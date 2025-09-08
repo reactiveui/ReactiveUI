@@ -21,7 +21,8 @@ public class WhenAnyThroughDependencyObjectTests
     /// <summary>
     /// Tests that WhenAny through a view shouldn't give null values.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void WhenAnyThroughAViewShouldntGiveNullValues()
     {
         var vm = new HostTestFixture()
@@ -38,16 +39,19 @@ public class WhenAnyThroughDependencyObjectTests
 
         var output = new List<string?>();
 
-        Assert.That(output.Count, Is.EqualTo(0));
-        Assert.That(fixture.ViewModel, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output.Count, Is.Zero);
+            Assert.That(fixture.ViewModel, Is.Null);
+        }
 
         fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
 
         fixture.ViewModel = vm;
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
 
         fixture.ViewModel.Child.IsNotNullString = "Bar";
-        Assert.That(output.Count, Is.EqualTo(2));
+        Assert.That(output, Has.Count.EqualTo(2));
         new[] { "Foo", "Bar" }.AssertAreEqual(output);
     }
 }

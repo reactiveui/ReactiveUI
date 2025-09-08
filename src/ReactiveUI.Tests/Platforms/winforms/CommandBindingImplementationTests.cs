@@ -86,14 +86,20 @@ public class CommandBindingImplementationTests
         var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
 
         view.Command1.PerformClick();
-        Assert.That(invokeCount, Is.EqualTo(1));
-        Assert.That(vm.ParameterResult, Is.EqualTo(10));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(invokeCount, Is.EqualTo(1));
+            Assert.That(vm.ParameterResult, Is.EqualTo(10));
+        }
 
         // update the parameter to ensure its updated when the command is executed
         vm.Parameter = 2;
         view.Command1.PerformClick();
-        Assert.That(invokeCount, Is.EqualTo(2));
-        Assert.That(vm.ParameterResult, Is.EqualTo(20));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(invokeCount, Is.EqualTo(2));
+            Assert.That(vm.ParameterResult, Is.EqualTo(20));
+        }
 
         // break the Command3 subscription
         var newCmd = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
@@ -101,8 +107,11 @@ public class CommandBindingImplementationTests
 
         // ensure that the invoke count does not update and that the Command3 is now using the new math
         view.Command1.PerformClick();
-        Assert.That(invokeCount, Is.EqualTo(2));
-        Assert.That(vm.ParameterResult, Is.EqualTo(4));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(invokeCount, Is.EqualTo(2));
+            Assert.That(vm.ParameterResult, Is.EqualTo(4));
+        }
 
         disp.Dispose();
     }
@@ -120,13 +129,19 @@ public class CommandBindingImplementationTests
         var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
 
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-        Assert.That(vm.ParameterResult, Is.EqualTo(10));
-        Assert.That(invokeCount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.ParameterResult, Is.EqualTo(10));
+            Assert.That(invokeCount, Is.EqualTo(1));
+        }
 
         vm.Parameter = 2;
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-        Assert.That(vm.ParameterResult, Is.EqualTo(20));
-        Assert.That(invokeCount, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.ParameterResult, Is.EqualTo(20));
+            Assert.That(invokeCount, Is.EqualTo(2));
+        }
 
         disp.Dispose();
 

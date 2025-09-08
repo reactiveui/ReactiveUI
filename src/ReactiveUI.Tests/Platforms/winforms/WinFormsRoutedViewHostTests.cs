@@ -43,7 +43,7 @@ public class WinFormsRoutedViewHostTests
             DefaultContent = defaultContent
         };
 
-        Assert.That(target.Controls.Contains(defaultContent, Is.True));
+        Assert.That(target.Controls.Contains(defaultContent), Is.True);
     }
 
     [Test]
@@ -54,6 +54,6 @@ public class WinFormsRoutedViewHostTests
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         router?.Navigate?.Execute(new FakeWinformViewModel());
 
-        Assert.That(target.Controls.OfType<FakeWinformsView>(, Is.EqualTo(1)).Count());
+        Assert.That(target.Controls.OfType<FakeWinformsView>().Count(), Is.EqualTo(1));
     }
 }

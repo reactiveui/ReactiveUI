@@ -29,79 +29,94 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>(, Has.Exactly(1).Items));
-            Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>(, Has.Exactly(1).Items));
-            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(, Has.Exactly(1).Items));
-            Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>(, Has.Exactly(1).Items));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>(), Has.Exactly(1).Items);
+                Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>(), Has.Exactly(1).Items);
+                Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(), Has.Exactly(1).Items);
+                Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>(), Has.Exactly(1).Items);
+            }
         }
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void NonContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetService<IViewFor<AnotherViewModel>>(, Is.TypeOf<AnotherView>()));
+            Assert.That(_resolver.GetService<IViewFor<AnotherViewModel>>(), Is.TypeOf<AnotherView>());
         }
     }
 
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void ContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetService(typeof(IViewFor<ExampleViewModel>, Is.TypeOf<ContractExampleView>()), "contract"));
+            Assert.That(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract"), Is.TypeOf<ContractExampleView>());
         }
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(0));
+            Assert.That(SingleInstanceExampleView.Instances, Is.Zero);
 
             var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
             Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(1));
 
             var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
-            Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(1));
 
-            Assert.Same(instance, instance2);
+                Assert.That(instance2, Is.SameAs(instance));
+            }
         }
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsWithContractShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(0));
+            Assert.That(SingleInstanceWithContractExampleView.Instances, Is.Zero);
 
             var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
             Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(1));
 
             var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
-            Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(1));
 
-            Assert.Same(instance, instance2);
+                Assert.That(instance2, Is.SameAs(instance));
+            }
         }
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(NeverUsedView.Instances, Is.EqualTo(0));
+            Assert.That(NeverUsedView.Instances, Is.Zero);
         }
     }
 }

@@ -27,8 +27,11 @@ public class AOTCompatibilityTests
         obj.PropertyChanged += (s, e) => propertyChanged = true;
         obj.TestProperty = "New Value";
 
-        Assert.That(propertyChanged, Is.True);
-        Assert.That(obj.TestProperty, Is.EqualTo("New Value"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(propertyChanged, Is.True);
+            Assert.That(obj.TestProperty, Is.EqualTo("New Value"));
+        }
     }
 
     /// <summary>
@@ -117,8 +120,11 @@ public class AOTCompatibilityTests
 
         var result = interaction.Handle("test").Wait();
 
-        Assert.That(called, Is.True);
-        Assert.That(result, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(called, Is.True);
+            Assert.That(result, Is.True);
+        }
     }
 
     /// <summary>

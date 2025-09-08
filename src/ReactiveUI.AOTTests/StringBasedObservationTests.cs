@@ -32,7 +32,7 @@ public class StringBasedObservationTests
         s.IntValue = 7; // distinct should suppress duplicate
         s.IntValue = 9;
 
-        Assert.That(values, Is.EqualTo(new[] { 5, 7, 9 }));
+        Assert.That(values, Is.EqualTo([5, 7, 9]));
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class StringBasedObservationTests
         s.IntValue = 2; // should emit previous value (1) before change
         s.IntValue = 3; // should emit 2
 
-        Assert.That(before, Is.EqualTo(new[] { 1, 2 }));
+        Assert.That(before, Is.EqualTo([1, 2]));
     }
 
     /// <summary>
@@ -70,7 +70,7 @@ public class StringBasedObservationTests
         s.Name = "b"; // duplicate should be filtered by default overload
         s.Name = "c";
 
-        Assert.That(values, Is.EqualTo(new[] { "a", "b", "c" }));
+        Assert.That(values, Is.EqualTo(["a", "b", "c"]));
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class StringBasedObservationTests
         s.Name = "y";
         s.Name = "y"; // should be included
 
-        Assert.That(values, Is.EqualTo(new[] { "x", "y", "y" }));
+        Assert.That(values, Is.EqualTo(["x", "y", "y"]));
     }
 
     private sealed class Sample : ReactiveObject

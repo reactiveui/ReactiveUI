@@ -40,7 +40,8 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
 #endif
     public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction = null)
         : this(collectionView) =>
-        Data = new[] { new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction) };
+        Data = [new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction)
+        ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.

@@ -76,7 +76,7 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm);
 
-        Assert.That(count, Is.EqualTo(0));
+        Assert.That(count, Is.Zero);
 
         screen.Router.Navigate.Execute(vm2);
 
@@ -99,7 +99,7 @@ public class RoutableViewModelMixinTests
 
         screen.Router.Navigate.Execute(vm1);
 
-        Assert.That(count, Is.EqualTo(0));
+        Assert.That(count, Is.Zero);
 
         screen.Router.NavigateAndReset.Execute(vm2);
 

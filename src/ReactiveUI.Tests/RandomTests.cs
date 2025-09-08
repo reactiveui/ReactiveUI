@@ -227,9 +227,9 @@ public class RandomTests
         var doubleConverter = new DoubleToStringTypeConverter();
 
         // Assert - These converters return 10 for their type conversions
-        Assert.That(intConverter.GetAffinityForObjects(typeof(int, Is.EqualTo(10)), typeof(string)));
-        Assert.That(doubleConverter.GetAffinityForObjects(typeof(double, Is.EqualTo(10)), typeof(string)));
-        Assert.That(intConverter.GetAffinityForObjects(typeof(string, Is.EqualTo(10)), typeof(int)));
+        Assert.That(intConverter.GetAffinityForObjects(typeof(int), typeof(string)), Is.EqualTo(10));
+        Assert.That(doubleConverter.GetAffinityForObjects(typeof(double), typeof(string)), Is.EqualTo(10));
+        Assert.That(intConverter.GetAffinityForObjects(typeof(string), typeof(int)), Is.EqualTo(10));
     }
 
     /// <summary>

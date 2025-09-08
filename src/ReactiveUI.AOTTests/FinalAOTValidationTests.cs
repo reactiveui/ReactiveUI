@@ -55,11 +55,14 @@ public class FinalAOTValidationTests
         var validationResult = interaction.Handle("long string").Wait();
         messageBus.SendMessage("workflow complete");
 
-        // Verify everything works
-        Assert.That(property.Value, Is.EqualTo("test value"));
-        Assert.That(helper.Value, Is.EqualTo("test value"));
-        Assert.That(validationResult, Is.True);
-        Assert.Contains("workflow complete", messages);
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify everything works
+            Assert.That(property.Value, Is.EqualTo("test value"));
+            Assert.That(helper.Value, Is.EqualTo("test value"));
+            Assert.That(validationResult, Is.True);
+            Assert.That(messages, Does.Contain("workflow complete"));
+        }
 
         // Cleanup
         helper.Dispose();
@@ -98,15 +101,18 @@ public class FinalAOTValidationTests
         taskCommand.Execute().Subscribe();
         observableCommand.Execute().Subscribe();
 
-        // Verify results
-        Assert.That(simpleResult, Is.EqualTo("executed"));
-        Assert.That(paramResult, Is.EqualTo("value: 42"));
-        Assert.That(taskResult, Is.EqualTo("async result"));
-        Assert.That(observableResult, Is.EqualTo("observable result"));
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify results
+            Assert.That(simpleResult, Is.EqualTo("executed"));
+            Assert.That(paramResult, Is.EqualTo("value: 42"));
+            Assert.That(taskResult, Is.EqualTo("async result"));
+            Assert.That(observableResult, Is.EqualTo("observable result"));
 
-        // Test command states
-        Assert.That(simpleCommand.CanExecute.FirstAsync().Wait(), Is.True);
-        Assert.That(simpleCommand.IsExecuting.FirstAsync().Wait(), Is.False);
+            // Test command states
+            Assert.That(simpleCommand.CanExecute.FirstAsync().Wait(), Is.True);
+            Assert.That(simpleCommand.IsExecuting.FirstAsync().Wait(), Is.False);
+        }
     }
 
     /// <summary>
@@ -143,8 +149,11 @@ public class FinalAOTValidationTests
             command.Execute().Subscribe();
             var result = interaction.Handle(Unit.Default).Wait();
 
-            Assert.That(property.Value, Is.EqualTo("updated"));
-            Assert.That(result, Is.True);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(property.Value, Is.EqualTo("updated"));
+                Assert.That(result, Is.True);
+            }
         });
 
         viewModel.Activator.Activate();
@@ -242,10 +251,6 @@ public class FinalAOTValidationTests
         };
 
         // Verify we have comprehensive coverage
-        Assert.That(testedFeatures.Count >= 13, "Should test at least 13 key ReactiveUI features", Is.True);
-
-        // This test serves as documentation that we have validated
-        // the complete ReactiveUI feature set for AOT compatibility
-        Assert.That(true, "Comprehensive AOT testing completed successfully", Is.True);
+        Assert.That(testedFeatures.Count >= 13, Is.True, "Should test at least 13 key ReactiveUI features");
     }
 }

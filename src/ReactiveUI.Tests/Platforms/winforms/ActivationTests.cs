@@ -78,15 +78,21 @@ public class ActivationTests
                 }
             });
 
-            Assert.That(formActivateCount, Is.EqualTo(0));
-            Assert.That(formDeActivateCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(formActivateCount, Is.Zero);
+                Assert.That(formDeActivateCount, Is.Zero);
+            }
 
             form.Visible = true;
             Assert.That(formActivateCount, Is.EqualTo(1));
 
             form.Visible = false;
-            Assert.That(formActivateCount, Is.EqualTo(1));
-            Assert.That(formDeActivateCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(formActivateCount, Is.EqualTo(1));
+                Assert.That(formDeActivateCount, Is.EqualTo(1));
+            }
 
             form.Visible = true;
             Assert.That(formActivateCount, Is.EqualTo(2));

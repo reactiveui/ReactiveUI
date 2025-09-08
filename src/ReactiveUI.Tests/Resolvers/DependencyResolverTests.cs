@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 
+using System.Linq;
+
 namespace ReactiveUI.Tests;
 
 [TestFixture]
@@ -12,32 +14,17 @@ public sealed class DependencyResolverTests
     /// <summary>
     /// Gets RegistrationNamespaces.
     /// </summary>
-    public static IEnumerable<object[]> NamespacesToRegister =>
-        new List<object[]>
+    public static IEnumerable<TestCaseData> NamespacesToRegister =>
+        new List<TestCaseData>
         {
-            new object[] { new[] { RegistrationNamespace.XamForms } },
-            new object[] { new[] { RegistrationNamespace.Winforms } },
-            new object[] { new[] { RegistrationNamespace.Wpf } },
-            new object[] { new[] { RegistrationNamespace.Uno } },
-            new object[] { new[] { RegistrationNamespace.Blazor } },
-            new object[] { new[] { RegistrationNamespace.Drawing } },
-            new object[]
-            {
-                new[]
-                {
-                    RegistrationNamespace.XamForms,
-                    RegistrationNamespace.Wpf
-                }
-            },
-            new object[]
-            {
-                new[]
-                {
-                    RegistrationNamespace.Blazor,
-                    RegistrationNamespace.XamForms,
-                    RegistrationNamespace.Wpf
-                }
-            }
+            new TestCaseData(new[] { RegistrationNamespace.XamForms }),
+            new TestCaseData(new[] { RegistrationNamespace.Winforms }),
+            new TestCaseData(new[] { RegistrationNamespace.Wpf }),
+            new TestCaseData(new[] { RegistrationNamespace.Uno }),
+            new TestCaseData(new[] { RegistrationNamespace.Blazor }),
+            new TestCaseData(new[] { RegistrationNamespace.Drawing }),
+            new TestCaseData(new[] { RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
+            new TestCaseData(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
         };
 
     [Test]
@@ -49,7 +36,7 @@ public sealed class DependencyResolverTests
             foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(PlatformRegistrationManager.DefaultRegistrationNamespaces))
             {
                 var resolvedServices = resolver.GetServices(shouldRegistered.Key);
-                Assert.That(resolvedServices.Count(, Is.EqualTo(shouldRegistered.Value.Count)));
+                Assert.That(resolvedServices.Count(), Is.EqualTo(shouldRegistered.Value.Count));
                 foreach (var implementationType in shouldRegistered.Value)
                 {
                     resolvedServices
@@ -61,7 +48,7 @@ public sealed class DependencyResolverTests
     }
 
     [Test]
-    [MemberData(nameof(NamespacesToRegister))]
+    [TestCaseSource(nameof(NamespacesToRegister))]
     public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {
         var resolver = GenerateResolver();
@@ -88,7 +75,7 @@ public sealed class DependencyResolverTests
     }
 
     [Test]
-    [MemberData(nameof(NamespacesToRegister))]
+    [TestCaseSource(nameof(NamespacesToRegister))]
     public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {
         var resolver = GenerateResolver();
@@ -191,7 +178,8 @@ public sealed class DependencyResolverTests
                 implementationTypes.Add(factory().GetType());
             });
 
-            register?.Invoke(platformRegistrations, new object[] { registerParameter });
+            register?.Invoke(platformRegistrations,
+                             [registerParameter]);
         }
     }
 }

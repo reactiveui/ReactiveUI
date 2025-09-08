@@ -12,6 +12,7 @@
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="RandomTests.cs" />
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>

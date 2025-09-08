@@ -35,23 +35,26 @@ public class DefaultPropertyBindingTests
         var input = new TextBox();
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.That(fixture.GetAffinityForObject(typeof(TextBox, Is.Not.EqualTo(0)), "Text"));
+        Assert.That(fixture.GetAffinityForObject(typeof(TextBox), "Text"), Is.Not.Zero);
 
         Expression<Func<TextBox, string>> expression = x => x.Text;
 
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.EqualTo(0));
+        Assert.That(output.Count, Is.Zero);
 
         input.Text = "Foo";
-        Assert.That(output.Count, Is.EqualTo(1));
-        Assert.That(output[0].Sender, Is.EqualTo(input));
-        Assert.That(output[0].GetPropertyName(, Is.EqualTo("Text")));
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Text"));
+        }
 
         dispose.Dispose();
 
         input.Text = "Bar";
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -63,23 +66,26 @@ public class DefaultPropertyBindingTests
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton, Is.Not.EqualTo(0)), "Checked"));
+        Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"), Is.Not.Zero);
 
         Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.EqualTo(0));
+        Assert.That(output.Count, Is.Zero);
 
         input.Checked = true;
-        Assert.That(output.Count, Is.EqualTo(1));
-        Assert.That(output[0].Sender, Is.EqualTo(input));
-        Assert.That(output[0].GetPropertyName(, Is.EqualTo("Checked")));
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Checked"));
+        }
 
         dispose.Dispose();
 
         // Since we disposed the derived list, we should no longer receive updates
         input.Checked = false;
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -91,22 +97,25 @@ public class DefaultPropertyBindingTests
         var input = new AThirdPartyNamespace.ThirdPartyControl();
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.That(fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl, Is.Not.EqualTo(0)), "Value"));
+        Assert.That(fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"), Is.Not.Zero);
 
         Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.EqualTo(0));
+        Assert.That(output.Count, Is.Zero);
 
         input.Value = "Foo";
-        Assert.That(output.Count, Is.EqualTo(1));
-        Assert.That(output[0].Sender, Is.EqualTo(input));
-        Assert.That(output[0].GetPropertyName(, Is.EqualTo("Value")));
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Value"));
+        }
 
         dispose.Dispose();
 
         input.Value = "Bar";
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -181,9 +190,12 @@ public class DefaultPropertyBindingTests
         var test3 = fixture.GetAffinityForObjects(typeof(List<Label>), typeof(Control.ControlCollection));
         var test4 = fixture.GetAffinityForObjects(typeof(Control.ControlCollection), typeof(IEnumerable<GridItem>));
 
-        Assert.That(test1, Is.EqualTo(0));
-        Assert.That(test2, Is.EqualTo(10));
-        Assert.That(test3, Is.EqualTo(10));
-        Assert.That(test4, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(test1, Is.Zero);
+            Assert.That(test2, Is.EqualTo(10));
+            Assert.That(test3, Is.EqualTo(10));
+            Assert.That(test4, Is.Zero);
+        }
     }
 }

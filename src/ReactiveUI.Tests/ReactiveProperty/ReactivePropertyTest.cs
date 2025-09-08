@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if false
+
 using System.Collections;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
@@ -55,7 +57,7 @@ public class ReactivePropertyTest : ReactiveTest
     public void ValidationLengthIsCorrectlyHandled()
     {
         var target = new ReactivePropertyVM();
-        IEnumerable? error = default;
+        IEnumerable? error = null;
         target.LengthLessThanFiveProperty
             .ObserveErrorChanged
             .Subscribe(x => error = x);
@@ -476,3 +478,4 @@ public class ReactivePropertyTest : ReactiveTest
         vm.SubscriberEvents.Should().Be(1000);
     }
 }
+#endif

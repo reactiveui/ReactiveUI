@@ -30,12 +30,13 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
     /// <summary>
     /// Tests that  Register views for view model should register all views.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(, Has.Exactly(1).Items));
+            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(), Has.Exactly(1).Items);
         }
     }
 

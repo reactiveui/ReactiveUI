@@ -25,8 +25,11 @@ public class WinFormsViewModelViewHostTests
             ViewModel = new FakeWinformViewModel()
         };
 
-        Assert.That(target.CurrentView, Is.TypeOf<FakeWinformsView>());
-        Assert.That(target.Controls.OfType<FakeWinformsView>(, Is.EqualTo(1)).Count());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(target.CurrentView, Is.TypeOf<FakeWinformsView>());
+            Assert.That(target.Controls.OfType<FakeWinformsView>().Count(), Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -58,8 +61,11 @@ public class WinFormsViewModelViewHostTests
         var defaultContent = new Control();
         var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
-        Assert.That(defaultContent, Is.EqualTo(target.CurrentView));
-        Assert.That(target.Controls.Contains(defaultContent, Is.True));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(defaultContent, Is.EqualTo(target.CurrentView));
+            Assert.That(target.Controls.Contains(defaultContent), Is.True);
+        }
     }
 
     [Test]
@@ -76,7 +82,7 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.Content;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.That(ReferenceEquals(cachedView, target.Content, Is.True));
+        Assert.That(ReferenceEquals(cachedView, target.Content), Is.True);
     }
 
     [Test]
@@ -93,6 +99,6 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.CurrentView;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.That(ReferenceEquals(cachedView, target.CurrentView, Is.False));
+        Assert.That(ReferenceEquals(cachedView, target.CurrentView), Is.False);
     }
 }

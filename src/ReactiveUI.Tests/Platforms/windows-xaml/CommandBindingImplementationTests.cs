@@ -21,7 +21,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind by name wireup.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindByNameWireup()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -42,7 +43,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind nested command wireup.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindNestedCommandWireup()
     {
         var vm = new CommandBindViewModel
@@ -60,7 +62,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind sets initial enabled state true.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsInitialEnabledState_True()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -76,7 +79,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind sets disables command when can execute changed.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -96,7 +100,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind sets initial enabled state false.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsInitialEnabledState_False()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -112,7 +117,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind raises can execute changed on bind.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindRaisesCanExecuteChangedOnBind()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -134,7 +140,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind with parameter expression.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithParameterExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -156,7 +163,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind with delay set vm parameter expression.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithDelaySetVMParameterExpression()
     {
         var view = new ReactiveObjectCommandBindView
@@ -181,7 +189,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind with delay set vm parameter no inpc expression.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithDelaySetVMParameterNoINPCExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -208,7 +217,8 @@ public class CommandBindingImplementationTests
     /// <summary>
     /// Tests the command bind with parameter observable.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithParameterObservable()
     {
         var view = new CommandBindView { ViewModel = new() };

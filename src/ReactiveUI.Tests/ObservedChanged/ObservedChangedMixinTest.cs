@@ -56,9 +56,9 @@ public class ObservedChangedMixinTest
         };
 
         Expression<Func<HostTestFixture, string>> expression = x => x!.Child!.IsNotNullString!;
-        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, default);
+        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
-        Assert.That(fixture.GetValue(, Is.EqualTo("Foo")));
+        Assert.That(fixture.GetValue(), Is.EqualTo("Foo"));
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class ObservedChangedMixinTest
         };
 
         Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
-        var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, default);
+        var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, null);
 
         fixture.SetValueToProperty(output, x => x.Child!.IsNotNullString);
         Assert.That(output.Child.IsNotNullString, Is.EqualTo("Bar"));

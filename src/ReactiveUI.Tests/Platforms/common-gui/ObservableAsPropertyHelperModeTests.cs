@@ -29,10 +29,13 @@ public class ObservableAsPropertyHelperModeTests
             // or RX bug.
             f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-            // Trigger subscription to the underlying observable.
-            Assert.That(f.A, Is.EqualTo(true));
+            using (Assert.EnterMultipleScope())
+            {
+                // Trigger subscription to the underlying observable.
+                Assert.That(f.A, Is.True);
 
-            Assert.That(f.Count, Is.EqualTo(1));
+                Assert.That(f.Count, Is.EqualTo(1));
+            }
         }
     }
 
@@ -52,10 +55,13 @@ public class ObservableAsPropertyHelperModeTests
             // or RX bug.
             f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-            // Trigger subscription to the underlying observable.
-            Assert.That(f.A, Is.EqualTo(true));
+            using (Assert.EnterMultipleScope())
+            {
+                // Trigger subscription to the underlying observable.
+                Assert.That(f.A, Is.True);
 
-            Assert.That(f.Count, Is.EqualTo(1));
+                Assert.That(f.Count, Is.EqualTo(1));
+            }
         }
     }
 }

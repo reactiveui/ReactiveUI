@@ -27,8 +27,12 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.CreateRunInBackground<int>(_ => { });
         var input = new Button();
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), true) > 0);
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(async o =>
@@ -42,8 +46,11 @@ public class CommandBindingTests
         {
             input.PerformClick();
             await testSequencer.AdvancePhaseAsync("Phase 1");
-            Assert.That(commandExecuted, Is.True);
-            Assert.That(ea, Is.Not.Null);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 
@@ -57,8 +64,12 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableControl();
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), true) > 0);
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(o =>
@@ -71,8 +82,11 @@ public class CommandBindingTests
         {
             input.PerformClick();
 
-            Assert.That(commandExecuted, Is.True);
-            Assert.That(ea, Is.Not.Null);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 
@@ -86,8 +100,12 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableComponent();
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), true) > 0);
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(o =>
@@ -100,8 +118,11 @@ public class CommandBindingTests
         {
             input.PerformClick();
 
-            Assert.That(commandExecuted, Is.True);
-            Assert.That(ea, Is.Not.Null);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 

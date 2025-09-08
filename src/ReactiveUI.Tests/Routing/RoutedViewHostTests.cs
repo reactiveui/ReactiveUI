@@ -4,16 +4,16 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-
 using DynamicData;
-
 using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class RoutedViewHostTests
 {
-    [StaFact]
+    [Test]
     public void RoutedViewHostDefaultContentNotNull()
     {
         Locator.CurrentMutable.InitializeSplat();
@@ -42,12 +42,12 @@ public class RoutedViewHostTests
         new[] { true }.AssertAreEqual(windowActivated);
         new[] { true }.AssertAreEqual(controlActivated);
 
-        Assert.NotNull(uc.Content);
+        Assert.That(uc.Content, Is.Not.Null);
 
         window.Dispatcher.InvokeShutdown();
     }
 
-    [StaFact]
+    [Test]
     public void RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
         Locator.CurrentMutable.InitializeSplat();
@@ -82,16 +82,16 @@ public class RoutedViewHostTests
         new[] { true }.AssertAreEqual(controlActivated);
 
         // Default Content
-        Assert.IsType<System.Windows.Controls.Label>(uc.Content);
+        Assert.That(uc.Content, Is.InstanceOf<System.Windows.Controls.Label>());
 
         // Test Navigation after activated
         uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
-        Assert.IsType<TestView>(uc.Content);
+        Assert.That(uc.Content, Is.InstanceOf<TestView>());
 
         window.Dispatcher.InvokeShutdown();
     }
 
-    [StaFact]
+    [Test]
     public void RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
         Locator.CurrentMutable.InitializeSplat();
@@ -130,7 +130,7 @@ public class RoutedViewHostTests
         new[] { true }.AssertAreEqual(controlActivated);
 
         // Test Navigation before activated
-        Assert.IsType<TestView>(uc.Content);
+        Assert.That(uc.Content, Is.InstanceOf<TestView>());
 
         window.Dispatcher.InvokeShutdown();
     }

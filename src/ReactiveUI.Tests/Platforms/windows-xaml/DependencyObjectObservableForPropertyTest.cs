@@ -9,8 +9,8 @@ using DynamicData;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using System.Windows.Controls;
 using System.Threading;
+using System.Windows.Controls;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -23,24 +23,35 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void DependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
-        Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture, Is.Not.EqualTo(0)), "TestString"));
-        Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture, Is.EqualTo(0)), "DoesntExist"));
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"), Is.Not.Zero);
+            Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"), Is.Zero);
+        }
 
         var results = new List<IObservedChange<object, object?>>();
-        Expression<Func<DepObjFixture, object>> expression = x => x.TestString;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
-        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
-        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
+        Expression<Func<DepObjFixture, object?>> expression = x => x.TestString;
+        var propertyName = expression.Body.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException("There is no valid property name");
+
+        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
+                          .WhereNotNull()
+                          .Subscribe(results.Add);
+        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
+                          .WhereNotNull()
+                          .Subscribe(results.Add);
 
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.That(results.Count, Is.EqualTo(4));
+        Assert.That(results, Has.Count.EqualTo(4));
 
         disp1.Dispose();
         disp2.Dispose();
@@ -49,24 +60,35 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Runs a smoke test for derived dependency object observables for property.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void DerivedDependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DerivedDepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
-        Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture, Is.Not.EqualTo(0)), "TestString"));
-        Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture, Is.EqualTo(0)), "DoesntExist"));
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"), Is.Not.Zero);
+            Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"), Is.Zero);
+        }
 
         var results = new List<IObservedChange<object, object?>>();
-        Expression<Func<DerivedDepObjFixture, object>> expression = x => x.TestString;
-        var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("There is no valid property name");
-        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
-        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName).WhereNotNull().Subscribe(results.Add);
+        Expression<Func<DerivedDepObjFixture, object?>> expression = x => x.TestString;
+        var propertyName = expression.Body.GetMemberInfo()?.Name
+                           ?? throw new InvalidOperationException("There is no valid property name");
+
+        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
+                          .WhereNotNull()
+                          .Subscribe(results.Add);
+        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
+                          .WhereNotNull()
+                          .Subscribe(results.Add);
 
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.That(results.Count, Is.EqualTo(4));
+        Assert.That(results, Has.Count.EqualTo(4));
 
         disp1.Dispose();
         disp2.Dispose();
@@ -75,24 +97,37 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Tests WhenAny with dependency object test.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void WhenAnyWithDependencyObjectTest()
     {
         var inputs = new[] { "Foo", "Bar", "Baz" };
         var fixture = new DepObjFixture();
 
-        fixture.WhenAnyValue(x => x.TestString).ToObservableChangeSet().Bind(out var outputs).Subscribe();
-        inputs.ForEach(x => fixture.TestString = x);
+        fixture.WhenAnyValue(x => x.TestString)
+               .ToObservableChangeSet()
+               .Bind(out var outputs)
+               .Subscribe();
 
-        Assert.That(outputs.First(, Is.Null));
-        Assert.That(outputs.Count, Is.EqualTo(4));
-        Assert.That(inputs.Zip(outputs.Skip(1, Is.True), (expected, actual) => expected == actual).All(x => x));
+        foreach (var x in inputs)
+        {
+            fixture.TestString = x;
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(outputs.First(), Is.Null);
+            Assert.That(outputs, Has.Count.EqualTo(4));
+        }
+
+        Assert.That(outputs.Skip(1), Is.EqualTo(inputs));
     }
 
     /// <summary>
     /// Tests ListBoxes the selected item test.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void ListBoxSelectedItemTest()
     {
         var input = new ListBox();
@@ -100,13 +135,17 @@ public class DependencyObjectObservableForPropertyTest
         input.Items.Add("Bar");
         input.Items.Add("Baz");
 
-        input.WhenAnyValue(x => x.SelectedItem).ToObservableChangeSet().Bind(out var output).Subscribe();
-        Assert.That(output.Count, Is.EqualTo(1));
+        input.WhenAnyValue(x => x.SelectedItem)
+             .ToObservableChangeSet()
+             .Bind(out var output)
+             .Subscribe();
+
+        Assert.That(output, Has.Count.EqualTo(1));
 
         input.SelectedIndex = 1;
-        Assert.That(output.Count, Is.EqualTo(2));
+        Assert.That(output, Has.Count.EqualTo(2));
 
         input.SelectedIndex = 2;
-        Assert.That(output.Count, Is.EqualTo(3));
+        Assert.That(output, Has.Count.EqualTo(3));
     }
 }

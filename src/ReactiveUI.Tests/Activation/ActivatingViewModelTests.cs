@@ -18,7 +18,7 @@ public class ActivatingViewModelTests
     public void ActivationsGetRefCounted()
     {
         var fixture = new ActivatingViewModel();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+        Assert.That(fixture.IsActiveCount, Is.Zero);
 
         fixture.Activator.Activate();
         Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
@@ -31,7 +31,7 @@ public class ActivatingViewModelTests
 
         // RefCount drops to zero
         fixture.Activator.Deactivate();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+        Assert.That(fixture.IsActiveCount, Is.Zero);
     }
 
     /// <summary>
@@ -41,12 +41,18 @@ public class ActivatingViewModelTests
     public void DerivedActivationsDontGetStomped()
     {
         var fixture = new DerivedActivatingViewModel();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
-        Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.IsActiveCount, Is.Zero);
+            Assert.That(fixture.IsActiveCountAlso, Is.Zero);
+        }
 
         fixture.Activator.Activate();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
-        Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
+        }
 
         fixture.Activator.Activate();
         Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
@@ -57,7 +63,10 @@ public class ActivatingViewModelTests
         Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(1));
 
         fixture.Activator.Deactivate();
-        Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
-        Assert.That(fixture.IsActiveCountAlso, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.IsActiveCount, Is.Zero);
+            Assert.That(fixture.IsActiveCountAlso, Is.Zero);
+        }
     }
 }

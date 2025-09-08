@@ -24,7 +24,7 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Activate();
 
-        Assert.That(activated.Count, Is.EqualTo(1));
+        Assert.That(activated, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Deactivate(true);
 
-        Assert.That(deactivated.Count, Is.EqualTo(1));
+        Assert.That(deactivated, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class ViewModelActivatorTests
 
         viewModelActivator.Deactivate(false);
 
-        Assert.That(deactivated.Count, Is.EqualTo(0));
+        Assert.That(deactivated.Count, Is.Zero);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class ViewModelActivatorTests
         viewModelActivator.Activate();
         viewModelActivator.Deactivate(false);
 
-        Assert.That(deactivated.Count, Is.EqualTo(1));
+        Assert.That(deactivated, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -82,11 +82,17 @@ public class ViewModelActivatorTests
 
         using (viewModelActivator.Activate())
         {
-            Assert.That(activated.Count, Is.EqualTo(1));
-            Assert.That(deactivated.Count, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(activated, Has.Count.EqualTo(1));
+                Assert.That(deactivated.Count, Is.Zero);
+            }
         }
 
-        Assert.That(activated.Count, Is.EqualTo(1));
-        Assert.That(deactivated.Count, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activated, Has.Count.EqualTo(1));
+            Assert.That(deactivated, Has.Count.EqualTo(1));
+        }
     }
 }

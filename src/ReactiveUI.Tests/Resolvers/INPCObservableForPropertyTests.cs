@@ -15,13 +15,17 @@ public class INPCObservableForPropertyTests
     {
         var instance = new INPCObservableForProperty();
 
-        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged, Is.EqualTo(5)), string.Empty, false));
-        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged, Is.EqualTo(0)), string.Empty, true));
-        Assert.That(instance.GetAffinityForObject(typeof(object, Is.EqualTo(0)), string.Empty, false));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false), Is.EqualTo(5));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true), Is.Zero);
+            Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
 
-        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging, Is.EqualTo(5)), string.Empty, true));
-        Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging, Is.EqualTo(0)), string.Empty, false));
-        Assert.That(instance.GetAffinityForObject(typeof(object, Is.EqualTo(0)), string.Empty, false));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true), Is.EqualTo(5));
+            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false), Is.Zero);
+        }
+
+        Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
     }
 
     [Test]
@@ -42,10 +46,13 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.That(changes.Count, Is.EqualTo(2));
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
     [Test]
@@ -66,10 +73,13 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.That(changes.Count, Is.EqualTo(2));
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
     [Test]
@@ -90,10 +100,13 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanged(null);
         testClass.OnPropertyChanged(string.Empty);
 
-        Assert.That(changes.Count, Is.EqualTo(2));
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
     [Test]
@@ -114,10 +127,13 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanging(null);
         testClass.OnPropertyChanging(string.Empty);
 
-        Assert.That(changes.Count, Is.EqualTo(2));
+        Assert.That(changes, Has.Count.EqualTo(2));
 
-        Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-        Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
+            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+        }
     }
 
     private class TestClassChanged : INotifyPropertyChanged

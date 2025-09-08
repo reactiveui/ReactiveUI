@@ -17,7 +17,8 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Commands the bind to explicit event wireup.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindToExplicitEventWireup()
     {
         var vm = new CommandBindingViewModel();
@@ -39,7 +40,8 @@ public class WpfCommandBindingImplementationTests
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandToObjectWithEventTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -60,13 +62,14 @@ public class WpfCommandBindingImplementationTests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         });
 
-        Assert.That(invokeCount, Is.EqualTo(0));
+        Assert.That(invokeCount, Is.Zero);
     }
 
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandToObjectTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -87,13 +90,14 @@ public class WpfCommandBindingImplementationTests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         });
 
-        Assert.That(invokeCount, Is.EqualTo(0));
+        Assert.That(invokeCount, Is.Zero);
     }
 
     /// <summary>
     /// Binds the command to object target is null.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandToObjectEventIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -114,13 +118,14 @@ public class WpfCommandBindingImplementationTests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         });
 
-        Assert.That(invokeCount, Is.EqualTo(0));
+        Assert.That(invokeCount, Is.Zero);
     }
 
     /// <summary>
     /// Binds the command to object command is null.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandToObjectWithEventCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -142,13 +147,14 @@ public class WpfCommandBindingImplementationTests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         });
 
-        Assert.That(invokeCount, Is.EqualTo(0));
+        Assert.That(invokeCount, Is.Zero);
     }
 
     /// <summary>
     /// Binds the command to object command is null.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandToObjectCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -170,13 +176,14 @@ public class WpfCommandBindingImplementationTests
             view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         });
 
-        Assert.That(invokeCount, Is.EqualTo(0));
+        Assert.That(invokeCount, Is.Zero);
     }
 
     /// <summary>
     /// Commands the bind view model to view with observable.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindViewModelToViewWithObservable()
     {
         var vm = new CommandBindingViewModel();
@@ -188,31 +195,41 @@ public class WpfCommandBindingImplementationTests
 
         // Bind the command and the IObservable parameter.
         var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.WhenAnyValue(vm => vm.Value), "MouseUp");
-        Assert.That(vm.Value, Is.EqualTo(0));
+        Assert.That(vm.Value, Is.Zero);
 
         // Confirm that the values update as expected.
         var parameter = 0;
         vm.Command1.Subscribe(i => parameter = i);
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(vm.Value, Is.EqualTo(1));
-        Assert.That(parameter, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Value, Is.EqualTo(1));
+            Assert.That(parameter, Is.Zero);
+        }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         Assert.That(parameter, Is.EqualTo(1));
 
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(vm.Value, Is.EqualTo(2));
-        Assert.That(parameter, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Value, Is.EqualTo(2));
+            Assert.That(parameter, Is.EqualTo(1));
+        }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(parameter, Is.EqualTo(2));
-        Assert.That(vm.Value, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(parameter, Is.EqualTo(2));
+            Assert.That(vm.Value, Is.EqualTo(2));
+        }
     }
 
     /// <summary>
     /// Commands the bind view model to view with function.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindViewModelToViewWithFunc()
     {
         var vm = new CommandBindingViewModel();
@@ -224,28 +241,38 @@ public class WpfCommandBindingImplementationTests
 
         // Bind the command and the Func<T> parameter.
         var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm => vm.Value, "MouseUp");
-        Assert.That(vm.Value, Is.EqualTo(0));
+        Assert.That(vm.Value, Is.Zero);
 
         // Confirm that the values update as expected.
         var parameter = 0;
         vm.Command1.Subscribe(i => parameter = i);
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(vm.Value, Is.EqualTo(1));
-        Assert.That(parameter, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Value, Is.EqualTo(1));
+            Assert.That(parameter, Is.Zero);
+        }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         Assert.That(parameter, Is.EqualTo(1));
 
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(vm.Value, Is.EqualTo(2));
-        Assert.That(parameter, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(vm.Value, Is.EqualTo(2));
+            Assert.That(parameter, Is.EqualTo(1));
+        }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
-        Assert.That(parameter, Is.EqualTo(2));
-        Assert.That(vm.Value, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(parameter, Is.EqualTo(2));
+            Assert.That(vm.Value, Is.EqualTo(2));
+        }
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
     {
         var testLogger = new TestLogger();
@@ -254,10 +281,16 @@ public class WpfCommandBindingImplementationTests
         var vm = new CommandBindingViewModel();
         var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
-        testLogger.Messages.Should().NotContain(t => t.message.Contains(nameof(POCOObservableForProperty)) && t.message.Contains(view.NameOfButtonDeclaredInXaml) && t.logLevel == LogLevel.Warn);
+        Assert.That(
+            testLogger.Messages.Any(t =>
+                t.message.Contains(nameof(POCOObservableForProperty)) &&
+                t.message.Contains(view.NameOfButtonDeclaredInXaml) &&
+                t.logLevel == LogLevel.Warn),
+            Is.False);
     }
 
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()
@@ -271,7 +304,7 @@ public class WpfCommandBindingImplementationTests
             return (disp, weakRef);
         }
 
-        var (disp, weakRef) = GetWeakReference();
+        var (_, weakRef) = GetWeakReference();
 
         GC.Collect();
         GC.WaitForPendingFinalizers();

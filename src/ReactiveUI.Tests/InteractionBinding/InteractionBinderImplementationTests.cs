@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -26,14 +25,14 @@ public class InteractionBinderImplementationTests
             vm,
             vm => vm.Interaction1,
             input =>
-                {
-                    input.SetOutput(true);
-                    return Task.CompletedTask;
-                });
+            {
+                input.SetOutput(true);
+                return Task.CompletedTask;
+            });
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -57,7 +56,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -83,7 +82,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -109,7 +108,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -132,7 +131,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -155,7 +155,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -178,7 +179,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -201,7 +203,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -227,7 +230,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -253,7 +256,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -277,7 +280,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -301,7 +304,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -325,7 +328,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -349,7 +353,8 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -378,7 +383,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -407,7 +412,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        isDeletionConfirmed.Should().BeTrue();
+        Assert.That(isDeletionConfirmed, Is.True);
     }
 
     /// <summary>
@@ -430,7 +435,8 @@ public class InteractionBinderImplementationTests
 
         disposable.Dispose();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -453,7 +459,8 @@ public class InteractionBinderImplementationTests
 
         disposable.Dispose();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
+            () => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -471,10 +478,10 @@ public class InteractionBinderImplementationTests
                 vm,
                 vm => vm.Interaction1,
                 input =>
-                    {
-                        input.SetOutput(true);
-                        return Task.CompletedTask;
-                    });
+                {
+                    input.SetOutput(true);
+                    return Task.CompletedTask;
+                });
             view.ViewModel = new InteractionBindViewModel();
 
             return (disposable, weakRef);
@@ -496,7 +503,7 @@ public class InteractionBinderImplementationTests
     {
         static (IDisposable, WeakReference) GetWeakReference()
         {
-            var vm = new InteractionAncestorViewModel() { InteractionViewModel = new InteractionBindViewModel() };
+            var vm = new InteractionAncestorViewModel { InteractionViewModel = new InteractionBindViewModel() };
             var view = new InteractionAncestorView { ViewModel = vm };
             var weakRef = new WeakReference(vm.InteractionViewModel);
             var disposable = view.BindInteraction(

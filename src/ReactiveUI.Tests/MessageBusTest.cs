@@ -30,8 +30,11 @@ public class MessageBusTest
             var fixture = new MessageBus();
 
             fixture.RegisterMessageSource(source, "Test");
-            Assert.That(fixture.IsRegistered(typeof(int, Is.False)));
-            Assert.That(fixture.IsRegistered(typeof(int, Is.False), "Foo"));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsRegistered(typeof(int)), Is.False);
+                Assert.That(fixture.IsRegistered(typeof(int), "Foo"), Is.False);
+            }
 
             fixture.Listen<int>("Test").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
@@ -120,15 +123,21 @@ public class MessageBusTest
         bus.Listen<int>().Subscribe(_ => receivedMessage2 = true);
 
         source1.OnNext(1);
-        Assert.That(receivedMessage1, Is.True);
-        Assert.That(receivedMessage2, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(receivedMessage1, Is.True);
+            Assert.That(receivedMessage2, Is.True);
+        }
 
         receivedMessage1 = false;
         receivedMessage2 = false;
 
         source2.OnNext(2);
-        Assert.That(receivedMessage1, Is.True);
-        Assert.That(receivedMessage2, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(receivedMessage1, Is.True);
+            Assert.That(receivedMessage2, Is.True);
+        }
     }
 
     /// <summary>
@@ -154,8 +163,11 @@ public class MessageBusTest
         otherThread.Start();
         otherThread.Join();
 
-        Assert.That(thisThreadId, Is.Not.EqualTo(listenedThreadId!.Value));
-        Assert.That(otherThreadId!.Value, Is.EqualTo(listenedThreadId.Value));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(thisThreadId, Is.Not.EqualTo(listenedThreadId!.Value));
+            Assert.That(otherThreadId!.Value, Is.EqualTo(listenedThreadId.Value));
+        }
     }
 
     /// <summary>
@@ -236,12 +248,20 @@ public class MessageBusTest
 
         // Assert
         Assert.That(contract1Messages, Has.Exactly(1).Items);
-        Assert.That(contract1Messages[0], Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(contract1Messages[0], Is.EqualTo(1));
 
-        Assert.That(contract2Messages, Has.Exactly(1).Items);
-        Assert.That(contract2Messages[0], Is.EqualTo(2));
+            Assert.That(contract2Messages, Has.Exactly(1).Items);
+        }
 
-        Assert.That(noContractMessages, Has.Exactly(1).Items);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(contract2Messages[0], Is.EqualTo(2));
+
+            Assert.That(noContractMessages, Has.Exactly(1).Items);
+        }
+
         Assert.That(noContractMessages[0], Is.EqualTo(3));
     }
 }

@@ -28,7 +28,7 @@ public class NewGameViewModelTests
         {
             _viewmodel.NewPlayerName = "Player" + i;
             _viewmodel.AddPlayer.Execute().Subscribe();
-            Assert.That(_viewmodel.Players.Count, Is.EqualTo(i));
+            Assert.That(_viewmodel.Players, Has.Count.EqualTo(i));
         }
     }
 }

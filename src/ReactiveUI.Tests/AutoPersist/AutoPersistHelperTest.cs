@@ -57,12 +57,12 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
 
             // Change to not serialized = no saving
             fixture.NotSerialized = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
         });
 
     /// <summary>
@@ -87,7 +87,7 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";
@@ -129,7 +129,7 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";

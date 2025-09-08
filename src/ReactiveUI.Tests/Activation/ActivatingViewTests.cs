@@ -32,16 +32,25 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
         }
     }
 
@@ -64,15 +73,21 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.ViewModel = null;
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(vm.IsActiveCount, Is.Zero);
         }
     }
 
@@ -95,18 +110,21 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
             Assert.That(vm.IsActiveCount, Is.EqualTo(1));
             Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             var newVm = new ActivatingViewModel();
-            Assert.That(newVm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(newVm.IsActiveCount, Is.Zero);
 
             fixture.ViewModel = newVm;
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            Assert.That(vm.IsActiveCount, Is.Zero);
             Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
         }
     }
@@ -128,19 +146,28 @@ public class ActivatingViewTests
             var vm = new ActivatingViewModel();
             var fixture = new ActivatingView();
 
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
             Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.ViewModel = vm;
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+                Assert.That(vm.IsActiveCount, Is.Zero);
+            }
         }
     }
 
@@ -163,20 +190,32 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(0));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(0));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
         }
     }
 }

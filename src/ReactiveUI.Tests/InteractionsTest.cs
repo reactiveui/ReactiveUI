@@ -37,14 +37,20 @@ public class InteractionsTest
     {
         var interaction = new Interaction<string, Unit>();
         var ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
-        Assert.Same(interaction, ex.Interaction);
-        Assert.That(ex.Input, Is.EqualTo("foo"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ex.Interaction, Is.SameAs(interaction));
+            Assert.That(ex.Input, Is.EqualTo("foo"));
+        }
 
         interaction.RegisterHandler(_ => { });
         interaction.RegisterHandler(_ => { });
         ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("bar").FirstAsync().Wait());
-        Assert.Same(interaction, ex.Interaction);
-        Assert.That(ex.Input, Is.EqualTo("bar"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(ex.Interaction, Is.SameAs(interaction));
+            Assert.That(ex.Input, Is.EqualTo("bar"));
+        }
     }
 
     /// <summary>
@@ -127,21 +133,19 @@ public class InteractionsTest
 
         using (interaction.RegisterHandler(x => x.SetOutput("A")))
         {
-            Assert.That(interaction.Handle(Unit.Default, Is.EqualTo("A")).FirstAsync().Wait());
-
+            Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("A"));
             using (interaction.RegisterHandler(x => x.SetOutput("B")))
             {
-                Assert.That(interaction.Handle(Unit.Default, Is.EqualTo("B")).FirstAsync().Wait());
-
+                Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("B"));
                 using (interaction.RegisterHandler(x => x.SetOutput("C")))
                 {
-                    Assert.That(interaction.Handle(Unit.Default, Is.EqualTo("C")).FirstAsync().Wait());
+                    Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("C"));
                 }
 
-                Assert.That(interaction.Handle(Unit.Default, Is.EqualTo("B")).FirstAsync().Wait());
+                Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("B"));
             }
 
-            Assert.That(interaction.Handle(Unit.Default, Is.EqualTo("A")).FirstAsync().Wait());
+            Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("A"));
         }
     }
 
@@ -170,17 +174,24 @@ public class InteractionsTest
             using (handler1B)
             {
                 using (handler1C)
+                using (Assert.EnterMultipleScope())
                 {
-                    Assert.That(interaction.Handle(false, Is.EqualTo("C")).FirstAsync().Wait());
-                    Assert.That(interaction.Handle(true, Is.EqualTo("C")).FirstAsync().Wait());
+                    Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("C"));
+                    Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("C"));
                 }
 
-                Assert.That(interaction.Handle(false, Is.EqualTo("A")).FirstAsync().Wait());
-                Assert.That(interaction.Handle(true, Is.EqualTo("B")).FirstAsync().Wait());
+                using (Assert.EnterMultipleScope())
+                {
+                    Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("A"));
+                    Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("B"));
+                }
             }
 
-            Assert.That(interaction.Handle(false, Is.EqualTo("A")).FirstAsync().Wait());
-            Assert.That(interaction.Handle(true, Is.EqualTo("A")).FirstAsync().Wait());
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("A"));
+                Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("A"));
+            }
         }
     }
 
@@ -195,7 +206,7 @@ public class InteractionsTest
 #pragma warning restore SYSLIB0050 // Type or member is obsolete
         var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
         Assert.That(uieme, Is.Not.Null);
-        Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(default!, default));
+        Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(null!, default));
 #pragma warning restore SYSLIB0051 // Type or member is obsolete
     }
 
@@ -230,11 +241,11 @@ public class InteractionsTest
                 .Handle(Unit.Default)
                 .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var result).Subscribe();
 
-            Assert.That(result.Count, Is.EqualTo(0));
+            Assert.That(result.Count, Is.Zero);
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
-            Assert.That(result.Count, Is.EqualTo(0));
+            Assert.That(result.Count, Is.Zero);
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
-            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0], Is.EqualTo("B"));
         }
 

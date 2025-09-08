@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Xunit;
+using NUnit.Framework;
 
 namespace ReactiveUI.Testing.Tests;
 
@@ -24,19 +24,34 @@ public class TestSequencerTests
         var subject = new Subject<Unit>();
         subject.Subscribe(async _ => await testSequencer.AdvancePhaseAsync());
 
-        Assert.That(testSequencer.CurrentPhase, Is.EqualTo(0));
-        Assert.That(testSequencer.CompletedPhases, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(testSequencer.CurrentPhase, Is.Zero);
+            Assert.That(testSequencer.CompletedPhases, Is.Zero);
+        }
         subject.OnNext(Unit.Default);
-        Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
-        Assert.That(testSequencer.CompletedPhases, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
+            Assert.That(testSequencer.CompletedPhases, Is.Zero);
+        }
         await testSequencer.AdvancePhaseAsync("Phase 1");
-        Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
-        Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
+            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+        }
         subject.OnNext(Unit.Default);
-        Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
-        Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
+            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+        }
         await testSequencer.AdvancePhaseAsync("Phase 2");
-        Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
-        Assert.That(testSequencer.CompletedPhases, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
+            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(2));
+        }
     }
 }

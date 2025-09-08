@@ -30,9 +30,12 @@ public class StringBasedSemanticsTests
         // initial emission is null, then updated value
         obj.TestProperty = "v1";
 
-        Assert.That(seen.Count >= 2, Is.True);
-        Assert.That(seen[0], Is.Null);
-        Assert.That(seen[^1], Is.EqualTo("v1"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(seen.Count >= 2, Is.True);
+            Assert.That(seen[0], Is.Null);
+            Assert.That(seen[^1], Is.EqualTo("v1"));
+        }
     }
 
     /// <summary>
@@ -69,9 +72,12 @@ public class StringBasedSemanticsTests
         obj.TestProperty = "same"; // should be filtered by distinct
         obj.TestProperty = "other";
 
-        // initial null + "same" + "other" => 3 distinct emissions
-        Assert.That(seen.Count >= 3, Is.True);
-        Assert.That(seen.TakeLast(3).ToArray(), Is.EqualTo(new[] { null, "same", "other" }));
+        using (Assert.EnterMultipleScope())
+        {
+            // initial null + "same" + "other" => 3 distinct emissions
+            Assert.That(seen.Count >= 3, Is.True);
+            Assert.That(seen.TakeLast(3).ToArray(), Is.EqualTo([null, "same", "other"]));
+        }
     }
 
     /// <summary>

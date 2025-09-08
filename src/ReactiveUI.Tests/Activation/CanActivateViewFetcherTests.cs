@@ -76,7 +76,7 @@ public class CanActivateViewFetcherTests
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateViewFetcherTests));
-        Assert.That(affinity, Is.EqualTo(0));
+        Assert.That(affinity, Is.Zero);
     }
 
 #pragma warning disable CA1812 // Class is not instantiated

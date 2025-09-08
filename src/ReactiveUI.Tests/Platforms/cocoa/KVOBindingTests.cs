@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using Xunit;
+using NUnit.Framework;
 using ReactiveUI.Cocoa;
 
 namespace ReactiveUI.Tests
@@ -47,8 +47,8 @@ namespace ReactiveUI.Tests
             var input = new FooController();
             var fixture = new KVOObservableForProperty();
 
-            Assert.That(fixture.GetAffinityForObject(typeof(FooController, Is.Not.EqualTo(0)), "View"));
-            Assert.That(fixture.GetAffinityForObject(typeof(FooController, Is.EqualTo(0)), "ViewModel"));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "View"), Is.Not.EqualTo(0));
+            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "ViewModel"), Is.EqualTo(0));
         }
     }
 }

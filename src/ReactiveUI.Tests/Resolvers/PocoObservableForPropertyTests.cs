@@ -18,8 +18,11 @@ public class PocoObservableForPropertyTests
         RxApp.EnsureInitialized();
         var instance = new POCOObservableForProperty();
 
-        Assert.That(instance.GetAffinityForObject(typeof(PocoType, Is.EqualTo(1)), null!, false));
-        Assert.That(instance.GetAffinityForObject(typeof(INPCClass, Is.EqualTo(1)), null!, false));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(instance.GetAffinityForObject(typeof(PocoType), null!, false), Is.EqualTo(1));
+            Assert.That(instance.GetAffinityForObject(typeof(INPCClass), null!, false), Is.EqualTo(1));
+        }
     }
 
     ////[Fact(Skip = "Test Scheduler is null on occasions")]

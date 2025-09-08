@@ -33,8 +33,11 @@ public class ComprehensiveAOTMarkupTests
         obj.PropertyChanged += (_, _) => propertyChangedFired = true;
         obj.TestProperty = "test value";
 
-        Assert.That(propertyChangedFired, Is.True);
-        Assert.That(obj.TestProperty, Is.EqualTo("test value"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(propertyChangedFired, Is.True);
+            Assert.That(obj.TestProperty, Is.EqualTo("test value"));
+        }
     }
 
     /// <summary>
@@ -109,8 +112,11 @@ public class ComprehensiveAOTMarkupTests
         property.Value = string.Empty;
 
         Assert.That(valueChanges, Does.Contain("initial"));
-        Assert.That(valueChanges, Does.Contain("changed"));
-        Assert.That(hasErrors, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(valueChanges, Does.Contain("changed"));
+            Assert.That(hasErrors, Is.True);
+        }
 
         property.Dispose();
     }
@@ -148,9 +154,12 @@ public class ComprehensiveAOTMarkupTests
         messageBus.SendMessage("workflow test");
         var result = interaction.Handle("test").Wait();
 
-        Assert.That(property.Value, Is.EqualTo("updated"));
-        Assert.That(messages, Does.Contain("workflow test"));
-        Assert.That(result, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(property.Value, Is.EqualTo("updated"));
+            Assert.That(messages, Does.Contain("workflow test"));
+            Assert.That(result, Is.True);
+        }
 
         // Cleanup
         source.Dispose();
@@ -209,9 +218,12 @@ public class ComprehensiveAOTMarkupTests
         var constant = Locator.Current.GetService<string>();
         var factory = Locator.Current.GetService<Func<string, ReactiveProperty<string>>>();
 
-        Assert.That(scheduler, Is.Not.Null);
-        Assert.That(constant, Is.EqualTo("test service"));
-        Assert.That(factory, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(scheduler, Is.Not.Null);
+            Assert.That(constant, Is.EqualTo("test service"));
+            Assert.That(factory, Is.Not.Null);
+        }
 
         var property = factory("factory test");
         Assert.That(property.Value, Is.EqualTo("factory test"));
@@ -246,21 +258,33 @@ public class ComprehensiveAOTMarkupTests
 
         // Test activation cycle
         viewModel.Activator.Activate();
-        Assert.That(activationCount, Is.EqualTo(1));
-        Assert.That(deactivationCount, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.Zero);
+        }
 
         viewModel.Activator.Deactivate();
-        Assert.That(activationCount, Is.EqualTo(1));
-        Assert.That(deactivationCount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.EqualTo(1));
+        }
 
         // Test reactivation
         viewModel.Activator.Activate();
-        Assert.That(activationCount, Is.EqualTo(2));
-        Assert.That(deactivationCount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(2));
+            Assert.That(deactivationCount, Is.EqualTo(1));
+        }
 
         viewModel.Activator.Deactivate();
-        Assert.That(activationCount, Is.EqualTo(2));
-        Assert.That(deactivationCount, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(2));
+            Assert.That(deactivationCount, Is.EqualTo(2));
+        }
     }
 
     /// <summary>
@@ -287,9 +311,12 @@ public class ComprehensiveAOTMarkupTests
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Value required" : null);
         property.Value = string.Empty;
 
-        // Test that validation works
-        Assert.That(property.HasErrors, Is.True);
-        Assert.That(validationErrors, Does.Contain("Value required"));
+        using (Assert.EnterMultipleScope())
+        {
+            // Test that validation works
+            Assert.That(property.HasErrors, Is.True);
+            Assert.That(validationErrors, Does.Contain("Value required"));
+        }
 
         // Fix the error
         property.Value = "valid value";

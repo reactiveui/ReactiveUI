@@ -14,7 +14,6 @@ using Windows.UI.Xaml.Markup;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Threading;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -28,7 +27,8 @@ public class XamlViewCommandTests
     /// <summary>
     /// Test that event binder binds to explicit inherited event.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void EventBinderBindsToExplicitInheritedEvent()
     {
         var fixture = new FakeView();
@@ -38,21 +38,25 @@ public class XamlViewCommandTests
     /// <summary>
     /// Test that event binder binds to implicit event.
     /// </summary>
-    [Test, Apartment(ApartmentState.STA)]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void EventBinderBindsToImplicitEvent()
     {
         var input = new Button();
         var fixture = new CreatesCommandBindingViaEvent();
         var cmd = ReactiveCommand.Create<int>(_ => { });
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), false) > 0);
+        Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
 
         var invokeCount = 0;
         cmd.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
-        Assert.That(disp, Is.Not.Null);
-        Assert.That(invokeCount, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(disp, Is.Not.Null);
+            Assert.That(invokeCount, Is.Zero);
+        }
 
         var automationPeer = new ButtonAutomationPeer(input);
         var invoker = (IInvokeProvider)automationPeer.GetPattern(PatternInterface.Invoke);

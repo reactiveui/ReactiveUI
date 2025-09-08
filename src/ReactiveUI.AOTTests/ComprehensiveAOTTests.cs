@@ -81,9 +81,9 @@ public class ComprehensiveAOTTests
         messageBus.SendMessage("Message1");
         messageBus.SendMessage("Message2");
 
-        Assert.That(receivedMessages.Count, Is.EqualTo(2));
-        Assert.Contains("Message1", receivedMessages);
-        Assert.Contains("Message2", receivedMessages);
+        Assert.That(receivedMessages, Has.Count.EqualTo(2));
+        Assert.That(receivedMessages, Does.Contain("Message1"));
+        Assert.That(receivedMessages, Does.Contain("Message2"));
     }
 
     /// <summary>
@@ -125,9 +125,12 @@ public class ComprehensiveAOTTests
 
         property.Value = "changed";
 
-        Assert.Contains("initial", values);
-        Assert.Contains("changed", values);
-        Assert.That(property.Value, Is.EqualTo("changed"));
+        Assert.That(values, Does.Contain("initial"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(values, Does.Contain("changed"));
+            Assert.That(property.Value, Is.EqualTo("changed"));
+        }
     }
 
     /// <summary>
@@ -200,18 +203,27 @@ public class ComprehensiveAOTTests
 
         // Test activation/deactivation cycle
         viewModel.Activator.Activate();
-        Assert.That(activationCount, Is.EqualTo(1));
-        Assert.That(deactivationCount, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.Zero);
+        }
 
         viewModel.Activator.Deactivate();
-        Assert.That(activationCount, Is.EqualTo(1));
-        Assert.That(deactivationCount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(1));
+            Assert.That(deactivationCount, Is.EqualTo(1));
+        }
 
         // Test multiple activation cycles
         viewModel.Activator.Activate();
         viewModel.Activator.Deactivate();
 
-        Assert.That(activationCount, Is.EqualTo(2));
-        Assert.That(deactivationCount, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activationCount, Is.EqualTo(2));
+            Assert.That(deactivationCount, Is.EqualTo(2));
+        }
     }
 }

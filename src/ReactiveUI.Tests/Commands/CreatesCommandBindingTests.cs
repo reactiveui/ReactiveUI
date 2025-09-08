@@ -22,8 +22,11 @@ public class CreatesCommandBindingTests
         var wasCalled = false;
         var cmd = ReactiveCommand.Create<int>(_ => wasCalled = true);
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.True), true) > 0);
-        Assert.That(fixture.GetAffinityForObject(input.GetType(, Is.False), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true) > 0);
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        }
 
         var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
         input.IsNotNullString = "Foo";

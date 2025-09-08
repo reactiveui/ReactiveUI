@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests
     using System.Linq;
     using System.Text;
     using ReactiveUI;
-    using Xunit;
+    using NUnit.Framework;
 
     /// <summary>
     /// Tests for the different indexes on the cocoa platform.

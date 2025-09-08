@@ -63,17 +63,17 @@ public class WhenAnyObservableTests
 
         var list = new List<string?>();
         fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list.Count, Is.EqualTo(0));
+        Assert.That(list.Count, Is.Zero);
 
         await fixture.Command1!.Execute(1);
         await fixture.Command3.Execute("foo");
-        Assert.That(list.Count, Is.EqualTo(1));
+        Assert.That(list, Has.Count.EqualTo(1));
 
         await fixture.Command1.Execute(2);
-        Assert.That(list.Count, Is.EqualTo(2));
+        Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command3.Execute("bar");
-        Assert.That(list.Count, Is.EqualTo(3));
+        Assert.That(list, Has.Count.EqualTo(3));
 
         Assert.True(
                     new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
@@ -96,16 +96,16 @@ public class WhenAnyObservableTests
 
         var list = new List<int>();
         fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list.Count, Is.EqualTo(0));
+        Assert.That(list.Count, Is.Zero);
 
         await fixture.Command1!.Execute(1);
-        Assert.That(list.Count, Is.EqualTo(1));
+        Assert.That(list, Has.Count.EqualTo(1));
 
         await fixture.Command2.Execute(2);
-        Assert.That(list.Count, Is.EqualTo(2));
+        Assert.That(list, Has.Count.EqualTo(2));
 
         await fixture.Command1.Execute(1);
-        Assert.That(list.Count, Is.EqualTo(3));
+        Assert.That(list, Has.Count.EqualTo(3));
 
         Assert.True(
                     new[] { 1, 2, 1, }.Zip(
@@ -125,15 +125,15 @@ public class WhenAnyObservableTests
     {
         var fixture = new TestWhenAnyObsViewModel();
         fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-        Assert.That(output.Count, Is.EqualTo(0));
+        Assert.That(output.Count, Is.Zero);
 
         fixture.MyListOfInts = [];
-        Assert.That(output.Count, Is.EqualTo(0));
+        Assert.That(output.Count, Is.Zero);
 
         fixture.MyListOfInts.Add(1);
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
 
         fixture.MyListOfInts = null;
-        Assert.That(output.Count, Is.EqualTo(1));
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 }

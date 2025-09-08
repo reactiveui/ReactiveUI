@@ -33,12 +33,15 @@ public class ReactiveObjectTests
         fixture.Changing.Subscribe(
                                    x =>
                                    {
-                                       // XXX: The content of these asserts don't actually get
-                                       // propagated back, it only prevents before_fired from
-                                       // being set - we have to enable 1st-chance exceptions
-                                       // to see the real error
-                                       Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
-                                       Assert.That(beforeSet, Is.EqualTo(fixture.IsOnlyOneWord));
+                                       using (Assert.EnterMultipleScope())
+                                       {
+                                           // XXX: The content of these asserts don't actually get
+                                           // propagated back, it only prevents before_fired from
+                                           // being set - we have to enable 1st-chance exceptions
+                                           // to see the real error
+                                           Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
+                                           Assert.That(fixture.IsOnlyOneWord, Is.EqualTo(beforeSet));
+                                       }
                                        beforeFired = true;
                                    });
 
@@ -46,15 +49,21 @@ public class ReactiveObjectTests
         fixture.Changed.Subscribe(
                                   x =>
                                   {
-                                      Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
-                                      Assert.That(afterSet, Is.EqualTo(fixture.IsOnlyOneWord));
+                                      using (Assert.EnterMultipleScope())
+                                      {
+                                          Assert.That(x.PropertyName, Is.EqualTo("IsOnlyOneWord"));
+                                          Assert.That(afterSet, Is.EqualTo(fixture.IsOnlyOneWord));
+                                      }
                                       afterFired = true;
                                   });
 
         fixture.IsOnlyOneWord = afterSet;
 
-        Assert.That(beforeFired, Is.True);
-        Assert.That(afterFired, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(beforeFired, Is.True);
+            Assert.That(afterFired, Is.True);
+        }
     }
 
     /// <summary>
@@ -107,10 +116,13 @@ public class ReactiveObjectTests
         AssertCount(3, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
         var expectedEventProperties = new[] { "NullableInt", "NullableInt", "IsNotNullString" };
-        Assert.That(changing.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
-        Assert.That(changed.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
-        Assert.That(propertyChangingEvents.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
-        Assert.That(propertyChangedEvents.Select(e => e.PropertyName, Is.EqualTo(expectedEventProperties)));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(changing.Select(e => e.PropertyName), Is.EqualTo(expectedEventProperties));
+            Assert.That(changed.Select(e => e.PropertyName), Is.EqualTo(expectedEventProperties));
+            Assert.That(propertyChangingEvents.Select(e => e.PropertyName), Is.EqualTo(expectedEventProperties));
+            Assert.That(propertyChangedEvents.Select(e => e.PropertyName), Is.EqualTo(expectedEventProperties));
+        }
     }
 
     /// <summary>
@@ -128,7 +140,7 @@ public class ReactiveObjectTests
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
         fixture.IsOnlyOneWord = "Bar";
-        Assert.That(exceptionList.Count, Is.EqualTo(1));
+        Assert.That(exceptionList, Has.Count.EqualTo(1));
     }
 
     /// <summary>
@@ -153,15 +165,18 @@ public class ReactiveObjectTests
 
         fixture.IsOnlyOneWord = "Bamf";
 
-        Assert.That(output.Count, Is.EqualTo(2));
+        Assert.That(output, Has.Count.EqualTo(2));
 
-        Assert.That(output[0].Sender, Is.EqualTo(fixture));
-        Assert.That(output[0].GetPropertyName(, Is.EqualTo("IsNotNullString")));
-        Assert.That(output[0].Value, Is.EqualTo("Bar"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(fixture));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("IsNotNullString"));
+            Assert.That(output[0].Value, Is.EqualTo("Bar"));
 
-        Assert.That(output[1].Sender, Is.EqualTo(fixture));
-        Assert.That(output[1].GetPropertyName(, Is.EqualTo("IsNotNullString")));
-        Assert.That(output[1].Value, Is.EqualTo("Baz"));
+            Assert.That(output[1].Sender, Is.EqualTo(fixture));
+            Assert.That(output[1].GetPropertyName(), Is.EqualTo("IsNotNullString"));
+            Assert.That(output[1].Value, Is.EqualTo("Baz"));
+        }
     }
 
     /// <summary>
@@ -184,8 +199,11 @@ public class ReactiveObjectTests
         fixture.UsesExprRaiseSet = "Foo";
         fixture.UsesExprRaiseSet = "Foo"; // This one shouldn't raise a change notification
 
-        Assert.That(fixture.UsesExprRaiseSet, Is.EqualTo("Foo"));
-        Assert.That(output.Count, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.UsesExprRaiseSet, Is.EqualTo("Foo"));
+            Assert.That(output, Has.Count.EqualTo(1));
+        }
         Assert.That(output[0], Is.EqualTo("UsesExprRaiseSet"));
     }
 
@@ -202,11 +220,14 @@ public class ReactiveObjectTests
         };
         var json = JSONHelper.Serialize(fixture) ?? throw new InvalidOperationException("JSON string should not be null");
 
-        // Should look something like:
-        // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
-        Assert.That(json.Count(x => x == ',', Is.True) == 6);
-        Assert.That(json.Count(x => x == ':', Is.True) == 7);
-        Assert.That(json.Count(x => x == '"', Is.True) == 18);
+        using (Assert.EnterMultipleScope())
+        {
+            // Should look something like:
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
+            Assert.That(json.Count(x => x == ','), Is.EqualTo(6));
+            Assert.That(json.Count(x => x == ':'), Is.EqualTo(7));
+            Assert.That(json.Count(x => x == '"'), Is.EqualTo(18));
+        }
     }
 
     /// <summary>
@@ -236,7 +257,7 @@ public class ReactiveObjectTests
 
         var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
 
-        Assert.That(output.Count, Is.EqualTo(results.Length));
+        Assert.That(output, Has.Count.EqualTo(results.Length));
 
         output.AssertAreEqual(outputChanging);
         results.AssertAreEqual(output);
@@ -252,7 +273,7 @@ public class ReactiveObjectTests
         var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
         observable.Subscribe(_ => throw new Exception("This is a test."));
 
-        var result = Record.Exception(() => fixture.IsOnlyOneWord = "Two Words");
+        Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
     }
 
     [Test]
@@ -261,10 +282,10 @@ public class ReactiveObjectTests
         var fixture = new TestFixture();
         using (fixture.SuppressChangeNotifications())
         {
-            Assert.That(fixture.AreChangeNotificationsEnabled(, Is.False));
+            Assert.That(fixture.AreChangeNotificationsEnabled(), Is.False);
         }
 
-        Assert.That(fixture.AreChangeNotificationsEnabled(, Is.True));
+        Assert.That(fixture.AreChangeNotificationsEnabled(), Is.True);
 
         var ser = JsonSerializer.Serialize(fixture);
         Assert.That(ser.Length > 0, Is.True);
@@ -273,17 +294,17 @@ public class ReactiveObjectTests
 
         using (deser.SuppressChangeNotifications())
         {
-            Assert.That(deser.AreChangeNotificationsEnabled(, Is.False));
+            Assert.That(deser!.AreChangeNotificationsEnabled(), Is.False);
         }
 
-        Assert.That(deser.AreChangeNotificationsEnabled(, Is.True));
+        Assert.That(deser!.AreChangeNotificationsEnabled(), Is.True);
     }
 
     private static void AssertCount(int expected, params ICollection[] collections)
     {
         foreach (var collection in collections)
         {
-            Assert.That(collection.Count, Is.EqualTo(expected));
+            Assert.That(collection, Has.Count.EqualTo(expected));
         }
     }
 }

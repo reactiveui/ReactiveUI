@@ -40,7 +40,7 @@ public class AutoPersistCollectionTests
                 TimeSpan.FromMilliseconds(100));
 
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
 
             // By being added to collection, AutoPersist is enabled for item
             item.IsNotNullString = "Foo";
@@ -102,7 +102,7 @@ public class AutoPersistCollectionTests
                 TimeSpan.FromMilliseconds(100));
 
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(0));
+            Assert.That(timesSaved, Is.Zero);
 
             // By being added to collection, AutoPersist is enabled for item
             item.IsNotNullString = "Foo";

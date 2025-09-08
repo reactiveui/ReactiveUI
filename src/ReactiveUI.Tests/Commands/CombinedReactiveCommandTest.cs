@@ -28,7 +28,7 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.That(canExecute.Count, Is.EqualTo(1));
+        Assert.That(canExecute, Has.Count.EqualTo(1));
         Assert.That(canExecute[0], Is.False);
     }
 
@@ -44,7 +44,7 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, Observables.False, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.That(canExecute.Count, Is.EqualTo(1));
+        Assert.That(canExecute, Has.Count.EqualTo(1));
         Assert.That(canExecute[0], Is.False);
     }
 
@@ -63,7 +63,7 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
         Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
@@ -82,7 +82,7 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
         Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
@@ -124,25 +124,40 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.That(isExecuting.Count, Is.EqualTo(3));
-        Assert.That(isExecuting[0], Is.False);
-        Assert.That(isExecuting[1], Is.True);
-        Assert.That(isExecuting[2], Is.False);
+        Assert.That(isExecuting, Has.Count.EqualTo(3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(isExecuting[0], Is.False);
+            Assert.That(isExecuting[1], Is.True);
+            Assert.That(isExecuting[2], Is.False);
 
-        Assert.That(child1IsExecuting.Count, Is.EqualTo(3));
-        Assert.That(child1IsExecuting[0], Is.False);
-        Assert.That(child1IsExecuting[1], Is.True);
-        Assert.That(child1IsExecuting[2], Is.False);
+            Assert.That(child1IsExecuting, Has.Count.EqualTo(3));
+        }
 
-        Assert.That(child2IsExecuting.Count, Is.EqualTo(3));
-        Assert.That(child2IsExecuting[0], Is.False);
-        Assert.That(child2IsExecuting[1], Is.True);
-        Assert.That(child2IsExecuting[2], Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child1IsExecuting[0], Is.False);
+            Assert.That(child1IsExecuting[1], Is.True);
+            Assert.That(child1IsExecuting[2], Is.False);
 
-        Assert.That(child3IsExecuting.Count, Is.EqualTo(3));
-        Assert.That(child3IsExecuting[0], Is.False);
-        Assert.That(child3IsExecuting[1], Is.True);
-        Assert.That(child3IsExecuting[2], Is.False);
+            Assert.That(child2IsExecuting, Has.Count.EqualTo(3));
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child2IsExecuting[0], Is.False);
+            Assert.That(child2IsExecuting[1], Is.True);
+            Assert.That(child2IsExecuting[2], Is.False);
+
+            Assert.That(child3IsExecuting, Has.Count.EqualTo(3));
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child3IsExecuting[0], Is.False);
+            Assert.That(child3IsExecuting[1], Is.True);
+            Assert.That(child3IsExecuting[2], Is.False);
+        }
     }
 
     /// <summary>
@@ -159,7 +174,7 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe(_ => { }, _ => { });
 
-        Assert.That(thrownExceptions.Count, Is.EqualTo(1));
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
         Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
@@ -178,10 +193,13 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.That(results.Count, Is.EqualTo(1));
-        Assert.That(results[0].Count, Is.EqualTo(2));
-        Assert.That(results[0][0], Is.EqualTo(1));
-        Assert.That(results[0][1], Is.EqualTo(2));
+        Assert.That(results, Has.Count.EqualTo(1));
+        Assert.That(results[0], Has.Count.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(results[0][0], Is.EqualTo(1));
+            Assert.That(results[0][1], Is.EqualTo(2));
+        }
     }
 
     /// <summary>
@@ -203,7 +221,7 @@ public class CombinedReactiveCommandTest
                 Assert.That(results, Is.Empty);
 
                 scheduler.AdvanceByMs(1);
-                Assert.That(results.Count, Is.EqualTo(1));
+                Assert.That(results, Has.Count.EqualTo(1));
                 return Task.CompletedTask;
             });
 }
