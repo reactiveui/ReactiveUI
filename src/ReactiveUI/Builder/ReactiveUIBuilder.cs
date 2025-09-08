@@ -311,7 +311,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Builds the application and returns the ReactiveUI instance wrapper.
     /// </summary>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if builder is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
     public IReactiveUIInstance BuildApp()
     {
@@ -329,7 +328,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T">The type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T>(Action<T?> action)
     {
         if (Current is null)
@@ -348,7 +346,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2>(Action<T1?, T2?> action)
     {
         if (Current is null)
@@ -373,7 +370,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3>(Action<T1?, T2?, T3?> action)
     {
         if (Current is null)
@@ -399,7 +395,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4>(Action<T1?, T2?, T3?, T4?> action)
     {
         if (Current is null)
@@ -426,7 +421,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(Action<T1?, T2?, T3?, T4?, T5?> action)
     {
         if (Current is null)
@@ -454,7 +448,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(Action<T1?, T2?, T3?, T4?, T5?, T6?> action)
     {
         if (Current is null)
@@ -489,7 +482,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
     {
         if (Current is null)
@@ -526,7 +518,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
     {
         if (Current is null)
@@ -565,7 +556,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
     {
         if (Current is null)
@@ -606,7 +596,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
     {
         if (Current is null)
@@ -649,7 +638,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
     {
         if (Current is null)
@@ -694,7 +682,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
     {
         if (Current is null)
@@ -741,7 +728,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
     {
         if (Current is null)
@@ -790,7 +776,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
     {
         if (Current is null)
@@ -841,7 +826,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
     {
         if (Current is null)
@@ -894,7 +878,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    /// <exception cref="System.ArgumentNullException">reactiveUIInstance.</exception>
     public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
     {
         if (Current is null)
