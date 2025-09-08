@@ -57,7 +57,7 @@ public class ComprehensiveAOTMarkupTests
         property.Refresh(); // This calls RaisePropertyChanged which has AOT attributes
 
         Assert.That(values, Does.Contain("initial"));
-        Assert.That(values.Count >= 2, Is.True); // Initial value plus refresh
+        Assert.That(values, Has.Count.GreaterThanOrEqualTo(2)); // Initial value plus refresh
 
         property.Dispose();
     }

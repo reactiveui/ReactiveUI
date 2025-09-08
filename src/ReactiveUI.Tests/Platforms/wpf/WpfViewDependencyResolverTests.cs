@@ -12,6 +12,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// </summary>
 /// <seealso cref="System.IDisposable" />
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public sealed class WpfViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;

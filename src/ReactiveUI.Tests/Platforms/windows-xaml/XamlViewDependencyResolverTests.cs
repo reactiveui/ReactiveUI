@@ -16,6 +16,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests associated with UI and the <see cref="IDependencyResolver"/>.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public sealed class XamlViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;

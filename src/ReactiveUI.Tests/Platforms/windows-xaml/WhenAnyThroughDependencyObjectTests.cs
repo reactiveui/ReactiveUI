@@ -14,6 +14,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests that WhenAny dependency objects.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class WhenAnyThroughDependencyObjectTests
 {
     /// <summary>

@@ -9,6 +9,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Checks RxApp dependency objects.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class RxAppDependencyObjectTests
 {
     /// <summary>

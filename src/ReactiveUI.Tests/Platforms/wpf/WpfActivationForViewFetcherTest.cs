@@ -10,6 +10,8 @@ using DynamicData;
 
 namespace ReactiveUI.Tests.Wpf;
 
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class WpfActivationForViewFetcherTest
 {
     [Test]

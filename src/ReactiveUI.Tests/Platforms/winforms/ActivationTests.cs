@@ -11,6 +11,7 @@ namespace ReactiveUI.Tests.Winforms;
 /// Tests to make sure the activation works correctly.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class ActivationTests
 {
     /// <summary>

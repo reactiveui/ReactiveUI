@@ -15,6 +15,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests with the command binding implementation.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class CommandBindingImplementationTests
 {
     /// <summary>

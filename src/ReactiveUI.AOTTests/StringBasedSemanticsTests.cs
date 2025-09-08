@@ -32,7 +32,7 @@ public class StringBasedSemanticsTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(seen.Count >= 2, Is.True);
+            Assert.That(seen, Has.Count.GreaterThanOrEqualTo(2));
             Assert.That(seen[0], Is.Null);
             Assert.That(seen[^1], Is.EqualTo("v1"));
         }
@@ -75,7 +75,7 @@ public class StringBasedSemanticsTests
         using (Assert.EnterMultipleScope())
         {
             // initial null + "same" + "other" => 3 distinct emissions
-            Assert.That(seen.Count >= 3, Is.True);
+            Assert.That(seen, Has.Count.GreaterThanOrEqualTo(3));
             Assert.That(seen.TakeLast(3).ToArray(), Is.EqualTo([null, "same", "other"]));
         }
     }
@@ -94,7 +94,7 @@ public class StringBasedSemanticsTests
 
         obj.TestProperty = "value";
 
-        Assert.That(tuples.Count >= 1, Is.True);
+        Assert.That(tuples, Is.Not.Empty);
         var last = tuples[^1];
         Assert.That(last.Item1, Is.EqualTo("value"));
     }

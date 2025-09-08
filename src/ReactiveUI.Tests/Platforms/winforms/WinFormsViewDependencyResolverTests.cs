@@ -10,6 +10,7 @@ using Splat.Builder;
 namespace ReactiveUI.Tests.Winforms;
 
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;

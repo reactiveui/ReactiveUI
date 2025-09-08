@@ -17,6 +17,8 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests for the dependency object property binding.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class DependencyObjectObservableForPropertyTest
 {
     /// <summary>

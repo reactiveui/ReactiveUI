@@ -22,6 +22,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests for XAML and commands.
 /// </summary>
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class XamlViewCommandTests
 {
     /// <summary>

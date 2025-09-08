@@ -12,6 +12,7 @@ using System.Windows.Input;
 namespace ReactiveUI.Tests.Wpf;
 
 [TestFixture]
+[Apartment(ApartmentState.STA)]
 public class WpfCommandBindingImplementationTests
 {
     /// <summary>

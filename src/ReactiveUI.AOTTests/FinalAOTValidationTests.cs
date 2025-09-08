@@ -251,6 +251,6 @@ public class FinalAOTValidationTests
         };
 
         // Verify we have comprehensive coverage
-        Assert.That(testedFeatures.Count >= 13, Is.True, "Should test at least 13 key ReactiveUI features");
+        Assert.That(testedFeatures, Has.Count.GreaterThanOrEqualTo(13), "Should test at least 13 key ReactiveUI features");
     }
 }
