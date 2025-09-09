@@ -20,7 +20,7 @@ jobs:
     with:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
-      solutionFile: "reactiveui.sln"
+      solutionFile: "ReactiveUI.sln"
       installWorkloads: true
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
