@@ -38,7 +38,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.8" />
-    <PackageVersion Include="Verify.NUnit" Version="30.8.0" />
+    <PackageVersion Include="Verify.NUnit" Version="30.10.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
