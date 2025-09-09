@@ -26,7 +26,7 @@
     <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
     <PackageVersion Include="PublicApiGenerator" Version="11.4.6" />
-    <PackageVersion Include="Reactive.Wasm" Version="2.1.2" />
+    <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Splat" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
@@ -38,7 +38,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.8" />
-    <PackageVersion Include="Verify.NUnit" Version="30.7.3" />
+    <PackageVersion Include="Verify.NUnit" Version="30.8.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
     <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
