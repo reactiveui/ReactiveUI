@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUIFinalModernTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);SA1600</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net47')) ">
+  <PropertyGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net4')) ">
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+  <ItemGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net4'))">
     <ProjectReference Include="..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
     <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
   </ItemGroup>
