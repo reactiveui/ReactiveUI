@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(IsWindows)' == 'true'">$(ReactiveUIFinalModernTargetFrameworks)</TargetFrameworks>
-    <TargetFrameworks Condition="'$(IsWindows)' != 'true'"></TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -32,7 +31,7 @@
         <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
       </ItemGroup>
     </When>
-    <When Condition=" $(TargetFramework.StartsWith('net47'))">
+    <When Condition=" $(TargetFramework.StartsWith('net4'))">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>
