@@ -15,6 +15,10 @@
 
 [🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
 
+## Documentation
+
+- [RxSchedulers](docs/RxSchedulers.md) - Using ReactiveUI schedulers without RequiresUnreferencedCode attributes
+
 ## Book
 There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer Kent Boogart.
 

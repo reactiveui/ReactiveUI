@@ -158,6 +158,45 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     public IObservable<bool> ObserveHasErrors => ObserveErrorChanged.Select(_ => HasErrors);
 
     /// <summary>
+    /// Creates a new instance of ReactiveProperty without requiring RequiresUnreferencedCode attributes.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
+    /// </summary>
+    /// <returns>A new ReactiveProperty instance.</returns>
+    public static ReactiveProperty<T> Create()
+        => new(default, RxSchedulers.TaskpoolScheduler, false, false);
+
+    /// <summary>
+    /// Creates a new instance of ReactiveProperty with an initial value without requiring RequiresUnreferencedCode attributes.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
+    /// </summary>
+    /// <param name="initialValue">The initial value.</param>
+    /// <returns>A new ReactiveProperty instance.</returns>
+    public static ReactiveProperty<T> Create(T? initialValue)
+        => new(initialValue, RxSchedulers.TaskpoolScheduler, false, false);
+
+    /// <summary>
+    /// Creates a new instance of ReactiveProperty with configuration options without requiring RequiresUnreferencedCode attributes.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
+    /// </summary>
+    /// <param name="initialValue">The initial value.</param>
+    /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
+    /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
+    /// <returns>A new ReactiveProperty instance.</returns>
+    public static ReactiveProperty<T> Create(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
+        => new(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+
+    /// <summary>
+    /// Creates a new instance of ReactiveProperty with a custom scheduler without requiring RequiresUnreferencedCode attributes.
+    /// </summary>
+    /// <param name="initialValue">The initial value.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
+    /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
+    /// <returns>A new ReactiveProperty instance.</returns>
+    public static ReactiveProperty<T> Create(T? initialValue, IScheduler scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
+        => new(initialValue, scheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+
+    /// <summary>
     /// Set INotifyDataErrorInfo's asynchronous validation, return value is self.
     /// </summary>
     /// <param name="validator">If success return IO&lt;null&gt;, failure return IO&lt;IEnumerable&gt;(Errors).</param>
