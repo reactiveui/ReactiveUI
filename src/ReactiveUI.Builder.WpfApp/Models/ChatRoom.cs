@@ -30,5 +30,5 @@ public class ChatRoom
     /// <summary>
     /// Gets or sets the members in the room.
     /// </summary>
-    public List<string> Members { get; set; } = new();
+    public List<string> Members { get; set; } = [];
 }

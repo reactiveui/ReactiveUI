@@ -12,13 +12,14 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// Command binding tests.
 /// </summary>
+[TestFixture]
 public class CommandBindingTests
 {
     /// <summary>
     /// Tests that the command binder binds to button.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Fact]
+    [Test]
     public async Task CommandBinderBindsToButtonAsync()
     {
         using var testSequencer = new TestSequencer();
@@ -26,8 +27,12 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.CreateRunInBackground<int>(_ => { });
         var input = new Button();
 
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(async o =>
@@ -41,23 +46,30 @@ public class CommandBindingTests
         {
             input.PerformClick();
             await testSequencer.AdvancePhaseAsync("Phase 1");
-            Assert.True(commandExecuted);
-            Assert.NotNull(ea);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 
     /// <summary>
     /// Tests that the command binder binds to custom control.
     /// </summary>
-    [Fact]
+    [Test]
     public void CommandBinderBindsToCustomControl()
     {
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableControl();
 
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(o =>
@@ -70,23 +82,30 @@ public class CommandBindingTests
         {
             input.PerformClick();
 
-            Assert.True(commandExecuted);
-            Assert.NotNull(ea);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 
     /// <summary>
     /// Tests that the command binder binds to custom component.
     /// </summary>
-    [Fact]
+    [Test]
     public void CommandBinderBindsToCustomComponent()
     {
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create<int>(_ => { });
         var input = new CustomClickableComponent();
 
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), true) > 0);
-        Assert.True(fixture.GetAffinityForObject(input.GetType(), false) > 0);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), true), Is.GreaterThan(0));
+            Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
+        }
+
         var commandExecuted = false;
         object? ea = null;
         cmd.Subscribe(o =>
@@ -99,15 +118,18 @@ public class CommandBindingTests
         {
             input.PerformClick();
 
-            Assert.True(commandExecuted);
-            Assert.NotNull(ea);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(commandExecuted, Is.True);
+                Assert.That(ea, Is.Not.Null);
+            }
         }
     }
 
     /// <summary>
     /// Tests that the command binder affects enabled.
     /// </summary>
-    [Fact]
+    [Test]
     public void CommandBinderAffectsEnabledState()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -120,17 +142,17 @@ public class CommandBindingTests
         using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
         {
             canExecute.OnNext(true);
-            Assert.True(input.Enabled);
+            Assert.That(input.Enabled, Is.True);
 
             canExecute.OnNext(false);
-            Assert.False(input.Enabled);
+            Assert.That(input.Enabled, Is.False);
         }
     }
 
     /// <summary>
     /// Tests that the command binder affects enabled state for components.
     /// </summary>
-    [Fact]
+    [Test]
     public void CommandBinderAffectsEnabledStateForComponents()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -143,10 +165,10 @@ public class CommandBindingTests
         using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
         {
             canExecute.OnNext(true);
-            Assert.True(input.Enabled);
+            Assert.That(input.Enabled, Is.True);
 
             canExecute.OnNext(false);
-            Assert.False(input.Enabled);
+            Assert.That(input.Enabled, Is.False);
         }
     }
 }

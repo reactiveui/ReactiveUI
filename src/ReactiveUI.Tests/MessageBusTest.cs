@@ -19,7 +19,7 @@ public class MessageBusTest
     /// <summary>
     /// Smoke tests the MessageBus.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBusSmokeTest()
     {
         var input = new[] { 1, 2, 3, 4 };
@@ -30,8 +30,11 @@ public class MessageBusTest
             var fixture = new MessageBus();
 
             fixture.RegisterMessageSource(source, "Test");
-            Assert.False(fixture.IsRegistered(typeof(int)));
-            Assert.False(fixture.IsRegistered(typeof(int), "Foo"));
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsRegistered(typeof(int)), Is.False);
+                Assert.That(fixture.IsRegistered(typeof(int), "Foo"), Is.False);
+            }
 
             fixture.Listen<int>("Test").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
@@ -47,7 +50,7 @@ public class MessageBusTest
     /// <summary>
     /// Tests that explicits send message should work even after registering source.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
     {
         Locator.CurrentMutable.InitializeSplat();
@@ -59,13 +62,13 @@ public class MessageBusTest
         fixture.Listen<int>().Subscribe(_ => messageReceived = true);
 
         fixture.SendMessage(42);
-        Assert.True(messageReceived);
+        Assert.That(messageReceived, Is.True);
     }
 
     /// <summary>
     /// Tests that listening before registering a source should work.
     /// </summary>
-    [Fact]
+    [Test]
     public void ListeningBeforeRegisteringASourceShouldWork()
     {
         var fixture = new MessageBus();
@@ -73,17 +76,17 @@ public class MessageBusTest
 
         fixture.Listen<int>().Subscribe(x => result = x);
 
-        Assert.Equal(-1, result);
+        Assert.That(result, Is.EqualTo(-1));
 
         fixture.SendMessage(42);
 
-        Assert.Equal(42, result);
+        Assert.That(result, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Tests that the Garbage Collector should not kill message service.
     /// </summary>
-    [Fact]
+    [Test]
     public void GcShouldNotKillMessageService()
     {
         var bus = new MessageBus();
@@ -91,20 +94,20 @@ public class MessageBusTest
         var receivedMessage = false;
         var dispose = bus.Listen<int>().Subscribe(_ => receivedMessage = true);
         bus.SendMessage(1);
-        Assert.True(receivedMessage);
+        Assert.That(receivedMessage, Is.True);
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
         receivedMessage = false;
         bus.SendMessage(2);
-        Assert.True(receivedMessage);
+        Assert.That(receivedMessage, Is.True);
     }
 
     /// <summary>
     /// Tests that Registering the second message source should merge both sources.
     /// </summary>
-    [Fact]
+    [Test]
     public void RegisteringSecondMessageSourceShouldMergeBothSources()
     {
         var bus = new MessageBus();
@@ -120,21 +123,27 @@ public class MessageBusTest
         bus.Listen<int>().Subscribe(_ => receivedMessage2 = true);
 
         source1.OnNext(1);
-        Assert.True(receivedMessage1);
-        Assert.True(receivedMessage2);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(receivedMessage1, Is.True);
+            Assert.That(receivedMessage2, Is.True);
+        }
 
         receivedMessage1 = false;
         receivedMessage2 = false;
 
         source2.OnNext(2);
-        Assert.True(receivedMessage1);
-        Assert.True(receivedMessage2);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(receivedMessage1, Is.True);
+            Assert.That(receivedMessage2, Is.True);
+        }
     }
 
     /// <summary>
     /// Tests the MessageBus threading.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBusThreadingTest()
     {
         Locator.CurrentMutable.InitializeSplat();
@@ -154,14 +163,17 @@ public class MessageBusTest
         otherThread.Start();
         otherThread.Join();
 
-        Assert.NotEqual(listenedThreadId!.Value, thisThreadId);
-        Assert.Equal(listenedThreadId.Value, otherThreadId!.Value);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(thisThreadId, Is.Not.EqualTo(listenedThreadId!.Value));
+            Assert.That(otherThreadId!.Value, Is.EqualTo(listenedThreadId.Value));
+        }
     }
 
     /// <summary>
     /// Tests MessageBus.RegisterScheduler method for complete coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_RegisterScheduler_ShouldWork()
     {
         // Arrange
@@ -174,14 +186,14 @@ public class MessageBusTest
         messageBus.SendMessage(42);
 
         // Assert
-        Assert.Single(receivedMessages);
-        Assert.Equal(42, receivedMessages[0]);
+        Assert.That(receivedMessages, Has.Exactly(1).Items);
+        Assert.That(receivedMessages[0], Is.EqualTo(42));
     }
 
     /// <summary>
     /// Tests MessageBus.ListenIncludeLatest method for complete coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_ListenIncludeLatest_ShouldIncludeLastMessage()
     {
         // Arrange
@@ -195,28 +207,28 @@ public class MessageBusTest
         messageBus.ListenIncludeLatest<int>().Subscribe(x => receivedMessages.Add(x));
 
         // Assert
-        Assert.Single(receivedMessages);
-        Assert.Equal(42, receivedMessages[0]);
+        Assert.That(receivedMessages, Has.Exactly(1).Items);
+        Assert.That(receivedMessages[0], Is.EqualTo(42));
     }
 
     /// <summary>
     /// Tests MessageBus.Current static property for complete coverage.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_Current_ShouldBeAccessible()
     {
         // Act
         var current = MessageBus.Current;
 
         // Assert
-        Assert.NotNull(current);
-        Assert.IsAssignableFrom<IMessageBus>(current);
+        Assert.That(current, Is.Not.Null);
+        Assert.That(current, Is.AssignableFrom<IMessageBus>());
     }
 
     /// <summary>
     /// Tests MessageBus with contracts to ensure message isolation.
     /// </summary>
-    [Fact]
+    [Test]
     public void MessageBus_WithContracts_ShouldIsolateMessages()
     {
         // Arrange
@@ -235,13 +247,21 @@ public class MessageBusTest
         messageBus.SendMessage(3);
 
         // Assert
-        Assert.Single(contract1Messages);
-        Assert.Equal(1, contract1Messages[0]);
+        Assert.That(contract1Messages, Has.Exactly(1).Items);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(contract1Messages[0], Is.EqualTo(1));
 
-        Assert.Single(contract2Messages);
-        Assert.Equal(2, contract2Messages[0]);
+            Assert.That(contract2Messages, Has.Exactly(1).Items);
+        }
 
-        Assert.Single(noContractMessages);
-        Assert.Equal(3, noContractMessages[0]);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(contract2Messages[0], Is.EqualTo(2));
+
+            Assert.That(noContractMessages, Has.Exactly(1).Items);
+        }
+
+        Assert.That(noContractMessages[0], Is.EqualTo(3));
     }
 }

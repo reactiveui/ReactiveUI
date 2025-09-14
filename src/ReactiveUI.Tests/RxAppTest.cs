@@ -15,10 +15,10 @@ public class RxAppTest
     /// <summary>
     /// Tests that schedulers should be current thread in test runner.
     /// </summary>
-    [Fact]
+    [Test]
     public void SchedulerShouldBeCurrentThreadInTestRunner()
     {
         Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
-        Assert.Equal(CurrentThreadScheduler.Instance, RxApp.MainThreadScheduler);
+        Assert.That(RxApp.MainThreadScheduler, Is.EqualTo(CurrentThreadScheduler.Instance));
     }
 }

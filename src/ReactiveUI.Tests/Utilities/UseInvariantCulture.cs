@@ -6,24 +6,28 @@
 using System.Globalization;
 using System.Reflection;
 
-using Xunit.Sdk;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace ReactiveUI.Tests;
 
 // run tests on invariant culture to avoid problems e.g with culture specific decimal separator
-public sealed class UseInvariantCulture : BeforeAfterTestAttribute
+public sealed class UseInvariantCulture : Attribute, ITestAction
 {
     private CultureInfo? _storedCulture;
 
     /// <inheritdoc/>
-    public override void Before(MethodInfo methodUnderTest)
+    public ActionTargets Targets => ActionTargets.Test;
+
+    /// <inheritdoc/>
+    public void BeforeTest(ITest test)
     {
         _storedCulture = Thread.CurrentThread.CurrentCulture;
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
     }
 
     /// <inheritdoc/>
-    public override void After(MethodInfo methodUnderTest)
+    public void AfterTest(ITest test)
     {
         if (_storedCulture is not null)
         {

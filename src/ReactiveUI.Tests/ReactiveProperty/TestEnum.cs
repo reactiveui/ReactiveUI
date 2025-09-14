@@ -3,12 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.ReactiveProperty
+namespace ReactiveUI.Tests.ReactiveProperty;
+
+internal enum TestEnum
 {
-    internal enum TestEnum
-    {
-        None,
-        Enum1,
-        Enum2
-    }
+    None,
+    Enum1,
+    Enum2
 }

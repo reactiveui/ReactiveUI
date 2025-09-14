@@ -10,12 +10,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// OAPH mode tests.
 /// </summary>
+[TestFixture]
 public class ObservableAsPropertyHelperModeTests
 {
     /// <summary>
     /// Tests that ToProperty should only subscribe only once.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToPropertyShouldSubscribeOnlyOnce()
     {
         using (ProductionMode.Set())
@@ -28,17 +29,20 @@ public class ObservableAsPropertyHelperModeTests
             // or RX bug.
             f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-            // Trigger subscription to the underlying observable.
-            Assert.Equal(true, f.A);
+            using (Assert.EnterMultipleScope())
+            {
+                // Trigger subscription to the underlying observable.
+                Assert.That(f.A, Is.True);
 
-            Assert.Equal(1, f.Count);
+                Assert.That(f.Count, Is.EqualTo(1));
+            }
         }
     }
 
     /// <summary>
     /// Tests to make sure that ToProperty overload with the nameof only subscribes once.
     /// </summary>
-    [Fact]
+    [Test]
     public void ToProperty_NameOf_ShouldSubscribeOnlyOnce()
     {
         using (ProductionMode.Set())
@@ -51,10 +55,13 @@ public class ObservableAsPropertyHelperModeTests
             // or RX bug.
             f.PropertyChanged += (e, s) => Debug.WriteLine(f.A);
 
-            // Trigger subscription to the underlying observable.
-            Assert.Equal(true, f.A);
+            using (Assert.EnterMultipleScope())
+            {
+                // Trigger subscription to the underlying observable.
+                Assert.That(f.A, Is.True);
 
-            Assert.Equal(1, f.Count);
+                Assert.That(f.Count, Is.EqualTo(1));
+            }
         }
     }
 }

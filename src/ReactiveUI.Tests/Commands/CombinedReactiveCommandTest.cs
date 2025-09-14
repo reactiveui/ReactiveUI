@@ -19,7 +19,7 @@ public class CombinedReactiveCommandTest
     /// <summary>
     /// Tests that determines whether this instance [can execute is false if any child cannot execute].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsFalseIfAnyChildCannotExecute()
     {
         var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -28,14 +28,14 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.Equal(1, canExecute.Count);
-        Assert.False(canExecute[0]);
+        Assert.That(canExecute, Has.Count.EqualTo(1));
+        Assert.That(canExecute[0], Is.False);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if parent can execute is false].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
     {
         var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -44,14 +44,14 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, Observables.False, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.Equal(1, canExecute.Count);
-        Assert.False(canExecute[0]);
+        Assert.That(canExecute, Has.Count.EqualTo(1));
+        Assert.That(canExecute[0], Is.False);
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures in child can execute through thrown exceptions].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -63,14 +63,14 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
     /// </summary>
-    [Fact]
+    [Test]
     public void CanExecuteTicksFailuresThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
@@ -82,14 +82,14 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
     /// <summary>
     /// A test that checks that all the exceptions that were delivered through the output scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExceptionsAreDeliveredOnOutputScheduler() =>
         new TestScheduler().With(
             scheduler =>
@@ -100,15 +100,15 @@ public class CombinedReactiveCommandTest
                 Exception? exception = null;
                 fixture.ThrownExceptions.Subscribe(ex => exception = ex);
                 fixture.Execute().Subscribe(_ => { }, _ => { });
-                Assert.Null(exception);
+                Assert.That(exception, Is.Null);
                 scheduler.Start();
-                Assert.IsType<InvalidOperationException>(exception);
+                Assert.That(exception, Is.TypeOf<InvalidOperationException>());
             });
 
     /// <summary>
     /// A test that executes the executes all child commands.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteExecutesAllChildCommands()
     {
         var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -124,31 +124,46 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.Equal(3, isExecuting.Count);
-        Assert.False(isExecuting[0]);
-        Assert.True(isExecuting[1]);
-        Assert.False(isExecuting[2]);
+        Assert.That(isExecuting, Has.Count.EqualTo(3));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(isExecuting[0], Is.False);
+            Assert.That(isExecuting[1], Is.True);
+            Assert.That(isExecuting[2], Is.False);
 
-        Assert.Equal(3, child1IsExecuting.Count);
-        Assert.False(child1IsExecuting[0]);
-        Assert.True(child1IsExecuting[1]);
-        Assert.False(child1IsExecuting[2]);
+            Assert.That(child1IsExecuting, Has.Count.EqualTo(3));
+        }
 
-        Assert.Equal(3, child2IsExecuting.Count);
-        Assert.False(child2IsExecuting[0]);
-        Assert.True(child2IsExecuting[1]);
-        Assert.False(child2IsExecuting[2]);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child1IsExecuting[0], Is.False);
+            Assert.That(child1IsExecuting[1], Is.True);
+            Assert.That(child1IsExecuting[2], Is.False);
 
-        Assert.Equal(3, child3IsExecuting.Count);
-        Assert.False(child3IsExecuting[0]);
-        Assert.True(child3IsExecuting[1]);
-        Assert.False(child3IsExecuting[2]);
+            Assert.That(child2IsExecuting, Has.Count.EqualTo(3));
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child2IsExecuting[0], Is.False);
+            Assert.That(child2IsExecuting[1], Is.True);
+            Assert.That(child2IsExecuting[2], Is.False);
+
+            Assert.That(child3IsExecuting, Has.Count.EqualTo(3));
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(child3IsExecuting[0], Is.False);
+            Assert.That(child3IsExecuting[1], Is.True);
+            Assert.That(child3IsExecuting[2], Is.False);
+        }
     }
 
     /// <summary>
     /// Test that executes the ticks errors in any child command through thrown exceptions.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
     {
         var child1 = ReactiveCommand.CreateFromObservable(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -159,14 +174,14 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe(_ => { }, _ => { });
 
-        Assert.Equal(1, thrownExceptions.Count);
-        Assert.Equal("oops", thrownExceptions[0].Message);
+        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
+        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
     }
 
     /// <summary>
     /// Test that executes the ticks through the results.
     /// </summary>
-    [Fact]
+    [Test]
     public void ExecuteTicksThroughTheResults()
     {
         var child1 = ReactiveCommand.CreateFromObservable(() => Observable.Return(1), outputScheduler: ImmediateScheduler.Instance);
@@ -178,16 +193,19 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.Equal(1, results.Count);
-        Assert.Equal(2, results[0].Count);
-        Assert.Equal(1, results[0][0]);
-        Assert.Equal(2, results[0][1]);
+        Assert.That(results, Has.Count.EqualTo(1));
+        Assert.That(results[0], Has.Count.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(results[0][0], Is.EqualTo(1));
+            Assert.That(results[0][1], Is.EqualTo(2));
+        }
     }
 
     /// <summary>
     /// Test that checks that results is ticked through specified scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void ResultIsTickedThroughSpecifiedScheduler() =>
         new TestScheduler().WithAsync(
             scheduler =>
@@ -200,10 +218,10 @@ public class CombinedReactiveCommandTest
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                 fixture.Execute().Subscribe();
-                Assert.Empty(results);
+                Assert.That(results, Is.Empty);
 
                 scheduler.AdvanceByMs(1);
-                Assert.Equal(1, results.Count);
+                Assert.That(results, Has.Count.EqualTo(1));
                 return Task.CompletedTask;
             });
 }

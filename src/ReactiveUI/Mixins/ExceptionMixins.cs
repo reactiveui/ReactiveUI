@@ -3,16 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace System
+namespace System;
+
+internal static class ExceptionMixins
 {
-    internal static class ExceptionMixins
+    public static void ArgumentNullExceptionThrowIfNull<T>(this T? value, string name)
     {
-        public static void ArgumentNullExceptionThrowIfNull<T>(this T? value, string name)
+        if (value is null)
         {
-            if (value is null)
-            {
-                throw new ArgumentNullException(name);
-            }
+            throw new ArgumentNullException(name);
         }
     }
 }

@@ -502,6 +502,119 @@ dotnet_diagnostic.RCS1190.severity=error
 dotnet_diagnostic.RCS1195.severity=error
 dotnet_diagnostic.RCS1214.severity=error
 
+[*.{cs,vb}]
+#############################################
+# NUnit Analyzers — enable all as errors
+#############################################
+
+# Structure Rules (NUnit1001 - )
+dotnet_diagnostic.NUnit1001.severity = error # TestCase args must match parameter types
+dotnet_diagnostic.NUnit1002.severity = error # TestCaseSource should use nameof
+dotnet_diagnostic.NUnit1003.severity = error # TestCase provided too few arguments
+dotnet_diagnostic.NUnit1004.severity = error # TestCase provided too many arguments
+dotnet_diagnostic.NUnit1005.severity = error # ExpectedResult type must match return type
+dotnet_diagnostic.NUnit1006.severity = error # ExpectedResult must not be used on void methods
+dotnet_diagnostic.NUnit1007.severity = error # Non-void method but no ExpectedResult provided
+dotnet_diagnostic.NUnit1008.severity = error # ParallelScope.Self at assembly level has no effect
+dotnet_diagnostic.NUnit1009.severity = error # ParallelScope.Children on non-parameterized test
+dotnet_diagnostic.NUnit1010.severity = error # ParallelScope.Fixtures on a test method
+dotnet_diagnostic.NUnit1011.severity = error # TestCaseSource member does not exist
+dotnet_diagnostic.NUnit1012.severity = error # async test method must have non-void return type
+dotnet_diagnostic.NUnit1013.severity = error # async method must use non-generic Task when no result
+dotnet_diagnostic.NUnit1014.severity = error # async method must use Task<T> when result expected
+dotnet_diagnostic.NUnit1015.severity = error # Source type does not implement I(Async)Enumerable
+dotnet_diagnostic.NUnit1016.severity = error # Source type lacks default constructor
+dotnet_diagnostic.NUnit1017.severity = error # Specified source is not static
+dotnet_diagnostic.NUnit1018.severity = error # TestCaseSource param count mismatch (target method)
+dotnet_diagnostic.NUnit1019.severity = error # Source does not return I(Async)Enumerable
+dotnet_diagnostic.NUnit1020.severity = error # Parameters provided to field/property source
+dotnet_diagnostic.NUnit1021.severity = error # ValueSource should use nameof
+dotnet_diagnostic.NUnit1022.severity = error # Specified ValueSource is not static
+dotnet_diagnostic.NUnit1023.severity = error # ValueSource cannot supply required parameters
+dotnet_diagnostic.NUnit1024.severity = error # ValueSource does not return I(Async)Enumerable
+dotnet_diagnostic.NUnit1025.severity = error # ValueSource member does not exist
+dotnet_diagnostic.NUnit1026.severity = error # Test or setup/teardown method is not public
+dotnet_diagnostic.NUnit1027.severity = error # Test method has parameters but no arguments supplied
+dotnet_diagnostic.NUnit1028.severity = error # Non-test method is public
+dotnet_diagnostic.NUnit1029.severity = error # TestCaseSource param count mismatch (Test method)
+dotnet_diagnostic.NUnit1030.severity = error # TestCaseSource parameter type mismatch (Test method)
+dotnet_diagnostic.NUnit1031.severity = error # ValuesAttribute args must match parameter types
+dotnet_diagnostic.NUnit1032.severity = error # IDisposable field/property should be disposed in TearDown
+dotnet_diagnostic.NUnit1033.severity = error # TestContext.Write methods will be obsolete
+dotnet_diagnostic.NUnit1034.severity = error # Base TestFixtures should be abstract
+dotnet_diagnostic.NUnit1035.severity = error # Range 'step' parameter cannot be zero
+dotnet_diagnostic.NUnit1036.severity = error # Range: from < to when step is positive
+dotnet_diagnostic.NUnit1037.severity = error # Range: from > to when step is negative
+dotnet_diagnostic.NUnit1038.severity = error # Attribute values' types must match parameter type
+
+# Assertion Rules (NUnit2001 - )
+dotnet_diagnostic.NUnit2001.severity = error # Prefer Assert.That(..., Is.False) over ClassicAssert.False
+dotnet_diagnostic.NUnit2002.severity = error # Prefer Assert.That(..., Is.False) over ClassicAssert.IsFalse
+dotnet_diagnostic.NUnit2003.severity = error # Prefer Assert.That(..., Is.True) over ClassicAssert.IsTrue
+dotnet_diagnostic.NUnit2004.severity = error # Prefer Assert.That(..., Is.True) over ClassicAssert.True
+dotnet_diagnostic.NUnit2005.severity = error # Prefer Is.EqualTo over AreEqual
+dotnet_diagnostic.NUnit2006.severity = error # Prefer Is.Not.EqualTo over AreNotEqual
+dotnet_diagnostic.NUnit2007.severity = error # Actual value should not be a constant
+dotnet_diagnostic.NUnit2008.severity = error # Incorrect IgnoreCase usage
+dotnet_diagnostic.NUnit2009.severity = error # Same value used for actual and expected
+dotnet_diagnostic.NUnit2010.severity = error # Use EqualConstraint for better messages
+dotnet_diagnostic.NUnit2011.severity = error # Use ContainsConstraint for better messages
+dotnet_diagnostic.NUnit2012.severity = error # Use StartsWithConstraint for better messages
+dotnet_diagnostic.NUnit2013.severity = error # Use EndsWithConstraint for better messages
+dotnet_diagnostic.NUnit2014.severity = error # Use SomeItemsConstraint for better messages
+dotnet_diagnostic.NUnit2015.severity = error # Prefer Is.SameAs over AreSame
+dotnet_diagnostic.NUnit2016.severity = error # Prefer Is.Null over ClassicAssert.Null
+dotnet_diagnostic.NUnit2017.severity = error # Prefer Is.Null over ClassicAssert.IsNull
+dotnet_diagnostic.NUnit2018.severity = error # Prefer Is.Not.Null over ClassicAssert.NotNull
+dotnet_diagnostic.NUnit2019.severity = error # Prefer Is.Not.Null over ClassicAssert.IsNotNull
+dotnet_diagnostic.NUnit2020.severity = error # Incompatible types for SameAs constraint
+dotnet_diagnostic.NUnit2021.severity = error # Incompatible types for EqualTo constraint
+dotnet_diagnostic.NUnit2022.severity = error # Missing property required for constraint
+dotnet_diagnostic.NUnit2023.severity = error # Invalid NullConstraint usage
+dotnet_diagnostic.NUnit2024.severity = error # Wrong actual type with String constraint
+dotnet_diagnostic.NUnit2025.severity = error # Wrong actual type with ContainsConstraint
+dotnet_diagnostic.NUnit2026.severity = error # Wrong actual type with SomeItems+EqualConstraint
+dotnet_diagnostic.NUnit2027.severity = error # Prefer Is.GreaterThan over ClassicAssert.Greater
+dotnet_diagnostic.NUnit2028.severity = error # Prefer Is.GreaterThanOrEqualTo over GreaterOrEqual
+dotnet_diagnostic.NUnit2029.severity = error # Prefer Is.LessThan over ClassicAssert.Less
+dotnet_diagnostic.NUnit2030.severity = error # Prefer Is.LessThanOrEqualTo over LessOrEqual
+dotnet_diagnostic.NUnit2031.severity = error # Prefer Is.Not.SameAs over AreNotSame
+dotnet_diagnostic.NUnit2032.severity = error # Prefer Is.Zero over ClassicAssert.Zero
+dotnet_diagnostic.NUnit2033.severity = error # Prefer Is.Not.Zero over ClassicAssert.NotZero
+dotnet_diagnostic.NUnit2034.severity = error # Prefer Is.NaN over ClassicAssert.IsNaN
+dotnet_diagnostic.NUnit2035.severity = error # Prefer Is.Empty over ClassicAssert.IsEmpty
+dotnet_diagnostic.NUnit2036.severity = error # Prefer Is.Not.Empty over ClassicAssert.IsNotEmpty
+dotnet_diagnostic.NUnit2037.severity = error # Prefer Does.Contain over ClassicAssert.Contains
+dotnet_diagnostic.NUnit2038.severity = error # Prefer Is.InstanceOf over ClassicAssert.IsInstanceOf
+dotnet_diagnostic.NUnit2039.severity = error # Prefer Is.Not.InstanceOf over ClassicAssert.IsNotInstanceOf
+dotnet_diagnostic.NUnit2040.severity = error # Non-reference types for SameAs constraint
+dotnet_diagnostic.NUnit2041.severity = error # Incompatible types for comparison constraint
+dotnet_diagnostic.NUnit2042.severity = error # Comparison constraint on object
+dotnet_diagnostic.NUnit2043.severity = error # Use ComparisonConstraint for better messages
+dotnet_diagnostic.NUnit2044.severity = error # Non-delegate actual parameter
+dotnet_diagnostic.NUnit2045.severity = error # Use Assert.EnterMultipleScope or Assert.Multiple
+dotnet_diagnostic.NUnit2046.severity = error # Use CollectionConstraint for better messages
+dotnet_diagnostic.NUnit2047.severity = error # Incompatible types for Within constraint
+dotnet_diagnostic.NUnit2048.severity = error # Prefer Assert.That over StringAssert
+dotnet_diagnostic.NUnit2049.severity = error # Prefer Assert.That over CollectionAssert
+dotnet_diagnostic.NUnit2050.severity = error # NUnit 4 no longer supports string.Format spec
+dotnet_diagnostic.NUnit2051.severity = error # Prefer Is.Positive over ClassicAssert.Positive
+dotnet_diagnostic.NUnit2052.severity = error # Prefer Is.Negative over ClassicAssert.Negative
+dotnet_diagnostic.NUnit2053.severity = error # Prefer Is.AssignableFrom over ClassicAssert.IsAssignableFrom
+dotnet_diagnostic.NUnit2054.severity = error # Prefer Is.Not.AssignableFrom over ClassicAssert.IsNotAssignableFrom
+dotnet_diagnostic.NUnit2055.severity = error # Prefer Is.InstanceOf<T> over 'is T' expression
+dotnet_diagnostic.NUnit2056.severity = error # Prefer Assert.EnterMultipleScope statement over Multiple
+
+# Suppressor Rules (NUnit3001 - )
+dotnet_diagnostic.NUnit3001.severity = error # Expression checked in NotNull/IsNotNull/Assert.That
+dotnet_diagnostic.NUnit3002.severity = error # Field/Property initialized in SetUp/OneTimeSetUp
+dotnet_diagnostic.NUnit3003.severity = error # TestFixture instantiated via reflection
+dotnet_diagnostic.NUnit3004.severity = error # Field should be disposed in TearDown/OneTimeTearDown
+
+# Style Rules (NUnit4001 - )
+dotnet_diagnostic.NUnit4001.severity = error # Simplify the Values attribute
+dotnet_diagnostic.NUnit4002.severity = error # Use Specific constraint
+
 # C++ Files
 [*.{cpp,h,in}]
 curly_bracket_next_line = true

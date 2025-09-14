@@ -8,17 +8,21 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Checks RxApp dependency objects.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class RxAppDependencyObjectTests
 {
     /// <summary>
     /// Tests that Dependency Property notifiers should be found.
     /// </summary>
-    [Fact]
+    [Test]
     public void DepPropNotifierShouldBeFound()
     {
         RxApp.EnsureInitialized();
 
-        Assert.True(Locator.Current.GetServices<ICreatesObservableForProperty>()
-                           .Any(x => x is DependencyObjectObservableForProperty));
+        Assert.That(
+            Locator.Current.GetServices<ICreatesObservableForProperty>()
+                           .Any(x => x is DependencyObjectObservableForProperty),
+            Is.True);
     }
 }
