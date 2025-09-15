@@ -5,7 +5,7 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;windows;net</PackageTags>
     <UseMaui>true</UseMaui>
     <DefineConstants>$(DefineConstants);IS_MAUI</DefineConstants>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
