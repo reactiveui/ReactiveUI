@@ -37,11 +37,6 @@
 
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-
-    <!-- Cross-platform platform detection properties for project-level conditional building -->
-    <IsWindows>$([MSBuild]::IsOsPlatform('Windows'))</IsWindows>
-    <IsMacOS>$([MSBuild]::IsOsPlatform('OSX'))</IsMacOS>
-    <IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -49,7 +44,7 @@
     <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
-    <ReactiveUIFrameworkTargets Condition="'$(IsWindows)' == 'true'">net462;net472</ReactiveUIFrameworkTargets>
+    <ReactiveUIFrameworkTargets Condition="'$([MSBuild]::IsOsPlatform('Windows'))' == 'true'">net462;net472</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
@@ -58,13 +53,13 @@
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
-    <ReactiveUIWindowsOnlyTargets Condition="'$(IsWindows)' == 'true'">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
+    <ReactiveUIWindowsOnlyTargets Condition="'$([MSBuild]::IsOsPlatform('Windows'))' == 'true'">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net9.0;net10.0</ReactiveUITestTargets>
-    <ReactiveUITestTargets Condition="'$(IsWindows)' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net472</ReactiveUITestTargets>
+    <ReactiveUITestTargets Condition="'$([MSBuild]::IsOsPlatform('Windows'))' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net472</ReactiveUITestTargets>
 
     <ReactiveUIMauiTestTargets>net9.0;net10.0</ReactiveUIMauiTestTargets>
-    <ReactiveUIMauiTestTargets Condition="'$(IsWindows)' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiTestTargets>
+    <ReactiveUIMauiTestTargets Condition="'$([MSBuild]::IsOsPlatform('Windows'))' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiTestTargets>
 
     <ReactiveMauiTargets>net9.0;net10.0;$(ReactiveUIAndroidTargets)</ReactiveMauiTargets>
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
