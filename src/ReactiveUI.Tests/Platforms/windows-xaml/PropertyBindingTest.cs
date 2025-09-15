@@ -30,7 +30,7 @@ public class PropertyBindingTest
         vm.JustADecimal = 123.45m;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
-        var disp = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, d => d.ToString(), t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
+        var disp = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, static d => d.ToString(), static t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
 
         using (Assert.EnterMultipleScope())
         {
@@ -64,7 +64,7 @@ public class PropertyBindingTest
         vm.Property1 = "Foo";
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.Property1));
 
-        var disp = fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp = fixture.Bind(vm, view, static x => x.Property1, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         using (Assert.EnterMultipleScope())
         {
@@ -98,7 +98,7 @@ public class PropertyBindingTest
         vm.Property2 = 17;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.Property2.ToString()));
 
-        var disp = fixture.Bind(vm, view, x => x.Property2, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp = fixture.Bind(vm, view, static x => x.Property2, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         using (Assert.EnterMultipleScope())
         {
@@ -123,7 +123,7 @@ public class PropertyBindingTest
         }
 
         vm.JustADecimal = 17.2m;
-        var disp1 = fixture.Bind(vm, view, x => x.JustADecimal, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp1 = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         using (Assert.EnterMultipleScope())
         {
@@ -150,7 +150,7 @@ public class PropertyBindingTest
 
         // Empty test
         vm.JustAInt32 = 12;
-        var disp2 = fixture.Bind(vm, view, x => x.JustAInt32, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp2 = fixture.Bind(vm, view, static x => x.JustAInt32, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         view.SomeTextBox.Text = string.Empty;
         Assert.That(vm.JustAInt32, Is.EqualTo(12));
@@ -171,7 +171,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, x => x.Model!.AnotherThing, x => x.SomeTextBox.Text);
+        view.OneWayBind(view.ViewModel, static x => x.Model!.AnotherThing, static x => x.SomeTextBox.Text);
         Assert.That(view.SomeTextBox.Text, Is.EqualTo("Baz"));
     }
 
@@ -184,7 +184,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.JustADouble);
+        view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.JustADouble);
         Assert.That(view.FakeControl.JustADouble, Is.Zero);
 
         vm.NullableDouble = 4.0;
@@ -206,7 +206,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, x => x.JustADouble, x => x.FakeControl.NullableDouble);
+        view.Bind(view.ViewModel, static x => x.JustADouble, static x => x.FakeControl.NullableDouble);
         Assert.That(vm.JustADouble, Is.Zero);
 
         view.FakeControl.NullableDouble = 4.0;
@@ -228,7 +228,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, x => x.NullableDouble, x => x.FakeControl.NullableDouble);
+        view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.NullableDouble);
         Assert.That(vm.NullableDouble, Is.Null);
 
         view.FakeControl.NullableDouble = 4.0;
@@ -250,7 +250,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
+        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         Assert.That(view.SomeTextBox.Text, Is.EqualTo("Foo"));
     }
 
@@ -263,7 +263,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0], x => x.SomeTextBox.Text);
+        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         Assert.That(view.SomeTextBox.Text, Is.EqualTo("Foo"));
 
         vm.SomeCollectionOfStrings[0] = "Bar";
@@ -280,7 +280,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings[0].Length, x => x.SomeTextBox.Text);
+        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0].Length, static x => x.SomeTextBox.Text);
         Assert.That(view.SomeTextBox.Text, Is.EqualTo("3"));
     }
 
@@ -293,7 +293,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = null };
 
-        view.OneWayBind(vm, x => x.Model!.AnotherThing, x => x.FakeControl.NullHatingString);
+        view.OneWayBind(vm, static x => x.Model!.AnotherThing, static x => x.FakeControl.NullHatingString);
         Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(string.Empty));
 
         view.ViewModel = vm;
@@ -311,8 +311,8 @@ public class PropertyBindingTest
 
         Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(string.Empty));
 
-        view.WhenAnyValue(x => x.ViewModel!.JustADouble)
-            .BindTo(view, x => x.FakeControl.NullHatingString);
+        view.WhenAnyValue(static x => x.ViewModel!.JustADouble)
+            .BindTo(view, static x => x.FakeControl.NullHatingString);
 
         view.ViewModel = vm;
         Assert.That(view.FakeControl.NullHatingString, Is.EqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture)));
@@ -341,7 +341,7 @@ public class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         view.FakeItemsControl.ItemsSource = new ObservableCollectionExtended<string>(new[] { "aaa", "bbb", "ccc" });
 
-        view.Bind(view.ViewModel, x => x.Property1, x => x.FakeItemsControl.SelectedItem);
+        view.Bind(view.ViewModel, static x => x.Property1, static x => x.FakeItemsControl.SelectedItem);
 
         using (Assert.EnterMultipleScope())
         {
@@ -366,7 +366,7 @@ public class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
-        view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+        view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Not.Null);
     }
@@ -382,7 +382,7 @@ public class PropertyBindingTest
         view.FakeItemsControl.DisplayMemberPath = "Bla";
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
-        view.OneWayBind(vm, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+        view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
     }
@@ -397,13 +397,13 @@ public class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Null);
-        vm.WhenAnyValue(x => x.SomeCollectionOfStrings)
-            .BindTo(view, v => v.FakeItemsControl.ItemsSource);
+        vm.WhenAnyValue(static x => x.SomeCollectionOfStrings)
+            .BindTo(view, static v => v.FakeItemsControl.ItemsSource);
 
         Assert.That(view.FakeItemsControl.ItemTemplate, Is.Not.Null);
 
-        view.WhenAnyValue(x => x.FakeItemsControl.SelectedItem)
-            .BindTo(vm, x => x.Property1);
+        view.WhenAnyValue(static x => x.FakeItemsControl.SelectedItem)
+            .BindTo(vm, static x => x.Property1);
     }
 
     /// <summary>
@@ -415,7 +415,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, x => x.SomeCollectionOfStrings, x => x.FakeItemsControl.ItemsSource);
+        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         var itemsSourceValue = (IList)view.FakeItemsControl.ItemsSource;
         Assert.That(itemsSourceValue.OfType<string>().Count(), Is.GreaterThan(1));
@@ -430,7 +430,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
-        fixture.OneWayBind(vm, view, x => x.JustABoolean, x => x.SomeTextBox.IsEnabled, s => s);
+        fixture.OneWayBind(vm, view, static x => x.JustABoolean, static x => x.SomeTextBox.IsEnabled, static s => s);
         Assert.That(view.SomeTextBox.IsEnabled, Is.False);
     }
 
@@ -443,7 +443,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+        view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
 
         vm.Property1 = "Baz";
 
@@ -461,7 +461,7 @@ public class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+        view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
 
         vm.Property1 = null;
 
@@ -477,7 +477,7 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(vm, x => x.Model, x => x.SomeTextBox.Text, x => x?.AnotherThing);
+        view.OneWayBind(vm, static x => x.Model, static x => x.SomeTextBox.Text, static x => x?.AnotherThing);
 
         vm.Model = null;
 
@@ -495,7 +495,7 @@ public class PropertyBindingTest
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
-            var disp = view.OneWayBind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+            var disp = view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
             view.ViewModel = new PropertyBindViewModel();
 
             return (disp, weakRef);
@@ -518,8 +518,8 @@ public class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.WhenAnyValue(x => x.ViewModel!.Property1)
-            .BindTo(view, x => x.SomeTextBox.Text);
+        view.WhenAnyValue(static x => x.ViewModel!.Property1)
+            .BindTo(view, static x => x.SomeTextBox.Text);
 
         vm.Property1 = "Baz";
 
@@ -537,8 +537,8 @@ public class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        view.WhenAnyValue(x => x.ViewModel!.Property1)
-            .BindTo(view, x => x.SomeTextBox.Text);
+        view.WhenAnyValue(static x => x.ViewModel!.Property1)
+            .BindTo(view, static x => x.SomeTextBox.Text);
 
         vm.Property1 = null;
 
@@ -573,7 +573,7 @@ public class PropertyBindingTest
         vm.JustADecimal = 123.45m;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : 0m);
+        view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : 0m);
 
         Assert.That(view.SomeTextBox.Text, Is.EqualTo("123.45"));
 
@@ -598,7 +598,7 @@ public class PropertyBindingTest
             var vm = new PropertyBindViewModel();
             var view = new PropertyBindView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
-            var disp = view.Bind(vm, x => x.Property1, x => x.SomeTextBox.Text);
+            var disp = view.Bind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
             view.ViewModel = new PropertyBindViewModel();
 
             return (disp, weakRef);
@@ -620,7 +620,7 @@ public class PropertyBindingTest
         var view = new PropertyBindView() { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
 
-        fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        fixture.OneWayBind(vm, view, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
         Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Visible));
 
         vm.JustABoolean = true;
@@ -647,8 +647,8 @@ public class PropertyBindingTest
         var dis = new CompositeDisposable();
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        var obs = vm.WhenAnyValue(x => x.JustABoolean);
-        var a = new PropertyBinderImplementation().BindTo(obs, view, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        var obs = vm.WhenAnyValue(static x => x.JustABoolean);
+        var a = new PropertyBinderImplementation().BindTo(obs, view, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
         Assert.That(view.SomeTextBox.Visibility, Is.EqualTo(System.Windows.Visibility.Visible));
 
         vm.JustABoolean = true;
@@ -669,7 +669,7 @@ public class PropertyBindingTest
         vm.JustADecimal = 123.45m;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, update.AsObservable(), static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADecimal = 1.0M;
 
@@ -717,7 +717,7 @@ public class PropertyBindingTest
 
         var decimalToStringTypeConverter = new DecimalToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADecimal = 1.0M;
 
@@ -765,7 +765,7 @@ public class PropertyBindingTest
 
         var decimalToStringTypeConverter = new NullableDecimalToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullDecimal, x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullDecimal, static x => x.SomeTextBox.Text, update.AsObservable(), 2, decimalToStringTypeConverter, decimalToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullDecimal = 1.0M;
 
@@ -815,7 +815,7 @@ public class PropertyBindingTest
         vm.JustADecimal = 123.45m;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustADecimal, x => x.SomeTextBox.Text, update.AsObservable(), d => d.ToString(CultureInfo.InvariantCulture), t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewToViewModel).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, update.AsObservable(), static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : decimal.Zero, TriggerUpdate.ViewToViewModel).DisposeWith(dis);
 
         view.SomeTextBox.Text = "1.0";
 
@@ -863,7 +863,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new DoubleToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustADouble, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = 1.0;
 
@@ -911,7 +911,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new NullableDoubleToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullDouble, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullDouble, static x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullDouble = 1.0;
 
@@ -961,7 +961,7 @@ public class PropertyBindingTest
         vm.JustADouble = 123.45;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustADouble, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = 1.0;
 
@@ -1009,7 +1009,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new SingleToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustASingle, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = 1.0f;
 
@@ -1057,7 +1057,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new NullableSingleToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullSingle, x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullSingle, static x => x.SomeTextBox.Text, update.AsObservable(), 2, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullSingle = 1.0f;
 
@@ -1107,7 +1107,7 @@ public class PropertyBindingTest
         vm.JustASingle = 123.45f;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustASingle.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustASingle, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = 1.0f;
 
@@ -1155,7 +1155,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new ByteToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustAByte, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAByte, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAByte = 1;
 
@@ -1203,7 +1203,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new NullableByteToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullByte, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullByte, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullByte = 1;
 
@@ -1253,7 +1253,7 @@ public class PropertyBindingTest
         vm.JustAByte = 123;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAByte.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustAByte, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAByte, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAByte = 1;
 
@@ -1301,7 +1301,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new ShortToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustAInt16, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt16, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt16 = 1;
 
@@ -1349,7 +1349,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new NullableShortToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullInt16, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullInt16, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullInt16 = 1;
 
@@ -1399,7 +1399,7 @@ public class PropertyBindingTest
         vm.JustAInt16 = 123;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt16.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustAInt16, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt16, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt16 = 1;
 
@@ -1447,7 +1447,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new IntegerToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustAInt32, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt32, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt32 = 1;
 
@@ -1495,7 +1495,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new NullableIntegerToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustANullInt32, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustANullInt32, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustANullInt32 = 1;
 
@@ -1545,7 +1545,7 @@ public class PropertyBindingTest
         vm.JustAInt32 = 123;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt32.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustAInt32, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt32, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt32 = 1;
 
@@ -1593,7 +1593,7 @@ public class PropertyBindingTest
 
         var xToStringTypeConverter = new LongToStringTypeConverter();
 
-        view.Bind(vm, x => x.JustAInt64, x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt64, static x => x.SomeTextBox.Text, update.AsObservable(), 3, xToStringTypeConverter, xToStringTypeConverter, TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt64 = 1;
 
@@ -1639,7 +1639,7 @@ public class PropertyBindingTest
         vm.JustAInt64 = 123;
         Assert.That(view.SomeTextBox.Text, Is.Not.EqualTo(vm.JustAInt64.ToString(CultureInfo.InvariantCulture)));
 
-        view.Bind(vm, x => x.JustAInt64, x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        view.Bind(vm, static x => x.JustAInt64, static x => x.SomeTextBox.Text, update.AsObservable(), null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustAInt64 = 1;
 

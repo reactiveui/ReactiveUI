@@ -58,7 +58,7 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
             new { Name = "CommandParameter", TargetType = typeof(object) },
         };
 
-        return propsToFind.All(x =>
+        return propsToFind.All(static x =>
         {
             var pi = typeof(T).GetRuntimeProperty(x.Name);
             return pi is not null;

@@ -23,8 +23,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -47,8 +47,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -71,8 +71,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -97,8 +97,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -219,8 +219,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -245,8 +245,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.Interaction1,
-            input =>
+            static vm => vm.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -271,8 +271,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static vm => vm.InteractionViewModel.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -295,8 +295,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static vm => vm.InteractionViewModel.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -372,8 +372,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static vm => vm.InteractionViewModel.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -401,8 +401,8 @@ public class InteractionBinderImplementationTests
 
         var disposable = view.BindInteraction(
             vm,
-            vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static vm => vm.InteractionViewModel.Interaction1,
+            static input =>
             {
                 input.SetOutput(true);
                 return Observable.Return(Unit.Default);
@@ -476,8 +476,8 @@ public class InteractionBinderImplementationTests
             var weakRef = new WeakReference(vm);
             var disposable = view.BindInteraction(
                 vm,
-                vm => vm.Interaction1,
-                input =>
+                static vm => vm.Interaction1,
+                static input =>
                 {
                     input.SetOutput(true);
                     return Task.CompletedTask;
@@ -508,8 +508,8 @@ public class InteractionBinderImplementationTests
             var weakRef = new WeakReference(vm.InteractionViewModel);
             var disposable = view.BindInteraction(
                 vm,
-                vm => vm.InteractionViewModel.Interaction1,
-                input =>
+                static vm => vm.InteractionViewModel.Interaction1,
+                static input =>
                 {
                     input.SetOutput(true);
                     return Observable.Return(Unit.Default);

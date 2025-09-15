@@ -62,7 +62,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
             return 5;
         }
 
-        return _defaultEventsToBind.Any(x =>
+        return _defaultEventsToBind.Any(static x =>
         {
             var ei = typeof(T).GetRuntimeEvent(x.name);
             return ei is not null;

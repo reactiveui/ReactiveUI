@@ -29,10 +29,10 @@ public class CommandBindingImplementationTests
 
         Assert.That(view.Command1.Command, Is.Null);
 
-        var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        var disp = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
         Assert.That(view.Command1.Command, Is.EqualTo(view.ViewModel.Command1));
 
-        var newCmd = ReactiveCommand.Create<int>(_ => { });
+        var newCmd = ReactiveCommand.Create<int>(static _ => { });
         view.ViewModel.Command1 = newCmd;
         Assert.That(view.Command1.Command, Is.EqualTo(newCmd));
 
@@ -54,7 +54,7 @@ public class CommandBindingImplementationTests
 
         var view = new CommandBindView { ViewModel = vm };
 
-        view.BindCommand(view.ViewModel, m => m.NestedViewModel.NestedCommand, x => x.Command1);
+        view.BindCommand(view.ViewModel, static m => m.NestedViewModel.NestedCommand, static x => x.Command1);
 
         Assert.That(view.Command1.Command, Is.EqualTo(view.ViewModel.NestedViewModel.NestedCommand));
     }
@@ -69,9 +69,9 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         Assert.That(view.Command1.IsEnabled, Is.True);
     }
@@ -86,9 +86,9 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         Assert.That(view.Command1.IsEnabled, Is.True);
 
@@ -107,9 +107,9 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(false);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         Assert.That(view.Command1.IsEnabled, Is.False);
     }
@@ -124,15 +124,15 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         Assert.That(view.Command1.IsEnabled, Is.True);
 
         // Now  change to a disabled cmd
         var canExecute2 = new BehaviorSubject<bool>(false);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute2);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute2);
 
         Assert.That(view.Command1.IsEnabled, Is.False);
     }

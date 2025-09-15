@@ -36,5 +36,5 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
     public IObservable<bool> GetActivationForView(IActivatableView view) =>
         view is not ICanActivate canActivate
             ? Observable.Return(false)
-            : canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+            : canActivate.Activated.Select(static _ => true).Merge(canActivate.Deactivated.Select(static _ => false));
 }

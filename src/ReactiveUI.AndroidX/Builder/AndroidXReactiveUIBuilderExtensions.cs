@@ -25,6 +25,10 @@ public static class AndroidXReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
+    [RequiresDynamicCode("Uses reflection to create instances of types.")]
+#endif
     public static IReactiveUIBuilder WithAndroidX(this IReactiveUIBuilder builder)
     {
         if (builder is null)

@@ -50,7 +50,7 @@ public static class ReactiveTableViewSourceExtensions
             initSource(source);
         }
 
-        var bind = sectionsObservable.BindTo(source, x => x.Data);
+        var bind = sectionsObservable.BindTo(source, static x => x.Data);
         tableView.Source = source;
 
         return new CompositeDisposable(bind, source);

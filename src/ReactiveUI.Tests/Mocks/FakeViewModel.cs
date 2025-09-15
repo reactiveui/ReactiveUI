@@ -13,7 +13,7 @@ public class FakeViewModel : ReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeViewModel"/> class.
     /// </summary>
-    public FakeViewModel() => Cmd = ReactiveCommand.Create(() => { });
+    public FakeViewModel() => Cmd = ReactiveCommand.Create(static () => { });
 
     /// <summary>
     /// Gets or sets the command.

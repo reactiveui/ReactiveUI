@@ -132,7 +132,7 @@ public class RoutingStateTests
     public void CurrentViewModelObservableIsAccurateViaWhenAnyObservable()
     {
         var fixture = new TestScreen();
-        fixture.WhenAnyObservable(x => x.Router!.CurrentViewModel)
+        fixture.WhenAnyObservable(static x => x.Router!.CurrentViewModel)
                .ToObservableChangeSet(ImmediateScheduler.Instance)
                .Bind(out var output)
                .Subscribe();
@@ -188,7 +188,7 @@ public class RoutingStateTests
     [Test]
     public void SchedulerIsUsedForAllCommands() =>
         new TestScheduler().With(
-            scheduler =>
+            static scheduler =>
             {
                 var fixture = new RoutingState(scheduler);
 

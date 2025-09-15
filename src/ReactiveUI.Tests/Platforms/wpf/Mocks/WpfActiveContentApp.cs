@@ -15,7 +15,7 @@ public class WpfActiveContentApp : Application
     /// <value>
     /// The mock window factory.
     /// </value>
-    public Func<MockWindow> MockWindowFactory { get; } = () => new();
+    public Func<MockWindow> MockWindowFactory { get; } = static () => new();
 
     /// <summary>
     /// Gets the tc mock window factory.
@@ -23,7 +23,7 @@ public class WpfActiveContentApp : Application
     /// <value>
     /// The tc mock window factory.
     /// </value>
-    public Func<TCMockWindow> TCMockWindowFactory { get; } = () => new();
+    public Func<TCMockWindow> TCMockWindowFactory { get; } = static () => new();
 
     /// <summary>
     /// Gets the WPF test window factory.
@@ -31,5 +31,5 @@ public class WpfActiveContentApp : Application
     /// <value>
     /// The WPF test window factory.
     /// </value>
-    public Func<WpfTestWindow> WpfTestWindowFactory { get; } = () => new();
+    public Func<WpfTestWindow> WpfTestWindowFactory { get; } = static () => new();
 }

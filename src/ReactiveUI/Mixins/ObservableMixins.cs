@@ -19,8 +19,8 @@ public static class ObservableMixins
     /// <returns>A non nullable version of the observable that only emits valid values.</returns>
     public static IObservable<T> WhereNotNull<T>(this IObservable<T?> observable) =>
         observable
-            .Where(x => x is not null)
-            .Select(x => x!);
+            .Where(static x => x is not null)
+            .Select(static x => x!);
 
     /// <summary>
     /// Converts an asynchronous action into an observable sequence. Each subscription

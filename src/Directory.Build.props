@@ -19,11 +19,11 @@
     <RepositoryType>git</RepositoryType>
     <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    
+
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    
+
     <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Nullable>enable</Nullable>
@@ -34,7 +34,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    
+
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
@@ -42,12 +42,14 @@
     <IsWindows>$([MSBuild]::IsOsPlatform('Windows'))</IsWindows>
     <IsMacOS>$([MSBuild]::IsOsPlatform('OSX'))</IsMacOS>
     <IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
-
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <!-- Granular Target Framework definitions for cross-platform builds -->
     <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
-    <ReactiveUIFrameworkTargets Condition="'$(IsWindows)' == 'true'">>net462;net472</ReactiveUIFrameworkTargets>
+    <ReactiveUIFrameworkTargets Condition="'$(IsWindows)' == 'true'">net462;net472</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
@@ -59,17 +61,17 @@
     <ReactiveUIWindowsOnlyTargets Condition="'$(IsWindows)' == 'true'">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net9.0;net10.0</ReactiveUITestTargets>
-    <ReactiveUITestTargets Condition="'$(IsWindows)' == 'true'">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net472</ReactiveUITestTargets>
-    
+    <ReactiveUITestTargets Condition="'$(IsWindows)' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net472</ReactiveUITestTargets>
+
+    <ReactiveUIMauiTestTargets>net9.0;net10.0</ReactiveUIMauiTestTargets>
+    <ReactiveUIMauiTestTargets Condition="'$(IsWindows)' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiTestTargets>
+
     <ReactiveMauiTargets>net9.0;net10.0;$(ReactiveUIAndroidTargets);$(ReactiveUIMauiWindowsTargets)</ReactiveMauiTargets>
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
-  </PropertyGroup>
 
-  <!-- Build final target framework list based on operating system -->
-  <PropertyGroup>
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>netstandard2.0;$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
 
@@ -85,16 +87,21 @@
     <!-- Final target frameworks for tests/benchmarks (modern .NET only, with platform-specific additions) -->
     <ReactiveUIFinalModernTargetFrameworks>$(ReactiveUIModernTargets)</ReactiveUIFinalModernTargetFrameworks>
     <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
-    
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <!-- Ensure all test runs use our runsettings to control cross-assembly parallelism -->
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')))">
+  
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('WPF')) != 'true' and '$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
+  
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
+  
   <ItemGroup Condition="$(IsTestProject)">
     <PackageReference Include="NUnit"/>
     <PackageReference Include="NUnit3TestAdapter"/>
@@ -105,6 +112,7 @@
     <PackageReference Include="coverlet.msbuild" PrivateAssets="All"/>
     <PackageReference Include="Verify.NUnit"/>
   </ItemGroup>
+  
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>

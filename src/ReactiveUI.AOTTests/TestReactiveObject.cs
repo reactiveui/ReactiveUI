@@ -23,8 +23,8 @@ public class TestReactiveObject : ReactiveObject
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "AOT compatibility tests deliberately use AOT-incompatible methods to test suppression scenarios")]
     public TestReactiveObject()
     {
-        _computedProperty = this.WhenAnyValue(x => x.TestProperty)
-            .Select(x => $"Computed: {x}")
+        _computedProperty = this.WhenAnyValue(static x => x.TestProperty)
+            .Select(static x => $"Computed: {x}")
             .ToProperty(this, nameof(ComputedProperty));
     }
 

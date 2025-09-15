@@ -236,7 +236,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
 #endif
     public static ObservableAsPropertyHelper<T> Default(T? initialValue = default, IScheduler? scheduler = null) => // TODO: Create Test
-        new(Observable<T>.Never, _ => { }, initialValue!, false, scheduler);
+        new(Observable<T>.Never, static _ => { }, initialValue!, false, scheduler);
 
     /// <summary>
     /// Disposes this ObservableAsPropertyHelper.

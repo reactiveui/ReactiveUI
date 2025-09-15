@@ -75,6 +75,6 @@ public static class ReactivePropertyMixins
         self.ArgumentNullExceptionThrowIfNull(nameof(self));
 
         return self.ObserveErrorChanged
-            .Select(x => x?.OfType<string>()?.FirstOrDefault());
+            .Select(static x => x?.OfType<string>()?.FirstOrDefault());
     }
 }

@@ -55,7 +55,7 @@ public class ComprehensiveAOTTests
         var interaction = new Interaction<string, bool>();
         var result = false;
 
-        interaction.RegisterHandler(context =>
+        interaction.RegisterHandler(static context =>
         {
             context.SetOutput(context.Input == "test");
         });
@@ -171,7 +171,7 @@ public class ComprehensiveAOTTests
         var resolver = Locator.CurrentMutable;
 
         // Register concrete types (AOT-friendly)
-        resolver.Register<IScheduler>(() => CurrentThreadScheduler.Instance);
+        resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
 
         // Resolve registered types
         var scheduler = Locator.Current.GetService<IScheduler>();

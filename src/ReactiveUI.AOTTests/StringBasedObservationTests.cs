@@ -25,7 +25,7 @@ public class StringBasedObservationTests
         var values = new List<int>();
 
         s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), beforeChange: false, skipInitial: false, isDistinct: true)
-         .Select(x => x.Value)
+         .Select(static x => x.Value)
          .Subscribe(values.Add);
 
         s.IntValue = 7;
@@ -45,7 +45,7 @@ public class StringBasedObservationTests
         var before = new List<int>();
 
         s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), beforeChange: true, skipInitial: true, isDistinct: false)
-         .Select(x => x.Value)
+         .Select(static x => x.Value)
          .Subscribe(before.Add);
 
         s.IntValue = 2; // should emit previous value (1) before change

@@ -345,13 +345,13 @@ public class WpfActiveContentTests
     public void DummySuspensionDriverTest()
     {
         var dsd = new DummySuspensionDriver();
-        dsd.LoadState().Select(_ => 1).Subscribe(v => Assert.That(
+        dsd.LoadState().Select(static _ => 1).Subscribe(static v => Assert.That(
                                                                   v,
                                                                   Is.EqualTo(1)));
-        dsd.SaveState("Save Me").Select(_ => 2).Subscribe(v => Assert.That(
+        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(static v => Assert.That(
                                                                            v,
                                                                            Is.EqualTo(2)));
-        dsd.InvalidateState().Select(_ => 3).Subscribe(v => Assert.That(
+        dsd.InvalidateState().Select(static _ => 3).Subscribe(static v => Assert.That(
                                                                         v,
                                                                         Is.EqualTo(3)));
     }

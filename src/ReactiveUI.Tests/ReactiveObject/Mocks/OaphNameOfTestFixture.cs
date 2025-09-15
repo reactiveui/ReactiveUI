@@ -26,8 +26,8 @@ public class OaphNameOfTestFixture : TestFixture
         /// </summary>
         public OaphNameOfTestFixture()
         {
-            this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, nameof(FirstThreeLettersOfOneWord), out _firstThreeLettersOfOneWord);
-            _lastThreeLettersOfOneWord = this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(x.Length - 3, 3) : x).ToProperty(this, nameof(LastThreeLettersOfOneWord));
+            this.WhenAnyValue(static x => x.IsOnlyOneWord).Select(static x => x ?? string.Empty).Select(static x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, nameof(FirstThreeLettersOfOneWord), out _firstThreeLettersOfOneWord);
+            _lastThreeLettersOfOneWord = this.WhenAnyValue(static x => x.IsOnlyOneWord).Select(static x => x ?? string.Empty).Select(static x => x.Length >= 3 ? x.Substring(x.Length - 3, 3) : x).ToProperty(this, nameof(LastThreeLettersOfOneWord));
         }
 
         /// <summary>

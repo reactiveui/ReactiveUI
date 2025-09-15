@@ -67,7 +67,7 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
             return 6;
         }
 
-        return _defaultEventsToBind.Any(x =>
+        return _defaultEventsToBind.Any(static x =>
         {
             var ei = typeof(T).GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             return ei is not null;

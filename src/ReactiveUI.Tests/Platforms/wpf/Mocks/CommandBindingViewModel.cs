@@ -15,10 +15,10 @@ public class CommandBindingViewModel : ReactiveObject
 
     public CommandBindingViewModel()
     {
-        _Command1 = ReactiveCommand.Create<int, int>(_ => _, outputScheduler: ImmediateScheduler.Instance);
-        _Command2 = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+        _Command1 = ReactiveCommand.Create<int, int>(static _ => _, outputScheduler: ImmediateScheduler.Instance);
+        _Command2 = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
         _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxApp.TaskpoolScheduler);
-        _result = _Command3.ToProperty(this, x => x.Result, scheduler: RxApp.MainThreadScheduler);
+        _result = _Command3.ToProperty(this, static x => x.Result, scheduler: RxApp.MainThreadScheduler);
     }
 
     public ReactiveCommand<int, int> Command1

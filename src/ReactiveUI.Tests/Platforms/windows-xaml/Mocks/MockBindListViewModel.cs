@@ -16,7 +16,7 @@ public class MockBindListViewModel : ReactiveObject
 
     static MockBindListViewModel()
     {
-        Locator.CurrentMutable.Register(() => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
+        Locator.CurrentMutable.Register(static () => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
     }
 
     /// <summary>

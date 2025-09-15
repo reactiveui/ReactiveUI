@@ -160,16 +160,15 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
-    [SuppressMessage("Trimming", "IL2111:Method with parameters or return value with `DynamicallyAccessedMembersAttribute` is accessed via reflection. Trimmer can't guarantee availability of the requirements of the method.", Justification = "Does not use reflection")]
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
         var registration = new T();
-#if NET6_0_OR_GREATER
-        registration.Register((f, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] t) => CurrentMutable.RegisterConstant(f(), t));
-#else
         registration.Register((f, t) => CurrentMutable.RegisterConstant(f(), t));
-#endif
         return this;
     }
 
@@ -270,7 +269,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <returns>The builder instance for chaining.</returns>
     public IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
-            WithRegistration(resolver => resolver.Register<TViewModel>(() => new()));
+            WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.
@@ -283,7 +282,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
 #endif
         where TViewModel : class, IReactiveObject, new() =>
-            WithRegistration(resolver => resolver.RegisterLazySingleton<TViewModel>(() => new()));
+            WithRegistration(static resolver => resolver.RegisterLazySingleton<TViewModel>(static () => new()));
 
     /// <summary>
     /// Registers a custom view for a specific view model.
@@ -294,7 +293,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
-            WithRegistration(resolver => resolver.Register<IViewFor<TViewModel>>(() => new TView()));
+            WithRegistration(static resolver => resolver.Register<IViewFor<TViewModel>>(static () => new TView()));
 
     /// <summary>
     /// Registers a custom view for a specific view model.
@@ -305,7 +304,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
-            WithRegistration(resolver => resolver.RegisterLazySingleton<IViewFor<TViewModel>>(() => new TView()));
+            WithRegistration(static resolver => resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView()));
 
     private void ConfigureSchedulers() =>
             WithCustomRegistration(_ =>

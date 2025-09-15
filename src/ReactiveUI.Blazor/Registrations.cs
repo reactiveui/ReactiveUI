@@ -31,22 +31,22 @@ public class Registrations : IWantsToRegisterStuff
         }
 #endif
 
-        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
 
         if (Type.GetType("Mono.Runtime") is not null)
         {

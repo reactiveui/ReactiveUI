@@ -175,14 +175,14 @@ public class ObservableAsPropertyHelperTest
     [Test]
     public void OAPHDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
     {
-        var observable = Observable.Create<int>(o =>
+        var observable = Observable.Create<int>(static o =>
         {
             o.OnNext(42);
             o.OnCompleted();
             return Disposable.Empty;
         });
 
-        var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
+        var fixture = new ObservableAsPropertyHelper<int>(observable, static _ => { }, 0, true);
 
         using (Assert.EnterMultipleScope())
         {
@@ -275,7 +275,7 @@ public class ObservableAsPropertyHelperTest
     public void OAPHDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
-        var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
+        var fixture = new ObservableAsPropertyHelper<int>(observable, static _ => { }, initialValue, deferSubscription: true);
 
         Assert.That(fixture.IsSubscribed, Is.False);
 
@@ -480,9 +480,9 @@ public class ObservableAsPropertyHelperTest
         // NB: Hack to connect up the OAPH
         _ = (fixture.FirstThreeLettersOfOneWord ?? string.Empty).Substring(0, 0);
 
-        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: true)
+        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, beforeChange: true)
                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanging).Subscribe();
-        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, beforeChange: false)
+        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, beforeChange: false)
                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
 
         using (Assert.EnterMultipleScope())
@@ -673,15 +673,15 @@ public class ObservableAsPropertyHelperTest
     {
         var fixture = new WhenAnyTestFixture();
         fixture.WhenAnyValue(
-                             x => x.ProjectService.ProjectsNullable,
-                             x => x.AccountService.AccountUsersNullable)
-               .Where(tuple => tuple.Item1.Count > 0 && tuple.Item2.Count > 0)
-               .Select(tuple =>
+                             static x => x.ProjectService.ProjectsNullable,
+                             static x => x.AccountService.AccountUsersNullable)
+               .Where(static tuple => tuple.Item1.Count > 0 && tuple.Item2.Count > 0)
+               .Select(static tuple =>
                {
                    var (projects, users) = tuple;
-                   return users?.Values.Count(x => !string.IsNullOrWhiteSpace(x?.LastName));
+                   return users?.Values.Count(static x => !string.IsNullOrWhiteSpace(x?.LastName));
                })
-               .ToProperty(fixture, x => x.AccountsFound, out fixture._accountsFound);
+               .ToProperty(fixture, static x => x.AccountsFound, out fixture._accountsFound);
 
         Assert.That(fixture.AccountsFound, Is.EqualTo(3));
     }

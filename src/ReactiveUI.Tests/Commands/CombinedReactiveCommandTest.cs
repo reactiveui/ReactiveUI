@@ -22,8 +22,8 @@ public class CombinedReactiveCommandTest
     [Test]
     public void CanExecuteIsFalseIfAnyChildCannotExecute()
     {
-        var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.Create(() => Observables.Unit, Observables.False, ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.Create(static () => Observables.Unit, Observables.False, ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -38,8 +38,8 @@ public class CombinedReactiveCommandTest
     [Test]
     public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
     {
-        var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, Observables.False, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -55,8 +55,8 @@ public class CombinedReactiveCommandTest
     public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
-        var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.Create(() => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.Create(static () => Observables.Unit, canExecuteSubject, ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
@@ -74,8 +74,8 @@ public class CombinedReactiveCommandTest
     public void CanExecuteTicksFailuresThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
-        var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, canExecuteSubject, ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
@@ -111,9 +111,9 @@ public class CombinedReactiveCommandTest
     [Test]
     public void ExecuteExecutesAllChildCommands()
     {
-        var child1 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child3 = ReactiveCommand.Create(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child3 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2, child3 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
 
@@ -166,13 +166,13 @@ public class CombinedReactiveCommandTest
     [Test]
     public void ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
     {
-        var child1 = ReactiveCommand.CreateFromObservable(() => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.CreateFromObservable(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.CreateFromObservable(static () => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
-        fixture.Execute().Subscribe(_ => { }, _ => { });
+        fixture.Execute().Subscribe(static _ => { }, static _ => { });
 
         Assert.That(thrownExceptions, Has.Count.EqualTo(1));
         Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
@@ -184,8 +184,8 @@ public class CombinedReactiveCommandTest
     [Test]
     public void ExecuteTicksThroughTheResults()
     {
-        var child1 = ReactiveCommand.CreateFromObservable(() => Observable.Return(1), outputScheduler: ImmediateScheduler.Instance);
-        var child2 = ReactiveCommand.CreateFromObservable(() => Observable.Return(2), outputScheduler: ImmediateScheduler.Instance);
+        var child1 = ReactiveCommand.CreateFromObservable(static () => Observable.Return(1), outputScheduler: ImmediateScheduler.Instance);
+        var child2 = ReactiveCommand.CreateFromObservable(static () => Observable.Return(2), outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
 
@@ -208,11 +208,11 @@ public class CombinedReactiveCommandTest
     [Test]
     public void ResultIsTickedThroughSpecifiedScheduler() =>
         new TestScheduler().WithAsync(
-            scheduler =>
+            static scheduler =>
             {
                 // Allow scheduler to run freely
-                var child1 = ReactiveCommand.Create(() => Observable.Return(1));
-                var child2 = ReactiveCommand.CreateRunInBackground(() => Observable.Return(2));
+                var child1 = ReactiveCommand.Create(static () => Observable.Return(1));
+                var child2 = ReactiveCommand.CreateRunInBackground(static () => Observable.Return(2));
                 var childCommands = new[] { child1, child2 };
                 var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();

@@ -28,7 +28,7 @@ public class Registrations : IWantsToRegisterStuff
         }
 
 #if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
-        registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
+        registerFunction(static () => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 #endif
     }
 }

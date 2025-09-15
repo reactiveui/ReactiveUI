@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <IsPackable>false</IsPackable>
     <DefaultPackageDescription>A sample WPF application using ReactiveUI.</DefaultPackageDescription>
+    <IsAotCompatible>false</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>

@@ -14,7 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
-    <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,8 +21,11 @@
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.EndsWith('net8.0')) or $(TargetFramework.EndsWith('net9.0')) or $(TargetFramework.EndsWith('net8.0'))">
     <Compile Include="Platforms\Blazor\**\*.cs" />
+    <ProjectReference Include="..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Platforms\Drawing\**\*.cs" />
   </ItemGroup>
   <Choose>

@@ -16,10 +16,10 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     {
         ArgumentNullException.ThrowIfNull(registerFunction);
 
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
 
         if (!ModeDetector.InUnitTestRunner())
         {
@@ -27,6 +27,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
             RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
         }
 
-        registerFunction(() => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
+        registerFunction(static () => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
     }
 }

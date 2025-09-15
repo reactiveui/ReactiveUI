@@ -23,7 +23,7 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -64,7 +64,7 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -101,7 +101,7 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -145,7 +145,7 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -187,7 +187,7 @@ public class ActivatingViewTests
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {

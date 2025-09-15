@@ -258,7 +258,7 @@ public static class IReactiveObjectExtensions
     private class ExtensionState<TSender> : IExtensionState<TSender>
         where TSender : IReactiveObject
     {
-        private readonly Lazy<ISubject<Exception>> _thrownExceptions = new(() => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
+        private readonly Lazy<ISubject<Exception>> _thrownExceptions = new(static () => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
         private readonly Lazy<Subject<Unit>> _startOrStopDelayingChangeNotifications = new();
         private readonly TSender _sender;
         private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changing;

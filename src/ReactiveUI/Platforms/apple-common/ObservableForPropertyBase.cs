@@ -127,6 +127,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     /// <param name="sender">Sender.</param>
     /// <param name="expression">The expression.</param>
     /// <param name="eventName">The event name.</param>
+    [RequiresUnreferencedCode("ObservableFromEvent uses methods that may require unreferenced code")]
     protected static IObservable<IObservedChange<object, object?>> ObservableFromEvent(NSObject sender, Expression expression, string eventName) =>
         Observable.Create<IObservedChange<object, object?>>(subj =>
             Observable.FromEventPattern(sender, eventName).Subscribe(_ =>

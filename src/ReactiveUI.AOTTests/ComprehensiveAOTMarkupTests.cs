@@ -203,11 +203,11 @@ public class ComprehensiveAOTMarkupTests
         var resolver = Locator.CurrentMutable;
 
         // Register concrete implementations (AOT-friendly)
-        resolver.Register<IScheduler>(() => CurrentThreadScheduler.Instance);
+        resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
         resolver.RegisterConstant<string>("test service");
 
         // Create a simple factory
-        resolver.Register<Func<string, ReactiveProperty<string>>>(() => value =>
+        resolver.Register<Func<string, ReactiveProperty<string>>>(static () => static value =>
         {
             var scheduler = Locator.Current.GetService<IScheduler>();
             return new ReactiveProperty<string>(value, scheduler, false, false);

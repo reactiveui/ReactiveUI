@@ -34,7 +34,7 @@ public class WinFormsRoutedViewHostTests
     public void ShouldSetDefaultContentWhenViewModelIsNull()
     {
         var defaultContent = new Control();
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState();
         var target = new WinFormsRoutedViewHost
         {
@@ -49,7 +49,7 @@ public class WinFormsRoutedViewHostTests
     [Test]
     public void WhenRoutedToViewModelItShouldAddViewToControls()
     {
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState();
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         router?.Navigate?.Execute(new FakeWinformViewModel());

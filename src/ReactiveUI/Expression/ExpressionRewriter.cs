@@ -114,7 +114,7 @@ internal class ExpressionRewriter : ExpressionVisitor
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         // Rewrite a method call to an indexer as an index expression
-        if (node.Arguments.Any(e => e is not ConstantExpression) || !node.Method.IsSpecialName)
+        if (node.Arguments.Any(static e => e is not ConstantExpression) || !node.Method.IsSpecialName)
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }
@@ -133,7 +133,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 
     protected override Expression VisitIndex(IndexExpression node)
     {
-        if (node.Arguments.Any(e => e is not ConstantExpression))
+        if (node.Arguments.Any(static e => e is not ConstantExpression))
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }

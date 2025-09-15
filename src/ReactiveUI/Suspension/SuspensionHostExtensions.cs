@@ -50,7 +50,7 @@ public static class SuspensionHostExtensions
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
-        return item.WhenAny<ISuspensionHost, object?, object?>(nameof(item.AppState), observedChange => observedChange.Value)
+        return item.WhenAny<ISuspensionHost, object?, object?>(nameof(item.AppState), static observedChange => observedChange.Value)
                    .WhereNotNull()
                    .Cast<T>();
     }

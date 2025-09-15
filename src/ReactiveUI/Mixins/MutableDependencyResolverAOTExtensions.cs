@@ -20,7 +20,7 @@ internal static class MutableDependencyResolverAOTExtensions
         where TViewModel : class
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
-        resolver.Register(() => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        resolver.Register(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
         return resolver;
     }
 
@@ -33,7 +33,7 @@ internal static class MutableDependencyResolverAOTExtensions
         where TViewModel : class
     {
         resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
-        resolver.RegisterLazySingleton(() => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        resolver.RegisterLazySingleton(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
         return resolver;
     }
 }
