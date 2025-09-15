@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(ReactiveUIWinUITargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveMauiTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;windows;net</PackageTags>
     <UseMaui>true</UseMaui>

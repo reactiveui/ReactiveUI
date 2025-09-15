@@ -44,7 +44,7 @@
     <IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
 
     <!-- Granular Target Framework definitions for cross-platform builds -->
-    <ReactiveUICoreTargets>netstandard2.0;net8.0;net9.0;net10.0</ReactiveUICoreTargets>
+    <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
     <ReactiveUIAndroidTargets>net9.0-android;net10.0-android</ReactiveUIAndroidTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
@@ -59,6 +59,9 @@
 
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
     <ReactiveUITestTargets Condition="'$(IsWindows)' == 'true'">net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net472</ReactiveUITestTargets>
+    
+    <ReactiveMauiTargets>net8.0;net9.0;net10.0;$(ReactiveUIAndroidTargets);$(ReactiveUIWindowsTargets);$(ReactiveUIWinUITargets)</ReactiveMauiTargets>
+    <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
@@ -67,7 +70,7 @@
   <!-- Build final target framework list based on operating system -->
   <PropertyGroup>
     <!-- Start with core targets available on all platforms -->
-    <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
+    <ReactiveUIFinalTargetFrameworks>netstandard2.0;$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
 
     <!-- Add Android targets (available on all platforms with Android SDK) -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>

@@ -5,8 +5,14 @@
   </PropertyGroup>
   <PropertyGroup>
     <SplatVersion>16.1.1</SplatVersion>
-    <XamarinAndroidXCoreVersion>1.13.1.4</XamarinAndroidXCoreVersion>
-    <XamarinAndroidXLifecycleLiveDataVersion>2.8.4.1</XamarinAndroidXLifecycleLiveDataVersion>
+    <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
+    <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25452.6</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.110</MauiVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25451.107</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.9</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.20</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
@@ -41,10 +47,13 @@
     <PackageVersion Include="Verify.NUnit" Version="30.8.0" />
     <PackageVersion Include="Xamarin.AndroidX.Core" Version="$(XamarinAndroidXCoreVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.9" />
-    <PackageVersion Include="Xamarin.AndroidX.Legacy.Support.Core.UI" Version="1.0.0.29" />
-    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.11.0.2" />
+    <PackageVersion Include="Xamarin.Google.Android.Material" Version="1.12.0.5" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="2.9.2.1" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
@@ -55,18 +64,7 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net9'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="9.0.100" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.100" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net8'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="8.0.19" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="3.1.32" />
     <PackageVersion Include="System.ComponentModel" Version="4.3.0" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
