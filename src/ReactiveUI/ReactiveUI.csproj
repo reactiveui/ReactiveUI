@@ -27,12 +27,17 @@
     <Compile Include="Platforms\netstandard2.0\**\*.cs" />
     <Compile Include="Platforms\shared\**\*.cs" />
     <PackageReference Include="System.ComponentModel" />
-    <PackageReference Include="System.ComponentModel.Annotations" />
     <PackageReference Include="System.Diagnostics.Contracts" />
     <PackageReference Include="System.Dynamic.Runtime" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" />
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.ComponentModel.Annotations" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+  
   <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
     <Compile Include="Platforms\apple-common\**\*.cs" />
     <Compile Include="Platforms\ios\**\*.cs" />
@@ -56,10 +61,6 @@
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="System.ComponentModel.Annotations" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Splat" />
