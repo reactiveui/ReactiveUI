@@ -66,7 +66,7 @@
     <ReactiveUIMauiTestTargets>net9.0;net10.0</ReactiveUIMauiTestTargets>
     <ReactiveUIMauiTestTargets Condition="'$(IsWindows)' == 'true'">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiTestTargets>
 
-    <ReactiveMauiTargets>net9.0;net10.0;$(ReactiveUIAndroidTargets);$(ReactiveUIMauiWindowsTargets)</ReactiveMauiTargets>
+    <ReactiveMauiTargets>net9.0;net10.0;$(ReactiveUIAndroidTargets)</ReactiveMauiTargets>
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
