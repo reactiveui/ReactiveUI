@@ -44,24 +44,24 @@
     <IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
 
     <!-- Granular Target Framework definitions for cross-platform builds -->
-    <ReactiveUICoreTargets>netstandard2.0;net8.0;net9.0</ReactiveUICoreTargets>
-    <ReactiveUIAndroidTargets>net9.0-android</ReactiveUIAndroidTargets>
+    <ReactiveUICoreTargets>netstandard2.0;net8.0;net9.0;net10.0</ReactiveUICoreTargets>
+    <ReactiveUIAndroidTargets>net9.0-android;net10.0-android</ReactiveUIAndroidTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
     <ReactiveUIFrameworkTargets Condition="'$(IsWindows)' == 'true'">>net462;net472</ReactiveUIFrameworkTargets>
-    <ReactiveUIWindowsTargets>net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0</ReactiveUIWindowsTargets>
-    <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</ReactiveUIWinUITargets>
-    <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst</ReactiveUIAppleTargets>
+    <ReactiveUIWindowsTargets>net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net10.0-windows10.0.17763.0</ReactiveUIWindowsTargets>
+    <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
+    <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst;net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
     <ReactiveUIWindowsOnlyTargets Condition="'$(IsWindows)' == 'true'">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
-    <ReactiveUITestTargets>net8.0;net9.0</ReactiveUITestTargets>
+    <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
     <ReactiveUITestTargets Condition="'$(IsWindows)' == 'true'">net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0;net472</ReactiveUITestTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
-    <ReactiveUIModernTargets>net8.0;net9.0</ReactiveUIModernTargets>
+    <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
   </PropertyGroup>
 
   <!-- Build final target framework list based on operating system -->

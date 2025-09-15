@@ -50,6 +50,27 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (hasEventTarget)
+        {
+            return 5;
+        }
+
+        return _defaultEventsToBind.Any(x =>
+        {
+            var ei = typeof(T).GetRuntimeEvent(x.name);
+            return ei is not null;
+        }) ? 3 : 0;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
     [RequiresDynamicCode("Event binding requires dynamic code generation and reflection")]
     [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
 #endif
@@ -73,7 +94,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     [RequiresDynamicCode("Event binding requires dynamic code generation")]
     [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
 #endif
-    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
         where TEventArgs : EventArgs
 #endif

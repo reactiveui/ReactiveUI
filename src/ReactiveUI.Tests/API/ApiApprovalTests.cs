@@ -9,6 +9,7 @@ namespace ReactiveUI.Tests.API;
 /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[Platform(Include = "Win")]
 [TestFixture]
 public class ApiApprovalTests
 {

@@ -33,6 +33,24 @@ public interface ICreatesCommandBinding
     int GetAffinityForObject(Type type, bool hasEventTarget);
 
     /// <summary>
+    /// Returns a positive integer when this class supports binding a command
+    /// to an object of the specified type. If the binding is not supported,
+    /// the method will return a non-positive integer. In cases where multiple
+    /// implementations return positive values, the one with the highest value will
+    /// be chosen. Default values are typically '2' or '0'.
+    /// </summary>
+    /// <param name="hasEventTarget">Determines if the host intends to use a custom event target.</param>
+    /// <typeparam name="T">The type of the object to query for compatibility with command binding.</typeparam>
+    /// <returns>A positive integer if binding is supported, or zero/a negative value if not supported.</returns>
+#if NET6_0_OR_GREATER
+    int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget);
+#else
+    int GetAffinityForObject<T>(
+        bool hasEventTarget);
+#endif
+
+    /// <summary>
     /// Bind an ICommand to a UI object, in the "default" way. The meaning
     /// of this is dependent on the implementation. Implement this if you
     /// have a new type of UI control that doesn't have
@@ -73,9 +91,13 @@ public interface ICreatesCommandBinding
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
 #endif
-    IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    IDisposable BindCommandToObject<TEventArgs>(
+            ICommand? command,
+            object? target,
+            IObservable<object?> commandParameter,
+            string eventName)
 #if MONO
         where TEventArgs : EventArgs
 #endif
-    ;
+        ;
 }
