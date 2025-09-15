@@ -48,6 +48,34 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        var isWinformControl = typeof(Control).IsAssignableFrom(typeof(T));
+
+        if (isWinformControl)
+        {
+            return 10;
+        }
+
+        if (hasEventTarget)
+        {
+            return 6;
+        }
+
+        return _defaultEventsToBind.Any(x =>
+        {
+            var ei = typeof(T).GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
+            return ei is not null;
+        }) ? 4 : 0;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
     [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
@@ -91,7 +119,7 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
-    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
