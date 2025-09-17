@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>16.2.1</SplatVersion>
+    <SplatVersion>17.0.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25452.6</MauiVersion>
