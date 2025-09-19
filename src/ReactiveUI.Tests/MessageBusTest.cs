@@ -222,7 +222,7 @@ public class MessageBusTest
 
         // Assert
         Assert.That(current, Is.Not.Null);
-        Assert.That(current, Is.AssignableFrom<IMessageBus>());
+        Assert.That(current, Is.InstanceOf<IMessageBus>());
     }
 
     /// <summary>

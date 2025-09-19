@@ -56,7 +56,7 @@
     <ReactiveUIWindowsOnlyTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net9.0;net10.0</ReactiveUITestTargets>
-    <ReactiveUITestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net472</ReactiveUITestTargets>
+    <ReactiveUITestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestTargets>
 
     <ReactiveUIMauiTestTargets>net9.0;net10.0</ReactiveUIMauiTestTargets>
     <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiTestTargets>

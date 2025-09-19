@@ -15,6 +15,7 @@ namespace ReactiveUI.AOTTests;
 /// Additional AOT compatibility tests for more advanced scenarios.
 /// </summary>
 [TestFixture]
+[NonParallelizable] // These tests modify global state (e.g., Locator.Current)
 public class AdvancedAOTTests
 {
     /// <summary>
@@ -125,7 +126,7 @@ public class AdvancedAOTTests
     {
         var messageBus = new MessageBus();
         var received = false;
-        var testMessage = "test message";
+        const string testMessage = "test message";
 
         messageBus.Listen<string>().Subscribe(msg =>
         {

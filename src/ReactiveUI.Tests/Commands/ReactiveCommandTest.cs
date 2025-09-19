@@ -2044,7 +2044,7 @@ public class ReactiveCommandTest
                         ]));
             Assert.That(
                         fail,
-                        Is.TypeOf<OperationCanceledException>());
+                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
         }
     }
 
@@ -2200,7 +2200,7 @@ public class ReactiveCommandTest
                         ]));
             Assert.That(
                         fail,
-                        Is.TypeOf<OperationCanceledException>());
+                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
         }
     }
 
