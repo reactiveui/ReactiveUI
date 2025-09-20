@@ -40,6 +40,6 @@ public class ActivatingViewFetcher : IActivationForViewFetcher
             throw new ArgumentNullException(nameof(view));
         }
 
-        return av.Loaded.Select(_ => true).Merge(av.Unloaded.Select(_ => false));
+        return av.Loaded.Select(static _ => true).Merge(av.Unloaded.Select(static _ => false));
     }
 }

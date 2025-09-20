@@ -16,7 +16,7 @@ public static class WpfReactiveUIBuilderExtensions
     /// <value>
     /// The WPF main thread scheduler.
     /// </value>
-    public static IScheduler WpfMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => DispatcherScheduler.Current);
+    public static IScheduler WpfMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => DispatcherScheduler.Current);
 
     /// <summary>
     /// Configures ReactiveUI for WPF platform with appropriate schedulers.

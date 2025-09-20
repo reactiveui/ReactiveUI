@@ -65,35 +65,35 @@ public class ReactiveNotifyPropertyChangedMixinTest
     {
         var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
         {
-            { x => x!.Child!.IsOnlyOneWord!.Length, ["Child", "IsOnlyOneWord", "Length"] },
-            { x => x.SomeOtherParam, ["SomeOtherParam"] },
-            { x => x.Child!.IsNotNullString!, ["Child", "IsNotNullString"] },
-            { x => x.Child!.Changed, ["Child", "Changed"] },
+            { static x => x!.Child!.IsOnlyOneWord!.Length, ["Child", "IsOnlyOneWord", "Length"] },
+            { static x => x.SomeOtherParam, ["SomeOtherParam"] },
+            { static x => x.Child!.IsNotNullString!, ["Child", "IsNotNullString"] },
+            { static x => x.Child!.Changed, ["Child", "Changed"] },
         };
 
         var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>
         {
-            { x => x.Child!.IsOnlyOneWord!.Length, [typeof(TestFixture), typeof(string), typeof(int)] },
-            { x => x.SomeOtherParam, [typeof(int)] },
-            { x => x.Child!.IsNotNullString!, [typeof(TestFixture), typeof(string)] },
+            { static x => x.Child!.IsOnlyOneWord!.Length, [typeof(TestFixture), typeof(string), typeof(int)] },
+            { static x => x.SomeOtherParam, [typeof(int)] },
+            { static x => x.Child!.IsNotNullString!, [typeof(TestFixture), typeof(string)] },
             {
-                x => x.Child!.Changed, [typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>)
+                static x => x.Child!.Changed, [typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>)
                 ]
             },
         };
 
-        var results = data.Keys.Select(x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() })
+        var results = data.Keys.Select(static x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() })
                           .ToArray();
 
         var resultTypes = dataTypes.Keys
-                                   .Select(x => new
+                                   .Select(static x => new
                                    {
                                        input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain()
                                    }).ToArray();
 
         foreach (var x in results)
         {
-            var names = x.output.Select(y =>
+            var names = x.output.Select(static y =>
                                             y.GetMemberInfo()?.Name ??
                                             throw new InvalidOperationException("propertyName should not be null."));
 
@@ -104,7 +104,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         foreach (var x in resultTypes)
         {
-            var types = x.output.Select(y => y.Type);
+            var types = x.output.Select(static y => y.Type);
             Assert.That(
                         types,
                         Is.EqualTo(dataTypes[x.input]));
@@ -116,10 +116,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
     /// </summary>
     [Test]
     public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture() };
-            fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
+            fixture.ObservableForProperty(static x => x.Child!.IsOnlyOneWord)
                    .ToObservableChangeSet(ImmediateScheduler.Instance)
                    .Bind(out var changes)
                    .Subscribe();
@@ -458,10 +458,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
     /// </summary>
     [Test]
     public void OFPShouldWorkWithINPCObjectsToo() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var fixture = new NonReactiveINPCObject { InpcProperty = null! };
-            fixture.ObservableForProperty(x => x.InpcProperty.IsOnlyOneWord)
+            fixture.ObservableForProperty(static x => x.InpcProperty.IsOnlyOneWord)
                    .ToObservableChangeSet(ImmediateScheduler.Instance)
                    .Bind(out var changes)
                    .Subscribe();
@@ -643,19 +643,19 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         var output = new List<IObservedChange<TestFixture, string?>?>();
         fixture.WhenAny(
-                        x => x.PocoProperty,
-                        x => x).Subscribe(output.Add);
+                        static x => x.PocoProperty,
+                        static x => x).Subscribe(output.Add);
 
         var output2 = new List<string?>();
-        fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output2.Add);
+        fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output2.Add);
 
         var output3 = new List<IObservedChange<TestFixture, int?>?>();
         fixture.WhenAny(
-                        x => x.NullableInt,
-                        x => x).Subscribe(output3.Add);
+                        static x => x.NullableInt,
+                        static x => x).Subscribe(output3.Add);
 
         var output4 = new List<int?>();
-        fixture.WhenAnyValue(x => x.NullableInt).Subscribe(output4.Add);
+        fixture.WhenAnyValue(static x => x.NullableInt).Subscribe(output4.Add);
 
         using (Assert.EnterMultipleScope())
         {
@@ -893,10 +893,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         var output1 = new List<string?>();
         var output2 = new List<int?>();
-        fixture.WhenAnyValue(x => x.PocoProperty).Subscribe(output1.Add);
+        fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output1.Add);
         fixture.WhenAnyValue(
-                             x => x.IsOnlyOneWord,
-                             x => x?.Length).Subscribe(output2.Add);
+                             static x => x.IsOnlyOneWord,
+                             static x => x?.Length).Subscribe(output2.Add);
 
         using (Assert.EnterMultipleScope())
         {
@@ -1001,7 +1001,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
         {
             var obj = new ObjChain1();
             var weakRef = new WeakReference(obj.Model);
-            obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
             obj.Model = new ObjChain2();
             return (obj, weakRef);
         }
@@ -1010,7 +1010,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
         {
             var obj = new ObjChain1();
             var weakRef = new WeakReference(obj.Model.Model);
-            obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
             obj.Model.Model = new ObjChain3();
             return (obj, weakRef);
         }
@@ -1019,7 +1019,7 @@ public class ReactiveNotifyPropertyChangedMixinTest
         {
             var obj = new ObjChain1();
             var weakRef = new WeakReference(obj.Model.Model.Model);
-            obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
             obj.Model.Model.Model = new HostTestFixture();
             return (obj, weakRef);
         }

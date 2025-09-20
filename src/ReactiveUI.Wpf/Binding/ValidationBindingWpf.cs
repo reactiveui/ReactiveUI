@@ -38,7 +38,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         _viewModel = viewModel;
         ViewModelExpression = Reflection.Rewrite(vmProperty.Body);
         var vmet = ViewModelExpression.GetExpressionChain();
-        var vmFullName = vmet.Select(x => x.GetMemberInfo()?.Name).Aggregate(new StringBuilder(), (sb, x) => sb.Append(x).Append('.')).ToString();
+        var vmFullName = vmet.Select(static x => x.GetMemberInfo()?.Name).Aggregate(new StringBuilder(), static (sb, x) => sb.Append(x).Append('.')).ToString();
         if (vmFullName.EndsWith(DotValue))
         {
             vmFullName = vmFullName.Substring(0, vmFullName.Length - 1);
@@ -62,8 +62,8 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         var controlDpPropertyName = vet?.Last().GetMemberInfo()?.Name;
         _dpPropertyName = GetDependencyProperty(_control, controlDpPropertyName) ?? throw new ArgumentException($"Dependency property not found on {typeof(TVProp).Name}");
 
-        var somethingChanged = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression).Select(tvm => (TVMProp?)tvm).Merge(
-              view.WhenAnyDynamic(ViewExpression, x => (TVProp?)x.Value).Select(p => default(TVMProp)));
+        var somethingChanged = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression).Select(static tvm => (TVMProp?)tvm).Merge(
+              view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value).Select(static p => default(TVMProp)));
         Changed = somethingChanged;
         Direction = BindingDirection.TwoWay;
         Bind();

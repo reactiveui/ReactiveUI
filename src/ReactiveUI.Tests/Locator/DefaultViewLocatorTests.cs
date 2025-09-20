@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests;
 /// Tests for the default view locators.
 /// </summary>
 [TestFixture]
-public class DefaultViewLocatorTests
+public partial class DefaultViewLocatorTests
 {
     /// <summary>
     /// Tests that the default name of the view model is replaced with view when determining the service.
@@ -21,7 +21,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
+        resolver.Register(static () => new FooView(), typeof(IViewFor<FooViewModel>));
 
         using (resolver.WithResolver())
         {
@@ -43,7 +43,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(FooView));
+        resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
         {
@@ -65,14 +65,14 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooWithWeirdConvention(), typeof(FooWithWeirdConvention));
+        resolver.Register(static () => new FooWithWeirdConvention(), typeof(FooWithWeirdConvention));
 
         using (resolver.WithResolver())
         {
             var fixture = new DefaultViewLocator
             {
                 ViewModelToViewFunc =
-                viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention")
+                static viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention")
             };
             var vm = new FooViewModel();
 
@@ -91,7 +91,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(FooView));
+        resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
         {
@@ -113,7 +113,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IFooView));
+        resolver.Register(static () => new FooView(), typeof(IFooView));
 
         using (resolver.WithResolver())
         {
@@ -135,7 +135,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
+        resolver.Register(static () => new FooView(), typeof(IViewFor<FooViewModel>));
 
         using (resolver.WithResolver())
         {
@@ -157,7 +157,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(FooView));
+        resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
         {
@@ -179,7 +179,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IFooView));
+        resolver.Register(static () => new FooView(), typeof(IFooView));
 
         using (resolver.WithResolver())
         {
@@ -201,7 +201,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IViewFor<IFooViewModel>));
+        resolver.Register(static () => new FooView(), typeof(IViewFor<IFooViewModel>));
 
         using (resolver.WithResolver())
         {
@@ -223,8 +223,8 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => new FooView(), typeof(IViewFor<IFooViewModel>), "first");
-        resolver.Register(() => new FooWithWeirdConvention(), typeof(IViewFor<IFooViewModel>), "second");
+        resolver.Register(static () => new FooView(), typeof(IViewFor<IFooViewModel>), "first");
+        resolver.Register(static () => new FooWithWeirdConvention(), typeof(IViewFor<IFooViewModel>), "second");
 
         using (resolver.WithResolver())
         {
@@ -257,7 +257,7 @@ public class DefaultViewLocatorTests
         {
             var fixture = new DefaultViewLocator
             {
-                ViewModelToViewFunc = viewModelName =>
+                ViewModelToViewFunc = static viewModelName =>
                 "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName
             };
             var vm = new FooViewModel();
@@ -298,7 +298,7 @@ public class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
-        resolver.Register(() => "this string does not implement IViewFor", typeof(IViewFor<IFooViewModel>));
+        resolver.Register(static () => "this string does not implement IViewFor", typeof(IViewFor<IFooViewModel>));
 
         using (resolver.WithResolver())
         {
@@ -350,53 +350,6 @@ public class DefaultViewLocatorTests
             var vm = new StrangeClassNotFollowingConvention();
 
             fixture.ResolveView((IStrangeInterfaceNotFollowingConvention)vm);
-        }
-    }
-
-    /// <summary>
-    /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
-    /// </summary>
-    [Test]
-    public void CanResolveViewFromViewModelWithIRoutableViewModelType()
-    {
-        var resolver = new ModernDependencyResolver();
-
-        resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
-        resolver.Register(() => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
-
-        using (resolver.WithResolver())
-        {
-            var fixture = new DefaultViewLocator();
-            var vm = new RoutableFooViewModel();
-
-            var result = fixture.ResolveView<IRoutableViewModel>(vm);
-            Assert.That(result, Is.TypeOf<RoutableFooView>());
-        }
-    }
-
-    /// <summary>
-    /// Tests that make sure this instance [can override name resolution function].
-    /// </summary>
-    [Test]
-    public void CanOverrideNameResolutionFunc()
-    {
-        var resolver = new ModernDependencyResolver();
-
-        resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
-        resolver.Register(() => new RoutableFooCustomView());
-
-        using (resolver.WithResolver())
-        {
-            var fixture = new DefaultViewLocator
-            {
-                ViewModelToViewFunc = x => x.Replace("ViewModel", "CustomView")
-            };
-            var vm = new RoutableFooViewModel();
-
-            var result = fixture.ResolveView<IRoutableViewModel>(vm);
-            Assert.That(result, Is.TypeOf<RoutableFooCustomView>());
         }
     }
 }

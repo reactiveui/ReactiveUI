@@ -16,7 +16,7 @@ public static class WinUIReactiveUIBuilderExtensions
     /// <value>
     /// The win UI main thread scheduler.
     /// </value>
-    public static IScheduler WinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+    public static IScheduler WinUIMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
 
     /// <summary>
     /// Configures ReactiveUI for WinUI platform with appropriate schedulers.

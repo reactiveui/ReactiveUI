@@ -15,7 +15,7 @@ namespace ReactiveUI;
 public sealed partial class DefaultViewLocator : IViewLocator
 {
     internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
-        ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+        ViewModelToViewFunc = viewModelToViewFunc ?? (static vm => vm.Replace("ViewModel", "View"));
 
     /// <summary>
     /// Gets or sets the view model to view function.

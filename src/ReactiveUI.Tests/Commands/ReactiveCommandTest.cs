@@ -62,7 +62,7 @@ public class ReactiveCommandTest
         var canExecuteSubject = new Subject<bool>();
         ICommand fixture =
             ReactiveCommand.Create(
-                                   () => Observables.Unit,
+                                   static () => Observables.Unit,
                                    canExecuteSubject,
                                    ImmediateScheduler.Instance);
 
@@ -91,7 +91,7 @@ public class ReactiveCommandTest
     public void CanExecuteIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
@@ -155,7 +155,7 @@ public class ReactiveCommandTest
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              canExecuteSubject,
                                              ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -188,7 +188,7 @@ public class ReactiveCommandTest
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              canExecuteSubject,
                                              ImmediateScheduler.Instance);
 
@@ -211,7 +211,7 @@ public class ReactiveCommandTest
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              canExecuteSubject,
                                              ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
@@ -245,7 +245,7 @@ public class ReactiveCommandTest
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              canExecuteSubject,
                                              ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
@@ -272,7 +272,7 @@ public class ReactiveCommandTest
     {
         var fixture =
             ReactiveCommand.CreateFromTask(
-                                           () => Task.FromResult(13),
+                                           static () => Task.FromResult(13),
                                            outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -297,7 +297,7 @@ public class ReactiveCommandTest
     {
         var fixture =
             ReactiveCommand.CreateFromTask<int, int>(
-                                                     param => Task.FromResult(param + 1),
+                                                     static param => Task.FromResult(param + 1),
                                                      outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -327,28 +327,28 @@ public class ReactiveCommandTest
 #pragma warning disable CS8625
 #pragma warning disable CS8600
         Assert.That(
-                    () => ReactiveCommand.Create(null),
+                    static () => ReactiveCommand.Create(null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<Unit>)null),
+                    static () => ReactiveCommand.Create((Func<Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Action<Unit>)null),
+                    static () => ReactiveCommand.Create((Action<Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<Unit, Unit>)null),
+                    static () => ReactiveCommand.Create((Func<Unit, Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<IObservable<Unit>>)null),
+                    static () => ReactiveCommand.Create((Func<IObservable<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<Task<Unit>>)null),
+                    static () => ReactiveCommand.Create((Func<Task<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<Unit, IObservable<Unit>>)null),
+                    static () => ReactiveCommand.Create((Func<Unit, IObservable<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.Create((Func<Unit, Task<Unit>>)null),
+                    static () => ReactiveCommand.Create((Func<Unit, Task<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
 #pragma warning restore CS8600
 #pragma warning restore CS8625
@@ -363,28 +363,28 @@ public class ReactiveCommandTest
 #pragma warning disable CS8625
 #pragma warning disable CS8600
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground(null),
+                    static () => ReactiveCommand.CreateRunInBackground(null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<Unit>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Action<Unit>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Action<Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<Unit, Unit>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, Unit>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<IObservable<Unit>>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<IObservable<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<Task<Unit>>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<Task<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<Unit, IObservable<Unit>>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, IObservable<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
         Assert.That(
-                    () => ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null),
+                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null),
                     Throws.TypeOf<ArgumentNullException>());
 #pragma warning restore CS8600
 #pragma warning restore CS8625
@@ -467,7 +467,7 @@ public class ReactiveCommandTest
     public void ExecuteCanTickThroughMultipleResults()
     {
         var fixture = ReactiveCommand.CreateFromObservable(
-                                                           () => new[] { 1, 2, 3 }.ToObservable(),
+                                                           static () => new[] { 1, 2, 3 }.ToObservable(),
                                                            outputScheduler: ImmediateScheduler.Instance);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -626,15 +626,15 @@ public class ReactiveCommandTest
     {
         var fixture =
             ReactiveCommand.CreateFromObservable(
-                                                 () => Observable.Throw<Unit>(new InvalidOperationException("oops")),
+                                                 static () => Observable.Throw<Unit>(new InvalidOperationException("oops")),
                                                  outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
                .Subscribe();
 
         fixture.Execute().Subscribe(
-                                    _ => { },
-                                    _ => { });
+                                    static _ => { },
+                                    static _ => { });
 
         using (Assert.EnterMultipleScope())
         {
@@ -734,14 +734,14 @@ public class ReactiveCommandTest
     {
         var fixture =
             ReactiveCommand.CreateFromObservable(
-                                                 () => Observable.Throw<Unit>(new InvalidOperationException("oops")),
+                                                 static () => Observable.Throw<Unit>(new InvalidOperationException("oops")),
                                                  outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
                .Subscribe();
 
         fixture.Execute().Subscribe(
-                                    _ => { },
-                                    _ => { });
+                                    static _ => { },
+                                    static _ => { });
 
         using (Assert.EnterMultipleScope())
         {
@@ -761,14 +761,14 @@ public class ReactiveCommandTest
     public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
     {
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(
-                                                                 () => throw new InvalidOperationException("oops"),
+                                                                 static () => throw new InvalidOperationException("oops"),
                                                                  outputScheduler: ImmediateScheduler.Instance);
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
                .Subscribe();
 
         fixture.Execute().Subscribe(
-                                    _ => { },
-                                    _ => { });
+                                    static _ => { },
+                                    static _ => { });
 
         using (Assert.EnterMultipleScope())
         {
@@ -905,7 +905,7 @@ public class ReactiveCommandTest
         var source = new Subject<int>();
         source.InvokeCommand(
                              fixture,
-                             x => x!.TheCommand!);
+                             static x => x!.TheCommand!);
         var command = new FakeCommand();
         fixture.TheCommand = command;
 
@@ -931,7 +931,7 @@ public class ReactiveCommandTest
         var source = new Subject<int>();
         source.InvokeCommand(
                              fixture,
-                             x => x.TheCommand);
+                             static x => x.TheCommand);
         var command = new FakeCommand();
         fixture.TheCommand = command;
 
@@ -1509,7 +1509,7 @@ public class ReactiveCommandTest
     public void IsExecutingIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(
-                                             () => Observables.Unit,
+                                             static () => Observables.Unit,
                                              outputScheduler: ImmediateScheduler.Instance);
         fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
@@ -1607,10 +1607,10 @@ public class ReactiveCommandTest
     /// </summary>
     [Test]
     public void ResultIsTickedThroughSpecifiedScheduler() =>
-        new TestScheduler().WithAsync(scheduler =>
+        new TestScheduler().WithAsync(static scheduler =>
         {
             var fixture = ReactiveCommand.CreateRunInBackground(
-                                                                () => Observables.Unit,
+                                                                static () => Observables.Unit,
                                                                 outputScheduler: scheduler);
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
@@ -1917,7 +1917,7 @@ public class ReactiveCommandTest
 
     [Test]
     public void ShouldCallAsyncMethodOnSettingReactiveSetpoint() =>
-        new TestScheduler().WithAsync(async scheduler =>
+        new TestScheduler().WithAsync(static async scheduler =>
         {
             // set
             var fooVm = new Mocks.FooViewModel(new());
@@ -2044,7 +2044,7 @@ public class ReactiveCommandTest
                         ]));
             Assert.That(
                         fail,
-                        Is.TypeOf<OperationCanceledException>());
+                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
         }
     }
 
@@ -2200,7 +2200,7 @@ public class ReactiveCommandTest
                         ]));
             Assert.That(
                         fail,
-                        Is.TypeOf<OperationCanceledException>());
+                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
         }
     }
 

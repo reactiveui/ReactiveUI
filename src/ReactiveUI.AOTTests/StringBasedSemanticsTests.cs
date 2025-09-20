@@ -24,7 +24,7 @@ public class StringBasedSemanticsTests
         var seen = new List<string?>();
 
         obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), beforeChange: false, skipInitial: false)
-           .Select(x => x.Value)
+           .Select(static x => x.Value)
            .Subscribe(seen.Add);
 
         // initial emission is null, then updated value

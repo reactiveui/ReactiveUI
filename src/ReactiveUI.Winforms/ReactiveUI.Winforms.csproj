@@ -1,8 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
-  <!--
-    Added 19041 target as a workaround for System.Reactive targeting net5.0-windows10.0.19041.0
-    When 19041 is selected by the end user it causes the ControlScheduler in System.Reactive to be exposed and used.
-    -->
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
@@ -24,7 +20,7 @@
     <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs;..\ReactiveUI.Wpf\Rx\Linq\ControlObservable.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework) == 'net462' or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
     <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency" />
   </ItemGroup>
 </Project>

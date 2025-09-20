@@ -59,7 +59,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     }
 
     private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) =>
-        canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+        canActivate?.Activated.Select(static _ => true).Merge(canActivate.Deactivated.Select(static _ => false));
 
 #if IS_MAUI
     private static IObservable<bool>? GetActivationFor(Page? page)

@@ -18,7 +18,7 @@ public class TableContentSetMethodBindingConverter : ISetMethodBindingConverter
     public int GetAffinityForObjects(Type? fromType, Type? toType) =>
         toType != typeof(TableLayoutControlCollection)
             ? 0
-            : fromType?.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
+            : fromType?.GetInterfaces().Any(static x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>) && x.GetGenericArguments()[0].IsSubclassOf(typeof(Control))) ?? false
                 ? 15
                 : 0;
 

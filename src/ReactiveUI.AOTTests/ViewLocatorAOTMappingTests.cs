@@ -30,8 +30,8 @@ public class ViewLocatorAOTMappingTests
         var locator = new DefaultViewLocator();
 
         // Register contract-specific and default mappings
-        locator.Map<VmA, ViewA>(() => new ViewA(), contract: "mobile")
-            .Map<VmA, ViewADefault>(() => new ViewADefault()); // default
+        locator.Map<VmA, ViewA>(static () => new ViewA(), contract: "mobile")
+            .Map<VmA, ViewADefault>(static () => new ViewADefault()); // default
 
         var vm = new VmA();
 
@@ -53,7 +53,7 @@ public class ViewLocatorAOTMappingTests
     public void Unmap_RemovesMapping()
     {
         var locator = new DefaultViewLocator();
-        locator.Map<VmB, ViewB>(() => new ViewB(), contract: "c1");
+        locator.Map<VmB, ViewB>(static () => new ViewB(), contract: "c1");
 
         var vm = new VmB();
         Assert.That(locator.ResolveView(vm, "c1"), Is.TypeOf<ViewB>());

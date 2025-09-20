@@ -54,8 +54,8 @@ public class ViewModelViewHostTests
     [Apartment(ApartmentState.STA)]
     public void ViewModelViewHostContentNotNullWithViewModelAndActivated()
     {
-        Locator.CurrentMutable.Register<TestViewModel>(() => new());
-        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+        Locator.CurrentMutable.Register<TestViewModel>(static () => new());
+        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
 
         var uc = new ViewModelViewHost
         {

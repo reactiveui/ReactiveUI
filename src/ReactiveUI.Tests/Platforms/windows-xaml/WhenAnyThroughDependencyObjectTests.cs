@@ -44,7 +44,7 @@ public class WhenAnyThroughDependencyObjectTests
             Assert.That(fixture.ViewModel, Is.Null);
         }
 
-        fixture.WhenAnyValue(x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
+        fixture.WhenAnyValue(static x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
 
         fixture.ViewModel = vm;
         Assert.That(output, Has.Count.EqualTo(1));

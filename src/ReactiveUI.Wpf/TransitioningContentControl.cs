@@ -212,7 +212,7 @@ public class TransitioningContentControl : ContentControl
 
         // Set the current content site to the first piece of content.
         _currentContentPresentationSite.Content = Content;
-        _presentationGroup = ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(o => o.Name == PresentationGroup);
+        _presentationGroup = ((IEnumerable<VisualStateGroup>)VisualStateManager.GetVisualStateGroups(_container!))!.FirstOrDefault(static o => o.Name == PresentationGroup);
         VisualStateManager.GoToState(this, NormalState, false);
     }
 

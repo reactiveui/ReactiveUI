@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUICoreTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
     <NoWarn>$(NoWarn);BL0007;</NoWarn>

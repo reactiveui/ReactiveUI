@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" Condition="'$(IsWindows)' == 'true'">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
@@ -17,14 +17,16 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
     <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />
     <PackageReference Include="System.Reactive" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('OSX')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Maui\common\**\*.cs" LinkBase="common" />
+    <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common" />
     <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs" />
     <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs" />
     <Compile Include="..\ReactiveUI.Maui\Registrations.cs" />

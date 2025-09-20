@@ -32,18 +32,18 @@ public class Registrations : IWantsToRegisterStuff
     {
         ArgumentNullException.ThrowIfNull(registerFunction);
 
-        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(static () => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
 
 #if WINUI_TARGET
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
         }
 

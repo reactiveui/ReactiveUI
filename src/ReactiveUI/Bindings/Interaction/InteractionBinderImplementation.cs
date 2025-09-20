@@ -62,8 +62,9 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         var interactionDisposable = new SerialDisposable();
 
         return source
-               .Where(x => x is not null)
-               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Do(x => interactionDisposable.Disposable = x is null
+                   ? System.Reactive.Disposables.Disposable.Empty
+                   : x.RegisterHandler(handler))
                .Finally(() => interactionDisposable.Dispose())
                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
     }

@@ -14,6 +14,10 @@ namespace ReactiveUI.AndroidX;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
+    [RequiresDynamicCode("Uses reflection to create instances of types.")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
 #if NET6_0_OR_GREATER

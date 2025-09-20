@@ -38,7 +38,7 @@ public class DependencyObjectObservableForPropertyTest
         }
 
         var results = new List<IObservedChange<object, object?>>();
-        Expression<Func<DepObjFixture, object?>> expression = x => x.TestString;
+        Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name
                            ?? throw new InvalidOperationException("There is no valid property name");
 
@@ -75,7 +75,7 @@ public class DependencyObjectObservableForPropertyTest
         }
 
         var results = new List<IObservedChange<object, object?>>();
-        Expression<Func<DerivedDepObjFixture, object?>> expression = x => x.TestString;
+        Expression<Func<DerivedDepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name
                            ?? throw new InvalidOperationException("There is no valid property name");
 
@@ -105,7 +105,7 @@ public class DependencyObjectObservableForPropertyTest
         var inputs = new[] { "Foo", "Bar", "Baz" };
         var fixture = new DepObjFixture();
 
-        fixture.WhenAnyValue(x => x.TestString)
+        fixture.WhenAnyValue(static x => x.TestString)
                .ToObservableChangeSet()
                .Bind(out var outputs)
                .Subscribe();
@@ -136,7 +136,7 @@ public class DependencyObjectObservableForPropertyTest
         input.Items.Add("Bar");
         input.Items.Add("Baz");
 
-        input.WhenAnyValue(x => x.SelectedItem)
+        input.WhenAnyValue(static x => x.SelectedItem)
              .ToObservableChangeSet()
              .Bind(out var output)
              .Subscribe();

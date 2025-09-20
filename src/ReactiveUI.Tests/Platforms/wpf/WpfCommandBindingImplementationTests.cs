@@ -299,7 +299,7 @@ public class WpfCommandBindingImplementationTests
             var vm = new CommandBindingViewModel();
             var view = new CommandBindingView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
-            var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
+            var disp = view.BindCommand(vm, static x => x.Command2, static x => x.Command2, "MouseUp");
             view.ViewModel = new CommandBindingViewModel();
 
             return (disp, weakRef);

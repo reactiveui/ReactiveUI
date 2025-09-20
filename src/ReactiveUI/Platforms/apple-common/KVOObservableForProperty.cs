@@ -19,6 +19,7 @@ namespace ReactiveUI;
 /// only have to hope for the best :-/.
 /// </summary>
 [Preserve(AllMembers = true)]
+[RequiresUnreferencedCode("KVOObservableForProperty uses methods that may require unreferenced code")]
 public class KVOObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> _declaredInNSObject;
@@ -59,14 +60,16 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("This code uses reflection to find properties which requires dynamic code generation.")]
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
-    public int GetAffinityForObject([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type, string propertyName, bool beforeChanged = false) =>
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) =>
         _declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("This code uses reflection to find properties which requires dynamic code generation.")]
+    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
@@ -98,7 +101,7 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
     {
         var propIsBoolean = false;
 
-        var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
+        var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(static x => !x.IsStatic());
         if (pi is null)
         {
             goto attemptGuess;

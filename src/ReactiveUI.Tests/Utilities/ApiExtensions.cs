@@ -34,7 +34,7 @@ public static class ApiExtensions
         var result = await Verifier.Verify(apiText, null, filePath)
             .UniqueForRuntimeAndVersion()
             .ScrubEmptyLines()
-            .ScrubLines(l =>
+            .ScrubLines(static l =>
                 l.StartsWith("[assembly: AssemblyVersion(", StringComparison.InvariantCulture) ||
                 l.StartsWith("[assembly: AssemblyFileVersion(", StringComparison.InvariantCulture) ||
                 l.StartsWith("[assembly: AssemblyInformationalVersion(", StringComparison.InvariantCulture) ||

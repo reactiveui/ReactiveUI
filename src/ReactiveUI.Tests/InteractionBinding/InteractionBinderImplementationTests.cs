@@ -25,10 +25,10 @@ public class InteractionBinderImplementationTests
             vm,
             vm => vm.Interaction1,
             input =>
-            {
-                input.SetOutput(true);
-                return Task.CompletedTask;
-            });
+                {
+                    input.SetOutput(true);
+                    return Task.CompletedTask;
+                });
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
@@ -131,8 +131,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        Assert.That(async () => await vm.Interaction1.Handle("123").ToTask(), Throws.TypeOf<UnhandledInteractionException<string, bool>>());
     }
 
     /// <summary>
@@ -155,8 +154,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        Assert.That(async () => await vm.Interaction1.Handle("123").ToTask(), Throws.TypeOf<UnhandledInteractionException<string, bool>>());
     }
 
     /// <summary>
@@ -179,8 +177,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -203,8 +200,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -328,8 +324,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => firstInteractionVm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -353,8 +348,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => firstInteractionVm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -435,8 +429,7 @@ public class InteractionBinderImplementationTests
 
         disposable.Dispose();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -459,8 +452,7 @@ public class InteractionBinderImplementationTests
 
         disposable.Dispose();
 
-        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(
-            () => vm.Interaction1.Handle("123").ToTask());
+        _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() => vm.Interaction1.Handle("123").ToTask());
     }
 
     /// <summary>
@@ -478,10 +470,10 @@ public class InteractionBinderImplementationTests
                 vm,
                 vm => vm.Interaction1,
                 input =>
-                {
-                    input.SetOutput(true);
-                    return Task.CompletedTask;
-                });
+                    {
+                        input.SetOutput(true);
+                        return Task.CompletedTask;
+                    });
             view.ViewModel = new InteractionBindViewModel();
 
             return (disposable, weakRef);
@@ -503,7 +495,7 @@ public class InteractionBinderImplementationTests
     {
         static (IDisposable, WeakReference) GetWeakReference()
         {
-            var vm = new InteractionAncestorViewModel { InteractionViewModel = new InteractionBindViewModel() };
+            var vm = new InteractionAncestorViewModel() { InteractionViewModel = new InteractionBindViewModel() };
             var view = new InteractionAncestorView { ViewModel = vm };
             var weakRef = new WeakReference(vm.InteractionViewModel);
             var disposable = view.BindInteraction(

@@ -13,7 +13,7 @@ public class FooViewModel : ReactiveObject
     {
         Foo = foo ?? throw new ArgumentNullException(nameof(foo));
 
-        this.WhenAnyValue(x => x.Setpoint)
+        this.WhenAnyValue(static x => x.Setpoint)
             ////.Skip(1) // Skip the initial value
             .SelectMany(foo.SetValueAsync)
             .Subscribe();

@@ -16,5 +16,9 @@ public interface IWantsToRegisterStuff
     /// Register platform dependencies inside Splat.
     /// </summary>
     /// <param name="registerFunction">A method the deriving class will class to register the type.</param>
+    #if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
+    [RequiresDynamicCode("Uses reflection to create instances of types.")]
+    #endif
     void Register(Action<Func<object>, Type> registerFunction);
 }

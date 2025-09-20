@@ -22,7 +22,7 @@ public class RxAppDependencyObjectTests
 
         Assert.That(
             Locator.Current.GetServices<ICreatesObservableForProperty>()
-                           .Any(x => x is DependencyObjectObservableForProperty),
+                           .Any(static x => x is DependencyObjectObservableForProperty),
             Is.True);
     }
 }

@@ -26,7 +26,7 @@ public class AwaiterTest
     private static async Task<int> AwaitAnObservable()
     {
         var o = Observable.Start(
-            () =>
+            static () =>
             {
                 Thread.Sleep(1000);
                 return 42;

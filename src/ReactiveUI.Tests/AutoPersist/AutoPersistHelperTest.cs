@@ -25,7 +25,7 @@ public class AutoPersistHelperTest
         var shouldDie = true;
         try
         {
-            fixture.AutoPersist(_ => Observables.Unit);
+            fixture.AutoPersist(static _ => Observables.Unit);
         }
         catch (Exception)
         {
