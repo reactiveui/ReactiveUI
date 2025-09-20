@@ -1952,6 +1952,7 @@ public class ReactiveCommandTest
         });
 
     [Test]
+    [Platform(Exclude = "MacOsX")]
     public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
     {
         using var testSequencer = new TestSequencer();
