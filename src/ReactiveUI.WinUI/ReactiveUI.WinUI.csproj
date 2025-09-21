@@ -19,9 +19,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" />
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('OSX')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>

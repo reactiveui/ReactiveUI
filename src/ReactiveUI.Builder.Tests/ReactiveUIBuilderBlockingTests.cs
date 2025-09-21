@@ -11,6 +11,7 @@ namespace ReactiveUI.Builder.Tests;
 /// Tests ensuring the builder blocks reflection-based initialization.
 /// </summary>
 [TestFixture]
+[NonParallelizable]
 public class ReactiveUIBuilderBlockingTests
 {
     [Test]

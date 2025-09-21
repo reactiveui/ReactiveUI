@@ -28,13 +28,17 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<IInteraction<TInput, TOutput>>();
+        var vmNulls = view.WhenAnyValue(x => x.ViewModel).Where(x => x is null).Select(_ => default(IInteraction<TInput, TOutput>));
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
+            .Cast<IInteraction<TInput, TOutput>?>()
+            .Merge(vmNulls);
 
         var interactionDisposable = new SerialDisposable();
 
         return source
-               .WhereNotNull()
-               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Do(x => interactionDisposable.Disposable = x is null
+                   ? System.Reactive.Disposables.Disposable.Empty
+                   : x.RegisterHandler(handler))
                .Finally(() => interactionDisposable.Dispose())
                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
     }
@@ -57,7 +61,10 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<IInteraction<TInput, TOutput>>();
+        var vmNulls = view.WhenAnyValue(x => x.ViewModel).Where(x => x is null).Select(_ => default(IInteraction<TInput, TOutput>));
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
+            .Cast<IInteraction<TInput, TOutput>?>()
+            .Merge(vmNulls);
 
         var interactionDisposable = new SerialDisposable();
 
