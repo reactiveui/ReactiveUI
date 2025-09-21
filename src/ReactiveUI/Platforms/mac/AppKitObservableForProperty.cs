@@ -21,14 +21,14 @@ public class AppKitObservableForProperty : ObservableForPropertyBase
     /// </summary>
     public AppKitObservableForProperty()
     {
-        Register(typeof(NSControl), "AlphaValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "DoubleValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "FloatValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "IntValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "NintValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "ObjectValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "StringValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "AttributedStringValue", 20, (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "AlphaValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "DoubleValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "FloatValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "IntValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "NintValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "ObjectValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "StringValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "AttributedStringValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
     }
 
     /// <summary>

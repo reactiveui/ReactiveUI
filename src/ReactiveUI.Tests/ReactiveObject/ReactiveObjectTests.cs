@@ -138,7 +138,7 @@ public class ReactiveObjectTests
             IsOnlyOneWord = "Foo"
         };
 
-        fixture.Changed.Subscribe(_ => throw new Exception("Die!"));
+        fixture.Changed.Subscribe(static _ => throw new Exception("Die!"));
         fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
         fixture.IsOnlyOneWord = "Bar";
@@ -227,9 +227,9 @@ public class ReactiveObjectTests
         {
             // Should look something like:
             // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
-            Assert.That(json.Count(x => x == ','), Is.EqualTo(6));
-            Assert.That(json.Count(x => x == ':'), Is.EqualTo(7));
-            Assert.That(json.Count(x => x == '"'), Is.EqualTo(18));
+            Assert.That(json.Count(static x => x == ','), Is.EqualTo(6));
+            Assert.That(json.Count(static x => x == ':'), Is.EqualTo(7));
+            Assert.That(json.Count(static x => x == '"'), Is.EqualTo(18));
         }
     }
 

@@ -21,7 +21,7 @@ public class FakeXamlCommandBindingView : IViewFor<CommandBindingViewModel>
     {
         _buttonDeclaredInXaml = new Button();
 
-        this.BindCommand(ViewModel, vm => vm!.Command2!, v => v._buttonDeclaredInXaml);
+        this.BindCommand(ViewModel, static vm => vm!.Command2!, static v => v._buttonDeclaredInXaml);
     }
 
     /// <summary>

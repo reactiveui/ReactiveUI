@@ -95,7 +95,7 @@ public class InteractionsTest
     public void HandledInteractionsShouldNotCauseException()
     {
         var interaction = new Interaction<Unit, bool>();
-        interaction.RegisterHandler(c => c.SetOutput(true));
+        interaction.RegisterHandler(static c => c.SetOutput(true));
 
         interaction.Handle(Unit.Default).FirstAsync().Wait();
     }
@@ -131,13 +131,13 @@ public class InteractionsTest
     {
         var interaction = new Interaction<Unit, string>();
 
-        using (interaction.RegisterHandler(x => x.SetOutput("A")))
+        using (interaction.RegisterHandler(static x => x.SetOutput("A")))
         {
             Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("A"));
-            using (interaction.RegisterHandler(x => x.SetOutput("B")))
+            using (interaction.RegisterHandler(static x => x.SetOutput("B")))
             {
                 Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("B"));
-                using (interaction.RegisterHandler(x => x.SetOutput("C")))
+                using (interaction.RegisterHandler(static x => x.SetOutput("C")))
                 {
                     Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("C"));
                 }
@@ -157,9 +157,9 @@ public class InteractionsTest
     {
         var interaction = new Interaction<bool, string>();
 
-        var handler1A = interaction.RegisterHandler(x => x.SetOutput("A"));
+        var handler1A = interaction.RegisterHandler(static x => x.SetOutput("A"));
         var handler1B = interaction.RegisterHandler(
-            x =>
+            static x =>
             {
                 // only handle if the input is true
                 if (x.Input)
@@ -167,7 +167,7 @@ public class InteractionsTest
                     x.SetOutput("B");
                 }
             });
-        var handler1C = interaction.RegisterHandler(x => x.SetOutput("C"));
+        var handler1C = interaction.RegisterHandler(static x => x.SetOutput("C"));
 
         using (handler1A)
         {

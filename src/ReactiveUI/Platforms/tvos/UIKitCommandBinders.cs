@@ -24,8 +24,8 @@ public class UIKitCommandBinders : FlexibleCommandBinder
 #endif
     public UIKitCommandBinders()
     {
-        Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));
-        Register(typeof(UIBarButtonItem), 10, (cmd, t, cp) => ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("There is no Enabled property on the UIBarButtonItem which is needed for binding.")));
+        Register(typeof(UIControl), 9, static (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));
+        Register(typeof(UIBarButtonItem), 10, static (cmd, t, cp) => ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("There is no Enabled property on the UIBarButtonItem which is needed for binding.")));
     }
 
     /// <summary>

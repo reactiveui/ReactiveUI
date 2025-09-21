@@ -39,5 +39,5 @@ public static class ChangeSetMixin
     /// <returns>An observable of changes that only have count changes.</returns>
     public static IObservable<IChangeSet<T>> CountChanged<T>(this IObservable<IChangeSet<T>> changeSet)
         where T : notnull =>
-        changeSet.Where(x => x.HasCountChanged()); // TODO: Create Test
+        changeSet.Where(static x => x.HasCountChanged()); // TODO: Create Test
 }

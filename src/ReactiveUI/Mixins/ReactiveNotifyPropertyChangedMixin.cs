@@ -583,7 +583,7 @@ public static class ReactiveNotifyPropertyChangedMixin
         // Handle non null values in the chain
         return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
                .StartWith(kicker)
-               .Select(x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
+               .Select(static x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
     }
 
 #if NET6_0_OR_GREATER

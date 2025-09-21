@@ -16,7 +16,7 @@ public static class WinFormsReactiveUIBuilderExtensions
     /// <value>
     /// The win forms main thread scheduler.
     /// </value>
-    public static IScheduler WinFormsMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+    public static IScheduler WinFormsMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
 
     /// <summary>
     /// Configures ReactiveUI for WinForms platform with appropriate schedulers.

@@ -33,7 +33,7 @@ public class XamlViewCommandTests
     public void EventBinderBindsToExplicitInheritedEvent()
     {
         var fixture = new FakeView();
-        fixture.BindCommand(fixture!.ViewModel, x => x!.Cmd, x => x.TheTextBox, "MouseDown");
+        fixture.BindCommand(fixture!.ViewModel, static x => x!.Cmd, static x => x.TheTextBox, "MouseDown");
     }
 
     /// <summary>

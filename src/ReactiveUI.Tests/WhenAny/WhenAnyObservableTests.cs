@@ -26,31 +26,31 @@ public class WhenAnyObservableTests
         };
 
         // these are the overloads of WhenAnyObservable that perform a Merge
-        fixture.WhenAnyObservable(x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
 
         // these are the overloads of WhenAnyObservable that perform a CombineLatest
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, (zero, one) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine, ten) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, x => x.Command1, (zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static (zero, one) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six, seven) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six, seven, eight) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six, seven, eight, nine) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six, seven, eight, nine, ten) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static x => x.Command1, static (zero, one, two, three, four, five, six, seven, eight, nine, ten, eleven) => Unit.Default).Subscribe();
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<string?>();
-        fixture.WhenAnyObservable(x => x.Command3, x => x.Command1, (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+        fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
@@ -81,11 +81,11 @@ public class WhenAnyObservableTests
             Assert.That(
                         new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
                                                                        list,
-                                                                       (expected, actual) => new
+                                                                       static (expected, actual) => new
                                                                        {
                                                                            expected,
                                                                            actual
-                                                                       }).All(x => x.expected == x.actual),
+                                                                       }).All(static x => x.expected == x.actual),
                         Is.True);
         }
     }
@@ -100,7 +100,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<int>();
-        fixture.WhenAnyObservable(x => x.Command1, x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         Assert.That(list, Is.Empty);
 
         await fixture.Command1!.Execute(1);
@@ -117,11 +117,11 @@ public class WhenAnyObservableTests
             Assert.That(
                         new[] { 1, 2, 1, }.Zip(
                                                list,
-                                               (expected, actual) => new
+                                               static (expected, actual) => new
                                                {
                                                    expected,
                                                    actual
-                                               }).All(x => x.expected == x.actual),
+                                               }).All(static x => x.expected == x.actual),
                         Is.True);
         }
     }
@@ -133,7 +133,7 @@ public class WhenAnyObservableTests
     public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
     {
         var fixture = new TestWhenAnyObsViewModel();
-        fixture!.WhenAnyObservable(x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
+        fixture!.WhenAnyObservable(static x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
         Assert.That(output, Is.Empty);
 
         fixture.MyListOfInts = [];

@@ -36,8 +36,8 @@ public class ViewModelViewHost : ReactiveViewController
     {
         _currentView = new SerialDisposable();
         _viewContract = this
-            .WhenAnyObservable(x => x.ViewContractObservable)
-            .ToProperty(this, x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
+            .WhenAnyObservable(static x => x.ViewContractObservable)
+            .ToProperty(this, static x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
 
         Initialize();
     }

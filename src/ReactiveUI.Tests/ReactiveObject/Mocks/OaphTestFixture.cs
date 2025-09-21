@@ -21,7 +21,7 @@ namespace ReactiveUI.Tests;
       /// <summary>
       /// Initializes a new instance of the <see cref="OaphTestFixture"/> class.
       /// </summary>
-      public OaphTestFixture() => this.WhenAnyValue(x => x.IsOnlyOneWord).Select(x => x ?? string.Empty).Select(x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, x => x.FirstThreeLettersOfOneWord, out _firstThreeLettersOfOneWord);
+      public OaphTestFixture() => this.WhenAnyValue(static x => x.IsOnlyOneWord).Select(static x => x ?? string.Empty).Select(static x => x.Length >= 3 ? x.Substring(0, 3) : x).ToProperty(this, static x => x.FirstThreeLettersOfOneWord, out _firstThreeLettersOfOneWord);
 
       /// <summary>
       /// Gets the first three letters of one word.

@@ -74,7 +74,7 @@ public partial class ViewModelViewHost : ContentView, IViewFor
                                                                               (vm, contract) => new { ViewModel = vm, Contract = contract, });
 
         this.WhenActivated(() =>
-            [
+            (IDisposable[])[
                 vmAndContract.Subscribe(x =>
                 {
                     _viewContract = x.Contract;

@@ -16,7 +16,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("LoadState uses JsonSerializer.Deserialize which requires dynamic code generation")]
+    [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
 #endif
     public IObservable<object?> LoadState()
     {
@@ -40,7 +41,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("SaveState uses JsonSerializer.Serialize which requires dynamic code generation")]
+    [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
 #endif
     public IObservable<Unit> SaveState(object state)
     {
@@ -63,7 +65,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("InvalidateState uses JsonSerializer.Serialize which requires dynamic code generation")]
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
 #endif
     public IObservable<Unit> InvalidateState()
     {

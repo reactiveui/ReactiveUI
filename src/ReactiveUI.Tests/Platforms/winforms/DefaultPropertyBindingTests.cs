@@ -37,7 +37,7 @@ public class DefaultPropertyBindingTests
 
         Assert.That(fixture.GetAffinityForObject(typeof(TextBox), "Text"), Is.Not.Zero);
 
-        Expression<Func<TextBox, string>> expression = x => x.Text;
+        Expression<Func<TextBox, string>> expression = static x => x.Text;
 
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
@@ -68,7 +68,7 @@ public class DefaultPropertyBindingTests
 
         Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"), Is.Not.Zero);
 
-        Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
+        Expression<Func<ToolStripButton, bool>> expression = static x => x.Checked;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
         Assert.That(output, Is.Empty);
@@ -99,7 +99,7 @@ public class DefaultPropertyBindingTests
 
         Assert.That(fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"), Is.Not.Zero);
 
-        Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
+        Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = static x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
         Assert.That(output, Is.Empty);
@@ -130,14 +130,14 @@ public class DefaultPropertyBindingTests
         vm.SomeText = "Foo";
         Assert.That(view.Property3.Text, Is.Not.EqualTo(vm.SomeText));
 
-        var disp = view.Bind(vm, x => x.SomeText, x => x.Property3.Text);
+        var disp = view.Bind(vm, static x => x.SomeText, static x => x.Property3.Text);
         vm.SomeText = "Bar";
         Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeText));
 
         view.Property3.Text = "Bar2";
         Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeText));
 
-        var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
+        var disp2 = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
         vm.SomeDouble = 123.4;
 
         Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeDouble.ToString(CultureInfo.CurrentCulture)));
@@ -154,11 +154,11 @@ public class DefaultPropertyBindingTests
 
         var disp = new CompositeDisposable(
         [
-            view.Bind(vm, x => x.Property1, x => x.Property1.Text),
-            view.Bind(vm, x => x.Property2, x => x.Property2.Text),
-            view.Bind(vm, x => x.Property3, x => x.Property3.Text),
-            view.Bind(vm, x => x.Property4, x => x.Property4.Text),
-            view.Bind(vm, x => x.BooleanProperty, x => x.BooleanProperty.Checked),
+            view.Bind(vm, static x => x.Property1, static x => x.Property1.Text),
+            view.Bind(vm, static x => x.Property2, static x => x.Property2.Text),
+            view.Bind(vm, static x => x.Property3, static x => x.Property3.Text),
+            view.Bind(vm, static x => x.Property4, static x => x.Property4.Text),
+            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked),
         ]);
 
         vm.Property1 = "FOOO";

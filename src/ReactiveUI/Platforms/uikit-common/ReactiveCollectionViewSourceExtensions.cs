@@ -48,7 +48,7 @@ public static class ReactiveCollectionViewSourceExtensions
         var source = new ReactiveCollectionViewSource<TSource>(collectionView);
         initSource?.Invoke(source);
 
-        var bind = sectionsObservable.BindTo(source, x => x.Data);
+        var bind = sectionsObservable.BindTo(source, static x => x.Data);
         collectionView.Source = source;
         return new CompositeDisposable(bind, source);
     }

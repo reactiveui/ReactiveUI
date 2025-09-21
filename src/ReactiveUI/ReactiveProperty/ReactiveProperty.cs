@@ -27,7 +27,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     private readonly Subject<T?> _valueRefereshed = new();
     private readonly SerialDisposable _validationDisposable = new();
     private readonly Lazy<BehaviorSubject<IEnumerable?>> _errorChanged;
-    private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>> _validatorStore = new(() => []);
+    private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>> _validatorStore = new(static () => []);
     private readonly int _skipCurrentValue;
     private readonly bool _isDistinctUntilChanged;
     private IObservable<T?>? _observable;

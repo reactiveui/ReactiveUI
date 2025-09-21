@@ -173,11 +173,11 @@ public class FinalAOTValidationTests
         var resolver = Locator.CurrentMutable;
 
         // Register services
-        resolver.Register<IScheduler>(() => CurrentThreadScheduler.Instance);
+        resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
         resolver.RegisterConstant<string>("test service");
 
         // Create a factory that uses registered services
-        resolver.Register<Func<ReactiveProperty<string>>>(() => () =>
+        resolver.Register<Func<ReactiveProperty<string>>>(static () => static () =>
         {
             var scheduler = Locator.Current.GetService<IScheduler>();
             var initialValue = Locator.Current.GetService<string>();

@@ -36,8 +36,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
         }
     }
 
@@ -57,8 +57,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
         }
     }
 
@@ -79,8 +79,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
         }
     }
 
@@ -102,8 +102,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
         }
     }
 
@@ -123,8 +123,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
         }
     }
 
@@ -144,8 +144,8 @@ public class SplatAdapterTests
         Assert.That(converters, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
+            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
         }
     }
 }

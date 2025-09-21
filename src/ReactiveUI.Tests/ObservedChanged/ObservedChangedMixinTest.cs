@@ -55,7 +55,7 @@ public class ObservedChangedMixinTest
             Child = new TestFixture { IsNotNullString = "Foo" },
         };
 
-        Expression<Func<HostTestFixture, string>> expression = x => x!.Child!.IsNotNullString!;
+        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
         var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
         Assert.That(fixture.GetValue(), Is.EqualTo("Foo"));
@@ -72,10 +72,10 @@ public class ObservedChangedMixinTest
             Child = new TestFixture { IsNotNullString = "Foo" },
         };
 
-        Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
+        Expression<Func<TestFixture, string>> expression = static x => x.IsOnlyOneWord!;
         var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, null);
 
-        fixture.SetValueToProperty(output, x => x.Child!.IsNotNullString);
+        fixture.SetValueToProperty(output, static x => x.Child!.IsNotNullString);
         Assert.That(output.Child.IsNotNullString, Is.EqualTo("Bar"));
     }
 
@@ -84,12 +84,12 @@ public class ObservedChangedMixinTest
     /// </summary>
     [Test]
     public void BindToSmokeTest() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
             Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
@@ -107,12 +107,12 @@ public class ObservedChangedMixinTest
     /// </summary>
     [Test]
     public void DisposingDisconnectsTheBindTo() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            var subscription = input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            var subscription = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
             Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
@@ -132,12 +132,12 @@ public class ObservedChangedMixinTest
     /// </summary>
     [Test]
     public void BindToIsNotFooledByIntermediateObjectSwitching() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
             Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
@@ -159,7 +159,7 @@ public class ObservedChangedMixinTest
     /// </summary>
     [Test]
     public void BindToStackOverFlowTest() =>
-        new TestScheduler().With(_ =>
+        new TestScheduler().With(static _ =>
         {
             // Before the code changes packed in the same commit
             // as this test the test would go into an infinite
@@ -174,6 +174,6 @@ public class ObservedChangedMixinTest
 
             var source = new BehaviorSubject<List<string>>([]);
 
-            source.BindTo(fixtureA, x => x.StackOverflowTrigger);
+            source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
         });
 }

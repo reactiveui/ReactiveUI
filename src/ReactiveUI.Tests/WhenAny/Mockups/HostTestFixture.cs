@@ -18,11 +18,11 @@ public class HostTestFixture : ReactiveObject
 
     public HostTestFixture()
     {
-        _ownerName = this.WhenAnyValue(x => x.Owner)
+        _ownerName = this.WhenAnyValue(static x => x.Owner)
           .WhereNotNull()
-          .Select(owner => owner.WhenAnyValue(x => x.Name))
+          .Select(static owner => owner.WhenAnyValue(static x => x.Name))
           .Switch()
-          .ToProperty(this, x => x.OwnerName);
+          .ToProperty(this, static x => x.OwnerName);
     }
 
     /// <summary>

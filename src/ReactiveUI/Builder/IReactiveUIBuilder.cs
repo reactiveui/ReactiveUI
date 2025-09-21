@@ -105,6 +105,10 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
     IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new();
 

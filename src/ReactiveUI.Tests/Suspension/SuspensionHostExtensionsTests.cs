@@ -36,7 +36,7 @@ public class SuspensionHostExtensionsTests
     public void NullSuspensionHostThrowsException()
     {
         Assert.That(
-            () => ((SuspensionHost)null!).SetupDefaultSuspendResume(),
+            static () => ((SuspensionHost)null!).SetupDefaultSuspendResume(),
             Throws.TypeOf<ArgumentNullException>());
     }
 

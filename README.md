@@ -1,4 +1,4 @@
-![Build](https://github.com/reactiveui/ReactiveUI/workflows/Build/badge.svg) 
+[![Build](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml/badge.svg)](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml)
 [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
 [![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
 [![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)

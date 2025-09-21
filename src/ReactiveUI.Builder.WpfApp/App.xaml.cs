@@ -38,10 +38,10 @@ public partial class App : Application
             ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
             ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
             ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
-            .WithRegistration(r =>
+            .WithRegistration(static r =>
             {
                 // Register IScreen as a singleton so all resolutions share the same Router
-                r.RegisterLazySingleton<IScreen>(() => new ViewModels.AppBootstrapper());
+                r.RegisterLazySingleton<IScreen>(static () => new ViewModels.AppBootstrapper());
 
                 // Register MessageBus as a singleton if not already
                 if (Locator.Current.GetService<IMessageBus>() is null)
@@ -50,15 +50,15 @@ public partial class App : Application
                 }
 
                 // Cross-process instance lifetime coordination
-                r.RegisterLazySingleton(() => new Services.AppLifetimeCoordinator());
+                r.RegisterLazySingleton(static () => new Services.AppLifetimeCoordinator());
 
                 // Network service used to broadcast/receive messages across instances
-                r.RegisterLazySingleton(() => new Services.ChatNetworkService());
+                r.RegisterLazySingleton(static () => new Services.ChatNetworkService());
             })
             .Build();
 
         // Setup Suspension
-        RxApp.SuspensionHost.CreateNewAppState = () => new ChatState();
+        RxApp.SuspensionHost.CreateNewAppState = static () => new ChatState();
 
         var statePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -76,13 +76,13 @@ public partial class App : Application
             .LoadState()
             .ObserveOn(RxApp.MainThreadScheduler)
             .Subscribe(
-                stateObj =>
+                static stateObj =>
                 {
                     RxApp.SuspensionHost.AppState = stateObj;
                     MessageBus.Current.SendMessage(new ChatStateChanged());
                     Trace.WriteLine("[App] State loaded");
                 },
-                ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
+                static ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
 
         // Resolve coordinator + network service
         _lifetime = Locator.Current.GetService<Services.AppLifetimeCoordinator>();

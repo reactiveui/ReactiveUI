@@ -52,9 +52,9 @@ public class RoutedViewHostTests
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
-        Locator.CurrentMutable.Register<RoutingState>(() => new());
-        Locator.CurrentMutable.Register<TestViewModel>(() => new());
-        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+        Locator.CurrentMutable.Register<RoutingState>(static () => new());
+        Locator.CurrentMutable.Register<TestViewModel>(static () => new());
+        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
 
         var uc = new RoutedViewHost
         {
@@ -96,9 +96,9 @@ public class RoutedViewHostTests
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
-        Locator.CurrentMutable.Register<RoutingState>(() => new());
-        Locator.CurrentMutable.Register<TestViewModel>(() => new());
-        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(() => new TestView());
+        Locator.CurrentMutable.Register<RoutingState>(static () => new());
+        Locator.CurrentMutable.Register<TestViewModel>(static () => new());
+        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
 
         var uc = new RoutedViewHost
         {

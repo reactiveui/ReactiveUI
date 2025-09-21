@@ -55,7 +55,7 @@ internal static class CreatesCommandBinding
         var type = target!.GetType();
         var binder = _bindCommandEventCache.Get(type) ?? throw new Exception($"Couldn't find an Event Binder for {type.FullName} and event {eventName}");
         var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
-        var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
+        var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(static x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
         mi = mi.MakeGenericMethod(eventArgsType);
 
         var ret = (IDisposable)mi.Invoke(binder, [command, target, commandParameter, eventName])! ?? throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");

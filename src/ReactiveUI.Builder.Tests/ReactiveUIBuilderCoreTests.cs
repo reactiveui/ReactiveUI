@@ -12,6 +12,7 @@ namespace ReactiveUI.Builder.Tests;
 /// Tests for the ReactiveUIBuilder core functionality.
 /// </summary>
 [TestFixture]
+[NonParallelizable]
 public class ReactiveUIBuilderCoreTests
 {
     [Test]

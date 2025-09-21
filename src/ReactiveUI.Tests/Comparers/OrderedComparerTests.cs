@@ -34,24 +34,24 @@ public class OrderedComparerTests
             xavier
         };
 
-        employees.Sort(OrderedComparer<Employee>.OrderBy(x => x.Name));
+        employees.Sort(OrderedComparer<Employee>.OrderBy(static x => x.Name));
         Assert.That(
                     employees.SequenceEqual([adam, alice, bob, carol, xavier]),
                     Is.True);
 
         employees.Sort(
                        OrderedComparer<Employee>
-                           .OrderByDescending(x => x.Age)
-                           .ThenBy(x => x.Name));
+                           .OrderByDescending(static x => x.Age)
+                           .ThenBy(static x => x.Name));
         Assert.That(
                     employees.SequenceEqual([adam, carol, xavier, bob, alice]),
                     Is.True);
 
         employees.Sort(
                        OrderedComparer<Employee>
-                           .OrderByDescending(x => x.Salary)
+                           .OrderByDescending(static x => x.Salary)
                            .ThenBy(
-                                   x => x.Name,
+                                   static x => x.Name,
                                    StringComparer.OrdinalIgnoreCase));
         Assert.That(
                     employees.SequenceEqual([adam, alice, carol, xavier, bob]),
@@ -59,9 +59,9 @@ public class OrderedComparerTests
 
         employees.Sort(
                        OrderedComparer<Employee>
-                           .OrderByDescending(x => x.Age)
-                           .ThenByDescending(x => x.Salary)
-                           .ThenBy(x => x.Name));
+                           .OrderByDescending(static x => x.Age)
+                           .ThenByDescending(static x => x.Salary)
+                           .ThenBy(static x => x.Name));
         Assert.That(
                     employees.SequenceEqual([adam, carol, xavier, bob, alice]),
                     Is.True);
@@ -77,31 +77,31 @@ public class OrderedComparerTests
 
         items.Sort(
                    OrderedComparer<string>.OrderBy(
-                                                   x => x,
+                                                   static x => x,
                                                    StringComparer.Ordinal));
         Assert.That(
                     items.SequenceEqual(["AAA", "aaa", "aaaa", "abb"]),
                     Is.True);
 
         items.Sort(
-                   OrderedComparer<string>.OrderByDescending(x => x.Length).ThenBy(
-                    x => x,
+                   OrderedComparer<string>.OrderByDescending(static x => x.Length).ThenBy(
+                    static x => x,
                     StringComparer.Ordinal));
         Assert.That(
                     items.SequenceEqual(["aaaa", "AAA", "aaa", "abb"]),
                     Is.True);
 
         items.Sort(
-                   OrderedComparer<string>.OrderBy(x => x.Length).ThenBy(
-                                                                         x => x,
+                   OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
+                                                                         static x => x,
                                                                          StringComparer.Ordinal));
         Assert.That(
                     items.SequenceEqual(["AAA", "aaa", "abb", "aaaa"]),
                     Is.True);
 
         items.Sort(
-                   OrderedComparer<string>.OrderBy(x => x.Length).ThenBy(
-                                                                         x => x,
+                   OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
+                                                                         static x => x,
                                                                          StringComparer.OrdinalIgnoreCase));
         Assert.That(
                     items.SequenceEqual(
@@ -128,7 +128,7 @@ public class OrderedComparerTests
 
         items.Sort(
                    comparer.ThenByDescending(
-                                             x => x,
+                                             static x => x,
                                              StringComparer.Ordinal));
         Assert.That(
                     items.SequenceEqual(
@@ -144,11 +144,11 @@ public class OrderedComparerTests
     public void WorksWithAnonymousTypes()
     {
         var source = new List<string> { "abc", "bcd", "cde" };
-        var items = source.ConvertAll(x => new { FirstLetter = x[0], AllOfIt = x });
+        var items = source.ConvertAll(static x => new { FirstLetter = x[0], AllOfIt = x });
 
-        items.Sort(OrderedComparer.For(items).OrderBy(x => x.FirstLetter));
+        items.Sort(OrderedComparer.For(items).OrderBy(static x => x.FirstLetter));
         Assert.That(
-                    items.Select(x => x.FirstLetter).SequenceEqual("abc"),
+                    items.Select(static x => x.FirstLetter).SequenceEqual("abc"),
                     Is.True);
     }
 
