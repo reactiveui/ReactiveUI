@@ -19,6 +19,14 @@ public static class BlazorReactiveUIBuilderExtensions
     public static IScheduler BlazorMainThreadScheduler { get; } = CurrentThreadScheduler.Instance;
 
     /// <summary>
+    /// Gets the blazor wasm scheduler.
+    /// </summary>
+    /// <value>
+    /// The blazor wasm scheduler.
+    /// </value>
+    public static IScheduler BlazorWasmScheduler { get; } = WasmScheduler.Default;
+
+    /// <summary>
     /// Configures ReactiveUI for Blazor platform with appropriate schedulers.
     /// </summary>
     /// <param name="builder">The builder instance.</param>
@@ -48,5 +56,20 @@ public static class BlazorReactiveUIBuilderExtensions
         }
 
         return builder.WithMainThreadScheduler(BlazorMainThreadScheduler);
+    }
+
+    /// <summary>
+    /// Withes the blazor scheduler.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithBlazorWasmScheduler(this IReactiveUIBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        return builder.WithMainThreadScheduler(BlazorWasmScheduler);
     }
 }

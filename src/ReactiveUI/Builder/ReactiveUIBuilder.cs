@@ -104,6 +104,10 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the platform-specific ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
+#endif
     public IReactiveUIBuilder WithPlatformServices()
     {
         if (_platformRegistered)
@@ -122,6 +126,10 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the core ReactiveUI services in an AOT-compatible manner.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
+#endif
     public override IAppBuilder WithCoreServices()
     {
         if (!_coreRegistered)

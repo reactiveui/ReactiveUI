@@ -157,6 +157,7 @@ public static class DependencyResolverMixins
 
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
+    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
 #endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {
