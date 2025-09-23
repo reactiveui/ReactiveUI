@@ -85,13 +85,9 @@ public static class RxSchedulers
                 }
 
 #if !PORTABLE
-                {
-                    return _taskpoolScheduler ??= TaskPoolScheduler.Default;
-                }
+                return _taskpoolScheduler ??= TaskPoolScheduler.Default;
 #else
-                {
-                    return _taskpoolScheduler ??= DefaultScheduler.Instance;
-                }
+                return _taskpoolScheduler ??= DefaultScheduler.Instance;
 #endif
             }
         }
