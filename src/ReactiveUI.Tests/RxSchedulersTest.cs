@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.Reactive.Testing;
+using NUnit.Framework;
 
 namespace ReactiveUI.Tests;
 
@@ -15,7 +16,7 @@ public class RxSchedulersTest
     /// <summary>
     /// Tests that schedulers can be accessed without attributes.
     /// </summary>
-    [Fact]
+    [Test]
     public void SchedulersCanBeAccessedWithoutAttributes()
     {
         // This test method itself should not require RequiresUnreferencedCode
@@ -23,14 +24,17 @@ public class RxSchedulersTest
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
-        Assert.NotNull(mainScheduler);
-        Assert.NotNull(taskpoolScheduler);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(mainScheduler, Is.Not.Null);
+            Assert.That(taskpoolScheduler, Is.Not.Null);
+        }
     }
 
     /// <summary>
     /// Tests that schedulers can be set and retrieved.
     /// </summary>
-    [Fact]
+    [Test]
     public void SchedulersCanBeSetAndRetrieved()
     {
         var testScheduler = new TestScheduler();
@@ -39,9 +43,12 @@ public class RxSchedulersTest
         RxSchedulers.MainThreadScheduler = testScheduler;
         RxSchedulers.TaskpoolScheduler = testScheduler;
 
-        // Verify they were set
-        Assert.Equal(testScheduler, RxSchedulers.MainThreadScheduler);
-        Assert.Equal(testScheduler, RxSchedulers.TaskpoolScheduler);
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify they were set
+            Assert.That(RxSchedulers.MainThreadScheduler, Is.EqualTo(testScheduler));
+            Assert.That(RxSchedulers.TaskpoolScheduler, Is.EqualTo(testScheduler));
+        }
 
         // Reset to defaults
         RxSchedulers.MainThreadScheduler = DefaultScheduler.Instance;
@@ -51,18 +58,21 @@ public class RxSchedulersTest
     /// <summary>
     /// Tests that RxSchedulers provides basic scheduler functionality.
     /// </summary>
-    [Fact]
+    [Test]
     public void SchedulersProvideBasicFunctionality()
     {
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
-        // Verify they implement IScheduler
-        Assert.IsAssignableFrom<IScheduler>(mainScheduler);
-        Assert.IsAssignableFrom<IScheduler>(taskpoolScheduler);
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify they implement IScheduler
+            Assert.That(mainScheduler, Is.AssignableTo<IScheduler>());
+            Assert.That(taskpoolScheduler, Is.AssignableTo<IScheduler>());
 
-        // Verify they have Now property
-        Assert.True(mainScheduler.Now > DateTimeOffset.MinValue);
-        Assert.True(taskpoolScheduler.Now > DateTimeOffset.MinValue);
+            // Verify they have Now property
+            Assert.That(mainScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
+            Assert.That(taskpoolScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
+        }
     }
 }
