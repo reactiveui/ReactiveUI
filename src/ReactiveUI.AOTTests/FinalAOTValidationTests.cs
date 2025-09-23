@@ -78,11 +78,14 @@ public class FinalAOTValidationTests
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Demonstrating ReactiveCommand usage with proper AOT suppression")]
     public void ReactiveCommand_CompleteWorkflow_WorksWithSuppression()
     {
+        // Use CurrentThreadScheduler to ensure synchronous execution
+        var scheduler = CurrentThreadScheduler.Instance;
+        
         // Test all types of ReactiveCommand creation
-        var simpleCommand = ReactiveCommand.Create(() => "executed");
-        var paramCommand = ReactiveCommand.Create<int, string>(x => $"value: {x}");
-        var taskCommand = ReactiveCommand.CreateFromTask(async () => await Task.FromResult("async result"));
-        var observableCommand = ReactiveCommand.CreateFromObservable(() => Observable.Return("observable result"));
+        var simpleCommand = ReactiveCommand.Create(() => "executed", outputScheduler: scheduler);
+        var paramCommand = ReactiveCommand.Create<int, string>(x => $"value: {x}", outputScheduler: scheduler);
+        var taskCommand = ReactiveCommand.CreateFromTask(async () => await Task.FromResult("async result"), outputScheduler: scheduler);
+        var observableCommand = ReactiveCommand.CreateFromObservable(() => Observable.Return("observable result"), outputScheduler: scheduler);
 
         // Test command execution
         var simpleResult = string.Empty;
@@ -95,11 +98,11 @@ public class FinalAOTValidationTests
         taskCommand.Subscribe(r => taskResult = r);
         observableCommand.Subscribe(r => observableResult = r);
 
-        // Execute commands
-        simpleCommand.Execute().Subscribe();
-        paramCommand.Execute(42).Subscribe();
-        taskCommand.Execute().Subscribe();
-        observableCommand.Execute().Subscribe();
+        // Execute commands and wait for completion
+        simpleCommand.Execute().Wait();
+        paramCommand.Execute(42).Wait();
+        taskCommand.Execute().Wait();
+        observableCommand.Execute().Wait();
 
         using (Assert.EnterMultipleScope())
         {
