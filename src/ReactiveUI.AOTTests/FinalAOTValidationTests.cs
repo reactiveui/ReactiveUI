@@ -80,7 +80,7 @@ public class FinalAOTValidationTests
     {
         // Use CurrentThreadScheduler to ensure synchronous execution
         var scheduler = CurrentThreadScheduler.Instance;
-        
+
         // Test all types of ReactiveCommand creation
         var simpleCommand = ReactiveCommand.Create(() => "executed", outputScheduler: scheduler);
         var paramCommand = ReactiveCommand.Create<int, string>(x => $"value: {x}", outputScheduler: scheduler);
