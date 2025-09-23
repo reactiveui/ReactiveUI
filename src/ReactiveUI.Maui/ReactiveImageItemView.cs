@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 
 namespace ReactiveUI.Maui;
 
@@ -80,8 +81,7 @@ public partial class ReactiveImageItemView<TViewModel> : ReactiveContentView<TVi
             WidthRequest = 40,
             HeightRequest = 40,
             VerticalOptions = LayoutOptions.Center,
-            HorizontalOptions = LayoutOptions.Start,
-            Aspect = Aspect.AspectFill
+            HorizontalOptions = LayoutOptions.Start
         };
 
         _textLabel = new Label
@@ -101,7 +101,7 @@ public partial class ReactiveImageItemView<TViewModel> : ReactiveContentView<TVi
         {
             Orientation = StackOrientation.Vertical,
             VerticalOptions = LayoutOptions.Center,
-            HorizontalOptions = LayoutOptions.FillAndExpand,
+            HorizontalOptions = LayoutOptions.Fill,
             Children = { _textLabel, _detailLabel }
         };
 
@@ -109,7 +109,7 @@ public partial class ReactiveImageItemView<TViewModel> : ReactiveContentView<TVi
         {
             Orientation = StackOrientation.Horizontal,
             VerticalOptions = LayoutOptions.Center,
-            Padding = new Thickness(16, 8),
+            Padding = 16,
             Spacing = 12,
             Children = { _image, textStackLayout }
         };

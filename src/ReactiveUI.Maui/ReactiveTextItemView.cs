@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 
 namespace ReactiveUI.Maui;
 
@@ -82,7 +83,7 @@ public partial class ReactiveTextItemView<TViewModel> : ReactiveContentView<TVie
         {
             Orientation = StackOrientation.Vertical,
             VerticalOptions = LayoutOptions.Center,
-            Padding = new Thickness(16, 8),
+            Padding = 16,
             Children = { _textLabel, _detailLabel }
         };
 
