@@ -86,13 +86,13 @@ public partial class ReactiveImageItemView<TViewModel> : ReactiveContentView<TVi
 
         _textLabel = new Label
         {
-            FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
+            FontSize = 16,
             VerticalOptions = LayoutOptions.Center
         };
 
         _detailLabel = new Label
         {
-            FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label)),
+            FontSize = 12,
             VerticalOptions = LayoutOptions.Center,
             Opacity = 0.7
         };
