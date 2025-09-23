@@ -104,6 +104,10 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the platform-specific ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
+    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+#endif
     public IReactiveUIBuilder WithPlatformServices()
     {
         if (_platformRegistered)
@@ -122,6 +126,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the core ReactiveUI services in an AOT-compatible manner.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
+    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
+#endif
     public override IAppBuilder WithCoreServices()
     {
         if (!_coreRegistered)
