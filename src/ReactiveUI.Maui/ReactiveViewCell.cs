@@ -17,6 +17,7 @@ namespace ReactiveUI.Maui;
 [RequiresDynamicCode("ReactiveViewCell uses methods that require dynamic code generation")]
 [RequiresUnreferencedCode("ReactiveViewCell uses methods that may require unreferenced code")]
 #endif
+[Obsolete("ListView and its cells are obsolete in .NET MAUI, please use CollectionView with a DataTemplate and a ReactiveContentView-based view instead. This will be removed in a future release.")]
 public partial class ReactiveViewCell<TViewModel> : ViewCell, IViewFor<TViewModel>
     where TViewModel : class
 {
