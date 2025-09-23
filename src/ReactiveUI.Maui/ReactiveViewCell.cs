@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using Microsoft.Maui.Controls;
 
 namespace ReactiveUI.Maui;
@@ -17,6 +18,7 @@ namespace ReactiveUI.Maui;
 [RequiresDynamicCode("ReactiveViewCell uses methods that require dynamic code generation")]
 [RequiresUnreferencedCode("ReactiveViewCell uses methods that may require unreferenced code")]
 #endif
+[Obsolete("ListView and its cells are obsolete in .NET MAUI, please use CollectionView with a DataTemplate and a ReactiveContentView-based view instead. This will be removed in a future release.")]
 public partial class ReactiveViewCell<TViewModel> : ViewCell, IViewFor<TViewModel>
     where TViewModel : class
 {
