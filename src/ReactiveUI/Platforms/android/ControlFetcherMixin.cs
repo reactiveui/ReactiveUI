@@ -191,12 +191,12 @@ public static partial class ControlFetcherMixin
         return resolveStrategy switch
         {
             ResolveStrategy.ExplicitOptIn =>
-                members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+                members.Where(static member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
             ResolveStrategy.ExplicitOptOut =>
-                members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
+                members.Where(static member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
 
             // Implicit matches the Default.
-            _ => members.Where(member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+            _ => members.Where(static member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
         };
     }
 
@@ -235,23 +235,23 @@ public static partial class ControlFetcherMixin
 
         var ids = _controlIds.GetOrAdd(
                                        assembly,
-                                       currentAssembly =>
+                                       static currentAssembly =>
                                        {
 #if NET8_0_OR_GREATER
                                             var resources = Assembly.Load(currentAssembly
                                                             .GetReferencedAssemblies()
-                                                            .First(an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
+                                                            .First(static an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
                                                             .GetModules()
-                                                            .SelectMany(x => x.GetTypes())
-                                                            .First(x => x.Name == "ResourceConstant");
+                                                            .SelectMany(static x => x.GetTypes())
+                                                            .First(static x => x.Name == "ResourceConstant");
 #else
                                             var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 #endif
 
                                             var idType = resources.GetNestedType("Id") ?? throw new InvalidOperationException("Id is not a valid nested type in the resources.");
                                             return idType.GetFields()
-                                                        .Where(x => x.FieldType == typeof(int))
-                                                        .ToDictionary(k => k.Name, v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
+                                                        .Where(static x => x.FieldType == typeof(int))
+                                                        .ToDictionary(static k => k.Name, static v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
                                        });
 
         return ids[name];

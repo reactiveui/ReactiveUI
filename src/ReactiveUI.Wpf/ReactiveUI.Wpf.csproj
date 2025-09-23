@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!--
-    Added 19041 target as a workaround for System.Reactive targeting net5.0-windows10.0.19041.0
-    When 19041 is selected by the end user it causes the DispatcherScheduler in System.Reactive to be exposed and used.
-    -->
-    <TargetFrameworks>$(WindowsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
     <UseWpf>true</UseWpf>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;netframework;netcore</PackageTags>
+    <IsAotCompatible>false</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +17,7 @@
     <Compile Remove="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs;Rx\**\Control*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework) == 'net462' or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net46')) or $(TargetFramework.EndsWith('-windows10.0.17763.0'))">
     <Compile Include="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs" />
   </ItemGroup>
 </Project>

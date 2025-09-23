@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for WinUI Desktop</PackageDescription>
     <RootNamespace>ReactiveUI.WinUI.Desktop</RootNamespace>
@@ -14,19 +14,24 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+  <!-- Packages only on Windows -->
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
     <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.Maui\common\**\*.cs" LinkBase="common" />
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+    <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common" />
     <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs" />
     <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs" />
     <Compile Include="..\ReactiveUI.Maui\Registrations.cs" />
+  </ItemGroup>
+
+  <!-- Strip all sources off Windows so the fallback TFM builds an empty assembly -->
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) != 'true'">
+    <Compile Remove="**\*.cs" />
   </ItemGroup>
 </Project>

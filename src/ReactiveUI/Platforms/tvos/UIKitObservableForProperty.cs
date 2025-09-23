@@ -21,17 +21,17 @@ public class UIKitObservableForProperty : ObservableForPropertyBase
     /// </summary>
     public UIKitObservableForProperty()
     {
-        Register(typeof(UIControl), "Value", 20, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-        Register(typeof(UITextField), "Text", 30, (s, p) => ObservableFromNotification(s, p, UITextField.TextFieldTextDidChangeNotification));
-        Register(typeof(UITextView), "Text", 30, (s, p) => ObservableFromNotification(s, p, UITextView.TextDidChangeNotification));
-        Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-        Register(typeof(UISegmentedControl), "SelectedSegment", 30, (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+        Register(typeof(UIControl), "Value", 20, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+        Register(typeof(UITextField), "Text", 30, static (s, p) => ObservableFromNotification(s, p, UITextField.TextFieldTextDidChangeNotification));
+        Register(typeof(UITextView), "Text", 30, static (s, p) => ObservableFromNotification(s, p, UITextView.TextDidChangeNotification));
+        Register(typeof(UISegmentedControl), "SelectedSegment", 30, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+        Register(typeof(UISegmentedControl), "SelectedSegment", 30, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
 
         // Warning: This will stomp the Control's delegate
-        Register(typeof(UITabBar), "SelectedItem", 30, (s, p) => ObservableFromEvent(s, p, "ItemSelected"));
+        Register(typeof(UITabBar), "SelectedItem", 30, static (s, p) => ObservableFromEvent(s, p, "ItemSelected"));
 
         // Warning: This will stomp the Control's delegate
-        Register(typeof(UISearchBar), "Text", 30, (s, p) => ObservableFromEvent(s, p, "TextChanged"));
+        Register(typeof(UISearchBar), "Text", 30, static (s, p) => ObservableFromEvent(s, p, "TextChanged"));
     }
 
     /// <summary>

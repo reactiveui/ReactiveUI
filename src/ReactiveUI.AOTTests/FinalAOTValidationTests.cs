@@ -17,12 +17,13 @@ namespace ReactiveUI.AOTTests;
 /// Final validation tests that demonstrate the complete AOT compatibility of ReactiveUI.
 /// These tests validate both the areas that work seamlessly in AOT and those that require suppression.
 /// </summary>
+[TestFixture]
 public class FinalAOTValidationTests
 {
     /// <summary>
     /// Comprehensive test that validates all the AOT-compatible patterns work together.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     public void CompleteAOTCompatibleWorkflow_WorksSeamlessly()
@@ -54,11 +55,14 @@ public class FinalAOTValidationTests
         var validationResult = interaction.Handle("long string").Wait();
         messageBus.SendMessage("workflow complete");
 
-        // Verify everything works
-        Assert.Equal("test value", property.Value);
-        Assert.Equal("test value", helper.Value);
-        Assert.True(validationResult);
-        Assert.Contains("workflow complete", messages);
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify everything works
+            Assert.That(property.Value, Is.EqualTo("test value"));
+            Assert.That(helper.Value, Is.EqualTo("test value"));
+            Assert.That(validationResult, Is.True);
+            Assert.That(messages, Does.Contain("workflow complete"));
+        }
 
         // Cleanup
         helper.Dispose();
@@ -69,7 +73,7 @@ public class FinalAOTValidationTests
     /// Tests that demonstrate the proper way to use ReactiveCommand in AOT scenarios.
     /// This shows that even AOT-incompatible features work when properly suppressed.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Demonstrating ReactiveCommand usage with proper AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Demonstrating ReactiveCommand usage with proper AOT suppression")]
     public void ReactiveCommand_CompleteWorkflow_WorksWithSuppression()
@@ -97,22 +101,25 @@ public class FinalAOTValidationTests
         taskCommand.Execute().Subscribe();
         observableCommand.Execute().Subscribe();
 
-        // Verify results
-        Assert.Equal("executed", simpleResult);
-        Assert.Equal("value: 42", paramResult);
-        Assert.Equal("async result", taskResult);
-        Assert.Equal("observable result", observableResult);
+        using (Assert.EnterMultipleScope())
+        {
+            // Verify results
+            Assert.That(simpleResult, Is.EqualTo("executed"));
+            Assert.That(paramResult, Is.EqualTo("value: 42"));
+            Assert.That(taskResult, Is.EqualTo("async result"));
+            Assert.That(observableResult, Is.EqualTo("observable result"));
 
-        // Test command states
-        Assert.True(simpleCommand.CanExecute.FirstAsync().Wait());
-        Assert.False(simpleCommand.IsExecuting.FirstAsync().Wait());
+            // Test command states
+            Assert.That(simpleCommand.CanExecute.FirstAsync().Wait(), Is.True);
+            Assert.That(simpleCommand.IsExecuting.FirstAsync().Wait(), Is.False);
+        }
     }
 
     /// <summary>
     /// Tests that demonstrate mixed usage scenarios where some features are AOT-compatible
     /// and others require suppression, showing how to build complex applications.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing mixed AOT scenario with ReactiveCommand")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing mixed AOT scenario with ReactiveCommand")]
     public void MixedAOTScenario_ComplexApplication_Works()
@@ -142,12 +149,15 @@ public class FinalAOTValidationTests
             command.Execute().Subscribe();
             var result = interaction.Handle(Unit.Default).Wait();
 
-            Assert.Equal("updated", property.Value);
-            Assert.True(result);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(property.Value, Is.EqualTo("updated"));
+                Assert.That(result, Is.True);
+            }
         });
 
         viewModel.Activator.Activate();
-        Assert.Equal(1, activationCount);
+        Assert.That(activationCount, Is.EqualTo(1));
 
         viewModel.Activator.Deactivate();
     }
@@ -155,7 +165,7 @@ public class FinalAOTValidationTests
     /// <summary>
     /// Tests that verify dependency injection patterns work in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     public void DependencyInjection_AdvancedScenarios_WorkInAOT()
@@ -163,11 +173,11 @@ public class FinalAOTValidationTests
         var resolver = Locator.CurrentMutable;
 
         // Register services
-        resolver.Register<IScheduler>(() => CurrentThreadScheduler.Instance);
+        resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
         resolver.RegisterConstant<string>("test service");
 
         // Create a factory that uses registered services
-        resolver.Register<Func<ReactiveProperty<string>>>(() => () =>
+        resolver.Register<Func<ReactiveProperty<string>>>(static () => static () =>
         {
             var scheduler = Locator.Current.GetService<IScheduler>();
             var initialValue = Locator.Current.GetService<string>();
@@ -178,14 +188,14 @@ public class FinalAOTValidationTests
         var factory = Locator.Current.GetService<Func<ReactiveProperty<string>>>();
         var property = factory!();
 
-        Assert.Equal("test service", property.Value);
+        Assert.That(property.Value, Is.EqualTo("test service"));
         property.Dispose();
     }
 
     /// <summary>
     /// Tests that demonstrate error handling and disposal patterns in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty in AOT scenario with proper suppression")]
     public void ErrorHandlingAndDisposal_PatternsWork_InAOT()
@@ -206,10 +216,10 @@ public class FinalAOTValidationTests
                 .DisposeWith(disposables);
 
             source.OnNext("success");
-            Assert.Equal("success", property.Value);
+            Assert.That(property.Value, Is.EqualTo("success"));
 
             source.OnError(new InvalidOperationException("test error"));
-            Assert.Equal("Error: test error", property.Value);
+            Assert.That(property.Value, Is.EqualTo("Error: test error"));
         }
         finally
         {
@@ -220,7 +230,7 @@ public class FinalAOTValidationTests
     /// <summary>
     /// Final validation that all key ReactiveUI patterns have been tested for AOT compatibility.
     /// </summary>
-    [Fact]
+    [Test]
     public void AllKeyReactiveUIFeatures_TestedForAOT()
     {
         var testedFeatures = new HashSet<string>
@@ -241,10 +251,6 @@ public class FinalAOTValidationTests
         };
 
         // Verify we have comprehensive coverage
-        Assert.True(testedFeatures.Count >= 13, "Should test at least 13 key ReactiveUI features");
-
-        // This test serves as documentation that we have validated
-        // the complete ReactiveUI feature set for AOT compatibility
-        Assert.True(true, "Comprehensive AOT testing completed successfully");
+        Assert.That(testedFeatures, Has.Count.GreaterThanOrEqualTo(13), "Should test at least 13 key ReactiveUI features");
     }
 }

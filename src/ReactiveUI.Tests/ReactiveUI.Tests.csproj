@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net472;net8.0-windows10.0.17763.0;net9.0-windows10.0.17763.0</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -12,6 +11,7 @@
     <ProjectReference Include="..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="RandomTests.cs" />
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>
@@ -31,7 +31,7 @@
         <Compile Remove="Platforms\windows-xaml\Api\XamlApiApprovalTests.cs" />
       </ItemGroup>
     </When>
-    <When Condition=" $(TargetFramework.StartsWith('net47'))">
+    <When Condition=" $(TargetFramework.StartsWith('net4'))">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>
@@ -50,18 +50,6 @@
   </Choose>
   <ItemGroup>
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\AlwaysFalseModeDetector.cs" />
-    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml.cs" />
-    <None Remove="Platforms\wpf\Mocks\CanExecuteMock\LiveModeDetector.cs" />
-    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator.cs" />
-    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator1.cs" />
-    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator2.cs" />
-    <None Remove="Platforms\wpf\Mocks\FakeViewWithContractLocator3.cs" />
-    <None Remove="Platforms\wpf\WpfGeneralFixture.cs" />
-    <None Remove="Platforms\wpf\WpfGeneralFixtureApp.cs" />
-    <None Remove="xunit.runner.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Platforms\Winforms\Mocks\TestForm.Designer.cs">

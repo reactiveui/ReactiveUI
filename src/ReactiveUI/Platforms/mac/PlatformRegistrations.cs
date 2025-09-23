@@ -22,19 +22,19 @@ public class PlatformRegistrations : IWantsToRegisterStuff
     {
         ArgumentNullException.ThrowIfNull(registerFunction);
 
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new AppKitObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
-        registerFunction(() => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new AppKitObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
 
         if (!ModeDetector.InUnitTestRunner())
         {
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
         }
 
-        registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+        registerFunction(static () => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
     }
 }

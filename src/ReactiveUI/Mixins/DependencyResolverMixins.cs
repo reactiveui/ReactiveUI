@@ -99,7 +99,7 @@ public static class DependencyResolverMixins
 
         // for each type that implements IViewFor
         foreach (var ti in assembly.DefinedTypes
-                                   .Where(ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
+                                   .Where(static ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
         {
             // Skip types explicitly marked to be excluded from auto view registration
             if (ti.GetCustomAttribute<ExcludeFromViewRegistrationAttribute>() is not null)
@@ -108,7 +108,7 @@ public static class DependencyResolverMixins
             }
 
             // grab the first _implemented_ interface that also implements IViewFor, this should be the expected IViewFor<>`
-            var ivf = ti.ImplementedInterfaces.FirstOrDefault(t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
+            var ivf = ti.ImplementedInterfaces.FirstOrDefault(static t => t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
 
             // need to check for null because some classes may implement IViewFor but not IViewFor<T> - we don't care about those
             if (ivf is not null)
@@ -157,6 +157,7 @@ public static class DependencyResolverMixins
 
 #if NET6_0_OR_GREATER
     [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
+    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
 #endif
     private static void ProcessRegistrationForNamespace(string namespaceName, AssemblyName assemblyName, IMutableDependencyResolver resolver)
     {

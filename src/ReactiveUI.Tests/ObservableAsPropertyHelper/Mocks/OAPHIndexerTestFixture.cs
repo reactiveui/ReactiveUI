@@ -20,14 +20,14 @@ internal class OAPHIndexerTestFixture : ReactiveObject
         switch (test)
         {
             case 0:
-                var temp = this.WhenAnyValue(f => f.Text)
-                                           .ToProperty(this, f => f["Whatever"], scheduler: scheduler)
+                var temp = this.WhenAnyValue(static f => f.Text)
+                                           .ToProperty(this, static f => f["Whatever"], scheduler: scheduler)
                                            .Value;
                 break;
 
             case 1:
-                var temp1 = this.WhenAnyValue(f => f.Text)
-                                           .ToProperty(new ReactiveObject(), f => f.ToString(), scheduler: scheduler)
+                var temp1 = this.WhenAnyValue(static f => f.Text)
+                                           .ToProperty(new ReactiveObject(), static f => f.ToString(), scheduler: scheduler)
                                            .Value;
                 break;
 

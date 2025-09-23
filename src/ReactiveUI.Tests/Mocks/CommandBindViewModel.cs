@@ -20,8 +20,8 @@ public class CommandBindViewModel : ReactiveObject
     /// </summary>
     public CommandBindViewModel()
     {
-        Command1 = ReactiveCommand.Create<int, Unit>(_ => Unit.Default);
-        Command2 = ReactiveCommand.Create(() => { });
+        Command1 = ReactiveCommand.Create<int, Unit>(static _ => Unit.Default);
+        Command2 = ReactiveCommand.Create(static () => { });
         NestedViewModel = new FakeNestedViewModel();
     }
 

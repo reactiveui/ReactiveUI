@@ -13,31 +13,31 @@ public class BindingTypeConvertersTest
     /// <summary>
     /// Tests that equality type converter do reference cast should convert null nullable values.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverterDoReferenceCastShouldConvertNullNullableValues()
     {
         double? nullDouble = null;
         double? expected = null;
         var result = EqualityTypeConverter.DoReferenceCast(nullDouble, typeof(double?));
-        Assert.Equal(expected, result);
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     /// <summary>
     /// Tests that equality type converter do reference cast should convert nullable values.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverterDoReferenceCastShouldConvertNullableValues()
     {
         double? doubleValue = 1.0;
         double? expected = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double?));
-        Assert.Equal(expected, result);
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     /// <summary>
     /// Tests that equality type converter do reference cast should throw when converting from null nullable to value.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverterDoReferenceCastShouldThrowWhenConvertingFromNullNullableToValueType()
     {
         double? nullDouble = null;
@@ -47,23 +47,23 @@ public class BindingTypeConvertersTest
     /// <summary>
     /// Tests that equality type converter do reference cast nullable to value.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverterDoReferenceCastNullableToValueType()
     {
         double? doubleValue = 1.0;
         double? expected = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
-        Assert.Equal(expected, result);
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     /// <summary>
     /// Tests that equality type converter do reference cast should convert value types.
     /// </summary>
-    [Fact]
+    [Test]
     public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
     {
         const double doubleValue = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
-        Assert.Equal(doubleValue, result);
+        Assert.That(result, Is.EqualTo(doubleValue));
     }
 }

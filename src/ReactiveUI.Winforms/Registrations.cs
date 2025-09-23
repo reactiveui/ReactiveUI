@@ -29,23 +29,23 @@ public class Registrations : IWantsToRegisterStuff
         }
 #endif
 
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
 
-        registerFunction(() => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
-        registerFunction(() => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(() => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
-        registerFunction(() => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
-        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(static () => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
+        registerFunction(static () => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
+        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
         if (!ModeDetector.InUnitTestRunner())
         {
             WindowsFormsSynchronizationContext.AutoInstall = true;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
         }
     }
 }

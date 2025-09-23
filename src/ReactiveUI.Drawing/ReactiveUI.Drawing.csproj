@@ -1,19 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;$(MobileTargetFrameworks)</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);$(WindowsTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Drawing</AssemblyName>
     <RootNamespace>ReactiveUI.Drawing</RootNamespace>
     <PackageDescription>A extension to the ReactiveUI platform that provides Splat bitmap operation support.</PackageDescription>
     <PackageId>ReactiveUI.Drawing</PackageId>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
-  
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.57</WindowsSdkPackageVersion>
+    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Resources\**" />
     <EmbeddedResource Remove="Resources\**" />

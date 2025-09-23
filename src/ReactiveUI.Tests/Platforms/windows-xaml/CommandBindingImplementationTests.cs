@@ -7,7 +7,6 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
-using FactAttribute = Xunit.WpfFactAttribute;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -15,33 +14,37 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests with the command binding implementation.
 /// </summary>
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class CommandBindingImplementationTests
 {
     /// <summary>
     /// Tests the command bind by name wireup.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindByNameWireup()
     {
         var view = new CommandBindView { ViewModel = new() };
 
-        Assert.Null(view.Command1.Command);
+        Assert.That(view.Command1.Command, Is.Null);
 
-        var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
-        Assert.Equal(view.ViewModel.Command1, view.Command1.Command);
+        var disp = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
+        Assert.That(view.Command1.Command, Is.EqualTo(view.ViewModel.Command1));
 
-        var newCmd = ReactiveCommand.Create<int>(_ => { });
+        var newCmd = ReactiveCommand.Create<int>(static _ => { });
         view.ViewModel.Command1 = newCmd;
-        Assert.Equal(newCmd, view.Command1.Command);
+        Assert.That(view.Command1.Command, Is.EqualTo(newCmd));
 
         disp.Dispose();
-        Assert.Null(view.Command1.Command);
+        Assert.That(view.Command1.Command, Is.Null);
     }
 
     /// <summary>
     /// Tests the command bind nested command wireup.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindNestedCommandWireup()
     {
         var vm = new CommandBindViewModel
@@ -51,89 +54,94 @@ public class CommandBindingImplementationTests
 
         var view = new CommandBindView { ViewModel = vm };
 
-        view.BindCommand(view.ViewModel, m => m.NestedViewModel.NestedCommand, x => x.Command1);
+        view.BindCommand(view.ViewModel, static m => m.NestedViewModel.NestedCommand, static x => x.Command1);
 
-        Assert.Equal(view.ViewModel.NestedViewModel.NestedCommand, view.Command1.Command);
+        Assert.That(view.Command1.Command, Is.EqualTo(view.ViewModel.NestedViewModel.NestedCommand));
     }
 
     /// <summary>
     /// Tests the command bind sets initial enabled state true.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsInitialEnabledState_True()
     {
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
-        Assert.True(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.True);
     }
 
     /// <summary>
     /// Tests the command bind sets disables command when can execute changed.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsDisablesCommandWhenCanExecuteChanged()
     {
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
-        Assert.True(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.True);
 
         canExecute1.OnNext(false);
 
-        Assert.False(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.False);
     }
 
     /// <summary>
     /// Tests the command bind sets initial enabled state false.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindSetsInitialEnabledState_False()
     {
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(false);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
-        Assert.False(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.False);
     }
 
     /// <summary>
     /// Tests the command bind raises can execute changed on bind.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindRaisesCanExecuteChangedOnBind()
     {
         var view = new CommandBindView { ViewModel = new() };
 
         var canExecute1 = new BehaviorSubject<bool>(true);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute1);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1);
+        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
-        Assert.True(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.True);
 
         // Now  change to a disabled cmd
         var canExecute2 = new BehaviorSubject<bool>(false);
-        view.ViewModel.Command1 = ReactiveCommand.Create<int>(_ => { }, canExecute2);
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute2);
 
-        Assert.False(view.Command1.IsEnabled);
+        Assert.That(view.Command1.IsEnabled, Is.False);
     }
 
     /// <summary>
     /// Tests the command bind with parameter expression.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithParameterExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -145,17 +153,18 @@ public class CommandBindingImplementationTests
 
         view.ViewModel.Value = 42;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(42, received);
+        Assert.That(received, Is.EqualTo(42));
 
         view.ViewModel.Value = 13;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(13, received);
+        Assert.That(received, Is.EqualTo(13));
     }
 
     /// <summary>
     /// Tests the command bind with delay set vm parameter expression.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithDelaySetVMParameterExpression()
     {
         var view = new ReactiveObjectCommandBindView
@@ -170,17 +179,18 @@ public class CommandBindingImplementationTests
 
         view.ViewModel.Value = 42;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(42, received);
+        Assert.That(received, Is.EqualTo(42));
 
         view.ViewModel.Value = 13;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(13, received);
+        Assert.That(received, Is.EqualTo(13));
     }
 
     /// <summary>
     /// Tests the command bind with delay set vm parameter no inpc expression.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithDelaySetVMParameterNoINPCExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -193,21 +203,22 @@ public class CommandBindingImplementationTests
         view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
-        Assert.Equal(10, received);
+        Assert.That(received, Is.EqualTo(10));
 
         view.ViewModel.Value = 42;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(42, received);
+        Assert.That(received, Is.EqualTo(42));
 
         view.ViewModel.Value = 13;
         view.Command1.RaiseCustomClick();
-        Assert.Equal(13, received);
+        Assert.That(received, Is.EqualTo(13));
     }
 
     /// <summary>
     /// Tests the command bind with parameter observable.
     /// </summary>
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void CommandBindWithParameterObservable()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -220,11 +231,11 @@ public class CommandBindingImplementationTests
         var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
-        Assert.Equal(10, received);
+        Assert.That(received, Is.EqualTo(10));
 
         view.ViewModel.Value = 42;
         view.Command1.RaiseCustomClick();
 
-        Assert.Equal(42, received);
+        Assert.That(received, Is.EqualTo(42));
     }
 }

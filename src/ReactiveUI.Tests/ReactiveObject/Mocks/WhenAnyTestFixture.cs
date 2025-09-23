@@ -14,7 +14,7 @@ public class WhenAnyTestFixture : ReactiveObject
     [IgnoreDataMember]
     [JsonIgnore]
 #pragma warning disable SA1401 // Fields should be private
-    internal ObservableAsPropertyHelper<int?>? _accountsFound;
+    internal ObservableAsPropertyHelper<int>? _accountsFound;
 
 #pragma warning restore SA1401 // Fields should be private
 
@@ -72,7 +72,7 @@ public class WhenAnyTestFixture : ReactiveObject
     /// </summary>
     [IgnoreDataMember]
     [JsonIgnore]
-    public int? AccountsFound => _accountsFound!.Value;
+    public int AccountsFound => _accountsFound!.Value;
 
     /// <summary>
     /// Gets or sets the value1.

@@ -21,7 +21,7 @@ public static class Reflection
     [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
     [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<string, Type?> _typeCache = new(
-        (type, _) => GetTypeHelper(type),
+        static (type, _) => GetTypeHelper(type),
         20);
 
     /// <summary>
@@ -364,7 +364,7 @@ public static class Reflection
         }
 
         // Find the EventArgs type parameter of the event via digging around via reflection
-        return ei.EventHandlerType.GetRuntimeMethods().First(x => x.Name == "Invoke").GetParameters()[1].ParameterType;
+        return ei.EventHandlerType.GetRuntimeMethods().First(static x => x.Name == "Invoke").GetParameters()[1].ParameterType;
     }
 
     /// <summary>

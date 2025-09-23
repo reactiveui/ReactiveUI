@@ -150,7 +150,7 @@ public static class ExpressionMixins
 
         if (expression.NodeType == ExpressionType.Index)
         {
-            return ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(c => c.Value).ToArray();
+            return ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(static c => c.Value).ToArray();
         }
 
         return null;

@@ -46,10 +46,38 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (hasEventTarget)
+        {
+            return 0;
+        }
+
+        var match = _config.Keys
+                           .Where(x => x.IsAssignableFrom(typeof(T)))
+                           .OrderByDescending(x => _config[x].Affinity)
+                           .FirstOrDefault();
+
+        if (match is null)
+        {
+            return 0;
+        }
+
+        var typeProperties = _config[match];
+        return typeProperties.Affinity;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
     [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
     [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
 #endif
-    public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+    public IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         ArgumentNullException.ThrowIfNull(target);
 
@@ -61,7 +89,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                            .FirstOrDefault() ?? throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
         var typeProperties = _config[match];
 
-        return typeProperties.CreateBinding?.Invoke(command, target, commandParameter);
+        return typeProperties.CreateBinding?.Invoke(command, target, commandParameter) ?? Disposable.Empty;
     }
 
     /// <inheritdoc/>

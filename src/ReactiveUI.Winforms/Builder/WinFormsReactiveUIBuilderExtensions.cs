@@ -16,13 +16,17 @@ public static class WinFormsReactiveUIBuilderExtensions
     /// <value>
     /// The win forms main thread scheduler.
     /// </value>
-    public static IScheduler WinFormsMainThreadScheduler { get; } = new WaitForDispatcherScheduler(() => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+    public static IScheduler WinFormsMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
 
     /// <summary>
     /// Configures ReactiveUI for WinForms platform with appropriate schedulers.
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
+#endif
     public static IReactiveUIBuilder WithWinForms(this IReactiveUIBuilder builder)
     {
         if (builder is null)

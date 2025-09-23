@@ -12,12 +12,13 @@ namespace ReactiveUI.AOTTests;
 /// Tests to verify that ReactiveUI works correctly in AOT (Ahead-of-Time) compilation scenarios.
 /// These tests ensure that the library doesn't rely on reflection in ways that break with AOT.
 /// </summary>
+[TestFixture]
 public class AOTCompatibilityTests
 {
     /// <summary>
     /// Tests that ReactiveObjects can be created and property changes work in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void ReactiveObject_PropertyChanges_WorksInAOT()
     {
         var obj = new TestReactiveObject();
@@ -26,14 +27,17 @@ public class AOTCompatibilityTests
         obj.PropertyChanged += (s, e) => propertyChanged = true;
         obj.TestProperty = "New Value";
 
-        Assert.True(propertyChanged);
-        Assert.Equal("New Value", obj.TestProperty);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(propertyChanged, Is.True);
+            Assert.That(obj.TestProperty, Is.EqualTo("New Value"));
+        }
     }
 
     /// <summary>
     /// Tests that ReactiveCommands can be created and executed in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing AOT-incompatible ReactiveCommand.Create method")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing AOT-incompatible ReactiveCommand.Create method")]
     public void ReactiveCommand_Create_WorksInAOT()
@@ -43,13 +47,13 @@ public class AOTCompatibilityTests
 
         command.Execute().Subscribe();
 
-        Assert.True(executed);
+        Assert.That(executed, Is.True);
     }
 
     /// <summary>
     /// Tests that ReactiveCommands with parameters work in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing AOT-incompatible ReactiveCommand.Create method")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing AOT-incompatible ReactiveCommand.Create method")]
     public void ReactiveCommand_CreateWithParameter_WorksInAOT()
@@ -59,13 +63,13 @@ public class AOTCompatibilityTests
 
         command.Execute("test").Subscribe();
 
-        Assert.Equal("test", result);
+        Assert.That(result, Is.EqualTo("test"));
     }
 
     /// <summary>
     /// Tests that ObservableAsPropertyHelper works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     public void ObservableAsPropertyHelper_WorksInAOT()
@@ -76,13 +80,13 @@ public class AOTCompatibilityTests
         var helper = Observable.Return("computed value")
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("computed value", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("computed value"));
     }
 
     /// <summary>
     /// Tests that WhenAnyValue works with string property names in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing WhenAnyValue which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing WhenAnyValue which requires AOT suppression")]
     public void WhenAnyValue_StringPropertyNames_WorksInAOT()
@@ -96,13 +100,13 @@ public class AOTCompatibilityTests
 
         obj.TestProperty = "test value";
 
-        Assert.Equal("test value", observedValue);
+        Assert.That(observedValue, Is.EqualTo("test value"));
     }
 
     /// <summary>
     /// Tests that interaction requests work in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void Interaction_WorksInAOT()
     {
         var interaction = new Interaction<string, bool>();
@@ -116,14 +120,17 @@ public class AOTCompatibilityTests
 
         var result = interaction.Handle("test").Wait();
 
-        Assert.True(called);
-        Assert.True(result);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(called, Is.True);
+            Assert.That(result, Is.True);
+        }
     }
 
     /// <summary>
     /// Tests that INPC property observation works in AOT.
     /// </summary>
-    [Fact]
+    [Test]
     public void INPCPropertyObservation_WorksInAOT()
     {
         var obj = new TestReactiveObject();
@@ -134,14 +141,14 @@ public class AOTCompatibilityTests
         obj.TestProperty = "value1";
         obj.TestProperty = "value2";
 
-        Assert.Contains(nameof(TestReactiveObject.TestProperty), changes);
-        Assert.Equal(2, changes.Count(x => x == nameof(TestReactiveObject.TestProperty)));
+        Assert.That(changes, Does.Contain(nameof(TestReactiveObject.TestProperty)));
+        Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty)), Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests that ReactiveCommand.CreateFromObservable works in AOT scenarios.
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing AOT-incompatible ReactiveCommand.CreateFromObservable method")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing AOT-incompatible ReactiveCommand.CreateFromObservable method")]
     public void ReactiveCommand_CreateFromObservable_WorksInAOT()
@@ -152,13 +159,13 @@ public class AOTCompatibilityTests
         command.Subscribe(x => result = x);
         command.Execute().Subscribe();
 
-        Assert.Equal(42, result);
+        Assert.That(result, Is.EqualTo(42));
     }
 
     /// <summary>
     /// Tests that string-based property bindings work in AOT (preferred pattern).
     /// </summary>
-    [Fact]
+    [Test]
     [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ToProperty with string-based property names which requires AOT suppression")]
     public void StringBasedPropertyBinding_WorksInAOT()
@@ -167,6 +174,6 @@ public class AOTCompatibilityTests
         var helper = Observable.Return("test")
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        Assert.Equal("test", helper.Value);
+        Assert.That(helper.Value, Is.EqualTo("test"));
     }
 }

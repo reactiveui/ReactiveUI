@@ -12,51 +12,52 @@ namespace ReactiveUI.AOTTests;
 /// <summary>
 /// StringBasedObservationTests.
 /// </summary>
+[TestFixture]
 public class StringBasedObservationTests
 {
     /// <summary>
     /// Observables for property string name emits initial then changes.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableForProperty_StringName_EmitsInitialThenChanges()
     {
         var s = new Sample { IntValue = 5 };
         var values = new List<int>();
 
         s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), beforeChange: false, skipInitial: false, isDistinct: true)
-         .Select(x => x.Value)
+         .Select(static x => x.Value)
          .Subscribe(values.Add);
 
         s.IntValue = 7;
         s.IntValue = 7; // distinct should suppress duplicate
         s.IntValue = 9;
 
-        Assert.Equal(new[] { 5, 7, 9 }, values);
+        Assert.That(values, Is.EqualTo([5, 7, 9]));
     }
 
     /// <summary>
     /// Observables for property before change emits before setter.
     /// </summary>
-    [Fact]
+    [Test]
     public void ObservableForProperty_BeforeChange_EmitsBeforeSetter()
     {
         var s = new Sample { IntValue = 1 };
         var before = new List<int>();
 
         s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), beforeChange: true, skipInitial: true, isDistinct: false)
-         .Select(x => x.Value)
+         .Select(static x => x.Value)
          .Subscribe(before.Add);
 
         s.IntValue = 2; // should emit previous value (1) before change
         s.IntValue = 3; // should emit 2
 
-        Assert.Equal(new[] { 1, 2 }, before);
+        Assert.That(before, Is.EqualTo([1, 2]));
     }
 
     /// <summary>
     /// Whens any value string name works and is distinct.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValue_StringName_WorksAndIsDistinct()
     {
         var s = new Sample { Name = "a" };
@@ -69,13 +70,13 @@ public class StringBasedObservationTests
         s.Name = "b"; // duplicate should be filtered by default overload
         s.Name = "c";
 
-        Assert.Equal(new[] { "a", "b", "c" }, values);
+        Assert.That(values, Is.EqualTo(["a", "b", "c"]));
     }
 
     /// <summary>
     /// Whens any value string name not distinct when requested.
     /// </summary>
-    [Fact]
+    [Test]
     public void WhenAnyValue_StringName_NotDistinctWhenRequested()
     {
         var s = new Sample { Name = "x" };
@@ -87,7 +88,7 @@ public class StringBasedObservationTests
         s.Name = "y";
         s.Name = "y"; // should be included
 
-        Assert.Equal(new[] { "x", "y", "y" }, values);
+        Assert.That(values, Is.EqualTo(["x", "y", "y"]));
     }
 
     private sealed class Sample : ReactiveObject

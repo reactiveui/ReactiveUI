@@ -9,19 +9,21 @@ namespace ReactiveUI.Tests.API;
 /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
+[Platform(Include = "Win")]
+[TestFixture]
 public class ApiApprovalTests
 {
     /// <summary>
     /// Generates public API for the ReactiveUI.Testing API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
-    [Fact]
+    [Test]
     public Task Testing() => typeof(Testing.SchedulerExtensions).Assembly.CheckApproval(["ReactiveUI"]);
 
     /// <summary>
     /// Generates public API for the ReactiveUI API.
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
-    [Fact]
+    [Test]
     public Task ReactiveUI() => typeof(RxApp).Assembly.CheckApproval(["ReactiveUI"]);
 }

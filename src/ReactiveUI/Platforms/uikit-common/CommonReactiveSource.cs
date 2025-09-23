@@ -120,7 +120,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             view.ViewModel = vm;
         }
 
-        var initializeCellAction = section?.InitializeCellAction ?? (_ => { });
+        var initializeCellAction = section?.InitializeCellAction ?? (static _ => { });
         initializeCellAction(cell);
 
         return cell;

@@ -36,7 +36,7 @@ public static class ObservableFuncMixins
 
         var sParam = Reflection.Rewrite(expression.Body);
         return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxApp.SuppressViewCommandBindingMessage)
-                     .Select(x => x.GetValue())
+                     .Select(static x => x.GetValue())
                      .Retry();
     }
 }

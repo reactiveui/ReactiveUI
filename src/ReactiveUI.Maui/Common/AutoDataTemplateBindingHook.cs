@@ -22,7 +22,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     /// <summary>
     /// Gets the default item template.
     /// </summary>
-    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
+    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
         const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
                  "xmlns:xaml='clr-namespace:ReactiveUI'>" +
