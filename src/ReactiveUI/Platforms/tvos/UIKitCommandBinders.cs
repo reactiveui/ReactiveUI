@@ -31,5 +31,8 @@ public class UIKitCommandBinders : FlexibleCommandBinder
     /// <summary>
     /// Gets the UIKitCommandBinders instance.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Deliberate")]
+#endif
     public static Lazy<UIKitCommandBinders> Instance { get; } = new();
 }

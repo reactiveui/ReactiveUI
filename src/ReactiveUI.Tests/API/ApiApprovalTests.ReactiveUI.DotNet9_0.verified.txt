@@ -1181,6 +1181,10 @@ namespace ReactiveUI
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Refresh uses RaisePropertyChanged which may require unreferenced code")]
         public void Refresh() { }
         public System.IDisposable Subscribe(System.IObserver<T?> observer) { }
+        public static ReactiveUI.ReactiveProperty<T> Create() { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue) { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue, System.Reactive.Concurrency.IScheduler scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
     }
     [System.Runtime.Serialization.DataContract]
     public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
@@ -1322,6 +1326,11 @@ namespace ReactiveUI
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
+        public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
+    }
+    public static class RxSchedulers
+    {
+        public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
     }
     public class ScheduledSubject<T> : System.IDisposable, System.IObservable<T>, System.IObserver<T>, System.Reactive.Subjects.ISubject<T>, System.Reactive.Subjects.ISubject<T, T>
@@ -2242,6 +2251,7 @@ namespace ReactiveUI.Builder
         public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
         public override Splat.Builder.IAppBuilder WithCoreServices() { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(System.Action<T?> action) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(System.Action<T1?, T2?> action) { }
@@ -2264,6 +2274,8 @@ namespace ReactiveUI.Builder
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
