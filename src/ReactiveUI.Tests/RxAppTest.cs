@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
@@ -19,6 +20,19 @@ namespace ReactiveUI.Tests;
 [NonParallelizable]
 public class RxAppTest
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
+    }
     /// <summary>
     /// Tests that schedulers should be current thread in test runner.
     /// </summary>

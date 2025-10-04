@@ -1,6 +1,6 @@
 # Static State Test Isolation
 
-This directory documents the approach for handling static/global state in ReactiveUI tests.
+This directory contains helper classes for managing static/global state in ReactiveUI tests.
 
 ## Problem
 
@@ -10,44 +10,119 @@ ReactiveUI uses several static/global entry points for configuration:
 - `MessageBus.Current`
 - `Locator.Current` / `Locator.CurrentMutable` (from Splat)
 
-When tests access or modify these static states, they can cause interference between parallel test executions, leading to intermittent failures.
+When tests access or modify these static states, they can cause interference between test executions, leading to intermittent failures and hidden state pollution.
 
-## Solution: NonParallelizable Attribute
+## Solution: NonParallelizable + State Restoration
 
-The approach taken is to mark test fixtures that use static state as `[NonParallelizable]` to prevent concurrent access rather than attempting complex state snapshot/restore mechanisms.
+Tests that use static state should be marked `[NonParallelizable]` **AND** use state restoration scopes to ensure clean state between tests.
 
-**When to mark a test fixture as `[NonParallelizable]`:**
+### Available Helper Scopes
 
-1. The test calls `RxApp.EnsureInitialized()`
-2. The test modifies or reads `RxApp` properties (schedulers, SuspensionHost, etc.)
-3. The test accesses or modifies `Locator.CurrentMutable`
-4. The test uses `MessageBus.Current`
-5. The test creates instances that depend on service locator registrations (e.g., `HostTestFixture`)
+#### 1. RxAppSchedulersScope
 
-**Example:**
+Snapshots and restores `RxApp.MainThreadScheduler` and `RxApp.TaskpoolScheduler`.
+
+**Usage:**
 ```csharp
 [TestFixture]
 [NonParallelizable]
 public class MyTests
 {
-    [Test]
-    public void MyTest()
+    private RxAppSchedulersScope? _schedulersScope;
+
+    [SetUp]
+    public void SetUp()
     {
-        RxApp.EnsureInitialized();
-        // Test code that uses static state
+        _schedulersScope = new RxAppSchedulersScope();
+        // Now safe to modify RxApp schedulers
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
     }
 }
 ```
 
-## Why Not State Restoration?
+#### 2. MessageBusScope
 
-While it might seem appealing to create helper scopes that snapshot and restore static state, this approach has significant drawbacks:
+Snapshots and restores `MessageBus.Current`.
 
-1. **Splat's Locator API complexity**: `Locator.SetLocator()` requires `IDependencyResolver` but `Locator.Current` returns `IReadonlyDependencyResolver`, making proper restoration difficult.
-2. **Fragility**: Attempting to snapshot/restore complex DI container state is error-prone and can lead to subtle bugs.
-3. **Simplicity**: The `[NonParallelizable]` attribute is explicit, simple, and foolproof.
+**Usage:**
+```csharp
+[TestFixture]
+[NonParallelizable]
+public class MyTests
+{
+    private MessageBusScope? _messageBusScope;
 
-Tests that truly need to modify and restore state can do so manually in their `[SetUp]`/`[TearDown]` methods, but in most cases simply preventing parallel execution is sufficient.
+    [SetUp]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+        // Now safe to use or replace MessageBus.Current
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
+}
+```
+
+#### 3. StaticStateScope (Generic)
+
+A generic helper for capturing and restoring arbitrary static state using getter/setter pairs.
+
+**Usage:**
+```csharp
+[TestFixture]
+[NonParallelizable]
+public class MyTests
+{
+    private StaticStateScope? _stateScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _stateScope = new StaticStateScope(
+            () => MyClass.StaticProperty,
+            (object? value) => MyClass.StaticProperty = value,
+            () => AnotherClass.StaticField,
+            (object? value) => AnotherClass.StaticField = value);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _stateScope?.Dispose();
+    }
+}
+```
+
+## When to Use These Scopes
+
+**Always use state restoration scopes when:**
+
+1. The test calls `RxApp.EnsureInitialized()`
+2. The test modifies `RxApp` properties (schedulers, SuspensionHost, etc.)
+3. The test modifies `MessageBus.Current`
+4. The test accesses or modifies `Locator.CurrentMutable`
+5. The test creates instances that depend on service locator registrations
+
+**Why both NonParallelizable AND state restoration?**
+
+- `[NonParallelizable]` prevents concurrent access issues
+- State restoration ensures clean state even when tests run sequentially
+- This prevents hidden state pollution that can cause issues in future test runs
+
+## Important Notes
+
+1. **Always mark test fixtures as `[NonParallelizable]`** when using these scopes
+2. **State restoration does NOT make tests safe for parallel execution** - it only ensures cleanup
+3. **For Splat's Locator**: Due to API complexity, use `StaticStateScope` or manual cleanup if needed
 
 ## Test Fixtures Already Marked as NonParallelizable
 

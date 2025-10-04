@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using DynamicData;
 
 using ReactiveUI.Winforms;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -24,12 +25,26 @@ namespace ReactiveUI.Tests.Winforms;
 [NonParallelizable]
 public class DefaultPropertyBindingTests
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
     /// </summary>
     public DefaultPropertyBindingTests()
     {
         RxApp.EnsureInitialized();
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
     }
 
     /// <summary>

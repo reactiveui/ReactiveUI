@@ -7,6 +7,7 @@ using System.Windows.Input;
 using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
@@ -22,9 +23,23 @@ namespace ReactiveUI.Tests;
 [NonParallelizable]
 public class ReactiveCommandTest
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
     public ReactiveCommandTest()
     {
         RxApp.EnsureInitialized();
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
     }
 
     /// <summary>

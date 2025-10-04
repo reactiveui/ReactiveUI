@@ -8,6 +8,7 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
@@ -24,6 +25,19 @@ namespace ReactiveUI.Tests;
 [NonParallelizable]
 public class MessageBusTest
 {
+    private MessageBusScope? _messageBusScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
     /// <summary>
     /// Smoke tests the MessageBus.
     /// </summary>

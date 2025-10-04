@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
@@ -21,6 +22,19 @@ namespace ReactiveUI.Tests;
 [NonParallelizable]
 public class RandomTests
 {
+    private MessageBusScope? _messageBusScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
     [Test]
     public void StringConverterAffinityTest()
     {
