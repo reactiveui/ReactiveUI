@@ -8,6 +8,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the awaiters.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it accesses RxApp.TaskpoolScheduler,
+/// which is global static state. While this test only reads the scheduler, marking it as
+/// NonParallelizable ensures no interference with other tests that might modify scheduler state.
+/// </remarks>
+[TestFixture]
+[NonParallelizable]
 public class AwaiterTest
 {
     /// <summary>

@@ -15,7 +15,13 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// Tests default propery binding.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
+/// in the constructor, which initializes global static state including the service locator.
+/// This state must not be concurrently initialized by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class DefaultPropertyBindingTests
 {
     /// <summary>
