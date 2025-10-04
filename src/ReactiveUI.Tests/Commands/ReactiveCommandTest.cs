@@ -7,18 +7,39 @@ using System.Windows.Input;
 using DynamicData;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for the ReactiveCommand class.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
+/// in the constructor, which initializes global static state including the service locator
+/// and schedulers. This state must not be concurrently initialized by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class ReactiveCommandTest
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
     public ReactiveCommandTest()
     {
         RxApp.EnsureInitialized();
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
     }
 
     /// <summary>

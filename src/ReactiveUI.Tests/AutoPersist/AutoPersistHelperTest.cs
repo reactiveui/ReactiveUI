@@ -12,6 +12,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the AutoPersistHelper.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it uses HostTestFixture
+/// which depends on ICreatesObservableForProperty from the service locator.
+/// The service locator state must not be mutated concurrently by parallel tests.
+/// </remarks>
+[TestFixture]
+[NonParallelizable]
 public class AutoPersistHelperTest
 {
     /// <summary>

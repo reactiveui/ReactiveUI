@@ -8,14 +8,37 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests the MessageBus class.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because some tests call
+/// Locator.CurrentMutable.InitializeSplat() and Locator.CurrentMutable.InitializeReactiveUI(),
+/// which mutate global service locator state. Other tests access MessageBus.Current static property.
+/// These static states must not be mutated concurrently by parallel tests.
+/// </remarks>
+[TestFixture]
+[NonParallelizable]
 public class MessageBusTest
 {
+    private MessageBusScope? _messageBusScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
+
     /// <summary>
     /// Smoke tests the MessageBus.
     /// </summary>
