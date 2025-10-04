@@ -3,11 +3,36 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Infrastructure.StaticState;
+
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// Tests for POCO observable property resolution.
+/// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized(),
+/// which initializes global static state including the service locator. This state must not be
+/// concurrently initialized by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class PocoObservableForPropertyTests
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
+    }
+
 #pragma warning disable CA1812 // Class is not instantiated
 
     ////private static TestLogger? _testLoggerForNotificationPocoErrorOnBind;

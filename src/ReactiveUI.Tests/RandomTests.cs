@@ -4,12 +4,37 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// Tests for various ReactiveUI components.
+/// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it accesses and mutates
+/// multiple static/global states: RxApp.EnsureInitialized(), ViewLocator.Current,
+/// Locator.CurrentMutable (for unregistering/registering services), MessageBus.Current,
+/// and RxApp cache constants. These static states must not be accessed or mutated
+/// concurrently by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class RandomTests
 {
+    private MessageBusScope? _messageBusScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
     [Test]
     public void StringConverterAffinityTest()
     {

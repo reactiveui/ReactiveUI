@@ -9,21 +9,42 @@ using System.Windows.Forms;
 using DynamicData;
 
 using ReactiveUI.Winforms;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests.Winforms;
 
 /// <summary>
 /// Tests default propery binding.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
+/// in the constructor, which initializes global static state including the service locator.
+/// This state must not be concurrently initialized by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class DefaultPropertyBindingTests
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
     /// </summary>
     public DefaultPropertyBindingTests()
     {
         RxApp.EnsureInitialized();
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
     }
 
     /// <summary>

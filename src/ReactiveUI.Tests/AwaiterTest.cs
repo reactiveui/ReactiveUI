@@ -3,13 +3,36 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Infrastructure.StaticState;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests the awaiters.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it accesses RxApp.TaskpoolScheduler,
+/// which is global static state. While this test only reads the scheduler, marking it as
+/// NonParallelizable ensures no interference with other tests that might modify scheduler state.
+/// </remarks>
+[TestFixture]
+[NonParallelizable]
 public class AwaiterTest
 {
+    private RxAppSchedulersScope? _schedulersScope;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _schedulersScope = new RxAppSchedulersScope();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _schedulersScope?.Dispose();
+    }
+
     /// <summary>
     /// A smoke test for Awaiters.
     /// </summary>
