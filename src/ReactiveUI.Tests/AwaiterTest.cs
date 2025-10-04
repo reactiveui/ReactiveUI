@@ -32,6 +32,7 @@ public class AwaiterTest
     {
         _schedulersScope?.Dispose();
     }
+
     /// <summary>
     /// A smoke test for Awaiters.
     /// </summary>

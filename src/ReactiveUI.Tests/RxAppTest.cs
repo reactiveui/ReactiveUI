@@ -33,6 +33,7 @@ public class RxAppTest
     {
         _schedulersScope?.Dispose();
     }
+
     /// <summary>
     /// Tests that schedulers should be current thread in test runner.
     /// </summary>

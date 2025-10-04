@@ -30,7 +30,7 @@ namespace ReactiveUI.Tests.Infrastructure.StaticState;
 ///             value => MyClass.StaticProperty = value,
 ///             () => AnotherClass.StaticField,
 ///             value => AnotherClass.StaticField = value);
-///         
+///
 ///         // Now safe to modify static state
 ///     }
 ///
@@ -53,6 +53,8 @@ public sealed class StaticStateScope : IDisposable
     /// <param name="stateCaptures">Pairs of getter functions and setter actions. Each pair should be: getter function, setter action.</param>
     public StaticStateScope(params object[] stateCaptures)
     {
+        ArgumentNullException.ThrowIfNull(stateCaptures);
+
         if (stateCaptures.Length % 2 != 0)
         {
             throw new ArgumentException("State captures must come in pairs of (getter, setter)", nameof(stateCaptures));
@@ -72,7 +74,7 @@ public sealed class StaticStateScope : IDisposable
 
             // Capture the current value by invoking the getter
             var currentValue = getter.DynamicInvoke();
-            
+
             // Store a restore action that will set the value back
             _restoreActions.Add(() => setter.DynamicInvoke(currentValue));
         }

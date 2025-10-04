@@ -38,6 +38,7 @@ public class MessageBusTest
     {
         _messageBusScope?.Dispose();
     }
+
     /// <summary>
     /// Smoke tests the MessageBus.
     /// </summary>
