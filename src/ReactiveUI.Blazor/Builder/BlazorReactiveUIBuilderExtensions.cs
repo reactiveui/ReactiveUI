@@ -31,6 +31,10 @@ public static class BlazorReactiveUIBuilderExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for chaining.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WithBlazor uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("WithBlazor uses methods that may require unreferenced code")]
+#endif
     public static IReactiveUIBuilder WithBlazor(this IReactiveUIBuilder builder)
     {
         if (builder is null)

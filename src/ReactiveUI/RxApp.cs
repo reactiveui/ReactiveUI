@@ -56,13 +56,9 @@ public static class RxApp
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
     private static IScheduler _unitTestTaskpoolScheduler = null!;
 
-    private static IScheduler _taskpoolScheduler = null!;
-
     [ThreadStatic]
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
     private static IScheduler _unitTestMainThreadScheduler = null!;
-
-    private static IScheduler _mainThreadScheduler = null!;
 
     [ThreadStatic]
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
@@ -80,7 +76,7 @@ public static class RxApp
     static RxApp()
     {
 #if !PORTABLE
-        _taskpoolScheduler = TaskPoolScheduler.Default;
+        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
         AppLocator.CurrentMutable.InitializeSplat();
 
@@ -130,7 +126,7 @@ public static class RxApp
 
         LogHost.Default.Info("Initializing to normal mode");
 
-        _mainThreadScheduler ??= DefaultScheduler.Instance;
+        RxSchedulers.MainThreadScheduler ??= DefaultScheduler.Instance;
     }
 
     /// <summary>
@@ -139,6 +135,9 @@ public static class RxApp
     /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
     /// to simplify writing common unit tests.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.MainThreadScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler MainThreadScheduler
     {
         get
@@ -149,7 +148,7 @@ public static class RxApp
             }
 
             // If Scheduler is DefaultScheduler, user is likely using .NET Standard
-            if (!_hasSchedulerBeenChecked && _mainThreadScheduler == Scheduler.Default)
+            if (!_hasSchedulerBeenChecked && RxSchedulers.MainThreadScheduler == Scheduler.Default)
             {
                 _hasSchedulerBeenChecked = true;
                 LogHost.Default.Warn("It seems you are running .NET Standard, but there is no host package installed!\n");
@@ -157,7 +156,7 @@ public static class RxApp
                 LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
             }
 
-            return _mainThreadScheduler!;
+            return RxSchedulers.MainThreadScheduler!;
         }
 
         set
@@ -170,11 +169,11 @@ public static class RxApp
             if (ModeDetector.InUnitTestRunner())
             {
                 UnitTestMainThreadScheduler = value;
-                _mainThreadScheduler ??= value;
+                RxSchedulers.MainThreadScheduler ??= value;
             }
             else
             {
-                _mainThreadScheduler = value;
+                RxSchedulers.MainThreadScheduler = value;
             }
         }
     }
@@ -184,19 +183,22 @@ public static class RxApp
     /// run in a background thread. In both modes, this will run on the TPL
     /// Task Pool.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.TaskpoolScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler TaskpoolScheduler
     {
-        get => _unitTestTaskpoolScheduler ?? _taskpoolScheduler;
+        get => _unitTestTaskpoolScheduler ?? RxSchedulers.TaskpoolScheduler;
         set
         {
             if (ModeDetector.InUnitTestRunner())
             {
                 _unitTestTaskpoolScheduler = value;
-                _taskpoolScheduler ??= value;
+                RxSchedulers.TaskpoolScheduler ??= value;
             }
             else
             {
-                _taskpoolScheduler = value;
+                RxSchedulers.TaskpoolScheduler = value;
             }
         }
     }

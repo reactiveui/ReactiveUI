@@ -19,7 +19,7 @@
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.57</WindowsSdkPackageVersion>
     <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0'))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   
@@ -37,7 +37,6 @@
     <PackageReference Include="System.Diagnostics.Contracts" />
     <PackageReference Include="System.Dynamic.Runtime" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" />
-    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
@@ -70,6 +69,7 @@
     <Compile Include="Platforms\net\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.Reactive" />
     <PackageReference Include="Splat" />
     <PackageReference Include="DynamicData" />
   </ItemGroup>

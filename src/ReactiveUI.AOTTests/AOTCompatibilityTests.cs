@@ -150,11 +150,10 @@ public class AOTCompatibilityTests
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing AOT-incompatible ReactiveCommand.CreateFromObservable method")]
     public void ReactiveCommand_CreateFromObservable_WorksInAOT()
     {
-        var result = 0;
         var command = ReactiveCommand.CreateFromObservable(() => Observable.Return(42));
 
-        command.Subscribe(x => result = x);
-        command.Execute().Subscribe();
+        // Ensure the execution completes before asserting by blocking for the result
+        var result = command.Execute().Wait();
 
         Assert.That(result, Is.EqualTo(42));
     }
