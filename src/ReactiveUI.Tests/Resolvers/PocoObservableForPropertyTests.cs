@@ -5,7 +5,16 @@
 
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// Tests for POCO observable property resolution.
+/// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized(),
+/// which initializes global static state including the service locator. This state must not be
+/// concurrently initialized by parallel tests.
+/// </remarks>
 [TestFixture]
+[NonParallelizable]
 public class PocoObservableForPropertyTests
 {
 #pragma warning disable CA1812 // Class is not instantiated

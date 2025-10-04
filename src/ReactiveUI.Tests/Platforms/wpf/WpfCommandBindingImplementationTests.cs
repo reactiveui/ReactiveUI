@@ -11,8 +11,17 @@ using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Wpf;
 
+/// <summary>
+/// Tests for WPF command binding implementation.
+/// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because some tests call
+/// Locator.CurrentMutable.RegisterConstant() to register test loggers, which mutates
+/// global service locator state. This state must not be mutated concurrently by parallel tests.
+/// </remarks>
 [TestFixture]
 [Apartment(ApartmentState.STA)]
+[NonParallelizable]
 public class WpfCommandBindingImplementationTests
 {
     /// <summary>

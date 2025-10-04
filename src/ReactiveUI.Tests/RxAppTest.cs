@@ -10,6 +10,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the RxApp class.
 /// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because it accesses
+/// RxApp.MainThreadScheduler static property, which is global state that
+/// must not be accessed concurrently by parallel tests.
+/// </remarks>
+[TestFixture]
+[NonParallelizable]
 public class RxAppTest
 {
     /// <summary>

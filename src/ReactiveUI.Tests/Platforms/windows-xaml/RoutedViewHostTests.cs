@@ -9,8 +9,18 @@ using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// Tests for RoutedViewHost.
+/// </summary>
+/// <remarks>
+/// This test fixture is marked as NonParallelizable because tests call
+/// Locator.CurrentMutable.InitializeSplat() and Locator.CurrentMutable.InitializeReactiveUI(),
+/// which mutate global service locator state. This state must not be mutated concurrently
+/// by parallel tests.
+/// </remarks>
 [TestFixture]
 [Apartment(ApartmentState.STA)]
+[NonParallelizable]
 public class RoutedViewHostTests
 {
     [Test]
