@@ -46,7 +46,7 @@
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
     <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
-    <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
+    <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
     <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst;net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
     <ReactiveUIAndroidTargets>net9.0-android;net10.0-android</ReactiveUIAndroidTargets>
