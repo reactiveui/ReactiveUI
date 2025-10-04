@@ -19,6 +19,10 @@ public class UIKitObservableForProperty : ObservableForPropertyBase
     /// <summary>
     /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("UIKitObservableForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("UIKitObservableForProperty uses methods that may require unreferenced code")]
+#endif
     public UIKitObservableForProperty()
     {
         Register(typeof(UIControl), "Value", 20, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
@@ -37,5 +41,8 @@ public class UIKitObservableForProperty : ObservableForPropertyBase
     /// <summary>
     /// Gets the UI Kit ObservableForProperty instance.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Deliberate")]
+#endif
     public static Lazy<UIKitObservableForProperty> Instance { get; } = new();
 }
