@@ -24,8 +24,8 @@
     <PackageVersion Include="NUnit" Version="4.4.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.1.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.10.0" />
-    <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.2" />
-    <PackageVersion Include="System.Reactive" Version="6.0.2" />
+    <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
+    <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
