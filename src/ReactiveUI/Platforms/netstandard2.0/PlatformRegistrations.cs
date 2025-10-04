@@ -12,6 +12,10 @@ namespace ReactiveUI;
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Platform registration uses RxApp which requires dynamic code generation")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Platform registration uses RxApp which may require unreferenced code")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));

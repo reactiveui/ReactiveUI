@@ -12,13 +12,21 @@ namespace ReactiveUI.Winforms;
 /// particularly useful types.
 /// </summary>
 /// <seealso cref="ICreatesObservableForProperty" />
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("WinformsCreatesObservableForProperty uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("WinformsCreatesObservableForProperty uses methods that may require unreferenced code")]
+#endif
 public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
-     (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
+     static (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
      RxApp.SmallCacheLimit);
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         var supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
@@ -32,6 +40,10 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
 #if NET6_0_OR_GREATER

@@ -12,8 +12,5 @@ namespace ReactiveUI.Tests.Wpf;
 /// </summary>
 public partial class SecondView : UserControl
 {
-    public SecondView()
-    {
-        InitializeComponent();
-    }
+    public SecondView() => InitializeComponent();
 }

@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Command binder for android controls.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>
@@ -23,6 +19,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -45,7 +45,39 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+#if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (hasEventTarget)
+        {
+            return 0;
+        }
+
+        var match = _config.Keys
+                           .Where(x => x.IsAssignableFrom(typeof(T)))
+                           .OrderByDescending(x => _config[x].Affinity)
+                           .FirstOrDefault();
+
+        if (match is null)
+        {
+            return 0;
+        }
+
+        var typeProperties = _config[match];
+        return typeProperties.Affinity;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
+    public IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         ArgumentNullException.ThrowIfNull(target);
 
@@ -57,10 +89,14 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                            .FirstOrDefault() ?? throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
         var typeProperties = _config[match];
 
-        return typeProperties.CreateBinding?.Invoke(command, target, commandParameter);
+        return typeProperties.CreateBinding?.Invoke(command, target, commandParameter) ?? Disposable.Empty;
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
         where TEventArgs : EventArgs
         => throw new NotImplementedException();
@@ -75,8 +111,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled property name.</param>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("This member uses reflection to discover event members and associated delegate types.")]
 #endif
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {

@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// Changing and Changed Observables to monitor object changes.
 /// </summary>
 [DataContract]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
     private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changing;
@@ -111,6 +107,10 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
         PropertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#endif
     public IDisposable SuppressChangeNotifications() => // TODO: Create Test
         IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
@@ -128,5 +128,3 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     public IDisposable DelayChangeNotifications() =>
         IReactiveObjectExtensions.DelayChangeNotifications(this);
 }
-
-// vim: tw=120 ts=4 sw=4 et :

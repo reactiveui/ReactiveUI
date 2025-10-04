@@ -28,8 +28,8 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
     /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,
@@ -58,8 +58,8 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
     /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
 #endif
     IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
         TViewModel? viewModel,

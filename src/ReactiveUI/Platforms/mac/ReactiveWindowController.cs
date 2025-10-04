@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using AppKit;
-
 using Foundation;
 
 namespace ReactiveUI;
@@ -14,8 +13,8 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveWindowController inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveWindowController inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
 #endif
 public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {

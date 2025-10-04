@@ -8,10 +8,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Observable Func Mixins.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ObservableFuncMixins
 {
     /// <summary>
@@ -26,6 +22,10 @@ public static class ObservableFuncMixins
     /// <returns>
     /// An observable Result.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
+    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#endif
     public static IObservable<TResult?> ToObservable<TSource, TResult>(
         this Expression<Func<TSource, TResult?>> expression,
         TSource? source,
@@ -36,7 +36,7 @@ public static class ObservableFuncMixins
 
         var sParam = Reflection.Rewrite(expression.Body);
         return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxApp.SuppressViewCommandBindingMessage)
-                     .Select(x => x.GetValue())
+                     .Select(static x => x.GetValue())
                      .Retry();
     }
 }

@@ -23,6 +23,10 @@ internal interface IUICollViewAdapter<TUIView, TUIViewCell>
     /// <summary>
     /// Reloads the data.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ReloadData uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ReloadData uses methods that may require unreferenced code")]
+#endif
     void ReloadData();
 
     /// <summary>

@@ -9,34 +9,32 @@ namespace ReactiveUI;
 /// Mac platform registrations.
 /// </summary>
 /// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dynamic code generation")]
+    [RequiresUnreferencedCode("Platform registration uses ComponentModelTypeConverter and RxApp which may require unreferenced code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         ArgumentNullException.ThrowIfNull(registerFunction);
 
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new AppKitObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
-        registerFunction(() => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new AppKitObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
 
         if (!ModeDetector.InUnitTestRunner())
         {
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new NSRunloopScheduler());
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
         }
 
-        registerFunction(() => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+        registerFunction(static () => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
     }
 }

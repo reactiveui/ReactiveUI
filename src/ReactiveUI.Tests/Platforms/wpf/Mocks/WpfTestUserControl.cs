@@ -7,6 +7,4 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf;
 
-public class WpfTestUserControl : UserControl, IActivatableView
-{
-}
+public class WpfTestUserControl : UserControl, IActivatableView;

@@ -3,13 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using FluentAssertions;
+using NUnit.Framework;
 
 namespace ReactiveUI.Tests.Suspension;
 
+/// <summary>
+/// Tests for <see cref="SuspensionHost"/> extension helpers.
+/// </summary>
+[TestFixture]
 public class SuspensionHostExtensionsTests
 {
-    [Fact]
+    /// <summary>
+    /// Verifies that GetAppState correctly retrieves the current app state.
+    /// </summary>
+    [Test]
     public void GetAppStateReturns()
     {
         var fixture = new SuspensionHost
@@ -19,44 +26,50 @@ public class SuspensionHostExtensionsTests
 
         var result = fixture.GetAppState<DummyAppState>();
 
-        result.Should().Be(fixture.AppState);
+        Assert.That(result, Is.SameAs(fixture.AppState));
     }
 
-    [Fact]
+    /// <summary>
+    /// Verifies that a null <see cref="SuspensionHost"/> throws <see cref="ArgumentNullException"/> when calling SetupDefaultSuspendResume.
+    /// </summary>
+    [Test]
     public void NullSuspensionHostThrowsException()
     {
-        Action result = () => ((SuspensionHost)null!).SetupDefaultSuspendResume();
-
-        result.Should().Throw<ArgumentNullException>();
+        Assert.That(
+            static () => ((SuspensionHost)null!).SetupDefaultSuspendResume(),
+            Throws.TypeOf<ArgumentNullException>());
     }
 
-    [Fact]
+    /// <summary>
+    /// Verifies that a null AppState does not throw when calling SetupDefaultSuspendResume.
+    /// </summary>
+    [Test]
     public void NullAppStateDoesNotThrowException()
     {
         var fixture = new SuspensionHost();
 
-        var result = Record.Exception(() => fixture.SetupDefaultSuspendResume());
-
-        result.Should().BeNull();
+        Assert.That(() => fixture.SetupDefaultSuspendResume(), Throws.Nothing);
     }
 
-    [Fact]
+    /// <summary>
+    /// Verifies that observing AppState does not throw.
+    /// </summary>
+    [Test]
     public void ObserveAppStateDoesNotThrowException()
     {
         var fixture = new SuspensionHost();
 
-        var result = Record.Exception(() => fixture.ObserveAppState<DummyAppState>().Subscribe());
-
-        result.Should().BeNull();
+        Assert.That(() => fixture.ObserveAppState<DummyAppState>().Subscribe(), Throws.Nothing);
     }
 
-    [Fact]
+    /// <summary>
+    /// Verifies that observing AppState does not throw <see cref="InvalidCastException"/>.
+    /// </summary>
+    [Test]
     public void ObserveAppStateDoesNotThrowInvalidCastException()
     {
         var fixture = new SuspensionHost();
 
-        Action result = () => fixture.ObserveAppState<DummyAppState>().Subscribe();
-
-        result.Should().NotThrow<InvalidCastException>();
+        Assert.That(() => fixture.ObserveAppState<DummyAppState>().Subscribe(), Throws.Nothing);
     }
 }

@@ -14,6 +14,10 @@ namespace ReactiveUI.AndroidX;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveFragmentActivity inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveFragmentActivity inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
+#endif
 public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();

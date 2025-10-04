@@ -14,8 +14,8 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveActivity inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveActivity inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
 #endif
 public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
 {

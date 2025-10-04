@@ -12,8 +12,8 @@ namespace ReactiveUI;
 /// Helps manage android application lifecycle events.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
+[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
 #endif
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
@@ -27,7 +27,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
     /// </summary>
-    static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (o, e) => UntimelyDemise.OnNext(Unit.Default);
+    static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += static (o, e) => UntimelyDemise.OnNext(Unit.Default);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
@@ -37,12 +37,12 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         hostApplication?.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
-        _onCreate.Merge(_onSaveInstanceState).Subscribe(x => LatestBundle = x);
+        _onCreate.Merge(_onSaveInstanceState).Subscribe(static x => LatestBundle = x);
 
-        RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(x => x is null).Select(_ => Unit.Default);
-        RxApp.SuspensionHost.IsResuming = _onCreate.Where(x => x is not null).Select(_ => Unit.Default);
+        RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(static x => x is null).Select(static _ => Unit.Default);
+        RxApp.SuspensionHost.IsResuming = _onCreate.Where(static x => x is not null).Select(static _ => Unit.Default);
         RxApp.SuspensionHost.IsUnpausing = _onRestart;
-        RxApp.SuspensionHost.ShouldPersistState = _onPause.Select(_ => Disposable.Empty);
+        RxApp.SuspensionHost.ShouldPersistState = _onPause.Select(static _ => Disposable.Empty);
         RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
     }
 

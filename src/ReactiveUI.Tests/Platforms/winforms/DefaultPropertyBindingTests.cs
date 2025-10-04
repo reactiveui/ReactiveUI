@@ -15,120 +15,138 @@ namespace ReactiveUI.Tests.Winforms;
 /// <summary>
 /// Tests default propery binding.
 /// </summary>
+[TestFixture]
 public class DefaultPropertyBindingTests
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
+    /// </summary>
+    public DefaultPropertyBindingTests()
+    {
+        RxApp.EnsureInitialized();
+    }
+
+    /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.
     /// </summary>
-    [Fact]
+    [Test]
     public void WinformsCreatesObservableForPropertyWorksForTextboxes()
     {
         var input = new TextBox();
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(TextBox), "Text"));
+        Assert.That(fixture.GetAffinityForObject(typeof(TextBox), "Text"), Is.Not.Zero);
 
-        Expression<Func<TextBox, string>> expression = x => x.Text;
+        Expression<Func<TextBox, string>> expression = static x => x.Text;
 
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.Equal(0, output.Count);
+        Assert.That(output, Is.Empty);
 
         input.Text = "Foo";
-        Assert.Equal(1, output.Count);
-        Assert.Equal(input, output[0].Sender);
-        Assert.Equal("Text", output[0].GetPropertyName());
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Text"));
+        }
 
         dispose.Dispose();
 
         input.Text = "Bar";
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
     /// Tests that Winform creates observable for property works for components.
     /// </summary>
-    [Fact]
+    [Test]
     public void WinformsCreatesObservableForPropertyWorksForComponents()
     {
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"));
+        Assert.That(fixture.GetAffinityForObject(typeof(ToolStripButton), "Checked"), Is.Not.Zero);
 
-        Expression<Func<ToolStripButton, bool>> expression = x => x.Checked;
+        Expression<Func<ToolStripButton, bool>> expression = static x => x.Checked;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.Equal(0, output.Count);
+        Assert.That(output, Is.Empty);
 
         input.Checked = true;
-        Assert.Equal(1, output.Count);
-        Assert.Equal(input, output[0].Sender);
-        Assert.Equal("Checked", output[0].GetPropertyName());
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Checked"));
+        }
 
         dispose.Dispose();
 
         // Since we disposed the derived list, we should no longer receive updates
         input.Checked = false;
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
     /// Tests that winforms creates observable for property works for third party controls.
     /// </summary>
-    [Fact]
+    [Test]
     public void WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
     {
         var input = new AThirdPartyNamespace.ThirdPartyControl();
         var fixture = new WinformsCreatesObservableForProperty();
 
-        Assert.NotEqual(0, fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"));
+        Assert.That(fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value"), Is.Not.Zero);
 
-        Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = x => x.Value;
+        Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = static x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
-        Assert.Equal(0, output.Count);
+        Assert.That(output, Is.Empty);
 
         input.Value = "Foo";
-        Assert.Equal(1, output.Count);
-        Assert.Equal(input, output[0].Sender);
-        Assert.Equal("Value", output[0].GetPropertyName());
+        Assert.That(output, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output[0].Sender, Is.EqualTo(input));
+            Assert.That(output[0].GetPropertyName(), Is.EqualTo("Value"));
+        }
 
         dispose.Dispose();
 
         input.Value = "Bar";
-        Assert.Equal(1, output.Count);
+        Assert.That(output, Has.Count.EqualTo(1));
     }
 
     /// <summary>
     /// Tests that Winforms controled can bind to View Model.
     /// </summary>
-    [Fact]
+    [Test]
     public void CanBindViewModelToWinformControls()
     {
         var vm = new FakeWinformViewModel();
         var view = new FakeWinformsView { ViewModel = vm };
 
         vm.SomeText = "Foo";
-        Assert.NotEqual(vm.SomeText, view.Property3.Text);
+        Assert.That(view.Property3.Text, Is.Not.EqualTo(vm.SomeText));
 
-        var disp = view.Bind(vm, x => x.SomeText, x => x.Property3.Text);
+        var disp = view.Bind(vm, static x => x.SomeText, static x => x.Property3.Text);
         vm.SomeText = "Bar";
-        Assert.Equal(vm.SomeText, view.Property3.Text);
+        Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeText));
 
         view.Property3.Text = "Bar2";
-        Assert.Equal(vm.SomeText, view.Property3.Text);
+        Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeText));
 
-        var disp2 = view.Bind(vm, x => x.SomeDouble, x => x.Property3.Text);
+        var disp2 = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
         vm.SomeDouble = 123.4;
 
-        Assert.Equal(vm.SomeDouble.ToString(CultureInfo.CurrentCulture), view.Property3.Text);
+        Assert.That(view.Property3.Text, Is.EqualTo(vm.SomeDouble.ToString(CultureInfo.CurrentCulture)));
     }
 
     /// <summary>
     /// Smoke tests the WinForm controls.
     /// </summary>
-    [Fact]
+    [Test]
     public void SmokeTestWinformControls()
     {
         var vm = new FakeWinformViewModel();
@@ -136,34 +154,34 @@ public class DefaultPropertyBindingTests
 
         var disp = new CompositeDisposable(
         [
-            view.Bind(vm, x => x.Property1, x => x.Property1.Text),
-            view.Bind(vm, x => x.Property2, x => x.Property2.Text),
-            view.Bind(vm, x => x.Property3, x => x.Property3.Text),
-            view.Bind(vm, x => x.Property4, x => x.Property4.Text),
-            view.Bind(vm, x => x.BooleanProperty, x => x.BooleanProperty.Checked),
+            view.Bind(vm, static x => x.Property1, static x => x.Property1.Text),
+            view.Bind(vm, static x => x.Property2, static x => x.Property2.Text),
+            view.Bind(vm, static x => x.Property3, static x => x.Property3.Text),
+            view.Bind(vm, static x => x.Property4, static x => x.Property4.Text),
+            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked),
         ]);
 
         vm.Property1 = "FOOO";
-        Assert.Equal(vm.Property1, view.Property1.Text);
+        Assert.That(view.Property1.Text, Is.EqualTo(vm.Property1));
 
         vm.Property2 = "FOOO1";
-        Assert.Equal(vm.Property2, view.Property2.Text);
+        Assert.That(view.Property2.Text, Is.EqualTo(vm.Property2));
 
         vm.Property3 = "FOOO2";
-        Assert.Equal(vm.Property3, view.Property3.Text);
+        Assert.That(view.Property3.Text, Is.EqualTo(vm.Property3));
 
         vm.Property4 = "FOOO3";
-        Assert.Equal(vm.Property4, view.Property4.Text);
+        Assert.That(view.Property4.Text, Is.EqualTo(vm.Property4));
 
         vm.BooleanProperty = false;
-        Assert.Equal(vm.BooleanProperty, view.BooleanProperty.Checked);
+        Assert.That(view.BooleanProperty.Checked, Is.EqualTo(vm.BooleanProperty));
         vm.BooleanProperty = true;
-        Assert.Equal(vm.BooleanProperty, view.BooleanProperty.Checked);
+        Assert.That(view.BooleanProperty.Checked, Is.EqualTo(vm.BooleanProperty));
 
         disp.Dispose();
     }
 
-    [Fact]
+    [Test]
     public void PanelSetMethodBindingConverter_GetAffinityForObjects()
     {
         var fixture = new PanelSetMethodBindingConverter();
@@ -172,9 +190,12 @@ public class DefaultPropertyBindingTests
         var test3 = fixture.GetAffinityForObjects(typeof(List<Label>), typeof(Control.ControlCollection));
         var test4 = fixture.GetAffinityForObjects(typeof(Control.ControlCollection), typeof(IEnumerable<GridItem>));
 
-        Assert.Equal(0, test1);
-        Assert.Equal(10, test2);
-        Assert.Equal(10, test3);
-        Assert.Equal(0, test4);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(test1, Is.Zero);
+            Assert.That(test2, Is.EqualTo(10));
+            Assert.That(test3, Is.EqualTo(10));
+            Assert.That(test4, Is.Zero);
+        }
     }
 }

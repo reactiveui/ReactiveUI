@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Splat.Builder;
 
 namespace ReactiveUI;
 
@@ -27,10 +28,6 @@ namespace ReactiveUI;
 /// This class also initializes a whole bunch of other stuff, including the IoC container,
 /// logging and error handling.
 /// </remarks>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class RxApp
 {
 #if ANDROID || IOS
@@ -59,13 +56,9 @@ public static class RxApp
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
     private static IScheduler _unitTestTaskpoolScheduler = null!;
 
-    private static IScheduler _taskpoolScheduler = null!;
-
     [ThreadStatic]
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
     private static IScheduler _unitTestMainThreadScheduler = null!;
-
-    private static IScheduler _mainThreadScheduler = null!;
 
     [ThreadStatic]
     [SuppressMessage("Reliability", "CA2019:Improper 'ThreadStatic' field initialization", Justification = "By Design")]
@@ -78,21 +71,28 @@ public static class RxApp
     /// Initializes static members of the <see cref="RxApp"/> class.
     /// </summary>
     /// <exception cref="UnhandledErrorException">Default exception when we have unhandled exception in RxUI.</exception>
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Recommend using AppBuilder")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming.", Justification = "Recommend using AppBuilder")]
     static RxApp()
     {
 #if !PORTABLE
-        _taskpoolScheduler = TaskPoolScheduler.Default;
+        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
 #endif
+        AppLocator.CurrentMutable.InitializeSplat();
 
-        Locator.RegisterResolverCallbackChanged(() =>
+        if (!AppBuilder.UsingBuilder)
         {
-            if (Locator.CurrentMutable is null)
+            AppLocator.RegisterResolverCallbackChanged(() =>
             {
-                return;
-            }
+                if (AppLocator.CurrentMutable is null)
+                {
+                    return;
+                }
 
-            Locator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
-        });
+                AppLocator.CurrentMutable.InitializeSplat();
+                AppLocator.CurrentMutable.InitializeReactiveUI(PlatformRegistrationManager.NamespacesToRegister);
+            });
+        }
 
         DefaultExceptionHandler = Observer.Create<Exception>(ex =>
         {
@@ -126,7 +126,7 @@ public static class RxApp
 
         LogHost.Default.Info("Initializing to normal mode");
 
-        _mainThreadScheduler ??= DefaultScheduler.Instance;
+        RxSchedulers.MainThreadScheduler ??= DefaultScheduler.Instance;
     }
 
     /// <summary>
@@ -135,6 +135,9 @@ public static class RxApp
     /// DispatcherScheduler, and in Unit Test mode this will be Immediate,
     /// to simplify writing common unit tests.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.MainThreadScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler MainThreadScheduler
     {
         get
@@ -145,7 +148,7 @@ public static class RxApp
             }
 
             // If Scheduler is DefaultScheduler, user is likely using .NET Standard
-            if (!_hasSchedulerBeenChecked && _mainThreadScheduler == Scheduler.Default)
+            if (!_hasSchedulerBeenChecked && RxSchedulers.MainThreadScheduler == Scheduler.Default)
             {
                 _hasSchedulerBeenChecked = true;
                 LogHost.Default.Warn("It seems you are running .NET Standard, but there is no host package installed!\n");
@@ -153,7 +156,7 @@ public static class RxApp
                 LogHost.Default.Warn("You can install the needed package via NuGet, see https://reactiveui.net/docs/getting-started/installation/");
             }
 
-            return _mainThreadScheduler!;
+            return RxSchedulers.MainThreadScheduler!;
         }
 
         set
@@ -166,11 +169,11 @@ public static class RxApp
             if (ModeDetector.InUnitTestRunner())
             {
                 UnitTestMainThreadScheduler = value;
-                _mainThreadScheduler ??= value;
+                RxSchedulers.MainThreadScheduler ??= value;
             }
             else
             {
-                _mainThreadScheduler = value;
+                RxSchedulers.MainThreadScheduler = value;
             }
         }
     }
@@ -180,19 +183,22 @@ public static class RxApp
     /// run in a background thread. In both modes, this will run on the TPL
     /// Task Pool.
     /// </summary>
+    /// <remarks>
+    /// Consider using RxSchedulers.TaskpoolScheduler for new code to avoid RequiresUnreferencedCode attributes.
+    /// </remarks>
     public static IScheduler TaskpoolScheduler
     {
-        get => _unitTestTaskpoolScheduler ?? _taskpoolScheduler;
+        get => _unitTestTaskpoolScheduler ?? RxSchedulers.TaskpoolScheduler;
         set
         {
             if (ModeDetector.InUnitTestRunner())
             {
                 _unitTestTaskpoolScheduler = value;
-                _taskpoolScheduler ??= value;
+                RxSchedulers.TaskpoolScheduler ??= value;
             }
             else
             {
-                _taskpoolScheduler = value;
+                RxSchedulers.TaskpoolScheduler = value;
             }
         }
     }
@@ -239,6 +245,9 @@ public static class RxApp
         set => _unitTestMainThreadScheduler = value;
     }
 
+    /// <summary>
+    /// Set up default initializations.
+    /// </summary>
     [MethodImpl(MethodImplOptions.NoOptimization)]
     internal static void EnsureInitialized()
     {

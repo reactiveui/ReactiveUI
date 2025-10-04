@@ -13,43 +13,37 @@ namespace ReactiveUI;
 /// To get these registrations after the main ReactiveUI Initialization use the
 /// DependencyResolverMixins.InitializeReactiveUI() extension method.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));
 
-        registerFunction(() => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(() => new DefaultViewLocator(), typeof(IViewLocator));
-        registerFunction(() => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(() => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
-        registerFunction(() => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new DefaultViewLocator(), typeof(IViewLocator));
+        registerFunction(static () => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(static () => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
+        registerFunction(static () => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
     }
 }

@@ -79,39 +79,51 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
 
     /// <inheritdoc />
 #pragma warning disable RCS1168 // Parameter name differs from base name.
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OnAfterRender uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("OnAfterRender uses methods that may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "LayoutComponentBase is an external reference")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "LayoutComponentBase is an external reference")]
+#endif
     protected override void OnAfterRender(bool isFirstRender)
 #pragma warning restore RCS1168 // Parameter name differs from base name.
     {
         if (isFirstRender)
         {
-            this.WhenAnyValue(x => x.ViewModel)
-                .Skip(1)
-                .WhereNotNull()
+            var viewModelChanged =
+                this.WhenAnyValue<ReactiveLayoutComponentBase<T>, T?>(nameof(ViewModel))
+                    .WhereNotNull()
+                    .Publish()
+                    .RefCount(2);
+
+            viewModelChanged
+                .Subscribe(_ => InvokeAsync(StateHasChanged))
+                .DisposeWith(_compositeDisposable);
+
+            viewModelChanged
+                .Select(x =>
+                    Observable
+                        .FromEvent<PropertyChangedEventHandler, Unit>(
+                            eventHandler =>
+                            {
+                                void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                return Handler;
+                            },
+                            eh => x.PropertyChanged += eh,
+                            eh => x.PropertyChanged -= eh))
+                .Switch()
                 .Subscribe(_ => InvokeAsync(StateHasChanged))
                 .DisposeWith(_compositeDisposable);
         }
 
-        this.WhenAnyValue(x => x.ViewModel)
-            .WhereNotNull()
-            .Select(x => Observable.FromEvent<PropertyChangedEventHandler, Unit>(
-                     eventHandler =>
-                     {
-                         void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                         return Handler;
-                     },
-                     eh => x.PropertyChanged += eh,
-                     eh => x.PropertyChanged -= eh))
-            .Switch()
-            .Do(_ => InvokeAsync(StateHasChanged))
-            .Subscribe()
-            .DisposeWith(_compositeDisposable);
+        base.OnAfterRender(isFirstRender);
     }
 
     /// <summary>
     /// Invokes the property changed event.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     /// <summary>
     /// Cleans up the managed resources of the object.

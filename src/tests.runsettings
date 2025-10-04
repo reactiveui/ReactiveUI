@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Limit vstest to a reasonable CPU count for controlled parallelism -->
+    <MaxCpuCount>4</MaxCpuCount>
+    <!-- Disable legacy app domains for consistency across frameworks -->
+    <DisableAppDomain>true</DisableAppDomain>
+  </RunConfiguration>
+  
+  <!-- NUnit configuration for controlled concurrency -->
+  <NUnit>
+    <NumberOfTestWorkers>4</NumberOfTestWorkers>
+  </NUnit>
+</RunSettings>

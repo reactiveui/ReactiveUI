@@ -10,11 +10,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the IReactiveObject interface.
 /// </summary>
-[ReactiveUI.Preserve(AllMembers = true)]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+[Preserve(AllMembers = true)]
 public static class IReactiveObjectExtensions
 {
 #if NETSTANDARD || NETFRAMEWORK
@@ -259,14 +255,10 @@ public static class IReactiveObjectExtensions
         return s.DelayChangeNotifications();
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     private class ExtensionState<TSender> : IExtensionState<TSender>
         where TSender : IReactiveObject
     {
-        private readonly Lazy<ISubject<Exception>> _thrownExceptions = new(() => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
+        private readonly Lazy<ISubject<Exception>> _thrownExceptions = new(static () => new ScheduledSubject<Exception>(Scheduler.Immediate, RxApp.DefaultExceptionHandler));
         private readonly Lazy<Subject<Unit>> _startOrStopDelayingChangeNotifications = new();
         private readonly TSender _sender;
         private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changing;

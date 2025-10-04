@@ -18,6 +18,7 @@ namespace ReactiveUI;
 /// Android view objects are not Generally Observable™, so hard-code some
 /// particularly useful types.
 /// </summary>
+[Preserve(AllMembers = true)]
 public class AndroidObservableForWidgets : ICreatesObservableForProperty
 {
     private static readonly Dictionary<(Type viewType, string? propertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> _dispatchTable;
@@ -27,18 +28,22 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     static AndroidObservableForWidgets() =>
         _dispatchTable = new[]
         {
-            CreateFromWidget<TextView, TextChangedEventArgs>(v => v.Text, (v, h) => v.TextChanged += h, (v, h) => v.TextChanged -= h),
-            CreateFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(v => v.Value, (v, h) => v.ValueChanged += h, (v, h) => v.ValueChanged -= h),
-            CreateFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(v => v.Rating, (v, h) => v.RatingBarChange += h, (v, h) => v.RatingBarChange -= h),
-            CreateFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(v => v.Checked, (v, h) => v.CheckedChange += h, (v, h) => v.CheckedChange -= h),
-            CreateFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(v => v.Date, (v, h) => v.DateChange += h, (v, h) => v.DateChange -= h),
-            CreateFromWidget<TabHost, TabHost.TabChangeEventArgs>(v => v.CurrentTab, (v, h) => v.TabChanged += h, (v, h) => v.TabChanged -= h),
+            CreateFromWidget<TextView, TextChangedEventArgs>(static v => v.Text, static (v, h) => v.TextChanged += h, static (v, h) => v.TextChanged -= h),
+            CreateFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(static v => v.Value, static (v, h) => v.ValueChanged += h, static (v, h) => v.ValueChanged -= h),
+            CreateFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(static v => v.Rating, static (v, h) => v.RatingBarChange += h, static (v, h) => v.RatingBarChange -= h),
+            CreateFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(static v => v.Checked, static (v, h) => v.CheckedChange += h, static (v, h) => v.CheckedChange -= h),
+            CreateFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(static v => v.Date, static (v, h) => v.DateChange += h, static (v, h) => v.DateChange -= h),
+            CreateFromWidget<TabHost, TabHost.TabChangeEventArgs>(static v => v.CurrentTab, static (v, h) => v.TabChanged += h, static (v, h) => v.TabChanged -= h),
             CreateTimePickerHourFromWidget(),
             CreateTimePickerMinuteFromWidget(),
             CreateFromAdapterView(),
-        }.ToDictionary(k => (viewType: k.Type, propertyName: k.Property), v => v.Func);
+        }.ToDictionary(static k => (viewType: k.Type, propertyName: k.Property), static v => v.Func);
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses reflection for property access and type checking which require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses reflection for property access and type checking which may require unreferenced code")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (beforeChanged)
@@ -50,6 +55,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses reflection for property access and type checking which require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses reflection for property access and type checking which may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         var type = sender?.GetType();
@@ -111,10 +120,10 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
         if ((int)Build.VERSION.SdkInt >= 23)
         {
-            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Hour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(static v => v.Hour, static (v, h) => v.TimeChanged += h, static (v, h) => v.TimeChanged -= h);
         }
 
-        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentHour, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(static v => v.CurrentHour, static (v, h) => v.TimeChanged += h, static (v, h) => v.TimeChanged -= h);
     }
 
     [ObsoletedOSPlatform("android23.0")]
@@ -123,12 +132,14 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
         if ((int)Build.VERSION.SdkInt >= 23)
         {
-            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.Minute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(static v => v.Minute, static (v, h) => v.TimeChanged += h, static (v, h) => v.TimeChanged -= h);
         }
 
-        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(v => v.CurrentMinute, (v, h) => v.TimeChanged += h, (v, h) => v.TimeChanged -= h);
+        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(static v => v.CurrentMinute, static (v, h) => v.TimeChanged += h, static (v, h) => v.TimeChanged -= h);
     }
 
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Marked as Preserve")]
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
     private static DispatchItem CreateFromWidget<TView, TEventArgs>(Expression<Func<TView, object?>> property, Action<TView, EventHandler<TEventArgs>> addHandler, Action<TView, EventHandler<TEventArgs>> removeHandler)
         where TView : View
         where TEventArgs : EventArgs

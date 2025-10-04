@@ -42,14 +42,18 @@ public class TestSequencer : IDisposable
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
-    public Task AdvancePhaseAsync(string comment = "")
+    public async Task AdvancePhaseAsync(string comment = "")
     {
         if (_phaseSync.ParticipantCount == _phaseSync.ParticipantsRemaining)
         {
             CurrentPhase = CompletedPhases + 1;
         }
 
-        return Task.Run(() => _phaseSync?.SignalAndWait(CancellationToken.None));
+        // Synchronize both participants and then yield once to allow post-barrier continuations
+        // to run before returning to the caller. This reduces timing-related flakiness in tests
+        // that assert immediately after advancing a phase.
+        await Task.Run(() => _phaseSync.SignalAndWait(CancellationToken.None)).ConfigureAwait(false);
+        await Task.Yield();
     }
 
     /// <summary>

@@ -11,16 +11,12 @@ namespace ReactiveUI;
 /// <summary>
 /// Class that registers Command Binding and Command Parameter Binding.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
-    [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    [RequiresDynamicCode("Property access requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
 #endif
     public int GetAffinityForObject(Type type, bool hasEventTarget)
     {
@@ -44,8 +40,35 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Calls GetRuntimeProperty(string name)")]
-    [RequiresDynamicCode("Calls GetRuntimeProperty(string name)")]
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (hasEventTarget)
+        {
+            return 0;
+        }
+
+        var propsToFind = new[]
+        {
+            new { Name = "Command", TargetType = typeof(ICommand) },
+            new { Name = "CommandParameter", TargetType = typeof(object) },
+        };
+
+        return propsToFind.All(static x =>
+        {
+            var pi = typeof(T).GetRuntimeProperty(x.Name);
+            return pi is not null;
+        }) ? 5 : 0;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
@@ -72,7 +95,11 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
+#endif
+    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
 #if MONO
         where TEventArgs : EventArgs
 #endif
@@ -80,7 +107,7 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
         // NB: We should fall back to the generic Event-based handler if
         // an event target is specified
 #pragma warning disable IDE0022 // Use expression body for methods
-        return null;
+        return Disposable.Empty;
 #pragma warning restore IDE0022 // Use expression body for methods
     }
 }

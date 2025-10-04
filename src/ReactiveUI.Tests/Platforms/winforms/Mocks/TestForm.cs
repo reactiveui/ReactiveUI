@@ -14,7 +14,7 @@ public class TestForm : Form, IActivatableView, ICanActivate
 
     public TestForm()
     {
-        this.WhenActivated(d =>
+        this.WhenActivated(static d =>
         {
             ////
         });

@@ -11,16 +11,12 @@ namespace ReactiveUI;
 /// <summary>
 /// Loads and saves state to persistent storage.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class BundleSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("LoadState uses JsonSerializer.Deserialize which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState uses JsonSerializer.Deserialize which may require unreferenced code")]
 #endif
     public IObservable<object?> LoadState() // TODO: Create Test
     {
@@ -41,7 +37,7 @@ public class BundleSuspensionDriver : ISuspensionDriver
 
             var st = new MemoryStream(buffer);
 
-            return Observable.Return(JsonSerializer.Deserialize<object>(st));
+            return Observable.FromAsync(async () => await JsonSerializer.DeserializeAsync<object>(st));
         }
         catch (Exception ex)
         {
@@ -51,10 +47,9 @@ public class BundleSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("SaveState uses JsonSerializer.Serialize which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState uses JsonSerializer.Serialize which may require unreferenced code")]
 #endif
-
     public IObservable<Unit> SaveState(object state) // TODO: Create Test
     {
         try
@@ -71,6 +66,10 @@ public class BundleSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
+#endif
     public IObservable<Unit> InvalidateState() // TODO: Create Test
     {
         try

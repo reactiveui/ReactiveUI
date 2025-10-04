@@ -23,8 +23,8 @@ namespace ReactiveUI;
 /// participate in this framework.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("TargetActionCommandBinder uses reflection for property access and Objective-C runtime features which require dynamic code generation")]
+[RequiresUnreferencedCode("TargetActionCommandBinder uses reflection for property access and Objective-C runtime features which may require unreferenced code")]
 #endif
 public class TargetActionCommandBinder : ICreatesCommandBinding
 {
@@ -62,6 +62,27 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (!_validTypes.Any(static x => x.IsAssignableFrom(typeof(T))))
+        {
+            return 0;
+        }
+
+        return !hasEventTarget ? 4 : 0;
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterOrThrow and GetValueSetterForProperty which require dynamic code generation")]
+    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterOrThrow and GetValueSetterForProperty which may require unreferenced code")]
+#endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         command.ArgumentNullExceptionThrowIfNull(nameof(command));
@@ -117,7 +138,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
         where TEventArgs : EventArgs => throw new NotImplementedException();
 
     private class ControlDelegate(Action<NSObject> block) : NSObject

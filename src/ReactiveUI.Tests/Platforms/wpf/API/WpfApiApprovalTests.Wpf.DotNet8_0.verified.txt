@@ -9,6 +9,8 @@ namespace ReactiveUI
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher
     {
         public ActivationForViewFetcher() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
         public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
@@ -16,8 +18,14 @@ namespace ReactiveUI
     {
         public AutoDataTemplateBindingHook() { }
         public static System.Lazy<System.Windows.DataTemplate> DefaultItemTemplate { get; }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which require d" +
+        "ynamic code generation")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which may requi" +
+        "re unreferenced code")]
     public class AutoSuspendHelper : Splat.IEnableLogger
     {
         public AutoSuspendHelper(System.Windows.Application app) { }
@@ -39,7 +47,11 @@ namespace ReactiveUI
     public class DependencyObjectObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public DependencyObjectObservableForProperty() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
     public class PlatformOperations : ReactiveUI.IPlatformOperations
@@ -76,6 +88,8 @@ namespace ReactiveUI
         public static readonly System.Windows.DependencyProperty DefaultContentProperty;
         public static readonly System.Windows.DependencyProperty RouterProperty;
         public static readonly System.Windows.DependencyProperty ViewContractObservableProperty;
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
         public RoutedViewHost() { }
         public object DefaultContent { get; set; }
         public ReactiveUI.RoutingState Router { get; set; }
@@ -118,10 +132,16 @@ namespace ReactiveUI
     }
     public static class ValidationBindingMixins
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindWithValidation uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindWithValidation uses methods that may require unreferenced code")]
         public static ReactiveUI.IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel, TType?>> viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView, TVProp>> frameworkElementSelector)
             where TViewModel :  class
             where TView :  class, ReactiveUI.IViewFor { }
     }
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp which require dynam" +
+        "ic code generation")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp which may require u" +
+        "nreferenced code")]
     public class ViewModelViewHost : ReactiveUI.TransitioningContentControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, Splat.IEnableLogger
     {
         public static readonly System.Windows.DependencyProperty ContractFallbackByPassProperty;
@@ -138,11 +158,22 @@ namespace ReactiveUI
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
 }
+namespace ReactiveUI.Builder
+{
+    public static class WpfReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WpfMainThreadScheduler { get; }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpf(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpfScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+    }
+}
 namespace ReactiveUI.Wpf
 {
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
     }
 }

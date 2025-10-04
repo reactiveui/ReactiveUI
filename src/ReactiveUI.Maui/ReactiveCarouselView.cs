@@ -13,7 +13,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="CarouselView" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveCarouselView<TViewModel> : CarouselView, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveCarouselView uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveCarouselView uses methods that may require unreferenced code")]
+#endif
+public partial class ReactiveCarouselView<TViewModel> : CarouselView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

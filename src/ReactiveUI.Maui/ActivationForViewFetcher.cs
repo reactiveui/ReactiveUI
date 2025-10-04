@@ -37,6 +37,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             ? 10 : 0;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
+#endif
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
         var activation =
@@ -55,7 +59,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     }
 
     private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) =>
-        canActivate?.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+        canActivate?.Activated.Select(static _ => true).Merge(canActivate.Deactivated.Select(static _ => false));
 
 #if IS_MAUI
     private static IObservable<bool>? GetActivationFor(Page? page)
@@ -138,6 +142,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         return appearing.Merge(disappearing);
     }
 #else
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetActivationFor uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetActivationFor uses methods that may require unreferenced code")]
+#endif
     private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)
@@ -169,7 +177,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
 
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? view.WhenAnyValue(x => x.IsHitTestVisible).SkipWhile(x => !x) : Observables.False)
+               .Select(b => b ? view.WhenAnyValue<FrameworkElement, bool>(nameof(view.IsHitTestVisible)).SkipWhile(x => !x) : Observables.False)
                .Switch()
                .DistinctUntilChanged();
     }

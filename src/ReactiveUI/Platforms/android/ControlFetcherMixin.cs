@@ -17,10 +17,6 @@ namespace ReactiveUI;
 /// Fragments via property names, similar to Butter Knife, as well as allows
 /// you to fetch controls manually.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static partial class ControlFetcherMixin
 {
     private static readonly ConcurrentDictionary<Assembly, Dictionary<string, int>> _controlIds = new();
@@ -34,8 +30,8 @@ public static partial class ControlFetcherMixin
     /// <param name="propertyName">The property name.</param>
     /// <returns>The return view.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetControl uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("GetControl may reference properties that could be trimmed")]
 #endif
     public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, activity, () => activity.FindViewById(GetControlIdByName(activity.GetType().Assembly, propertyName)));
@@ -47,6 +43,10 @@ public static partial class ControlFetcherMixin
     /// <param name="assembly">The assembly containing the user-defined view.</param>
     /// <param name="propertyName">The property.</param>
     /// <returns>The return view.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetControl uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("GetControl may reference properties that could be trimmed")]
+#endif
     public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) // TODO: Create Test
         => GetCachedControl(propertyName, view, () => view.FindViewById(GetControlIdByName(assembly, propertyName)));
 
@@ -55,6 +55,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="layoutHost">The layout view host.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
+#endif
     public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(layoutHost);
@@ -80,6 +84,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="view">The view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
+#endif
     public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(view);
@@ -111,6 +119,10 @@ public static partial class ControlFetcherMixin
     /// <param name="fragment">The fragment.</param>
     /// <param name="inflatedView">The inflated view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
+#endif
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(fragment);
@@ -140,6 +152,10 @@ public static partial class ControlFetcherMixin
     /// </summary>
     /// <param name="activity">The Activity.</param>
     /// <param name="resolveMembers">The resolve members.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("WireUpControls uses reflection to find and set properties")]
+    [RequiresUnreferencedCode("WireUpControls may reference properties that could be trimmed")]
+#endif
     public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
         ArgumentNullException.ThrowIfNull(activity);
@@ -165,8 +181,8 @@ public static partial class ControlFetcherMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetWireUpMembers uses reflection to analyze properties")]
+    [RequiresUnreferencedCode("GetWireUpMembers may reference properties that could be trimmed")]
 #endif
     internal static IEnumerable<PropertyInfo> GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
     {
@@ -175,12 +191,12 @@ public static partial class ControlFetcherMixin
         return resolveStrategy switch
         {
             ResolveStrategy.ExplicitOptIn =>
-                members.Where(member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+                members.Where(static member => member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
             ResolveStrategy.ExplicitOptOut =>
-                members.Where(member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
+                members.Where(static member => typeof(View).IsAssignableFrom(member.PropertyType) && member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null),
 
             // Implicit matches the Default.
-            _ => members.Where(member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
+            _ => members.Where(static member => member.PropertyType.IsSubclassOf(typeof(View)) || member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null),
         };
     }
 
@@ -210,8 +226,8 @@ public static partial class ControlFetcherMixin
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("GetControlIdByName uses assembly reflection and type discovery")]
+    [RequiresUnreferencedCode("GetControlIdByName may reference types that could be trimmed")]
 #endif
     private static int GetControlIdByName(Assembly assembly, string? name)
     {
@@ -219,23 +235,23 @@ public static partial class ControlFetcherMixin
 
         var ids = _controlIds.GetOrAdd(
                                        assembly,
-                                       currentAssembly =>
+                                       static currentAssembly =>
                                        {
 #if NET8_0_OR_GREATER
                                             var resources = Assembly.Load(currentAssembly
                                                             .GetReferencedAssemblies()
-                                                            .First(an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
+                                                            .First(static an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
                                                             .GetModules()
-                                                            .SelectMany(x => x.GetTypes())
-                                                            .First(x => x.Name == "ResourceConstant");
+                                                            .SelectMany(static x => x.GetTypes())
+                                                            .First(static x => x.Name == "ResourceConstant");
 #else
                                             var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 #endif
 
                                             var idType = resources.GetNestedType("Id") ?? throw new InvalidOperationException("Id is not a valid nested type in the resources.");
                                             return idType.GetFields()
-                                                        .Where(x => x.FieldType == typeof(int))
-                                                        .ToDictionary(k => k.Name, v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
+                                                        .Where(static x => x.FieldType == typeof(int))
+                                                        .ToDictionary(static k => k.Name, static v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
                                        });
 
         return ids[name];

@@ -76,8 +76,8 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">
 /// The type of the view model backing the view.
 /// </typeparam>
-public
-class ReactiveUserControl<TViewModel> :
+[SuppressMessage("WinRT", "CsWinRT1029:Types used in signatures should be WinRT types", Justification = "This is a netstandard2.0 library")]
+public partial class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
 {

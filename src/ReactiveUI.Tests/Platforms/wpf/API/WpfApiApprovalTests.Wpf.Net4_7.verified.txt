@@ -136,9 +136,18 @@ namespace ReactiveUI
         protected virtual void ResolveViewForViewModel(object? viewModel, string? contract) { }
     }
 }
+namespace ReactiveUI.Builder
+{
+    public static class WpfReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WpfMainThreadScheduler { get; }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpf(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWpfScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+    }
+}
 namespace ReactiveUI.Wpf
 {
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }

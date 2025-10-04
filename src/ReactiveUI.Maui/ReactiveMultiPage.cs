@@ -14,6 +14,11 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="MultiPage{T}" />
 /// <seealso cref="IViewFor{TViewModel}" />
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveMultiPage uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveMultiPage uses methods that may require unreferenced code")]
+[SuppressMessage("Trimming", "IL2091:Target generic argument does not satisfy 'DynamicallyAccessedMembersAttribute' in target method or type. The generic parameter of the source method or type does not have matching annotations.", Justification = "MultiPage is a third party component")]
+#endif
 public abstract class ReactiveMultiPage<TPage, TViewModel> : MultiPage<TPage>, IViewFor<TViewModel>
     where TPage : Page
     where TViewModel : class

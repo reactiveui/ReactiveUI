@@ -1,4 +1,13 @@
 ﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.7.2", FrameworkDisplayName=".NET Framework 4.7.2")]
+namespace ReactiveUI.Builder
+{
+    public static class WinFormsReactiveUIBuilderExtensions
+    {
+        public static System.Reactive.Concurrency.IScheduler WinFormsMainThreadScheduler { get; }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWinForms(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithWinFormsScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder) { }
+    }
+}
 namespace ReactiveUI.Winforms
 {
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
@@ -46,7 +55,7 @@ namespace ReactiveUI.Winforms
         public TViewModel ViewModel { get; set; }
         protected override void Dispose(bool disposing) { }
     }
-    public class Registrations
+    public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
         public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }

@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using Microsoft.Maui.Controls;
 
 namespace ReactiveUI.Maui;
@@ -13,7 +14,12 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="EntryCell" />
 /// <seealso cref="IViewFor{TViewModel}" />
-public class ReactiveEntryCell<TViewModel> : EntryCell, IViewFor<TViewModel>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("ReactiveEntryCell uses methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveEntryCell uses methods that may require unreferenced code")]
+#endif
+[Obsolete("ListView and its cells are obsolete in .NET MAUI, please use CollectionView with a DataTemplate and a ReactiveContentView-based view instead. This will be removed in a future release.")]
+public partial class ReactiveEntryCell<TViewModel> : EntryCell, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

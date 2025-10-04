@@ -17,8 +17,8 @@ namespace ReactiveUI;
 /// to show. It uses.
 /// </summary>
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which require dynamic code generation")]
+[RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which may require unreferenced code")]
 #endif
 public class ViewModelViewHost : ReactiveViewController
 {
@@ -36,8 +36,8 @@ public class ViewModelViewHost : ReactiveViewController
     {
         _currentView = new SerialDisposable();
         _viewContract = this
-            .WhenAnyObservable(x => x.ViewContractObservable)
-            .ToProperty(this, x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
+            .WhenAnyObservable(static x => x.ViewContractObservable)
+            .ToProperty(this, static x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
 
         Initialize();
     }
@@ -167,15 +167,15 @@ public class ViewModelViewHost : ReactiveViewController
 
     private void Initialize()
     {
-        var viewChange = this.WhenAnyValue(x => x.ViewModel)
+        var viewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
             .CombineLatest(
                 this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string?)null),
                 (vm, contract) => new { ViewModel = vm, Contract = contract })
             .Where(x => x.ViewModel is not null);
 
-        var defaultViewChange = this.WhenAnyValue(x => x.ViewModel)
+        var defaultViewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
             .CombineLatest(
-                this.WhenAnyValue(x => x.DefaultContent),
+                this.WhenAnyValue<ViewModelViewHost, NSViewController?>(nameof(DefaultContent)),
                 (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
             .Where(x => x.ViewModel is null && x.DefaultContent is not null)
             .Select(x => x.DefaultContent);

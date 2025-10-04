@@ -18,10 +18,8 @@ namespace ReactiveUI;
 /// tell whether a given property on an object is Key-Value Observable, we
 /// only have to hope for the best :-/.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+[Preserve(AllMembers = true)]
+[RequiresUnreferencedCode("KVOObservableForProperty uses methods that may require unreferenced code")]
 public class KVOObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string propertyName), bool> _declaredInNSObject;
@@ -61,9 +59,18 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => _declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+#endif
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) =>
+        _declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         if (sender is not NSObject obj)
@@ -90,11 +97,11 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
         });
     }
 
-    private static string FindCocoaNameFromNetName(Type senderType, string propertyName)
+    private static string FindCocoaNameFromNetName([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type senderType, string propertyName)
     {
         var propIsBoolean = false;
 
-        var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(x => !x.IsStatic());
+        var pi = senderType.GetTypeInfo().DeclaredProperties.FirstOrDefault(static x => !x.IsStatic());
         if (pi is null)
         {
             goto attemptGuess;

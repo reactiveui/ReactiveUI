@@ -7,6 +7,4 @@ using System.Windows.Forms;
 
 namespace ReactiveUI.Tests.Winforms;
 
-public class TestFormNotCanActivate : Form, IActivatableView
-{
-}
+public class TestFormNotCanActivate : Form, IActivatableView;

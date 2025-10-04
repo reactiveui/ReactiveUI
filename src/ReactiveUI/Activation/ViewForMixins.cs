@@ -10,10 +10,6 @@ namespace ReactiveUI;
 /// <summary>
 /// A set of extension methods to help wire up View and ViewModel activation.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ViewForMixins
 {
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
@@ -88,7 +84,7 @@ public static class ViewForMixins
         {
             var d = new CompositeDisposable();
             block(d);
-            return new[] { d };
+            return [d];
         });
     }
 
@@ -103,6 +99,10 @@ public static class ViewForMixins
     /// cleaned up when the View is deactivated.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
+    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+#endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -126,6 +126,10 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
+    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+#endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -161,7 +165,12 @@ public static class ViewForMixins
     /// deactivated (i.e. "d(someObservable.Subscribe());").
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-    public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) => item.WhenActivated(block, null!);
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
+    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+#endif
+    public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) =>
+        item.WhenActivated(block, null!);
 
     /// <summary>
     /// WhenActivated allows you to register a Func to be called when a
@@ -180,6 +189,10 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
+    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+#endif
     public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
         item.WhenActivated(
                            () =>
@@ -206,15 +219,19 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-    public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) => // TODO: Create Test
-        item.WhenActivated(
-                           () =>
-                           {
-                               var d = new CompositeDisposable();
-                               block(d);
-                               return new[] { d };
-                           },
-                           view);
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
+    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
+#endif
+    public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
+            item.WhenActivated(
+                               () =>
+                               {
+                                   var d = new CompositeDisposable();
+                                   block(d);
+                                   return [d];
+                               },
+                               view);
 
     private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
@@ -234,6 +251,10 @@ public static class ViewForMixins
                                        viewDisposable);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("ViewModel activation may reference types that could be trimmed")]
+    [RequiresDynamicCode("ViewModel activation uses reflection which requires dynamic code generation")]
+#endif
     private static CompositeDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
     {
         var vmDisposable = new SerialDisposable();
@@ -244,7 +265,7 @@ public static class ViewForMixins
                                        {
                                            if (activated)
                                            {
-                                               viewVmDisposable.Disposable = view.WhenAnyValue(x => x.ViewModel)
+                                               viewVmDisposable.Disposable = view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel))
                                                    .Select(x => x as IActivatableViewModel)
                                                    .Subscribe(x =>
                                                    {

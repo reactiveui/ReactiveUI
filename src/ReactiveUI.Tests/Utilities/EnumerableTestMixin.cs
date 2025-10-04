@@ -16,16 +16,16 @@ public static class EnumerableTestMixin
 
         try
         {
-            Assert.Equal(left.Length, right.Length);
+            Assert.That(left, Has.Length.EqualTo(right.Length), "Sequence lengths differ.");
             for (var i = 0; i < left.Length; i++)
             {
-                Assert.Equal(left[i], right[i]);
+                Assert.That(left[i], Is.EqualTo(right[i]), $"Sequences differ at index {i}.");
             }
         }
         catch
         {
-            Debug.WriteLine("lhs: [{0}]", string.Join(",", lhs.ToArray()));
-            Debug.WriteLine("rhs: [{0}]", string.Join(",", rhs.ToArray()));
+            Debug.WriteLine("lhs: [{0}]", string.Join(",", left));
+            Debug.WriteLine("rhs: [{0}]", string.Join(",", right));
             throw;
         }
     }

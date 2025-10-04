@@ -19,6 +19,10 @@ public static class ExpressionMixins
     /// </summary>
     /// <param name="expression">The expression.</param>
     /// <returns>An enumerable of expressions.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Expression chain analysis requires dynamic code generation")]
+    [RequiresUnreferencedCode("Expression chain analysis may reference members that could be trimmed")]
+#endif
     public static IEnumerable<Expression> GetExpressionChain(this Expression expression)
     {
         var expressions = new List<Expression>();
@@ -86,6 +90,10 @@ public static class ExpressionMixins
     /// </summary>
     /// <param name="expression">The expression.</param>
     /// <returns>The member info from the expression.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Member info access requires dynamic code generation")]
+    [RequiresUnreferencedCode("Member info access may reference members that could be trimmed")]
+#endif
     public static MemberInfo? GetMemberInfo(this Expression expression)
     {
         expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
@@ -113,6 +121,10 @@ public static class ExpressionMixins
     /// </summary>
     /// <param name="expression">The expression.</param>
     /// <returns>The parent expression.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Expression analysis requires dynamic code generation")]
+    [RequiresUnreferencedCode("Expression analysis may reference members that could be trimmed")]
+#endif
     public static Expression? GetParent(this Expression expression) // TODO: Create Test
     {
         expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
@@ -138,7 +150,7 @@ public static class ExpressionMixins
 
         if (expression.NodeType == ExpressionType.Index)
         {
-            return ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(c => c.Value).ToArray();
+            return ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(static c => c.Value).ToArray();
         }
 
         return null;

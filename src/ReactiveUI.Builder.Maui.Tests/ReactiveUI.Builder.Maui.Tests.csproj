@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIMauiTestTargets)</TargetFrameworks>
+    <UseMaui>true</UseMaui>
+    <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Splat" />
+  </ItemGroup>
+</Project>

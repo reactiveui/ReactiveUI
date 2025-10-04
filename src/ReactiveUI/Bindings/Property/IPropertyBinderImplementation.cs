@@ -47,6 +47,10 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Bind uses expression trees which require dynamic code generation")]
+    [RequiresUnreferencedCode("Bind uses expression trees which may require unreferenced code")]
+#endif
     IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -94,6 +98,10 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Bind uses expression trees which require dynamic code generation")]
+    [RequiresUnreferencedCode("Bind uses expression trees which may require unreferenced code")]
+#endif
     IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -145,6 +153,10 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// <exception cref="ArgumentException">
     /// There is no registered converter from <typeparamref name="TVMProp"/> to <typeparamref name="TVProp"/>.
     /// </exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OneWayBind uses expression trees which require dynamic code generation")]
+    [RequiresUnreferencedCode("OneWayBind uses expression trees which may require unreferenced code")]
+#endif
     IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
         TViewModel? viewModel,
         TView view,
@@ -186,6 +198,10 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OneWayBind uses expression trees which require dynamic code generation")]
+    [RequiresUnreferencedCode("OneWayBind uses expression trees which may require unreferenced code")]
+#endif
     IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         TViewModel? viewModel,
         TView view,
@@ -219,6 +235,10 @@ public interface IPropertyBinderImplementation : IEnableLogger
     /// viewModel to view property.
     /// </param>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindTo uses expression trees which require dynamic code generation")]
+    [RequiresUnreferencedCode("BindTo uses expression trees which may require unreferenced code")]
+#endif
     IDisposable BindTo<TValue, TTarget, TTValue>(
         IObservable<TValue> observedChange,
         TTarget? target,

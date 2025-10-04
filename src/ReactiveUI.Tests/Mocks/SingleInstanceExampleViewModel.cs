@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A single instance example view model.
 /// </summary>
-public class SingleInstanceExampleViewModel : ReactiveObject
-{
-}
+public class SingleInstanceExampleViewModel : ReactiveObject;

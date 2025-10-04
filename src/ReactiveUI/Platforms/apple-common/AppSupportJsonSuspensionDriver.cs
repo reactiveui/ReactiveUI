@@ -12,16 +12,12 @@ namespace ReactiveUI;
 /// <summary>
 /// Loads and saves state to persistent storage.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("LoadState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("LoadState implementations may use serialization which may require unreferenced code")]
 #endif
     public IObservable<object?> LoadState()
     {
@@ -45,8 +41,8 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("SaveState implementations may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("SaveState implementations may use serialization which may require unreferenced code")]
 #endif
     public IObservable<Unit> SaveState(object state)
     {
@@ -68,6 +64,10 @@ public class AppSupportJsonSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
+    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
+#endif
     public IObservable<Unit> InvalidateState()
     {
         try

@@ -1,6 +1,12 @@
 ﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
 namespace ReactiveUI.Testing
 {
+    public abstract class AppBuilderTestBase
+    {
+        protected AppBuilderTestBase() { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Action testBody) { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody) { }
+    }
     public interface IBuilder { }
     public static class IBuilderExtensions
     {
@@ -25,6 +31,10 @@ namespace ReactiveUI.Testing
         public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
         public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
     }
+    public static class RxTest
+    {
+        public static System.Threading.Tasks.Task AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody, int maxWaitMs = 60000) { }
+    }
     public static class SchedulerExtensions
     {
         public static void AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds) { }
@@ -33,14 +43,24 @@ namespace ReactiveUI.Testing
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnCompletedAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds) { }
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnErrorAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds, System.Exception ex) { }
         public static Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>> OnNextAt<T>(this Microsoft.Reactive.Testing.TestScheduler scheduler, double milliseconds, T value) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("With uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
         public static void With<T>(this T scheduler, System.Action<T> block)
             where T : System.Reactive.Concurrency.IScheduler { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("With uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
         public static TRet With<T, TRet>(this T scheduler, System.Func<T, TRet> block)
             where T : System.Reactive.Concurrency.IScheduler { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
         public static System.Threading.Tasks.Task WithAsync<T>(this T scheduler, System.Func<T, System.Threading.Tasks.Task> block)
             where T : System.Reactive.Concurrency.IScheduler { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
         public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T scheduler, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
             where T : System.Reactive.Concurrency.IScheduler { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WithScheduler uses methods that require dynamic code generation")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WithScheduler uses methods that may require unreferenced code")]
         public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
     }
     public class TestSequencer : System.IDisposable

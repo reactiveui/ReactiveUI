@@ -19,7 +19,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     /// <summary>
     /// Gets the default item template.
     /// </summary>
-    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(() =>
+    public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
         const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
                  "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
@@ -33,6 +33,10 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     });
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
+#endif
     public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
         if (getCurrentViewProperties is null)

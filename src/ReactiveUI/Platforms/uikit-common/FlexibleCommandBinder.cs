@@ -15,8 +15,8 @@ namespace ReactiveUI;
 /// </summary>
 /// <seealso cref="ICreatesCommandBinding" />
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("FlexibleCommandBinder uses reflection for property access and type checking which require dynamic code generation")]
+[RequiresUnreferencedCode("FlexibleCommandBinder uses reflection for property access and type checking which may require unreferenced code")]
 #endif
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
@@ -49,6 +49,34 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
+        bool hasEventTarget)
+#else
+    public int GetAffinityForObject<T>(
+        bool hasEventTarget)
+#endif
+    {
+        if (hasEventTarget)
+        {
+            return 0;
+        }
+
+        var match = _config.Keys
+                           .Where(x => x.IsAssignableFrom(typeof(T)))
+                           .OrderByDescending(x => _config[x].Affinity)
+                           .FirstOrDefault();
+
+        if (match is null)
+        {
+            return 0;
+        }
+
+        var typeProperties = _config[match];
+        return typeProperties.Affinity;
+    }
+
+    /// <inheritdoc/>
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
         ArgumentNullException.ThrowIfNull(target);
@@ -65,7 +93,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    public IDisposable? BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
         where TEventArgs : EventArgs => throw new NotImplementedException();
 
     /// <summary>
@@ -77,6 +105,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="commandParameter">Command parameter.</param>
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled Property.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ForEvent uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ForEvent uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -125,6 +157,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="commandParameter">The command parameter.</param>
     /// <param name="enabledProperty">The enabled property.</param>
     /// <returns>Returns a disposable.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ForTargetAction uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ForTargetAction uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+#endif
     protected static IDisposable ForTargetAction(ICommand? command, object? target, IObservable<object?> commandParameter, PropertyInfo enabledProperty)
     {
         ArgumentNullException.ThrowIfNull(command);

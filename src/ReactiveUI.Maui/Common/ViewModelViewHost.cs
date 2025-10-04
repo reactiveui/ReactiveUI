@@ -12,7 +12,7 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
-public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
+public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
     /// The default content dependency property.
@@ -43,6 +43,10 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
+#endif
     public ViewModelViewHost()
     {
         var platform = Locator.Current.GetService<IPlatformOperations>();
@@ -75,7 +79,7 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
               .DistinctUntilChanged();
 
         var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
-        var viewModelChanged = this.WhenAnyValue(x => x.ViewModel).StartWith(ViewModel);
+        var viewModelChanged = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).StartWith(ViewModel);
         var vmAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
 
@@ -144,6 +148,10 @@ public class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableL
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
+#endif
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

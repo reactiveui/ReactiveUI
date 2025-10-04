@@ -17,8 +17,8 @@ namespace ReactiveUI;
 /// </summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveCollectionView inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveCollectionView inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
 #endif
 public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
@@ -138,8 +138,8 @@ public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotify
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 #if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+[RequiresDynamicCode("ReactiveCollectionView<TViewModel> inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
+[RequiresUnreferencedCode("ReactiveCollectionView<TViewModel> inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
 #endif
 public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
     where TViewModel : class

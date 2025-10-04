@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(BaseTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
     <NoWarn>$(NoWarn);BL0007;</NoWarn>
@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm" />
     <PackageReference Include="Microsoft.AspNetCore.Components" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />

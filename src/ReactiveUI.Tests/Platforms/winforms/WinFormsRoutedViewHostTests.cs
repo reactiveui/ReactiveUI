@@ -9,9 +9,10 @@ using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedControlHost;
 
 namespace ReactiveUI.Tests.Winforms;
 
+[TestFixture]
 public class WinFormsRoutedViewHostTests
 {
-    [Fact]
+    [Test]
     public void ShouldDisposePreviousView()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
@@ -26,14 +27,14 @@ public class WinFormsRoutedViewHostTests
         // switch the viewmodel
         router?.Navigate?.Execute(new FakeWinformViewModel());
 
-        Assert.True(isDisposed);
+        Assert.That(isDisposed, Is.True);
     }
 
-    [Fact]
+    [Test]
     public void ShouldSetDefaultContentWhenViewModelIsNull()
     {
         var defaultContent = new Control();
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState();
         var target = new WinFormsRoutedViewHost
         {
@@ -42,17 +43,17 @@ public class WinFormsRoutedViewHostTests
             DefaultContent = defaultContent
         };
 
-        Assert.True(target.Controls.Contains(defaultContent));
+        Assert.That(target.Controls.Contains(defaultContent), Is.True);
     }
 
-    [Fact]
+    [Test]
     public void WhenRoutedToViewModelItShouldAddViewToControls()
     {
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState();
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         router?.Navigate?.Execute(new FakeWinformViewModel());
 
-        Assert.Equal(1, target.Controls.OfType<FakeWinformsView>().Count());
+        Assert.That(target.Controls.OfType<FakeWinformsView>().Count(), Is.EqualTo(1));
     }
 }

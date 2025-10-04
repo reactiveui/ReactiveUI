@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A interface routable view model.
 /// </summary>
-public interface IRoutableFooViewModel : IRoutableViewModel
-{
-}
+public interface IRoutableFooViewModel : IRoutableViewModel;

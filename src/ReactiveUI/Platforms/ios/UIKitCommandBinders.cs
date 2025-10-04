@@ -12,11 +12,10 @@ namespace ReactiveUI;
 /// <summary>
 /// UI Kit command binder platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+/// <seealso cref="ICreatesCommandBinding" />
+[Preserve(AllMembers = true)]
+[RequiresUnreferencedCode("UIKitCommandBinders uses methods that may require unreferenced code")]
+[RequiresDynamicCode("UIKitCommandBinders uses methods that may require unreferenced code")]
 public class UIKitCommandBinders : FlexibleCommandBinder
 {
     private const string Enabled = nameof(Enabled);
@@ -26,9 +25,9 @@ public class UIKitCommandBinders : FlexibleCommandBinder
     /// </summary>
     public UIKitCommandBinders()
     {
-        Register(typeof(UIControl), 9, (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));
-        Register(typeof(UIRefreshControl), 10, (cmd, t, cp) => ForEvent(cmd, t, cp, "ValueChanged", typeof(UIRefreshControl).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIRefreshControl which is needed for binding.")));
-        Register(typeof(UIBarButtonItem), 10, (cmd, t, cp) => ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIBarButtonItem which is needed for binding.")));
+        Register(typeof(UIControl), 9, static (cmd, t, cp) => ForTargetAction(cmd, t, cp, typeof(UIControl).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIControl which is needed for binding.")));
+        Register(typeof(UIRefreshControl), 10, static (cmd, t, cp) => ForEvent(cmd, t, cp, "ValueChanged", typeof(UIRefreshControl).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIRefreshControl which is needed for binding.")));
+        Register(typeof(UIBarButtonItem), 10, static (cmd, t, cp) => ForEvent(cmd, t, cp, "Clicked", typeof(UIBarButtonItem).GetRuntimeProperty(Enabled) ?? throw new InvalidOperationException("There is no Enabled property on the UIBarButtonItem which is needed for binding.")));
     }
 
     /// <summary>

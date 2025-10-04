@@ -9,35 +9,20 @@ using System.Reflection;
 namespace ReactiveUI;
 
 /// <summary>
-/// Default implementation for <see cref="IViewLocator"/>. The default <see cref="ViewModelToViewFunc"/>
-/// behavior is to replace instances of "View" with "ViewMode" in the Fully Qualified Name of the ViewModel type.
+/// DefaultViewLocator.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
-public sealed class DefaultViewLocator : IViewLocator
+/// <seealso cref="ReactiveUI.IViewLocator" />
+public sealed partial class DefaultViewLocator : IViewLocator
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
-    /// </summary>
-    /// <param name="viewModelToViewFunc">The method which will convert a ViewModel name into a View.</param>
     internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
-        ViewModelToViewFunc = viewModelToViewFunc ?? (vm => vm.Replace("ViewModel", "View"));
+        ViewModelToViewFunc = viewModelToViewFunc ?? (static vm => vm.Replace("ViewModel", "View"));
 
     /// <summary>
-    /// Gets or sets a function that is used to convert a view model name to a proposed view name.
+    /// Gets or sets the view model to view function.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// If unset, the default behavior is to change "ViewModel" to "View". If a different convention is followed, assign an appropriate function to this
-    /// property.
-    /// </para>
-    /// <para>
-    /// Note that the name returned by the function is a starting point for view resolution. Variants on the name will be resolved according to the rules
-    /// set out by the <see cref="ResolveView{T}"/> method.
-    /// </para>
-    /// </remarks>
+    /// <value>
+    /// The view model to view function.
+    /// </value>
     public Func<string, string> ViewModelToViewFunc { get; set; }
 
     /// <summary>
@@ -92,35 +77,23 @@ public sealed class DefaultViewLocator : IViewLocator
     /// The view associated with the given view model.
     /// </returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
 #endif
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
         viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
 
-        var view = AttemptViewResolutionFor(viewModel!.GetType(), contract);
-
-        if (view is not null)
+        var mapped = TryResolveAOTMapping(viewModel!.GetType(), contract);
+        if (mapped is not null)
         {
-            return view;
+            return mapped;
         }
 
-        view = AttemptViewResolutionFor(typeof(T), contract);
-
-        if (view is not null)
-        {
-            return view;
-        }
-
-        view = AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract);
-
-        if (view is not null)
-        {
-            return view;
-        }
-
-        view = AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
+        var view = AttemptViewResolutionFor(viewModel!.GetType(), contract)
+                   ?? AttemptViewResolutionFor(typeof(T), contract)
+                   ?? AttemptViewResolutionFor(ToggleViewModelType(viewModel.GetType()), contract)
+                   ?? AttemptViewResolutionFor(ToggleViewModelType(typeof(T)), contract);
 
         if (view is not null)
         {
@@ -131,6 +104,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return null;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Type resolution requires dynamic code generation")]
+    [RequiresUnreferencedCode("Type resolution may reference types that could be trimmed")]
+#endif
     private static Type? ToggleViewModelType(Type viewModelType)
     {
         var viewModelTypeName = viewModelType.AssemblyQualifiedName;
@@ -180,7 +157,8 @@ public sealed class DefaultViewLocator : IViewLocator
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method is used to resolve views for view models.")]
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
 #endif
     private IViewFor? AttemptViewResolutionFor(Type? viewModelType, string? contract)
     {
@@ -208,6 +186,10 @@ public sealed class DefaultViewLocator : IViewLocator
         return AttemptViewResolution(proposedViewTypeName, contract);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("View resolution uses reflection and type discovery")]
+    [RequiresUnreferencedCode("View resolution may reference types that could be trimmed")]
+#endif
     private IViewFor? AttemptViewResolution(string? viewTypeName, string? contract)
     {
         try

@@ -14,10 +14,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods for <see cref="ReactiveCollectionViewSource{TSource}"/>.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class ReactiveCollectionViewSourceExtensions
 {
     /// <summary>
@@ -35,6 +31,10 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the view source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
+#endif
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
         UICollectionView collectionView,
@@ -48,7 +48,7 @@ public static class ReactiveCollectionViewSourceExtensions
         var source = new ReactiveCollectionViewSource<TSource>(collectionView);
         initSource?.Invoke(source);
 
-        var bind = sectionsObservable.BindTo(source, x => x.Data);
+        var bind = sectionsObservable.BindTo(source, static x => x.Data);
         collectionView.Source = source;
         return new CompositeDisposable(bind, source);
     }
@@ -66,6 +66,10 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
+#endif
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
@@ -98,6 +102,10 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
+#endif
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,

@@ -20,7 +20,7 @@ internal class ProductionMode : IModeDetector, IPlatformModeDetector
     {
         PlatformModeDetector.OverrideModeDetector(Instance);
         ModeDetector.OverrideModeDetector(Instance);
-        return Disposable.Create(() =>
+        return Disposable.Create(static () =>
         {
             PlatformModeDetector.OverrideModeDetector(new DefaultPlatformModeDetector());
             ModeDetector.OverrideModeDetector(new DefaultModeDetector());

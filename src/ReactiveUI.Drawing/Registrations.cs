@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Drawing;
 
 /// <summary>
@@ -12,6 +14,12 @@ namespace ReactiveUI.Drawing;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         if (registerFunction is null)
@@ -19,8 +27,8 @@ public class Registrations : IWantsToRegisterStuff
             throw new ArgumentNullException(nameof(registerFunction));
         }
 
-#if !NETSTANDARD && !NETCOREAPP2_0
-        registerFunction(() => new PlatformBitmapLoader(), typeof(IBitmapLoader));
+#if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
+        registerFunction(static () => new PlatformBitmapLoader(), typeof(IBitmapLoader));
 #endif
     }
 }

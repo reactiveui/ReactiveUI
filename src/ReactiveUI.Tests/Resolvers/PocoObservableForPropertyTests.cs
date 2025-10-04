@@ -5,20 +5,24 @@
 
 namespace ReactiveUI.Tests;
 
+[TestFixture]
 public class PocoObservableForPropertyTests
 {
 #pragma warning disable CA1812 // Class is not instantiated
 
     ////private static TestLogger? _testLoggerForNotificationPocoErrorOnBind;
 
-    [Fact]
+    [Test]
     public void CheckGetAffinityForObjectValues()
     {
         RxApp.EnsureInitialized();
         var instance = new POCOObservableForProperty();
 
-        Assert.Equal(1, instance.GetAffinityForObject(typeof(PocoType), null!, false));
-        Assert.Equal(1, instance.GetAffinityForObject(typeof(INPCClass), null!, false));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(instance.GetAffinityForObject(typeof(PocoType), null!, false), Is.EqualTo(1));
+            Assert.That(instance.GetAffinityForObject(typeof(INPCClass), null!, false), Is.EqualTo(1));
+        }
     }
 
     ////[Fact(Skip = "Test Scheduler is null on occasions")]
@@ -55,15 +59,15 @@ public class PocoObservableForPropertyTests
 
     ////        instance.GetNotificationForProperty(testClass, exp, propertyName, false).Subscribe(_ => { });
 
-    ////        Assert.True(testLogger.LastMessages.Count > 0);
+    ////        Assert.That(testLogger.LastMessages.Count > 0, Is.True);
 
     ////        var expectedMessage = $"{nameof(POCOObservableForProperty)}: The class {typeof(PocoType).FullName} property {nameof(PocoType.Property1)} is a POCO type and won't send change notifications, WhenAny will only return a single value!";
-    ////        Assert.Equal(expectedMessage, testLogger.LastMessages[0]);
+    ////        Assert.That(testLogger.LastMessages[0], Is.EqualTo(expectedMessage));
 
     ////        // Verify that the message is logged only once
     ////        foreach (var logMessage in testLogger.LastMessages.Skip(1))
     ////        {
-    ////            Assert.NotEqual(expectedMessage, logMessage);
+    ////            Assert.That(logMessage, Is.Not.EqualTo(expectedMessage));
     ////        }
     ////    }
     ////}

@@ -22,12 +22,12 @@ public static class AutoPersistHelper
 {
     private static readonly MemoizingMRUCache<Type, Dictionary<string, bool>> _persistablePropertiesCache = new(
      static (type, _) => type.GetTypeInfo().DeclaredProperties
-                      .Where(x => x.CustomAttributes.Any(y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
-                      .ToDictionary(k => k.Name, _ => true),
+                               .Where(static x => x.CustomAttributes.Any(static y => typeof(DataMemberAttribute).GetTypeInfo().IsAssignableFrom(y.AttributeType.GetTypeInfo())))
+                               .ToDictionary(static k => k.Name, static _ => true),
      RxApp.SmallCacheLimit);
 
     private static readonly MemoizingMRUCache<Type, bool> _dataContractCheckCache = new(
-     (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0,
+     static (t, _) => t.GetTypeInfo().GetCustomAttributes(typeof(DataContractAttribute), true).Length > 0,
      RxApp.SmallCacheLimit);
 
     /// <summary>

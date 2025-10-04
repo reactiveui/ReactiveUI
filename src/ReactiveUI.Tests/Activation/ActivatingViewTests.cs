@@ -3,23 +3,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for activating views.
 /// </summary>
+[TestFixture]
 public class ActivatingViewTests
 {
     /// <summary>
     /// Tests to make sure that views generally activate.
     /// </summary>
-    [Fact]
+    [Test]
     public void ActivatingViewSmokeTest()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -28,29 +32,39 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
         }
     }
 
     /// <summary>
     /// Tests for making sure nulling the view model deactivate it.
     /// </summary>
-    [Fact]
+    [Test]
     public void NullingViewModelDeactivateIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -59,28 +73,35 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.ViewModel = null;
-            Assert.Equal(0, vm.IsActiveCount);
+            Assert.That(vm.IsActiveCount, Is.Zero);
         }
     }
 
     /// <summary>
     /// Tests switching the view model deactivates it.
     /// </summary>
-    [Fact]
+    [Test]
     public void SwitchingViewModelDeactivatesIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -89,64 +110,84 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             var newVm = new ActivatingViewModel();
-            Assert.Equal(0, newVm.IsActiveCount);
+            Assert.That(newVm.IsActiveCount, Is.Zero);
 
             fixture.ViewModel = newVm;
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(1, newVm.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
+            }
         }
     }
 
     /// <summary>
     /// Tests setting the view model after loaded loads it.
     /// </summary>
-    [Fact]
+    [Test]
     public void SettingViewModelAfterLoadedLoadsIt()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
             var vm = new ActivatingViewModel();
             var fixture = new ActivatingView();
 
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, fixture.IsActiveCount);
+            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
 
             fixture.ViewModel = vm;
-            Assert.Equal(1, fixture.IsActiveCount);
-            Assert.Equal(1, vm.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, fixture.IsActiveCount);
-            Assert.Equal(0, vm.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+                Assert.That(vm.IsActiveCount, Is.Zero);
+            }
         }
     }
 
     /// <summary>
     /// Tests the can unload and load view again.
     /// </summary>
-    [Fact]
+    [Test]
     public void CanUnloadAndLoadViewAgain()
     {
+        AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
         locator.InitializeSplat();
         locator.InitializeReactiveUI();
-        locator.Register(() => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
+        locator.Register(static () => new ActivatingViewFetcher(), typeof(IActivationForViewFetcher));
 
         using (locator.WithResolver())
         {
@@ -155,20 +196,32 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            Assert.Equal(0, vm.IsActiveCount);
-            Assert.Equal(0, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.Zero);
+                Assert.That(fixture.IsActiveCount, Is.Zero);
+            }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.Equal(1, vm.IsActiveCount);
-            Assert.Equal(1, fixture.IsActiveCount);
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            }
         }
     }
 }

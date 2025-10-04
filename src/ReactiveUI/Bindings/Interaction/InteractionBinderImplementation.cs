@@ -8,13 +8,13 @@ namespace ReactiveUI;
 /// <summary>
 /// Provides methods to bind <see cref="Interaction{TInput, TOutput}"/>s to handlers.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class InteractionBinderImplementation : IInteractionBinderImplementation
 {
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
         TView view,
@@ -28,18 +28,26 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<IInteraction<TInput, TOutput>>();
+        var vmNulls = view.WhenAnyValue(x => x.ViewModel).Where(x => x is null).Select(_ => default(IInteraction<TInput, TOutput>));
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
+            .Cast<IInteraction<TInput, TOutput>?>()
+            .Merge(vmNulls);
 
         var interactionDisposable = new SerialDisposable();
 
         return source
-               .WhereNotNull()
-               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Do(x => interactionDisposable.Disposable = x is null
+                   ? System.Reactive.Disposables.Disposable.Empty
+                   : x.RegisterHandler(handler))
                .Finally(() => interactionDisposable.Dispose())
                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -53,13 +61,17 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<IInteraction<TInput, TOutput>>();
+        var vmNulls = view.WhenAnyValue(x => x.ViewModel).Where(x => x is null).Select(_ => default(IInteraction<TInput, TOutput>));
+        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
+            .Cast<IInteraction<TInput, TOutput>?>()
+            .Merge(vmNulls);
 
         var interactionDisposable = new SerialDisposable();
 
         return source
-               .Where(x => x is not null)
-               .Do(x => interactionDisposable.Disposable = x.RegisterHandler(handler))
+               .Do(x => interactionDisposable.Disposable = x is null
+                   ? System.Reactive.Disposables.Disposable.Empty
+                   : x.RegisterHandler(handler))
                .Finally(() => interactionDisposable.Dispose())
                .Subscribe(_ => { }, ex => this.Log().Error(ex, $"{vmExpression} Interaction Binding received an Exception!"));
     }

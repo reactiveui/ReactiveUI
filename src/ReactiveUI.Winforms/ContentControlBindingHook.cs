@@ -13,6 +13,10 @@ namespace ReactiveUI.Winforms;
 public class ContentControlBindingHook : IPropertyBindingHook
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
+#endif
     public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
         if (getCurrentViewProperties is null)

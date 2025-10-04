@@ -5,6 +5,4 @@
 
 namespace ReactiveUI.Tests.Winforms;
 
-public class ViewWithoutMatchingName : ReactiveUI.Winforms.ReactiveUserControl<ViewModelWithWeirdName>
-{
-}
+public class ViewWithoutMatchingName : ReactiveUI.Winforms.ReactiveUserControl<ViewModelWithWeirdName>;

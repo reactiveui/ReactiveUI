@@ -12,18 +12,22 @@ namespace ReactiveUI;
 /// return the value of the type at the time it was created. It will also
 /// warn the user that this is probably not what they want to do.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class POCOObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly ConcurrentDictionary<(Type, string), bool> _hasWarned = new();
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetAffinityForObject uses reflection and type analysis")]
+    [RequiresUnreferencedCode("GetAffinityForObject may reference members that could be trimmed")]
+#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
 
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetNotificationForProperty uses reflection and type analysis")]
+    [RequiresUnreferencedCode("GetNotificationForProperty may reference members that could be trimmed")]
+#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         sender.ArgumentNullExceptionThrowIfNull(nameof(sender));

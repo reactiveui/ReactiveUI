@@ -4,16 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using System.Reflection;
 
 namespace ReactiveUI;
 
 /// <summary>
 /// Provides methods to bind properties to observables.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
     private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(
@@ -25,6 +22,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                           }).currentBinding,
      RxApp.SmallCacheLimit);
 
+    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
+    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<(Type? fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new(
      (type, _) => Locator.Current.GetServices<ISetMethodBindingConverter>()
                          .Aggregate((currentAffinity: -1, currentBinding: default(ISetMethodBindingConverter)), (acc, x) =>
@@ -39,6 +38,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -83,6 +86,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,
@@ -116,6 +123,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
         TViewModel? viewModel,
         TView view,
@@ -148,6 +159,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         TViewModel? viewModel,
         TView view,
@@ -176,6 +191,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     }
 
     /// <inheritdoc />
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
+    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
+#endif
     public IDisposable BindTo<TValue, TTarget, TTValue>(
         IObservable<TValue> observedChange,
         TTarget? target,
@@ -206,6 +225,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     internal static IBindingTypeConverter? GetConverterForTypes(Type lhs, Type rhs) =>
         _typeConverterCache.Get((lhs, rhs));
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Type conversion requires dynamic code generation")]
+    [RequiresUnreferencedCode("Type conversion may reference types that could be trimmed")]
+#endif
     private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type? targetType)
     {
         if (fromType is null)
@@ -217,14 +240,20 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         return setter is null ? null : setter.PerformSet;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
         IObservable<TObs> changeObservable,
         TTarget target,
         Expression viewExpression)
         where TTarget : class
     {
-        var defaultSetter = Reflection.GetValueSetterOrThrow(viewExpression.GetMemberInfo());
-        var defaultGetter = Reflection.GetValueFetcherOrThrow(viewExpression.GetMemberInfo());
+        var memberInfo = viewExpression.GetMemberInfo();
+
+        var defaultSetter = Reflection.GetValueSetterOrThrow(memberInfo);
+        var defaultGetter = Reflection.GetValueFetcherOrThrow(memberInfo);
 
         object? SetThenGet(object? paramTarget, object? paramValue, object?[]? paramParams)
         {
@@ -265,9 +294,23 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                             })!;
         }
 
-        return (setObservable.Subscribe(_ => { }, ex => this.Log().Error(ex, $"{viewExpression} Binding received an Exception!")), setObservable);
+        return (setObservable.Subscribe(_ => { }, ex =>
+        {
+            this.Log().Error(ex, $"{viewExpression} Binding received an Exception!");
+            if (ex.InnerException is null)
+            {
+                return;
+            }
+
+            // If the exception is not null, we throw it wrapped in a TargetInvocationException.
+            throw new TargetInvocationException($"{viewExpression} Binding received an Exception!", ex.InnerException);
+        }), setObservable);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
         where TViewModel : class
     {
@@ -275,15 +318,15 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         view.ArgumentNullExceptionThrowIfNull(nameof(view));
 
         Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null
-                                                                 ? (() =>
-                                                                       {
-                                                                           Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
-                                                                           return fetchedValues;
-                                                                       })
-                                                                 : (() => new IObservedChange<object, object?>[]
-                                                                       {
-                                                                           new ObservedChange<object, object?>(null!, null, viewModel)
-                                                                       });
+            ? (() =>
+                {
+                    Reflection.TryGetAllValuesForPropertyChain(out var fetchedValues, viewModel, vmExpression.GetExpressionChain());
+                    return fetchedValues;
+                })
+            : (() =>
+                  [
+                      new ObservedChange<object, object?>(null!, null, viewModel)
+                  ]);
 
         var vFetcher = new Func<IObservedChange<object, object?>[]>(() =>
         {
@@ -304,6 +347,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         return shouldBind;
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Property binding requires dynamic code generation")]
+    [RequiresUnreferencedCode("Property binding may reference members that could be trimmed")]
+#endif
     private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         TViewModel? viewModel,
         TView view,

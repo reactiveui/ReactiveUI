@@ -30,10 +30,6 @@ namespace ReactiveUI;
 /// <typeparam name="TResult">
 /// The type of the values that are the result of command execution.
 /// </typeparam>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, IList<TResult>>
 {
     private readonly ReactiveCommand<TParam, IList<TResult>> _innerCommand;
@@ -49,6 +45,10 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <param name="outputScheduler">The scheduler where to dispatch the output from the command.</param>
     /// <exception cref="ArgumentNullException">Fires when required arguments are null.</exception>
     /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("CombinedReactiveCommand uses RxApp and ReactiveCommand which require dynamic code generation.")]
+    [RequiresUnreferencedCode("CombinedReactiveCommand uses RxApp and ReactiveCommand which may require unreferenced code.")]
+#endif
     protected internal CombinedReactiveCommand(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool>? canExecute,
@@ -56,7 +56,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     {
         childCommands.ArgumentNullExceptionThrowIfNull(nameof(childCommands));
 
-        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
+        _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
 
         var childCommandsArray = childCommands.ToArray();
 

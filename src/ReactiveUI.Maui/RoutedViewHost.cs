@@ -15,7 +15,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
-public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
+public partial class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
     /// <summary>
     /// The router bindable property.
@@ -41,6 +41,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
     /// <exception cref="Exception">You *must* register an IScreen class representing your App's main Screen.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
+#endif
     public RoutedViewHost()
     {
         this.WhenActivated(async disposable =>
@@ -76,7 +80,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
             Router?
                 .Navigate
-                .Where(_ => Navigation.NavigationStack.Count != Router.NavigationStack.Count)
+                .Where(_ => StacksAreDifferent())
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
@@ -184,6 +188,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("PagesForViewModel uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("PagesForViewModel uses methods that may require unreferenced code")]
+#endif
     protected virtual IObservable<Page> PagesForViewModel(IRoutableViewModel? vm)
     {
         if (vm is null)
@@ -215,6 +223,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("PagesForViewModel uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("PagesForViewModel uses methods that may require unreferenced code")]
+#endif
     protected virtual Page PageForViewModel(IRoutableViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm);
@@ -264,6 +276,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// to affect <see cref="Router"/> manipulations like Add or Clear.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SyncNavigationStacksAsync uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("SyncNavigationStacksAsync uses methods that may require unreferenced code")]
+#endif
     protected async Task SyncNavigationStacksAsync()
     {
         if (Navigation.NavigationStack.Count != Router.NavigationStack.Count

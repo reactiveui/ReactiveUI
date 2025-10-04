@@ -8,12 +8,13 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the WaitForDispatcherSchedulerClass.
 /// </summary>
+[TestFixture]
 public class WaitForDispatcherSchedulerTests
 {
     /// <summary>
     /// Tests call scheduler factory on creation.
     /// </summary>
-    [Fact]
+    [Test]
     public void CallSchedulerFactoryOnCreation()
     {
         var schedulerFactoryCalls = 0;
@@ -26,13 +27,13 @@ public class WaitForDispatcherSchedulerTests
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
 
-        Assert.Equal(1, schedulerFactoryCalls);
+        Assert.That(schedulerFactoryCalls, Is.EqualTo(1));
     }
 
     /// <summary>
     /// Calls that factories throws argument null exception falls back to current thread.
     /// </summary>
-    [Fact]
+    [Test]
     public void FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
     {
         IScheduler? schedulerExecutedOn = null;
@@ -46,13 +47,13 @@ public class WaitForDispatcherSchedulerTests
                                  return Disposable.Empty;
                              });
 
-        Assert.Equal(CurrentThreadScheduler.Instance, schedulerExecutedOn);
+        Assert.That(schedulerExecutedOn, Is.EqualTo(CurrentThreadScheduler.Instance));
     }
 
     /// <summary>
     /// Tests that factories throws exception re calls on schedule.
     /// </summary>
-    [Fact]
+    [Test]
     public void FactoryThrowsException_ReCallsOnSchedule()
     {
         var schedulerFactoryCalls = 0;
@@ -66,13 +67,13 @@ public class WaitForDispatcherSchedulerTests
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule(() => { });
 
-        Assert.Equal(2, schedulerFactoryCalls);
+        Assert.That(schedulerFactoryCalls, Is.EqualTo(2));
     }
 
     /// <summary>
     /// Tests that factories throws invalid operation exception falls back to current thread.
     /// </summary>
-    [Fact]
+    [Test]
     public void FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
     {
         IScheduler schedulerExecutedOn = null!;
@@ -87,13 +88,13 @@ public class WaitForDispatcherSchedulerTests
                                  return Disposable.Empty;
                              });
 
-        Assert.Equal(CurrentThreadScheduler.Instance, schedulerExecutedOn);
+        Assert.That(schedulerExecutedOn, Is.EqualTo(CurrentThreadScheduler.Instance));
     }
 
     /// <summary>
     /// Tests that factory uses cached scheduler.
     /// </summary>
-    [Fact]
+    [Test]
     public void SuccessfulFactory_UsesCachedScheduler()
     {
         var schedulerFactoryCalls = 0;
@@ -107,6 +108,6 @@ public class WaitForDispatcherSchedulerTests
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule(() => { });
 
-        Assert.Equal(1, schedulerFactoryCalls);
+        Assert.That(schedulerFactoryCalls, Is.EqualTo(1));
     }
 }

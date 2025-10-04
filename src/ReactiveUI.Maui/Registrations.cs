@@ -22,22 +22,28 @@ namespace ReactiveUI.Maui;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
+#endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
         ArgumentNullException.ThrowIfNull(registerFunction);
 
-        registerFunction(() => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(() => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
+        registerFunction(static () => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
 
 #if WINUI_TARGET
-        registerFunction(() => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(() => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(() => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-        registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registerFunction(static () => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registerFunction(static () => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
+        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => DispatcherQueueScheduler.Current);
+            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
             RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
         }
 

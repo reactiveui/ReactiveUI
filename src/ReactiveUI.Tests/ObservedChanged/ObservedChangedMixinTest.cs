@@ -17,7 +17,7 @@ public class ObservedChangedMixinTest
     /// <summary>
     /// Tests that getting the value should actually return the value.
     /// </summary>
-    [Fact]
+    [Test]
     public void GetValueShouldActuallyReturnTheValue()
     {
         var input = new[] { "Foo", "Bar", "Baz" };
@@ -47,7 +47,7 @@ public class ObservedChangedMixinTest
     /// <summary>
     /// Tests that getting the value should return the value from a path.
     /// </summary>
-    [Fact]
+    [Test]
     public void GetValueShouldReturnTheValueFromAPath()
     {
         var input = new HostTestFixture
@@ -55,16 +55,16 @@ public class ObservedChangedMixinTest
             Child = new TestFixture { IsNotNullString = "Foo" },
         };
 
-        Expression<Func<HostTestFixture, string>> expression = x => x!.Child!.IsNotNullString!;
-        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, default);
+        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
-        Assert.Equal("Foo", fixture.GetValue());
+        Assert.That(fixture.GetValue(), Is.EqualTo("Foo"));
     }
 
     /// <summary>
     /// Runs a smoke test that sets the value path.
     /// </summary>
-    [Fact]
+    [Test]
     public void SetValuePathSmokeTest()
     {
         var output = new HostTestFixture
@@ -72,94 +72,94 @@ public class ObservedChangedMixinTest
             Child = new TestFixture { IsNotNullString = "Foo" },
         };
 
-        Expression<Func<TestFixture, string>> expression = x => x.IsOnlyOneWord!;
-        var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, default);
+        Expression<Func<TestFixture, string>> expression = static x => x.IsOnlyOneWord!;
+        var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, null);
 
-        fixture.SetValueToProperty(output, x => x.Child!.IsNotNullString);
-        Assert.Equal("Bar", output.Child.IsNotNullString);
+        fixture.SetValueToProperty(output, static x => x.Child!.IsNotNullString);
+        Assert.That(output.Child.IsNotNullString, Is.EqualTo("Bar"));
     }
 
     /// <summary>
     /// Runs a smoke test for the BindTo functionality.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToSmokeTest() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.Null(fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.Equal("Foo", fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.Equal("Bar", fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Bar"));
         });
 
     /// <summary>
     /// Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.
     /// </summary>
-    [Fact]
+    [Test]
     public void DisposingDisconnectsTheBindTo() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            var subscription = input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            var subscription = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.Null(fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.Equal("Foo", fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
 
             subscription.Dispose();
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.Equal("Foo", fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
         });
 
     /// <summary>
     /// Tests to make sure that BindTo can handle intermediate object switching.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToIsNotFooledByIntermediateObjectSwitching() =>
-        new TestScheduler().With(scheduler =>
+        new TestScheduler().With(static scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
-            input.BindTo(fixture, x => x.Child!.IsNotNullString);
+            input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.Null(fixture.Child.IsNotNullString);
+            Assert.That(fixture.Child.IsNotNullString, Is.Null);
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.Equal("Foo", fixture.Child!.IsNotNullString);
+            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Foo"));
 
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.Equal("Foo", fixture.Child!.IsNotNullString);
+            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Foo"));
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.Equal("Bar", fixture.Child!.IsNotNullString);
+            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Bar"));
         });
 
     /// <summary>
     /// Tests to make sure that BindTo can handle Stack Overflow conditions.
     /// </summary>
-    [Fact]
+    [Test]
     public void BindToStackOverFlowTest() =>
-        new TestScheduler().With(_ =>
+        new TestScheduler().With(static _ =>
         {
             // Before the code changes packed in the same commit
             // as this test the test would go into an infinite
@@ -174,6 +174,6 @@ public class ObservedChangedMixinTest
 
             var source = new BehaviorSubject<List<string>>([]);
 
-            source.BindTo(fixtureA, x => x.StackOverflowTrigger);
+            source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
         });
 }

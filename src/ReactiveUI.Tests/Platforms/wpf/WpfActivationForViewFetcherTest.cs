@@ -3,17 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Threading;
 using System.Windows;
 
 using DynamicData;
 
-using FactAttribute = Xunit.WpfFactAttribute;
-
 namespace ReactiveUI.Tests.Wpf;
 
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class WpfActivationForViewFetcherTest
 {
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void FrameworkElementIsActivatedAndDeactivated()
     {
         var uc = new WpfTestUserControl();
@@ -41,7 +43,8 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void IsHitTestVisibleActivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl
@@ -79,7 +82,8 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void IsHitTestVisibleDeactivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl();
@@ -102,7 +106,8 @@ public class WpfActivationForViewFetcherTest
         new[] { true, false }.AssertAreEqual(activated);
     }
 
-    [Fact]
+    [Test]
+    [Apartment(ApartmentState.STA)]
     public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
     {
         var uc = new WpfTestUserControl();

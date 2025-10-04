@@ -39,7 +39,11 @@ namespace ReactiveUI.Maui;
 /// </code>
 /// </para>
 /// </remarks>
-public class AutoSuspendHelper : IEnableLogger, IDisposable
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
+[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
+#endif
+public partial class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _onSleep = new();
     private readonly Subject<Unit> _onLaunchingNew = new();
@@ -50,7 +54,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
     /// </summary>
-    static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += (_, _) => UntimelyDemise.OnNext(Unit.Default);
+    static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException += static (_, _) => UntimelyDemise.OnNext(Unit.Default);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.

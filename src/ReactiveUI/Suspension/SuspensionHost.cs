@@ -9,10 +9,6 @@ namespace ReactiveUI;
 /// A internal state setup by other classes for the different suspension state of a application.
 /// The user does not implement themselves but is often setup via the AutoSuspendHelper class.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
 {
     private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new(1);

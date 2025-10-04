@@ -13,20 +13,20 @@ public class AwaiterTest
     /// <summary>
     /// A smoke test for Awaiters.
     /// </summary>
-    [Fact]
+    [Test]
     [SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method", Justification = "Intentional")]
     public void AwaiterSmokeTest()
     {
         var fixture = AwaitAnObservable();
         fixture.Wait();
 
-        Assert.Equal(42, fixture.Result);
+        Assert.That(fixture.Result, Is.EqualTo(42));
     }
 
     private static async Task<int> AwaitAnObservable()
     {
         var o = Observable.Start(
-            () =>
+            static () =>
             {
                 Thread.Sleep(1000);
                 return 42;

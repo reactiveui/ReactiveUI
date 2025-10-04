@@ -8,10 +8,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the ISuspensionHost interface.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class SuspensionHostExtensions
 {
     /// <summary>
@@ -45,12 +41,16 @@ public static class SuspensionHostExtensions
     /// <typeparam name="T">The observable type.</typeparam>
     /// <param name="item">The suspension host.</param>
     /// <returns>An observable of the app state.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ObserveAppState uses WhenAny which requires dynamic code generation for expression tree analysis")]
+    [RequiresUnreferencedCode("ObserveAppState uses WhenAny which may reference members that could be trimmed")]
+#endif
     public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
         where T : class
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
-        return item.WhenAny(suspensionHost => suspensionHost.AppState, observedChange => observedChange.Value)
+        return item.WhenAny<ISuspensionHost, object?, object?>(nameof(item.AppState), static observedChange => observedChange.Value)
                    .WhereNotNull()
                    .Cast<T>();
     }
@@ -62,6 +62,10 @@ public static class SuspensionHostExtensions
     /// <param name="item">The suspension host.</param>
     /// <param name="driver">The suspension driver.</param>
     /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("SetupDefaultSuspendResume uses ISuspensionDriver which may require dynamic code generation for serialization")]
+    [RequiresUnreferencedCode("SetupDefaultSuspendResume uses ISuspensionDriver which may require unreferenced code for serialization")]
+#endif
     public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -100,6 +104,10 @@ public static class SuspensionHostExtensions
     /// <param name="item">The suspension host.</param>
     /// <param name="driver">The suspension driver.</param>
     /// <returns>A completed observable.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("EnsureLoadAppState uses ISuspensionDriver.LoadState which may require dynamic code generation for serialization")]
+    [RequiresUnreferencedCode("EnsureLoadAppState uses ISuspensionDriver.LoadState which may require unreferenced code for serialization")]
+#endif
     private static IObservable<Unit> EnsureLoadAppState(this ISuspensionHost item, ISuspensionDriver? driver = null)
     {
         if (item.AppState is not null)

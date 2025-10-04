@@ -19,8 +19,8 @@ public interface IViewLocator : IEnableLogger
     /// <param name="contract">Contract.</param>
     /// <returns>The view associated with the given view model.</returns>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresDynamicCode("ResolveView uses reflection and type discovery which require dynamic code generation")]
+    [RequiresUnreferencedCode("ResolveView uses reflection and type discovery which may require unreferenced code")]
 #endif
     IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
 }

@@ -8,10 +8,6 @@ namespace ReactiveUI;
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 public static class InteractionBindingMixins
 {
     private static readonly InteractionBinderImplementation _binderImplementation = new();
@@ -30,6 +26,10 @@ public static class InteractionBindingMixins
     /// <typeparam name="TInput">The interaction's input type.</typeparam>
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
+#endif
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         this TView view,
         TViewModel? viewModel,
@@ -56,6 +56,10 @@ public static class InteractionBindingMixins
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <typeparam name="TDontCare">The interaction's signal type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
+    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
+#endif
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         this TView view,
         TViewModel? viewModel,

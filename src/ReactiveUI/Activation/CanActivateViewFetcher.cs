@@ -29,8 +29,12 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
     /// </summary>
     /// <param name="view">The view to observe.</param>
     /// <returns>An observable tracking whether the view is active.</returns>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
+#endif
     public IObservable<bool> GetActivationForView(IActivatableView view) =>
         view is not ICanActivate canActivate
             ? Observable.Return(false)
-            : canActivate.Activated.Select(_ => true).Merge(canActivate.Deactivated.Select(_ => false));
+            : canActivate.Activated.Select(static _ => true).Merge(canActivate.Deactivated.Select(static _ => false));
 }

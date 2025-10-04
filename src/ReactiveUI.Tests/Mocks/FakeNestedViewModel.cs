@@ -13,7 +13,7 @@ public class FakeNestedViewModel : ReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="FakeNestedViewModel"/> class.
     /// </summary>
-    public FakeNestedViewModel() => NestedCommand = ReactiveCommand.Create(() => { });
+    public FakeNestedViewModel() => NestedCommand = ReactiveCommand.Create(static () => { });
 
     /// <summary>
     /// Gets or sets the nested command.

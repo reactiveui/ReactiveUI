@@ -12,6 +12,10 @@ namespace ReactiveUI;
 /// Auto Suspender helpers will assist with saving out the application state
 /// when the application closes or activates.
 /// </summary>
+#if NET6_0_OR_GREATER
+[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which require dynamic code generation")]
+[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which may require unreferenced code")]
+#endif
 public class AutoSuspendHelper : IEnableLogger
 {
     /// <summary>

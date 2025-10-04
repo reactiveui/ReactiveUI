@@ -11,10 +11,6 @@ namespace ReactiveUI;
 /// <summary>
 /// Class for simplifying and validating expressions.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 internal class ExpressionRewriter : ExpressionVisitor
 {
     public override Expression Visit(Expression? node)
@@ -55,6 +51,12 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitBinary(BinaryExpression node)
     {
         if (node.Right is not ConstantExpression)
@@ -66,16 +68,22 @@ internal class ExpressionRewriter : ExpressionVisitor
         var right = Visit(node.Right);
 
         // Translate arrayindex into normal index expression
-        return Expression.MakeIndex(left, left.Type.GetRuntimeProperty("Item"), [right]);
+        return Expression.MakeIndex(left, GetItemProperty(left.Type), [right]);
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitUnary(UnaryExpression node)
     {
         if (node.NodeType == ExpressionType.ArrayLength && node.Operand is not null)
         {
             var expression = Visit(node.Operand);
 
-            var memberInfo = expression.Type.GetRuntimeProperty("Length");
+            var memberInfo = GetLengthProperty(expression.Type);
 
             return memberInfo switch
             {
@@ -97,10 +105,16 @@ internal class ExpressionRewriter : ExpressionVisitor
         }
     }
 
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("ExpressionRewriter uses reflection to access type properties which requires dynamic code generation")]
+    [RequiresUnreferencedCode("ExpressionRewriter uses reflection to access type properties which may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+#endif
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         // Rewrite a method call to an indexer as an index expression
-        if (node.Arguments.Any(e => e is not ConstantExpression) || !node.Method.IsSpecialName)
+        if (node.Arguments.Any(static e => e is not ConstantExpression) || !node.Method.IsSpecialName)
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }
@@ -114,16 +128,34 @@ internal class ExpressionRewriter : ExpressionVisitor
         IEnumerable<Expression> arguments = Visit(node.Arguments);
 
         // Translate call to get_Item into normal index expression
-        return Expression.MakeIndex(instance, instance.Type.GetRuntimeProperty("Item"), arguments);
+        return Expression.MakeIndex(instance, GetItemProperty(instance.Type), arguments);
     }
 
     protected override Expression VisitIndex(IndexExpression node)
     {
-        if (node.Arguments.Any(e => e is not ConstantExpression))
+        if (node.Arguments.Any(static e => e is not ConstantExpression))
         {
             throw new NotSupportedException("Index expressions are only supported with constants.");
         }
 
         return base.VisitIndex(node);
+    }
+
+#if NET6_0_OR_GREATER
+    private static PropertyInfo? GetItemProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+#else
+    private static PropertyInfo? GetItemProperty(Type type)
+#endif
+    {
+        return type.GetRuntimeProperty("Item");
+    }
+
+#if NET6_0_OR_GREATER
+    private static PropertyInfo? GetLengthProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+#else
+    private static PropertyInfo? GetLengthProperty(Type type)
+#endif
+    {
+        return type.GetRuntimeProperty("Length");
     }
 }
