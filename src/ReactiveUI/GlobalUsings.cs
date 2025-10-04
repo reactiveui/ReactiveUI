@@ -17,6 +17,7 @@ global using global::System.Linq.Expressions;
 global using global::System.Reactive;
 global using global::System.Reactive.Concurrency;
 global using global::System.Reactive.Disposables;
+global using global::System.Reactive.Disposables.Fluent;
 global using global::System.Reactive.Linq;
 global using global::System.Reactive.Subjects;
 global using global::System.Reactive.Threading.Tasks;
