@@ -9,6 +9,7 @@ namespace ReactiveUI.Tests;
 /// Tests for the default view locators.
 /// </summary>
 [TestFixture]
+[NonParallelizable]
 public partial class DefaultViewLocatorTests
 {
     /// <summary>
