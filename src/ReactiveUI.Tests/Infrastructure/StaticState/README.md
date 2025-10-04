@@ -1,85 +1,53 @@
-# Static State Helper Scopes
+# Static State Test Isolation
 
-This directory contains helper classes for managing static/global state in tests.
+This directory documents the approach for handling static/global state in ReactiveUI tests.
 
-## Purpose
+## Problem
 
 ReactiveUI uses several static/global entry points for configuration:
 - `RxApp.MainThreadScheduler` and `RxApp.TaskpoolScheduler`
+- `RxApp.EnsureInitialized()` (initializes the service locator)
 - `MessageBus.Current`
 - `Locator.Current` / `Locator.CurrentMutable` (from Splat)
 
-When tests modify these static states, they can cause interference between parallel test executions, leading to intermittent failures. The helper scopes in this directory provide a pattern for snapshot/restore of static state.
+When tests access or modify these static states, they can cause interference between parallel test executions, leading to intermittent failures.
 
-## Available Scopes
+## Solution: NonParallelizable Attribute
 
-### RxAppSchedulersScope
+The approach taken is to mark test fixtures that use static state as `[NonParallelizable]` to prevent concurrent access rather than attempting complex state snapshot/restore mechanisms.
 
-Snapshots and restores `RxApp.MainThreadScheduler` and `RxApp.TaskpoolScheduler`.
+**When to mark a test fixture as `[NonParallelizable]`:**
 
-**Usage:**
+1. The test calls `RxApp.EnsureInitialized()`
+2. The test modifies or reads `RxApp` properties (schedulers, SuspensionHost, etc.)
+3. The test accesses or modifies `Locator.CurrentMutable`
+4. The test uses `MessageBus.Current`
+5. The test creates instances that depend on service locator registrations (e.g., `HostTestFixture`)
+
+**Example:**
 ```csharp
 [TestFixture]
 [NonParallelizable]
 public class MyTests
 {
-    private RxAppSchedulersScope _schedulersScope;
-
-    [SetUp]
-    public void SetUp()
+    [Test]
+    public void MyTest()
     {
-        _schedulersScope = new RxAppSchedulersScope();
-        // Now safe to modify RxApp schedulers
-        RxApp.MainThreadScheduler = ImmediateScheduler.Instance;
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _schedulersScope?.Dispose();
+        RxApp.EnsureInitialized();
+        // Test code that uses static state
     }
 }
 ```
 
-### MessageBusScope
+## Why Not State Restoration?
 
-Snapshots and restores `MessageBus.Current`.
+While it might seem appealing to create helper scopes that snapshot and restore static state, this approach has significant drawbacks:
 
-**Usage:**
-```csharp
-[TestFixture]
-[NonParallelizable]
-public class MyTests
-{
-    private MessageBusScope _messageBusScope;
+1. **Splat's Locator API complexity**: `Locator.SetLocator()` requires `IDependencyResolver` but `Locator.Current` returns `IReadonlyDependencyResolver`, making proper restoration difficult.
+2. **Fragility**: Attempting to snapshot/restore complex DI container state is error-prone and can lead to subtle bugs.
+3. **Simplicity**: The `[NonParallelizable]` attribute is explicit, simple, and foolproof.
 
-    [SetUp]
-    public void SetUp()
-    {
-        _messageBusScope = new MessageBusScope();
-        // Now safe to use or replace MessageBus.Current
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _messageBusScope?.Dispose();
-    }
-}
-```
-
-## Important Notes
-
-1. **Always mark test fixtures as `[NonParallelizable]`** if they:
-   - Call `RxApp.EnsureInitialized()`
-   - Modify `RxApp` properties (schedulers, SuspensionHost, etc.)
-   - Access or modify `Locator.CurrentMutable`
-   - Use `MessageBus.Current`
-   - Create instances that depend on service locator registrations (e.g., `HostTestFixture`)
-
-2. **These scopes do NOT make tests safe for parallel execution** - they only help with cleanup. Tests touching static state should always be marked `[NonParallelizable]`.
-
-3. **For Splat's Locator**: Due to the complexity of Splat's dependency resolver API, we don't provide a `LocatorScope`. Instead, tests that modify Locator state should be marked `[NonParallelizable]` and clean up their own registrations if needed.
+Tests that truly need to modify and restore state can do so manually in their `[SetUp]`/`[TearDown]` methods, but in most cases simply preventing parallel execution is sufficient.
 
 ## Test Fixtures Already Marked as NonParallelizable
 
