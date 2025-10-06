@@ -81,7 +81,7 @@
 
     <!-- Final target frameworks for tests/benchmarks (modern .NET only, with platform-specific additions) -->
     <ReactiveUIFinalModernTargetFrameworks>$(ReactiveUIModernTargets)</ReactiveUIFinalModernTargetFrameworks>
-    <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
+    <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalModernTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
   </PropertyGroup>
   
   <PropertyGroup>
