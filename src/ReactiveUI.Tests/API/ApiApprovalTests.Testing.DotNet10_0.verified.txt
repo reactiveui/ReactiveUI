@@ -1,6 +1,4 @@
-﻿[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v10.0", FrameworkDisplayName=".NET 10.0")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
+﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v10.0", FrameworkDisplayName=".NET 10.0")]
 namespace ReactiveUI.Testing
 {
     public abstract class AppBuilderTestBase

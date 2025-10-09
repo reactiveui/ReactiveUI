@@ -68,6 +68,9 @@
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
 
+    <ReactiveUITestingTargets>netstandard2.0;$(ReactiveUIModernTargets)</ReactiveUITestingTargets>
+    <ReactiveUITestingTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUITestingTargets);net462;net472</ReactiveUITestingTargets>
+
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>netstandard2.0;$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
 

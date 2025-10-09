@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <PackageDescription>Provides extensions for testing ReactiveUI based applications</PackageDescription>
