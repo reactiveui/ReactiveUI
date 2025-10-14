@@ -32,14 +32,20 @@ public static class SchedulerExtensions
         _schedulerGate.WaitOne();
         var prevDef = RxApp.MainThreadScheduler;
         var prevTask = RxApp.TaskpoolScheduler;
+        var prevRxDef = RxSchedulers.MainThreadScheduler;
+        var prevRxTask = RxSchedulers.TaskpoolScheduler;
 
         RxApp.MainThreadScheduler = scheduler;
         RxApp.TaskpoolScheduler = scheduler;
+        RxSchedulers.MainThreadScheduler = scheduler;
+        RxSchedulers.TaskpoolScheduler = scheduler;
 
         return Disposable.Create(() =>
         {
             RxApp.MainThreadScheduler = prevDef;
             RxApp.TaskpoolScheduler = prevTask;
+            RxSchedulers.MainThreadScheduler = prevRxDef;
+            RxSchedulers.TaskpoolScheduler = prevRxTask;
             _schedulerGate.Set();
         });
     }
