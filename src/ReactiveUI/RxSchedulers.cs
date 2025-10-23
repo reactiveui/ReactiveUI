@@ -21,10 +21,8 @@ public static class RxSchedulers
 {
     private static readonly object _lock = new();
 
-    [ThreadStatic]
     private static volatile IScheduler? _mainThreadScheduler;
 
-    [ThreadStatic]
     private static volatile IScheduler? _taskpoolScheduler;
 
     /// <summary>
