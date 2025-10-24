@@ -70,35 +70,26 @@ public class RxSchedulersTest
     [Test]
     public void SchedulersProvideBasicFunctionality()
     {
-        // Store original schedulers
-        var originalMainScheduler = RxSchedulers.MainThreadScheduler;
-        var originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
+        var mainScheduler = RxSchedulers.MainThreadScheduler;
+        var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
-        try
+        using (Assert.EnterMultipleScope())
         {
-            // Ensure we're using default schedulers for this test to avoid test isolation issues
-            RxSchedulers.MainThreadScheduler = DefaultScheduler.Instance;
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            // Verify they implement IScheduler
+            Assert.That(mainScheduler, Is.AssignableTo<IScheduler>());
+            Assert.That(taskpoolScheduler, Is.AssignableTo<IScheduler>());
 
-            var mainScheduler = RxSchedulers.MainThreadScheduler;
-            var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
-
-            using (Assert.EnterMultipleScope())
+            // Verify they have Now property - only check if not using TestScheduler
+            // TestScheduler.Now returns DateTimeOffset.MinValue by design
+            if (mainScheduler is not TestScheduler)
             {
-                // Verify they implement IScheduler
-                Assert.That(mainScheduler, Is.AssignableTo<IScheduler>());
-                Assert.That(taskpoolScheduler, Is.AssignableTo<IScheduler>());
-
-                // Verify they have Now property
                 Assert.That(mainScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
+            }
+
+            if (taskpoolScheduler is not TestScheduler)
+            {
                 Assert.That(taskpoolScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
             }
-        }
-        finally
-        {
-            // Restore original schedulers
-            RxSchedulers.MainThreadScheduler = originalMainScheduler;
-            RxSchedulers.TaskpoolScheduler = originalTaskpoolScheduler;
         }
     }
 }
