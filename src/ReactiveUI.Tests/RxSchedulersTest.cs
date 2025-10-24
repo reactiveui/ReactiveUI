@@ -11,6 +11,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests the RxSchedulers class to ensure it works without RequiresUnreferencedCode attributes.
 /// </summary>
+[NonParallelizable]
 public class RxSchedulersTest
 {
     /// <summary>
