@@ -1811,16 +1811,26 @@ public class ReactiveCommandTest
         fixture.ThrownExceptions.Subscribe(_ => { });
 
         var latestIsExecutingValue = false;
+        var subscriptionReady = new TaskCompletionSource<bool>();
+        var isFirstValue = true;
+
         fixture.IsExecuting.Subscribe(isExec =>
         {
             statusTrail.Add((position++, $"command executing = {isExec}"));
             Volatile.Write(
                            ref latestIsExecutingValue,
                            isExec);
+
+            // Signal that we've received the first value (should be false initially)
+            if (isFirstValue)
+            {
+                isFirstValue = false;
+                subscriptionReady.TrySetResult(true);
+            }
         });
 
-        // Yield to ensure subscription is fully established before executing
-        await Task.Yield();
+        // Wait for the subscription to receive the initial value
+        await subscriptionReady.Task;
 
         var disposable = fixture.Execute().Subscribe();
 
