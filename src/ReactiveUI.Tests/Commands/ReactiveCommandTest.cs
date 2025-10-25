@@ -1819,6 +1819,9 @@ public class ReactiveCommandTest
                            isExec);
         });
 
+        // Yield to ensure subscription is fully established before executing
+        await Task.Yield();
+
         var disposable = fixture.Execute().Subscribe();
 
         // Phase 1
