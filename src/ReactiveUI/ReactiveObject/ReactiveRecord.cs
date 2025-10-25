@@ -73,7 +73,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
-        field ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
+        Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -83,7 +83,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
-        field ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
+        Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -92,7 +92,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<Exception> ThrownExceptions => field ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
+    public IObservable<Exception> ThrownExceptions => Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
