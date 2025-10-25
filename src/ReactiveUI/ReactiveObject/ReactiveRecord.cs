@@ -13,11 +13,8 @@ namespace ReactiveUI;
 [DataContract]
 public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
-    private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changing;
-    private readonly Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>> _changed;
-    private readonly Lazy<Unit> _propertyChangingEventsSubscribed;
-    private readonly Lazy<Unit> _propertyChangedEventsSubscribed;
-    private readonly Lazy<IObservable<Exception>> _thrownExceptions;
+    private bool _propertyChangingEventsSubscribed;
+    private bool _propertyChangedEventsSubscribed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveRecord"/> class.
@@ -28,23 +25,6 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
 #endif
     public ReactiveRecord()
     {
-        _changing = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangingObservable(), LazyThreadSafetyMode.PublicationOnly);
-        _changed = new Lazy<IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>>(() => ((IReactiveObject)this).GetChangedObservable(), LazyThreadSafetyMode.PublicationOnly);
-        _propertyChangingEventsSubscribed = new Lazy<Unit>(
-                                                           () =>
-                                                           {
-                                                               this.SubscribePropertyChangingEvents();
-                                                               return Unit.Default;
-                                                           },
-                                                           LazyThreadSafetyMode.PublicationOnly);
-        _propertyChangedEventsSubscribed = new Lazy<Unit>(
-                                                          () =>
-                                                          {
-                                                              this.SubscribePropertyChangedEvents();
-                                                              return Unit.Default;
-                                                          },
-                                                          LazyThreadSafetyMode.PublicationOnly);
-        _thrownExceptions = new Lazy<IObservable<Exception>>(this.GetThrownExceptionsObservable, LazyThreadSafetyMode.PublicationOnly);
     }
 
     /// <inheritdoc/>
@@ -52,7 +32,12 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     {
         add
         {
-            _ = _propertyChangingEventsSubscribed.Value;
+            if (!_propertyChangingEventsSubscribed)
+            {
+                this.SubscribePropertyChangingEvents();
+                _propertyChangingEventsSubscribed = true;
+            }
+
             PropertyChangingHandler += value;
         }
         remove => PropertyChangingHandler -= value;
@@ -63,7 +48,12 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     {
         add
         {
-            _ = _propertyChangedEventsSubscribed.Value;
+            if (!_propertyChangedEventsSubscribed)
+            {
+                this.SubscribePropertyChangedEvents();
+                _propertyChangedEventsSubscribed = true;
+            }
+
             PropertyChangedHandler += value;
         }
         remove => PropertyChangedHandler -= value;
@@ -83,7 +73,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
-        _changing.Value;
+        field ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -93,7 +83,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
     public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
-        _changed.Value;
+        field ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -102,7 +92,7 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<Exception> ThrownExceptions => _thrownExceptions.Value;
+    public IObservable<Exception> ThrownExceptions => field ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
