@@ -20,7 +20,7 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     private readonly Subject<Unit> _deactivateSubject = new();
     private readonly CompositeDisposable _compositeDisposable = [];
 
-    private bool _disposedValue;
+    private bool _disposedValue; // To detect redundant calls
     private T? _viewModel;
 
     /// <inheritdoc />
@@ -96,7 +96,7 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
             viewModelChanged
                 .Select(x =>
                     Observable
-                        .FromEvent<PropertyChangedEventHandler?, Unit>(
+                        .FromEvent<PropertyChangedEventHandler, Unit>(
                             eventHandler =>
                             {
                                 void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
@@ -113,10 +113,10 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     }
 
     /// <summary>
-    /// Raises the <see cref="PropertyChanged"/> event.
+    /// Invokes the property changed event.
     /// </summary>
     /// <param name="propertyName">The name of the changed property.</param>
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+    protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     /// <inheritdoc />
