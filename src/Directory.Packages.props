@@ -20,10 +20,10 @@
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="NUnit" Version="4.4.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
-    <PackageVersion Include="NUnit.Analyzers" Version="4.10.0" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.11.2" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
@@ -44,7 +44,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.11" />
-    <PackageVersion Include="Verify.NUnit" Version="31.0.4" />
+    <PackageVersion Include="Verify.NUnit" Version="31.7.1" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251015.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
