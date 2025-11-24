@@ -1,0 +1,131 @@
+﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using System.Runtime.CompilerServices;
+
+using Microsoft.AspNetCore.Components;
+
+namespace ReactiveUI.Blazor;
+
+/// <summary>
+/// A base component for handling property changes and updating the blazer view appropriately.
+/// </summary>
+/// <typeparam name="T">The type of view model. Must support INotifyPropertyChanged.</typeparam>
+public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
+    where T : class, INotifyPropertyChanged
+{
+    private readonly Subject<Unit> _initSubject = new();
+    [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
+    private readonly Subject<Unit> _deactivateSubject = new();
+    private readonly CompositeDisposable _compositeDisposable = [];
+
+    private T? _viewModel;
+
+    /// <inheritdoc />
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <summary>
+    /// Gets or sets the view model associated with this component.
+    /// </summary>
+    [Parameter]
+    public T? ViewModel
+    {
+        get => _viewModel;
+        set
+        {
+            if (EqualityComparer<T?>.Default.Equals(_viewModel, value))
+            {
+                return;
+            }
+
+            _viewModel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (T?)value;
+    }
+
+    /// <inheritdoc />
+    public IObservable<Unit> Activated => _initSubject.AsObservable();
+
+    /// <inheritdoc />
+    public IObservable<Unit> Deactivated => _deactivateSubject.AsObservable();
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        if (ViewModel is IActivatableViewModel avm)
+        {
+            Activated.Subscribe(_ => avm.Activator.Activate()).DisposeWith(_compositeDisposable);
+            Deactivated.Subscribe(_ => avm.Activator.Deactivate());
+        }
+
+        _initSubject.OnNext(Unit.Default);
+        base.OnInitialized();
+    }
+
+    /// <inheritdoc/>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("OnAfterRender uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("OnAfterRender uses methods that may require unreferenced code")]
+    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
+    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
+#endif
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
+            var viewModelChanged =
+                this.WhenAnyValue<ReactiveOwningComponentBase<T>, T?>(nameof(ViewModel))
+                    .WhereNotNull()
+                    .Publish()
+                    .RefCount(2);
+
+            viewModelChanged
+                .Subscribe(_ => InvokeAsync(StateHasChanged))
+                .DisposeWith(_compositeDisposable);
+
+            viewModelChanged
+                .Select(x =>
+                    Observable
+                        .FromEvent<PropertyChangedEventHandler, Unit>(
+                            eventHandler =>
+                            {
+                                void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
+                                return Handler;
+                            },
+                            eh => x.PropertyChanged += eh,
+                            eh => x.PropertyChanged -= eh))
+                .Switch()
+                .Subscribe(_ => InvokeAsync(StateHasChanged))
+                .DisposeWith(_compositeDisposable);
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    /// <summary>
+    /// Invokes the property changed event.
+    /// </summary>
+    /// <param name="propertyName">The name of the changed property.</param>
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _initSubject.Dispose();
+            _compositeDisposable.Dispose();
+            _deactivateSubject.OnNext(Unit.Default);
+        }
+    }
+}
