@@ -912,7 +912,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
             return Observable.Defer(
                     () =>
                     {
-                        _synchronizedExecutionInfo.OnNext(ExecutionInfo.CreateBegin());
+                        _executionInfo.OnNext(ExecutionInfo.CreateBegin());
                         return Observable<(IObservable<TResult>, Action)>.Empty;
                     })
                 .Concat(_execute(parameter))
