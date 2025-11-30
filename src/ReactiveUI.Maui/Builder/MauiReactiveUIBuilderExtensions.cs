@@ -86,6 +86,11 @@ public static class MauiReactiveUIBuilderExtensions
 
         builder.WithTaskPoolScheduler(TaskPoolScheduler.Default);
 
+        if (ModeDetector.InUnitTestRunner())
+        {
+            return builder.WithMainThreadScheduler(RxApp.UnitTestMainThreadScheduler);
+        }
+
 #if ANDROID
         return builder.WithMainThreadScheduler(AndroidMainThreadScheduler);
 #elif MACCATALYST || IOS || MACOS || TVOS

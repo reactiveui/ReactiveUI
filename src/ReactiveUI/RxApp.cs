@@ -238,7 +238,7 @@ public static class RxApp
         }
     }
 
-    private static IScheduler UnitTestMainThreadScheduler
+    internal static IScheduler UnitTestMainThreadScheduler
     {
         get => _unitTestMainThreadScheduler ??= CurrentThreadScheduler.Instance;
 
