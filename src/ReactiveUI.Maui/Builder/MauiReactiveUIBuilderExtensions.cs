@@ -13,12 +13,42 @@ namespace ReactiveUI.Builder;
 public static class MauiReactiveUIBuilderExtensions
 {
     /// <summary>
-    /// Gets the maui main thread scheduler.
+    /// Gets the MAUI main thread scheduler.
     /// </summary>
     /// <value>
-    /// The maui main thread scheduler.
+    /// The MAUI main thread scheduler.
     /// </value>
     public static IScheduler MauiMainThreadScheduler { get; } = DefaultScheduler.Instance;
+
+#if WINUI_TARGET
+    /// <summary>
+    /// Gets a scheduler that schedules work on the WinUI or .NET MAUI main UI thread, if available.
+    /// </summary>
+    /// <remarks>Use this scheduler to ensure that actions are executed on the main thread in WinUI or .NET
+    /// MAUI applications. This is useful for updating UI elements or performing operations that require main thread
+    /// access. If called from a non-main thread, scheduled actions will be marshaled to the main UI thread.</remarks>
+    public static IScheduler WinUIMauiMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
+#endif
+
+#if ANDROID
+    /// <summary>
+    /// Gets the scheduler that schedules work on the Android main (UI) thread.
+    /// </summary>
+    /// <remarks>Use this scheduler to execute actions that must run on the Android UI thread, such as
+    /// updating user interface elements from background operations. This property is only available on Android
+    /// platforms.</remarks>
+    public static IScheduler AndroidMainThreadScheduler { get; } = HandlerScheduler.MainThreadScheduler;
+#endif
+
+#if MACCATALYST || IOS || MACOS || TVOS
+    /// <summary>
+    /// Gets the scheduler that schedules work on the Apple main (UI) thread.
+    /// </summary>
+    /// <remarks>Use this scheduler to execute actions that must run on the main UI thread of Apple platforms,
+    /// such as updating user interface elements from background operations. This property is available on macOS, iOS,
+    /// and Mac Catalyst platforms.</remarks>
+    public static IScheduler AppleMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
+#endif
 
     /// <summary>
     /// Configures ReactiveUI for MAUI platform with appropriate schedulers.
@@ -43,7 +73,7 @@ public static class MauiReactiveUIBuilderExtensions
     }
 
     /// <summary>
-    /// Withes the maui scheduler.
+    /// Adds the MAUI scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
@@ -54,6 +84,21 @@ public static class MauiReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
+        builder.WithTaskPoolScheduler(TaskPoolScheduler.Default);
+
+        if (ModeDetector.InUnitTestRunner())
+        {
+            return builder.WithMainThreadScheduler(RxApp.UnitTestMainThreadScheduler);
+        }
+
+#if ANDROID
+        return builder.WithMainThreadScheduler(AndroidMainThreadScheduler);
+#elif MACCATALYST || IOS || MACOS || TVOS
+        return builder.WithMainThreadScheduler(AppleMainThreadScheduler);
+#elif WINUI_TARGET
+        return builder.WithMainThreadScheduler(WinUIMauiMainThreadScheduler);
+#else
         return builder.WithMainThreadScheduler(MauiMainThreadScheduler);
+#endif
     }
 }
