@@ -20,6 +20,26 @@ public static class MauiReactiveUIBuilderExtensions
     /// </value>
     public static IScheduler MauiMainThreadScheduler { get; } = DefaultScheduler.Instance;
 
+#if ANDROID
+    /// <summary>
+    /// Gets the scheduler that schedules work on the Android main (UI) thread.
+    /// </summary>
+    /// <remarks>Use this scheduler to execute actions that must run on the Android UI thread, such as
+    /// updating user interface elements from background operations. This property is only available on Android
+    /// platforms.</remarks>
+    public static IScheduler AndroidMainThreadScheduler { get; } = HandlerScheduler.MainThreadScheduler;
+#endif
+
+#if MACCATALYST || IOS || MACOS
+    /// <summary>
+    /// Gets the scheduler that schedules work on the Apple main (UI) thread.
+    /// </summary>
+    /// <remarks>Use this scheduler to execute actions that must run on the main UI thread of Apple platforms,
+    /// such as updating user interface elements from background operations. This property is available on macOS, iOS,
+    /// and Mac Catalyst platforms.</remarks>
+    public static IScheduler AppleMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
+#endif
+
     /// <summary>
     /// Configures ReactiveUI for MAUI platform with appropriate schedulers.
     /// </summary>
@@ -38,7 +58,9 @@ public static class MauiReactiveUIBuilderExtensions
         }
 
         return builder
+#if !WINUI_TARGET
             .WithMauiScheduler()
+#endif
             .WithPlatformModule<Maui.Registrations>();
     }
 
@@ -54,6 +76,12 @@ public static class MauiReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
+#if ANDROID
+        return builder.WithMainThreadScheduler(AndroidMainThreadScheduler);
+#elif MACCATALYST || IOS || MACOS
+        return builder.WithMainThreadScheduler(AppleMainThreadScheduler);
+#else
         return builder.WithMainThreadScheduler(MauiMainThreadScheduler);
+#endif
     }
 }
