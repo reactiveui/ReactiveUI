@@ -44,6 +44,7 @@ namespace ReactiveUI;
 /// <para>
 /// Creating asynchronous reactive commands:
 /// <code>
+///
 /// <![CDATA[
 /// // An asynchronous command that waits 2 seconds and returns 42.
 /// var command = ReactiveCommand.CreateFromObservable<Unit, int>(
@@ -812,7 +813,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         IScheduler? outputScheduler)
     {
         _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-        _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
+        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
         _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxApp.DefaultExceptionHandler);
         _executionInfo = new Subject<ExecutionInfo>();
         _synchronizedExecutionInfo = Subject.Synchronize(_executionInfo, _outputScheduler);
@@ -882,7 +883,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                     });
             },
             canExecute,
-            outputScheduler)
+            outputScheduler ?? RxApp.MainThreadScheduler)
     {
     }
 
