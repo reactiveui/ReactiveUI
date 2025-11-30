@@ -303,7 +303,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                                                                           this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] BeginUpdates", sectionInfoId);
                                                                           _adapter.BeginUpdates();
 
-                                                                          applyPendingChangesDisposable.Disposable = RxApp.MainThreadScheduler.Schedule(
+                                                                          applyPendingChangesDisposable.Disposable = RxSchedulers.MainThreadScheduler.Schedule(
                                                                            () =>
                                                                            {
                                                                                ApplyPendingChanges(sectionInfoId);

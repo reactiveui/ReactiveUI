@@ -62,7 +62,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
             triggerItem._watcher = null;
         }
 
-        triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+        triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxSchedulers.MainThreadScheduler).Subscribe(
          triggerItem.InvokeActions,
          _ =>
          {

@@ -75,11 +75,11 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         this.WhenAnyObservable(x => x.RoomsChanged)
             .StartWith(Unit.Default)
             .Select(_ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Rooms), out _rooms);
 
         // Request a snapshot from peers shortly after activation
-        RxApp.MainThreadScheduler.Schedule(Unit.Default, TimeSpan.FromMilliseconds(500), (s, __) =>
+        RxSchedulers.MainThreadScheduler.Schedule(Unit.Default, TimeSpan.FromMilliseconds(500), (s, __) =>
         {
             var req = new Services.RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty) { InstanceId = Services.AppInstance.Id };
             Trace.WriteLine("[Lobby] Broadcasting SyncRequest");

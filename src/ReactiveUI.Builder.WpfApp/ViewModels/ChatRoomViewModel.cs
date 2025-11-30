@@ -40,7 +40,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         MessageBus.Current.Listen<ChatNetworkMessage>(contract: room.Name)
             .Where(msg => msg.InstanceId != Services.AppInstance.Id)
             .Throttle(TimeSpan.FromMilliseconds(33))
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(msg =>
             {
                 _room.Messages.Add(new ChatMessage { Sender = msg.Sender, Text = msg.Text, Timestamp = msg.Timestamp });

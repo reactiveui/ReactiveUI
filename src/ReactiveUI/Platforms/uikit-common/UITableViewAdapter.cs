@@ -55,7 +55,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
 
         // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
         // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
-        RxApp.MainThreadScheduler.Schedule(FinishReloadData);
+        RxSchedulers.MainThreadScheduler.Schedule(FinishReloadData);
     }
 
     public void BeginUpdates() => _view.BeginUpdates();

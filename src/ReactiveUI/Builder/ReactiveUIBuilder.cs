@@ -926,12 +926,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             {
                 if (MainThreadScheduler != null && _setRxAppMainScheduler)
                 {
-                    RxApp.MainThreadScheduler = MainThreadScheduler;
+                    RxSchedulers.MainThreadScheduler = MainThreadScheduler;
                 }
 
                 if (TaskpoolScheduler != null && _setRxAppTaskPoolScheduler)
                 {
-                    RxApp.TaskpoolScheduler = TaskpoolScheduler;
+                    RxSchedulers.TaskpoolScheduler = TaskpoolScheduler;
                 }
             });
 }

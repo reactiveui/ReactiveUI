@@ -31,8 +31,8 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
         }
 
         registerFunction(static () => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));

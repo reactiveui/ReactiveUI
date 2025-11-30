@@ -56,7 +56,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     {
         childCommands.ArgumentNullExceptionThrowIfNull(nameof(childCommands));
 
-        _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
+        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
 
         var childCommandsArray = childCommands.ToArray();
 

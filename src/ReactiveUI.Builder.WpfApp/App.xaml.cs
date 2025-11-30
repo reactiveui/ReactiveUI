@@ -55,7 +55,7 @@ public partial class App : Application
                 // Network service used to broadcast/receive messages across instances
                 r.RegisterLazySingleton(static () => new Services.ChatNetworkService());
             })
-            .Build();
+            .BuildApp();
 
         // Setup Suspension
         RxApp.SuspensionHost.CreateNewAppState = static () => new ChatState();
@@ -74,7 +74,7 @@ public partial class App : Application
         // Load persisted state asynchronously and update UI when ready
         _ = _driver
             .LoadState()
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(
                 static stateObj =>
                 {

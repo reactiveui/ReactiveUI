@@ -25,8 +25,8 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = EcoreMainloopScheduler.MainThreadScheduler;
         }
     }
 }

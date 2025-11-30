@@ -114,7 +114,7 @@ public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotify
 
     /// <inheritdoc/>
     void ICanForceManualActivation.Activate(bool activate) =>
-        RxApp.MainThreadScheduler.Schedule(() =>
+        RxSchedulers.MainThreadScheduler.Schedule(() =>
                                                (activate ? _activated : _deactivated).OnNext(Unit.Default));
 
     /// <inheritdoc/>

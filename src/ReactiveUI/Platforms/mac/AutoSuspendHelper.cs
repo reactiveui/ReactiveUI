@@ -63,7 +63,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <returns>The termination reply from the application.</returns>
     public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
     {
-        RxApp.MainThreadScheduler.Schedule(() =>
+        RxSchedulers.MainThreadScheduler.Schedule(() =>
                                                _shouldPersistState.OnNext(Disposable.Create(() =>
                                                                               sender.ReplyToApplicationShouldTerminate(true))));
 
