@@ -847,7 +847,6 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
                                              .Select(x => x.Result);
 
         _canExecuteSubscription = _canExecute
-                                  .ObserveOn(_outputScheduler)
                                   .Subscribe(OnCanExecuteChanged);
     }
 
