@@ -133,43 +133,6 @@ public static class DispatcherObservable
         return ObserveOn_(source, dispatcherObject.Dispatcher, priority);
     }
 
-
-    /// <summary>
-    /// Wraps the source sequence in order to run its observer callbacks on the dispatcher associated with the current thread.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-    /// <param name="source">Source sequence.</param>
-    /// <returns>The source sequence whose observations happen on the current thread's dispatcher.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
-    [Obsolete("Use ObserveOn(RxApp.MainThreadScheduler)", false)]
-    public static IObservable<TSource> ObserveOnDispatcher<TSource>(this IObservable<TSource> source)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return ObserveOn_(source, DispatcherScheduler.Current.Dispatcher);
-    }
-
-    /// <summary>
-    /// Wraps the source sequence in order to run its observer callbacks on the dispatcher associated with the current thread.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-    /// <param name="source">Source sequence.</param>
-    /// <param name="priority">Priority to schedule work items at.</param>
-    /// <returns>The source sequence whose observations happen on the current thread's dispatcher.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
-    public static IObservable<TSource> ObserveOnDispatcher<TSource>(this IObservable<TSource> source, DispatcherPriority priority)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return ObserveOn_(source, DispatcherScheduler.Current.Dispatcher, priority);
-    }
-
     private static IObservable<TSource> ObserveOn_<TSource>(IObservable<TSource> source, Dispatcher dispatcher, DispatcherPriority priority)
     {
         return Synchronization.ObserveOn(source, new DispatcherSynchronizationContext(dispatcher, priority));
@@ -321,49 +284,6 @@ public static class DispatcherObservable
         }
 
         return SubscribeOn_(source, dispatcherObject.Dispatcher, priority);
-    }
-
-    /// <summary>
-    /// Wraps the source sequence in order to run its subscription and unsubscription logic on the dispatcher associated with the current thread.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-    /// <param name="source">Source sequence.</param>
-    /// <returns>The source sequence whose subscriptions and unsubscriptions happen on the current thread's dispatcher.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
-    /// <remarks>
-    /// Only the side-effects of subscribing to the source sequence and disposing subscriptions to the source sequence are run on the dispatcher associated with the current thread.
-    /// In order to invoke observer callbacks on the dispatcher associated with the current thread, e.g. to render results in a control, use <see cref="DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource})"/>.
-    /// </remarks>
-    public static IObservable<TSource> SubscribeOnDispatcher<TSource>(this IObservable<TSource> source)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return SubscribeOn_(source, DispatcherScheduler.Current.Dispatcher);
-    }
-
-    /// <summary>
-    /// Wraps the source sequence in order to run its subscription and unsubscription logic on the dispatcher associated with the current thread.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-    /// <param name="source">Source sequence.</param>
-    /// <param name="priority">Priority to schedule work items at.</param>
-    /// <returns>The source sequence whose observations happen on the current thread's dispatcher.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/> is null.</exception>
-    /// <remarks>
-    /// Only the side-effects of subscribing to the source sequence and disposing subscriptions to the source sequence are run on the dispatcher associated with the current thread.
-    /// In order to invoke observer callbacks on the dispatcher associated with the current thread, e.g. to render results in a control, use <see cref="DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource}, DispatcherPriority)"/>.
-    /// </remarks>
-    public static IObservable<TSource> SubscribeOnDispatcher<TSource>(this IObservable<TSource> source, DispatcherPriority priority)
-    {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
-
-        return SubscribeOn_(source, DispatcherScheduler.Current.Dispatcher, priority);
     }
 
     private static IObservable<TSource> SubscribeOn_<TSource>(IObservable<TSource> source, Dispatcher dispatcher, DispatcherPriority priority)

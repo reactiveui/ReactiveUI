@@ -81,7 +81,7 @@ public partial class RoutedViewHost : NavigationPage, IActivatableView, IEnableL
             Router?
                 .Navigate
                 .Where(_ => StacksAreDifferent())
-                .ObserveOn(RxApp.MainThreadScheduler)
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
                 .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
                 .SelectMany(async page =>
                 {
@@ -245,7 +245,7 @@ public partial class RoutedViewHost : NavigationPage, IActivatableView, IEnableL
 
         if (SetTitleOnNavigate)
         {
-            RxApp.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+            RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
         }
 
         return pg;

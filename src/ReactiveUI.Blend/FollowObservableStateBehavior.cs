@@ -114,7 +114,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
         var newValue = (IObservable<string>)e.NewValue ?? throw new ArgumentNullException(nameof(e.NewValue));
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
-        item._watcher = newValue.ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+        item._watcher = newValue.ObserveOn(RxSchedulers.MainThreadScheduler).Subscribe(
             x =>
             {
                 var target = item.TargetObject ?? item.AssociatedObject;

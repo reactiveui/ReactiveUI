@@ -32,7 +32,7 @@ public static class RxSchedulers
     /// </summary>
     /// <remarks>
     /// This is a simplified version that doesn't include unit test detection.
-    /// For full functionality including unit test support, use RxApp.MainThreadScheduler.
+    /// For full functionality including unit test support, use RxSchedulers.MainThreadScheduler.
     /// </remarks>
     public static IScheduler MainThreadScheduler
     {

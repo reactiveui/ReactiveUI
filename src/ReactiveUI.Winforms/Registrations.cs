@@ -45,7 +45,7 @@ public class Registrations : IWantsToRegisterStuff
         if (!ModeDetector.InUnitTestRunner())
         {
             WindowsFormsSynchronizationContext.AutoInstall = true;
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
+            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new SynchronizationContextScheduler(new WindowsFormsSynchronizationContext()));
         }
     }
 }

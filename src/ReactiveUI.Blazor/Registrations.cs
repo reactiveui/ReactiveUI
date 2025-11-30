@@ -53,7 +53,7 @@ public class Registrations : IWantsToRegisterStuff
             PlatformEnlightenmentProvider.Current.EnableWasm();
         }
 
-        RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-        RxApp.MainThreadScheduler = CurrentThreadScheduler.Instance;
+        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+        RxSchedulers.MainThreadScheduler = CurrentThreadScheduler.Instance;
     }
 }

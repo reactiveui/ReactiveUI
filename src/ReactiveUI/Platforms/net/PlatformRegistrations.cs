@@ -27,8 +27,8 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = DefaultScheduler.Instance;
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = DefaultScheduler.Instance;
         }
     }
 }

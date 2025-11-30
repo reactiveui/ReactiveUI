@@ -140,7 +140,7 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
     protected void OnCanExecuteChanged(bool newValue)
     {
         _canExecuteValue = newValue;
-        _canExecuteChanged?.Invoke(this, EventArgs.Empty);
+        RxSchedulers.MainThreadScheduler.Schedule(() => _canExecuteChanged?.Invoke(this, EventArgs.Empty));
     }
 
     /// <summary>

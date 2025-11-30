@@ -113,7 +113,7 @@ public
         this.WhenActivated(d =>
         {
             d(contractChanged
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(x => _viewContract = x ?? string.Empty));
 
             d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));

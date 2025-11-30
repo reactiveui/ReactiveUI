@@ -43,8 +43,8 @@ public class Registrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
         }
 
         RxApp.SuppressViewCommandBindingMessage = true;

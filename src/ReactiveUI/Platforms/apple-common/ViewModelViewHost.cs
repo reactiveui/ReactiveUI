@@ -37,7 +37,7 @@ public class ViewModelViewHost : ReactiveViewController
         _currentView = new SerialDisposable();
         _viewContract = this
             .WhenAnyObservable(static x => x.ViewContractObservable)
-            .ToProperty(this, static x => x.ViewContract, initialValue: null, scheduler: RxApp.MainThreadScheduler);
+            .ToProperty(this, static x => x.ViewContract, initialValue: null, scheduler: RxSchedulers.MainThreadScheduler);
 
         Initialize();
     }
@@ -181,7 +181,7 @@ public class ViewModelViewHost : ReactiveViewController
             .Select(x => x.DefaultContent);
 
         viewChange
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(
                 x =>
                 {
@@ -215,7 +215,7 @@ public class ViewModelViewHost : ReactiveViewController
                 });
 
         defaultViewChange
-            .ObserveOn(RxApp.MainThreadScheduler)
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(x => Adopt(this, x));
     }
 }

@@ -27,8 +27,8 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxApp.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
         }
 
         registerFunction(static () => new BundleSuspensionDriver(), typeof(ISuspensionDriver));

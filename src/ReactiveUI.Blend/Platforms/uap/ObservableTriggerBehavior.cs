@@ -117,7 +117,7 @@ public sealed class ObservableTriggerBehavior : Behavior<DependencyObject>, IDis
     {
         var @this = (ObservableTriggerBehavior)sender;
 
-        @this._watcher.Disposable = ((IObservable<object>)e.NewValue).ObserveOn(RxApp.MainThreadScheduler).Subscribe(
+        @this._watcher.Disposable = ((IObservable<object>)e.NewValue).ObserveOn(RxSchedulers.MainThreadScheduler).Subscribe(
          x => Interaction.ExecuteActions(@this._resolvedSource, @this.Actions, x),
          ex =>
          {

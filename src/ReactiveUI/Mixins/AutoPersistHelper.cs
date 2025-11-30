@@ -91,14 +91,14 @@ public static class AutoPersistHelper
         var saveHint = @this.GetChangedObservable().Where(x => x.PropertyName is not null && persistableProperties.ContainsKey(x.PropertyName)).Select(_ => Unit.Default).Merge(manualSaveSignal.Select(_ => Unit.Default));
 
         var autoSaver = saveHint
-                        .Throttle(interval.Value, RxApp.TaskpoolScheduler)
+                        .Throttle(interval.Value, RxSchedulers.TaskpoolScheduler)
                         .SelectMany(_ => doPersist(@this))
                         .Publish();
 
         // NB: This rigamarole is to prevent the initialization of a class
         // from triggering a save
         var ret = new SingleAssignmentDisposable();
-        RxApp.MainThreadScheduler.Schedule(() =>
+        RxSchedulers.MainThreadScheduler.Schedule(() =>
         {
             if (ret.IsDisposed)
             {
