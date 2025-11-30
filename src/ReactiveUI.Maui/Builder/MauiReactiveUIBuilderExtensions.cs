@@ -13,10 +13,10 @@ namespace ReactiveUI.Builder;
 public static class MauiReactiveUIBuilderExtensions
 {
     /// <summary>
-    /// Gets the maui main thread scheduler.
+    /// Gets the MAUI main thread scheduler.
     /// </summary>
     /// <value>
-    /// The maui main thread scheduler.
+    /// The MAUI main thread scheduler.
     /// </value>
     public static IScheduler MauiMainThreadScheduler { get; } = DefaultScheduler.Instance;
 
@@ -73,7 +73,7 @@ public static class MauiReactiveUIBuilderExtensions
     }
 
     /// <summary>
-    /// Withes the maui scheduler.
+    /// Adds the MAUI scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <returns>The builder instance for chaining.</returns>
