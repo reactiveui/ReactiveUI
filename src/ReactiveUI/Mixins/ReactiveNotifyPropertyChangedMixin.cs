@@ -16,7 +16,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> _notifyFactoryCache =
         new(
-            (t, _) => Locator.Current.GetServices<ICreatesObservableForProperty>()
+            (t, _) => AppLocator.Current.GetServices<ICreatesObservableForProperty>()
                              .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
                              {
                                  var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);

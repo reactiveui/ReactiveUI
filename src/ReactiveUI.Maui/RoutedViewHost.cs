@@ -161,7 +161,7 @@ public partial class RoutedViewHost : NavigationPage, IActivatableView, IEnableL
             await SyncNavigationStacksAsync();
         });
 
-        var screen = Locator.Current.GetService<IScreen>() ?? throw new Exception("You *must* register an IScreen class representing your App's main Screen");
+        var screen = AppLocator.Current.GetService<IScreen>() ?? throw new Exception("You *must* register an IScreen class representing your App's main Screen");
         Router = screen.Router;
     }
 

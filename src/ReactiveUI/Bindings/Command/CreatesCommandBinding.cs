@@ -16,7 +16,7 @@ internal static class CreatesCommandBinding
 {
     private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandCache =
         new(
-            (t, _) => Locator.Current.GetServices<ICreatesCommandBinding>()
+            (t, _) => AppLocator.Current.GetServices<ICreatesCommandBinding>()
                              .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                              {
                                  var score = x.GetAffinityForObject(t, false);
@@ -26,7 +26,7 @@ internal static class CreatesCommandBinding
 
     private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandEventCache =
         new(
-            (t, _) => Locator.Current.GetServices<ICreatesCommandBinding>()
+            (t, _) => AppLocator.Current.GetServices<ICreatesCommandBinding>()
                              .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
                              {
                                  var score = x.GetAffinityForObject(t, true);

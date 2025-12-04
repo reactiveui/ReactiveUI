@@ -17,7 +17,7 @@ public static class DependencyResolverMixins
     /// <summary>
     /// This method allows you to initialize resolvers with the default
     /// ReactiveUI types. All resolvers used as the default
-    /// Locator.Current.
+    /// AppLocator.Current.
     /// If no namespaces are passed in, all registrations will be checked.
     /// </summary>
     /// <param name="resolver">The resolver to initialize.</param>
@@ -28,10 +28,10 @@ public static class DependencyResolverMixins
 #endif
     public static void InitializeReactiveUI(this IMutableDependencyResolver resolver, params RegistrationNamespace[] registrationNamespaces)
     {
-        if (AppBuilder.UsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, Locator.CurrentMutable))
+        if (AppBuilder.UsingBuilder && !ModeDetector.InUnitTestRunner() && ReferenceEquals(resolver, AppLocator.CurrentMutable))
         {
             // If the builder has been used for the default resolver in a non-test environment,
-            // do not re-register defaults via reflection for Locator.CurrentMutable.
+            // do not re-register defaults via reflection for AppLocator.CurrentMutable.
             return;
         }
 

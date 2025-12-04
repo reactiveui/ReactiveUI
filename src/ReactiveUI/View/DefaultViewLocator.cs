@@ -200,7 +200,7 @@ public sealed partial class DefaultViewLocator : IViewLocator
                 return null;
             }
 
-            var service = Locator.Current.GetService(viewType, contract);
+            var service = AppLocator.Current.GetService(viewType, contract);
 
             if (service is not IViewFor view)
             {

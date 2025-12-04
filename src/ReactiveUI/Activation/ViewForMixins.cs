@@ -15,7 +15,7 @@ public static class ViewForMixins
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
         new(
             (t, _) =>
-                Locator.Current
+                AppLocator.Current
                        .GetServices<IActivationForViewFetcher?>()
                        .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
                        {
