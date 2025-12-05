@@ -71,7 +71,7 @@ public static class SuspensionHostExtensions
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
 
         var ret = new CompositeDisposable();
-        suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();
+        suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
         if (suspensionDriver is null)
         {
@@ -115,7 +115,7 @@ public static class SuspensionHostExtensions
             return Observable.Return(Unit.Default);
         }
 
-        suspensionDriver ??= driver ?? Locator.Current.GetService<ISuspensionDriver>();
+        suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
         if (suspensionDriver is null)
         {

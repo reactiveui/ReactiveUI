@@ -18,7 +18,7 @@ public static class CommandBinder
     {
         RxApp.EnsureInitialized();
 
-        _binderImplementation = Locator.Current.GetService<ICommandBinderImplementation>() ??
+        _binderImplementation = AppLocator.Current.GetService<ICommandBinderImplementation>() ??
                                 new CommandBinderImplementation();
     }
 

@@ -47,7 +47,7 @@ public partial class ReactiveShellContent<TViewModel> : ShellContent, IActivatab
     /// </summary>
     public ReactiveShellContent()
     {
-        var view = Locator.Current.GetService<IViewFor<TViewModel>>(Contract);
+        var view = AppLocator.Current.GetService<IViewFor<TViewModel>>(Contract);
         if (view is not null)
         {
             ContentTemplate = new DataTemplate(() => view);
@@ -80,14 +80,14 @@ public partial class ReactiveShellContent<TViewModel> : ShellContent, IActivatab
 
     private static void ViewModelChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (Locator.Current is null)
+        if (AppLocator.Current is null)
         {
-            throw new NullReferenceException(nameof(Locator.Current));
+            throw new NullReferenceException(nameof(AppLocator.Current));
         }
 
         if (bindable is ReactiveShellContent<TViewModel> svm)
         {
-            var view = Locator.Current.GetService<IViewFor<TViewModel>>(svm.Contract);
+            var view = AppLocator.Current.GetService<IViewFor<TViewModel>>(svm.Contract);
             if (view is not null)
             {
                 svm.ContentTemplate = new DataTemplate(() => view);

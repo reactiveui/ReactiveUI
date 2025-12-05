@@ -71,7 +71,7 @@ public
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 
-        var platform = Locator.Current.GetService<IPlatformOperations>();
+        var platform = AppLocator.Current.GetService<IPlatformOperations>();
         Func<string?> platformGetter = () => default;
 
         if (platform is null)

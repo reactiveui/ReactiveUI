@@ -14,7 +14,7 @@ namespace ReactiveUI;
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
     private static readonly MemoizingMRUCache<(Type fromType, Type toType), IBindingTypeConverter?> _typeConverterCache = new(
-     (types, _) => Locator.Current.GetServices<IBindingTypeConverter?>()
+     (types, _) => AppLocator.Current.GetServices<IBindingTypeConverter?>()
                           .Aggregate((currentAffinity: -1, currentBinding: default(IBindingTypeConverter)), (acc, x) =>
                           {
                               var score = x?.GetAffinityForObjects(types.fromType, types.toType) ?? -1;
@@ -25,7 +25,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
     [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
     private static readonly MemoizingMRUCache<(Type? fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new(
-     (type, _) => Locator.Current.GetServices<ISetMethodBindingConverter>()
+     (type, _) => AppLocator.Current.GetServices<ISetMethodBindingConverter>()
                          .Aggregate((currentAffinity: -1, currentBinding: default(ISetMethodBindingConverter)), (acc, x) =>
                          {
                              var score = x.GetAffinityForObjects(type.fromType, type.toType);
@@ -314,7 +314,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
         where TViewModel : class
     {
-        var hooks = Locator.Current.GetServices<IPropertyBindingHook>();
+        var hooks = AppLocator.Current.GetServices<IPropertyBindingHook>();
         view.ArgumentNullExceptionThrowIfNull(nameof(view));
 
         Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null

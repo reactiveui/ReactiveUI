@@ -6,11 +6,10 @@
 namespace System.Reactive.Concurrency;
 
 /// <summary>
-/// Represents an object that schedules units of work on a <see cref="System.Windows.Threading.Dispatcher"/>.
+/// The <see cref="DispatcherScheduler"/> schedules units of work on a <see cref="System.Windows.Threading.Dispatcher"/>.
 /// </summary>
-/// <remarks>
-/// This scheduler type is typically used indirectly through the <see cref="Linq.DispatcherObservable.ObserveOnDispatcher{TSource}(IObservable{TSource})"/> and <see cref="Linq.DispatcherObservable.SubscribeOnDispatcher{TSource}(IObservable{TSource})"/> methods that use the Dispatcher on the calling thread.
-/// </remarks>
+/// <seealso cref="System.Reactive.Concurrency.LocalScheduler" />
+/// <seealso cref="System.Reactive.Concurrency.ISchedulerPeriodic" />
 public class DispatcherScheduler : LocalScheduler, ISchedulerPeriodic
 {
     /// <summary>

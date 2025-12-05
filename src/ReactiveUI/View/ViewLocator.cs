@@ -22,5 +22,5 @@ public static class ViewLocator
     /// </exception>
     [SuppressMessage("Microsoft.Reliability", "CA1065", Justification = "Exception required to keep interface same.")]
     public static IViewLocator Current =>
-        Locator.Current.GetService<IViewLocator>() ?? throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
+        AppLocator.Current.GetService<IViewLocator>() ?? throw new ViewLocatorNotFoundException("Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");
 }
