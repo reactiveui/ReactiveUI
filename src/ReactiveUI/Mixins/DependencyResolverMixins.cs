@@ -47,6 +47,7 @@ public static class DependencyResolverMixins
             { RegistrationNamespace.UnoWinUI, "ReactiveUI.Uno.WinUI" },
             { RegistrationNamespace.Blazor, "ReactiveUI.Blazor" },
             { RegistrationNamespace.Drawing, "ReactiveUI.Drawing" },
+            { RegistrationNamespace.Avalonia, "ReactiveUI.Avalonia" },
             { RegistrationNamespace.Maui, "ReactiveUI.Maui" },
             { RegistrationNamespace.Uwp, "ReactiveUI.Uwp" },
             { RegistrationNamespace.WinUI, "ReactiveUI.WinUI" },
