@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using Microsoft.Maui.Dispatching;
 
 namespace ReactiveUI.Builder;
@@ -10,7 +13,7 @@ namespace ReactiveUI.Builder;
 /// <summary>
 /// MAUI-specific extensions for the ReactiveUI builder.
 /// </summary>
-public static class MauiReactiveUIBuilderExtensions
+public static partial class MauiReactiveUIBuilderExtensions
 {
     /// <summary>
     /// Gets the MAUI main thread scheduler.
@@ -51,7 +54,7 @@ public static class MauiReactiveUIBuilderExtensions
 #endif
 
     /// <summary>
-    /// Configures ReactiveUI for MAUI platform with appropriate schedulers.
+    /// Configures ReactiveUI for MAUI platform with appropriate schedulers and platform services.
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <param name="dispatcher">The MAUI dispatcher to use for the main thread scheduler.</param>
@@ -68,16 +71,18 @@ public static class MauiReactiveUIBuilderExtensions
         }
 
         return builder
-            .WithMauiScheduler()
-            .WithPlatformModule<Maui.Registrations>();
+            .WithMauiScheduler(dispatcher)
+            .WithPlatformModule<Maui.Registrations>()
+            .WithPlatformServices();
     }
 
     /// <summary>
     /// Adds the MAUI scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
+    /// <param name="dispatcher">Optional dispatcher instance to derive the scheduler from.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder)
+    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder, IDispatcher? dispatcher = null)
     {
         if (builder is null)
         {
@@ -85,20 +90,109 @@ public static class MauiReactiveUIBuilderExtensions
         }
 
         builder.WithTaskPoolScheduler(TaskPoolScheduler.Default);
+        var scheduler = ResolveMainThreadScheduler(dispatcher);
+        return builder.WithMainThreadScheduler(scheduler);
+    }
+
+    private static IScheduler ResolveMainThreadScheduler(IDispatcher? dispatcher)
+    {
+        if (dispatcher is not null)
+        {
+            return new MauiDispatcherScheduler(dispatcher);
+        }
 
         if (ModeDetector.InUnitTestRunner())
         {
-            return builder.WithMainThreadScheduler(RxApp.UnitTestMainThreadScheduler);
+            return CurrentThreadScheduler.Instance;
         }
 
 #if ANDROID
-        return builder.WithMainThreadScheduler(AndroidMainThreadScheduler);
+        return AndroidMainThreadScheduler;
 #elif MACCATALYST || IOS || MACOS || TVOS
-        return builder.WithMainThreadScheduler(AppleMainThreadScheduler);
+        return AppleMainThreadScheduler;
 #elif WINUI_TARGET
-        return builder.WithMainThreadScheduler(WinUIMauiMainThreadScheduler);
+        return WinUIMauiMainThreadScheduler;
 #else
-        return builder.WithMainThreadScheduler(MauiMainThreadScheduler);
+        return MauiMainThreadScheduler;
 #endif
+    }
+
+    private sealed partial class MauiDispatcherScheduler(IDispatcher dispatcher) : LocalScheduler
+    {
+        private readonly IDispatcher _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+
+        public override DateTimeOffset Now => DateTimeOffset.Now;
+
+        public override IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
+        {
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            var disposable = new SingleAssignmentDisposable();
+
+            void Execute()
+            {
+                if (!disposable.IsDisposed)
+                {
+                    disposable.Disposable = action(this, state);
+                }
+            }
+
+            if (_dispatcher.IsDispatchRequired)
+            {
+                _dispatcher.Dispatch(Execute);
+            }
+            else
+            {
+                Execute();
+            }
+
+            return disposable;
+        }
+
+        public override IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        {
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            var normalized = Scheduler.Normalize(dueTime);
+            if (normalized == TimeSpan.Zero)
+            {
+                return Schedule(state, action);
+            }
+
+            var disposable = new SingleAssignmentDisposable();
+            var timer = _dispatcher.CreateTimer();
+            timer.IsRepeating = false;
+            timer.Interval = normalized;
+
+            EventHandler? handler = null;
+            handler = (sender, args) =>
+            {
+                timer.Tick -= handler;
+                timer.Stop();
+
+                if (!disposable.IsDisposed)
+                {
+                    disposable.Disposable = action(this, state);
+                }
+            };
+
+            timer.Tick += handler;
+            timer.Start();
+
+            return new CompositeDisposable(disposable, Disposable.Create(() =>
+            {
+                timer.Tick -= handler;
+                timer.Stop();
+            }));
+        }
+
+        public override IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) =>
+            Schedule(state, dueTime - Now, action);
     }
 }

@@ -22,6 +22,14 @@ public static class RxAppBuilder
     /// </summary>
     /// <param name="resolver">The dependency resolver to use.</param>
     /// <returns>The ReactiveUI builder instance.</returns>
-    public static ReactiveUIBuilder CreateReactiveUIBuilder(this IMutableDependencyResolver resolver) =>
-        new(resolver, AppLocator.Current);
+    public static ReactiveUIBuilder CreateReactiveUIBuilder(this IMutableDependencyResolver resolver)
+    {
+        if (resolver is null)
+        {
+            throw new ArgumentNullException(nameof(resolver));
+        }
+
+        var readonlyResolver = resolver as IReadonlyDependencyResolver ?? AppLocator.Current;
+        return new(resolver, readonlyResolver);
+    }
 }
