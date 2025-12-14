@@ -254,5 +254,3 @@ public static class RxApp
         // NB: This method only exists to invoke the static constructor
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :

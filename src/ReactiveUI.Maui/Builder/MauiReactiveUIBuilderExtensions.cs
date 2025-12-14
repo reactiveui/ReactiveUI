@@ -10,7 +10,7 @@ namespace ReactiveUI.Builder;
 /// <summary>
 /// MAUI-specific extensions for the ReactiveUI builder.
 /// </summary>
-public static class MauiReactiveUIBuilderExtensions
+public static partial class MauiReactiveUIBuilderExtensions
 {
     /// <summary>
     /// Gets the MAUI main thread scheduler.

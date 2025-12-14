@@ -14,11 +14,6 @@ public enum RegistrationNamespace
     None = 0,
 
     /// <summary>
-    /// Xamarin Forms.
-    /// </summary>
-    XamForms,
-
-    /// <summary>
     /// Windows Forms.
     /// </summary>
     Winforms,

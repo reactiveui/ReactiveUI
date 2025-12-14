@@ -40,7 +40,6 @@ public static class DependencyResolverMixins
 
         var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
         {
-            { RegistrationNamespace.XamForms, "ReactiveUI.XamForms" },
             { RegistrationNamespace.Winforms, "ReactiveUI.Winforms" },
             { RegistrationNamespace.Wpf, "ReactiveUI.Wpf" },
             { RegistrationNamespace.Uno, "ReactiveUI.Uno" },

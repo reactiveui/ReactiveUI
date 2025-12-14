@@ -14,14 +14,12 @@ public sealed class DependencyResolverTests
     public static IEnumerable<TestCaseData> NamespacesToRegister =>
         new List<TestCaseData>
         {
-            new(new[] { RegistrationNamespace.XamForms }),
             new(new[] { RegistrationNamespace.Winforms }),
             new(new[] { RegistrationNamespace.Wpf }),
             new(new[] { RegistrationNamespace.Uno }),
             new(new[] { RegistrationNamespace.Blazor }),
             new(new[] { RegistrationNamespace.Drawing }),
-            new(new[] { RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
-            new(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.XamForms, RegistrationNamespace.Wpf }),
+            new(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.Wpf }),
         };
 
     [Test]
@@ -107,11 +105,6 @@ public sealed class DependencyResolverTests
             if (registrationNamespace == RegistrationNamespace.Wpf)
             {
                 yield return "ReactiveUI.Wpf.Registrations, ReactiveUI.Wpf";
-            }
-
-            if (registrationNamespace == RegistrationNamespace.XamForms)
-            {
-                yield return "ReactiveUI.XamForms.Registrations, ReactiveUI.XamForms";
             }
 
             if (registrationNamespace == RegistrationNamespace.Winforms)
