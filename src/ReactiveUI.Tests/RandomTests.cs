@@ -279,12 +279,38 @@ public class RandomTests
     [Test]
     public void RegistrationNamespace_ShouldHaveAllExpectedValues()
     {
-        // Assert all enum values exist
-        Assert.That((int, Is.EqualTo(0))RegistrationNamespace.None);
-        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.XamForms));
-        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Winforms));
-        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Wpf));
-        Assert.That(Enum.IsDefined(typeof(RegistrationNamespace, Is.True), RegistrationNamespace.Maui));
+        var expectedValues = new[]
+        {
+            RegistrationNamespace.None,
+            RegistrationNamespace.Winforms,
+            RegistrationNamespace.Wpf,
+            RegistrationNamespace.Uno,
+            RegistrationNamespace.UnoWinUI,
+            RegistrationNamespace.Blazor,
+            RegistrationNamespace.Drawing,
+            RegistrationNamespace.Avalonia,
+            RegistrationNamespace.Maui,
+            RegistrationNamespace.Uwp,
+            RegistrationNamespace.WinUI,
+        };
+
+        var actualValues = Enum.GetValues<RegistrationNamespace>();
+        Assert.That(actualValues, Is.EqualTo(expectedValues), "RegistrationNamespace values changed unexpectedly.");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((int)RegistrationNamespace.None, Is.EqualTo(0));
+            Assert.That((int)RegistrationNamespace.Winforms, Is.EqualTo(1));
+            Assert.That((int)RegistrationNamespace.Wpf, Is.EqualTo(2));
+            Assert.That((int)RegistrationNamespace.Uno, Is.EqualTo(3));
+            Assert.That((int)RegistrationNamespace.UnoWinUI, Is.EqualTo(4));
+            Assert.That((int)RegistrationNamespace.Blazor, Is.EqualTo(5));
+            Assert.That((int)RegistrationNamespace.Drawing, Is.EqualTo(6));
+            Assert.That((int)RegistrationNamespace.Avalonia, Is.EqualTo(7));
+            Assert.That((int)RegistrationNamespace.Maui, Is.EqualTo(8));
+            Assert.That((int)RegistrationNamespace.Uwp, Is.EqualTo(9));
+            Assert.That((int)RegistrationNamespace.WinUI, Is.EqualTo(10));
+        });
     }
 
     /// <summary>
@@ -554,7 +580,7 @@ public class RandomTests
 
         // Assert
         Assert.That(4, 6, 8, 10 }, processedItems, Is.EqualTo(new[] { 2));
-        Assert.That(2, 3 }, skippedLast, Is.EqualTo(new[] { 1));
+        Assert.That(2, 3 }, skippedLast, Is.EqualTo(new[] { 1"));
     }
 
     /// <summary>

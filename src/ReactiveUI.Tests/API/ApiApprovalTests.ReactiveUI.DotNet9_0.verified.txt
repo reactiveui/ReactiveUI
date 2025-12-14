@@ -1262,17 +1262,16 @@ namespace ReactiveUI
     public enum RegistrationNamespace
     {
         None = 0,
-        XamForms = 1,
-        Winforms = 2,
-        Wpf = 3,
-        Uno = 4,
-        UnoWinUI = 5,
-        Blazor = 6,
-        Drawing = 7,
-        Avalonia = 8,
-        Maui = 9,
-        Uwp = 10,
-        WinUI = 11,
+        Winforms = 1,
+        Wpf = 2,
+        Uno = 3,
+        UnoWinUI = 4,
+        Blazor = 5,
+        Drawing = 6,
+        Avalonia = 7,
+        Maui = 8,
+        Uwp = 9,
+        WinUI = 10,
     }
     public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
