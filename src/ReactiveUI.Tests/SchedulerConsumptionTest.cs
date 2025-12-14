@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Reactive.Subjects;
 using Microsoft.Reactive.Testing;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ public class SchedulerConsumptionTest
             viewModel.Name = "ReactiveUI";
 
             // Advance the test scheduler to process the observable
-            testScheduler.AdvanceBy(1);
+            testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(1).Ticks);
 
             // For this test, we're primarily verifying that the code compiles and runs
             // without requiring RequiresUnreferencedCode attributes on the test method
@@ -60,7 +61,7 @@ public class SchedulerConsumptionTest
             repository.PublishData("test");
 
             // Advance the test scheduler to process the observable
-            testScheduler.AdvanceBy(1);
+            testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(1).Ticks);
 
             Assert.That(result, Is.EqualTo("Processed: test"));
         }
