@@ -117,12 +117,21 @@ public static partial class MauiReactiveUIBuilderExtensions
 #endif
     }
 
+    /// <summary>
+    /// Scheduler implementation that marshals work onto a provided MAUI dispatcher.
+    /// </summary>
     private sealed partial class MauiDispatcherScheduler(IDispatcher dispatcher) : LocalScheduler
     {
         private readonly IDispatcher _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
 
+        /// <summary>
+        /// Gets the current timestamp for the scheduler.
+        /// </summary>
         public override DateTimeOffset Now => DateTimeOffset.Now;
 
+        /// <summary>
+        /// Schedules immediate work on the dispatcher.
+        /// </summary>
         public override IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             if (action is null)
@@ -152,6 +161,9 @@ public static partial class MauiReactiveUIBuilderExtensions
             return disposable;
         }
 
+        /// <summary>
+        /// Schedules work to execute after the specified delay.
+        /// </summary>
         public override IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
         {
             if (action is null)
@@ -192,6 +204,9 @@ public static partial class MauiReactiveUIBuilderExtensions
             }));
         }
 
+        /// <summary>
+        /// Schedules work to execute at the specified absolute time.
+        /// </summary>
         public override IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) =>
             Schedule(state, dueTime - Now, action);
     }
