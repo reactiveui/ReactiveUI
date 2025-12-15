@@ -7,7 +7,7 @@
     <SplatVersion>17.1.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25452.6</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.110</MauiVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25451.107</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.9</AspNetVersion>
@@ -15,6 +15,8 @@
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Akavache.Sqlite3" Version="11.5.1" />
+    <PackageVersion Include="Akavache.SystemTextJson" Version="11.5.1" />
     <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
@@ -49,7 +51,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+    <PackageVersion Include="Syncfusion.Maui.Toolkit" Version="1.0.7" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
     <!-- Lifecycle (align everything to 2.9.x) -->
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
@@ -60,7 +65,6 @@
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
-
     <!-- Fragment/Collection/SavedState to match their latest constraints -->
     <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9" />
     <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9" />
