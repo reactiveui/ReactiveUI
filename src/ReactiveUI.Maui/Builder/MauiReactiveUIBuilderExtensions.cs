@@ -112,7 +112,7 @@ public static partial class MauiReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        var reactiveUIBuilder = RxAppBuilder.CreateReactiveUIBuilder().WithMaui(dispatcher).BuildApp();
+        RxAppBuilder.CreateReactiveUIBuilder().WithMaui(dispatcher).BuildApp();
         return builder;
     }
 

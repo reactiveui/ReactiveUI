@@ -200,7 +200,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     }
 
     /// <summary>
-    /// Usings the splat builder.
+    /// Uses the splat builder.
     /// </summary>
     /// <param name="appBuilder">The application builder.</param>
     /// <returns>
