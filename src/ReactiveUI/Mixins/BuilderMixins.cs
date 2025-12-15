@@ -391,7 +391,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T>(this IReactiveUIInstance reactiveUIInstance, Action<T?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -418,7 +418,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -451,7 +451,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -520,7 +520,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -556,7 +556,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -599,7 +599,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -644,7 +644,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -691,7 +691,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -740,7 +740,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -791,7 +791,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -844,7 +844,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -899,7 +899,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -956,7 +956,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -1015,7 +1015,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
@@ -1076,7 +1076,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
     {
-        if (reactiveUIInstance == null)
+        if (reactiveUIInstance is null)
         {
             throw new ArgumentNullException(nameof(reactiveUIInstance));
         }
