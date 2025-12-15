@@ -15,7 +15,7 @@ namespace ReactiveUI.Builder;
 public static class BuilderMixins
 {
     /// <summary>
-    /// Withes the task pool scheduler.
+    /// Configures the task pool scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <param name="scheduler">The scheduler.</param>
@@ -36,7 +36,7 @@ public static class BuilderMixins
     }
 
     /// <summary>
-    /// Withes the main thread scheduler.
+    /// Configures the main thread scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <param name="scheduler">The scheduler.</param>
@@ -57,7 +57,7 @@ public static class BuilderMixins
     }
 
     /// <summary>
-    /// Withes the registration on build.
+    /// Configures the registration on build.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <param name="configureAction">The configure action.</param>
@@ -77,7 +77,7 @@ public static class BuilderMixins
     }
 
     /// <summary>
-    /// Withes the registration.
+    /// Configures the registration immediately.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <param name="configureAction">The configure action.</param>
@@ -97,7 +97,7 @@ public static class BuilderMixins
     }
 
     /// <summary>
-    /// Withes the views from assembly.
+    /// Configures the views from the assembly.
     /// </summary>
     /// <param name="builder">The builder.</param>
     /// <param name="assembly">The assembly.</param>
