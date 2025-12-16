@@ -99,19 +99,28 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             return null;
         }
 
-        var propertyChanged = Observable.FromEvent<PropertyChangedEventHandler, string?>(
-         eventHandler =>
-         {
-             void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(e.PropertyName);
-             return Handler;
-         },
-         x => view.PropertyChanged += x,
-         x => view.PropertyChanged -= x);
+        var loaded = Observable.FromEvent<EventHandler, bool>(
+                                                                eventHandler =>
+                                                                {
+                                                                    void Handler(object? sender, EventArgs e) => eventHandler(true);
+                                                                    return Handler;
+                                                                },
+                                                                x => view.Loaded += x,
+                                                                x => view.Loaded -= x);
 
-        return propertyChanged
-               .Where(x => x == "IsVisible")
-               .Select(_ => view.IsVisible)
-               .StartWith(view.IsVisible);
+        var unloaded = Observable.FromEvent<EventHandler, bool>(
+                                                                  eventHandler =>
+                                                                  {
+                                                                      void Handler(object? sender, EventArgs e) => eventHandler(false);
+                                                                      return Handler;
+                                                                  },
+                                                                  x => view.Unloaded += x,
+                                                                  x => view.Unloaded -= x);
+
+        return loaded
+               .Merge(unloaded)
+               .StartWith(view.IsLoaded)
+               .DistinctUntilChanged();
     }
 
     private static IObservable<bool>? GetActivationFor(Cell? cell)

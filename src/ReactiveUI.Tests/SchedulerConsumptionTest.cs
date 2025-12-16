@@ -30,7 +30,7 @@ public class SchedulerConsumptionTest
             };
 
             // Advance the test scheduler to process the observable
-            testScheduler.AdvanceBy(1);
+            testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(1).Ticks);
 
             // For this test, we're primarily verifying that the code compiles and runs
             // without requiring RequiresUnreferencedCode attributes on the test method
@@ -61,7 +61,7 @@ public class SchedulerConsumptionTest
             repository.PublishData("test");
 
             // Advance the test scheduler to process the observable
-            testScheduler.AdvanceBy(1);
+            testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(1).Ticks);
 
             Assert.That(result, Is.EqualTo("Processed: test"));
         }
