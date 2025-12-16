@@ -3,10 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using Microsoft.Maui.Dispatching;
+using Microsoft.Maui.Hosting;
 
 namespace ReactiveUI.Builder;
 
@@ -74,6 +72,48 @@ public static partial class MauiReactiveUIBuilderExtensions
             .WithMauiScheduler(dispatcher)
             .WithPlatformModule<Maui.Registrations>()
             .WithPlatformServices();
+    }
+
+    /// <summary>
+    /// Uses the reactive UI.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="withReactiveUIBuilder">The reactive UI builder.</param>
+    /// <returns>A The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">builder.</exception>
+    public static MauiAppBuilder UseReactiveUI(this MauiAppBuilder builder, Action<IReactiveUIBuilder> withReactiveUIBuilder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        var reactiveUIBuilder = RxAppBuilder.CreateReactiveUIBuilder();
+        withReactiveUIBuilder?.Invoke(reactiveUIBuilder);
+        reactiveUIBuilder.BuildApp();
+        return builder;
+    }
+
+    /// <summary>
+    /// Uses the reactive UI.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="dispatcher">The dispatcher.</param>
+    /// <returns>A The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">builder.</exception>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+#endif
+    public static MauiAppBuilder UseReactiveUI(this MauiAppBuilder builder, IDispatcher dispatcher)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        RxAppBuilder.CreateReactiveUIBuilder().WithMaui(dispatcher).BuildApp();
+        return builder;
     }
 
     /// <summary>
