@@ -3,15 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Subjects;
 using Microsoft.Reactive.Testing;
-using NUnit.Framework;
 
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Demonstrates using ReactiveUI schedulers without RequiresUnreferencedCode attributes.
 /// </summary>
+[NonParallelizable]
 public class SchedulerConsumptionTest
 {
     [Test]
@@ -25,8 +24,10 @@ public class SchedulerConsumptionTest
             // Use test scheduler for predictable behavior
             RxSchedulers.MainThreadScheduler = testScheduler;
 
-            var viewModel = new ExampleViewModel();
-            viewModel.Name = "ReactiveUI";
+            var viewModel = new ExampleViewModel
+            {
+                Name = "ReactiveUI"
+            };
 
             // Advance the test scheduler to process the observable
             testScheduler.AdvanceBy(1);
@@ -98,23 +99,13 @@ public class SchedulerConsumptionTest
     {
         private readonly Subject<string> _dataSubject = new();
 
-        public IObservable<string> GetData()
-        {
-            // Using RxSchedulers instead of RxApp schedulers avoids RequiresUnreferencedCode
-            return _dataSubject
+        public IObservable<string> GetData() => _dataSubject
                 .ObserveOn(RxSchedulers.TaskpoolScheduler) // No RequiresUnreferencedCode needed!
                 .Select(data => $"Processed: {data}");
-        }
 
-        public void PublishData(string data)
-        {
-            _dataSubject.OnNext(data);
-        }
+        public void PublishData(string data) => _dataSubject.OnNext(data);
 
-        public void Dispose()
-        {
-            _dataSubject?.Dispose();
-        }
+        public void Dispose() => _dataSubject?.Dispose();
     }
 
     /// <summary>
@@ -126,14 +117,10 @@ public class SchedulerConsumptionTest
         private readonly ObservableAsPropertyHelper<string> _greeting;
         private string? _name;
 
-        public ExampleViewModel()
-        {
-            // Using RxSchedulers instead of RxApp schedulers avoids RequiresUnreferencedCode
-            _greeting = this.WhenAnyValue(x => x.Name)
+        public ExampleViewModel() => _greeting = this.WhenAnyValue(x => x.Name)
                 .Select(name => $"Hello, {name ?? "World"}!")
                 .ObserveOn(RxSchedulers.MainThreadScheduler) // No RequiresUnreferencedCode needed!
                 .ToProperty(this, nameof(Greeting), scheduler: RxSchedulers.MainThreadScheduler);
-        }
 
         public string? Name
         {
