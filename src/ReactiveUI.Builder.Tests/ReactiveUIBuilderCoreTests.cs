@@ -152,4 +152,34 @@ public class ReactiveUIBuilderCoreTests
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         Assert.That(observableProperty, Is.Not.Null);
     }
+
+    [Test]
+    public void CreateReactiveUIBuilder_With_Null_Resolver_Should_Throw()
+    {
+        Assert.Throws<ArgumentNullException>(() => RxAppBuilder.CreateReactiveUIBuilder((IMutableDependencyResolver)null!));
+    }
+
+    [Test]
+    public void BuildApp_Should_Return_ReactiveInstance()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+
+        builder.WithCoreServices();
+        var instance = builder.BuildApp();
+
+        Assert.That(instance, Is.Not.Null);
+        Assert.That(instance.Current, Is.Not.Null);
+    }
+
+    [Test]
+    public void ForPlatforms_With_Null_Array_Should_Throw()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+
+        Assert.Throws<ArgumentNullException>(() => builder.ForPlatforms(null!));
+    }
 }
