@@ -6,6 +6,7 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reflection;
+using NUnit.Framework;
 using ReactiveUI;
 using Splat.Builder;
 
@@ -324,6 +325,8 @@ public class BuilderMixinsTests
             .SetName("WithPlatformModule");
         yield return new TestCaseData((TestDelegate)(() => BuilderMixins.UsingSplatModule(null!, new TestSplatModule())))
             .SetName("UsingSplatModule");
+        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.UsingSplatBuilder(null!, _ => { })))
+            .SetName("UsingSplatBuilder");
         yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ForCustomPlatform(null!, scheduler, _ => { })))
             .SetName("ForCustomPlatform");
         yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ForPlatforms(null!, _ => { })))
