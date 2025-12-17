@@ -134,15 +134,9 @@ public class BuilderMixinsWithInstanceTests
 
     private static void InvokeWithInstanceMethod(MethodInfo method, IReactiveUIInstance instance, Delegate action, bool useExtension)
     {
-        object? result;
-        if (useExtension)
-        {
-            result = method.Invoke(null, [instance, action]);
-        }
-        else
-        {
-            result = method.Invoke(instance, [action]);
-        }
+        var result = useExtension
+            ? method.Invoke(null, [instance, action])
+            : method.Invoke(instance, [action]);
 
         Assert.That(result, Is.SameAs(instance));
     }
