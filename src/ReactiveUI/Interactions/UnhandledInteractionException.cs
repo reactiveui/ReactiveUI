@@ -28,7 +28,7 @@ public class UnhandledInteractionException<TInput, TOutput> : Exception
     /// <param name="interaction">The interaction that doesn't have a input handler.</param>
     /// <param name="input">The input into the interaction.</param>
     public UnhandledInteractionException(Interaction<TInput, TOutput> interaction, TInput input)
-        : this("Failed to find a registration for a Interaction.")
+        : this("Failed to find a registration for an Interaction.")
     {
         _interaction = interaction;
         Input = input;
