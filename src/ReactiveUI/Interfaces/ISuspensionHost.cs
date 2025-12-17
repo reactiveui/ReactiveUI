@@ -21,6 +21,38 @@ namespace ReactiveUI;
 /// host operating system publishes. Subscribe to these events in order to
 /// handle app suspend / resume.
 /// </summary>
+/// <remarks>
+/// <para>
+/// These observables abstract platform terms such as "Launching", "Activated", and "Closing" into a
+/// consistent API so shared code can persist state without branching on specific UI stacks. Most
+/// applications call <c>RxApp.SuspensionHost.SetupDefaultSuspendResume()</c> during startup to wire
+/// default handlers, but the properties are public so advanced hosts can plug in their own monitoring.
+/// </para>
+/// <para>
+/// <see cref="AppState"/> represents the serialized model describing the last running session, while
+/// <see cref="CreateNewAppState"/> can be configured to hydrate a fresh instance when a crash or first
+/// launch occurs.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// var suspensionHost = RxApp.SuspensionHost;
+/// suspensionHost.CreateNewAppState = () => new ShellState();
+///
+/// suspensionHost.IsLaunchingNew.Subscribe(_ =>
+/// {
+///     suspensionHost.AppState = suspensionHost.CreateNewAppState!();
+/// });
+///
+/// suspensionHost.ShouldPersistState.Subscribe(disposable =>
+/// {
+///     storageService.Save((ShellState)suspensionHost.AppState!);
+///     disposable.Dispose();
+/// });
+/// ]]>
+/// </code>
+/// </example>
 public interface ISuspensionHost : IReactiveObject
 {
     /// <summary>

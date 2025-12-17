@@ -12,13 +12,41 @@ using NSAction = System.Action;
 namespace ReactiveUI;
 
 /// <summary>
-/// <para>
-/// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
-/// AppDelegate to inherit from this class, then call:
-/// </para>
-/// <para>Locator.Current.GetService{ISuspensionHost}().SetupDefaultSuspendResume();.</para>
-/// <para>This will get your suspension host.</para>
+/// Bridges iOS lifecycle notifications into <see cref="RxApp.SuspensionHost"/> so applications can persist and
+/// restore state without manually wiring UIKit events.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Instantiate <see cref="AutoSuspendHelper"/> inside your <see cref="UIApplicationDelegate"/> and forward the
+/// <c>FinishedLaunching</c>, <c>OnActivated</c>, and <c>DidEnterBackground</c> events to the helper. The helper updates
+/// the shared <see cref="ISuspensionHost"/> observables and takes care of requesting background time when persisting
+/// application state.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// public class AppDelegate : UIApplicationDelegate
+/// {
+///     private AutoSuspendHelper? _autoSuspendHelper;
+///
+///     public override bool FinishedLaunching(UIApplication app, NSDictionary options)
+///     {
+///         _autoSuspendHelper = new AutoSuspendHelper(this);
+///         _autoSuspendHelper.FinishedLaunching(app, options);
+///         RxApp.SuspensionHost.SetupDefaultSuspendResume();
+///         return true;
+///     }
+///
+///     public override void OnActivated(UIApplication application) =>
+///         _autoSuspendHelper?.OnActivated(application);
+///
+///     public override void DidEnterBackground(UIApplication application) =>
+///         _autoSuspendHelper?.DidEnterBackground(application);
+/// }
+/// ]]>
+/// </code>
+/// </example>
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost and reflection which require dynamic code generation")]
 [RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost and reflection which may require unreferenced code")]
@@ -69,16 +97,14 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     }
 
     /// <summary>
-    /// Gets the launch options.
+    /// Gets the launch options captured from the most recent call to <see cref="FinishedLaunching"/>. Keys are converted
+    /// to strings and values are stringified for convenience when hydrating state.
     /// </summary>
-    /// <value>
-    /// The launch options.
-    /// </value>
     public IDictionary<string, string>? LaunchOptions { get; private set; }
 
     /// <summary>
-    /// Advances the finished launching observable.
-    /// Finisheds the launching.
+    /// Notifies the helper that <see cref="UIApplicationDelegate.FinishedLaunching(UIApplication, NSDictionary)"/> was
+    /// invoked so it can propagate the <see cref="ISuspensionHost.IsResuming"/> observable.
     /// </summary>
     /// <param name="application">The application.</param>
     /// <param name="launchOptions">The launch options.</param>
@@ -94,13 +120,14 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     }
 
     /// <summary>
-    /// Advances the on activated observable.
+    /// Notifies the helper that <see cref="UIApplicationDelegate.OnActivated(UIApplication)"/> occurred.
     /// </summary>
     /// <param name="application">The application.</param>
     public void OnActivated(UIApplication application) => _activated.OnNext(application);
 
     /// <summary>
-    /// Advances the enter background observable.
+    /// Notifies the helper that <see cref="UIApplicationDelegate.DidEnterBackground(UIApplication)"/> was raised so that
+    /// persistence can begin.
     /// </summary>
     /// <param name="application">The application.</param>
     public void DidEnterBackground(UIApplication application) => _backgrounded.OnNext(application);
@@ -113,7 +140,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     }
 
     /// <summary>
-    /// Disposes of any disposable entities within the class.
+    /// Releases managed resources held by the helper.
     /// </summary>
     /// <param name="isDisposing">If we are going to call Dispose methods on field items.</param>
     protected virtual void Dispose(bool isDisposing)

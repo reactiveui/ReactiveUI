@@ -9,8 +9,31 @@ using Splat.Builder;
 namespace ReactiveUI.Builder;
 
 /// <summary>
-/// IReactiveUIBuilder.
+/// Fluent builder that configures ReactiveUI platform services, registrations, and schedulers before building an application instance.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The builder wraps <see cref="Splat.Builder"/> primitives so apps can register views, view models, and platform modules using
+/// a single fluent API. Most hosts call <c>UseReactiveUI</c> (MAUI) or <c>services.AddReactiveUI()</c> (generic host) internally, which
+/// creates an <see cref="IReactiveUIBuilder"/> and then applies platform-specific extensions.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// builder.UseReactiveUI(config =>
+///     config
+///         .WithPlatformServices()
+///         .RegisterView<LoginView, LoginViewModel>()
+///         .RegisterSingletonViewModel<AppShellViewModel>()
+///         .WithRegistration(resolver =>
+///         {
+///             resolver.RegisterLazySingleton(() => new ApiClient(), typeof(IApiClient));
+///         })
+///         .BuildApp());
+/// ]]>
+/// </code>
+/// </example>
 /// <seealso cref="Splat.Builder.IAppBuilder" />
 public interface IReactiveUIBuilder : IAppBuilder
 {

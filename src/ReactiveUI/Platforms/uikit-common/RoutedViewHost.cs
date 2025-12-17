@@ -12,9 +12,36 @@ using NSViewController = UIKit.UIViewController;
 namespace ReactiveUI;
 
 /// <summary>
-/// RoutedViewHost is a ReactiveNavigationController that monitors its RoutingState
-/// and keeps the navigation stack in line with it.
+/// A <see cref="ReactiveNavigationController"/> that observes a <see cref="RoutingState"/> and mirrors its
+/// navigation stack into UIKit.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Use <see cref="RoutedViewHost"/> inside iOS or Mac Catalyst applications to keep push/pop transitions aligned with
+/// <see cref="RoutingState"/> changes. The host resolves views via <see cref="ViewLocator"/> and updates titles using
+/// <see cref="IRoutableViewModel.UrlPathSegment"/> so navigation remains consistent across app restarts.
+/// </para>
+/// <para>
+/// Setting <see cref="Router"/> subscribes the host to <see cref="RoutingState.Navigate"/>,
+/// <see cref="RoutingState.NavigateBack"/>, and collection change notifications. Manual calls to
+/// <see cref="PushViewController(NSViewController?, bool)"/> and <see cref="PopViewController(bool)"/> also update the
+/// router so that imperative navigation cannot desynchronize the stacks.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// var host = new RoutedViewHost
+/// {
+///     Router = shell.Router,
+///     ViewLocator = locator,
+///     ViewContractObservable = shell.WhenAnyValue(x => x.SelectedContract)
+/// };
+///
+/// shell.Router.Navigate.Execute(new DashboardViewModel(shell)).Subscribe();
+/// ]]>
+/// </code>
+/// </example>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
@@ -132,7 +159,8 @@ public class RoutedViewHost : ReactiveNavigationController
     }
 
     /// <summary>
-    /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
+    /// Gets or sets the <see cref="RoutingState"/> responsible for driving the navigation stack. Assigning a router wires
+    /// the host up to all navigation observables.
     /// </summary>
     public RoutingState? Router
     {
@@ -141,7 +169,8 @@ public class RoutedViewHost : ReactiveNavigationController
     }
 
     /// <summary>
-    /// Gets or sets the view contract observable.
+    /// Gets or sets the observable contract used when resolving views. When <see langword="null"/>, the default contract
+    /// is applied.
     /// </summary>
     public IObservable<string?>? ViewContractObservable
     {
@@ -150,7 +179,8 @@ public class RoutedViewHost : ReactiveNavigationController
     }
 
     /// <summary>
-    /// Gets or sets the view locator.
+    /// Gets or sets the <see cref="IViewLocator"/> used to translate <see cref="IRoutableViewModel"/> instances into
+    /// UIKit view controllers. Defaults to <see cref="ReactiveUI.ViewLocator.Current"/>.
     /// </summary>
     public IViewLocator? ViewLocator { get; set; }
 

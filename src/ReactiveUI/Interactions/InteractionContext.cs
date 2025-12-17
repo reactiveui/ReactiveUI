@@ -14,7 +14,23 @@ namespace ReactiveUI;
 /// the input to the interaction, whilst the <see cref="SetOutput"/> method allows a handler to provide the
 /// output.
 /// </para>
+/// <para>
+/// Calling <see cref="SetOutput"/> more than once throws an <see cref="InvalidOperationException"/>, ensuring the
+/// handler's reply remains deterministic even when multiple handlers run concurrently. Use <see cref="IsHandled"/>
+/// to guard logic that should only execute once.
+/// </para>
 /// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// viewModel.ConfirmDelete.RegisterHandler(async ctx =>
+/// {
+///     var approved = await dialogService.ShowAsync(ctx.Input);
+///     ctx.SetOutput(approved);
+/// });
+/// ]]>
+/// </code>
+/// </example>
 /// <typeparam name="TInput">
 /// The type of the interaction's input.
 /// </typeparam>
