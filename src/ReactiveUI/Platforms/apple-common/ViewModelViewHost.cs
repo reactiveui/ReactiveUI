@@ -32,7 +32,7 @@ namespace ReactiveUI;
 /// <![CDATA[
 /// var host = new ViewModelViewHost
 /// {
-///     ViewModel = screen.Router.GetCurrentViewModel(),
+///     ViewModel = screen.Router.CurrentViewModel.FirstAsync().Wait(),
 ///     ViewLocator = locator,
 ///     DefaultContent = new LoadingViewController()
 /// };
