@@ -12,6 +12,32 @@ namespace ReactiveUI;
 /// the View is activated. See the documentation for ViewModelActivator to
 /// read more about Activation.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Typical usage involves creating a <see cref="ViewModelActivator"/> field and calling <c>WhenActivated</c>
+/// in the constructor to compose subscriptions that should live only while the view is displayed.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// public sealed class DetailsViewModel : ReactiveObject, IActivatableViewModel
+/// {
+///     public DetailsViewModel()
+///     {
+///         Activator = new ViewModelActivator();
+///
+///         this.WhenActivated(disposables =>
+///         {
+///             LoadCommand.Execute().Subscribe().DisposeWith(disposables);
+///         });
+///     }
+///
+///     public ViewModelActivator Activator { get; }
+/// }
+/// ]]>
+/// </code>
+/// </example>
 public interface IActivatableViewModel
 {
     /// <summary>

@@ -10,6 +10,31 @@ namespace ReactiveUI;
 /// View is activated or deactivated. This is usually only used when porting
 /// ReactiveUI to a new UI framework.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Activation fetchers translate framework-specific signals (such as page navigation, focus, or visibility
+/// changes) into the cross-platform <see cref="IActivatableView"/> semantics used by ReactiveUI. Multiple
+/// fetchers can exist, each advertising an affinity for a given view type.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// public sealed class WinFormsActivationFetcher : IActivationForViewFetcher
+/// {
+///     public int GetAffinityForView(Type view) => typeof(Form).IsAssignableFrom(view) ? 10 : 0;
+///
+///     public IObservable<bool> GetActivationForView(IActivatableView view)
+///     {
+///         var form = (Form)view;
+///         return Observable.Merge(
+///             Observable.FromEventPattern(form, nameof(form.Load)).Select(_ => true),
+///             Observable.FromEventPattern(form, nameof(form.FormClosed)).Select(_ => false));
+///     }
+/// }
+/// ]]>
+/// </code>
+/// </example>
 public interface IActivationForViewFetcher
 {
     /// <summary>

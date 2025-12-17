@@ -8,6 +8,28 @@ namespace ReactiveUI;
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The helpers in this class are typically consumed within a view's <c>WhenActivated</c> block to connect a view model
+/// property to a control and automatically dispose the binding when the view deactivates. Converters can be supplied via
+/// <see cref="IBindingTypeConverter"/> instances or delegates, and <see cref="TriggerUpdate"/> indicates whether bindings
+/// push values from the view model, the view, or both.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// this.WhenActivated(disposables =>
+/// {
+///     this.Bind(ViewModel, vm => vm.UserName, v => v.UserNameTextBox.Text)
+///         .DisposeWith(disposables);
+///
+///     this.OneWayBind(ViewModel, vm => vm.IsBusy, v => v.Spinner.IsRunning)
+///         .DisposeWith(disposables);
+/// });
+/// ]]>
+/// </code>
+/// </example>
 public static class PropertyBindingMixins
 {
     private static readonly PropertyBinderImplementation _binderImplementation;

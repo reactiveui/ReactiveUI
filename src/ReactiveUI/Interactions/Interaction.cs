@@ -33,15 +33,41 @@ namespace ReactiveUI;
 /// <see cref="UnhandledInteractionException{TInput, TOutput}"/> if no handler handles the interaction.
 /// </para>
 /// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// public class DeleteCustomerViewModel : ReactiveObject
+/// {
+///     public Interaction<string, bool> ConfirmDelete { get; } = new();
+///
+///     public async Task<bool> TryDeleteAsync(string customerName)
+///     {
+///         var approved = await ConfirmDelete.Handle($"Delete {customerName}?");
+///         return approved;
+///     }
+/// }
+///
+/// public partial class DeleteCustomerView : ReactiveUserControl<DeleteCustomerViewModel>
+/// {
+///     public DeleteCustomerView()
+///     {
+///         this.WhenActivated(disposables =>
+///             ViewModel!.ConfirmDelete.RegisterHandler(async context =>
+///             {
+///                 var approved = await dialogService.ShowAsync(context.Input);
+///                 context.SetOutput(approved);
+///             }).DisposeWith(disposables));
+///     }
+/// }
+/// ]]>
+/// </code>
+/// </example>
 /// <typeparam name="TInput">
 /// The interaction's input type.
 /// </typeparam>
 /// <typeparam name="TOutput">
 /// The interaction's output type.
 /// </typeparam>
-/// <remarks>
-/// Initializes a new instance of the <see cref="Interaction{TInput, TOutput}"/> class.
-/// </remarks>
 /// <param name="handlerScheduler">
 /// The scheduler to use when invoking handlers, which defaults to <c>CurrentThreadScheduler.Instance</c> if <see langword="null"/>.
 /// </param>
@@ -117,7 +143,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     }
 
     /// <summary>
-    /// Gets a interaction context which is used to provide information about the interaction.
+    /// Gets an interaction context which is used to provide information about the interaction.
     /// </summary>
     /// <param name="input">The input that is being passed in.</param>
     /// <returns>The interaction context.</returns>

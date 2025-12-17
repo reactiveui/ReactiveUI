@@ -12,6 +12,24 @@ namespace ReactiveUI;
 /// notifications. This class can be created directly, but is more often created
 /// via the <see cref="OAPHCreationHelperMixin" /> extension methods.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Use this helper when the value for a property is derived from one or more observable streams (for example,
+/// <c>WhenAnyValue</c>). The helper subscribes to the source observable, tracks the latest value, and raises change
+/// notifications through the supplied callbacks.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// _fullName = this.WhenAnyValue(x => x.FirstName, x => x.LastName,
+///         (first, last) => $"{first} {last}")
+///     .ToProperty(this, x => x.FullName);
+///
+/// public string FullName => _fullName.Value;
+/// ]]>
+/// </code>
+/// </example>
 /// <typeparam name="T">The type.</typeparam>
 public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDisposable, IEnableLogger
 {

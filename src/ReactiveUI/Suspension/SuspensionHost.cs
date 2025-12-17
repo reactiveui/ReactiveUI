@@ -9,6 +9,28 @@ namespace ReactiveUI;
 /// A internal state setup by other classes for the different suspension state of a application.
 /// The user does not implement themselves but is often setup via the AutoSuspendHelper class.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <see cref="SuspensionHost"/> backs <see cref="RxApp.SuspensionHost"/> and provides concrete observables that are wired up
+/// by helpers such as <see cref="AutoSuspendHelper"/>. Platform hosts push their lifecycle notifications into the
+/// <c>ReplaySubject</c> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
+/// </para>
+/// <para>
+/// Consumers rarely instantiate this type directly; instead call <c>RxApp.SuspensionHost</c> to access the singleton. The
+/// object is intentionally thread-safe via <see cref="ReplaySubject{T}"/> so events raised prior to subscription are
+/// replayed to late subscribers.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// var suspensionHost = new SuspensionHost();
+/// suspensionHost.IsLaunchingNew = Observable.Return(Unit.Default);
+/// suspensionHost.CreateNewAppState = () => new ShellState();
+/// suspensionHost.AppState = suspensionHost.CreateNewAppState();
+/// ]]>
+/// </code>
+/// </example>
 internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
 {
     private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new(1);

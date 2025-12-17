@@ -8,6 +8,24 @@ namespace ReactiveUI;
 /// <summary>
 /// This class provides extension methods for the ReactiveUI view binding mechanism.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Interaction bindings are usually established within a view's activation block to ensure registrations are disposed
+/// when the view is no longer visible. The helpers resolve the <see cref="IInteraction{TInput,TOutput}"/> on the view
+/// model via an expression and hook it to a handler that can await UI prompts such as dialogs.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// this.WhenActivated(disposables =>
+/// {
+///     this.BindInteraction(ViewModel, vm => vm.ShowDialog, HandleDialogAsync)
+///         .DisposeWith(disposables);
+/// });
+/// ]]>
+/// </code>
+/// </example>
 public static class InteractionBindingMixins
 {
     private static readonly InteractionBinderImplementation _binderImplementation = new();

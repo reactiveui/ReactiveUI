@@ -6,21 +6,40 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Implement this interface for ViewModels that can be navigated to.
+/// Defines the minimum contract for view models that participate in <see cref="RoutingState"/> navigation.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Routable view models expose a user-readable <see cref="UrlPathSegment"/> used for diagnostics / navigation breadcrumbs
+/// and keep a reference to the owning <see cref="IScreen"/> so that downstream navigation commands can be issued.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// public class SettingsViewModel : ReactiveObject, IRoutableViewModel
+/// {
+///     public SettingsViewModel(IScreen hostScreen) => HostScreen = hostScreen;
+///
+///     public string? UrlPathSegment => "settings";
+///
+///     public IScreen HostScreen { get; }
+/// }
+/// ]]>
+/// </code>
+/// </example>
 public interface IRoutableViewModel : IReactiveObject
 {
     /// <summary>
-    /// Gets a string token representing the current ViewModel, such as 'login' or 'user'.
+    /// Gets a string token representing the current view model, such as "login" or "user".
     /// </summary>
 #pragma warning disable CA1056 // URI-like properties should not be strings
     string? UrlPathSegment { get; }
 #pragma warning restore CA1056 // URI-like properties should not be strings
 
     /// <summary>
-    /// Gets the IScreen that this ViewModel is currently being shown in. This
-    /// is usually passed into the ViewModel in the Constructor and saved
-    /// as a ReadOnly Property.
+    /// Gets the <see cref="IScreen"/> instance that hosts this view model. Use this reference to access the
+    /// shared <see cref="RoutingState"/> when chaining navigation from child view models.
     /// </summary>
     IScreen HostScreen { get; }
 }

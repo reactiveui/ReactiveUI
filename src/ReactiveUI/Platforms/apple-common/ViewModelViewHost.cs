@@ -13,9 +13,34 @@ using AppKit;
 namespace ReactiveUI;
 
 /// <summary>
-/// A control which will use Splat dependency injection to determine the View
-/// to show. It uses.
+/// A controller that resolves an <see cref="IViewFor"/> implementation for the supplied <see cref="ViewModel"/> and
+/// hosts it as a child view controller.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <see cref="ViewModelViewHost"/> is useful when a view is responsible for projecting an arbitrary view model instance
+/// determined at runtime. The host listens for <see cref="ViewModel"/> or contract changes, resolves a view via
+/// <see cref="ViewLocator"/>, and swaps the child controller hierarchy accordingly.
+/// </para>
+/// <para>
+/// Provide a <see cref="DefaultContent"/> controller to display placeholder UI while no view model is available, or set
+/// <see cref="ViewContractObservable"/> to drive platform-specific view selection.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// var host = new ViewModelViewHost
+/// {
+///     ViewModel = screen.Router.CurrentViewModel.FirstAsync().Wait(),
+///     ViewLocator = locator,
+///     DefaultContent = new LoadingViewController()
+/// };
+///
+/// host.ViewContractObservable = this.WhenAnyValue(x => x.SelectedTheme);
+/// ]]>
+/// </code>
+/// </example>
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which require dynamic code generation")]
 [RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which may require unreferenced code")]
@@ -43,11 +68,9 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>
-    /// Gets or sets the view locator.
+    /// Gets or sets the <see cref="IViewLocator"/> used to resolve views for the current <see cref="ViewModel"/>. Defaults
+    /// to <see cref="ReactiveUI.ViewLocator.Current"/> if not provided.
     /// </summary>
-    /// <value>
-    /// The view locator.
-    /// </value>
     public IViewLocator? ViewLocator
     {
         get => _viewLocator;
@@ -55,11 +78,8 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>
-    /// Gets or sets the default content.
+    /// Gets or sets the controller displayed when <see cref="ViewModel"/> is <see langword="null"/>.
     /// </summary>
-    /// <value>
-    /// The default content.
-    /// </value>
     public NSViewController? DefaultContent
     {
         get => _defaultContent;
@@ -67,7 +87,7 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>
-    /// Gets or sets the view model.
+    /// Gets or sets the view model whose view should be hosted.
     /// </summary>
     public object? ViewModel
     {
@@ -76,7 +96,8 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>
-    /// Gets or sets the view contract observable.
+    /// Gets or sets an observable producing view contracts. Contracts allow multiple views to be registered for the same
+    /// view model but different display contexts.
     /// </summary>
     public IObservable<string?>? ViewContractObservable
     {
@@ -85,7 +106,8 @@ public class ViewModelViewHost : ReactiveViewController
     }
 
     /// <summary>
-    /// Gets or sets the view contract.
+    /// Gets or sets the view contract used when resolving views. Assigning a contract produces a singleton observable
+    /// under the covers.
     /// </summary>
     public string? ViewContract
     {
