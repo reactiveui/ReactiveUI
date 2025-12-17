@@ -11,9 +11,9 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
+[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
 [assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.17763.0")]
+[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
 namespace ReactiveUI
 {
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
@@ -145,10 +145,11 @@ namespace ReactiveUI
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
-        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Property access requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
+        public int GetAffinityForObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents)]  T>(bool hasEventTarget) { }
     }
     public class CreatesCommandBindingViaEvent : ReactiveUI.ICreatesCommandBinding
     {
@@ -158,10 +159,11 @@ namespace ReactiveUI
         public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Event binding requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
-        public System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
+        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Event binding requires dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
         public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
+        public int GetAffinityForObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents)]  T>(bool hasEventTarget) { }
     }
     public class DecimalToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
@@ -274,10 +276,11 @@ namespace ReactiveUI
         System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter);
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-        System.IDisposable? BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName);
+        System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName);
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         int GetAffinityForObject(System.Type type, bool hasEventTarget);
+        int GetAffinityForObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents)]  T>(bool hasEventTarget);
     }
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
@@ -522,6 +525,8 @@ namespace ReactiveUI
     }
     public interface IWantsToRegisterStuff
     {
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Uses reflection to create instances of types.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection to create instances of types.")]
         void Register(System.Action<System.Func<object>, System.Type> registerFunction);
     }
     public class IntegerToStringTypeConverter : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
@@ -1176,6 +1181,10 @@ namespace ReactiveUI
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Refresh uses RaisePropertyChanged which may require unreferenced code")]
         public void Refresh() { }
         public System.IDisposable Subscribe(System.IObserver<T?> observer) { }
+        public static ReactiveUI.ReactiveProperty<T> Create() { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue) { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
+        public static ReactiveUI.ReactiveProperty<T> Create(T? initialValue, System.Reactive.Concurrency.IScheduler scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues) { }
     }
     [System.Runtime.Serialization.DataContract]
     public class ReactiveRecord : ReactiveUI.IHandleObservableErrors, ReactiveUI.IReactiveNotifyPropertyChanged<ReactiveUI.IReactiveObject>, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging, System.IEquatable<ReactiveUI.ReactiveRecord>
@@ -1253,17 +1262,16 @@ namespace ReactiveUI
     public enum RegistrationNamespace
     {
         None = 0,
-        XamForms = 1,
-        Winforms = 2,
-        Wpf = 3,
-        Uno = 4,
-        UnoWinUI = 5,
-        Blazor = 6,
-        Drawing = 7,
-        Avalonia = 8,
-        Maui = 9,
-        Uwp = 10,
-        WinUI = 11,
+        Winforms = 1,
+        Wpf = 2,
+        Uno = 3,
+        UnoWinUI = 4,
+        Blazor = 5,
+        Drawing = 6,
+        Avalonia = 7,
+        Maui = 8,
+        Uwp = 9,
+        WinUI = 10,
     }
     public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
@@ -1317,6 +1325,11 @@ namespace ReactiveUI
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static bool SuppressViewCommandBindingMessage { get; set; }
         public static ReactiveUI.ISuspensionHost SuspensionHost { get; set; }
+        public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
+    }
+    public static class RxSchedulers
+    {
+        public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
         public static System.Reactive.Concurrency.IScheduler TaskpoolScheduler { get; set; }
     }
     public class ScheduledSubject<T> : System.IDisposable, System.IObservable<T>, System.IObserver<T>, System.Reactive.Subjects.ISubject<T>, System.Reactive.Subjects.ISubject<T, T>
@@ -2156,8 +2169,57 @@ namespace ReactiveUI
 }
 namespace ReactiveUI.Builder
 {
+    public static class BuilderMixins
+    {
+        public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.MessageBus> configure) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonViewModel<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)]  TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder RegisterView<TView, TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
+            where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
+            where TViewModel :  class, ReactiveUI.IReactiveObject { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder UsingSplatBuilder(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<Splat.Builder.IAppBuilder>? appBuilder) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(this ReactiveUI.Builder.IReactiveUIBuilder builder, T registrationModule)
+            where T : Splat.Builder.IModule { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>(this ReactiveUI.Builder.IReactiveUIBuilder builder)
+            where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithViewsFromAssembly(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reflection.Assembly assembly) { }
+    }
     public interface IReactiveUIBuilder : Splat.Builder.IAppBuilder
     {
+        ReactiveUI.Builder.IReactiveUIInstance BuildApp();
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure);
@@ -2175,9 +2237,30 @@ namespace ReactiveUI.Builder
             where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
         ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule;
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(System.Action<T?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(System.Action<T1?, T2?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(System.Action<T1?, T2?, T3?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4>(System.Action<T1?, T2?, T3?, T4?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(System.Action<T1?, T2?, T3?, T4?, T5?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action);
+        ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action);
         ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new ();
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trim" +
+            "med.")]
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
         ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction);
         ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction);
@@ -2196,6 +2279,7 @@ namespace ReactiveUI.Builder
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver, Splat.IReadonlyDependencyResolver? current) { }
         public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
         public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+        public ReactiveUI.Builder.IReactiveUIInstance BuildApp() { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure) { }
@@ -2211,12 +2295,35 @@ namespace ReactiveUI.Builder
             where TViewModel :  class, ReactiveUI.IReactiveObject { }
         public ReactiveUI.Builder.IReactiveUIBuilder RegisterViewModel<TViewModel>()
             where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
+        public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatBuilder(System.Action<Splat.Builder.IAppBuilder> appBuilder) { }
         public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
         public override Splat.Builder.IAppBuilder WithCoreServices() { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(System.Action<T?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(System.Action<T1?, T2?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(System.Action<T1?, T2?, T3?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4>(System.Action<T1?, T2?, T3?, T4?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(System.Action<T1?, T2?, T3?, T4?, T5?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
+        public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
+        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }

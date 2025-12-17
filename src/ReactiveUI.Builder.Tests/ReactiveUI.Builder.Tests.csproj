@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <NoWarn>$(NoWarn);SA1600</NoWarn>
+    <NoWarn>$(NoWarn);SA1600;CA1812;</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net4')) ">
     <UseWPF>true</UseWPF>

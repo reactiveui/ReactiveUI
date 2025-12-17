@@ -53,8 +53,7 @@
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.1" />
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
-    <PackageVersion Include="Syncfusion.Maui.Toolkit" Version="1.0.8" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    
     <!-- Lifecycle (align everything to 2.9.x) -->
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />

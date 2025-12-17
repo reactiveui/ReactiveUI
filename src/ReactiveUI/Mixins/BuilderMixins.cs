@@ -177,6 +177,11 @@ public static class BuilderMixins
     /// </returns>
     public static IReactiveUIBuilder UsingSplatBuilder(this IReactiveUIBuilder reactiveUIBuilder, Action<IAppBuilder>? appBuilder)
     {
+        if (reactiveUIBuilder == null)
+        {
+            throw new ArgumentNullException(nameof(reactiveUIBuilder));
+        }
+
         appBuilder?.Invoke(reactiveUIBuilder);
         return reactiveUIBuilder;
     }
