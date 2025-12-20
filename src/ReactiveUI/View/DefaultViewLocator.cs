@@ -3,22 +3,43 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using System.Globalization;
 using System.Reflection;
 
 namespace ReactiveUI;
 
 /// <summary>
-/// DefaultViewLocator.
+/// Default implementation of <see cref="IViewLocator"/> that resolves views by convention (replacing "ViewModel" with "View").
 /// </summary>
-/// <seealso cref="ReactiveUI.IViewLocator" />
+/// <remarks>
+/// <para>
+/// This locator queries Splat's service locator for a registered <see cref="IViewFor"/> using several fallbacks, including
+/// the exact view type, <c>IViewFor&lt;TViewModel&gt;</c>, and interface/class naming conversions. Override
+/// <see cref="ViewModelToViewFunc"/> to customize the name translation strategy.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// Locator.CurrentMutable.Register(() => new LoginView(), typeof(IViewFor<LoginViewModel>));
+///
+/// var locator = new DefaultViewLocator();
+/// var view = locator.ResolveView(new LoginViewModel());
+/// ]]>
+/// </code>
+/// </example>
 public sealed partial class DefaultViewLocator : IViewLocator
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
+    /// </summary>
+    /// <param name="viewModelToViewFunc">Custom mapping from view model type name to view type name.</param>
     internal DefaultViewLocator(Func<string, string>? viewModelToViewFunc = null) =>
         ViewModelToViewFunc = viewModelToViewFunc ?? (static vm => vm.Replace("ViewModel", "View"));
 
     /// <summary>
-    /// Gets or sets the view model to view function.
+    /// Gets or sets the function used to convert a view model type name into a view type name during resolution.
     /// </summary>
     /// <value>
     /// The view model to view function.

@@ -10,13 +10,35 @@ using Foundation;
 namespace ReactiveUI;
 
 /// <summary>
-/// <para>
-/// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
-/// AppDelegate to inherit from this class, then call:
-/// </para>
-/// <para><c>Locator.Current.GetService.{ISuspensionHost}().SetupDefaultSuspendResume();</c>.</para>
-/// <para>This will fetch your SuspensionHost.</para>
+/// Bridges <see cref="NSApplication"/> lifecycle notifications into <see cref="RxApp.SuspensionHost"/> on macOS.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Instantiate this helper inside your <see cref="NSApplicationDelegate"/> to map <c>DidFinishLaunching</c>,
+/// <c>DidBecomeActive</c>, and termination callbacks to the shared <see cref="ISuspensionHost"/> streams. Pair it with
+/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/> to persist
+/// view model state using a platform-specific <see cref="ISuspensionDriver"/> implementation.
+/// </para>
+/// <para>
+/// Example usage:
+/// <code language="csharp">
+/// <![CDATA[
+/// public class AppDelegate : NSApplicationDelegate
+/// {
+///     private AutoSuspendHelper? _suspensionHelper;
+///
+///     public override void DidFinishLaunching(NSNotification notification)
+///     {
+///         _suspensionHelper ??= new AutoSuspendHelper(this);
+///         RxApp.SuspensionHost.CreateNewAppState = () => new ShellState();
+///         RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(AppStatePathProvider.Resolve()));
+///         base.DidFinishLaunching(notification);
+///     }
+/// }
+/// ]]>
+/// </code>
+/// </para>
+/// </remarks>
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("AutoSuspendHelper uses RxApp properties which require dynamic code generation")]
 [RequiresUnreferencedCode("AutoSuspendHelper uses RxApp properties which may require unreferenced code")]
@@ -61,6 +83,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <returns>The termination reply from the application.</returns>
+    /// <remarks>
+    /// Delays the OS shutdown until <see cref="RxApp.SuspensionHost.ShouldPersistState"/> subscribers finish writing
+    /// <see cref="ISuspensionHost.AppState"/>, replying with <see cref="NSApplication.ReplyToApplicationShouldTerminate(bool)"/>
+    /// once persistence completes.
+    /// </remarks>
     public NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
     {
         RxSchedulers.MainThreadScheduler.Schedule(() =>
@@ -74,24 +101,36 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Did finish launching.
     /// </summary>
     /// <param name="notification">The notification.</param>
+    /// <remarks>
+    /// Signals <see cref="ISuspensionHost.IsResuming"/> so state drivers load the last persisted <see cref="ISuspensionHost.AppState"/>.
+    /// </remarks>
     public void DidFinishLaunching(NSNotification notification) => _isResuming.OnNext(Unit.Default);
 
     /// <summary>
     /// Did resign active.
     /// </summary>
     /// <param name="notification">The notification.</param>
+    /// <remarks>
+    /// Requests an asynchronous save by emitting <see cref="Disposable.Empty"/> via <see cref="ISuspensionHost.ShouldPersistState"/>.
+    /// </remarks>
     public void DidResignActive(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
     /// <summary>
     /// Did become active.
     /// </summary>
     /// <param name="notification">The notification.</param>
+    /// <remarks>
+    /// Signals <see cref="ISuspensionHost.IsUnpausing"/> so subscribers can refresh transient UI when the app regains focus.
+    /// </remarks>
     public void DidBecomeActive(NSNotification notification) => _isUnpausing.OnNext(Unit.Default);
 
     /// <summary>
     /// Did hide.
     /// </summary>
     /// <param name="notification">The notification.</param>
+    /// <remarks>
+    /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
+    /// </remarks>
     public void DidHide(NSNotification notification) => _shouldPersistState.OnNext(Disposable.Empty);
 
     /// <inheritdoc />

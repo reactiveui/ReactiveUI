@@ -10,6 +10,23 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the ReactiveCommand class.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <c>InvokeCommand</c> is typically chained after an <see cref="IObservable{T}"/> that represents user intent. It
+/// forwards each value into an <see cref="ICommand"/> once <see cref="ICommand.CanExecute(object?)"/> returns true,
+/// keeping the observable and command lifetimes aligned via the returned disposable.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// this.WhenAnyValue(x => x.ViewModel.SaveCommand)
+///     .Select(_ => Unit.Default)
+///     .InvokeCommand(ViewModel.SaveCommand)
+///     .DisposeWith(disposables);
+/// ]]>
+/// </code>
+/// </example>
 public static class ReactiveCommandMixins
 {
     /// <summary>

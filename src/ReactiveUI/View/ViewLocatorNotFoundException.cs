@@ -6,8 +6,30 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// An exception that is thrown if we are unable to find the View Locator.
+/// An exception that is thrown if ReactiveUI fails to locate an <see cref="IViewLocator"/> implementation.
 /// </summary>
+/// <remarks>
+/// <para>
+/// This exception typically indicates that the application's dependency resolver has not been initialized via
+/// <c>UseReactiveUI</c>, <c>services.AddReactiveUI()</c>, or custom DI registration. It can also surface when assemblies
+/// containing the default locator are trimmed out of the app package. Catch the exception at startup to log
+/// configuration issues and ensure the container registers an <see cref="IViewLocator"/> before resolving views.
+/// </para>
+/// </remarks>
+/// <example>
+/// <code language="csharp">
+/// <![CDATA[
+/// try
+/// {
+///     var view = ViewLocator.Current.ResolveView(viewModel);
+/// }
+/// catch (ViewLocatorNotFoundException ex)
+/// {
+///     logger.LogCritical(ex, "ReactiveUI was not initialized; cannot resolve views.");
+/// }
+/// ]]>
+/// </code>
+/// </example>
 #if !NET8_0_OR_GREATER
 [Serializable]
 #endif

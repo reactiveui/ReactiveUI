@@ -27,6 +27,11 @@ namespace ReactiveUI;
 /// <see cref="PushViewController(NSViewController?, bool)"/> and <see cref="PopViewController(bool)"/> also update the
 /// router so that imperative navigation cannot desynchronize the stacks.
 /// </para>
+/// <para>
+/// Provide a <see cref="ViewContractObservable"/> when multiple views are registered for the same view model. The host
+/// will pass the latest contract to <see cref="ViewLocator"/> so that platform-specific or modal presentations render
+/// the correct view controller.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code language="csharp">
