@@ -6,6 +6,7 @@
 using System.Collections;
 using System.Globalization;
 using DynamicData.Binding;
+using ReactiveUI;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -1672,5 +1673,111 @@ public class PropertyBindingTest
 
         dis.Dispose();
         Assert.That(dis.IsDisposed, Is.True);
+    }
+
+    /// <summary>
+    /// BindTo should only invoke the nested setter once per source value on the same host.
+    /// </summary>
+    [Test]
+    public void BindToSetsNestedPropertyOncePerValueOnSameHost()
+    {
+        var view = new TrackingHostView { ViewModel = new() };
+
+        using var source = new Subject<string>();
+        using var subscription = source.BindTo(view, static x => x.ViewModel!.Nested.SomeText);
+
+        source.OnNext("Alpha");
+        source.OnNext("Alpha");
+        source.OnNext("Alpha");
+        source.OnNext("Beta");
+        source.OnNext("Beta");
+        source.OnNext("Beta");
+        source.OnNext("Gamma");
+        source.OnNext("Gamma");
+        source.OnNext("Gamma");
+
+        var nested = view.ViewModel!.Nested;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(nested.SetCallCount, Is.EqualTo(3));
+            Assert.That(nested.SomeText, Is.EqualTo("Gamma"));
+        });
+    }
+
+    /// <summary>
+    /// BindTo should not reapply stale values after replacing the nested host.
+    /// </summary>
+    [Test]
+    public void BindToSetsNestedPropertyOncePerValueAfterHostReplacement()
+    {
+        var view = new TrackingHostView { ViewModel = new() };
+
+        using var source = new Subject<string>();
+        using var subscription = source.BindTo(view, static x => x.ViewModel!.Nested.SomeText);
+
+        var values = new[] { "Delta", "Epsilon", "Zeta" };
+
+        foreach (var value in values)
+        {
+            var replacement = new TrackingNestedValue();
+            view.ViewModel!.Nested = replacement;
+
+            source.OnNext(value);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(replacement.SetCallCount, Is.EqualTo(1), $"Value '{value}' invoked the setter more than once.");
+                Assert.That(replacement.SomeText, Is.EqualTo(value));
+            });
+        }
+    }
+
+    private sealed class TrackingHostView : ReactiveObject, IViewFor<TrackingHostViewModel>
+    {
+        private TrackingHostViewModel? _viewModel;
+
+        public TrackingHostViewModel? ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
+
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TrackingHostViewModel?)value;
+        }
+    }
+
+    private sealed class TrackingHostViewModel : ReactiveObject
+    {
+        private TrackingNestedValue _nested = new();
+
+        public TrackingNestedValue Nested
+        {
+            get => _nested;
+            set => this.RaiseAndSetIfChanged(ref _nested, value);
+        }
+    }
+
+    private sealed class TrackingNestedValue : ReactiveObject
+    {
+        public int SetCallCount { get; private set; }
+
+        public string? SomeText
+        {
+            get => field;
+            set
+            {
+                if (value != field)
+                {
+                    this.RaisePropertyChanging();
+                    field = value;
+                    this.RaisePropertyChanged();
+                    SetCallCount++;
+                }
+            }
+        }
     }
 }
