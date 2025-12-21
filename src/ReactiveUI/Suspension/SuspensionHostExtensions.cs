@@ -8,6 +8,13 @@ namespace ReactiveUI;
 /// <summary>
 /// Extension methods associated with the ISuspensionHost interface.
 /// </summary>
+/// <remarks>
+/// <para>
+/// These helpers provide strongly-typed access to the current application state and wire up the
+/// <see cref="ISuspensionDriver"/> responsible for persisting it. They are typically invoked from platform bootstrap
+/// classes after registering an <see cref="AutoSuspendHelper"/>.
+/// </para>
+/// </remarks>
 public static class SuspensionHostExtensions
 {
     /// <summary>
@@ -26,6 +33,10 @@ public static class SuspensionHostExtensions
     /// <typeparam name="T">The app state type.</typeparam>
     /// <param name="item">The suspension host.</param>
     /// <returns>The app state.</returns>
+    /// <remarks>
+    /// Calling this method triggers a one-time load via <see cref="ISuspensionDriver.LoadState"/> if the state has not
+    /// yet been materialized, ensuring late subscribers still receive persisted data.
+    /// </remarks>
     public static T GetAppState<T>(this ISuspensionHost item)
     {
         item.ArgumentNullExceptionThrowIfNull(nameof(item));
@@ -41,6 +52,10 @@ public static class SuspensionHostExtensions
     /// <typeparam name="T">The observable type.</typeparam>
     /// <param name="item">The suspension host.</param>
     /// <returns>An observable of the app state.</returns>
+    /// <remarks>
+    /// Emits the current value immediately (if available) and every subsequent assignment so downstream components can
+    /// react to hot reloads or state restoration.
+    /// </remarks>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("ObserveAppState uses WhenAny which requires dynamic code generation for expression tree analysis")]
     [RequiresUnreferencedCode("ObserveAppState uses WhenAny which may reference members that could be trimmed")]
@@ -62,6 +77,21 @@ public static class SuspensionHostExtensions
     /// <param name="item">The suspension host.</param>
     /// <param name="driver">The suspension driver.</param>
     /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+    /// <remarks>
+    /// <para>
+    /// Registers handlers for <see cref="ISuspensionHost.ShouldPersistState"/>, <see cref="ISuspensionHost.ShouldInvalidateState"/>,
+    /// and resume notifications, delegating serialization to the provided <paramref name="driver"/> (or a resolved
+    /// instance from <see cref="AppLocator"/>).
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// RxApp.SuspensionHost.CreateNewAppState = () => new ShellState();
+    /// RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FileSystem.AppDataDirectory));
+    /// ]]>
+    /// </code>
+    /// </example>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("SetupDefaultSuspendResume uses ISuspensionDriver which may require dynamic code generation for serialization")]
     [RequiresUnreferencedCode("SetupDefaultSuspendResume uses ISuspensionDriver which may require unreferenced code for serialization")]
