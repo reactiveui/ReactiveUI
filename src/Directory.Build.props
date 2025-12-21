@@ -2,7 +2,6 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
-    <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
     <DebugType>embedded</DebugType>
     <Authors>.NET Foundation and Contributors</Authors>
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
@@ -19,8 +18,6 @@
     <RepositoryType>git</RepositoryType>
     <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
 
-    <EnableNUnitRunner>true</EnableNUnitRunner>
-    
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -40,6 +37,15 @@
 
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('.Test'))">
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <EnableNUnitRunner>true</EnableNUnitRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -118,9 +124,9 @@
     <PackageReference Include="NUnit3TestAdapter"/>
     <PackageReference Include="NUnit.Analyzers"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="Microsoft.Reactive.Testing"/>
     <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="coverlet.msbuild" PrivateAssets="All"/>
     <PackageReference Include="Verify.NUnit"/>
   </ItemGroup>
 

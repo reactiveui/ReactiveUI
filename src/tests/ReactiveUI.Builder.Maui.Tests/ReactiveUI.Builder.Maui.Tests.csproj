@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIMauiTestTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
     <UseMaui>true</UseMaui>
     <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
     <IsPackable>false</IsPackable>

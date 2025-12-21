@@ -17,14 +17,14 @@
   <ItemGroup>
     <PackageVersion Include="Akavache.Sqlite3" Version="11.5.1" />
     <PackageVersion Include="Akavache.SystemTextJson" Version="11.5.1" />
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
     <PackageVersion Include="NUnit" Version="4.4.0" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.0.1" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.11.2" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />

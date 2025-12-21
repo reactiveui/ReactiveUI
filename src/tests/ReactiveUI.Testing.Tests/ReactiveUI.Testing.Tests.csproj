@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
     <FodyTargetFramework>netstandard2.0</FodyTargetFramework>
     <FodyTargetFramework Condition=" $(TargetFramework.StartsWith('net4')) ">$(TargetFramework)</FodyTargetFramework>
   </PropertyGroup>
