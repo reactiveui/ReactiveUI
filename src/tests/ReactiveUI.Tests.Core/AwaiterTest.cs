@@ -48,7 +48,8 @@ public class AwaiterTest : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _schedulersScope?.Dispose();
+        _schedulersScope = null;
     }
 
     private static async Task<int> AwaitAnObservable()
