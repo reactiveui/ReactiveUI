@@ -379,7 +379,6 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                                 }
 
                                 latestHost = host;
-                                currentHost = host;
                             }
 
                             if (host is null)

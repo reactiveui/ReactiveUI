@@ -810,7 +810,7 @@ public class PropertyBindingTest
     }
 
     [Test]
-    public void BindWithFuncToTriggerUpdateTestViewModelToView()
+    public void BindWithFuncToTriggerUpdateTestViewToViewModel()
     {
         var dis = new CompositeDisposable();
         var vm = new PropertyBindViewModel();
@@ -1756,7 +1756,7 @@ public class PropertyBindingTest
 
     private sealed class TrackingHostViewModel : ReactiveObject
     {
-        private TrackingNestedValue _nested = new();
+        private readonly TrackingNestedValue _nested = new();
 
         public TrackingNestedValue Nested
         {
@@ -1774,8 +1774,13 @@ public class PropertyBindingTest
             get => field;
             set
             {
-                SetCallCount++;
-                this.RaiseAndSetIfChanged(ref field, value);
+                if (value != field)
+                {
+                    this.RaisePropertyChanging();
+                    field = value;
+                    this.RaisePropertyChanged();
+                    SetCallCount++;
+                }
             }
         }
     }
