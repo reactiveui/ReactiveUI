@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Tests", "tests\R
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Wpf", "ReactiveUI.Wpf\ReactiveUI.Wpf.csproj", "{15CF3AA6-9F7C-4F23-BAE7-4A93352E94B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.LeakTests", "tests\ReactiveUI.LeakTests\ReactiveUI.LeakTests.csproj", "{1AC71A71-F5F3-4F96-BDA9-A9DC7F572DB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Leak.Tests", "tests\ReactiveUI.Leak.Tests\ReactiveUI.Leak.Tests.csproj", "{1AC71A71-F5F3-4F96-BDA9-A9DC7F572DB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactiveUI.Splat.Tests", "tests\ReactiveUI.Splat.Tests\ReactiveUI.Splat.Tests.csproj", "{7ED6D69F-138F-40BD-9F37-3E4050E4D19B}"
 EndProject
