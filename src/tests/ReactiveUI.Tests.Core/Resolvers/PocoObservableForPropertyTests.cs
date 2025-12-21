@@ -58,7 +58,8 @@ public class PocoObservableForPropertyTests : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _schedulersScope?.Dispose();
+        _schedulersScope = null;
     }
 
     [SuppressMessage("Style", "CA1812: Avoid uninstantiated internal classes", Justification = "Used in tests via reflection.")]
