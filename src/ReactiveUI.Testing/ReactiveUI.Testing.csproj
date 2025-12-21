@@ -3,6 +3,7 @@
     <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
+    <IsTestProject>false</IsTestProject>
     <PackageDescription>Provides extensions for testing ReactiveUI based applications</PackageDescription>
     <PackageId>ReactiveUI.Testing</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
