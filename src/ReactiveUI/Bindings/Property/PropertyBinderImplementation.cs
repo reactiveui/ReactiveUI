@@ -208,7 +208,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-        var shouldBind = target is not IViewFor viewFor || EvalBindingHooks(observedChange, viewFor, null!, viewExpression, BindingDirection.OneWay);
+        var shouldBind = target is not IViewFor viewFor || EvalBindingHooks<object, IViewFor>(null, viewFor, null!, viewExpression, BindingDirection.OneWay);
         if (!shouldBind)
         {
             return Disposable.Empty;
@@ -300,7 +300,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             var hostExpression = viewExpression.GetParent();
             var hostExpressionChain = hostExpression?.GetExpressionChain()?.ToArray();
-            var hostChanges = target.WhenAnyDynamic(hostExpression, x => x.Value);
+            var hostChanges = target.WhenAnyDynamic(hostExpression, x => x.Value).Synchronize();
             var arguments = viewExpression.GetArgumentsArray();
             var propertyDefaultValue = viewExpression.Type.GetTypeInfo().IsValueType ? Activator.CreateInstance(viewExpression.Type) : null;
             var shouldReplayOnHostChanges = hostExpressionChain?
