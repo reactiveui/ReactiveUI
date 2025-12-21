@@ -14,11 +14,6 @@
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
-  <!-- Link shared infrastructure files from ReactiveUI.Tests -->
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.Tests\Infrastructure\**\*.cs" Link="Infrastructure\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\ReactiveUI.Tests\Utilities\**\*.cs" Link="Utilities\%(RecursiveDir)%(Filename)%(Extension)" />
-  </ItemGroup>
   <!-- Global usings -->
   <ItemGroup>
     <Using Include="NUnit.Framework" />

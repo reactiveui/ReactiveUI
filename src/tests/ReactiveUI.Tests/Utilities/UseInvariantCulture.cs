@@ -4,9 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
-using System.Reflection;
 
-using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 namespace ReactiveUI.Tests;

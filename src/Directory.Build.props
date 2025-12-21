@@ -18,6 +18,9 @@
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
+
+    <EnableNUnitRunner>true</EnableNUnitRunner>
+    
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

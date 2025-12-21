@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
-using NUnit.Framework.Legacy;
 
 namespace ReactiveUI.Tests;
 

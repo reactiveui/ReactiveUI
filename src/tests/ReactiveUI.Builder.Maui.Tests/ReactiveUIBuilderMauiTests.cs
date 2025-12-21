@@ -3,11 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+
 using Microsoft.Maui.Dispatching;
-using Splat;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests;

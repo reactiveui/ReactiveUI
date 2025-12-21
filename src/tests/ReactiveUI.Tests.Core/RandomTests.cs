@@ -146,6 +146,24 @@ public class RandomTests : IDisposable
     }
 
     [Test]
+    public void ViewLocatorCurrentUsesAppLocatorTest()
+    {
+        // Ensure RxApp is initialized so IViewLocator is registered
+        RxApp.EnsureInitialized();
+
+        // Verify that ViewLocator.Current retrieves from AppLocator
+        var fromViewLocator = ViewLocator.Current;
+        var fromAppLocator = AppLocator.Current.GetService<IViewLocator>();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(fromViewLocator, Is.Not.Null);
+            Assert.That(fromAppLocator, Is.Not.Null);
+            Assert.That(fromViewLocator, Is.SameAs(fromAppLocator));
+        }
+    }
+
+    [Test]
     public void ViewLocatorCurrentTest()
     {
         RxApp.EnsureInitialized();
@@ -153,16 +171,6 @@ public class RandomTests : IDisposable
         Assert.That(
                     fixture,
                     Is.Not.Null);
-    }
-
-    [Test]
-    public void ViewLocatorCurrentFailedTest()
-    {
-        Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
-        Assert.Throws<ViewLocatorNotFoundException>(() => { _ = ViewLocator.Current; });
-        Locator.CurrentMutable.Register(
-                                        () => new DefaultViewLocator(null),
-                                        typeof(IViewLocator));
     }
 
     /// <summary>

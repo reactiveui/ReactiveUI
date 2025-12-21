@@ -5,10 +5,13 @@
 
 namespace ReactiveUI.Tests;
 
-internal static class CompatMixins
+public static class CompatMixins
 {
     public static void Run<T>(this IEnumerable<T> @this, Action<T> block)
     {
+        ArgumentNullException.ThrowIfNull(@this);
+        ArgumentNullException.ThrowIfNull(block);
+
         foreach (var v in @this)
         {
             block(v);

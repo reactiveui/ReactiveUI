@@ -3,13 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Dispatching;
-using NUnit.Framework;
 #if WINDOWS
 using Microsoft.UI.Dispatching;
 using Microsoft.Windows.ApplicationModel.DynamicDependency;
+
 using PackageVersion = Microsoft.Windows.ApplicationModel.DynamicDependency.PackageVersion;
 #endif
 

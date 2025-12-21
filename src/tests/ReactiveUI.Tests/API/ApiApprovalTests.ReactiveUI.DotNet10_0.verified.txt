@@ -6,6 +6,8 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Drawing")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests.Core")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests.Platforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]

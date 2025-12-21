@@ -5,9 +5,7 @@
 
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reflection;
-using NUnit.Framework;
-using ReactiveUI;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;

@@ -5,7 +5,7 @@
 
 using System.Linq.Expressions;
 using System.Reflection;
-using ReactiveUI;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;

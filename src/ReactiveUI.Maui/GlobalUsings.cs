@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 global using System;
-global using System.ComponentModel;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Linq;
 global using System.Reactive;

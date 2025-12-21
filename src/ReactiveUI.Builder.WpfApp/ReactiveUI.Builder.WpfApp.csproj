@@ -9,6 +9,8 @@
     <IsPackable>false</IsPackable>
     <DefaultPackageDescription>A sample WPF application using ReactiveUI.</DefaultPackageDescription>
     <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
 
   <ItemGroup>
