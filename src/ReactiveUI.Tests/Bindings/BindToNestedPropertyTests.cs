@@ -125,15 +125,15 @@ public class BindToNestedPropertyTests
 
     private sealed class TextTrackingView : ReactiveObject
     {
+        private TrackingHostViewModel _viewModel = new();
+
         public int SetCallCount { get; private set; }
 
         public TrackingHostViewModel ViewModel
         {
-            get => field;
-            set => this.RaiseAndSetIfChanged(ref field, value);
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
-
-        = new();
 
         public string? TextField
         {
