@@ -290,6 +290,7 @@ public class MessageBusTest : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _messageBusScope?.Dispose();
+        _messageBusScope = null;
     }
 }
