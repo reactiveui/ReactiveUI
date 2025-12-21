@@ -11,8 +11,6 @@ public class BindToNestedPropertyTests
     [Test]
     public void BindToSetsNestedPropertyOncePerValueOnSameHost()
     {
-        TrackingNestedValue.SetCallCount = 0;
-        TextTrackingView.SetCallCount = 0;
         var view = new TextTrackingView();
 
         using var subscription1 = view.WhenAnyValue(x => x.ViewModel!.Nested.SomeText).BindTo(view, static x => x.TextField);
@@ -32,8 +30,8 @@ public class BindToNestedPropertyTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(TrackingNestedValue.SetCallCount, Is.EqualTo(9));
-            Assert.That(TextTrackingView.SetCallCount, Is.EqualTo(3));
+            Assert.That(nested.SetCallCount, Is.EqualTo(1));
+            Assert.That(view.SetCallCount, Is.EqualTo(3));
             Assert.That(nested.SomeText, Is.EqualTo("Gamma"));
         }
     }
@@ -41,8 +39,6 @@ public class BindToNestedPropertyTests
     [Test]
     public void BindToSetsNestedPropertyOncePerValueAfterHostReplacement()
     {
-        TrackingNestedValue.SetCallCount = 0;
-        TextTrackingView.SetCallCount = 0;
         var view = new TextTrackingView();
 
         using var source = new Subject<string>();
@@ -60,7 +56,7 @@ public class BindToNestedPropertyTests
 
             using (Assert.EnterMultipleScope())
             {
-                Assert.That(TrackingNestedValue.SetCallCount, Is.EqualTo(count), $"Value '{value}' invoked the setter more than once.");
+                Assert.That(replacement.SetCallCount, Is.EqualTo(1), $"Value '{value}' invoked the setter more than once.");
                 Assert.That(replacement.SomeText, Is.EqualTo(value));
             }
         }
@@ -69,8 +65,6 @@ public class BindToNestedPropertyTests
     [Test]
     public void BindToFromViewPropertyKeepsSingleSetterAfterHostReplacement()
     {
-        TrackingNestedValue.SetCallCount = 0;
-        TextTrackingView.SetCallCount = 0;
         var view = new TextTrackingView { TextField = "Initial" }; // 1
 
         using var subscription = view.WhenAnyValue(x => x.TextField)
@@ -82,7 +76,7 @@ public class BindToNestedPropertyTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(TrackingNestedValue.SetCallCount, Is.EqualTo(2));
+            Assert.That(first.SetCallCount, Is.EqualTo(2));
             Assert.That(first.SomeText, Is.EqualTo("First"));
         }
 
@@ -93,7 +87,7 @@ public class BindToNestedPropertyTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(TrackingNestedValue.SetCallCount, Is.EqualTo(3), "Setter invoked multiple times after host swap.");
+            Assert.That(replacement.SetCallCount, Is.EqualTo(1), "Setter invoked multiple times after host swap.");
             Assert.That(replacement.SomeText, Is.EqualTo("Second"));
         }
     }
@@ -111,7 +105,7 @@ public class BindToNestedPropertyTests
 
     private sealed class TrackingNestedValue : ReactiveObject
     {
-        public static int SetCallCount { get; set; }
+        public int SetCallCount { get; private set; }
 
         public string? SomeText
         {
@@ -131,9 +125,15 @@ public class BindToNestedPropertyTests
 
     private sealed class TextTrackingView : ReactiveObject
     {
-        public static int SetCallCount { get; set; }
+        private TrackingHostViewModel _viewModel = new();
 
-        public TrackingHostViewModel ViewModel { get; set; } = new();
+        public int SetCallCount { get; private set; }
+
+        public TrackingHostViewModel ViewModel
+        {
+            get => _viewModel;
+            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        }
 
         public string? TextField
         {

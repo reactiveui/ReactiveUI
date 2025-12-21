@@ -5,12 +5,8 @@
 
 using System.Collections;
 using System.Globalization;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using DynamicData.Binding;
 using ReactiveUI;
-using ReactiveUI.Xaml;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -1704,7 +1700,7 @@ public class PropertyBindingTest
 
         Assert.Multiple(() =>
         {
-            Assert.That(nested.SetCallCount, Is.EqualTo(9));
+            Assert.That(nested.SetCallCount, Is.EqualTo(3));
             Assert.That(nested.SomeText, Is.EqualTo("Gamma"));
         });
     }
@@ -1756,7 +1752,7 @@ public class PropertyBindingTest
 
     private sealed class TrackingHostViewModel : ReactiveObject
     {
-        private readonly TrackingNestedValue _nested = new();
+        private TrackingNestedValue _nested = new();
 
         public TrackingNestedValue Nested
         {
