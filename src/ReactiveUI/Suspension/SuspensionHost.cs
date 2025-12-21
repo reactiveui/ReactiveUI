@@ -12,7 +12,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// <see cref="SuspensionHost"/> backs <see cref="RxApp.SuspensionHost"/> and provides concrete observables that are wired up
-/// by helpers such as <see cref="AutoSuspendHelper"/>. Platform hosts push their lifecycle notifications into the
+/// by helpers such as AutoSuspendHelper. Platform hosts push their lifecycle notifications into the
 /// <c>ReplaySubject</c> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
 /// </para>
 /// <para>

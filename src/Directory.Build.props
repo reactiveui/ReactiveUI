@@ -93,8 +93,17 @@
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
+  <!-- AOT Compatibility Settings for non-test, non-WPF projects on modern .NET -->
   <PropertyGroup Condition="$(MSBuildProjectName.Contains('WPF')) != 'true' and '$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')))">
+    <!-- Mark this library as AOT-compatible -->
     <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Enable trim analyzers to verify library is trim-safe -->
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+
+    <!-- Treat trimming warnings as errors during build -->
+    <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">

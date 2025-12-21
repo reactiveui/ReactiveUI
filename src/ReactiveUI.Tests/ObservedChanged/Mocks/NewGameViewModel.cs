@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Security.Cryptography;
 using DynamicData.Binding;
 
 namespace ReactiveUI.Tests;
@@ -23,16 +24,18 @@ public class NewGameViewModel : ReactiveObject
         Players = [];
 
         var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
-        StartGame = ReactiveCommand.Create(() => { }, canStart);
+        StartGame = ReactiveCommand.Create(
+                                           () => { },
+                                           canStart);
         RandomizeOrder = ReactiveCommand.Create(
                                                 () =>
                                                 {
                                                     using (Players.SuspendNotifications())
                                                     {
-                                                        var r = new Random();
-                                                        var newOrder = Players.OrderBy(x => r.NextDouble()).ToList();
+                                                        var list = Players.ToList();
+                                                        ShuffleCrypto(list);
                                                         Players.Clear();
-                                                        Players.AddRange(newOrder);
+                                                        Players.AddRange(list);
                                                     }
                                                 },
                                                 canStart);
@@ -41,7 +44,9 @@ public class NewGameViewModel : ReactiveObject
         var canAddPlayer = this.WhenAnyValue(
                                              x => x.Players.Count,
                                              x => x.NewPlayerName,
-                                             (count, newPlayerName) => count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) && !Players.Contains(newPlayerName!));
+                                             (count, newPlayerName) =>
+                                                 count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) &&
+                                                 !Players.Contains(newPlayerName));
         AddPlayer = ReactiveCommand.Create(
                                            () =>
                                            {
@@ -87,6 +92,18 @@ public class NewGameViewModel : ReactiveObject
     public string? NewPlayerName
     {
         get => _newPlayerName;
-        set => this.RaiseAndSetIfChanged(ref _newPlayerName, value);
+        set => this.RaiseAndSetIfChanged(
+                                         ref _newPlayerName,
+                                         value);
+    }
+
+    private static void ShuffleCrypto<T>(List<T> list)
+    {
+        // Fisher–Yates shuffle using a cryptographically secure RNG
+        for (var i = list.Count - 1; i > 0; i--)
+        {
+            var j = RandomNumberGenerator.GetInt32(i + 1); // 0..i inclusive
+            (list[i], list[j]) = (list[j], list[i]);
+        }
     }
 }
