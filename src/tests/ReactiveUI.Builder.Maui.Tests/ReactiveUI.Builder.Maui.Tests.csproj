@@ -6,6 +6,10 @@
     <NoWarn>$(NoWarn);CS1591;SA1600</NoWarn>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />

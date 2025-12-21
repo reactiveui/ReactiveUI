@@ -94,10 +94,14 @@
     <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalModernTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Ensure all test runs use our runsettings to control cross-assembly parallelism -->
-    <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
-  </PropertyGroup>
+  <!-- MTP Native JSON Configuration -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <!-- Copy testconfig.json to each test project's output directory for MTP auto-discovery -->
+    <None Include="$(MSBuildThisFileDirectory)testconfig.json">
+      <Link>testconfig.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <!-- AOT Compatibility Settings for non-test, non-WPF projects on modern .NET -->
   <PropertyGroup Condition="$(MSBuildProjectName.Contains('WPF')) != 'true' and '$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')))">
