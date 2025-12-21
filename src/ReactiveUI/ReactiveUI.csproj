@@ -73,4 +73,21 @@
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Tests.Core" />
+    <InternalsVisibleTo Include="ReactiveUI.Tests.Platforms" />
+    <InternalsVisibleTo Include="ReactiveUI.Blazor" />
+    <InternalsVisibleTo Include="ReactiveUI.Winforms" />
+    <InternalsVisibleTo Include="ReactiveUI.Wpf" />
+    <InternalsVisibleTo Include="ReactiveUI.Maui" />
+    <InternalsVisibleTo Include="ReactiveUI.Uno" />
+    <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI" />
+    <InternalsVisibleTo Include="ReactiveUI.Drawing" />
+    <InternalsVisibleTo Include="ReactiveUI.WinUI" />
+    <InternalsVisibleTo Include="ReactiveUI.AndroidX" />
+    <InternalsVisibleTo Include="ReactiveUI.Builder.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.AOT.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Avalonia" />
+  </ItemGroup>
 </Project>
