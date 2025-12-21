@@ -5,7 +5,7 @@
 
 using Microsoft.Reactive.Testing;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests the RxSchedulers class to ensure it works without RequiresUnreferencedCode attributes.

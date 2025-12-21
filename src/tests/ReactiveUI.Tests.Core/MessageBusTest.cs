@@ -10,7 +10,7 @@ using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests the MessageBus class.

@@ -5,7 +5,7 @@
 
 using Microsoft.Reactive.Testing;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Demonstrates using ReactiveUI schedulers without RequiresUnreferencedCode attributes.

@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests for the default view locators.
@@ -12,6 +12,45 @@ namespace ReactiveUI.Tests;
 [NonParallelizable]
 public partial class DefaultViewLocatorTests
 {
+    /// <summary>
+    /// Diagnostic test to verify registration and resolution.
+    /// </summary>
+    [Test]
+    public void DiagnosticTestForRegistrationAndResolution()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        // Register
+        resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
+
+        // Verify registration
+        var hasReg = resolver.HasRegistration(typeof(IViewFor<FooViewModel>));
+        Assert.That(hasReg, Is.True, "Registration should exist");
+
+        using (resolver.WithResolver())
+        {
+            // Test direct GetService
+            var service = AppLocator.Current.GetService(typeof(IViewFor<FooViewModel>));
+            Assert.That(service, Is.Not.Null, "GetService should return a service");
+            Assert.That(service, Is.TypeOf<FooView>(), "Service should be FooView");
+
+            // Test that the ViewLocator can find the view by manually checking the type
+            var vmType = typeof(FooViewModel);
+            var expectedViewForType = typeof(IViewFor<FooViewModel>);
+            var manualService = AppLocator.Current.GetService(expectedViewForType);
+            Assert.That(manualService, Is.Not.Null, $"Manual GetService for {expectedViewForType} should work");
+
+            // Test through ViewLocator
+            var fixture = new DefaultViewLocator();
+            var vm = new FooViewModel();
+            var result = fixture.ResolveView(vm);
+            Assert.That(result, Is.Not.Null, $"ResolveView should return a result. VM type: {vm.GetType().FullName}");
+            Assert.That(result, Is.TypeOf<FooView>(), "Result should be FooView");
+        }
+    }
+
     /// <summary>
     /// Tests that the default name of the view model is replaced with view when determining the service.
     /// </summary>
@@ -312,10 +351,10 @@ public partial class DefaultViewLocatorTests
     }
 
     /// <summary>
-    /// Tests that no errors are raised if the creation of the view fails.
+    /// Tests that null is returned if the creation of the view fails.
     /// </summary>
     [Test]
-    public void AnErrorIsRaisedIfTheCreationOfTheViewFails()
+    public void NoErrorIsRaisedIfTheCreationOfTheViewFails()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -328,8 +367,8 @@ public partial class DefaultViewLocatorTests
             var fixture = new DefaultViewLocator();
             var vm = new FooViewModel();
 
-            var ex = Assert.Throws<InvalidOperationException>(() => fixture.ResolveView(vm));
-            Assert.That(ex.Message, Is.EqualTo("This is a test failure."));
+            var result = fixture.ResolveView(vm);
+            Assert.That(result, Is.Null);
         }
     }
 

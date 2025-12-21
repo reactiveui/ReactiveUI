@@ -217,10 +217,16 @@ public sealed partial class DefaultViewLocator : IViewLocator
             var viewType = Reflection.ReallyFindType(viewTypeName, throwOnFailure: false);
             if (viewType is null)
             {
+                // this.Log().Debug(CultureInfo.InvariantCulture, "Failed to find type '{0}'", viewTypeName);
                 return null;
             }
 
-            var service = AppLocator.Current.GetService(viewType, contract);
+            var service = AppLocator.Current?.GetService(viewType, contract);
+
+            if (service is null)
+            {
+                 return null;
+            }
 
             if (service is not IViewFor view)
             {

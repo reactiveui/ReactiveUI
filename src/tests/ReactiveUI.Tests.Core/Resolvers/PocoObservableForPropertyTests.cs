@@ -5,7 +5,7 @@
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests for POCO observable property resolution.

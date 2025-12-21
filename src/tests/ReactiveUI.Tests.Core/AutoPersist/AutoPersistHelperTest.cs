@@ -7,7 +7,7 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests the AutoPersistHelper.
