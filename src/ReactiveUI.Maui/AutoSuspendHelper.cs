@@ -6,12 +6,17 @@
 namespace ReactiveUI.Maui;
 
 /// <summary>
-/// Helps manage Xamarin.Forms application lifecycle events.
+/// Helps manage .NET MAUI application lifecycle events.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Instantiate this class in order to setup ReactiveUI suspension hooks. Sample
-/// usage of <see cref="AutoSuspendHelper" /> is given by the code snippet below.
+/// Instantiate this class to wire <see cref="RxApp.SuspensionHost"/> to MAUI's <see cref="Microsoft.Maui.Controls.Application"/>
+/// callbacks. The helper propagates <c>OnStart</c>, <c>OnResume</c>, and <c>OnSleep</c> to the suspension host so state
+/// drivers created via <c>SetupDefaultSuspendResume</c> can serialize view models consistently across Android, iOS, and
+/// desktop targets.
+/// </para>
+/// <para>
+/// Sample usage of <see cref="AutoSuspendHelper"/> is shown below.
 /// <code>
 /// <![CDATA[
 /// public partial class App : Application
@@ -22,7 +27,7 @@ namespace ReactiveUI.Maui;
 ///   {
 ///     _autoSuspendHelper = new AutoSuspendHelper();
 ///     RxApp.SuspensionHost.CreateNewAppState = () => new MainState();
-///     RxApp.SuspensionHost.SetupDefaultSuspendResume(new CustomSuspensionDriver());
+///     RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FileSystem.AppDataDirectory));
 ///     _autoSuspendHelper.OnCreate();
 ///
 ///     InitializeComponent();
@@ -74,26 +79,23 @@ public partial class AutoSuspendHelper : IEnableLogger, IDisposable
     public static Subject<Unit> UntimelyDemise { get; } = new();
 
     /// <summary>
-    /// Call this method in the constructor of your Xamarin.Forms
+    /// Call this method in the constructor of your .NET MAUI
     /// <see cref="Microsoft.Maui.Controls.Application" />.
     /// </summary>
     public void OnCreate() => _onLaunchingNew.OnNext(Unit.Default);
 
     /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnStart" /> method
-    /// override in your Xamarin.Forms <see cref="Microsoft.Maui.Controls.Application" />.
+    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnStart" /> to relay MAUI's start notification.
     /// </summary>
     public void OnStart() => _onStart.OnNext(Unit.Default);
 
     /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> method
-    /// override in your Xamarin.Forms <see cref="Microsoft.Maui.Controls.Application" />.
+    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> when the app is going to the background.
     /// </summary>
     public void OnSleep() => _onSleep.OnNext(Disposable.Empty);
 
     /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> method
-    /// override in your Xamarin.Forms <see cref="Microsoft.Maui.Controls.Application" />.
+    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> when the app returns to the foreground.
     /// </summary>
     public void OnResume() => _onResume.OnNext(Unit.Default);
 

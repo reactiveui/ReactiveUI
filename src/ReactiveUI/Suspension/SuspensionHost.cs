@@ -67,6 +67,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a observable which notifies when the application is resuming.
     /// </summary>
+    /// <remarks>
+    /// Raised when the host platform reports that the previous process image is being restored (for example, when an
+    /// Android Activity is recreated with a saved bundle). Use this signal to reload persisted state before showing UI.
+    /// </remarks>
     public IObservable<Unit> IsResuming // TODO: Create Test
     {
         get => _isResuming.Switch();
@@ -76,6 +80,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a observable which notifies when the application is un-pausing.
     /// </summary>
+    /// <remarks>
+    /// Fired when the app returns to the foreground without being recreated (for example, when an Activity is resumed
+    /// after being paused). React to this stream to refresh transient UI state that should not be serialized.
+    /// </remarks>
     public IObservable<Unit> IsUnpausing // TODO: Create Test
     {
         get => _isUnpausing.Switch();
@@ -85,6 +93,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a observable which notifies when the application should persist its state.
     /// </summary>
+    /// <remarks>
+    /// Subscribers should write <see cref="AppState"/> to durable storage and dispose the provided token once the
+    /// operation completes so platform helpers can release any background execution grants.
+    /// </remarks>
     public IObservable<IDisposable> ShouldPersistState // TODO: Create Test
     {
         get => _shouldPersistState.Switch();
@@ -94,6 +106,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a observable which notifies when a application is launching new.
     /// </summary>
+    /// <remarks>
+    /// Emits when the platform indicates a clean launch (for example, no saved Android bundle). Use this to create
+    /// default state via <see cref="CreateNewAppState"/> or to initialize services only needed on cold start.
+    /// </remarks>
     public IObservable<Unit> IsLaunchingNew // TODO: Create Test
     {
         get => _isLaunchingNew.Switch();
@@ -103,6 +119,10 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a observable which notifies when the application state should be invalidated.
     /// </summary>
+    /// <remarks>
+    /// Triggered when the host detects an unrecoverable failure (for example, AppDomain unhandled exceptions). Use it to
+    /// delete corrupt state and log crash telemetry before the process terminates.
+    /// </remarks>
     public IObservable<Unit> ShouldInvalidateState // TODO: Create Test
     {
         get => _shouldInvalidateState.Switch();
@@ -112,11 +132,20 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <summary>
     /// Gets or sets a Func which will generate a fresh application state.
     /// </summary>
+    /// <remarks>
+    /// Invoked whenever persisted state cannot be loaded. Provide a factory that creates the root object backing
+    /// <see cref="AppState"/> so cold launches and crash recoveries produce consistent defaults.
+    /// </remarks>
     public Func<object>? CreateNewAppState { get; set; }
 
     /// <summary>
     /// Gets or sets the application state that will be used when suspending and resuming the class.
     /// </summary>
+    /// <remarks>
+    /// The value should be a serializable aggregate that represents the shell of your application. It is populated via
+    /// <see cref="ISuspensionDriver.LoadState"/> during resume and saved through <see cref="ISuspensionDriver.SaveState"/>
+    /// when <see cref="ShouldPersistState"/> fires.
+    /// </remarks>
     public object? AppState
     {
         get => _appState;

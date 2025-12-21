@@ -21,6 +21,11 @@ namespace ReactiveUI;
 /// then provides the interaction with an output as the answer to the question.
 /// </para>
 /// <para>
+/// Handlers receive an <see cref="IInteractionContext{TInput, TOutput}"/>, which exposes the request via
+/// <see cref="IInteractionContext{TInput, TOutput}.Input"/> and lets the handler respond by calling
+/// <see cref="IInteractionContext{TInput, TOutput}.SetOutput(TOutput)"/>.
+/// </para>
+/// <para>
 /// By default, handlers are invoked in reverse order of registration. That is, handlers registered later
 /// are given the opportunity to handle interactions before handlers that were registered earlier. This
 /// chaining mechanism enables handlers to be registered temporarily in a specific context, such that

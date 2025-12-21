@@ -8,10 +8,39 @@ using System.Windows;
 namespace ReactiveUI;
 
 /// <summary>
-/// Class for helping with Auto Suspending.
-/// Auto Suspender helpers will assist with saving out the application state
-/// when the application closes or activates.
+/// Wires WPF <see cref="Application"/> lifecycle events into <see cref="RxApp.SuspensionHost"/> so application state can be persisted automatically.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Create a single instance of this helper in <see cref="Application.OnStartup(StartupEventArgs)"/> to forward the
+/// <c>Startup</c>, <c>Activated</c>, <c>Deactivated</c>, and <c>Exit</c> events. Combine it with <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/>
+/// to flush <see cref="ISuspensionHost.AppState"/> to disk whenever the window loses focus for longer than <see cref="IdleTimeout"/> or when the
+/// process exits.
+/// </para>
+/// <para>
+/// Example usage:
+/// <code language="csharp">
+/// <![CDATA[
+/// public partial class App : Application
+/// {
+///     private AutoSuspendHelper? _autoSuspendHelper;
+///
+///     protected override void OnStartup(StartupEventArgs e)
+///     {
+///         base.OnStartup(e);
+///         _autoSuspendHelper = new AutoSuspendHelper(this)
+///         {
+///             IdleTimeout = TimeSpan.FromSeconds(10)
+///         };
+///
+///         RxApp.SuspensionHost.CreateNewAppState = () => new ShellState();
+///         RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(LocalAppDataProvider.Resolve()));
+///     }
+/// }
+/// ]]>
+/// </code>
+/// </para>
+/// </remarks>
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which require dynamic code generation")]
 [RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost and TaskpoolScheduler which may require unreferenced code")]
@@ -75,5 +104,9 @@ public class AutoSuspendHelper : IEnableLogger
     /// <summary>
     /// Gets or sets the time out before the Auto Suspension happens.
     /// </summary>
+    /// <remarks>
+    /// Determines how long the helper waits after the app is deactivated before emitting <see cref="ISuspensionHost.ShouldPersistState"/>
+    /// (unless the window is reactivated sooner). Shorter durations trade battery for durability.
+    /// </remarks>
     public TimeSpan IdleTimeout { get; set; }
 }

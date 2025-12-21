@@ -11,6 +11,39 @@ namespace ReactiveUI;
 /// <summary>
 /// Helps manage android application lifecycle events.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Register this helper inside your <see cref="Application"/> subclass to translate Activity lifecycle callbacks into
+/// <see cref="RxApp.SuspensionHost"/> signals. The helper automatically distinguishes cold starts from restores by
+/// inspecting <see cref="LatestBundle"/> and routes pause/save events to <see cref="ISuspensionDriver"/> via
+/// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/>.
+/// </para>
+/// <para>
+/// Example usage:
+/// <code language="csharp">
+/// <![CDATA[
+/// [Application]
+/// public class App : Application
+/// {
+///     private AutoSuspendHelper? _autoSuspendHelper;
+///
+///     public App(IntPtr handle, JniHandleOwnership ownership)
+///         : base(handle, ownership)
+///     {
+///     }
+///
+///     public override void OnCreate()
+///     {
+///         base.OnCreate();
+///         _autoSuspendHelper = new AutoSuspendHelper(this);
+///         RxApp.SuspensionHost.CreateNewAppState = () => new ShellState();
+///         RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FilesDir!.AbsolutePath));
+///     }
+/// }
+/// ]]>
+/// </code>
+/// </para>
+/// </remarks>
 #if NET6_0_OR_GREATER
 [RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
 [RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
@@ -54,6 +87,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Gets or sets the latest bundle.
     /// </summary>
+    /// <remarks>
+    /// Updated whenever <see cref="Activity.OnSaveInstanceState"/> runs so callers can detect whether
+    /// <see cref="OnActivityCreated(Activity?, Bundle?)"/> represents a cold launch (<see langword="null"/>) or a
+    /// recreation with persisted state.
+    /// </remarks>
     public static Bundle? LatestBundle { get; set; }
 
     /// <inheritdoc />
