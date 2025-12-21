@@ -208,8 +208,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-        var ret = EvalBindingHooks(observedChange, target, null!, viewExpression, BindingDirection.OneWay);
-        if (!ret)
+        var shouldBind = target is not IViewFor viewFor || EvalBindingHooks(observedChange, viewFor, null!, viewExpression, BindingDirection.OneWay);
+        if (!shouldBind)
         {
             return Disposable.Empty;
         }
@@ -254,8 +254,9 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         var defaultSetter = Reflection.GetValueSetterOrThrow(memberInfo);
         var defaultGetter = Reflection.GetValueFetcherOrThrow(memberInfo);
+        var synchronizedChanges = changeObservable.Synchronize();
 
-        object? SetThenGet(object? paramTarget, object? paramValue, object?[]? paramParams)
+        (bool shouldEmit, object? value) SetThenGet(object? paramTarget, object? paramValue, object?[]? paramParams)
         {
             var converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
 
@@ -266,32 +267,132 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
             if (converter is null)
             {
+                var currentValue = defaultGetter(paramTarget, paramParams);
+                var shouldUpdate = !EqualityComparer<object?>.Default.Equals(currentValue, paramValue);
+
+                if (!shouldUpdate)
+                {
+                    return (false, currentValue);
+                }
+
                 defaultSetter?.Invoke(paramTarget, paramValue, paramParams);
-                return defaultGetter(paramTarget, paramParams);
+                return (true, defaultGetter(paramTarget, paramParams));
             }
 
             var value = defaultGetter(paramTarget, paramParams);
-            return converter(value, paramValue, paramParams);
+            var convertedValue = converter(value, paramValue, paramParams);
+            var shouldEmit = !EqualityComparer<object?>.Default.Equals(value, convertedValue);
+
+            return (shouldEmit, convertedValue);
         }
 
         IObservable<TValue> setObservable;
 
         if (viewExpression.GetParent()?.NodeType == ExpressionType.Parameter)
         {
-            setObservable = changeObservable.Select(x => (TValue)SetThenGet(target, x, viewExpression.GetArgumentsArray())!);
+            var arguments = viewExpression.GetArgumentsArray();
+            setObservable = synchronizedChanges
+                .Select(value => SetThenGet(target, value, arguments))
+                .Where(result => result.shouldEmit)
+                .Select(result => result.value is null ? default! : (TValue)result.value);
         }
         else
         {
-            var bindInfo = changeObservable.CombineLatest(target.WhenAnyDynamic(viewExpression.GetParent(), x => x.Value), (val, host) => new { val, host });
+            var hostExpression = viewExpression.GetParent();
+            var hostExpressionChain = hostExpression?.GetExpressionChain()?.ToArray();
+            var hostChanges = target.WhenAnyDynamic(hostExpression, x => x.Value);
+            var arguments = viewExpression.GetArgumentsArray();
+            var propertyDefaultValue = viewExpression.Type.GetTypeInfo().IsValueType ? Activator.CreateInstance(viewExpression.Type) : null;
+            var shouldReplayOnHostChanges = hostExpressionChain?
+                .OfType<MemberExpression>()
+                .Any(static expression => string.Equals(expression.Member.Name, nameof(IViewFor.ViewModel), StringComparison.Ordinal)) != true;
 
-            setObservable = bindInfo
-                            .Where(x => x.host is not null)
-                            .Select(x =>
+            setObservable = Observable.Create<TValue>(observer =>
+            {
+                object? latestHost = null;
+                object? lastObservedValue = null;
+                object? currentHost = null;
+                var hasObservedValue = false;
+
+                bool HostPropertyEqualsDefault(object? host)
+                {
+                    if (host is null || defaultGetter is null)
+                    {
+                        return false;
+                    }
+
+                    var currentValue = defaultGetter(host, arguments);
+                    return EqualityComparer<object?>.Default.Equals(currentValue, propertyDefaultValue);
+                }
+
+                void ApplyValueToHost(object? host, object? value)
+                {
+                    if (host is null || !hasObservedValue)
+                    {
+                        return;
+                    }
+
+                    var (shouldEmit, result) = SetThenGet(host, value, arguments);
+                    if (!shouldEmit)
+                    {
+                        return;
+                    }
+
+                    observer.OnNext(result is null ? default! : (TValue)result);
+                }
+
+                var hostDisposable = hostChanges
+                    .Subscribe(
+                        hostValue =>
+                        {
+                            latestHost = hostValue;
+
+                            if (ReferenceEquals(hostValue, currentHost))
                             {
-                                var value = SetThenGet(x.host, x.val, viewExpression.GetArgumentsArray());
+                                return;
+                            }
 
-                                return value is null ? default : (TValue)value;
-                            })!;
+                            currentHost = hostValue;
+
+                            if (!shouldReplayOnHostChanges || !hasObservedValue || !HostPropertyEqualsDefault(hostValue))
+                            {
+                                return;
+                            }
+
+                            ApplyValueToHost(hostValue, lastObservedValue);
+                        },
+                        observer.OnError);
+
+                var changeDisposable = synchronizedChanges
+                    .Subscribe(
+                        value =>
+                        {
+                            hasObservedValue = true;
+                            lastObservedValue = value;
+
+                            var host = latestHost;
+                            if (hostExpressionChain is not null)
+                            {
+                                if (!Reflection.TryGetValueForPropertyChain(out host, target, hostExpressionChain))
+                                {
+                                    host = null;
+                                }
+
+                                latestHost = host;
+                                currentHost = host;
+                            }
+
+                            if (host is null)
+                            {
+                                return;
+                            }
+
+                            ApplyValueToHost(host, value);
+                        },
+                        observer.OnError);
+
+                return new CompositeDisposable(hostDisposable, changeDisposable);
+            });
         }
 
         return (setObservable.Subscribe(_ => { }, ex =>
@@ -313,6 +414,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 #endif
     private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
         where TViewModel : class
+        where TView : class, IViewFor
     {
         var hooks = AppLocator.Current.GetServices<IPropertyBindingHook>();
         view.ArgumentNullExceptionThrowIfNull(nameof(view));

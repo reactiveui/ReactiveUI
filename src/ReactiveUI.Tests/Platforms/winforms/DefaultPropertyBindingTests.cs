@@ -5,11 +5,9 @@
 
 using System.Globalization;
 using System.Windows.Forms;
-
 using DynamicData;
-
-using ReactiveUI.Winforms;
 using ReactiveUI.Tests.Infrastructure.StaticState;
+using ReactiveUI.Winforms;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -30,22 +28,13 @@ public class DefaultPropertyBindingTests
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
     /// </summary>
-    public DefaultPropertyBindingTests()
-    {
-        RxApp.EnsureInitialized();
-    }
+    public DefaultPropertyBindingTests() => RxApp.EnsureInitialized();
 
     [SetUp]
-    public void SetUp()
-    {
-        _schedulersScope = new RxAppSchedulersScope();
-    }
+    public void SetUp() => _schedulersScope = new RxAppSchedulersScope();
 
     [TearDown]
-    public void TearDown()
-    {
-        _schedulersScope?.Dispose();
-    }
+    public void TearDown() => _schedulersScope?.Dispose();
 
     /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.
