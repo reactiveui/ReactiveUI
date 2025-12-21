@@ -2281,6 +2281,7 @@ public class ReactiveCommandTest : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        _schedulersScope?.Dispose();
+        _schedulersScope = null;
     }
 }
