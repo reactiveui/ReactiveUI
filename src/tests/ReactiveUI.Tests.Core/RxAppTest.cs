@@ -46,6 +46,6 @@ public class RxAppTest : IDisposable
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        TearDown();
     }
 }
