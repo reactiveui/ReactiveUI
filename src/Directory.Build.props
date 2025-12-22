@@ -123,18 +123,12 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsTestProject)">
-    <PackageReference Include="NUnit"/>
-    <PackageReference Include="NUnit3TestAdapter"/>
-    <PackageReference Include="NUnit.Analyzers"/>
     <PackageReference Include="TUnit"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="Microsoft.Reactive.Testing"/>
     <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="Verify.NUnit"/>
-
-    <Using Remove="TUnit"/>
-    <Using Remove="TUnit.Core"/>
+    <PackageReference Include="Verify.TUnit"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
