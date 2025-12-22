@@ -5,12 +5,13 @@
 
 using System.Diagnostics;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests for the ordered comparer.
-/// </summary>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class OrderedComparerTests
 {
     /// <summary>

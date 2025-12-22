@@ -5,7 +5,11 @@
 
 using System.Globalization;
 
-using NUnit.Framework.Interfaces;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
+
+using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests;
 

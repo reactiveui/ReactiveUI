@@ -5,14 +5,16 @@
 
 using System.Collections;
 using System.Text.Json;
+
 using DynamicData;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests for the reactive object.
-/// </summary>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class ReactiveObjectTests
 {
     /// <summary>

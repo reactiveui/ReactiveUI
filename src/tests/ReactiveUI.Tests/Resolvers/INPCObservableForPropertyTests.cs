@@ -5,9 +5,13 @@
 
 using System.Runtime.CompilerServices;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class INPCObservableForPropertyTests
 {
     [Test]

@@ -43,6 +43,8 @@
   <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
     <EnableNUnitRunner>true</EnableNUnitRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TUnitImplicitUsings>false</TUnitImplicitUsings>
+    <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -50,7 +52,7 @@
     <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
-    <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472</ReactiveUIFrameworkTargets>
+    <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472;net481</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
@@ -74,11 +76,11 @@
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
 
-    <ReactiveUITestingTargets>netstandard2.0;$(ReactiveUIModernTargets)</ReactiveUITestingTargets>
-    <ReactiveUITestingTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUITestingTargets);net462;net472</ReactiveUITestingTargets>
+    <ReactiveUITestingTargets>$(ReactiveUIModernTargets)</ReactiveUITestingTargets>
+    <ReactiveUITestingTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUITestingTargets);net462;net472;net481</ReactiveUITestingTargets>
 
     <!-- Start with core targets available on all platforms -->
-    <ReactiveUIFinalTargetFrameworks>netstandard2.0;$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
+    <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
 
     <!-- Add Android targets (available on all platforms with Android SDK) -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>
@@ -124,11 +126,15 @@
     <PackageReference Include="NUnit"/>
     <PackageReference Include="NUnit3TestAdapter"/>
     <PackageReference Include="NUnit.Analyzers"/>
+    <PackageReference Include="TUnit"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="Microsoft.Reactive.Testing"/>
     <PackageReference Include="PublicApiGenerator"/>
     <PackageReference Include="Verify.NUnit"/>
+
+    <Using Remove="TUnit"/>
+    <Using Remove="TUnit.Core"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">

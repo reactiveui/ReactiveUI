@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel.DataAnnotations;
+
 using ReactiveUI.Tests.Properties;
 
 namespace ReactiveUI.Tests.ReactiveProperty.Mocks;

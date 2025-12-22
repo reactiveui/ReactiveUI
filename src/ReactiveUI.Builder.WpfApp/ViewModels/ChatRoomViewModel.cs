@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
+
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;

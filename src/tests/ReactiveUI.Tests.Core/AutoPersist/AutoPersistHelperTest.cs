@@ -7,17 +7,13 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests the AutoPersistHelper.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because it uses HostTestFixture
-/// which depends on ICreatesObservableForProperty from the service locator.
-/// The service locator state must not be mutated concurrently by parallel tests.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class AutoPersistHelperTest
 {

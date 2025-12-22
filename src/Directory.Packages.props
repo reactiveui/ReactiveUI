@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>17.1.1</SplatVersion>
+    <SplatVersion>18.1.1</SplatVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0</MauiVersion>
@@ -49,6 +49,7 @@
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.1" />
     <PackageVersion Include="Verify.NUnit" Version="31.9.0" />
+    <PackageVersion Include="TUnit" Version="1.6.15" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />

@@ -10,30 +10,25 @@ using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests the MessageBus class.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because some tests call
-/// Locator.CurrentMutable.InitializeSplat() and Locator.CurrentMutable.InitializeReactiveUI(),
-/// which mutate global service locator state. Other tests access MessageBus.Current static property.
-/// These static states must not be mutated concurrently by parallel tests.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class MessageBusTest : IDisposable
 {
     private MessageBusScope? _messageBusScope;
 
-    [SetUp]
+    [Before(HookType.Test)]
     public void SetUp()
     {
         _messageBusScope = new MessageBusScope();
     }
 
-    [TearDown]
+    [After(HookType.Test)]
     public void TearDown()
     {
         _messageBusScope?.Dispose();

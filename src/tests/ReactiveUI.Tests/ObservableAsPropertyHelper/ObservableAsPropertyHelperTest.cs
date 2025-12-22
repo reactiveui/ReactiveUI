@@ -4,15 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests for the observable as property helper.
-/// </summary>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class ObservableAsPropertyHelperTest
 {
     /// <summary>
@@ -221,8 +224,8 @@ public class ObservableAsPropertyHelperTest
     /// Verifies that deferring subscription with an initial value does not emit the initial value.
     /// </summary>
     /// <param name="initialValue">The initial value to test with.</param>
-    [TestCase(0)]
-    [TestCase(42)]
+    [Arguments(0)]
+    [Arguments(42)]
     public void OaphDeferSubscriptionWithInitialValueShouldNotEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
@@ -273,8 +276,8 @@ public class ObservableAsPropertyHelperTest
     /// <param name="initialValue">
     /// The initial value set before any subscription occurs.
     /// </param>
-    [TestCase(0)]
-    [TestCase(42)]
+    [Arguments(0)]
+    [Arguments(42)]
     public void OaphDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
@@ -333,8 +336,8 @@ public class ObservableAsPropertyHelperTest
     /// Verifies that deferring subscription with an initial function value does not trigger OnChanged when subscribed.
     /// </summary>
     /// <param name="initialValue">The initial value to set before any subscription occurs.</param>
-    [TestCase(0)]
-    [TestCase(42)]
+    [Arguments(0)]
+    [Arguments(42)]
     public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
@@ -374,8 +377,8 @@ public class ObservableAsPropertyHelperTest
     /// when the source observable provides the same initial value.
     /// </summary>
     /// <param name="initialValue">The initial value provided to the ObservableAsPropertyHelper.</param>
-    [TestCase(0)]
-    [TestCase(42)]
+    [Arguments(0)]
+    [Arguments(42)]
     public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(int initialValue)
     {
         var observable = new Subject<int>();
@@ -406,8 +409,8 @@ public class ObservableAsPropertyHelperTest
     /// Verifies that the initial value of an Observable As Property Helper is emitted correctly.
     /// </summary>
     /// <param name="initialValue">The initial value provided to the Observable As Property Helper.</param>
-    [TestCase(0)]
-    [TestCase(42)]
+    [Arguments(0)]
+    [Arguments(42)]
     public void OaphInitialValueShouldEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
@@ -559,7 +562,7 @@ public class ObservableAsPropertyHelperTest
     /// <param name="testWords">An array of input strings to evaluate.</param>
     /// <param name="first3Letters">An array of expected first three letters for each input string in <paramref name="testWords"/>.</param>
     /// <param name="last3Letters">An array of expected last three letters for each input string in <paramref name="testWords"/>.</param>
-    [TestCase(
+    [Arguments(
                  new[] { "FooBar", "Bazz" },
                  new[] { "Foo", "Baz" },
                  new[] { "Bar", "azz" })]

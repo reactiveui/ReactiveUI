@@ -5,8 +5,11 @@
 
 using System.Reactive.Disposables;
 using System.Reflection;
+
 using Microsoft.Maui.Controls;
+
 using ReactiveUI.Maui;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests.Activation;

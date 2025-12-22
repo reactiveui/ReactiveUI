@@ -1,11 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
+
+using static TUnit.Assertions.Assert;
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests;
-
-[TestFixture]
 public sealed class DependencyResolverTests
 {
     /// <summary>
@@ -43,7 +46,7 @@ public sealed class DependencyResolverTests
     }
 
     [Test]
-    [TestCaseSource(nameof(NamespacesToRegister))]
+    [MethodDataSource(nameof(NamespacesToRegister))]
     public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {
         var resolver = GenerateResolver();
@@ -70,7 +73,7 @@ public sealed class DependencyResolverTests
     }
 
     [Test]
-    [TestCaseSource(nameof(NamespacesToRegister))]
+    [MethodDataSource(nameof(NamespacesToRegister))]
     public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
     {
         var resolver = GenerateResolver();

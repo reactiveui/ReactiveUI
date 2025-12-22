@@ -4,22 +4,21 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
+
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests for the ReactiveCommand class.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
-/// in the constructor, which initializes global static state including the service locator
-/// and schedulers. This state must not be concurrently initialized by parallel tests.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class ReactiveCommandTest : IDisposable
 {
@@ -30,13 +29,13 @@ public class ReactiveCommandTest : IDisposable
         RxApp.EnsureInitialized();
     }
 
-    [SetUp]
+    [Before(HookType.Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [TearDown]
+    [After(HookType.Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();

@@ -5,12 +5,13 @@
 
 using DynamicData;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests WhenAnyObservable.
-/// </summary>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class WhenAnyObservableTests
 {
     /// <summary>

@@ -4,15 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing;
 
-namespace ReactiveUI.Tests;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests the reactive notify property changed.
-/// </summary>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests;
 public class ReactiveNotifyPropertyChangedMixinTest
 {
     /// <summary>

@@ -5,29 +5,25 @@
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests for POCO observable property resolution.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized(),
-/// which initializes global static state including the service locator. This state must not be
-/// concurrently initialized by parallel tests.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class PocoObservableForPropertyTests : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
 
-    [SetUp]
+    [Before(HookType.Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [TearDown]
+    [After(HookType.Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();

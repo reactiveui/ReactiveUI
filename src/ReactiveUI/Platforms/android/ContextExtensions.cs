@@ -5,6 +5,7 @@
 
 using Android.Content;
 using Android.OS;
+
 using Context = Android.Content.Context;
 
 namespace ReactiveUI;

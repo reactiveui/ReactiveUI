@@ -4,31 +4,28 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests the RxApp class.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because it accesses
-/// RxApp.MainThreadScheduler static property, which is global state that
-/// must not be accessed concurrently by parallel tests.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class RxAppTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
 
-    [SetUp]
+    [Before(HookType.Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [TearDown]
+    [After(HookType.Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();

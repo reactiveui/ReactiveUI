@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
+
 using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;

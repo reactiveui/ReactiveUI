@@ -5,6 +5,7 @@
 
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+
 using DynamicData.Binding;
 
 namespace ReactiveUI.Tests;

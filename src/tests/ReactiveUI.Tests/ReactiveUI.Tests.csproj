@@ -21,7 +21,6 @@
   </ItemGroup>
   <!-- Global usings -->
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />

@@ -5,6 +5,7 @@
 
 #if UIKIT
 using UIKit;
+
 using NSViewController = UIKit.UIViewController;
 #else
 using AppKit;

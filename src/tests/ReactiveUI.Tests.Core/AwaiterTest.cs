@@ -5,29 +5,25 @@
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-namespace ReactiveUI.Tests.Core;
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
 
-/// <summary>
-/// Tests the awaiters.
-/// </summary>
-/// <remarks>
-/// This test fixture is marked as NonParallelizable because it accesses RxApp.TaskpoolScheduler,
-/// which is global static state. While this test only reads the scheduler, marking it as
-/// NonParallelizable ensures no interference with other tests that might modify scheduler state.
-/// </remarks>
-[TestFixture]
+using static TUnit.Assertions.Assert;
+
+namespace ReactiveUI.Tests.Core;
 [NonParallelizable]
 public class AwaiterTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
 
-    [SetUp]
+    [Before(HookType.Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [TearDown]
+    [After(HookType.Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();
