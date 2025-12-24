@@ -35,20 +35,13 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(sender);
-#else
-        if (sender is null)
-        {
-            throw new ArgumentNullException(nameof(sender));
-        }
-#endif
+        ArgumentExceptionHelper.ThrowIfNull(sender);
 
         var type = sender.GetType();
 
         var dependencyProperty = GetDependencyProperty(type, propertyName) ?? throw new ArgumentException(
-                                        $"The property {propertyName} does not have a dependency property.",
-                                        nameof(propertyName));
+                                            $"The property {propertyName} does not have a dependency property.",
+                                            nameof(propertyName));
         var dependencyPropertyDescriptor = DependencyPropertyDescriptor.FromProperty(dependencyProperty, type);
 
         if (dependencyPropertyDescriptor is null)

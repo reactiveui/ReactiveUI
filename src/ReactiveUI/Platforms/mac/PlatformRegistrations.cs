@@ -20,7 +20,7 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        ArgumentNullException.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
 
         registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
         registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));

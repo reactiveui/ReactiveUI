@@ -159,7 +159,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         return _commonSource.GetCell(indexPath);
     }
@@ -189,7 +189,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
     }
@@ -197,7 +197,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         return _commonSource.SectionInfo[indexPath.Section].SizeHint;
     }
@@ -271,7 +271,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <returns>The item.</returns>
     public object? ItemAt(NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         return _commonSource.ItemAt(indexPath);
     }

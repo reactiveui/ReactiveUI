@@ -7,6 +7,8 @@ using System.Windows.Input;
 
 using Android.Views;
 
+using ReactiveUI.Helpers;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -22,8 +24,8 @@ public static class ViewCommandExtensions
     /// <returns>A disposable.</returns>
     public static IDisposable BindToTarget(this ICommand command, View control) // TODO: Create Test
     {
-        ArgumentNullException.ThrowIfNull(command);
-        ArgumentNullException.ThrowIfNull(control);
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(control);
 
         var ev = new EventHandler((o, e) =>
         {

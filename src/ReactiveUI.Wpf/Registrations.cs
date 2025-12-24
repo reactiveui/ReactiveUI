@@ -19,14 +19,7 @@ public class Registrations : IWantsToRegisterStuff
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(registerFunction);
-#else
-        if (registerFunction is null)
-        {
-            throw new ArgumentNullException(nameof(registerFunction));
-        }
-#endif
+        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
 
         registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
 

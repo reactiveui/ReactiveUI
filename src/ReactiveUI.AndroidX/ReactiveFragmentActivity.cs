@@ -120,7 +120,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
     /// <inheritdoc/>
     protected override void OnActivityResult(int requestCode, Result resultCode, Intent? data)
     {
-        ArgumentNullException.ThrowIfNull(data);
+        ArgumentExceptionHelper.ThrowIfNull(data);
 
         base.OnActivityResult(requestCode, resultCode, data);
         _activityResult.OnNext((requestCode, resultCode, data));

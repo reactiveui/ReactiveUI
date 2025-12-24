@@ -9,6 +9,11 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
   </ItemGroup>

@@ -23,8 +23,8 @@ public static class UIControlCommandExtensions
     /// <returns>A disposable.</returns>
     public static IDisposable BindToTarget(this ICommand item, UIControl control, UIControlEvent events)
     {
-        ArgumentNullException.ThrowIfNull(item);
-        ArgumentNullException.ThrowIfNull(control);
+        ArgumentExceptionHelper.ThrowIfNull(item);
+        ArgumentExceptionHelper.ThrowIfNull(control);
 
         var ev = new EventHandler((o, e) =>
         {

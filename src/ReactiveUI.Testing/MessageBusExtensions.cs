@@ -21,10 +21,7 @@ public static class MessageBusExtensions
     /// <returns>The return value of the function.</returns>
     public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         using (messageBus.WithMessageBus())
         {
@@ -61,10 +58,7 @@ public static class MessageBusExtensions
     /// <param name="block">The action to execute.</param>
     public static void With(this IMessageBus messageBus, Action block)
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         using (messageBus.WithMessageBus())
         {

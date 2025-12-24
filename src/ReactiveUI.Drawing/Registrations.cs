@@ -22,10 +22,7 @@ public class Registrations : IWantsToRegisterStuff
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        if (registerFunction is null)
-        {
-            throw new ArgumentNullException(nameof(registerFunction));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
 
 #if NETFRAMEWORK || (NET5_0_OR_GREATER && WINDOWS)
         registerFunction(static () => new PlatformBitmapLoader(), typeof(IBitmapLoader));

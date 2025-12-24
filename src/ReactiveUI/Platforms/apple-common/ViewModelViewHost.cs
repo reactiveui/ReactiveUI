@@ -130,7 +130,7 @@ public class ViewModelViewHost : ReactiveViewController
 
     private static void Adopt(NSViewController parent, NSViewController? child)
     {
-        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentExceptionHelper.ThrowIfNull(parent);
 
         if (parent.View is null)
         {

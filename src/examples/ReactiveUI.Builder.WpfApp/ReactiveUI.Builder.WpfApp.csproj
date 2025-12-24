@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
@@ -14,7 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Helpers" />
   </ItemGroup>
 
 </Project>

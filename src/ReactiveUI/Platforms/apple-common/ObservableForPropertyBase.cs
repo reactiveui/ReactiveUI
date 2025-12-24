@@ -61,7 +61,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentExceptionHelper.ThrowIfNull(sender);
 
         if (beforeChanged)
         {

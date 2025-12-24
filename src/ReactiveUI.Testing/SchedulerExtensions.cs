@@ -68,10 +68,7 @@ public static class SchedulerExtensions
     public static TRet With<T, TRet>(this T scheduler, Func<T, TRet> block)
         where T : IScheduler
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         TRet ret;
         using (WithScheduler(scheduler))
@@ -100,10 +97,7 @@ public static class SchedulerExtensions
     public static async Task<TRet> WithAsync<T, TRet>(this T scheduler, Func<T, Task<TRet>> block)
         where T : IScheduler
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         TRet ret;
         using (WithScheduler(scheduler))
@@ -163,10 +157,7 @@ public static class SchedulerExtensions
     /// incremental, it sets the time.</param>
     public static void AdvanceToMs(this TestScheduler scheduler, double milliseconds)
     {
-        if (scheduler is null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         scheduler.AdvanceTo(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
     }
@@ -180,10 +171,7 @@ public static class SchedulerExtensions
     /// by, in milliseconds.</param>
     public static void AdvanceByMs(this TestScheduler scheduler, double milliseconds)
     {
-        if (scheduler is null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         scheduler.AdvanceBy(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
     }

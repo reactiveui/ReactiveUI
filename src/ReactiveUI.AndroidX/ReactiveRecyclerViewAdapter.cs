@@ -52,7 +52,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     /// <inheritdoc/>
     public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
     {
-        ArgumentNullException.ThrowIfNull(holder);
+        ArgumentExceptionHelper.ThrowIfNull(holder);
 
         if (holder is not IViewFor viewForHolder)
         {

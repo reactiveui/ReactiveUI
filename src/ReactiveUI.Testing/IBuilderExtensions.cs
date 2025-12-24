@@ -48,10 +48,7 @@ public static class IBuilderExtensions
         IEnumerable<TField> values)
         where TBuilder : IBuilder
     {
-        if (field is null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(field);
 
         field.AddRange(values);
 
@@ -70,10 +67,7 @@ public static class IBuilderExtensions
     public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
         where TBuilder : IBuilder
     {
-        if (field is null)
-        {
-            throw new ArgumentNullException(nameof(field));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(field);
 
         field.Add(value);
         return builder;
@@ -96,10 +90,7 @@ public static class IBuilderExtensions
         where TBuilder : IBuilder
         where TKey : notnull
     {
-        if (dictionary is null)
-        {
-            throw new ArgumentNullException(nameof(dictionary));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
         dictionary.Add(keyValuePair.Key, keyValuePair.Value);
         return builder;
@@ -124,10 +115,7 @@ public static class IBuilderExtensions
         where TBuilder : IBuilder
         where TKey : notnull
     {
-        if (dictionary is null)
-        {
-            throw new ArgumentNullException(nameof(dictionary));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
         dictionary.Add(key, value);
         return builder;
@@ -149,10 +137,7 @@ public static class IBuilderExtensions
         IDictionary<TKey, TField> keyValuePair)
         where TKey : notnull
     {
-        if (dictionary is null)
-        {
-            throw new ArgumentNullException(nameof(dictionary));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
         dictionary = (Dictionary<TKey, TField>)keyValuePair;
         return builder;

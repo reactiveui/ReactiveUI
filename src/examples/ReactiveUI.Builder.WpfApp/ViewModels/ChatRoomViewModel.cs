@@ -8,6 +8,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 
 using ReactiveUI.Builder.WpfApp.Models;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
@@ -28,7 +29,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// <param name="user">The user.</param>
     public ChatRoomViewModel(IScreen hostScreen, ChatRoom room, string user)
     {
-        ArgumentNullException.ThrowIfNull(room);
+        ArgumentExceptionHelper.ThrowIfNull(room);
         HostScreen = hostScreen;
         UrlPathSegment = $"room/{room.Name}";
         _room = room;

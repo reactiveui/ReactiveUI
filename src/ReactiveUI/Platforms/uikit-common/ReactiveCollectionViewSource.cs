@@ -109,7 +109,7 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// <inheritdoc/>
     public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         return _commonSource.GetCell(indexPath);
     }
@@ -123,7 +123,7 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// <inheritdoc/>
     public override void ItemSelected(UICollectionView collectionView, NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         _elementSelected.OnNext(_commonSource.ItemAt(indexPath));
     }
@@ -135,7 +135,7 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// <returns>The object at the specified index.</returns>
     public object? ItemAt(NSIndexPath indexPath)
     {
-        ArgumentNullException.ThrowIfNull(indexPath);
+        ArgumentExceptionHelper.ThrowIfNull(indexPath);
 
         return _commonSource.ItemAt(indexPath);
     }

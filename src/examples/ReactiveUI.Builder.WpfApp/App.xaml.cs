@@ -37,9 +37,9 @@ public partial class App : Application
         RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
-            ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
-            ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
-            ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
+                                                         ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
+                                                         ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
+                                                         ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
             .WithRegistration(static r =>
             {
                 // Register IScreen as a singleton so all resolutions share the same Router

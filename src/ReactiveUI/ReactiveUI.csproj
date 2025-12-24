@@ -19,6 +19,30 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0'))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Collections.ObjectModel" />
+    <Using Include="System.ComponentModel" />
+    <Using Condition="'$(DefineConstants)' == '' or !$(DefineConstants.Contains('MONO'))" Include="System.ComponentModel.DataAnnotations" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Runtime.Serialization" />
+    <Using Include="System.Text.Json.Serialization" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
   
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
@@ -78,9 +102,12 @@
     <InternalsVisibleTo Include="ReactiveUI.Tests.Core" />
     <InternalsVisibleTo Include="ReactiveUI.Tests.Platforms" />
     <InternalsVisibleTo Include="ReactiveUI.Blazor" />
+    <InternalsVisibleTo Include="ReactiveUI.Blend" />
+    <InternalsVisibleTo Include="ReactiveUI.Builder.WpfApp" />
     <InternalsVisibleTo Include="ReactiveUI.Winforms" />
     <InternalsVisibleTo Include="ReactiveUI.Wpf" />
     <InternalsVisibleTo Include="ReactiveUI.Maui" />
+    <InternalsVisibleTo Include="ReactiveUI.Testing" />
     <InternalsVisibleTo Include="ReactiveUI.Uno" />
     <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI" />
     <InternalsVisibleTo Include="ReactiveUI.Drawing" />

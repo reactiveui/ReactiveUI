@@ -124,7 +124,7 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// Invokes the property changed event.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     /// <summary>
     /// Cleans up the managed resources of the object.

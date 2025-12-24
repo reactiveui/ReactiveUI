@@ -37,7 +37,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
         JoinRoom = ReactiveCommand.CreateFromTask<ChatRoom>(async room =>
         {
-            ArgumentNullException.ThrowIfNull(room);
+            ArgumentExceptionHelper.ThrowIfNull(room);
             await HostScreen.Router.Navigate.Execute(new ChatRoomViewModel(HostScreen, room, DisplayName));
         });
 

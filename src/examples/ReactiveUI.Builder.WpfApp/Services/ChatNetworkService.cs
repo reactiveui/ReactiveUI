@@ -104,7 +104,7 @@ public sealed class ChatNetworkService : IDisposable
         {
             try
             {
-                var result = await listener.ReceiveAsync(_cts.Token).ConfigureAwait(false);
+                var result = await listener.ReceiveAsync().ConfigureAwait(false);
                 var buffer = result.Buffer;
 
                 using var doc = JsonDocument.Parse(buffer);
