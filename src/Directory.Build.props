@@ -59,7 +59,7 @@
     <ReactiveUIAndroidTargets>net9.0-android;net10.0-android</ReactiveUIAndroidTargets>
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
-    <ReactiveUIWindowsOnlyTargets>$(ReactiveUICoreTargets)</ReactiveUIWindowsOnlyTargets>
+    <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
     <ReactiveUIWindowsOnlyTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
