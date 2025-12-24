@@ -99,8 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Tests.Core" />
-    <InternalsVisibleTo Include="ReactiveUI.Tests.Platforms" />
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
     <InternalsVisibleTo Include="ReactiveUI.Blazor" />
     <InternalsVisibleTo Include="ReactiveUI.Blend" />
     <InternalsVisibleTo Include="ReactiveUI.Builder.WpfApp" />

@@ -4,11 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TUnit.Core;
+
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;

@@ -10,15 +10,12 @@
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
+
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
-  </ItemGroup>
-  <!-- Link shared infrastructure files from ReactiveUI.Tests -->
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.Tests\Infrastructure\**\*.cs" Link="Infrastructure\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\ReactiveUI.Tests\Utilities\**\*.cs" Link="Utilities\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\ReactiveUI.Tests\Mocks\**\*.cs" Link="Mocks\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <!-- Exclude platform files by default -->
   <ItemGroup>
@@ -60,12 +57,6 @@
     </When>
   </Choose>
 
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.Tests\WhenAny\Mockups\**\*.cs" LinkBase="WhenAny" />
-    <Compile Include="..\ReactiveUI.Tests\ReactiveObject\Mocks\**\*.cs" LinkBase="ReactiveObject" />
-    <Compile Include="..\ReactiveUI.Tests.Core\Locator\Mocks\**\*.cs" LinkBase="Locator" />
-  </ItemGroup>
-  
   <!-- Platform-specific file handling -->
   <ItemGroup>
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\AlwaysFalseModeDetector.cs" />
@@ -102,6 +93,7 @@
     <Using Include="System.Reactive" />
     <Using Include="System.Reactive.Concurrency" />
     <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
     <Using Include="System.Reactive.Linq" />
     <Using Include="System.Reactive.Subjects" />
     <Using Include="System.Reactive.Threading.Tasks" />

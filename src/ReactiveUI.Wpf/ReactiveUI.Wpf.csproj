@@ -41,6 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.Tests.Platforms" />
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
   </ItemGroup>
 </Project>

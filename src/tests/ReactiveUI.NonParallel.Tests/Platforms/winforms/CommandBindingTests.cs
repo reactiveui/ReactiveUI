@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-using ReactiveUI.Testing;
+
 using ReactiveUI.Winforms;
 
 namespace ReactiveUI.Tests.Winforms;
