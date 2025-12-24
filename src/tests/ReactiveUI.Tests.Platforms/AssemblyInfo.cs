@@ -4,3 +4,4 @@
 // See the LICENSE file in the project root for full license information.
 
 [assembly: NotInParallel]
+[assembly: Timeout(3000)]
