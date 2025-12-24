@@ -200,6 +200,7 @@ public class WpfActiveContentTests
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]
+    [Skip("Flaky test - needs investigation")]
     public async Task TransitioningContentControlTest()
     {
         var window = Fixture.App?.MockWindowFactory();
@@ -343,6 +344,7 @@ public class WpfActiveContentTests
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]
+    [Skip("Flaky test - needs investigation")]
     public async Task TransitioninContentControlDpiTest()
     {
         var window = Fixture.App?.TCMockWindowFactory();

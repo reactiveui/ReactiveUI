@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
   </ItemGroup>
   <!-- Link shared infrastructure files from ReactiveUI.Tests -->
   <ItemGroup>
@@ -36,6 +35,7 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+        <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
         <Compile Include="Platforms\common-gui\**\*.cs" />
         <Compile Include="Platforms\wpf\**\*.cs" />
         <Compile Include="Platforms\Winforms\**\*.cs" />
