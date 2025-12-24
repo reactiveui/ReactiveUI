@@ -4,7 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-using ReactiveUI.Testing;
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -18,6 +19,7 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireup()
     {
         var vm = new WinformCommandBindViewModel();
@@ -47,34 +49,35 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [Skip("Flaky test - needs investigation")]
+    [TestExecutor<STAThreadExecutor>]
+    [Skip("Test failing with assertion error - needs investigation")]
     public async Task CommandBindToExplicitEventWireupAsync()
     {
-        using var testSequencer = new TestSequencer();
         var vm = new WinformCommandBindViewModel();
         var view = new WinformCommandBindView { ViewModel = vm };
         var fixture = new CommandBinderImplementation();
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(async void (_) =>
-        {
-            ++invokeCount;
-            await testSequencer.AdvancePhaseAsync();
-        });
+
+        vm.Command2.Subscribe(_ => invokeCount++);
 
         var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
 
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 
+        // With ImmediateScheduler, execution happens synchronously
+        await Assert.That(invokeCount).IsEqualTo(1);
+
         disp.Dispose();
 
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 
-        await testSequencer.AdvancePhaseAsync();
+        // After disposal, command should not execute
         await Assert.That(invokeCount).IsEqualTo(1);
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireupWithParameter()
     {
         var vm = new WinformCommandBindViewModel();
@@ -118,6 +121,7 @@ public class CommandBindingImplementationTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindToExplicitEventWireupWithParameter()
     {
         var vm = new WinformCommandBindViewModel();

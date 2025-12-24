@@ -348,123 +348,106 @@ public class ReactivePropertyTest : ReactiveTest
     [Test]
     public async Task ValueUpdatesMultipleTimesWithDifferentValues()
     {
-        using var testSequencer = new TestSequencer();
         using var rp = new ReactiveProperty<int>(0);
         var collector = new List<int>();
-        rp.Subscribe(async x =>
-        {
-            collector.Add(x);
-            await testSequencer.AdvancePhaseAsync();
-        });
+        rp.Subscribe(x => collector.Add(x));
 
         rp.Value.Should().Be(0);
-        await testSequencer.AdvancePhaseAsync();
+        // Allow potential async propagation
+        await Task.Yield();
         collector.Should().Equal(0);
+
         rp.Value = 1;
         rp.Value.Should().Be(1);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 1);
+
         rp.Value = 2;
         rp.Value.Should().Be(2);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 1, 2);
+
         rp.Value = 3;
         rp.Value.Should().Be(3);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 1, 2, 3);
     }
 
     [Test]
     public async Task Refresh()
     {
-        using var testSequencer = new TestSequencer();
         using var rp = new ReactiveProperty<int>(0);
         var collector = new List<int>();
-        rp.Subscribe(async x =>
-        {
-            collector.Add(x);
-            await testSequencer.AdvancePhaseAsync();
-        });
+        rp.Subscribe(x => collector.Add(x));
 
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0);
 
         // refresh should always produce a value even if it is the same and duplicates are not allowed
         rp.Refresh();
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 0);
     }
 
     [Test]
     public async Task ValueUpdatesMultipleTimesWithSameValues()
     {
-        using var testSequencer = new TestSequencer();
         using var rp = new ReactiveProperty<int>(0, false, true);
         var collector = new List<int>();
-        rp.Subscribe(async x =>
-        {
-            collector.Add(x);
-            await testSequencer.AdvancePhaseAsync();
-        });
+        rp.Subscribe(x => collector.Add(x));
 
         rp.Value.Should().Be(0);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0);
+
         rp.Value = 0;
         rp.Value.Should().Be(0);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 0);
+
         rp.Value = 0;
         rp.Value.Should().Be(0);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 0, 0);
+
         rp.Value = 0;
         rp.Value.Should().Be(0);
-        await testSequencer.AdvancePhaseAsync();
+        await Task.Yield();
         collector.Should().Equal(0, 0, 0, 0);
     }
 
     [Test]
     public async Task MultipleSubscribersGetCurrentValue()
     {
-        using var testSequencer1 = new TestSequencer();
-        using var testSequencer2 = new TestSequencer();
         using var rp = new ReactiveProperty<int>(0);
         var collector1 = new List<int>();
         var collector2 = new List<int>();
-        rp.Subscribe(async x =>
-        {
-            collector1.Add(x);
-            await testSequencer1.AdvancePhaseAsync();
-        });
+        rp.Subscribe(x => collector1.Add(x));
 
         rp.Value.Should().Be(0);
-        await testSequencer1.AdvancePhaseAsync();
+        await Task.Yield();
         collector1.Should().Equal(0);
+
         rp.Value = 1;
         rp.Value.Should().Be(1);
-        await testSequencer1.AdvancePhaseAsync();
+        await Task.Yield();
         collector1.Should().Equal(0, 1);
+
         rp.Value = 2;
         rp.Value.Should().Be(2);
-        await testSequencer1.AdvancePhaseAsync();
+        await Task.Yield();
         collector1.Should().Equal(0, 1, 2);
 
         // second subscriber
-        rp.Subscribe(async x =>
-        {
-            collector2.Add(x);
-            await testSequencer2.AdvancePhaseAsync();
-        });
+        rp.Subscribe(x => collector2.Add(x));
         rp.Value.Should().Be(2);
-        await testSequencer2.AdvancePhaseAsync();
+        await Task.Yield();
         collector2.Should().Equal(2);
 
         rp.Value = 3;
         rp.Value.Should().Be(3);
-        await testSequencer1.AdvancePhaseAsync();
+        await Task.Yield();
         collector1.Should().Equal(0, 1, 2, 3);
-        await testSequencer2.AdvancePhaseAsync();
         collector2.Should().Equal(2, 3);
     }
 

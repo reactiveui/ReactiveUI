@@ -35,19 +35,6 @@ public class ReflectionTypeEqualityTests
                     if (t.AssemblyQualifiedName == aqnFromTypeof)
                     {
                         found = true;
-                        Console.WriteLine($"Found type: {t.FullName}");
-                        Console.WriteLine($"Assembly from GetTypes: {t.Assembly.FullName}");
-                        Console.WriteLine($"Assembly from typeof: {typeFromTypeof.Assembly.FullName}");
-                        Console.WriteLine($"Assembly.Equals: {t.Assembly.Equals(typeFromTypeof.Assembly)}");
-                        Console.WriteLine($"Assembly ReferenceEquals: {ReferenceEquals(t.Assembly, typeFromTypeof.Assembly)}");
-                        Console.WriteLine($"typeof AQN: {aqnFromTypeof}");
-                        Console.WriteLine($"assembly.GetTypes() AQN: {t.AssemblyQualifiedName}");
-                        Console.WriteLine($"AQNs match: {t.AssemblyQualifiedName == aqnFromTypeof}");
-                        Console.WriteLine($"Type.Equals: {t.Equals(typeFromTypeof)}");
-                        Console.WriteLine($"Type ==: {t == typeFromTypeof}");
-                        Console.WriteLine($"ReferenceEquals: {ReferenceEquals(t, typeFromTypeof)}");
-                        Console.WriteLine($"typeof hashcode: {typeFromTypeof.GetHashCode()}");
-                        Console.WriteLine($"GetTypes hashcode: {t.GetHashCode()}");
                         break;
                     }
                 }
@@ -86,7 +73,6 @@ public class ReflectionTypeEqualityTests
     }
 
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
     public async Task ReallyFindType_ShouldReturn_SameInstanceAs_Typeof_ForGenericInterfaceType()
     {
         // Arrange
@@ -106,7 +92,6 @@ public class ReflectionTypeEqualityTests
     }
 
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
     public async Task MakeGenericType_ShouldReturn_SameInstanceAs_Typeof()
     {
         // This tests the hypothesis that MakeGenericType returns the same instance as typeof
@@ -121,7 +106,6 @@ public class ReflectionTypeEqualityTests
     }
 
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
     public async Task ReallyFindType_ShouldReturn_SameInstanceAs_MakeGenericType()
     {
         // Arrange
@@ -141,7 +125,6 @@ public class ReflectionTypeEqualityTests
     }
 
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
     public async Task ModernDependencyResolver_ShouldFind_ServiceRegisteredWith_Typeof_WhenLookedUpWith_ReallyFindType()
     {
         // Arrange

@@ -39,7 +39,7 @@ public class MockBindListViewModel : ReactiveObject
             .Select(_ => ActiveListItem.Count > 0 ? ActiveListItem.Items.ElementAt(ActiveListItem.Count - 1) : null)
             .ToProperty(this, vm => vm.ActiveItem, out _activeItem);
 
-        ActiveListItem.Connect().ObserveOn(RxApp.MainThreadScheduler).Bind(out _listItems).Subscribe();
+        ActiveListItem.Connect().ObserveOn(ImmediateScheduler.Instance).Bind(out _listItems).Subscribe();
     }
 
     /// <summary>

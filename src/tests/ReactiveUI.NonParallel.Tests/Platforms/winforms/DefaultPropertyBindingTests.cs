@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using DynamicData;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 using ReactiveUI.Winforms;
+using TUnit.Core;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -19,8 +21,7 @@ namespace ReactiveUI.Tests.Winforms;
 /// in the constructor, which initializes global static state including the service locator.
 /// This state must not be concurrently initialized by parallel tests.
 /// </remarks>
-// TEMPORARILY REMOVED for diagnostic: [NotInParallel]
-// [Skip("Testing if NotInParallel causes session hang")]
+[NotInParallel]
 [SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "In test dont care")]
 public class DefaultPropertyBindingTests
 {
@@ -42,6 +43,7 @@ public class DefaultPropertyBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForTextboxes()
     {
         var input = new TextBox();
@@ -74,6 +76,7 @@ public class DefaultPropertyBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForComponents()
     {
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
@@ -106,6 +109,7 @@ public class DefaultPropertyBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
     {
         var input = new AThirdPartyNamespace.ThirdPartyControl();
@@ -137,6 +141,7 @@ public class DefaultPropertyBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CanBindViewModelToWinformControls()
     {
         var vm = new FakeWinformViewModel();
@@ -163,6 +168,7 @@ public class DefaultPropertyBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task SmokeTestWinformControls()
     {
         var vm = new FakeWinformViewModel();
@@ -198,6 +204,7 @@ public class DefaultPropertyBindingTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task PanelSetMethodBindingConverter_GetAffinityForObjects()
     {
         var fixture = new PanelSetMethodBindingConverter();

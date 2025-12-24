@@ -19,8 +19,7 @@ namespace ReactiveUI.Tests;
 /// Locator.CurrentMutable.Register() and access Locator.Current, which interact with
 /// global service locator state. This state must not be mutated concurrently by parallel tests.
 /// </remarks>
-// TEMPORARILY REMOVED for diagnostic: [NotInParallel]
-// [Skip("Testing if NotInParallel causes session hang")]
+[NotInParallel]
 public class ViewModelViewHostTests
 {
     [Test]

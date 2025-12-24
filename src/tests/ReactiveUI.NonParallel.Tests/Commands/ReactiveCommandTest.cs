@@ -1519,138 +1519,105 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesTaskExceptionAsync()
     {
-        using var testSequencer = new TestSequencer();
-        var subj = new Subject<Unit>();
-        var isExecuting = false;
+        var tcsStart = new TaskCompletionSource<Unit>();
+        var isExecutingList = new List<bool>();
         Exception? fail = null;
 
         var fixture = ReactiveCommand.CreateFromTask(
                                                      async _ =>
                                                      {
-                                                         await subj.Take(1);
+                                                         await tcsStart.Task;
                                                          throw new Exception("break execution");
                                                      },
                                                      outputScheduler: ImmediateScheduler.Instance);
 
-        fixture.IsExecuting.Subscribe(async void (x) =>
-        {
-            isExecuting = x;
-            await testSequencer.AdvancePhaseAsync("Executing {false, true, false}");
-        });
-        fixture.ThrownExceptions.Subscribe(async void (ex) =>
-        {
-            fail = ex;
-            await testSequencer.AdvancePhaseAsync("Exception");
-        });
+        fixture.IsExecuting.Subscribe(x => isExecutingList.Add(x));
+        fixture.ThrownExceptions.Subscribe(ex => fail = ex);
 
-        await testSequencer.AdvancePhaseAsync("Executing {false}");
-        using (Assert.Multiple())
-        {
-            await Assert.That(isExecuting).IsFalse();
-            await Assert.That(fail).IsNull();
-        }
+        await Assert.That(isExecutingList.LastOrDefault()).IsFalse();
+        await Assert.That(fail).IsNull();
 
         fixture.Execute().Subscribe();
-        await testSequencer.AdvancePhaseAsync("Executing {true}");
+
+        // Wait for execution to start (IsExecuting should become true)
+        await Task.Delay(100);
+        await Assert.That(isExecutingList.LastOrDefault()).IsTrue();
+        await Assert.That(fail).IsNull();
+
+        // Signal task to proceed and throw
+        tcsStart.SetResult(Unit.Default);
+
+        // Wait for completion (IsExecuting should become false)
+        await Task.Delay(100);
+        await Assert.That(isExecutingList.LastOrDefault()).IsFalse();
+
         using (Assert.Multiple())
         {
-            await Assert.That(isExecuting).IsTrue();
-            await Assert.That(fail).IsNull();
-        }
-
-        subj.OnNext(Unit.Default);
-
-        // Wait to allow execution to complete
-        await testSequencer.AdvancePhaseAsync("Executing {false}");
-        await testSequencer.AdvancePhaseAsync("Exception");
-
-        using (Assert.Multiple())
-        {
-            await Assert.That(isExecuting).IsFalse();
             await Assert.That(fail?.Message).IsEqualTo("break execution");
         }
-
-        testSequencer.Dispose();
     }
 
     [Test]
     public async Task ReactiveCommandCreateFromTaskThenCancelSetsIsExecutingFalseOnlyAfterCancellationCompleteAsync()
     {
-        using var testSequencer = new TestSequencer();
+        var tcsStarted = new TaskCompletionSource<Unit>();
+        var tcsCaught = new TaskCompletionSource<Unit>();
+        var tcsFinish = new TaskCompletionSource<Unit>();
+
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
 
-        var fixture = ReactiveCommand.CreateFromTask(async (token) =>
-        {
-            // Phase 1
-            await testSequencer.AdvancePhaseAsync("Phase 1");
-            statusTrail.Add((position++, "started command"));
-            try
+        var fixture = ReactiveCommand.CreateFromTask(
+            async (token) =>
             {
-                await Task.Delay(
-                                 10000,
-                                 token);
-            }
-            catch (OperationCanceledException)
-            {
-                // Phase 2: cancellation observed
-                await testSequencer.AdvancePhaseAsync("Phase 2");
-
-                // Phase 3: test observed IsExecuting while cancelling
-                await testSequencer.AdvancePhaseAsync("Phase 3");
-                throw;
-            }
-        });
+                statusTrail.Add((Interlocked.Increment(ref position) - 1, "started command"));
+                tcsStarted.TrySetResult(Unit.Default);
+                try
+                {
+                    await Task.Delay(
+                                     10000,
+                                     token);
+                }
+                catch (OperationCanceledException)
+                {
+                    tcsCaught.TrySetResult(Unit.Default);
+                    await tcsFinish.Task;
+                    throw;
+                }
+            },
+            outputScheduler: ImmediateScheduler.Instance);
 
         // Subscribe to ThrownExceptions so RxApp.DefaultExceptionHandler doesn't terminate the test host
         fixture.ThrownExceptions.Subscribe(_ => { });
 
         var latestIsExecutingValue = false;
-        var subscriptionReady = new TaskCompletionSource<bool>();
-        var isFirstValue = true;
-
         fixture.IsExecuting.Subscribe(isExec =>
         {
-            statusTrail.Add((position++, $"command executing = {isExec}"));
-            Volatile.Write(
-                           ref latestIsExecutingValue,
-                           isExec);
-
-            // Signal that we've received the first value (should be false initially)
-            if (isFirstValue)
-            {
-                isFirstValue = false;
-                subscriptionReady.TrySetResult(true);
-            }
+            statusTrail.Add((Interlocked.Increment(ref position) - 1, $"command executing = {isExec}"));
+            Volatile.Write(ref latestIsExecutingValue, isExec);
         });
 
-        // Wait for the subscription to receive the initial value
-        await subscriptionReady.Task;
+        // IsExecuting subscription should emit initial false value immediately with ImmediateScheduler
+        await Assert.That(latestIsExecutingValue).IsFalse();
 
         var disposable = fixture.Execute().Subscribe();
 
-        // Phase 1
-        await testSequencer.AdvancePhaseAsync("Phase 1");
+        await tcsStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
         disposable.Dispose();
 
-        // Phase 2
-        await testSequencer.AdvancePhaseAsync("Phase 2");
+        await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(2));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
-        // Phase 3
-        await testSequencer.AdvancePhaseAsync("Phase 3");
+        tcsFinish.TrySetResult(Unit.Default);
 
-        var start = Environment.TickCount;
-        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
-        {
-            await Task.Yield();
-        }
+        // Wait a bit for the cancellation to complete and IsExecuting to become false
+        await Task.Delay(100);
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsFalse();
 
         using (Assert.Multiple())
         {
-            await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsFalse();
             await Assert.That(statusTrail).IsEquivalentTo([
                             (0, "command executing = False"),
                             (1, "command executing = True"),
@@ -1663,9 +1630,8 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task ReactiveCommandExecutesFromInvokeCommand()
     {
-        using var testSequencer = new TestSequencer();
-
-        var command = ReactiveCommand.Create(async () => await testSequencer.AdvancePhaseAsync("Phase 1"));
+        var tcs = new TaskCompletionSource<Unit>();
+        var command = ReactiveCommand.Create(() => tcs.TrySetResult(Unit.Default));
         var result = 0;
 
         // False, True, False
@@ -1674,10 +1640,8 @@ public class ReactiveCommandTest : IDisposable
         Observable.Return(Unit.Default)
                   .InvokeCommand(command);
 
-        await testSequencer.AdvancePhaseAsync("Phase 1");
+        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(2));
         await Assert.That(result).IsGreaterThanOrEqualTo(1);
-
-        testSequencer.Dispose();
     }
 
     [Test]
@@ -1705,17 +1669,19 @@ public class ReactiveCommandTest : IDisposable
         });
 
     [Test]
-    [Skip("Flakey on some platforms, ignore for the moment")]
     public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
     {
-        using var testSequencer = new TestSequencer();
+        var tcsStarted = new TaskCompletionSource<Unit>();
+        var tcsCaught = new TaskCompletionSource<Unit>();
+        var tcsFinish = new TaskCompletionSource<Unit>();
+
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
         var fixture = ReactiveCommand.CreateFromTask(
                                                      async cts =>
                                                      {
-                                                         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-                                                         statusTrail.Add((position++, "started command"));
+                                                         statusTrail.Add((Interlocked.Increment(ref position) - 1, "started command"));
+                                                         tcsStarted.TrySetResult(Unit.Default);
                                                          try
                                                          {
                                                              await Task.Delay(
@@ -1725,12 +1691,12 @@ public class ReactiveCommandTest : IDisposable
                                                          catch (OperationCanceledException)
                                                          {
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "starting cancelling command"));
-                                                             await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
-                                                             await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+                                                             tcsCaught.TrySetResult(Unit.Default);
+                                                             await tcsFinish.Task;
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "finished cancelling command"));
                                                              throw;
                                                          }
@@ -1744,7 +1710,7 @@ public class ReactiveCommandTest : IDisposable
         var latestIsExecutingValue = false;
         fixture.IsExecuting.Subscribe(isExec =>
         {
-            statusTrail.Add((position++, $"command executing = {isExec}"));
+            statusTrail.Add((Interlocked.Increment(ref position) - 1, $"command executing = {isExec}"));
             Volatile.Write(
                            ref latestIsExecutingValue,
                            isExec);
@@ -1753,7 +1719,8 @@ public class ReactiveCommandTest : IDisposable
         await Assert.That(fail).IsNull();
         var result = false;
         var disposable = fixture.Execute().Subscribe(_ => result = true);
-        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+
+        await tcsStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
         using (Assert.Multiple())
         {
             await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
@@ -1761,15 +1728,13 @@ public class ReactiveCommandTest : IDisposable
         }
 
         disposable.Dispose();
-        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
-        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
-        await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
 
-        var start = Environment.TickCount;
-        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
-        {
-            await Task.Yield();
-        }
+        await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+        tcsFinish.TrySetResult(Unit.Default);
+
+        await Task.Delay(100);
+        await Assert.That(fail).IsNotNull();
 
         using (Assert.Multiple())
         {
@@ -1833,14 +1798,17 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
     {
-        using var testSequencer = new TestSequencer();
+        var tcsStarted = new TaskCompletionSource<Unit>();
+        var tcsCaught = new TaskCompletionSource<Unit>();
+        var tcsFinish = new TaskCompletionSource<Unit>();
+
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
         var fixture = ReactiveCommand.CreateFromTask(
                                                      async cts =>
                                                      {
-                                                         statusTrail.Add((position++, "started command"));
-                                                         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+                                                         statusTrail.Add((Interlocked.Increment(ref position) - 1, "started command"));
+                                                         tcsStarted.TrySetResult(Unit.Default);
                                                          try
                                                          {
                                                              await Task.Delay(
@@ -1850,13 +1818,13 @@ public class ReactiveCommandTest : IDisposable
                                                          catch (OperationCanceledException)
                                                          {
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "starting cancelling command"));
-                                                             await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+                                                             tcsCaught.TrySetResult(Unit.Default);
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "finished cancelling command"));
-                                                             await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
+                                                             await tcsFinish.Task;
                                                              throw;
                                                          }
 
@@ -1869,7 +1837,7 @@ public class ReactiveCommandTest : IDisposable
         var latestIsExecutingValue = false;
         fixture.IsExecuting.Subscribe(isExec =>
         {
-            statusTrail.Add((position++, $"command executing = {isExec}"));
+            statusTrail.Add((Interlocked.Increment(ref position) - 1, $"command executing = {isExec}"));
             Volatile.Write(
                            ref latestIsExecutingValue,
                            isExec);
@@ -1878,7 +1846,8 @@ public class ReactiveCommandTest : IDisposable
         await Assert.That(fail).IsNull();
         var result = false;
         var disposable = fixture.Execute().Subscribe(_ => result = true);
-        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
+
+        await tcsStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
         using (Assert.Multiple())
         {
             await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
@@ -1886,15 +1855,13 @@ public class ReactiveCommandTest : IDisposable
         }
 
         disposable.Dispose();
-        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
-        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
-        await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
 
-        var start = Environment.TickCount;
-        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
-        {
-            await Task.Yield();
-        }
+        await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+        tcsFinish.TrySetResult(Unit.Default);
+
+        await Task.Delay(100);
+        await Assert.That(fail).IsNotNull();
 
         using (Assert.Multiple())
         {
@@ -1914,14 +1881,17 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesCompletion()
     {
-        using var testSequencer = new TestSequencer();
+        var tcsStarted = new TaskCompletionSource<Unit>();
+        var tcsFinished = new TaskCompletionSource<Unit>();
+        var tcsContinue = new TaskCompletionSource<Unit>();
+
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
         var fixture = ReactiveCommand.CreateFromTask(
                                                      async cts =>
                                                      {
-                                                         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-                                                         statusTrail.Add((position++, "started command"));
+                                                         statusTrail.Add((Interlocked.Increment(ref position) - 1, "started command"));
+                                                         tcsStarted.TrySetResult(Unit.Default);
                                                          try
                                                          {
                                                              await Task.Delay(
@@ -1931,19 +1901,20 @@ public class ReactiveCommandTest : IDisposable
                                                          catch (OperationCanceledException)
                                                          {
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "starting cancelling command"));
                                                              await Task.Delay(
                                                                               5000,
                                                                               CancellationToken.None);
                                                              statusTrail.Add(
-                                                                             (position++,
+                                                                             (Interlocked.Increment(ref position) - 1,
                                                                                  "finished cancelling command"));
                                                              throw;
                                                          }
 
-                                                         statusTrail.Add((position++, "finished command"));
-                                                         await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
+                                                         statusTrail.Add((Interlocked.Increment(ref position) - 1, "finished command"));
+                                                         tcsFinished.TrySetResult(Unit.Default);
+                                                         await tcsContinue.Task;
                                                          return Unit.Default;
                                                      },
                                                      outputScheduler: ImmediateScheduler.Instance);
@@ -1953,7 +1924,7 @@ public class ReactiveCommandTest : IDisposable
         var latestIsExecutingValue = false;
         fixture.IsExecuting.Subscribe(isExec =>
         {
-            statusTrail.Add((position++, $"command executing = {isExec}"));
+            statusTrail.Add((Interlocked.Increment(ref position) - 1, $"command executing = {isExec}"));
             Volatile.Write(
                            ref latestIsExecutingValue,
                            isExec);
@@ -1962,15 +1933,16 @@ public class ReactiveCommandTest : IDisposable
         await Assert.That(fail).IsNull();
         var result = false;
         fixture.Execute().Subscribe(_ => result = true);
-        await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
-        await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
 
-        var start = Environment.TickCount;
-        while (unchecked(Environment.TickCount - start) < 1000 && Volatile.Read(ref latestIsExecutingValue))
-        {
-            await Task.Yield();
-        }
+        await tcsStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+
+        await tcsFinished.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+        tcsContinue.TrySetResult(Unit.Default);
+
+        await Task.Delay(100);
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsFalse();
 
         using (Assert.Multiple())
         {

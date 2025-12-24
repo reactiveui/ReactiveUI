@@ -20,8 +20,7 @@ namespace ReactiveUI.Tests;
 /// which mutate global service locator state. This state must not be mutated concurrently
 /// by parallel tests.
 /// </remarks>
-// TEMPORARILY REMOVED for diagnostic: [NotInParallel]
-// [Skip("Testing if NotInParallel causes session hang")]
+[NotInParallel]
 public class RoutedViewHostTests
 {
     [Test]

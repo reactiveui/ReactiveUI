@@ -71,7 +71,7 @@ public class WpfActiveContentFixture : IDisposable
             if (App?.Dispatcher != null)
             {
                 // Must invoke shutdown on the Dispatcher's thread
-                App.Dispatcher.BeginInvoke(() =>
+                App.Dispatcher.Invoke(() =>
                 {
                     App.Dispatcher.InvokeShutdown();
                 });

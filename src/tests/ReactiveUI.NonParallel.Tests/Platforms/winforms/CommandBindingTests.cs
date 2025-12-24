@@ -6,12 +6,15 @@
 using System.Windows.Forms;
 
 using ReactiveUI.Winforms;
+using TUnit.Core;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
 /// <summary>
 /// Command binding tests.
 /// </summary>
+[NotInParallel]
 public class CommandBindingTests
 {
     /// <summary>
@@ -19,6 +22,7 @@ public class CommandBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBinderBindsToButtonAsync()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -56,6 +60,7 @@ public class CommandBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBinderBindsToCustomControl()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -93,6 +98,7 @@ public class CommandBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBinderBindsToCustomComponent()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -130,6 +136,7 @@ public class CommandBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBinderAffectsEnabledState()
     {
         var fixture = new CreatesWinformsCommandBinding();
@@ -154,6 +161,7 @@ public class CommandBindingTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBinderAffectsEnabledStateForComponents()
     {
         var fixture = new CreatesWinformsCommandBinding();
