@@ -12,7 +12,6 @@ using ReactiveUI.Tests.ReactiveProperty.Mocks;
 
 namespace ReactiveUI.Tests.ReactiveProperty;
 
-[TestFixture]
 public class ReactivePropertyTest : ReactiveTest
 {
     [Test]

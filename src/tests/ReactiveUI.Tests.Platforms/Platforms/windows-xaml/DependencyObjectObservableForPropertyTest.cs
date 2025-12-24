@@ -1,15 +1,16 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
-using DynamicData;
 
 #if NETFX_CORE
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else
 using System.Windows.Controls;
+using DynamicData;
+
+using TUnit.Core.Executors;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;
@@ -17,24 +18,23 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests for the dependency object property binding.
 /// </summary>
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public class DependencyObjectObservableForPropertyTest
 {
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void DependencyObjectObservableForPropertySmokeTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task DependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "TestString"), Is.Not.Zero);
-            Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist"), Is.Zero);
+            await Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "TestString")).IsNotEqualTo(0);
+            await Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist")).IsEqualTo(0);
         }
 
         var results = new List<IObservedChange<object, object?>>();
@@ -52,7 +52,7 @@ public class DependencyObjectObservableForPropertyTest
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.That(results, Has.Count.EqualTo(4));
+        await Assert.That(results).Count().IsEqualTo(4);
 
         disp1.Dispose();
         disp2.Dispose();
@@ -61,17 +61,18 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Runs a smoke test for derived dependency object observables for property.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void DerivedDependencyObjectObservableForPropertySmokeTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task DerivedDependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DerivedDepObjFixture();
         var binder = new DependencyObjectObservableForProperty();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString"), Is.Not.Zero);
-            Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist"), Is.Zero);
+            await Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString")).IsNotEqualTo(0);
+            await Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist")).IsEqualTo(0);
         }
 
         var results = new List<IObservedChange<object, object?>>();
@@ -89,7 +90,7 @@ public class DependencyObjectObservableForPropertyTest
         fixture.TestString = "Foo";
         fixture.TestString = "Bar";
 
-        Assert.That(results, Has.Count.EqualTo(4));
+        await Assert.That(results).Count().IsEqualTo(4);
 
         disp1.Dispose();
         disp2.Dispose();
@@ -98,9 +99,10 @@ public class DependencyObjectObservableForPropertyTest
     /// <summary>
     /// Tests WhenAny with dependency object test.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void WhenAnyWithDependencyObjectTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WhenAnyWithDependencyObjectTest()
     {
         var inputs = new[] { "Foo", "Bar", "Baz" };
         var fixture = new DepObjFixture();
@@ -115,21 +117,22 @@ public class DependencyObjectObservableForPropertyTest
             fixture.TestString = x;
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(outputs.First(), Is.Null);
-            Assert.That(outputs, Has.Count.EqualTo(4));
+            await Assert.That(outputs.First()).IsNull();
+            await Assert.That(outputs).Count().IsEqualTo(4);
         }
 
-        Assert.That(outputs.Skip(1), Is.EqualTo(inputs));
+        await Assert.That(outputs.Skip(1)).IsEquivalentTo(inputs);
     }
 
     /// <summary>
     /// Tests ListBoxes the selected item test.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ListBoxSelectedItemTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ListBoxSelectedItemTest()
     {
         var input = new ListBox();
         input.Items.Add("Foo");
@@ -141,12 +144,12 @@ public class DependencyObjectObservableForPropertyTest
              .Bind(out var output)
              .Subscribe();
 
-        Assert.That(output, Has.Count.EqualTo(1));
+        await Assert.That(output).Count().IsEqualTo(1);
 
         input.SelectedIndex = 1;
-        Assert.That(output, Has.Count.EqualTo(2));
+        await Assert.That(output).Count().IsEqualTo(2);
 
         input.SelectedIndex = 2;
-        Assert.That(output, Has.Count.EqualTo(3));
+        await Assert.That(output).Count().IsEqualTo(3);
     }
 }

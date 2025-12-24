@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,20 +16,20 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 #endif
 
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// Tests for XAML and commands.
 /// </summary>
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public class XamlViewCommandTests
 {
     /// <summary>
     /// Test that event binder binds to explicit inherited event.
     /// </summary>
     [Test]
-    [Apartment(ApartmentState.STA)]
+    [TestExecutor<STAThreadExecutor>]
     public void EventBinderBindsToExplicitInheritedEvent()
     {
         var fixture = new FakeView();
@@ -39,24 +39,25 @@ public class XamlViewCommandTests
     /// <summary>
     /// Test that event binder binds to implicit event.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void EventBinderBindsToImplicitEvent()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task EventBinderBindsToImplicitEvent()
     {
         var input = new Button();
         var fixture = new CreatesCommandBindingViaEvent();
-        var cmd = ReactiveCommand.Create<int>(_ => { });
+        var cmd = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
 
-        Assert.That(fixture.GetAffinityForObject(input.GetType(), false), Is.GreaterThan(0));
+        await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsGreaterThan(0);
 
         var invokeCount = 0;
         cmd.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(disp, Is.Not.Null);
-            Assert.That(invokeCount, Is.Zero);
+            await Assert.That(disp).IsNotNull();
+            await Assert.That(invokeCount).IsEqualTo(0);
         }
 
         var automationPeer = new ButtonAutomationPeer(input);
@@ -64,10 +65,10 @@ public class XamlViewCommandTests
 
         invoker.Invoke();
         DispatcherUtilities.DoEvents();
-        Assert.That(invokeCount, Is.EqualTo(1));
+        await Assert.That(invokeCount).IsEqualTo(1);
 
         disp?.Dispose();
         invoker.Invoke();
-        Assert.That(invokeCount, Is.EqualTo(1));
+        await Assert.That(invokeCount).IsEqualTo(1);
     }
 }

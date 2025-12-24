@@ -64,9 +64,10 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return Observable.Create<IObservedChange<object, object?>>(subj =>
         {
             var handler = new EventHandler((_, _) => subj.OnNext(new ObservedChange<object, object?>(sender, expression, default)));
+            var scheduler = RxApp.MainThreadScheduler;
 
             dependencyPropertyDescriptor.AddValueChanged(sender, handler);
-            return Disposable.Create(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler));
+            return Disposable.Create(() => scheduler.Schedule(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler)));
         });
     }
 

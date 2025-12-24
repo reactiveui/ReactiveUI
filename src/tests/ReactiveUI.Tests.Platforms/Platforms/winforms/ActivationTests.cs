@@ -1,65 +1,73 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
+using TUnit.Core;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
 /// <summary>
 /// Tests to make sure the activation works correctly.
 /// </summary>
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public class ActivationTests
 {
     /// <summary>
     /// Tests activations for view fetcher supports default winforms components.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ActivationForViewFetcherSupportsDefaultWinformsComponents()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ActivationForViewFetcherSupportsDefaultWinformsComponents()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         var supportedComponents = new[] { typeof(Control), typeof(UserControl), typeof(Form) };
 
         foreach (var c in supportedComponents)
         {
-            Assert.That(target.GetAffinityForView(c), Is.EqualTo(10));
+            await Assert.That(target.GetAffinityForView(c)).IsEqualTo(10);
         }
     }
 
     /// <summary>
     /// Tests that determines whether this instance [can fetch activator for form].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanFetchActivatorForForm()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task CanFetchActivatorForForm()
     {
         var form = new TestForm();
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         var formActivator = target.GetActivationForView(form);
 
-        Assert.That(formActivator, Is.Not.Null);
+        await Assert.That(formActivator).IsNotNull();
     }
 
     /// <summary>
     /// Tests that determines whether this instance [can fetch activator for control].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanFetchActivatorForControl()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task CanFetchActivatorForControl()
     {
         var control = new TestControl();
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         var activator = target.GetActivationForView(control);
 
-        Assert.That(activator, Is.Not.Null);
+        await Assert.That(activator).IsNotNull();
     }
 
     /// <summary>
     /// Smokes the test windows form.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SmokeTestWindowsForm()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task SmokeTestWindowsForm()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         using (var form = new TestForm())
@@ -79,35 +87,37 @@ public class ActivationTests
                 }
             });
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(formActivateCount, Is.Zero);
-                Assert.That(formDeActivateCount, Is.Zero);
+                await Assert.That(formActivateCount).IsEqualTo(0);
+                await Assert.That(formDeActivateCount).IsEqualTo(0);
             }
 
             form.Visible = true;
-            Assert.That(formActivateCount, Is.EqualTo(1));
+            await Assert.That(formActivateCount).IsEqualTo(1);
 
             form.Visible = false;
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(formActivateCount, Is.EqualTo(1));
-                Assert.That(formDeActivateCount, Is.EqualTo(1));
+                await Assert.That(formActivateCount).IsEqualTo(1);
+                await Assert.That(formDeActivateCount).IsEqualTo(1);
             }
 
             form.Visible = true;
-            Assert.That(formActivateCount, Is.EqualTo(2));
+            await Assert.That(formActivateCount).IsEqualTo(2);
 
             form.Close();
-            Assert.That(formDeActivateCount, Is.EqualTo(2));
+            await Assert.That(formDeActivateCount).IsEqualTo(2);
         }
     }
 
     /// <summary>
     /// Smokes the test user control.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SmokeTestUserControl()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task SmokeTestUserControl()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         using (var userControl = new TestControl())
@@ -132,16 +142,16 @@ public class ActivationTests
             parent.Controls.Add(userControl);
 
             userControl.Visible = true;
-            Assert.That(userControlActivateCount, Is.EqualTo(1));
+            await Assert.That(userControlActivateCount).IsEqualTo(1);
             userControl.Visible = false;
-            Assert.That(userControlDeActivateCount, Is.EqualTo(1));
+            await Assert.That(userControlDeActivateCount).IsEqualTo(1);
 
             userControl.Visible = true;
-            Assert.That(userControlActivateCount, Is.EqualTo(2));
+            await Assert.That(userControlActivateCount).IsEqualTo(2);
 
             // closing the form deactivated the usercontrol
             parent.Close();
-            Assert.That(userControlDeActivateCount, Is.EqualTo(2));
+            await Assert.That(userControlDeActivateCount).IsEqualTo(2);
         }
     }
 }

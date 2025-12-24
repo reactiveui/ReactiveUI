@@ -22,56 +22,57 @@ namespace ReactiveUI.Tests
         /// </summary>
         /// <param name="inputUpdatesString">The input updates string.</param>
         /// <param name="expectedOutputUpdatesString">The expected output updates string.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [Test]
-        [TestCase("", "")]
-        [TestCase("D0:D0", "D0:D1")]
-        [TestCase("D0:D0:D0", "D0:D1:D2")]
-        [TestCase("D2:D0:D1", "D2:D0:D3")]
-        [TestCase("D1:D0", "D1:D0")]
-        [TestCase("D0:D1", "D0:D2")]
-        [TestCase("D0:D5:D10", "D0:D6:D12")]
-        [TestCase("D5:D0:D10", "D5:D0:D12")]
-        [TestCase("A0:D1", "A0:D0")]
-        [TestCase("D0:A0", "D0:A0")]
-        [TestCase("D0:A1", "D0:A1")]
-        [TestCase("A0:D0", "")]
-        [TestCase("A0:A0:D0", "A0")]
-        [TestCase("A1:A1:D0", "A1:A0:D0")]
-        [TestCase("A1:D0:A1", "A0:D0:A1")]
-        [TestCase("A1:D1", "")]
-        [TestCase("A0:A1:D0", "A0")]
-        [TestCase("A0:A0", "A1:A0")]
-        [TestCase("A0:A0:A0", "A2:A1:A0")]
-        [TestCase("A0:A1", "A0:A1")]
-        [TestCase("A1:A0", "A2:A0")]
-        [TestCase("A0:A10:D5:A6:D3:D6", "A0:A8:D4:A5:D2:D6")]
-        [TestCase("A0:A10:D5:A6:D7:D6", "A0:A8:D4:D6")]
-        [TestCase("A0:A0:A0:D0:D1", "A0")]
-        [TestCase("A0:A1:A2:D0:D1", "A0")]
-        [TestCase("A0:A10:D5:D7", "A0:A8:D4:D7")]
-        [TestCase("A0:A0:D2:A3:D4", "A1:A0:D0:A3:D2")]
-        [TestCase("D0:A0:D1", "D0:A0:D1")]
-        [TestCase("A0:D1:D0", "D0")]
-        [TestCase("A1:D1:D1", "D1")]
-        [TestCase("D0:A0:A0:A5:A2:D3:A5:D2:A3:A1", "D0:A2:A0:A7:D1:A6:A4:A1")]
-        [TestCase("A2:A5:D2", "A4")]
-        [TestCase("A2:D3:A5:D2", "D2:A4")]
-        [TestCase("A5:A2:D3:A5:D2", "A5:D2:A4")]
-        [TestCase("A5:A2:A5:D2", "A6:A4")]
-        [TestCase("A7:A2:D3:A6:A2", "A9:A3:D2:A7:A2")]
-        [TestCase("D0:D0:A6:A0:D5:D0:D4:A4:A0:A6", "D0:D1:A7:D6:D7:A5:A0:A6")]
-        [TestCase("D0:D0:A6:D5:D4:A4:A0:A6", "D0:D1:A7:D7:D6:A5:A0:A6")]
-        [TestCase("D0:D0:A6:D5:D4", "D0:D1:A4:D7:D6")]
-        public void UpdatesAreCorrectlyNormalized(string inputUpdatesString, string expectedOutputUpdatesString)
+        [Arguments("", "")]
+        [Arguments("D0:D0", "D0:D1")]
+        [Arguments("D0:D0:D0", "D0:D1:D2")]
+        [Arguments("D2:D0:D1", "D2:D0:D3")]
+        [Arguments("D1:D0", "D1:D0")]
+        [Arguments("D0:D1", "D0:D2")]
+        [Arguments("D0:D5:D10", "D0:D6:D12")]
+        [Arguments("D5:D0:D10", "D5:D0:D12")]
+        [Arguments("A0:D1", "A0:D0")]
+        [Arguments("D0:A0", "D0:A0")]
+        [Arguments("D0:A1", "D0:A1")]
+        [Arguments("A0:D0", "")]
+        [Arguments("A0:A0:D0", "A0")]
+        [Arguments("A1:A1:D0", "A1:A0:D0")]
+        [Arguments("A1:D0:A1", "A0:D0:A1")]
+        [Arguments("A1:D1", "")]
+        [Arguments("A0:A1:D0", "A0")]
+        [Arguments("A0:A0", "A1:A0")]
+        [Arguments("A0:A0:A0", "A2:A1:A0")]
+        [Arguments("A0:A1", "A0:A1")]
+        [Arguments("A1:A0", "A2:A0")]
+        [Arguments("A0:A10:D5:A6:D3:D6", "A0:A8:D4:A5:D2:D6")]
+        [Arguments("A0:A10:D5:A6:D7:D6", "A0:A8:D4:D6")]
+        [Arguments("A0:A0:A0:D0:D1", "A0")]
+        [Arguments("A0:A1:A2:D0:D1", "A0")]
+        [Arguments("A0:A10:D5:D7", "A0:A8:D4:D7")]
+        [Arguments("A0:A0:D2:A3:D4", "A1:A0:D0:A3:D2")]
+        [Arguments("D0:A0:D1", "D0:A0:D1")]
+        [Arguments("A0:D1:D0", "D0")]
+        [Arguments("A1:D1:D1", "D1")]
+        [Arguments("D0:A0:A0:A5:A2:D3:A5:D2:A3:A1", "D0:A2:A0:A7:D1:A6:A4:A1")]
+        [Arguments("A2:A5:D2", "A4")]
+        [Arguments("A2:D3:A5:D2", "D2:A4")]
+        [Arguments("A5:A2:D3:A5:D2", "A5:D2:A4")]
+        [Arguments("A5:A2:A5:D2", "A6:A4")]
+        [Arguments("A7:A2:D3:A6:A2", "A9:A3:D2:A7:A2")]
+        [Arguments("D0:D0:A6:A0:D5:D0:D4:A4:A0:A6", "D0:D1:A7:D6:D7:A5:A0:A6")]
+        [Arguments("D0:D0:A6:D5:D4:A4:A0:A6", "D0:D1:A7:D7:D6:A5:A0:A6")]
+        [Arguments("D0:D0:A6:D5:D4", "D0:D1:A4:D7:D6")]
+        public async Task UpdatesAreCorrectlyNormalized(string inputUpdatesString, string expectedOutputUpdatesString)
         {
             var inputUpdates = inputUpdatesString.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(ParseUpdate)
                 .ToList();
             var outputUpdates = IndexNormalizer.Normalize(inputUpdates);
-            Assert.That(outputUpdates, Is.Not.Null);
+            await Assert.That(outputUpdates).IsNotNull();
             var formattedOutputUpdates = FormatUpdates(outputUpdates);
 
-            Assert.That(formattedOutputUpdates, Is.EqualTo(expectedOutputUpdatesString));
+            await Assert.That(formattedOutputUpdates).IsEqualTo(expectedOutputUpdatesString);
         }
 
         private string FormatUpdates(IEnumerable<Update> updates)

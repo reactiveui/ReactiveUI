@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,6 +6,8 @@
 using System.Windows;
 using DynamicData;
 using ReactiveUI.Tests.Wpf;
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
@@ -17,13 +19,13 @@ namespace ReactiveUI.Tests;
 /// Locator.CurrentMutable.Register() and access Locator.Current, which interact with
 /// global service locator state. This state must not be mutated concurrently by parallel tests.
 /// </remarks>
-[TestFixture]
-[NonParallelizable]
+// TEMPORARILY REMOVED for diagnostic: [NotInParallel]
+// [Skip("Testing if NotInParallel causes session hang")]
 public class ViewModelViewHostTests
 {
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ViewModelViewHostDefaultContentNotNull()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ViewModelViewHostDefaultContentNotNull()
     {
         var uc = new ViewModelViewHost
         {
@@ -52,17 +54,17 @@ public class ViewModelViewHostTests
         window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
-        new[] { true }.AssertAreEqual(windowActivated);
-        new[] { true }.AssertAreEqual(controlActivated);
+        await new[] { true }.AssertAreEqual(windowActivated);
+        await new[] { true }.AssertAreEqual(controlActivated);
 
-        Assert.That(uc.Content, Is.Not.Null);
+        await Assert.That(uc.Content).IsNotNull();
 
         window.Dispatcher.InvokeShutdown();
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ViewModelViewHostContentNotNullWithViewModelAndActivated()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ViewModelViewHostContentNotNullWithViewModelAndActivated()
     {
         Locator.CurrentMutable.Register<TestViewModel>(static () => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
@@ -89,11 +91,11 @@ public class ViewModelViewHostTests
         window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
-        new[] { true }.AssertAreEqual(windowActivated);
-        new[] { true }.AssertAreEqual(controlActivated);
+        await new[] { true }.AssertAreEqual(windowActivated);
+        await new[] { true }.AssertAreEqual(controlActivated);
 
         // Test IViewFor<ViewModel> after activated
-        Assert.That(uc.Content, Is.TypeOf<TestView>());
+        await Assert.That(uc.Content).IsTypeOf<TestView>();
 
         window.Dispatcher.InvokeShutdown();
     }

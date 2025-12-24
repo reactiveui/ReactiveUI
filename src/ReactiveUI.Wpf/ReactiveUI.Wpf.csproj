@@ -22,4 +22,8 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('net46'))">
     <Compile Include="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Tests.Platforms" />
+  </ItemGroup>
 </Project>

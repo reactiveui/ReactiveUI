@@ -11,14 +11,14 @@ namespace ReactiveUI.Tests.Platforms.AndroidX;
 /// Tests for AndroidX-specific ReactiveUIBuilder functionality.
 /// These run on desktop test host and only verify DI registrations, not Android runtime behavior.
 /// </summary>
-[TestFixture]
 public class ReactiveUIBuilderAndroidXTests
 {
     /// <summary>
     /// Test that AndroidX services can be registered using the builder.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WithAndroidX_Should_Register_Services()
+    public async Task WithAndroidX_Should_Register_Services()
     {
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateBuilder();
@@ -27,17 +27,18 @@ public class ReactiveUIBuilderAndroidXTests
 
         // Core/platform Android registrations ensure these services exist
         var commandBinder = locator.GetService<ICreatesCommandBinding>();
-        Assert.That(commandBinder, Is.Not.Null);
+        await Assert.That(commandBinder).IsNotNull();
 
         var observableForProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableForProperty, Is.Not.Null);
+        await Assert.That(observableForProperty).IsNotNull();
     }
 
     /// <summary>
     /// Test fluent chaining with AndroidX.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WithCoreServices_AndAndroidX_Should_Register_All_Services()
+    public async Task WithCoreServices_AndAndroidX_Should_Register_All_Services()
     {
         using var locator = new ModernDependencyResolver();
         locator.CreateBuilder()
@@ -46,9 +47,9 @@ public class ReactiveUIBuilderAndroidXTests
                .Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
 
         var commandBinder = locator.GetService<ICreatesCommandBinding>();
-        Assert.That(commandBinder, Is.Not.Null);
+        await Assert.That(commandBinder).IsNotNull();
     }
 }

@@ -12,7 +12,6 @@ using Android.Widget;
 using Android.OS;
 using Xunit.Runners.UI;
 using System.Reflection;
-using NUnit.Framework;
 
 namespace ReactiveUI.Tests
 {

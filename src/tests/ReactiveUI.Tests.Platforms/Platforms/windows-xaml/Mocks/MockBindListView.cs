@@ -3,11 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.IO;
-using System.Text;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
+using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests;
 
@@ -26,38 +25,11 @@ public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
     public MockBindListView()
     {
         ItemList = new();
-
-        var ms = new MemoryStream(Encoding.UTF8.GetBytes("""
-
-            <DataTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        VerticalAlignment="Stretch"
-                        Text="{Binding Name}"
-                        TextAlignment="Center" />
-                </StackPanel>
-            </DataTemplate> 
-"""));
-        ItemList.ItemTemplate = (DataTemplate)XamlReader.Load(ms);
-        var ms1 = new MemoryStream(Encoding.UTF8.GetBytes("""
-
-            <ItemsPanelTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-                <StackPanel Orientation="Horizontal" />
-             </ItemsPanelTemplate> 
-"""));
-        ItemList.ItemsPanel = (ItemsPanelTemplate)XamlReader.Load(ms1);
-
         ViewModel = new();
+
         this.WhenActivated(d =>
         {
             this.OneWayBind(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d);
-            this.WhenAnyValue(v => v.ItemList.SelectedItem)
-                .Where(i => i is not null)
-                .Cast<MockBindListItemViewModel>()
-                .Do(_ => ItemList.UnselectAll())
-                .InvokeCommand(this, v => v!.ViewModel!.SelectItem).DisposeWith(d);
         });
     }
 

@@ -10,13 +10,46 @@ using Microsoft.Maui.Dispatching;
 
 using Splat.Builder;
 
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Builder.Maui.Tests;
 
-[TestFixture]
+/// <summary>
+/// Tests for ReactiveUI Builder MAUI extensions.
+/// </summary>
 public class ReactiveUIBuilderMauiTests
 {
+    private static IDisposable? MauiState;
+
+    /// <summary>
+    /// Run before each test.
+    /// </summary>
+    [Before(Class)]
+    public static void SetUp()
+    {
+        AppBuilder.ResetBuilderStateForTests();
+        MauiState = MauiTestScope.Enter();
+    }
+
+    /// <summary>
+    /// Cleans up after each test.
+    /// </summary>
+    [After(Class)]
+    public static void TearDown()
+    {
+        MauiState?.Dispose();
+        MauiState = null;
+    }
+
+    /// <summary>
+    /// Verifies that the WithMaui builder extension registers required MAUI services.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-    public void WithMaui_Should_Register_Services()
+#if WINDOWS
+    [TestExecutor<STAThreadExecutor>]
+#endif
+    public async Task WithMaui_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -26,14 +59,21 @@ public class ReactiveUIBuilderMauiTests
                .Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
 
         var typeConverters = locator.GetServices<IBindingTypeConverter>();
-        Assert.That(typeConverters, Is.Not.Null);
+        await Assert.That(typeConverters).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that WithMauiScheduler uses a custom dispatcher when one is provided.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-    public void WithMauiScheduler_Should_Use_Custom_Dispatcher_When_Provided()
+#if WINDOWS
+    [TestExecutor<STAThreadExecutor>]
+#endif
+    public async Task WithMauiScheduler_Should_Use_Custom_Dispatcher_When_Provided()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -42,7 +82,7 @@ public class ReactiveUIBuilderMauiTests
 
         builder.WithMauiScheduler(dispatcher);
 
-        Assert.That(builder.MainThreadScheduler, Is.Not.Null);
+        await Assert.That(builder.MainThreadScheduler).IsNotNull();
 
         var executed = false;
         builder.MainThreadScheduler!.Schedule(0, (_, _) =>
@@ -51,15 +91,22 @@ public class ReactiveUIBuilderMauiTests
             return Disposable.Empty;
         });
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(dispatcher.DispatchCallCount, Is.GreaterThan(0));
-            Assert.That(executed, Is.True);
+            await Assert.That(dispatcher.DispatchCallCount).IsGreaterThan(0);
+            await Assert.That(executed).IsTrue();
         }
     }
 
+    /// <summary>
+    /// Verifies that WithMauiScheduler falls back to CurrentThreadScheduler when running in unit test mode.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-    public void WithMauiScheduler_Should_Use_CurrentThread_When_In_Unit_Test_Runner()
+#if WINDOWS
+    [TestExecutor<STAThreadExecutor>]
+#endif
+    public async Task WithMauiScheduler_Should_Use_CurrentThread_When_In_Unit_Test_Runner()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -68,7 +115,7 @@ public class ReactiveUIBuilderMauiTests
         using (ForceUnitTestMode())
         {
             builder.WithMauiScheduler();
-            Assert.That(builder.MainThreadScheduler, Is.EqualTo(CurrentThreadScheduler.Instance));
+            await Assert.That(builder.MainThreadScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
         }
     }
 
@@ -111,7 +158,7 @@ public class ReactiveUIBuilderMauiTests
         public IDispatcherTimer CreateTimer() => new TestDispatcherTimer(this);
     }
 
-    private sealed class TestDispatcherTimer(ReactiveUIBuilderMauiTests.TestDispatcher dispatcher) : IDispatcherTimer
+    private sealed class TestDispatcherTimer(TestDispatcher dispatcher) : IDispatcherTimer
     {
         public event EventHandler? Tick;
 

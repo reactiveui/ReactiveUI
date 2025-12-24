@@ -10,22 +10,51 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
 
-/// <summary>
-/// Tests covering the builder extension methods defined in <see cref="BuilderMixins"/>.
-/// </summary>
-[TestFixture]
-[NonParallelizable]
+[NotInParallel]
 public class BuilderMixinsTests
 {
-    [SetUp]
+    private static readonly Action[] NullBuilderCases;
+
+    static BuilderMixinsTests()
+    {
+        var scheduler = ImmediateScheduler.Instance;
+        NullBuilderCases =
+        [
+            () => BuilderMixins.WithTaskPoolScheduler(null!, scheduler),
+            () => BuilderMixins.WithMainThreadScheduler(null!, scheduler),
+            () => BuilderMixins.WithRegistrationOnBuild(null!, _ => { }),
+            () => BuilderMixins.WithRegistration(null!, _ => { }),
+            () => BuilderMixins.WithViewsFromAssembly(null!, typeof(BuilderMixinsTests).Assembly),
+            () => BuilderMixins.WithPlatformModule<TestRegistrationModule>(null!),
+            () => BuilderMixins.UsingSplatModule(null!, new TestSplatModule()),
+            () => BuilderMixins.UsingSplatBuilder(null!, _ => { }),
+            () => BuilderMixins.ForCustomPlatform(null!, scheduler, _ => { }),
+            () => BuilderMixins.ForPlatforms(null!, _ => { }),
+            () => BuilderMixins.ConfigureMessageBus(null!, _ => { }),
+            () => BuilderMixins.ConfigureViewLocator(null!, _ => { }),
+            () => BuilderMixins.ConfigureSuspensionDriver(null!, _ => { }),
+            () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
+            () => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!),
+            () => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
+            () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
+        ];
+    }
+
+    [Before(HookType.Test)]
     public void SetUp() => AppBuilder.ResetBuilderStateForTests();
 
-    [TestCaseSource(nameof(NullBuilderCases))]
-    public void Builder_extension_methods_throw_when_builder_null(TestDelegate action) =>
-        Assert.Throws<ArgumentNullException>(action);
+    [Test]
+    public void Builder_extension_methods_throw_when_builder_null()
+    {
+        foreach (var action in NullBuilderCases)
+        {
+            ArgumentNullException.ThrowIfNull(action);
+            Assert.Throws<ArgumentNullException>(action);
+        }
+    }
 
     [Test]
-    public void WithTaskPoolScheduler_sets_scheduler_and_rx_schedulers()
+    public async Task WithTaskPoolScheduler_sets_scheduler_and_rx_schedulers()
     {
         var original = RxSchedulers.TaskpoolScheduler;
         try
@@ -37,10 +66,10 @@ public class BuilderMixinsTests
             builder.WithTaskPoolScheduler(scheduler);
             builder.WithCoreServices().Build();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(builder.TaskpoolScheduler, Is.SameAs(scheduler));
-                Assert.That(RxSchedulers.TaskpoolScheduler, Is.SameAs(scheduler));
+                await Assert.That(builder.TaskpoolScheduler).IsSameReferenceAs(scheduler);
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(scheduler);
             }
         }
         finally
@@ -50,7 +79,7 @@ public class BuilderMixinsTests
     }
 
     [Test]
-    public void WithMainThreadScheduler_sets_scheduler_and_rx_schedulers()
+    public async Task WithMainThreadScheduler_sets_scheduler_and_rx_schedulers()
     {
         var original = RxSchedulers.MainThreadScheduler;
         try
@@ -62,10 +91,10 @@ public class BuilderMixinsTests
             builder.WithMainThreadScheduler(scheduler);
             builder.WithCoreServices().Build();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(builder.MainThreadScheduler, Is.SameAs(scheduler));
-                Assert.That(RxSchedulers.MainThreadScheduler, Is.SameAs(scheduler));
+                await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(scheduler);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler);
             }
         }
         finally
@@ -75,7 +104,7 @@ public class BuilderMixinsTests
     }
 
     [Test]
-    public void WithRegistrationOnBuild_registers_service_when_building()
+    public async Task WithRegistrationOnBuild_registers_service_when_building()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -83,22 +112,22 @@ public class BuilderMixinsTests
         BuilderMixins.WithRegistrationOnBuild(builder, r => r.RegisterConstant("mixins", typeof(string)));
         builder.WithCoreServices().Build();
 
-        Assert.That(resolver.GetService<string>(), Is.EqualTo("mixins"));
+        await Assert.That(resolver.GetService<string>()).IsEqualTo("mixins");
     }
 
     [Test]
-    public void WithRegistration_registers_service_immediately()
+    public async Task WithRegistration_registers_service_immediately()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
 
         BuilderMixins.WithRegistration(builder, r => r.RegisterConstant(42, typeof(int)));
 
-        Assert.That(resolver.GetService<int>(), Is.EqualTo(42));
+        await Assert.That(resolver.GetService<int>()).IsEqualTo(42);
     }
 
     [Test]
-    public void WithViewsFromAssembly_registers_views_in_resolver()
+    public async Task WithViewsFromAssembly_registers_views_in_resolver()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -107,11 +136,11 @@ public class BuilderMixinsTests
         builder.WithCoreServices().Build();
 
         var view = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
-        Assert.That(view, Is.TypeOf<BuilderMixinsTestView>());
+        await Assert.That(view).IsTypeOf<BuilderMixinsTestView>();
     }
 
     [Test]
-    public void WithPlatformModule_registers_module_types()
+    public async Task WithPlatformModule_registers_module_types()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -119,11 +148,11 @@ public class BuilderMixinsTests
         BuilderMixins.WithPlatformModule<TestRegistrationModule>(builder);
         builder.WithCoreServices().Build();
 
-        Assert.That(resolver.GetService<PlatformRegistrationMarker>(), Is.Not.Null);
+        await Assert.That(resolver.GetService<PlatformRegistrationMarker>()).IsNotNull();
     }
 
     [Test]
-    public void UsingSplatModule_invokes_module_registration()
+    public async Task UsingSplatModule_invokes_module_registration()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -132,15 +161,15 @@ public class BuilderMixinsTests
         BuilderMixins.UsingSplatModule(builder, module);
         builder.WithCoreServices().Build();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resolver.GetService<SplatModuleMarker>(), Is.Not.Null);
-            Assert.That(module.Registered, Is.True);
+            await Assert.That(resolver.GetService<SplatModuleMarker>()).IsNotNull();
+            await Assert.That(module.Registered).IsTrue();
         }
     }
 
     [Test]
-    public void UsingSplatBuilder_executes_callback()
+    public async Task UsingSplatBuilder_executes_callback()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -148,11 +177,11 @@ public class BuilderMixinsTests
 
         BuilderMixins.UsingSplatBuilder(builder, _ => invoked = true);
 
-        Assert.That(invoked, Is.True);
+        await Assert.That(invoked).IsTrue();
     }
 
     [Test]
-    public void ForCustomPlatform_sets_scheduler_and_platform_registrations()
+    public async Task ForCustomPlatform_sets_scheduler_and_platform_registrations()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -161,15 +190,15 @@ public class BuilderMixinsTests
         BuilderMixins.ForCustomPlatform(builder, scheduler, r => r.RegisterConstant(new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker)));
         builder.WithCoreServices().Build();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(builder.MainThreadScheduler, Is.SameAs(scheduler));
-            Assert.That(resolver.GetService<PlatformRegistrationMarker>(), Is.Not.Null);
+            await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(scheduler);
+            await Assert.That(resolver.GetService<PlatformRegistrationMarker>()).IsNotNull();
         }
     }
 
     [Test]
-    public void ForPlatforms_invokes_all_actions()
+    public async Task ForPlatforms_invokes_all_actions()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -180,11 +209,11 @@ public class BuilderMixinsTests
             b => executed.Add("first"),
             b => executed.Add("second"));
 
-        Assert.That(executed, Is.EquivalentTo(new[] { "first", "second" }));
+        await Assert.That(executed).IsEquivalentTo(new[] { "first", "second" });
     }
 
     [Test]
-    public void ConfigureMessageBus_registers_configured_instance()
+    public async Task ConfigureMessageBus_registers_configured_instance()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -193,15 +222,15 @@ public class BuilderMixinsTests
         BuilderMixins.ConfigureMessageBus(builder, _ => configured = true);
         builder.WithCoreServices().Build();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resolver.GetService<IMessageBus>(), Is.InstanceOf<MessageBus>());
-            Assert.That(configured, Is.True);
+            await Assert.That(resolver.GetService<IMessageBus>()).IsAssignableTo<MessageBus>();
+            await Assert.That(configured).IsTrue();
         }
     }
 
     [Test]
-    public void ConfigureViewLocator_registers_configured_locator()
+    public async Task ConfigureViewLocator_registers_configured_locator()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -210,15 +239,15 @@ public class BuilderMixinsTests
         BuilderMixins.ConfigureViewLocator(builder, _ => configured = true);
         builder.WithCoreServices().Build();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resolver.GetService<IViewLocator>(), Is.InstanceOf<DefaultViewLocator>());
-            Assert.That(configured, Is.True);
+            await Assert.That(resolver.GetService<IViewLocator>()).IsAssignableTo<DefaultViewLocator>();
+            await Assert.That(configured).IsTrue();
         }
     }
 
     [Test]
-    public void ConfigureSuspensionDriver_invokes_action_when_driver_registered()
+    public async Task ConfigureSuspensionDriver_invokes_action_when_driver_registered()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -229,11 +258,11 @@ public class BuilderMixinsTests
         BuilderMixins.ConfigureSuspensionDriver(builder, d => observed = d);
         builder.WithCoreServices().Build();
 
-        Assert.That(observed, Is.SameAs(driver));
+        await Assert.That(observed).IsSameReferenceAs(driver);
     }
 
     [Test]
-    public void RegisterViewModel_registers_transient_view_model()
+    public async Task RegisterViewModel_registers_transient_view_model()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -243,16 +272,16 @@ public class BuilderMixinsTests
         var first = resolver.GetService<BuilderMixinsTestViewModel>();
         var second = resolver.GetService<BuilderMixinsTestViewModel>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(first, Is.Not.Null);
-            Assert.That(second, Is.Not.Null);
-            Assert.That(first, Is.Not.SameAs(second));
+            await Assert.That(first).IsNotNull();
+            await Assert.That(second).IsNotNull();
+            await Assert.That(first).IsNotSameReferenceAs(second);
         }
     }
 
     [Test]
-    public void RegisterSingletonViewModel_registers_singleton_instance()
+    public async Task RegisterSingletonViewModel_registers_singleton_instance()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -262,15 +291,15 @@ public class BuilderMixinsTests
         var first = resolver.GetService<BuilderMixinsTestViewModel>();
         var second = resolver.GetService<BuilderMixinsTestViewModel>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(first, Is.Not.Null);
-            Assert.That(first, Is.SameAs(second));
+            await Assert.That(first).IsNotNull();
+            await Assert.That(first).IsSameReferenceAs(second);
         }
     }
 
     [Test]
-    public void RegisterView_registers_transient_view()
+    public async Task RegisterView_registers_transient_view()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -280,16 +309,16 @@ public class BuilderMixinsTests
         var first = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
         var second = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(first, Is.Not.Null);
-            Assert.That(second, Is.Not.Null);
-            Assert.That(first, Is.Not.SameAs(second));
+            await Assert.That(first).IsNotNull();
+            await Assert.That(second).IsNotNull();
+            await Assert.That(first).IsNotSameReferenceAs(second);
         }
     }
 
     [Test]
-    public void RegisterSingletonView_registers_singleton_view()
+    public async Task RegisterSingletonView_registers_singleton_view()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -299,50 +328,11 @@ public class BuilderMixinsTests
         var first = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
         var second = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(first, Is.Not.Null);
-            Assert.That(first, Is.SameAs(second));
+            await Assert.That(first).IsNotNull();
+            await Assert.That(first).IsSameReferenceAs(second);
         }
-    }
-
-    private static IEnumerable<TestCaseData> NullBuilderCases()
-    {
-        var scheduler = ImmediateScheduler.Instance;
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithTaskPoolScheduler(null!, scheduler)))
-            .SetName("WithTaskPoolScheduler");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithMainThreadScheduler(null!, scheduler)))
-            .SetName("WithMainThreadScheduler");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithRegistrationOnBuild(null!, _ => { })))
-            .SetName("WithRegistrationOnBuild");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithRegistration(null!, _ => { })))
-            .SetName("WithRegistration");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithViewsFromAssembly(null!, typeof(BuilderMixinsTests).Assembly)))
-            .SetName("WithViewsFromAssembly");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.WithPlatformModule<TestRegistrationModule>(null!)))
-            .SetName("WithPlatformModule");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.UsingSplatModule(null!, new TestSplatModule())))
-            .SetName("UsingSplatModule");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.UsingSplatBuilder(null!, _ => { })))
-            .SetName("UsingSplatBuilder");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ForCustomPlatform(null!, scheduler, _ => { })))
-            .SetName("ForCustomPlatform");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ForPlatforms(null!, _ => { })))
-            .SetName("ForPlatforms");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ConfigureMessageBus(null!, _ => { })))
-            .SetName("ConfigureMessageBus");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ConfigureViewLocator(null!, _ => { })))
-            .SetName("ConfigureViewLocator");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.ConfigureSuspensionDriver(null!, _ => { })))
-            .SetName("ConfigureSuspensionDriver");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!)))
-            .SetName("RegisterViewModel");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!)))
-            .SetName("RegisterSingletonViewModel");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)))
-            .SetName("RegisterView");
-        yield return new TestCaseData((TestDelegate)(() => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)))
-            .SetName("RegisterSingletonView");
     }
 
     private sealed class BuilderMixinsTestViewModel : ReactiveObject

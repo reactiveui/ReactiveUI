@@ -12,14 +12,9 @@ using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class ReactiveCommandTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
@@ -44,8 +39,9 @@ public class ReactiveCommandTest : IDisposable
     /// <summary>
     /// A test that determines whether this instance [can execute changed is available via ICommand].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteChangedIsAvailableViaICommand()
+    public async Task CanExecuteChangedIsAvailableViaICommand()
     {
         var canExecuteSubject = new Subject<bool>();
         ICommand fixture =
@@ -59,25 +55,20 @@ public class ReactiveCommandTest : IDisposable
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(false);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        canExecuteChanged,
-                        Has.Count.EqualTo(2));
-            Assert.That(
-                        canExecuteChanged[0],
-                        Is.True);
-            Assert.That(
-                        canExecuteChanged[1],
-                        Is.False);
+            await Assert.That(canExecuteChanged).Count().IsEqualTo(2);
+            await Assert.That(canExecuteChanged[0]).IsTrue();
+            await Assert.That(canExecuteChanged[1]).IsFalse();
         }
     }
 
     /// <summary>
     /// A test that determines whether this instance [can execute is available via ICommand].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsAvailableViaICommand()
+    public async Task CanExecuteIsAvailableViaICommand()
     {
         var canExecuteSubject = new Subject<bool>();
         ICommand fixture =
@@ -86,52 +77,44 @@ public class ReactiveCommandTest : IDisposable
                                    canExecuteSubject,
                                    ImmediateScheduler.Instance);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.CanExecute(null),
-                        Is.False);
+            await Assert.That(fixture.CanExecute(null)).IsFalse();
 
             canExecuteSubject.OnNext(true);
-            Assert.That(
-                        fixture.CanExecute(null),
-                        Is.True);
+            await Assert.That(fixture.CanExecute(null)).IsTrue();
 
             canExecuteSubject.OnNext(false);
-            Assert.That(
-                        fixture.CanExecute(null),
-                        Is.False);
+            await Assert.That(fixture.CanExecute(null)).IsFalse();
         }
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is behavioral].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsBehavioral()
+    public async Task CanExecuteIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(
                                              static () => Observables.Unit,
                                              outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        canExecute,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        canExecute[0],
-                        Is.True);
+            await Assert.That(canExecute).Count().IsEqualTo(1);
+            await Assert.That(canExecute[0]).IsTrue();
         }
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if already executing].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsFalseIfAlreadyExecuting() =>
-        new TestScheduler().With(scheduler =>
+    public async Task CanExecuteIsFalseIfAlreadyExecuting() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var execute = Observables.Unit.Delay(
                                                  TimeSpan.FromSeconds(1),
@@ -144,34 +127,27 @@ public class ReactiveCommandTest : IDisposable
             fixture.Execute().Subscribe();
             scheduler.AdvanceByMs(100);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            canExecute,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            canExecute[1],
-                            Is.False);
+                await Assert.That(canExecute).Count().IsEqualTo(2);
+                await Assert.That(canExecute[1]).IsFalse();
             }
 
             scheduler.AdvanceByMs(901);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            canExecute,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            canExecute[2],
-                            Is.True);
+                await Assert.That(canExecute).Count().IsEqualTo(3);
+                await Assert.That(canExecute[2]).IsTrue();
             }
         });
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if caller dictates as such].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsFalseIfCallerDictatesAsSuch()
+    public async Task CanExecuteIsFalseIfCallerDictatesAsSuch()
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
@@ -183,28 +159,21 @@ public class ReactiveCommandTest : IDisposable
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(false);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        canExecute,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        canExecute[0],
-                        Is.False);
-            Assert.That(
-                        canExecute[1],
-                        Is.True);
-            Assert.That(
-                        canExecute[2],
-                        Is.False);
+            await Assert.That(canExecute).Count().IsEqualTo(3);
+            await Assert.That(canExecute[0]).IsFalse();
+            await Assert.That(canExecute[1]).IsTrue();
+            await Assert.That(canExecute[2]).IsFalse();
         }
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is unsubscribed after command disposal].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsUnsubscribedAfterCommandDisposal()
+    public async Task CanExecuteIsUnsubscribedAfterCommandDisposal()
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
@@ -212,22 +181,19 @@ public class ReactiveCommandTest : IDisposable
                                              canExecuteSubject,
                                              ImmediateScheduler.Instance);
 
-        Assert.That(
-                    canExecuteSubject.HasObservers,
-                    Is.True);
+        await Assert.That(canExecuteSubject.HasObservers).IsTrue();
 
         fixture.Dispose();
 
-        Assert.That(
-                    canExecuteSubject.HasObservers,
-                    Is.False);
+        await Assert.That(canExecuteSubject.HasObservers).IsFalse();
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute only ticks distinct values].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteOnlyTicksDistinctValues()
+    public async Task CanExecuteOnlyTicksDistinctValues()
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
@@ -243,25 +209,20 @@ public class ReactiveCommandTest : IDisposable
         canExecuteSubject.OnNext(true);
         canExecuteSubject.OnNext(true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        canExecute,
-                        Has.Count.EqualTo(2));
-            Assert.That(
-                        canExecute[0],
-                        Is.False);
-            Assert.That(
-                        canExecute[1],
-                        Is.True);
+            await Assert.That(canExecute).Count().IsEqualTo(2);
+            await Assert.That(canExecute[0]).IsFalse();
+            await Assert.That(canExecute[1]).IsTrue();
         }
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteTicksFailuresThroughThrownExceptions()
+    public async Task CanExecuteTicksFailuresThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
         var fixture = ReactiveCommand.Create(
@@ -273,22 +234,19 @@ public class ReactiveCommandTest : IDisposable
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        thrownExceptions,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        thrownExceptions[0].Message,
-                        Is.EqualTo("oops"));
+            await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+            await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
         }
     }
 
     /// <summary>
     /// Creates the task facilitates TPL integration.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CreateTaskFacilitatesTPLIntegration()
+    public async Task CreateTaskFacilitatesTPLIntegration()
     {
         var fixture =
             ReactiveCommand.CreateFromTask(
@@ -298,22 +256,19 @@ public class ReactiveCommandTest : IDisposable
 
         fixture.Execute().Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        results,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        results[0],
-                        Is.EqualTo(13));
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo(13);
         }
     }
 
     /// <summary>
     /// Creates the task facilitates TPL integration with parameter.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CreateTaskFacilitatesTPLIntegrationWithParameter()
+    public async Task CreateTaskFacilitatesTPLIntegrationWithParameter()
     {
         var fixture =
             ReactiveCommand.CreateFromTask<int, int>(
@@ -324,98 +279,123 @@ public class ReactiveCommandTest : IDisposable
         fixture.Execute(3).Subscribe();
         fixture.Execute(41).Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        results,
-                        Has.Count.EqualTo(2));
-            Assert.That(
-                        results[0],
-                        Is.EqualTo(4));
-            Assert.That(
-                        results[1],
-                        Is.EqualTo(42));
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[0]).IsEqualTo(4);
+            await Assert.That(results[1]).IsEqualTo(42);
         }
     }
 
     /// <summary>
     /// Creates the throws if execution parameter is null.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CreateThrowsIfExecutionParameterIsNull()
+    public async Task CreateThrowsIfExecutionParameterIsNull()
     {
-#pragma warning disable CS8625
-#pragma warning disable CS8600
-        Assert.That(
-                    static () => ReactiveCommand.Create(null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Action<Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<Unit, Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<IObservable<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<Task<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<Unit, IObservable<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.Create((Func<Unit, Task<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-#pragma warning restore CS8600
-#pragma warning restore CS8625
+#pragma warning disable CS4014 // Because this call is not awaited
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create(null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Action<Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<Unit, Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<IObservable<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<Task<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<Unit, IObservable<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.Create((Func<Unit, Task<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+#pragma warning restore CS4014
     }
 
     /// <summary>
     /// Creates the throws if execution parameter is null (RunInBackground).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
+    public async Task CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
     {
-#pragma warning disable CS8625
-#pragma warning disable CS8600
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground(null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Action<Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, Unit>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<IObservable<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<Task<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, IObservable<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-        Assert.That(
-                    static () => ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null),
-                    Throws.TypeOf<ArgumentNullException>());
-#pragma warning restore CS8600
-#pragma warning restore CS8625
+#pragma warning disable CS4014 // Because this call is not awaited
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground(null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Action<Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<Unit, Unit>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<IObservable<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<Task<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<Unit, IObservable<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+        await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
+        {
+            ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null!);
+            await Task.CompletedTask;
+        });
+#pragma warning restore CS4014
     }
 
     /// <summary>
     /// Exceptions are delivered on output scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExceptionsAreDeliveredOnOutputScheduler() =>
-        new TestScheduler().With(scheduler =>
+    public async Task ExceptionsAreDeliveredOnOutputScheduler() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture =
                 ReactiveCommand.CreateFromObservable(
@@ -427,21 +407,18 @@ public class ReactiveCommandTest : IDisposable
                                         _ => { },
                                         _ => { });
 
-            Assert.That(
-                        exception,
-                        Is.Null);
+            await Assert.That(exception).IsNull();
             scheduler.Start();
-            Assert.That(
-                        exception,
-                        Is.TypeOf<InvalidOperationException>());
+            await Assert.That(exception).IsTypeOf<InvalidOperationException>();
         });
 
     /// <summary>
     /// Executes can be cancelled.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteCanBeCancelled() =>
-        new TestScheduler().With(scheduler =>
+    public async Task ExecuteCanBeCancelled() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var execute = Observables.Unit.Delay(
                                                  TimeSpan.FromSeconds(1),
@@ -455,36 +432,29 @@ public class ReactiveCommandTest : IDisposable
             var sub2 = fixture.Execute().Subscribe();
             scheduler.AdvanceByMs(999);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.True);
-                Assert.That(
-                            executed,
-                            Is.Empty);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
+                await Assert.That(executed).IsEmpty();
             }
 
             sub1.Dispose();
 
             scheduler.AdvanceByMs(2);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            executed,
-                            Has.Count.EqualTo(1));
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.False);
+                await Assert.That(executed).Count().IsEqualTo(1);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsFalse();
             }
         });
 
     /// <summary>
     /// Executes can tick through multiple results.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteCanTickThroughMultipleResults()
+    public async Task ExecuteCanTickThroughMultipleResults()
     {
         var fixture = ReactiveCommand.CreateFromObservable(
                                                            static () => new[] { 1, 2, 3 }.ToObservable(),
@@ -493,29 +463,22 @@ public class ReactiveCommandTest : IDisposable
 
         fixture.Execute().Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        results,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        results[0],
-                        Is.EqualTo(1));
-            Assert.That(
-                        results[1],
-                        Is.EqualTo(2));
-            Assert.That(
-                        results[2],
-                        Is.EqualTo(3));
+            await Assert.That(results).Count().IsEqualTo(3);
+            await Assert.That(results[0]).IsEqualTo(1);
+            await Assert.That(results[1]).IsEqualTo(2);
+            await Assert.That(results[2]).IsEqualTo(3);
         }
     }
 
     /// <summary>
     /// Executes facilitates any number of in flight executions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteFacilitatesAnyNumberOfInFlightExecutions() =>
-        new TestScheduler().With(scheduler =>
+    public async Task ExecuteFacilitatesAnyNumberOfInFlightExecutions() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var execute = Observables.Unit.Delay(
                                                  TimeSpan.FromMilliseconds(500),
@@ -534,58 +497,43 @@ public class ReactiveCommandTest : IDisposable
             var sub4 = fixture.Execute().Subscribe();
             scheduler.AdvanceByMs(100);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.True);
-                Assert.That(
-                            executed,
-                            Is.Empty);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
+                await Assert.That(executed).IsEmpty();
             }
 
             scheduler.AdvanceByMs(101);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            executed,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.True);
+                await Assert.That(executed).Count().IsEqualTo(2);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
             }
 
             scheduler.AdvanceByMs(200);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            executed,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.True);
+                await Assert.That(executed).Count().IsEqualTo(3);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
             }
 
             scheduler.AdvanceByMs(100);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            executed,
-                            Has.Count.EqualTo(4));
-                Assert.That(
-                            fixture.IsExecuting.FirstAsync().Wait(),
-                            Is.False);
+                await Assert.That(executed).Count().IsEqualTo(4);
+                await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsFalse();
             }
         });
 
     /// <summary>
     /// Execute is available via ICommand.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteIsAvailableViaICommand()
+    public async Task ExecuteIsAvailableViaICommand()
     {
         var executed = false;
         ICommand fixture = ReactiveCommand.Create(
@@ -597,16 +545,15 @@ public class ReactiveCommandTest : IDisposable
                                                   outputScheduler: ImmediateScheduler.Instance);
 
         fixture.Execute(null);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Execute passes through parameter.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecutePassesThroughParameter()
+    public async Task ExecutePassesThroughParameter()
     {
         var parameters = new List<int>();
         var fixture = ReactiveCommand.CreateFromObservable<int, Unit>(
@@ -621,28 +568,21 @@ public class ReactiveCommandTest : IDisposable
         fixture.Execute(42).Subscribe();
         fixture.Execute(348).Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        parameters,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        parameters[0],
-                        Is.EqualTo(1));
-            Assert.That(
-                        parameters[1],
-                        Is.EqualTo(42));
-            Assert.That(
-                        parameters[2],
-                        Is.EqualTo(348));
+            await Assert.That(parameters).Count().IsEqualTo(3);
+            await Assert.That(parameters[0]).IsEqualTo(1);
+            await Assert.That(parameters[1]).IsEqualTo(42);
+            await Assert.That(parameters[2]).IsEqualTo(348);
         }
     }
 
     /// <summary>
     /// Execute re-enables execution even after failure.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteReenablesExecutionEvenAfterFailure()
+    public async Task ExecuteReenablesExecutionEvenAfterFailure()
     {
         var fixture =
             ReactiveCommand.CreateFromObservable(
@@ -656,35 +596,24 @@ public class ReactiveCommandTest : IDisposable
                                     static _ => { },
                                     static _ => { });
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        thrownExceptions,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        thrownExceptions[0].Message,
-                        Is.EqualTo("oops"));
-            Assert.That(
-                        canExecute,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        canExecute[0],
-                        Is.True);
-            Assert.That(
-                        canExecute[1],
-                        Is.False);
-            Assert.That(
-                        canExecute[2],
-                        Is.True);
+            await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+            await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
+            await Assert.That(canExecute).Count().IsEqualTo(3);
+            await Assert.That(canExecute[0]).IsTrue();
+            await Assert.That(canExecute[1]).IsFalse();
+            await Assert.That(canExecute[2]).IsTrue();
         }
     }
 
     /// <summary>
     /// Execute result is delivered on specified scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteResultIsDeliveredOnSpecifiedScheduler() =>
-        new TestScheduler().With(scheduler =>
+    public async Task ExecuteResultIsDeliveredOnSpecifiedScheduler() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var execute = Observables.Unit;
             var fixture = ReactiveCommand.CreateFromObservable(
@@ -694,20 +623,17 @@ public class ReactiveCommandTest : IDisposable
 
             fixture.Execute().ObserveOn(scheduler).Subscribe(_ => executed = true);
 
-            Assert.That(
-                        executed,
-                        Is.False);
+            await Assert.That(executed).IsFalse();
             scheduler.AdvanceByMs(1);
-            Assert.That(
-                        executed,
-                        Is.True);
+            await Assert.That(executed).IsTrue();
         });
 
     /// <summary>
     /// Execute ticks any exception.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksAnyException()
+    public async Task ExecuteTicksAnyException()
     {
         var fixture =
             ReactiveCommand.CreateFromObservable(
@@ -720,16 +646,15 @@ public class ReactiveCommandTest : IDisposable
                                     ex => exception = ex,
                                     () => { });
 
-        Assert.That(
-                    exception,
-                    Is.TypeOf<InvalidOperationException>());
+        await Assert.That(exception).IsTypeOf<InvalidOperationException>();
     }
 
     /// <summary>
     /// Execute ticks any lambda exception.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksAnyLambdaException()
+    public async Task ExecuteTicksAnyLambdaException()
     {
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(
                                                                  () => throw new InvalidOperationException(),
@@ -741,16 +666,15 @@ public class ReactiveCommandTest : IDisposable
                                     ex => exception = ex,
                                     () => { });
 
-        Assert.That(
-                    exception,
-                    Is.TypeOf<InvalidOperationException>());
+        await Assert.That(exception).IsTypeOf<InvalidOperationException>();
     }
 
     /// <summary>
     /// Execute ticks errors through thrown exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksErrorsThroughThrownExceptions()
+    public async Task ExecuteTicksErrorsThroughThrownExceptions()
     {
         var fixture =
             ReactiveCommand.CreateFromObservable(
@@ -763,22 +687,19 @@ public class ReactiveCommandTest : IDisposable
                                     static _ => { },
                                     static _ => { });
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        thrownExceptions,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        thrownExceptions[0].Message,
-                        Is.EqualTo("oops"));
+            await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+            await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
         }
     }
 
     /// <summary>
     /// Execute ticks lambda errors through thrown exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksLambdaErrorsThroughThrownExceptions()
+    public async Task ExecuteTicksLambdaErrorsThroughThrownExceptions()
     {
         var fixture = ReactiveCommand.CreateFromObservable<Unit>(
                                                                  static () => throw new InvalidOperationException("oops"),
@@ -790,25 +711,20 @@ public class ReactiveCommandTest : IDisposable
                                     static _ => { },
                                     static _ => { });
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        thrownExceptions,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        thrownExceptions[0].Message,
-                        Is.EqualTo("oops"));
-            Assert.That(
-                        fixture.CanExecute.FirstAsync().Wait(),
-                        Is.True);
+            await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+            await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
+            await Assert.That(fixture.CanExecute.FirstAsync().Wait()).IsTrue();
         }
     }
 
     /// <summary>
     /// Execute ticks through the result.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksThroughTheResult()
+    public async Task ExecuteTicksThroughTheResult()
     {
         var num = 0;
         var fixture =
@@ -824,51 +740,39 @@ public class ReactiveCommandTest : IDisposable
         num = 30;
         fixture.Execute().Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        results,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        results[0],
-                        Is.EqualTo(1));
-            Assert.That(
-                        results[1],
-                        Is.EqualTo(10));
-            Assert.That(
-                        results[2],
-                        Is.EqualTo(30));
+            await Assert.That(results).Count().IsEqualTo(3);
+            await Assert.That(results[0]).IsEqualTo(1);
+            await Assert.That(results[1]).IsEqualTo(10);
+            await Assert.That(results[2]).IsEqualTo(30);
         }
     }
 
     /// <summary>
     /// Execute via ICommand throws if parameter type is incorrect.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
+    public async Task ExecuteViaICommandThrowsIfParameterTypeIsIncorrect()
     {
         ICommand fixture = ReactiveCommand.Create<int>(
                                                        _ => { },
                                                        outputScheduler: ImmediateScheduler.Instance);
         var ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute("foo"));
-        Assert.That(
-                    ex!.Message,
-                    Is.EqualTo(
-                               "Command requires parameters of type System.Int32, but received parameter of type System.String."));
+        await Assert.That(ex!.Message).IsEqualTo("Command requires parameters of type System.Int32, but received parameter of type System.String.");
 
         fixture = ReactiveCommand.Create<string>(_ => { });
         ex = Assert.Throws<InvalidOperationException>(() => fixture.Execute(13));
-        Assert.That(
-                    ex!.Message,
-                    Is.EqualTo(
-                               "Command requires parameters of type System.String, but received parameter of type System.Int32."));
+        await Assert.That(ex!.Message).IsEqualTo("Command requires parameters of type System.String, but received parameter of type System.Int32.");
     }
 
     /// <summary>
     /// Execute via ICommand works with nullable types.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteViaICommandWorksWithNullableTypes()
+    public async Task ExecuteViaICommandWorksWithNullableTypes()
     {
         int? value = null;
         ICommand fixture =
@@ -877,21 +781,18 @@ public class ReactiveCommandTest : IDisposable
                                          outputScheduler: ImmediateScheduler.Instance);
 
         fixture.Execute(42);
-        Assert.That(
-                    value,
-                    Is.EqualTo(42));
+        await Assert.That(value).IsEqualTo(42);
 
         fixture.Execute(null);
-        Assert.That(
-                    value,
-                    Is.Null);
+        await Assert.That(value).IsNull();
     }
 
     /// <summary>
     /// Invoke command against ICommand in target invokes the command.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInTargetInvokesTheCommand()
+    public async Task InvokeCommandAgainstICommandInTargetInvokesTheCommand()
     {
         var executionCount = 0;
         var fixture = new ICommandHolder();
@@ -905,21 +806,18 @@ public class ReactiveCommandTest : IDisposable
                                    outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against ICommand in target passes the specified value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
+    public async Task InvokeCommandAgainstICommandInTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new ICommandHolder();
         var source = new Subject<int>();
@@ -930,22 +828,19 @@ public class ReactiveCommandTest : IDisposable
         fixture.TheCommand = command;
 
         source.OnNext(42);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        command.CanExecuteParameter,
-                        Is.EqualTo(42));
-            Assert.That(
-                        command.ExecuteParameter,
-                        Is.EqualTo(42));
+            await Assert.That(command.CanExecuteParameter).IsEqualTo(42);
+            await Assert.That(command.ExecuteParameter).IsEqualTo(42);
         }
     }
 
     /// <summary>
     /// Invoke command against nullable ICommand in target passes the specified value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInNullableTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
+    public async Task InvokeCommandAgainstICommandInNullableTargetPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new ICommandHolder();
         var source = new Subject<int>();
@@ -956,22 +851,19 @@ public class ReactiveCommandTest : IDisposable
         fixture.TheCommand = command;
 
         source.OnNext(42);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        command.CanExecuteParameter,
-                        Is.EqualTo(42));
-            Assert.That(
-                        command.ExecuteParameter,
-                        Is.EqualTo(42));
+            await Assert.That(command.CanExecuteParameter).IsEqualTo(42);
+            await Assert.That(command.ExecuteParameter).IsEqualTo(42);
         }
     }
 
     /// <summary>
     /// Invoke command against ICommand in target respects can execute.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInTargetRespectsCanExecute()
+    public async Task InvokeCommandAgainstICommandInTargetRespectsCanExecute()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -986,22 +878,19 @@ public class ReactiveCommandTest : IDisposable
                                                     ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Invoke command against nullable target respects can execute window.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInNullableTargetRespectsCanExecute()
+    public async Task InvokeCommandAgainstICommandInNullableTargetRespectsCanExecute()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1016,22 +905,19 @@ public class ReactiveCommandTest : IDisposable
                                                     ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Invoke command against ICommand in target respects can execute window.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInTargetRespectsCanExecuteWindow()
+    public async Task InvokeCommandAgainstICommandInTargetRespectsCanExecuteWindow()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1046,22 +932,19 @@ public class ReactiveCommandTest : IDisposable
                                                     ImmediateScheduler.Instance);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         // When the window reopens, previous requests should NOT execute.
         canExecute.OnNext(true);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
     }
 
     /// <summary>
     /// Invoke command against ICommand in target swallows exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInTargetSwallowsExceptions()
+    public async Task InvokeCommandAgainstICommandInTargetSwallowsExceptions()
     {
         var count = 0;
         var fixture = new ICommandHolder();
@@ -1082,16 +965,15 @@ public class ReactiveCommandTest : IDisposable
         source.OnNext(Unit.Default);
         source.OnNext(Unit.Default);
 
-        Assert.That(
-                    count,
-                    Is.EqualTo(2));
+        await Assert.That(count).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against ICommand invokes the command.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandInvokesTheCommand()
+    public async Task InvokeCommandAgainstICommandInvokesTheCommand()
     {
         var executionCount = 0;
         ICommand fixture = ReactiveCommand.Create(
@@ -1101,21 +983,18 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against nullable ICommand invokes the command.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstNullableICommandInvokesTheCommand()
+    public async Task InvokeCommandAgainstNullableICommandInvokesTheCommand()
     {
         var executionCount = 0;
         ICommand fixture =
@@ -1126,43 +1005,37 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against ICommand passes the specified value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandPassesTheSpecifiedValueToCanExecuteAndExecute()
+    public async Task InvokeCommandAgainstICommandPassesTheSpecifiedValueToCanExecuteAndExecute()
     {
         var fixture = new FakeCommand();
         var source = new Subject<int>();
         source.InvokeCommand(fixture);
 
         source.OnNext(42);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.CanExecuteParameter,
-                        Is.EqualTo(42));
-            Assert.That(
-                        fixture.ExecuteParameter,
-                        Is.EqualTo(42));
+            await Assert.That(fixture.CanExecuteParameter).IsEqualTo(42);
+            await Assert.That(fixture.ExecuteParameter).IsEqualTo(42);
         }
     }
 
     /// <summary>
     /// Invoke command against ICommand respects can execute.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstICommandRespectsCanExecute()
+    public async Task InvokeCommandAgainstICommandRespectsCanExecute()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1174,22 +1047,19 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Invoke command against reactive command in target invokes the command.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
+    public async Task InvokeCommandAgainstReactiveCommandInTargetInvokesTheCommand()
     {
         var executionCount = 0;
         var fixture = new ReactiveCommandHolder();
@@ -1203,21 +1073,18 @@ public class ReactiveCommandTest : IDisposable
                                         outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         source.OnNext(0);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against reactive command in target passes the specified value to execute.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInTargetPassesTheSpecifiedValueToExecute()
+    public async Task InvokeCommandAgainstReactiveCommandInTargetPassesTheSpecifiedValueToExecute()
     {
         var executeReceived = 0;
         var fixture = new ReactiveCommandHolder();
@@ -1231,16 +1098,15 @@ public class ReactiveCommandTest : IDisposable
                                         outputScheduler: ImmediateScheduler.Instance);
 
         source.OnNext(42);
-        Assert.That(
-                    executeReceived,
-                    Is.EqualTo(42));
+        await Assert.That(executeReceived).IsEqualTo(42);
     }
 
     /// <summary>
     /// Invoke command against reactive command in target respects can execute.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecute()
+    public async Task InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecute()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1255,22 +1121,19 @@ public class ReactiveCommandTest : IDisposable
                                                          ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         canExecute.OnNext(true);
         source.OnNext(0);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Invoke command against reactive command in target respects can execute window.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecuteWindow()
+    public async Task InvokeCommandAgainstReactiveCommandInTargetRespectsCanExecuteWindow()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1285,22 +1148,19 @@ public class ReactiveCommandTest : IDisposable
                                                          ImmediateScheduler.Instance);
 
         source.OnNext(0);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         // When the window reopens, previous requests should NOT execute.
         canExecute.OnNext(true);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
     }
 
     /// <summary>
     /// Invoke command against reactive command in target swallows exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
+    public async Task InvokeCommandAgainstReactiveCommandInTargetSwallowsExceptions()
     {
         var count = 0;
         var fixture = new ReactiveCommandHolder
@@ -1322,16 +1182,15 @@ public class ReactiveCommandTest : IDisposable
         source.OnNext(0);
         source.OnNext(0);
 
-        Assert.That(
-                    count,
-                    Is.EqualTo(2));
+        await Assert.That(count).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against reactive command invokes the command.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandInvokesTheCommand()
+    public async Task InvokeCommandAgainstReactiveCommandInvokesTheCommand()
     {
         var executionCount = 0;
         var fixture = ReactiveCommand.Create(
@@ -1341,21 +1200,18 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command against reactive command passes the specified value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
+    public async Task InvokeCommandAgainstReactiveCommandPassesTheSpecifiedValueToExecute()
     {
         var executeReceived = 0;
         var fixture =
@@ -1366,16 +1222,15 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(42);
-        Assert.That(
-                    executeReceived,
-                    Is.EqualTo(42));
+        await Assert.That(executeReceived).IsEqualTo(42);
     }
 
     /// <summary>
     /// Invoke command against reactive command respects can execute.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandRespectsCanExecute()
+    public async Task InvokeCommandAgainstReactiveCommandRespectsCanExecute()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1387,22 +1242,19 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         canExecute.OnNext(true);
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.True);
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
     /// Invoke command against reactive command respects can execute window.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandRespectsCanExecuteWindow()
+    public async Task InvokeCommandAgainstReactiveCommandRespectsCanExecuteWindow()
     {
         var executed = false;
         var canExecute = new BehaviorSubject<bool>(false);
@@ -1414,22 +1266,19 @@ public class ReactiveCommandTest : IDisposable
         source.InvokeCommand(fixture);
 
         source.OnNext(Unit.Default);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
 
         // When the window reopens, previous requests should NOT execute.
         canExecute.OnNext(true);
-        Assert.That(
-                    executed,
-                    Is.False);
+        await Assert.That(executed).IsFalse();
     }
 
     /// <summary>
     /// Invoke command against reactive command swallows exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandAgainstReactiveCommandSwallowsExceptions()
+    public async Task InvokeCommandAgainstReactiveCommandSwallowsExceptions()
     {
         var count = 0;
         var fixture = ReactiveCommand.Create(
@@ -1446,16 +1295,15 @@ public class ReactiveCommandTest : IDisposable
         source.OnNext(Unit.Default);
         source.OnNext(Unit.Default);
 
-        Assert.That(
-                    count,
-                    Is.EqualTo(2));
+        await Assert.That(count).IsEqualTo(2);
     }
 
     /// <summary>
     /// Invoke command works even if the source is cold.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void InvokeCommandWorksEvenIfTheSourceIsCold()
+    public async Task InvokeCommandWorksEvenIfTheSourceIsCold()
     {
         var executionCount = 0;
         var fixture = ReactiveCommand.Create(
@@ -1464,38 +1312,34 @@ public class ReactiveCommandTest : IDisposable
         var source = Observable.Return(Unit.Default);
         source.InvokeCommand(fixture);
 
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
     }
 
     /// <summary>
     /// IsExecuting is behavioral.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void IsExecutingIsBehavioral()
+    public async Task IsExecutingIsBehavioral()
     {
         var fixture = ReactiveCommand.Create(
                                              static () => Observables.Unit,
                                              outputScheduler: ImmediateScheduler.Instance);
         fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        isExecuting,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        isExecuting[0],
-                        Is.False);
+            await Assert.That(isExecuting).Count().IsEqualTo(1);
+            await Assert.That(isExecuting[0]).IsFalse();
         }
     }
 
     /// <summary>
     /// IsExecuting remains true as long as pipeline has not completed.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
+    public async Task IsExecutingRemainsTrueAsLongAsExecutionPipelineHasNotCompleted()
     {
         var execute = new Subject<Unit>();
         var fixture = ReactiveCommand.CreateFromObservable(
@@ -1504,32 +1348,25 @@ public class ReactiveCommandTest : IDisposable
 
         fixture.Execute().Subscribe();
 
-        Assert.That(
-                    fixture.IsExecuting.FirstAsync().Wait(),
-                    Is.True);
+        await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
 
         execute.OnNext(Unit.Default);
-        Assert.That(
-                    fixture.IsExecuting.FirstAsync().Wait(),
-                    Is.True);
+        await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
 
         execute.OnNext(Unit.Default);
-        Assert.That(
-                    fixture.IsExecuting.FirstAsync().Wait(),
-                    Is.True);
+        await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsTrue();
 
         execute.OnCompleted();
-        Assert.That(
-                    fixture.IsExecuting.FirstAsync().Wait(),
-                    Is.False);
+        await Assert.That(fixture.IsExecuting.FirstAsync().Wait()).IsFalse();
     }
 
     /// <summary>
     /// IsExecuting ticks as executions progress.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void IsExecutingTicksAsExecutionsProgress() =>
-        new TestScheduler().With(scheduler =>
+    public async Task IsExecutingTicksAsExecutionsProgress() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var execute = Observables.Unit.Delay(
                                                  TimeSpan.FromSeconds(1),
@@ -1543,38 +1380,29 @@ public class ReactiveCommandTest : IDisposable
             fixture.Execute().Subscribe();
             scheduler.AdvanceByMs(100);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            isExecuting,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            isExecuting[0],
-                            Is.False);
-                Assert.That(
-                            isExecuting[1],
-                            Is.True);
+                await Assert.That(isExecuting).Count().IsEqualTo(2);
+                await Assert.That(isExecuting[0]).IsFalse();
+                await Assert.That(isExecuting[1]).IsTrue();
             }
 
             scheduler.AdvanceByMs(901);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            isExecuting,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            isExecuting[2],
-                            Is.False);
+                await Assert.That(isExecuting).Count().IsEqualTo(3);
+                await Assert.That(isExecuting[2]).IsFalse();
             }
         });
 
     /// <summary>
     /// Result is ticked through specified scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ResultIsTickedThroughSpecifiedScheduler() =>
-        new TestScheduler().WithAsync(static async scheduler =>
+    public async Task ResultIsTickedThroughSpecifiedScheduler() =>
+        await new TestScheduler().WithAsync(static async scheduler =>
         {
             var fixture = ReactiveCommand.CreateRunInBackground(
                                                                 static () => Observables.Unit,
@@ -1582,22 +1410,19 @@ public class ReactiveCommandTest : IDisposable
             fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
             fixture.Execute().Subscribe();
-            Assert.That(
-                        results,
-                        Is.Empty);
+            await Assert.That(results).IsEmpty();
 
             scheduler.AdvanceByMs(1);
-            Assert.That(
-                        results,
-                        Has.Count.EqualTo(1));
+            await Assert.That(results).Count().IsEqualTo(1);
             return Task.CompletedTask;
         });
 
     /// <summary>
     /// Synchronous command executes lazily.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SynchronousCommandExecuteLazily()
+    public async Task SynchronousCommandExecuteLazily()
     {
         var executionCount = 0;
         var fixture1 =
@@ -1628,36 +1453,27 @@ public class ReactiveCommandTest : IDisposable
         var execute3 = fixture3.Execute();
         var execute4 = fixture4.Execute();
 
-        Assert.That(
-                    executionCount,
-                    Is.Zero);
+        await Assert.That(executionCount).IsEqualTo(0);
 
         execute1.Subscribe();
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(1));
+        await Assert.That(executionCount).IsEqualTo(1);
 
         execute2.Subscribe();
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(2));
+        await Assert.That(executionCount).IsEqualTo(2);
 
         execute3.Subscribe();
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(3));
+        await Assert.That(executionCount).IsEqualTo(3);
 
         execute4.Subscribe();
-        Assert.That(
-                    executionCount,
-                    Is.EqualTo(4));
+        await Assert.That(executionCount).IsEqualTo(4);
     }
 
     /// <summary>
     /// Synchronous commands fail correctly.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SynchronousCommandsFailCorrectly()
+    public async Task SynchronousCommandsFailCorrectly()
     {
         var fixture1 = ReactiveCommand.Create(
                                               () => throw new InvalidOperationException(),
@@ -1682,30 +1498,22 @@ public class ReactiveCommandTest : IDisposable
         fixture1.Execute().Subscribe(
                                      _ => { },
                                      _ => { });
-        Assert.That(
-                    failureCount,
-                    Is.EqualTo(1));
+        await Assert.That(failureCount).IsEqualTo(1);
 
         fixture2.Execute().Subscribe(
                                      _ => { },
                                      _ => { });
-        Assert.That(
-                    failureCount,
-                    Is.EqualTo(2));
+        await Assert.That(failureCount).IsEqualTo(2);
 
         fixture3.Execute().Subscribe(
                                      _ => { },
                                      _ => { });
-        Assert.That(
-                    failureCount,
-                    Is.EqualTo(3));
+        await Assert.That(failureCount).IsEqualTo(3);
 
         fixture4.Execute().Subscribe(
                                      _ => { },
                                      _ => { });
-        Assert.That(
-                    failureCount,
-                    Is.EqualTo(4));
+        await Assert.That(failureCount).IsEqualTo(4);
     }
 
     [Test]
@@ -1736,26 +1544,18 @@ public class ReactiveCommandTest : IDisposable
         });
 
         await testSequencer.AdvancePhaseAsync("Executing {false}");
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        isExecuting,
-                        Is.False);
-            Assert.That(
-                        fail,
-                        Is.Null);
+            await Assert.That(isExecuting).IsFalse();
+            await Assert.That(fail).IsNull();
         }
 
         fixture.Execute().Subscribe();
         await testSequencer.AdvancePhaseAsync("Executing {true}");
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        isExecuting,
-                        Is.True);
-            Assert.That(
-                        fail,
-                        Is.Null);
+            await Assert.That(isExecuting).IsTrue();
+            await Assert.That(fail).IsNull();
         }
 
         subj.OnNext(Unit.Default);
@@ -1764,14 +1564,10 @@ public class ReactiveCommandTest : IDisposable
         await testSequencer.AdvancePhaseAsync("Executing {false}");
         await testSequencer.AdvancePhaseAsync("Exception");
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        isExecuting,
-                        Is.False);
-            Assert.That(
-                        fail?.Message,
-                        Is.EqualTo("break execution"));
+            await Assert.That(isExecuting).IsFalse();
+            await Assert.That(fail?.Message).IsEqualTo("break execution");
         }
 
         testSequencer.Dispose();
@@ -1835,19 +1631,13 @@ public class ReactiveCommandTest : IDisposable
 
         // Phase 1
         await testSequencer.AdvancePhaseAsync("Phase 1");
-        Assert.That(
-                    Volatile.Read(ref latestIsExecutingValue),
-                    Is.True,
-                    "IsExecuting should be true when execution is underway");
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
         disposable.Dispose();
 
         // Phase 2
         await testSequencer.AdvancePhaseAsync("Phase 2");
-        Assert.That(
-                    Volatile.Read(ref latestIsExecutingValue),
-                    Is.True,
-                    "IsExecuting should remain true while cancellation is in progress");
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
         // Phase 3
         await testSequencer.AdvancePhaseAsync("Phase 3");
@@ -1858,21 +1648,15 @@ public class ReactiveCommandTest : IDisposable
             await Task.Yield();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        Volatile.Read(ref latestIsExecutingValue),
-                        Is.False,
-                        "IsExecuting should be false once cancellation completes");
-            Assert.That(
-                        statusTrail,
-                        Is.EqualTo(
-                        [
+            await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsFalse();
+            await Assert.That(statusTrail).IsEquivalentTo([
                             (0, "command executing = False"),
                             (1, "command executing = True"),
                             (2, "started command"),
                             (3, "command executing = False")
-                        ]));
+                        ]);
         }
     }
 
@@ -1891,51 +1675,37 @@ public class ReactiveCommandTest : IDisposable
                   .InvokeCommand(command);
 
         await testSequencer.AdvancePhaseAsync("Phase 1");
-        Assert.That(
-                    result,
-                    Is.GreaterThanOrEqualTo(1));
+        await Assert.That(result).IsGreaterThanOrEqualTo(1);
 
         testSequencer.Dispose();
     }
 
     [Test]
-    public void ShouldCallAsyncMethodOnSettingReactiveSetpoint() =>
-        new TestScheduler().WithAsync(static async scheduler =>
+    public async Task ShouldCallAsyncMethodOnSettingReactiveSetpoint() =>
+        await new TestScheduler().WithAsync(static async scheduler =>
         {
             // set
             var fooVm = new Mocks.FooViewModel(new());
 
-            Assert.That(
-                        fooVm.Foo.Value,
-                        Is.EqualTo(42),
-                        "initial value unchanged");
+            await Assert.That(fooVm.Foo.Value).IsEqualTo(42);
 
             // act
             scheduler.AdvanceByMs(11); // async processing
-            Assert.That(
-                        fooVm.Foo.Value,
-                        Is.Zero,
-                        "value set to default Setpoint value");
+            await Assert.That(fooVm.Foo.Value).IsEqualTo(0);
 
             fooVm.Setpoint = 123;
             scheduler.AdvanceByMs(5); // async task processing
 
             // assert
-            Assert.That(
-                        fooVm.Foo.Value,
-                        Is.Zero,
-                        "value unchanged as async task still processing");
+            await Assert.That(fooVm.Foo.Value).IsEqualTo(0);
             scheduler.AdvanceByMs(6); // process async setpoint setting
 
-            Assert.That(
-                        fooVm.Foo.Value,
-                        Is.EqualTo(123),
-                        "value set to Setpoint value");
+            await Assert.That(fooVm.Foo.Value).IsEqualTo(123);
             await Task.CompletedTask;
         });
 
     [Test]
-    [Ignore("Flakey on some platforms, ignore for the moment")]
+    [Skip("Flakey on some platforms, ignore for the moment")]
     public async Task ReactiveCommandCreateFromTaskHandlesExecuteCancellation()
     {
         using var testSequencer = new TestSequencer();
@@ -1980,27 +1750,19 @@ public class ReactiveCommandTest : IDisposable
                            isExec);
         });
 
-        Assert.That(
-                    fail,
-                    Is.Null);
+        await Assert.That(fail).IsNull();
         var result = false;
         var disposable = fixture.Execute().Subscribe(_ => result = true);
         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                            Volatile.Read(ref latestIsExecutingValue),
-                            Is.True);
-            Assert.That(
-                        statusTrail.Any(x => x.Status == "started command"),
-                        Is.True);
+            await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+            await Assert.That(statusTrail.Any(x => x.Status == "started command")).IsTrue();
         }
 
         disposable.Dispose();
         await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
-        Assert.That(
-                    Volatile.Read(ref latestIsExecutingValue),
-                    Is.True);
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
         await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
 
         var start = Environment.TickCount;
@@ -2009,87 +1771,64 @@ public class ReactiveCommandTest : IDisposable
             await Task.Yield();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        result,
-                        Is.False,
-                        "No result expected as cancelled");
-            Assert.That(
-                        statusTrail,
-                        Is.EqualTo(
-                        [
+            await Assert.That(result).IsFalse();
+            await Assert.That(statusTrail).IsEquivalentTo([
                             (0, "command executing = False"),
                             (1, "command executing = True"),
                             (2, "started command"),
                             (3, "starting cancelling command"),
                             (4, "finished cancelling command"),
                             (5, "command executing = False")
-                        ]));
-            Assert.That(
-                        fail,
-                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
+                        ]);
+            await Assert.That(fail).IsTypeOf<TaskCanceledException>();
         }
     }
 
     [Test]
-    public void ReactiveCommandCreateFromTaskHandlesTaskException() =>
-        new TestScheduler().With(async scheduler =>
+    public async Task ReactiveCommandCreateFromTaskHandlesTaskException()
+    {
+        var subj = new Subject<Unit>();
+        Exception? fail = null;
+        var fixture = ReactiveCommand.CreateFromTask(
+                                                     async cts =>
+                                                     {
+                                                         await subj.Take(1);
+                                                         throw new Exception("break execution");
+                                                     },
+                                                     outputScheduler: ImmediateScheduler.Instance);
+
+        fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting)
+               .Subscribe();
+        fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+
+        using (Assert.Multiple())
         {
-            var subj = new Subject<Unit>();
-            Exception? fail = null;
-            var fixture = ReactiveCommand.CreateFromTask(
-                                                         async cts =>
-                                                         {
-                                                             await subj.Take(1);
-                                                             throw new Exception("break execution");
-                                                         },
-                                                         outputScheduler: scheduler);
+            await Assert.That(isExecuting[0]).IsFalse();
+            await Assert.That(fail).IsNull();
+        }
 
-            fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting)
-                   .Subscribe();
-            fixture.ThrownExceptions.Subscribe(ex => fail = ex);
+        fixture.Execute().Subscribe();
 
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(
-                            isExecuting[0],
-                            Is.False);
-                Assert.That(
-                            fail,
-                            Is.Null);
-            }
+        using (Assert.Multiple())
+        {
+            await Assert.That(isExecuting[1]).IsTrue();
+            await Assert.That(fail).IsNull();
+        }
 
-            fixture.Execute().Subscribe();
+        subj.OnNext(Unit.Default);
 
-            scheduler.AdvanceByMs(10);
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(
-                            isExecuting[1],
-                            Is.True);
-                Assert.That(
-                            fail,
-                            Is.Null);
-            }
+        // Required for correct async / await task handling
+        await Task.Delay(10);
 
-            scheduler.AdvanceByMs(10);
-            subj.OnNext(Unit.Default);
-
-            scheduler.AdvanceByMs(10);
-            using (Assert.EnterMultipleScope())
-            {
-                Assert.That(
-                            isExecuting[2],
-                            Is.False);
-                Assert.That(
-                            fail?.Message,
-                            Is.EqualTo("break execution"));
-            }
-
-            // Required for correct async / await task handling
-            await Task.Delay(0);
-        });
+        using (Assert.Multiple())
+        {
+            await Assert.That(isExecuting).Count().IsGreaterThanOrEqualTo(3);
+            await Assert.That(isExecuting[2]).IsFalse();
+            await Assert.That(fail?.Message).IsEqualTo("break execution");
+        }
+    }
 
     [Test]
     public async Task ReactiveCommandCreateFromTaskHandlesCancellation()
@@ -2136,27 +1875,19 @@ public class ReactiveCommandTest : IDisposable
                            isExec);
         });
 
-        Assert.That(
-                    fail,
-                    Is.Null);
+        await Assert.That(fail).IsNull();
         var result = false;
         var disposable = fixture.Execute().Subscribe(_ => result = true);
         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                            Volatile.Read(ref latestIsExecutingValue),
-                            Is.True);
-            Assert.That(
-                        statusTrail.Any(x => x.Status == "started command"),
-                        Is.True);
+            await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
+            await Assert.That(statusTrail.Any(x => x.Status == "started command")).IsTrue();
         }
 
         disposable.Dispose();
         await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
-        Assert.That(
-                    Volatile.Read(ref latestIsExecutingValue),
-                    Is.True);
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
         await testSequencer.AdvancePhaseAsync("Phase 3"); // #3
 
         var start = Environment.TickCount;
@@ -2165,26 +1896,18 @@ public class ReactiveCommandTest : IDisposable
             await Task.Yield();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        result,
-                        Is.False,
-                        "No result expected as cancelled");
-            Assert.That(
-                        statusTrail,
-                        Is.EqualTo(
-                        [
+            await Assert.That(result).IsFalse();
+            await Assert.That(statusTrail).IsEquivalentTo([
                             (0, "command executing = False"),
                             (1, "command executing = True"),
                             (2, "started command"),
                             (3, "starting cancelling command"),
                             (4, "finished cancelling command"),
                             (5, "command executing = False")
-                        ]));
-            Assert.That(
-                        fail,
-                        Is.TypeOf<OperationCanceledException>().Or.TypeOf<TaskCanceledException>());
+                        ]);
+            await Assert.That(fail).IsTypeOf<TaskCanceledException>();
         }
     }
 
@@ -2236,15 +1959,11 @@ public class ReactiveCommandTest : IDisposable
                            isExec);
         });
 
-        Assert.That(
-                    fail,
-                    Is.Null);
+        await Assert.That(fail).IsNull();
         var result = false;
         fixture.Execute().Subscribe(_ => result = true);
         await testSequencer.AdvancePhaseAsync("Phase 1"); // #1
-        Assert.That(
-                    Volatile.Read(ref latestIsExecutingValue),
-                    Is.True);
+        await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
         await testSequencer.AdvancePhaseAsync("Phase 2"); // #2
 
         var start = Environment.TickCount;
@@ -2253,28 +1972,18 @@ public class ReactiveCommandTest : IDisposable
             await Task.Yield();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        result,
-                        Is.True);
-            Assert.That(
-                        statusTrail,
-                        Is.EqualTo(
-                        [
+            await Assert.That(result).IsTrue();
+            await Assert.That(statusTrail).IsEquivalentTo([
                             (0, "command executing = False"),
                             (1, "command executing = True"),
                             (2, "started command"),
                             (3, "finished command"),
                             (4, "command executing = False")
-                        ]));
-            Assert.That(
-                        fail,
-                        Is.Null);
-            Assert.That(
-                        Volatile.Read(ref latestIsExecutingValue),
-                        Is.False,
-                        "execution should be completed");
+                        ]);
+            await Assert.That(fail).IsNull();
+            await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsFalse();
         }
     }
 

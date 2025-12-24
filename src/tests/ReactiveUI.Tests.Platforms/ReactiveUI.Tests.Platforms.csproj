@@ -6,13 +6,14 @@
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
   </ItemGroup>
   <!-- Link shared infrastructure files from ReactiveUI.Tests -->
   <ItemGroup>
@@ -27,7 +28,7 @@
   </ItemGroup>
   <!-- Platform-specific includes -->
   <Choose>
-    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) ">
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
       <PropertyGroup>
         <UseWpf>true</UseWpf>
         <UseWindowsForms>true</UseWindowsForms>
@@ -58,6 +59,13 @@
       </ItemGroup>
     </When>
   </Choose>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Tests\WhenAny\Mockups\**\*.cs" LinkBase="WhenAny" />
+    <Compile Include="..\ReactiveUI.Tests\ReactiveObject\Mocks\**\*.cs" LinkBase="ReactiveObject" />
+    <Compile Include="..\ReactiveUI.Tests.Core\Locator\Mocks\**\*.cs" LinkBase="Locator" />
+  </ItemGroup>
+  
   <!-- Platform-specific file handling -->
   <ItemGroup>
     <None Remove="Platforms\wpf\Mocks\CanExecuteMock\AlwaysFalseModeDetector.cs" />
@@ -84,7 +92,6 @@
   </ItemGroup>
   <!-- Global usings -->
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />

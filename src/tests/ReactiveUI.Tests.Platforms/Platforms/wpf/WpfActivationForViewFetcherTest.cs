@@ -3,20 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Threading;
 using System.Windows;
 
 using DynamicData;
 
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Tests.Wpf;
 
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public class WpfActivationForViewFetcherTest
 {
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void FrameworkElementIsActivatedAndDeactivated()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task FrameworkElementIsActivatedAndDeactivated()
     {
         var uc = new WpfTestUserControl();
         var activation = new ActivationForViewFetcher();
@@ -31,7 +30,7 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        new[] { true }.AssertAreEqual(activated);
+        await new[] { true }.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -40,12 +39,12 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        new[] { true, false }.AssertAreEqual(activated);
+        await new[] { true, false }.AssertAreEqual(activated);
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void IsHitTestVisibleActivatesFrameworkElement()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task IsHitTestVisibleActivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl
         {
@@ -64,12 +63,12 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(loaded);
 
         // Loaded has happened.
-        new[] { true }.AssertAreEqual(activated);
+        await new[] { true }.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = true;
 
         // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
-        new[] { true }.AssertAreEqual(activated);
+        await new[] { true }.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -79,12 +78,12 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(unloaded);
 
         // We had both a loaded/hit test visible change/unloaded happen.
-        new[] { true, false }.AssertAreEqual(activated);
+        await new[] { true, false }.AssertAreEqual(activated);
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void IsHitTestVisibleDeactivatesFrameworkElement()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task IsHitTestVisibleDeactivatesFrameworkElement()
     {
         var uc = new WpfTestUserControl();
         var activation = new ActivationForViewFetcher();
@@ -99,16 +98,16 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        new[] { true }.AssertAreEqual(activated);
+        await new[] { true }.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = false;
 
-        new[] { true, false }.AssertAreEqual(activated);
+        await new[] { true, false }.AssertAreEqual(activated);
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void FrameworkElementIsActivatedAndDeactivatedWithHitTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task FrameworkElementIsActivatedAndDeactivatedWithHitTest()
     {
         var uc = new WpfTestUserControl();
         var activation = new ActivationForViewFetcher();
@@ -123,17 +122,17 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        new[] { true }.AssertAreEqual(activated);
+        await new[] { true }.AssertAreEqual(activated);
 
         // this should deactivate it
         uc.IsHitTestVisible = false;
 
-        new[] { true, false }.AssertAreEqual(activated);
+        await new[] { true, false }.AssertAreEqual(activated);
 
         // this should activate it
         uc.IsHitTestVisible = true;
 
-        new[] { true, false, true }.AssertAreEqual(activated);
+        await new[] { true, false, true }.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -142,6 +141,6 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        new[] { true, false, true, false }.AssertAreEqual(activated);
+        await new[] { true, false, true, false }.AssertAreEqual(activated);
     }
 }

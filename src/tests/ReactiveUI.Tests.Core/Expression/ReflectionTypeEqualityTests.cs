@@ -1,19 +1,14 @@
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 // Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests.Core;
+
 public class ReflectionTypeEqualityTests
 {
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void AssemblyGetTypes_ContainsTypeWithMatchingAQN()
+    public async Task AssemblyGetTypes_ContainsTypeWithMatchingAQN()
     {
         // This test verifies that assembly.GetTypes() returns a type with the same AQN as typeof()
         var typeFromTypeof = typeof(FooView);
@@ -68,13 +63,11 @@ public class ReflectionTypeEqualityTests
             }
         }
 
-        Assert.That(found, Is.True, "Should find a type with matching AQN via assembly.GetTypes()");
-        Assert.Fail("Intentional fail to see console output");
+        await Assert.That(found).IsTrue();
     }
 
     [Test]
-    [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void ReallyFindType_ShouldReturn_SameInstanceAs_Typeof_ForSimpleType()
+    public async Task ReallyFindType_ShouldReturn_SameInstanceAs_Typeof_ForSimpleType()
     {
         // Arrange
         var typeFromTypeof = typeof(FooView);
@@ -84,17 +77,17 @@ public class ReflectionTypeEqualityTests
         var typeFromReflection = Reflection.ReallyFindType(assemblyQualifiedName, false);
 
         // Assert
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(typeFromReflection, Is.Not.Null);
-            Assert.That(typeFromReflection, Is.EqualTo(typeFromTypeof), "Types should be equal");
-            Assert.That(ReferenceEquals(typeFromReflection, typeFromTypeof), Is.True, "Types should be the same instance");
+            await Assert.That(typeFromReflection).IsNotNull();
+            await Assert.That(typeFromReflection).IsEqualTo(typeFromTypeof);
+            await Assert.That(ReferenceEquals(typeFromReflection, typeFromTypeof)).IsTrue();
         }
     }
 
     [Test]
     [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void ReallyFindType_ShouldReturn_SameInstanceAs_Typeof_ForGenericInterfaceType()
+    public async Task ReallyFindType_ShouldReturn_SameInstanceAs_Typeof_ForGenericInterfaceType()
     {
         // Arrange
         var typeFromTypeof = typeof(IViewFor<FooViewModel>);
@@ -104,32 +97,32 @@ public class ReflectionTypeEqualityTests
         var typeFromReflection = Reflection.ReallyFindType(assemblyQualifiedName, false);
 
         // Assert
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(typeFromReflection, Is.Not.Null, "ReallyFindType should find the type");
-            Assert.That(typeFromReflection, Is.EqualTo(typeFromTypeof), "Types should be equal");
-            Assert.That(ReferenceEquals(typeFromReflection, typeFromTypeof), Is.True, "Types should be the same instance for DI lookup to work");
+            await Assert.That(typeFromReflection).IsNotNull();
+            await Assert.That(typeFromReflection).IsEqualTo(typeFromTypeof);
+            await Assert.That(ReferenceEquals(typeFromReflection, typeFromTypeof)).IsTrue();
         }
     }
 
     [Test]
     [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void MakeGenericType_ShouldReturn_SameInstanceAs_Typeof()
+    public async Task MakeGenericType_ShouldReturn_SameInstanceAs_Typeof()
     {
         // This tests the hypothesis that MakeGenericType returns the same instance as typeof
         var typeFromTypeof = typeof(IViewFor<FooViewModel>);
         var typeFromMakeGeneric = typeof(IViewFor<>).MakeGenericType(typeof(FooViewModel));
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(typeFromMakeGeneric, Is.EqualTo(typeFromTypeof), "Types should be equal");
-            Assert.That(ReferenceEquals(typeFromMakeGeneric, typeFromTypeof), Is.True, "MakeGenericType should return the same instance as typeof");
+            await Assert.That(typeFromMakeGeneric).IsEqualTo(typeFromTypeof);
+            await Assert.That(ReferenceEquals(typeFromMakeGeneric, typeFromTypeof)).IsTrue();
         }
     }
 
     [Test]
     [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void ReallyFindType_ShouldReturn_SameInstanceAs_MakeGenericType()
+    public async Task ReallyFindType_ShouldReturn_SameInstanceAs_MakeGenericType()
     {
         // Arrange
         var typeFromMakeGeneric = typeof(IViewFor<>).MakeGenericType(typeof(FooViewModel));
@@ -139,17 +132,17 @@ public class ReflectionTypeEqualityTests
         var typeFromReflection = Reflection.ReallyFindType(assemblyQualifiedName, false);
 
         // Assert
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(typeFromReflection, Is.Not.Null);
-            Assert.That(typeFromReflection, Is.EqualTo(typeFromMakeGeneric), "Types should be equal");
-            Assert.That(ReferenceEquals(typeFromReflection, typeFromMakeGeneric), Is.True, "Types should be the same instance");
+            await Assert.That(typeFromReflection).IsNotNull();
+            await Assert.That(typeFromReflection).IsEqualTo(typeFromMakeGeneric);
+            await Assert.That(ReferenceEquals(typeFromReflection, typeFromMakeGeneric)).IsTrue();
         }
     }
 
     [Test]
     [Explicit("Disabled due to NUnit bug with Type reference equality - see https://github.com/nunit/nunit/issues/5092")]
-    public void ModernDependencyResolver_ShouldFind_ServiceRegisteredWith_Typeof_WhenLookedUpWith_ReallyFindType()
+    public async Task ModernDependencyResolver_ShouldFind_ServiceRegisteredWith_Typeof_WhenLookedUpWith_ReallyFindType()
     {
         // Arrange
         var resolver = new ModernDependencyResolver();
@@ -162,15 +155,15 @@ public class ReflectionTypeEqualityTests
         var assemblyQualifiedName = serviceType.AssemblyQualifiedName!;
         var typeFromReflection = Reflection.ReallyFindType(assemblyQualifiedName, false);
 
-        Assert.That(typeFromReflection, Is.Not.Null, "ReallyFindType should find the type");
+        await Assert.That(typeFromReflection).IsNotNull();
 
         var service = resolver.GetService(typeFromReflection!);
 
         // Assert
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(service, Is.Not.Null, "Should be able to retrieve service using type from ReallyFindType");
-            Assert.That(service, Is.TypeOf<FooView>());
+            await Assert.That(service).IsNotNull();
+            await Assert.That(service).IsTypeOf<FooView>();
         }
     }
 }

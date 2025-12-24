@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,7 +12,6 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Tests to make sure the can activate view fetcher works correctly.
 /// </summary>
-[TestFixture]
 public class CanActivateViewFetcherTests
 {
     /// <summary>
@@ -49,34 +48,37 @@ public class CanActivateViewFetcherTests
     /// <summary>
     /// Tests return positive for ICanActivate.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ReturnPositiveForICanActivate()
+    public async Task ReturnPositiveForICanActivate()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(ICanActivate));
-        Assert.That(affinity, Is.GreaterThan(0));
+        await Assert.That(affinity).IsGreaterThan(0);
     }
 
     /// <summary>
     /// Tests return positive for ICanActivate derivatives.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ReturnPositiveForICanActivateDerivatives()
+    public async Task ReturnPositiveForICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateStub));
-        Assert.That(affinity, Is.GreaterThan(0));
+        await Assert.That(affinity).IsGreaterThan(0);
     }
 
     /// <summary>
     /// Tests return zero for non ICanActivate derivatives.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ReturnZeroForNonICanActivateDerivatives()
+    public async Task ReturnZeroForNonICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
         var affinity = canActivateViewFetcher.GetAffinityForView(typeof(CanActivateViewFetcherTests));
-        Assert.That(affinity, Is.Zero);
+        await Assert.That(affinity).IsEqualTo(0);
     }
 
 #pragma warning disable CA1812 // Class is not instantiated

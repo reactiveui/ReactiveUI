@@ -6,16 +6,16 @@
 namespace ReactiveUI.AOTTests;
 
 /// <summary>
-/// StringBasedObservationTests.
+/// Observable string based observation tests.
 /// </summary>
-[TestFixture]
 public class StringBasedObservationTests
 {
     /// <summary>
     /// Observables for property string name emits initial then changes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ObservableForProperty_StringName_EmitsInitialThenChanges()
+    public async Task ObservableForProperty_StringName_EmitsInitialThenChanges()
     {
         var s = new Sample { IntValue = 5 };
         var values = new List<int>();
@@ -28,14 +28,15 @@ public class StringBasedObservationTests
         s.IntValue = 7; // distinct should suppress duplicate
         s.IntValue = 9;
 
-        Assert.That(values, Is.EqualTo([5, 7, 9]));
+        await Assert.That(values).IsEquivalentTo([5, 7, 9]);
     }
 
     /// <summary>
     /// Observables for property before change emits before setter.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ObservableForProperty_BeforeChange_EmitsBeforeSetter()
+    public async Task ObservableForProperty_BeforeChange_EmitsBeforeSetter()
     {
         var s = new Sample { IntValue = 1 };
         var before = new List<int>();
@@ -47,14 +48,15 @@ public class StringBasedObservationTests
         s.IntValue = 2; // should emit previous value (1) before change
         s.IntValue = 3; // should emit 2
 
-        Assert.That(before, Is.EqualTo([1, 2]));
+        await Assert.That(before).IsEquivalentTo([1, 2]);
     }
 
     /// <summary>
     /// Whens any value string name works and is distinct.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValue_StringName_WorksAndIsDistinct()
+    public async Task WhenAnyValue_StringName_WorksAndIsDistinct()
     {
         var s = new Sample { Name = "a" };
         var values = new List<string?>();
@@ -66,14 +68,15 @@ public class StringBasedObservationTests
         s.Name = "b"; // duplicate should be filtered by default overload
         s.Name = "c";
 
-        Assert.That(values, Is.EqualTo(["a", "b", "c"]));
+        await Assert.That(values).IsEquivalentTo(new string?[] { "a", "b", "c" });
     }
 
     /// <summary>
     /// Whens any value string name not distinct when requested.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValue_StringName_NotDistinctWhenRequested()
+    public async Task WhenAnyValue_StringName_NotDistinctWhenRequested()
     {
         var s = new Sample { Name = "x" };
         var values = new List<string?>();
@@ -84,7 +87,7 @@ public class StringBasedObservationTests
         s.Name = "y";
         s.Name = "y"; // should be included
 
-        Assert.That(values, Is.EqualTo(["x", "y", "y"]));
+        await Assert.That(values).IsEquivalentTo(new string?[] { "x", "y", "y" });
     }
 
     private sealed class Sample : ReactiveObject

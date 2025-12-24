@@ -1,32 +1,24 @@
-﻿using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 // Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests;
+
 public sealed class DependencyResolverTests
 {
-    /// <summary>
-    /// Gets RegistrationNamespaces.
-    /// </summary>
-    public static IEnumerable<TestCaseData> NamespacesToRegister =>
-        new List<TestCaseData>
-        {
-            new(new[] { RegistrationNamespace.Winforms }),
-            new(new[] { RegistrationNamespace.Wpf }),
-            new(new[] { RegistrationNamespace.Uno }),
-            new(new[] { RegistrationNamespace.Blazor }),
-            new(new[] { RegistrationNamespace.Drawing }),
-            new(new[] { RegistrationNamespace.Blazor, RegistrationNamespace.Wpf }),
-        };
+    private static readonly RegistrationNamespace[][] NamespacesToRegister =
+    [
+        [RegistrationNamespace.Winforms],
+        [RegistrationNamespace.Wpf],
+        [RegistrationNamespace.Uno],
+        [RegistrationNamespace.Blazor],
+        [RegistrationNamespace.Drawing],
+        [RegistrationNamespace.Blazor, RegistrationNamespace.Wpf]
+    ];
 
     [Test]
-    public void AllDefaultServicesShouldBeRegistered()
+    public async Task AllDefaultServicesShouldBeRegistered()
     {
         var resolver = GenerateResolver();
         using (resolver.WithResolver())
@@ -34,68 +26,64 @@ public sealed class DependencyResolverTests
             foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(PlatformRegistrationManager.DefaultRegistrationNamespaces))
             {
                 var resolvedServices = resolver.GetServices(shouldRegistered.Key);
-                Assert.That(resolvedServices.Count(), Is.EqualTo(shouldRegistered.Value.Count));
+                await Assert.That(resolvedServices.Count()).IsEqualTo(shouldRegistered.Value.Count);
                 foreach (var implementationType in shouldRegistered.Value)
                 {
-                    Assert.That(
-                        resolvedServices.Any(rs => rs.GetType() == implementationType),
-                        Is.True);
+                    await Assert.That(resolvedServices.Any(rs => rs.GetType() == implementationType)).IsTrue();
                 }
             }
         }
     }
 
     [Test]
-    [MethodDataSource(nameof(NamespacesToRegister))]
-    public void AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace(IEnumerable<RegistrationNamespace> namespacesToRegister)
+    public async Task AllDefaultServicesShouldBeRegisteredPerRegistrationNamespace()
     {
-        var resolver = GenerateResolver();
-        using (resolver.WithResolver())
+        foreach (var namespaces in NamespacesToRegister)
         {
-            var namespaces = namespacesToRegister.ToArray();
-
-            resolver.InitializeReactiveUI(namespaces);
-
-            var registeredService = GetServicesThatShouldBeRegistered(namespaces);
-
-            foreach (var shouldRegistered in registeredService)
+            var resolver = GenerateResolver();
+            using (resolver.WithResolver())
             {
-                var resolvedServices = resolver.GetServices(shouldRegistered.Key);
+                resolver.InitializeReactiveUI(namespaces);
 
-                foreach (var implementationType in shouldRegistered.Value)
+                var registeredService = GetServicesThatShouldBeRegistered(namespaces);
+
+                foreach (var shouldRegistered in registeredService)
                 {
-                    Assert.That(
-                        resolvedServices.Any(rs => rs.GetType() == implementationType),
-                        Is.True);
+                    var resolvedServices = resolver.GetServices(shouldRegistered.Key);
+
+                    foreach (var implementationType in shouldRegistered.Value)
+                    {
+                        await Assert.That(resolvedServices.Any(rs => rs.GetType() == implementationType)).IsTrue();
+                    }
                 }
             }
         }
     }
 
     [Test]
-    [MethodDataSource(nameof(NamespacesToRegister))]
-    public void RegisteredNamespacesShouldBeRegistered(IEnumerable<RegistrationNamespace> namespacesToRegister)
+    public async Task RegisteredNamespacesShouldBeRegistered()
     {
-        var resolver = GenerateResolver();
-        using (resolver.WithResolver())
+        foreach (var namespacesToRegister in NamespacesToRegister)
         {
-            var namespaces = namespacesToRegister.ToArray();
-
-            resolver.InitializeReactiveUI(namespaces);
-
-            foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
+            var resolver = GenerateResolver();
+            using (resolver.WithResolver())
             {
-                var resolvedServices = resolver.GetServices(shouldRegistered.Key);
+                var namespaces = namespacesToRegister;
 
-                Assert.That(
-                    resolvedServices
-                        .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
-                        .Any(registeredType =>
-                            !string.IsNullOrEmpty(registeredType) &&
-                            PlatformRegistrationManager.DefaultRegistrationNamespaces
-                                .Except(namespacesToRegister)
-                                .All(x => !registeredType.Contains(x.ToString()))),
-                    Is.True);
+                resolver.InitializeReactiveUI(namespaces);
+
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
+                {
+                    var resolvedServices = resolver.GetServices(shouldRegistered.Key);
+
+                    await Assert.That(resolvedServices
+                            .Select(x => x.GetType()?.AssemblyQualifiedName ?? string.Empty)
+                            .Any(registeredType =>
+                                !string.IsNullOrEmpty(registeredType) &&
+                                PlatformRegistrationManager.DefaultRegistrationNamespaces
+                                    .Except(namespacesToRegister)
+                                    .All(x => !registeredType.Contains(x.ToString())))).IsTrue();
+                }
             }
         }
     }

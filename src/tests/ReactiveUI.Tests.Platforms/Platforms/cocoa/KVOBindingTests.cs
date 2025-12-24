@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
-using NUnit.Framework;
 using ReactiveUI.Cocoa;
 
 namespace ReactiveUI.Tests
@@ -19,7 +18,8 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Gets or sets the view model.
         /// </summary>
-        public PropertyBindViewModel ViewModel {
+        public PropertyBindViewModel ViewModel
+        {
             get { return _viewModel; }
             set { this.RaiseAndSetIfChanged(ref _viewModel, value); }
         }
@@ -27,7 +27,8 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Gets or sets the view model.
         /// </summary>
-        object IViewFor.ViewModel {
+        object IViewFor.ViewModel
+        {
             get { return ViewModel; }
             set { ViewModel = (PropertyBindViewModel)value; }
         }
@@ -41,14 +42,15 @@ namespace ReactiveUI.Tests
         /// <summary>
         /// Makes the sure kvo bindings bind to kvo things.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [Test]
-        public void MakeSureKVOBindingsBindToKVOThings()
+        public async Task MakeSureKVOBindingsBindToKVOThings()
         {
             var input = new FooController();
             var fixture = new KVOObservableForProperty();
 
-            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "View"), Is.Not.EqualTo(0));
-            Assert.That(fixture.GetAffinityForObject(typeof(FooController), "ViewModel"), Is.EqualTo(0));
+            await Assert.That(fixture.GetAffinityForObject(typeof(FooController), "View")).IsNotEqualTo(0);
+            await Assert.That(fixture.GetAffinityForObject(typeof(FooController), "ViewModel")).IsEqualTo(0);
         }
     }
 }

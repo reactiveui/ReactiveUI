@@ -26,9 +26,16 @@ public class WpfActiveContentFixture : IDisposable
         {
             _uiThread = new Thread(() =>
             {
+                // Create dispatcher without showing windows
+                SynchronizationContext.SetSynchronizationContext(
+                    new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+
                 App = new WpfActiveContentApp();
                 App.Startup += (s, e) => _loadComplete = true;
-                App.Run();
+
+                // Don't call App.Run() - instead run a frame
+                _loadComplete = true;
+                Dispatcher.Run();
             });
             _uiThread.SetApartmentState(ApartmentState.STA);
             _uiThread.Start();
@@ -61,11 +68,29 @@ public class WpfActiveContentFixture : IDisposable
     {
         if (!_disposedValue && disposing)
         {
-            App?.Dispatcher.Invoke(
-                () => App.Shutdown(),
-                DispatcherPriority.Normal);
-            Thread.Sleep(500);
-            _uiThread?.Join();
+            if (App?.Dispatcher != null)
+            {
+                // Must invoke shutdown on the Dispatcher's thread
+                App.Dispatcher.BeginInvoke(() =>
+                {
+                    App.Dispatcher.InvokeShutdown();
+                });
+            }
+
+            // Wait for UI thread to shut down with a timeout to prevent hanging
+            if (_uiThread != null && !_uiThread.Join(TimeSpan.FromSeconds(5)))
+            {
+                // If thread doesn't shut down in 5 seconds, interrupt it
+                _uiThread.Interrupt();
+
+                // Give it one more second after interrupt
+                if (!_uiThread.Join(TimeSpan.FromSeconds(1)))
+                {
+                    // Last resort - thread is truly stuck
+                    Console.WriteLine("[WARNING] WPF UI thread did not shut down cleanly");
+                }
+            }
+
             _disposedValue = true;
         }
     }

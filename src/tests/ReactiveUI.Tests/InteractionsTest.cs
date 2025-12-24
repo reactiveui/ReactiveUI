@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -8,12 +8,6 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
-
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests;
 
@@ -38,32 +32,34 @@ public class InteractionsTest
     /// <summary>
     /// Tests that unhandled interactions should cause exception.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void UnhandledInteractionsShouldCauseException()
+    public async Task UnhandledInteractionsShouldCauseException()
     {
         var interaction = new Interaction<string, Unit>();
         var ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("foo").FirstAsync().Wait());
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(ex.Interaction, Is.SameAs(interaction));
-            Assert.That(ex.Input, Is.EqualTo("foo"));
+            await Assert.That(ex.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex.Input).IsEqualTo("foo");
         }
 
         interaction.RegisterHandler(_ => { });
         interaction.RegisterHandler(_ => { });
         ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() => interaction.Handle("bar").FirstAsync().Wait());
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(ex.Interaction, Is.SameAs(interaction));
-            Assert.That(ex.Input, Is.EqualTo("bar"));
+            await Assert.That(ex.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex.Input).IsEqualTo("bar");
         }
     }
 
     /// <summary>
     /// Test that attempting to set interaction output more than once should cause exception.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AttemptingToSetInteractionOutputMoreThanOnceShouldCauseException()
+    public async Task AttemptingToSetInteractionOutputMoreThanOnceShouldCauseException()
     {
         var interaction = new Interaction<Unit, Unit>();
 
@@ -74,14 +70,15 @@ public class InteractionsTest
         });
 
         var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());
-        Assert.That(ex.Message, Is.EqualTo("Output has already been set."));
+        await Assert.That(ex.Message).IsEqualTo("Output has already been set.");
     }
 
     /// <summary>
     /// Test that attempting to get interaction output before it has been set should cause exception.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AttemptingToGetInteractionOutputBeforeItHasBeenSetShouldCauseException()
+    public async Task AttemptingToGetInteractionOutputBeforeItHasBeenSetShouldCauseException()
     {
         var interaction = new Interaction<Unit, Unit>();
 
@@ -91,7 +88,7 @@ public class InteractionsTest
         });
 
         var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(Unit.Default).Subscribe());
-        Assert.That(ex.Message, Is.EqualTo("Output has not been set."));
+        await Assert.That(ex.Message).IsEqualTo("Output has not been set.");
     }
 
     /// <summary>
@@ -109,9 +106,10 @@ public class InteractionsTest
     /// <summary>
     /// Tests that Handlers are executed on handler scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void HandlersAreExecutedOnHandlerScheduler() =>
-        new TestScheduler().With(scheduler =>
+    public async Task HandlersAreExecutedOnHandlerScheduler() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var interaction = new Interaction<Unit, string>(scheduler);
 
@@ -122,44 +120,46 @@ public class InteractionsTest
                     .Handle(Unit.Default)
                     .Subscribe(_ => handled = true);
 
-                Assert.That(handled, Is.False);
+                await Assert.That(handled).IsFalse();
 
                 scheduler.Start();
-                Assert.That(handled, Is.True);
+                await Assert.That(handled).IsTrue();
             }
         });
 
     /// <summary>
     /// Test that Nested handlers are executed in reverse order of subscription.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NestedHandlersAreExecutedInReverseOrderOfSubscription()
+    public async Task NestedHandlersAreExecutedInReverseOrderOfSubscription()
     {
         var interaction = new Interaction<Unit, string>();
 
         using (interaction.RegisterHandler(static x => x.SetOutput("A")))
         {
-            Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("A"));
+            await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo("A");
             using (interaction.RegisterHandler(static x => x.SetOutput("B")))
             {
-                Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("B"));
+                await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo("B");
                 using (interaction.RegisterHandler(static x => x.SetOutput("C")))
                 {
-                    Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("C"));
+                    await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo("C");
                 }
 
-                Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("B"));
+                await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo("B");
             }
 
-            Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait(), Is.EqualTo("A"));
+            await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo("A");
         }
     }
 
     /// <summary>
     /// Tests that handlers can opt not to handle the interaction.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void HandlersCanOptNotToHandleTheInteraction()
+    public async Task HandlersCanOptNotToHandleTheInteraction()
     {
         var interaction = new Interaction<bool, string>();
 
@@ -180,38 +180,38 @@ public class InteractionsTest
             using (handler1B)
             {
                 using (handler1C)
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("C"));
-                    Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("C"));
+                    await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo("C");
+                    await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo("C");
                 }
 
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("A"));
-                    Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("B"));
+                    await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo("A");
+                    await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo("B");
                 }
             }
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(interaction.Handle(false).FirstAsync().Wait(), Is.EqualTo("A"));
-                Assert.That(interaction.Handle(true).FirstAsync().Wait(), Is.EqualTo("A"));
+                await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo("A");
+                await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo("A");
             }
         }
     }
 
     [Test]
-    public void UnhandledInteractionExceptionTests()
+    public async Task UnhandledInteractionExceptionTests()
     {
         var uie = new UnhandledInteractionException<Unit, string>();
-        Assert.That(uie, Is.Not.Null);
+        await Assert.That(uie).IsNotNull();
 #pragma warning disable SYSLIB0051 // Type or member is obsolete
 #pragma warning disable SYSLIB0050 // Type or member is obsolete
         uie.GetObjectData(new(typeof(string), new System.Runtime.Serialization.FormatterConverter()), default);
 #pragma warning restore SYSLIB0050 // Type or member is obsolete
         var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
-        Assert.That(uieme, Is.Not.Null);
+        await Assert.That(uieme).IsNotNull();
         Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(null!, default));
 #pragma warning restore SYSLIB0051 // Type or member is obsolete
     }
@@ -219,8 +219,9 @@ public class InteractionsTest
     /// <summary>
     /// Test that handlers can contain asynchronous code.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void HandlersCanContainAsynchronousCode()
+    public async Task HandlersCanContainAsynchronousCode()
     {
         var scheduler = new TestScheduler();
         var interaction = new Interaction<Unit, string>();
@@ -247,15 +248,15 @@ public class InteractionsTest
                 .Handle(Unit.Default)
                 .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var result).Subscribe();
 
-            Assert.That(result, Is.Empty);
+            await Assert.That(result).IsEmpty();
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5).Ticks);
-            Assert.That(result, Is.Empty);
+            await Assert.That(result).IsEmpty();
             scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6).Ticks);
-            Assert.That(result, Has.Count.EqualTo(1));
-            Assert.That(result[0], Is.EqualTo("B"));
+            await Assert.That(result).Count().IsEqualTo(1);
+            await Assert.That(result[0]).IsEqualTo("B");
         }
 
-        Assert.That(handler1AWasCalled, Is.False);
+        await Assert.That(handler1AWasCalled).IsFalse();
     }
 
     /// <summary>
@@ -281,8 +282,9 @@ public class InteractionsTest
     /// <summary>
     /// Tests that handlers returning observables can return any kind of observable.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void HandlersReturningObservablesCanReturnAnyKindOfObservable()
+    public async Task HandlersReturningObservablesCanReturnAnyKindOfObservable()
     {
         var interaction = new Interaction<Unit, string>();
 
@@ -293,6 +295,6 @@ public class InteractionsTest
                     .Do(_ => x.SetOutput("result")));
 
         var result = interaction.Handle(Unit.Default).FirstAsync().Wait();
-        Assert.That(result, Is.EqualTo("result"));
+        await Assert.That(result).IsEqualTo("result");
     }
 }

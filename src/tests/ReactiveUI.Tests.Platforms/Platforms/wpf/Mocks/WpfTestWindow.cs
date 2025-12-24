@@ -15,6 +15,16 @@ public class WpfTestWindow : Window, IActivatableView
         RootGrid = new Grid();
 
         AddChild(RootGrid);
+
+        // Hide window from user during tests
+        ShowInTaskbar = false;
+        WindowStyle = System.Windows.WindowStyle.None;
+        Left = -10000;
+        Top = -10000;
+        Width = 1;
+        Height = 1;
+        Opacity = 0; // Make completely transparent
+        ShowActivated = false; // Don't steal focus
     }
 
     public Grid RootGrid { get; }

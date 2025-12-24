@@ -1,12 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using DynamicData;
-using NUnit.Framework.Legacy;
 using ReactiveUI.Testing;
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -15,96 +17,87 @@ namespace ReactiveUI.Tests.Wpf;
 /// NOTE: Only one Test can create an AppDomain, all Active content tests must go in this class.
 /// Add to WpfActiveContentApp to add any additional mock windows.
 /// </summary>
+[NotInParallel]
 public class WpfActiveContentTests
 {
     /// <summary>
     /// Gets the fixture.
     /// </summary>
-    public WpfActiveContentFixture Fixture { get; private set; } = null!;
+    public static WpfActiveContentFixture Fixture { get; private set; } = null!;
 
     /// <summary>
     /// One-time setup to create the WPF test fixture.
     /// </summary>
-    [OneTimeSetUp]
-    public void OneTimeSetUp() => Fixture = new WpfActiveContentFixture();
+    [Before(HookType.Class)]
+    public static void OneTimeSetUp() => Fixture = new WpfActiveContentFixture();
 
     /// <summary>
     /// One-time teardown to clean up the WPF test fixture.
     /// </summary>
-    [OneTimeTearDown]
-    public void OneTimeTearDown() => Fixture?.Dispose();
+    [After(HookType.Class)]
+    public static void OneTimeTearDown() => Fixture?.Dispose();
 
     /// <summary>
     /// Validates binding logic for a list-backed view.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void BindListFunctionalTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task BindListFunctionalTest()
     {
-        var window = Fixture.App?.WpfTestWindowFactory();
         var view = new MockBindListView();
-        window!.RootGrid.Children.Add(view);
+        var vm = view.ViewModel!;
 
-        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
-        window.RaiseEvent(loaded);
-        view.RaiseEvent(loaded);
+        // Activate the view to trigger bindings
+        view.RaiseEvent(new RoutedEventArgs(FrameworkElement.LoadedEvent));
 
+        // Test 1: Add first item
         var test1 = new MockBindListItemViewModel("Test1");
-        view.ViewModel!.ActiveListItem.Add(test1);
-        using (Assert.EnterMultipleScope())
+        vm.ActiveListItem.Add(test1);
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        view.ItemList.Items,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        view.ViewModel.ActiveItem,
-                        Is.EqualTo(test1));
+            await Assert.That(vm.ListItems.Count).IsEqualTo(1);
+            await Assert.That(vm.ActiveItem).IsEqualTo(test1);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(1);
         }
 
+        // Test 2: Add second item
         var test2 = new MockBindListItemViewModel("Test2");
-        view.ViewModel.ActiveListItem.Add(test2);
-        using (Assert.EnterMultipleScope())
+        vm.ActiveListItem.Add(test2);
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        view.ItemList.Items,
-                        Has.Count.EqualTo(2));
-            Assert.That(
-                        view.ViewModel.ActiveItem,
-                        Is.EqualTo(test2));
+            await Assert.That(vm.ListItems.Count).IsEqualTo(2);
+            await Assert.That(vm.ActiveItem).IsEqualTo(test2);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(2);
         }
 
+        // Test 3: Add third item
         var test3 = new MockBindListItemViewModel("Test3");
-        view.ViewModel.ActiveListItem.Add(test3);
-        using (Assert.EnterMultipleScope())
+        vm.ActiveListItem.Add(test3);
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        view.ItemList.Items,
-                        Has.Count.EqualTo(3));
-            Assert.That(
-                        view.ViewModel.ActiveItem,
-                        Is.EqualTo(test3));
+            await Assert.That(vm.ListItems.Count).IsEqualTo(3);
+            await Assert.That(vm.ActiveItem).IsEqualTo(test3);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(3);
         }
 
-        view.ItemList.SelectedItem = view.ItemList.Items.GetItemAt(0);
-        using (Assert.EnterMultipleScope())
+        // Test 4: Select first item (should trigger command that removes items after it)
+        await vm.SelectItem.Execute(test1);
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        view.ItemList.Items,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        view.ViewModel.ActiveItem,
-                        Is.EqualTo(test1));
+            await Assert.That(vm.ListItems.Count).IsEqualTo(1);
+            await Assert.That(vm.ActiveItem).IsEqualTo(test1);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(1);
         }
-
-        window.Close();
     }
 
     /// <summary>
     /// Ensures view resolution respects contracts and fallback behavior.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ViewModelHostViewTestFallback()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ViewModelHostViewTestFallback()
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
@@ -112,12 +105,12 @@ public class WpfActiveContentTests
 
         using (resolver.WithResolver())
         {
-            ResolveViewBIfViewBIsRegistered(resolver);
-            ResolveView0WithFallback(resolver);
-            ResolveNoneWithFallbackBypass(resolver);
+            await ResolveViewBIfViewBIsRegistered(resolver);
+            await ResolveView0WithFallback(resolver);
+            await ResolveNoneWithFallbackBypass(resolver);
         }
 
-        void ResolveViewBIfViewBIsRegistered(ModernDependencyResolver r)
+        async Task ResolveViewBIfViewBIsRegistered(ModernDependencyResolver r)
         {
             r.Register(
                        () => new FakeViewWithContract.View0(),
@@ -142,12 +135,12 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            Assert.That(host.Content, Is.Not.Null);
-            Assert.That(host.Content, Is.InstanceOf<FakeViewWithContract.ViewB>());
+            await Assert.That(host.Content).IsNotNull();
+            await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.ViewB>();
             window.Close();
         }
 
-        void ResolveView0WithFallback(ModernDependencyResolver r)
+        async Task ResolveView0WithFallback(ModernDependencyResolver r)
         {
             r.UnregisterCurrent(
                                 typeof(IViewFor<FakeViewWithContract.MyViewModel>),
@@ -157,7 +150,9 @@ public class WpfActiveContentTests
             var vm = new FakeViewWithContract.MyViewModel();
             var host = new ViewModelViewHost
             {
-                ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, ContractFallbackByPass = false,
+                ViewModel = vm,
+                ViewContract = FakeViewWithContract.ContractB,
+                ContractFallbackByPass = false,
             };
 
             window!.RootGrid.Children.Clear();
@@ -167,12 +162,12 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            Assert.That(host.Content, Is.Not.Null);
-            Assert.That(host.Content, Is.InstanceOf<FakeViewWithContract.View0>());
+            await Assert.That(host.Content).IsNotNull();
+            await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.View0>();
             window.Close();
         }
 
-        void ResolveNoneWithFallbackBypass(ModernDependencyResolver r)
+        async Task ResolveNoneWithFallbackBypass(ModernDependencyResolver r)
         {
             r.UnregisterCurrent(
                                 typeof(IViewFor<FakeViewWithContract.MyViewModel>),
@@ -182,7 +177,9 @@ public class WpfActiveContentTests
             var vm = new FakeViewWithContract.MyViewModel();
             var host = new ViewModelViewHost
             {
-                ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, ContractFallbackByPass = true,
+                ViewModel = vm,
+                ViewContract = FakeViewWithContract.ContractB,
+                ContractFallbackByPass = true,
             };
 
             window!.RootGrid.Children.Clear();
@@ -192,7 +189,7 @@ public class WpfActiveContentTests
             window.RaiseEvent(loaded);
             host.RaiseEvent(loaded);
 
-            Assert.That(host.Content, Is.Null);
+            await Assert.That(host.Content).IsNull();
             window.Close();
         }
     }
@@ -200,9 +197,10 @@ public class WpfActiveContentTests
     /// <summary>
     /// Exercises TransitioningContentControl with all directions and transitions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void TransitioningContentControlTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task TransitioningContentControlTest()
     {
         var window = Fixture.App?.MockWindowFactory();
         window!.WhenActivated(async _ =>
@@ -277,38 +275,30 @@ public class WpfActiveContentTests
             {
                 var v1 = new View1();
                 window.TransitioningContent.Content = v1;
-                Assert.That(
-                            transitioning,
-                            Is.True);
+                await Assert.That(transitioning).IsTrue();
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(
-                                            window.TransitioningContent.Content,
-                                            Is.EqualTo(v1));
-                    Assert.That(transitioning, Is.False);
+                    await Assert.That(window.TransitioningContent.Content).IsEqualTo(v1);
+                    await Assert.That(transitioning).IsFalse();
                 }
 
                 var v2 = new View2();
                 window.TransitioningContent.Content = v2;
-                Assert.That(
-                            transitioning,
-                            Is.True);
+                await Assert.That(transitioning).IsTrue();
                 while (transitioning)
                 {
                     await Task.Delay(5).ConfigureAwait(true);
                 }
 
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(
-                                            window.TransitioningContent.Content,
-                                            Is.EqualTo(v2));
-                    Assert.That(transitioning, Is.False);
+                    await Assert.That(window.TransitioningContent.Content).IsEqualTo(v2);
+                    await Assert.That(transitioning).IsFalse();
                 }
             }
 
@@ -318,14 +308,10 @@ public class WpfActiveContentTests
             {
                 window.TransitioningContent.Direction = dir;
                 window.TransitioningContent.Transition = type;
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(
-                                window.TransitioningContent.Direction,
-                                Is.EqualTo(dir));
-                    Assert.That(
-                                window.TransitioningContent.Transition,
-                                Is.EqualTo(type));
+                    await Assert.That(window.TransitioningContent.Direction).IsEqualTo(dir);
+                    await Assert.That(window.TransitioningContent.Transition).IsEqualTo(type);
                 }
 
                 await RunOnceAsync().ConfigureAwait(true);
@@ -341,27 +327,23 @@ public class WpfActiveContentTests
     /// <summary>
     /// Verifies the dummy suspension driver calls.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DummySuspensionDriverTest()
+    public async Task DummySuspensionDriverTest()
     {
         var dsd = new DummySuspensionDriver();
-        dsd.LoadState().Select(static _ => 1).Subscribe(static v => Assert.That(
-                                                                  v,
-                                                                  Is.EqualTo(1)));
-        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(static v => Assert.That(
-                                                                           v,
-                                                                           Is.EqualTo(2)));
-        dsd.InvalidateState().Select(static _ => 3).Subscribe(static v => Assert.That(
-                                                                        v,
-                                                                        Is.EqualTo(3)));
+        dsd.LoadState().Select(static _ => 1).Subscribe(async static v => await Assert.That(v).IsEqualTo(1));
+        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(async static v => await Assert.That(v).IsEqualTo(2));
+        dsd.InvalidateState().Select(static _ => 3).Subscribe(async static v => await Assert.That(v).IsEqualTo(3));
     }
 
     /// <summary>
     /// DPI override scenarios for TransitioningContentControl.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void TransitioninContentControlDpiTest()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task TransitioninContentControlDpiTest()
     {
         var window = Fixture.App?.TCMockWindowFactory();
         const int delay = 2000;
@@ -416,10 +398,12 @@ public class WpfActiveContentTests
     /// <summary>
     /// Ensures ReactiveCommand IsExecuting/CanExecute behave correctly on task thread.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ReactiveCommandRunningOnTaskThreadAllowsCanExecuteAndExecutingToFire()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ReactiveCommandRunningOnTaskThreadAllowsCanExecuteAndExecutingToFire()
     {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         LiveModeDetector.UseRuntimeThreads();
         var window = Fixture.App?.MockWindowFactory();
 
@@ -451,20 +435,16 @@ public class WpfActiveContentTests
                 view.ViewModel.Command3.Subscribe(async r =>
                 {
                     result = r;
-                    await testSequencer.AdvancePhaseAsync();
+                    testSequencer.AdvancePhaseAsync();
                 });
 
-                await view.ViewModel.Command3.Execute();
-                await testSequencer.AdvancePhaseAsync();
+                view.ViewModel.Command3.Execute();
+                testSequencer.AdvancePhaseAsync();
 
-                using (Assert.EnterMultipleScope())
+                using (Assert.Multiple())
                 {
-                    Assert.That(
-                                result,
-                                Is.EqualTo(100));
-                    Assert.That(
-                                sawExecuting,
-                                Is.True);
+                    await Assert.That(result).IsEqualTo(100);
+                    await Assert.That(sawExecuting).IsTrue();
                 }
             }
             finally
@@ -475,5 +455,6 @@ public class WpfActiveContentTests
         });
 
         window!.ShowDialog();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 }

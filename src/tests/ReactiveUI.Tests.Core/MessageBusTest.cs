@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,14 +10,9 @@ using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class MessageBusTest : IDisposable
 {
     private MessageBusScope? _messageBusScope;
@@ -37,21 +32,22 @@ public class MessageBusTest : IDisposable
     /// <summary>
     /// Smoke tests the MessageBus.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBusSmokeTest()
+    public async Task MessageBusSmokeTest()
     {
         var input = new[] { 1, 2, 3, 4 };
 
-        var result = new TestScheduler().With(scheduler =>
+        var result = await new TestScheduler().With(async scheduler =>
         {
             var source = new Subject<int>();
             var fixture = new MessageBus();
 
             fixture.RegisterMessageSource(source, "Test");
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.IsRegistered(typeof(int)), Is.False);
-                Assert.That(fixture.IsRegistered(typeof(int), "Foo"), Is.False);
+                await Assert.That(fixture.IsRegistered(typeof(int))).IsFalse();
+                await Assert.That(fixture.IsRegistered(typeof(int), "Foo")).IsFalse();
             }
 
             fixture.Listen<int>("Test").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
@@ -62,14 +58,15 @@ public class MessageBusTest : IDisposable
             return output;
         });
 
-        Assert.That(result, Is.EqualTo(input));
+        await Assert.That(result).IsEquivalentTo(input);
     }
 
     /// <summary>
     /// Tests that explicits send message should work even after registering source.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
+    public async Task ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
@@ -80,53 +77,56 @@ public class MessageBusTest : IDisposable
         fixture.Listen<int>().Subscribe(_ => messageReceived = true);
 
         fixture.SendMessage(42);
-        Assert.That(messageReceived, Is.True);
+        await Assert.That(messageReceived).IsTrue();
     }
 
     /// <summary>
     /// Tests that listening before registering a source should work.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ListeningBeforeRegisteringASourceShouldWork()
+    public async Task ListeningBeforeRegisteringASourceShouldWork()
     {
         var fixture = new MessageBus();
         var result = -1;
 
         fixture.Listen<int>().Subscribe(x => result = x);
 
-        Assert.That(result, Is.EqualTo(-1));
+        await Assert.That(result).IsEqualTo(-1);
 
         fixture.SendMessage(42);
 
-        Assert.That(result, Is.EqualTo(42));
+        await Assert.That(result).IsEqualTo(42);
     }
 
     /// <summary>
     /// Tests that the Garbage Collector should not kill message service.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void GcShouldNotKillMessageService()
+    public async Task GcShouldNotKillMessageService()
     {
         var bus = new MessageBus();
 
         var receivedMessage = false;
         var dispose = bus.Listen<int>().Subscribe(_ => receivedMessage = true);
         bus.SendMessage(1);
-        Assert.That(receivedMessage, Is.True);
+        await Assert.That(receivedMessage).IsTrue();
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
         receivedMessage = false;
         bus.SendMessage(2);
-        Assert.That(receivedMessage, Is.True);
+        await Assert.That(receivedMessage).IsTrue();
     }
 
     /// <summary>
     /// Tests that Registering the second message source should merge both sources.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void RegisteringSecondMessageSourceShouldMergeBothSources()
+    public async Task RegisteringSecondMessageSourceShouldMergeBothSources()
     {
         var bus = new MessageBus();
         var source1 = new Subject<int>();
@@ -141,28 +141,29 @@ public class MessageBusTest : IDisposable
         bus.Listen<int>().Subscribe(_ => receivedMessage2 = true);
 
         source1.OnNext(1);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(receivedMessage1, Is.True);
-            Assert.That(receivedMessage2, Is.True);
+            await Assert.That(receivedMessage1).IsTrue();
+            await Assert.That(receivedMessage2).IsTrue();
         }
 
         receivedMessage1 = false;
         receivedMessage2 = false;
 
         source2.OnNext(2);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(receivedMessage1, Is.True);
-            Assert.That(receivedMessage2, Is.True);
+            await Assert.That(receivedMessage1).IsTrue();
+            await Assert.That(receivedMessage2).IsTrue();
         }
     }
 
     /// <summary>
     /// Tests the MessageBus threading.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBusThreadingTest()
+    public async Task MessageBusThreadingTest()
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
@@ -181,18 +182,19 @@ public class MessageBusTest : IDisposable
         otherThread.Start();
         otherThread.Join();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(thisThreadId, Is.Not.EqualTo(listenedThreadId!.Value));
-            Assert.That(otherThreadId!.Value, Is.EqualTo(listenedThreadId.Value));
+            await Assert.That(thisThreadId).IsNotEqualTo(listenedThreadId!.Value);
+            await Assert.That(otherThreadId!.Value).IsEqualTo(listenedThreadId.Value);
         }
     }
 
     /// <summary>
     /// Tests MessageBus.RegisterScheduler method for complete coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBus_RegisterScheduler_ShouldWork()
+    public async Task MessageBus_RegisterScheduler_ShouldWork()
     {
         // Arrange
         var messageBus = new MessageBus();
@@ -204,15 +206,16 @@ public class MessageBusTest : IDisposable
         messageBus.SendMessage(42);
 
         // Assert
-        Assert.That(receivedMessages, Has.Exactly(1).Items);
-        Assert.That(receivedMessages[0], Is.EqualTo(42));
+        await Assert.That(receivedMessages).Count().IsEqualTo(1);
+        await Assert.That(receivedMessages[0]).IsEqualTo(42);
     }
 
     /// <summary>
     /// Tests MessageBus.ListenIncludeLatest method for complete coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBus_ListenIncludeLatest_ShouldIncludeLastMessage()
+    public async Task MessageBus_ListenIncludeLatest_ShouldIncludeLastMessage()
     {
         // Arrange
         var messageBus = new MessageBus();
@@ -225,29 +228,31 @@ public class MessageBusTest : IDisposable
         messageBus.ListenIncludeLatest<int>().Subscribe(x => receivedMessages.Add(x));
 
         // Assert
-        Assert.That(receivedMessages, Has.Exactly(1).Items);
-        Assert.That(receivedMessages[0], Is.EqualTo(42));
+        await Assert.That(receivedMessages).Count().IsEqualTo(1);
+        await Assert.That(receivedMessages[0]).IsEqualTo(42);
     }
 
     /// <summary>
     /// Tests MessageBus.Current static property for complete coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBus_Current_ShouldBeAccessible()
+    public async Task MessageBus_Current_ShouldBeAccessible()
     {
         // Act
         var current = MessageBus.Current;
 
         // Assert
-        Assert.That(current, Is.Not.Null);
-        Assert.That(current, Is.InstanceOf<IMessageBus>());
+        await Assert.That(current).IsNotNull();
+        await Assert.That(current).IsAssignableTo<IMessageBus>();
     }
 
     /// <summary>
     /// Tests MessageBus with contracts to ensure message isolation.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBus_WithContracts_ShouldIsolateMessages()
+    public async Task MessageBus_WithContracts_ShouldIsolateMessages()
     {
         // Arrange
         var messageBus = new MessageBus();
@@ -265,22 +270,22 @@ public class MessageBusTest : IDisposable
         messageBus.SendMessage(3);
 
         // Assert
-        Assert.That(contract1Messages, Has.Exactly(1).Items);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(contract1Messages).Count().IsEqualTo(1);
+        using (Assert.Multiple())
         {
-            Assert.That(contract1Messages[0], Is.EqualTo(1));
+            await Assert.That(contract1Messages[0]).IsEqualTo(1);
 
-            Assert.That(contract2Messages, Has.Exactly(1).Items);
+            await Assert.That(contract2Messages).Count().IsEqualTo(1);
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(contract2Messages[0], Is.EqualTo(2));
+            await Assert.That(contract2Messages[0]).IsEqualTo(2);
 
-            Assert.That(noContractMessages, Has.Exactly(1).Items);
+            await Assert.That(noContractMessages).Count().IsEqualTo(1);
         }
 
-        Assert.That(noContractMessages[0], Is.EqualTo(3));
+        await Assert.That(noContractMessages[0]).IsEqualTo(3);
     }
 
     public void Dispose()

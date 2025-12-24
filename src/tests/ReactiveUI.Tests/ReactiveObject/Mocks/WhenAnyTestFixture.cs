@@ -13,10 +13,10 @@ public class WhenAnyTestFixture : ReactiveObject
 {
     [IgnoreDataMember]
     [JsonIgnore]
-#pragma warning disable SA1401 // Fields should be private
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private", Justification = "Used for the serializaton test")]
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value null - Used by reflection
     internal ObservableAsPropertyHelper<int>? _accountsFound;
-
-#pragma warning restore SA1401 // Fields should be private
+#pragma warning restore CS0649
 
     [IgnoreDataMember]
     [JsonIgnore]

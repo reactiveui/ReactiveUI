@@ -8,14 +8,14 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Routable ViewModel MixinTests.
 /// </summary>
-[TestFixture]
 public class RoutableViewModelMixinTests
 {
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model is first added.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
+    public async Task WhenNavigatedToCallsOnNavigatedToWhenViewModelIsFirstAdded()
     {
         var count = 0;
 
@@ -29,16 +29,19 @@ public class RoutableViewModelMixinTests
             return Disposable.Empty;
         });
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model returns to top of stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
+    public async Task WhenNavigatedToCallsOnNavigatedToWhenViewModelReturnsToTopOfStack()
     {
         var count = 0;
 
@@ -53,18 +56,21 @@ public class RoutableViewModelMixinTests
             return Disposable.Empty;
         });
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
         screen.Router.Navigate.Execute(vm2);
         screen.Router.Navigate.Execute(vm);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(2));
+        await Assert.That(count).IsEqualTo(2);
     }
 
     /// <summary>
     /// Whens the navigated to calls dispose when view model loses focus.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
+    public async Task WhenNavigatedToCallsDisposeWhenViewModelLosesFocus()
     {
         var count = 0;
 
@@ -74,20 +80,25 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.Zero);
+        await Assert.That(count).IsEqualTo(0);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm2);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigated to calls dispose when navigation stack is reset.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
+    public async Task WhenNavigatedToCallsDisposeWhenNavigationStackIsReset()
     {
         var count = 0;
 
@@ -97,20 +108,25 @@ public class RoutableViewModelMixinTests
 
         vm1.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm1);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.Zero);
+        await Assert.That(count).IsEqualTo(0);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.NavigateAndReset.Execute(vm2);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigated to observable fires when view model added to navigation stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
+    public async Task WhenNavigatedToObservableFiresWhenViewModelAddedToNavigationStack()
     {
         var count = 0;
 
@@ -119,16 +135,19 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigated to observable fires when view model returns to navigation stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
+    public async Task WhenNavigatedToObservableFiresWhenViewModelReturnsToNavigationStack()
     {
         var count = 0;
 
@@ -138,18 +157,21 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
         screen.Router.Navigate.Execute(vm2);
         screen.Router.Navigate.Execute(vm);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(2));
+        await Assert.That(count).IsEqualTo(2);
     }
 
     /// <summary>
     /// Whens the navigated to observable completes when view model is removed from navigation stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
+    public async Task WhenNavigatedToObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
     {
         var count = 0;
 
@@ -160,17 +182,20 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
         screen.Router.NavigateBack.Execute();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigated to observable completes when navigation stack is reset.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
+    public async Task WhenNavigatedToObservableCompletesWhenNavigationStackIsReset()
     {
         var count = 0;
 
@@ -182,17 +207,20 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm1);
         screen.Router.NavigateAndReset.Execute(vm2);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigating from observable fires when view model loses focus.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
+    public async Task WhenNavigatingFromObservableFiresWhenViewModelLosesFocus()
     {
         var count = 0;
         var screen = new TestScreen();
@@ -201,17 +229,20 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
         screen.Router.Navigate.Execute(vm2);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigating from observable completes when view model is removed from navigation stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
+    public async Task WhenNavigatingFromObservableCompletesWhenViewModelIsRemovedFromNavigationStack()
     {
         var count = 0;
 
@@ -222,17 +253,20 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm);
         screen.Router.NavigateBack.Execute();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     /// <summary>
     /// Whens the navigating from observable completes when navigation stack is reset.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
+    public async Task WhenNavigatingFromObservableCompletesWhenNavigationStackIsReset()
     {
         var count = 0;
 
@@ -244,10 +278,12 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         screen.Router.Navigate.Execute(vm1);
         screen.Router.NavigateAndReset.Execute(vm2);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        Assert.That(count, Is.EqualTo(1));
+        await Assert.That(count).IsEqualTo(1);
     }
 
     private class TestScreen : IScreen

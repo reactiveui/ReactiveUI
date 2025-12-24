@@ -7,25 +7,21 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
 
-/// <summary>
-/// Tests for the ReactiveUIBuilder core functionality.
-/// </summary>
-[TestFixture]
-[NonParallelizable]
+[NotInParallel]
 public class ReactiveUIBuilderCoreTests
 {
     [Test]
-    public void CreateBuilder_Should_Return_Builder_Instance()
+    public async Task CreateBuilder_Should_Return_Builder_Instance()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
-        Assert.That(builder, Is.Not.Null);
-        Assert.That(builder, Is.TypeOf<ReactiveUIBuilder>());
+        await Assert.That(builder).IsNotNull();
+        await Assert.That(builder).IsTypeOf<ReactiveUIBuilder>();
     }
 
     [Test]
-    public void WithCoreServices_Should_Register_Core_Services()
+    public async Task WithCoreServices_Should_Register_Core_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -33,14 +29,14 @@ public class ReactiveUIBuilderCoreTests
         builder.WithCoreServices().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
 
         var typeConverter = locator.GetService<IBindingTypeConverter>();
-        Assert.That(typeConverter, Is.Not.Null);
+        await Assert.That(typeConverter).IsNotNull();
     }
 
     [Test]
-    public void WithPlatformServices_Should_Register_Platform_Services()
+    public async Task WithPlatformServices_Should_Register_Platform_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -48,12 +44,12 @@ public class ReactiveUIBuilderCoreTests
         builder.WithPlatformServices().Build();
 
         var services = locator.GetServices<IBindingTypeConverter>();
-        Assert.That(services, Is.Not.Null);
-        Assert.That(services.Any(), Is.True);
+        await Assert.That(services).IsNotNull();
+        await Assert.That(services.Any()).IsTrue();
     }
 
     [Test]
-    public void WithCustomRegistration_Should_Execute_Custom_Action()
+    public async Task WithCustomRegistration_Should_Execute_Custom_Action()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -66,13 +62,13 @@ public class ReactiveUIBuilderCoreTests
             customServiceRegistered = true;
         }).Build();
 
-        Assert.That(customServiceRegistered, Is.True);
+        await Assert.That(customServiceRegistered).IsTrue();
         var service = locator.GetService<string>();
-        Assert.That(service, Is.EqualTo("TestValue"));
+        await Assert.That(service).IsEqualTo("TestValue");
     }
 
     [Test]
-    public void Build_Should_Always_Register_Core_Services()
+    public async Task Build_Should_Always_Register_Core_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -81,7 +77,7 @@ public class ReactiveUIBuilderCoreTests
         builder.Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
     }
 
     [Test]
@@ -94,7 +90,7 @@ public class ReactiveUIBuilderCoreTests
     }
 
     [Test]
-    public void WithViewsFromAssembly_Should_Register_Views()
+    public async Task WithViewsFromAssembly_Should_Register_Views()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -102,7 +98,7 @@ public class ReactiveUIBuilderCoreTests
         var assembly = typeof(ReactiveUIBuilderCoreTests).Assembly;
 
         builder.WithViewsFromAssembly(assembly).Build();
-        Assert.That(builder, Is.Not.Null);
+        await Assert.That(builder).IsNotNull();
     }
 
     [Test]
@@ -115,7 +111,7 @@ public class ReactiveUIBuilderCoreTests
     }
 
     [Test]
-    public void WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
+    public async Task WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -124,12 +120,12 @@ public class ReactiveUIBuilderCoreTests
         builder.WithCoreServices().WithCoreServices().Build();
 
         var services = locator.GetServices<ICreatesObservableForProperty>();
-        Assert.That(services, Is.Not.Null);
-        Assert.That(services.Any(), Is.True);
+        await Assert.That(services).IsNotNull();
+        await Assert.That(services.Any()).IsTrue();
     }
 
     [Test]
-    public void Builder_Should_Support_Fluent_Chaining()
+    public async Task Builder_Should_Support_Fluent_Chaining()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -144,12 +140,12 @@ public class ReactiveUIBuilderCoreTests
                })
                .Build();
 
-        Assert.That(customServiceRegistered, Is.True);
+        await Assert.That(customServiceRegistered).IsTrue();
         var service = locator.GetService<string>();
-        Assert.That(service, Is.EqualTo("Test"));
+        await Assert.That(service).IsEqualTo("Test");
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
     }
 
     [Test]
@@ -159,7 +155,7 @@ public class ReactiveUIBuilderCoreTests
     }
 
     [Test]
-    public void BuildApp_Should_Return_ReactiveInstance()
+    public async Task BuildApp_Should_Return_ReactiveInstance()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -168,8 +164,8 @@ public class ReactiveUIBuilderCoreTests
         builder.WithCoreServices();
         var instance = builder.BuildApp();
 
-        Assert.That(instance, Is.Not.Null);
-        Assert.That(instance.Current, Is.Not.Null);
+        await Assert.That(instance).IsNotNull();
+        await Assert.That(instance.Current).IsNotNull();
     }
 
     [Test]

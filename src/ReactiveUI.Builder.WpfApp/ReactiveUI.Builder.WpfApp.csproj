@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>$(ReactiveUIWindowsTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>

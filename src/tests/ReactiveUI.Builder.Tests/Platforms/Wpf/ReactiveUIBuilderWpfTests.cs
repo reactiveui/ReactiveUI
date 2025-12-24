@@ -8,11 +8,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Wpf;
 
-[TestFixture]
 public class ReactiveUIBuilderWpfTests
 {
     [Test]
-    public void WithWpf_Should_Register_Wpf_Services()
+    public async Task WithWpf_Should_Register_Wpf_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -21,14 +20,14 @@ public class ReactiveUIBuilderWpfTests
         builder.WithWpf().Build();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.That(platformOperations, Is.Not.Null);
+        await Assert.That(platformOperations).IsNotNull();
 
         var activationFetcher = locator.GetService<IActivationForViewFetcher>();
-        Assert.That(activationFetcher, Is.Not.Null);
+        await Assert.That(activationFetcher).IsNotNull();
     }
 
     [Test]
-    public void WithCoreServices_AndWpf_Should_Register_All_Services()
+    public async Task WithCoreServices_AndWpf_Should_Register_All_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -37,9 +36,9 @@ public class ReactiveUIBuilderWpfTests
         builder.WithWpf().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.That(platformOperations, Is.Not.Null);
+        await Assert.That(platformOperations).IsNotNull();
     }
 }

@@ -5,14 +5,9 @@
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class AwaiterTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
@@ -32,14 +27,15 @@ public class AwaiterTest : IDisposable
     /// <summary>
     /// A smoke test for Awaiters.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method", Justification = "Intentional")]
-    public void AwaiterSmokeTest()
+    public async Task AwaiterSmokeTest()
     {
         var fixture = AwaitAnObservable();
         fixture.Wait();
 
-        Assert.That(fixture.Result, Is.EqualTo(42));
+        await Assert.That(fixture.Result).IsEqualTo(42);
     }
 
     public void Dispose()

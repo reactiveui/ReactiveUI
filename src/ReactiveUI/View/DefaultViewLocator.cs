@@ -217,7 +217,6 @@ public sealed partial class DefaultViewLocator : IViewLocator
             var viewType = Reflection.ReallyFindType(viewTypeName, throwOnFailure: false);
             if (viewType is null)
             {
-                // this.Log().Debug(CultureInfo.InvariantCulture, "Failed to find type '{0}'", viewTypeName);
                 return null;
             }
 
@@ -225,7 +224,7 @@ public sealed partial class DefaultViewLocator : IViewLocator
 
             if (service is null)
             {
-                 return null;
+                return null;
             }
 
             if (service is not IViewFor view)

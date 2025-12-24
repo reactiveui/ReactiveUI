@@ -1,14 +1,10 @@
-﻿using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 // Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests;
+
 public class InteractionBinderImplementationTests
 {
     /// <summary>
@@ -32,7 +28,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -56,7 +52,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -82,7 +78,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -108,14 +104,15 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
     /// Tests to make sure that it unregisters the task handler when view model is set to null.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void UnregisterTaskHandlerWhenViewModelIsSetToNull()
+    public async Task UnregisterTaskHandlerWhenViewModelIsSetToNull()
     {
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
@@ -131,14 +128,15 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        Assert.That(async () => await vm.Interaction1.Handle("123").ToTask(), Throws.TypeOf<UnhandledInteractionException<string, bool>>());
+        await Assert.That(async () => await vm.Interaction1.Handle("123").ToTask()).Throws<UnhandledInteractionException<string, bool>>();
     }
 
     /// <summary>
     /// Tests to make sure that it unregisters the observable handler when view model is set to null.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void UnregisterObservableHandlerWhenViewModelIsSetToNull()
+    public async Task UnregisterObservableHandlerWhenViewModelIsSetToNull()
     {
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
@@ -154,7 +152,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        Assert.That(async () => await vm.Interaction1.Handle("123").ToTask(), Throws.TypeOf<UnhandledInteractionException<string, bool>>());
+        await Assert.That(async () => await vm.Interaction1.Handle("123").ToTask()).Throws<UnhandledInteractionException<string, bool>>();
     }
 
     /// <summary>
@@ -226,7 +224,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -252,7 +250,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -276,7 +274,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -300,7 +298,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -377,7 +375,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -406,7 +404,7 @@ public class InteractionBinderImplementationTests
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
-        Assert.That(isDeletionConfirmed, Is.True);
+        await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
     /// <summary>
@@ -458,8 +456,9 @@ public class InteractionBinderImplementationTests
     /// <summary>
     /// Test that confirms the view model should be garbage collected when overwritten.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewModelShouldBeGarbageCollectedWhenOverwritten()
+    public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()
         {
@@ -484,14 +483,15 @@ public class InteractionBinderImplementationTests
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.That(weakRef.IsAlive, Is.False);
+        await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
     /// <summary>
     /// Test that confirms nested view model should be garbage collected when overwritten.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NestedViewModelShouldBeGarbageCollectedWhenOverwritten()
+    public async Task NestedViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()
         {
@@ -516,6 +516,6 @@ public class InteractionBinderImplementationTests
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        Assert.That(weakRef.IsAlive, Is.False);
+        await Assert.That(weakRef.IsAlive).IsFalse();
     }
 }

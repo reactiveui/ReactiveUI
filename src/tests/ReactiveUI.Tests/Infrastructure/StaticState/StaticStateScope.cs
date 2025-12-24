@@ -11,13 +11,13 @@ namespace ReactiveUI.Tests.Infrastructure.StaticState;
 /// </summary>
 /// <remarks>
 /// This helper allows you to capture any state via getter functions and restore it via setter actions.
-/// Tests using this scope should also be marked with [NonParallelizable] to prevent
+/// Tests using this scope should also be marked with [NotInParallel] to prevent
 /// concurrent modifications to the shared state.
 /// </remarks>
 /// <example>
 /// <code>
 /// [TestFixture]
-/// [NonParallelizable]
+/// [NotInParallel]
 /// public class MyTests
 /// {
 ///     private StaticStateScope _stateScope;

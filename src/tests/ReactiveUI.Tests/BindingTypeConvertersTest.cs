@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using NUnit.Framework;
-
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -15,25 +13,27 @@ public class BindingTypeConvertersTest
     /// <summary>
     /// Tests that equality type converter do reference cast should convert null nullable values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void EqualityTypeConverterDoReferenceCastShouldConvertNullNullableValues()
+    public async Task EqualityTypeConverterDoReferenceCastShouldConvertNullNullableValues()
     {
         double? nullDouble = null;
         double? expected = null;
         var result = EqualityTypeConverter.DoReferenceCast(nullDouble, typeof(double?));
-        Assert.That(result, Is.EqualTo(expected));
+        await Assert.That(result).IsEqualTo(expected);
     }
 
     /// <summary>
     /// Tests that equality type converter do reference cast should convert nullable values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void EqualityTypeConverterDoReferenceCastShouldConvertNullableValues()
+    public async Task EqualityTypeConverterDoReferenceCastShouldConvertNullableValues()
     {
         double? doubleValue = 1.0;
         double? expected = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double?));
-        Assert.That(result, Is.EqualTo(expected));
+        await Assert.That(result).IsEqualTo(expected);
     }
 
     /// <summary>
@@ -49,23 +49,25 @@ public class BindingTypeConvertersTest
     /// <summary>
     /// Tests that equality type converter do reference cast nullable to value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void EqualityTypeConverterDoReferenceCastNullableToValueType()
+    public async Task EqualityTypeConverterDoReferenceCastNullableToValueType()
     {
         double? doubleValue = 1.0;
         double? expected = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
-        Assert.That(result, Is.EqualTo(expected));
+        await Assert.That(result).IsEqualTo(expected);
     }
 
     /// <summary>
     /// Tests that equality type converter do reference cast should convert value types.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
+    public async Task EqualityTypeConverterDoReferenceCastShouldConvertValueTypes()
     {
         const double doubleValue = 1.0;
         var result = EqualityTypeConverter.DoReferenceCast(doubleValue, typeof(double));
-        Assert.That(result, Is.EqualTo(doubleValue));
+        await Assert.That(result).IsEqualTo(doubleValue);
     }
 }

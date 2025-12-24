@@ -8,6 +8,7 @@ dotnet_diagnostic.SA1600.severity = none            # Elements must be documente
 ###################
 # Code Analysis (CA) - Disable rules for test projects
 ###################
+dotnet_diagnostic.CA1001.severity = none            # Owns disposable fields
 dotnet_diagnostic.CA1063.severity = none            # Implement IDisposable correctly
 dotnet_diagnostic.CA1065.severity = none            # Do not raise exceptions in unexpected locations
 dotnet_diagnostic.CA2213.severity = none            # Disposable fields should be disposed

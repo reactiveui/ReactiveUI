@@ -5,20 +5,16 @@
 
 using System.Diagnostics;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class OrderedComparerTests
 {
     /// <summary>
     /// A general smoke test.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SmokeTest()
+    public async Task SmokeTest()
     {
         var adam = new Employee { Name = "Adam", Age = 50, Salary = 125 };
         var alice = new Employee { Name = "Alice", Age = 25, Salary = 100 };
@@ -36,17 +32,13 @@ public class OrderedComparerTests
         };
 
         employees.Sort(OrderedComparer<Employee>.OrderBy(static x => x.Name));
-        Assert.That(
-                    employees.SequenceEqual([adam, alice, bob, carol, xavier]),
-                    Is.True);
+        await Assert.That(employees.SequenceEqual([adam, alice, bob, carol, xavier])).IsTrue();
 
         employees.Sort(
                        OrderedComparer<Employee>
                            .OrderByDescending(static x => x.Age)
                            .ThenBy(static x => x.Name));
-        Assert.That(
-                    employees.SequenceEqual([adam, carol, xavier, bob, alice]),
-                    Is.True);
+        await Assert.That(employees.SequenceEqual([adam, carol, xavier, bob, alice])).IsTrue();
 
         employees.Sort(
                        OrderedComparer<Employee>
@@ -54,25 +46,22 @@ public class OrderedComparerTests
                            .ThenBy(
                                    static x => x.Name,
                                    StringComparer.OrdinalIgnoreCase));
-        Assert.That(
-                    employees.SequenceEqual([adam, alice, carol, xavier, bob]),
-                    Is.True);
+        await Assert.That(employees.SequenceEqual([adam, alice, carol, xavier, bob])).IsTrue();
 
         employees.Sort(
                        OrderedComparer<Employee>
                            .OrderByDescending(static x => x.Age)
                            .ThenByDescending(static x => x.Salary)
                            .ThenBy(static x => x.Name));
-        Assert.That(
-                    employees.SequenceEqual([adam, carol, xavier, bob, alice]),
-                    Is.True);
+        await Assert.That(employees.SequenceEqual([adam, carol, xavier, bob, alice])).IsTrue();
     }
 
     /// <summary>
     /// A test which determines if customer comparers work.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CustomComparerTest()
+    public async Task CustomComparerTest()
     {
         List<string> items = ["aaa", "AAA", "abb", "aaaa"];
 
@@ -80,77 +69,65 @@ public class OrderedComparerTests
                    OrderedComparer<string>.OrderBy(
                                                    static x => x,
                                                    StringComparer.Ordinal));
-        Assert.That(
-                    items.SequenceEqual(["AAA", "aaa", "aaaa", "abb"]),
-                    Is.True);
+        await Assert.That(items.SequenceEqual(["AAA", "aaa", "aaaa", "abb"])).IsTrue();
 
         items.Sort(
                    OrderedComparer<string>.OrderByDescending(static x => x.Length).ThenBy(
                     static x => x,
                     StringComparer.Ordinal));
-        Assert.That(
-                    items.SequenceEqual(["aaaa", "AAA", "aaa", "abb"]),
-                    Is.True);
+        await Assert.That(items.SequenceEqual(["aaaa", "AAA", "aaa", "abb"])).IsTrue();
 
         items.Sort(
                    OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
                                                                          static x => x,
                                                                          StringComparer.Ordinal));
-        Assert.That(
-                    items.SequenceEqual(["AAA", "aaa", "abb", "aaaa"]),
-                    Is.True);
+        await Assert.That(items.SequenceEqual(["AAA", "aaa", "abb", "aaaa"])).IsTrue();
 
         items.Sort(
                    OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
                                                                          static x => x,
                                                                          StringComparer.OrdinalIgnoreCase));
-        Assert.That(
-                    items.SequenceEqual(
+        await Assert.That(items.SequenceEqual(
                                         ["AAA", "AAA", "abb", "aaaa"],
-                                        StringComparer.OrdinalIgnoreCase),
-                    Is.True);
+                                        StringComparer.OrdinalIgnoreCase)).IsTrue();
     }
 
     /// <summary>
     /// Test for checking that chaining the onto regular IComparable works.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ChainOntoRegularIComparables()
+    public async Task ChainOntoRegularIComparables()
     {
         var items = new List<string> { "aaa", "AAA", "abb", "aaaa" };
         var comparer = StringComparer.OrdinalIgnoreCase;
 
         items.Sort(comparer);
-        Assert.That(
-                    items.SequenceEqual(
+        await Assert.That(items.SequenceEqual(
                                         ["AAA", "aaa", "aaaa", "abb"],
-                                        StringComparer.OrdinalIgnoreCase),
-                    Is.True);
+                                        StringComparer.OrdinalIgnoreCase)).IsTrue();
 
         items.Sort(
                    comparer.ThenByDescending(
                                              static x => x,
                                              StringComparer.Ordinal));
-        Assert.That(
-                    items.SequenceEqual(
+        await Assert.That(items.SequenceEqual(
                                         ["aaa", "AAA", "aaaa", "abb"],
-                                        StringComparer.Ordinal),
-                    Is.True);
+                                        StringComparer.Ordinal)).IsTrue();
     }
 
     /// <summary>
     /// Test that checks it works with anonymous types.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WorksWithAnonymousTypes()
+    public async Task WorksWithAnonymousTypes()
     {
         var source = new List<string> { "abc", "bcd", "cde" };
         var items = source.ConvertAll(static x => new { FirstLetter = x[0], AllOfIt = x });
 
         items.Sort(OrderedComparer.For(items).OrderBy(static x => x.FirstLetter));
-        Assert.That(
-                    items.Select(static x => x.FirstLetter).SequenceEqual("abc"),
-                    Is.True);
+        await Assert.That(items.Select(static x => x.FirstLetter).SequenceEqual("abc")).IsTrue();
     }
 
     [DebuggerDisplay("{Name}")]

@@ -1,24 +1,20 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Splat.Builder;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class ActivatingViewTests
 {
     /// <summary>
     /// Tests to make sure that views generally activate.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ActivatingViewSmokeTest()
+    public async Task ActivatingViewSmokeTest()
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
@@ -33,24 +29,24 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
         }
     }
@@ -58,8 +54,9 @@ public class ActivatingViewTests
     /// <summary>
     /// Tests for making sure nulling the view model deactivate it.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NullingViewModelDeactivateIt()
+    public async Task NullingViewModelDeactivateIt()
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
@@ -74,29 +71,30 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             }
 
             fixture.ViewModel = null;
-            Assert.That(vm.IsActiveCount, Is.Zero);
+            await Assert.That(vm.IsActiveCount).IsEqualTo(0);
         }
     }
 
     /// <summary>
     /// Tests switching the view model deactivates it.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SwitchingViewModelDeactivatesIt()
+    public async Task SwitchingViewModelDeactivatesIt()
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
@@ -111,27 +109,27 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             }
 
             var newVm = new ActivatingViewModel();
-            Assert.That(newVm.IsActiveCount, Is.Zero);
+            await Assert.That(newVm.IsActiveCount).IsEqualTo(0);
 
             fixture.ViewModel = newVm;
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(newVm.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(newVm.IsActiveCount).IsEqualTo(1);
             }
         }
     }
@@ -139,8 +137,9 @@ public class ActivatingViewTests
     /// <summary>
     /// Tests setting the view model after loaded loads it.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SettingViewModelAfterLoadedLoadsIt()
+    public async Task SettingViewModelAfterLoadedLoadsIt()
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
@@ -153,27 +152,27 @@ public class ActivatingViewTests
             var vm = new ActivatingViewModel();
             var fixture = new ActivatingView();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+            await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
 
             fixture.ViewModel = vm;
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
             }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.IsActiveCount, Is.Zero);
-                Assert.That(vm.IsActiveCount, Is.Zero);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
             }
         }
     }
@@ -181,8 +180,9 @@ public class ActivatingViewTests
     /// <summary>
     /// Tests the can unload and load view again.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanUnloadAndLoadViewAgain()
+    public async Task CanUnloadAndLoadViewAgain()
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
@@ -197,31 +197,31 @@ public class ActivatingViewTests
             {
                 ViewModel = vm
             };
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             }
 
             fixture.Unloaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.Zero);
-                Assert.That(fixture.IsActiveCount, Is.Zero);
+                await Assert.That(vm.IsActiveCount).IsEqualTo(0);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
             }
 
             fixture.Loaded.OnNext(Unit.Default);
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(vm.IsActiveCount, Is.EqualTo(1));
-                Assert.That(fixture.IsActiveCount, Is.EqualTo(1));
+                await Assert.That(vm.IsActiveCount).IsEqualTo(1);
+                await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             }
         }
     }

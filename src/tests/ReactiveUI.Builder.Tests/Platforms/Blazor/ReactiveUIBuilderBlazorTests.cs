@@ -8,11 +8,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
-[TestFixture]
 public class ReactiveUIBuilderBlazorTests
 {
     [Test]
-    public void WithBlazor_Should_Register_Services()
+    public async Task WithBlazor_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -21,14 +20,14 @@ public class ReactiveUIBuilderBlazorTests
         builder.WithBlazor().Build();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.That(platformOperations, Is.Not.Null);
+        await Assert.That(platformOperations).IsNotNull();
 
         var typeConverters = locator.GetServices<IBindingTypeConverter>();
-        Assert.That(typeConverters, Is.Not.Empty);
+        await Assert.That(typeConverters).IsNotEmpty();
     }
 
     [Test]
-    public void WithCoreServices_AndBlazor_Should_Register_All_Services()
+    public async Task WithCoreServices_AndBlazor_Should_Register_All_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -37,9 +36,9 @@ public class ReactiveUIBuilderBlazorTests
         builder.WithBlazor().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
-        Assert.That(platformOperations, Is.Not.Null);
+        await Assert.That(platformOperations).IsNotNull();
     }
 }

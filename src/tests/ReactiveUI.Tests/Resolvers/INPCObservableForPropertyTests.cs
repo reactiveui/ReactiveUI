@@ -1,39 +1,34 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class INPCObservableForPropertyTests
 {
     [Test]
-    public void CheckGetAffinityForObjectValues()
+    public async Task CheckGetAffinityForObjectValues()
     {
         var instance = new INPCObservableForProperty();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false), Is.EqualTo(5));
-            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true), Is.Zero);
-            Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false)).IsEqualTo(5);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true)).IsEqualTo(0);
+            await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
 
-            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true), Is.EqualTo(5));
-            Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false), Is.Zero);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true)).IsEqualTo(5);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false)).IsEqualTo(0);
         }
 
-        Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false), Is.Zero);
+        await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
     }
 
     [Test]
-    public void NotificationOnPropertyChanged()
+    public async Task NotificationOnPropertyChanged()
     {
         var instance = new INPCObservableForProperty();
 
@@ -50,17 +45,17 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.That(changes, Has.Count.EqualTo(2));
+        await Assert.That(changes).Count().IsEqualTo(2);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+            await Assert.That(changes[0].Sender).IsEqualTo(testClass);
+            await Assert.That(changes[1].Sender).IsEqualTo(testClass);
         }
     }
 
     [Test]
-    public void NotificationOnPropertyChanging()
+    public async Task NotificationOnPropertyChanging()
     {
         var instance = new INPCObservableForProperty();
 
@@ -77,17 +72,17 @@ public class INPCObservableForPropertyTests
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        Assert.That(changes, Has.Count.EqualTo(2));
+        await Assert.That(changes).Count().IsEqualTo(2);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+            await Assert.That(changes[0].Sender).IsEqualTo(testClass);
+            await Assert.That(changes[1].Sender).IsEqualTo(testClass);
         }
     }
 
     [Test]
-    public void NotificationOnWholeObjectChanged()
+    public async Task NotificationOnWholeObjectChanged()
     {
         var instance = new INPCObservableForProperty();
 
@@ -104,17 +99,17 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanged(null);
         testClass.OnPropertyChanged(string.Empty);
 
-        Assert.That(changes, Has.Count.EqualTo(2));
+        await Assert.That(changes).Count().IsEqualTo(2);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+            await Assert.That(changes[0].Sender).IsEqualTo(testClass);
+            await Assert.That(changes[1].Sender).IsEqualTo(testClass);
         }
     }
 
     [Test]
-    public void NotificationOnWholeObjectChanging()
+    public async Task NotificationOnWholeObjectChanging()
     {
         var instance = new INPCObservableForProperty();
 
@@ -131,12 +126,12 @@ public class INPCObservableForPropertyTests
         testClass.OnPropertyChanging(null);
         testClass.OnPropertyChanging(string.Empty);
 
-        Assert.That(changes, Has.Count.EqualTo(2));
+        await Assert.That(changes).Count().IsEqualTo(2);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changes[0].Sender, Is.EqualTo(testClass));
-            Assert.That(changes[1].Sender, Is.EqualTo(testClass));
+            await Assert.That(changes[0].Sender).IsEqualTo(testClass);
+            await Assert.That(changes[1].Sender).IsEqualTo(testClass);
         }
     }
 

@@ -1,22 +1,28 @@
-﻿using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 // Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using TUnit.Assertions;
+using TUnit.Assertions.Extensions;
+using TUnit.Core;
+
+using static TUnit.Assertions.Assert;
+
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+/// <summary>
+/// Tests for the <see cref="DefaultViewLocator"/> class.
+/// </summary>
+[NotInParallel]
 public partial class DefaultViewLocatorTests
 {
     /// <summary>
     /// Diagnostic test to verify registration and resolution.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DiagnosticTestForRegistrationAndResolution()
+    public async Task DiagnosticTestForRegistrationAndResolution()
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
@@ -27,35 +33,36 @@ public partial class DefaultViewLocatorTests
 
         // Verify registration
         var hasReg = resolver.HasRegistration(typeof(IViewFor<FooViewModel>));
-        Assert.That(hasReg, Is.True, "Registration should exist");
+        await Assert.That(hasReg).IsTrue();
 
         using (resolver.WithResolver())
         {
             // Test direct GetService
             var service = AppLocator.Current.GetService(typeof(IViewFor<FooViewModel>));
-            Assert.That(service, Is.Not.Null, "GetService should return a service");
-            Assert.That(service, Is.TypeOf<FooView>(), "Service should be FooView");
+            await Assert.That(service).IsNotNull();
+            await Assert.That(service).IsTypeOf<FooView>();
 
             // Test that the ViewLocator can find the view by manually checking the type
             var vmType = typeof(FooViewModel);
             var expectedViewForType = typeof(IViewFor<FooViewModel>);
             var manualService = AppLocator.Current.GetService(expectedViewForType);
-            Assert.That(manualService, Is.Not.Null, $"Manual GetService for {expectedViewForType} should work");
+            await Assert.That(manualService).IsNotNull();
 
             // Test through ViewLocator
             var fixture = new DefaultViewLocator();
             var vm = new FooViewModel();
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Not.Null, $"ResolveView should return a result. VM type: {vm.GetType().FullName}");
-            Assert.That(result, Is.TypeOf<FooView>(), "Result should be FooView");
+            await Assert.That(result).IsNotNull();
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that the default name of the view model is replaced with view when determining the service.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ByDefaultViewModelIsReplacedWithViewWhenDeterminingTheServiceName()
+    public async Task ByDefaultViewModelIsReplacedWithViewWhenDeterminingTheServiceName()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -69,15 +76,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that the runtime type of the view model is used to resolve the view.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TheRuntimeTypeOfTheViewModelIsUsedToResolveTheView()
+    public async Task TheRuntimeTypeOfTheViewModelIsUsedToResolveTheView()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -91,15 +99,16 @@ public partial class DefaultViewLocatorTests
             object vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that the view model to view naming convention can be customized.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewModelToViewNamingConventionCanBeCustomized()
+    public async Task ViewModelToViewNamingConventionCanBeCustomized()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -117,15 +126,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooWithWeirdConvention>());
+            await Assert.That(result).IsTypeOf<FooWithWeirdConvention>();
         }
     }
 
     /// <summary>
     /// Tests that makes sure that this instance [can resolve view from view model class using class registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelClassUsingClassRegistration()
+    public async Task CanResolveViewFromViewModelClassUsingClassRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -139,15 +149,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that make sure this instance [can resolve view from view model class using interface registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelClassUsingInterfaceRegistration()
+    public async Task CanResolveViewFromViewModelClassUsingInterfaceRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -161,15 +172,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Test that makes sure that this instance [can resolve view from view model class using IView for registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelClassUsingIViewForRegistration()
+    public async Task CanResolveViewFromViewModelClassUsingIViewForRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -183,15 +195,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using class registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelInterfaceUsingClassRegistration()
+    public async Task CanResolveViewFromViewModelInterfaceUsingClassRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -205,15 +218,16 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModelWithWeirdName();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using interface registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelInterfaceUsingInterfaceRegistration()
+    public async Task CanResolveViewFromViewModelInterfaceUsingInterfaceRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -227,15 +241,16 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that this instance [can resolve view from view model interface using i view for registration].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanResolveViewFromViewModelInterfaceUsingIViewForRegistration()
+    public async Task CanResolveViewFromViewModelInterfaceUsingIViewForRegistration()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -249,15 +264,16 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
         }
     }
 
     /// <summary>
     /// Tests that contracts is used when resolving view.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ContractIsUsedWhenResolvingView()
+    public async Task ContractIsUsedWhenResolvingView()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -272,21 +288,22 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Null);
+            await Assert.That(result).IsNull();
 
             result = fixture.ResolveView(vm, "first");
-            Assert.That(result, Is.TypeOf<FooView>());
+            await Assert.That(result).IsTypeOf<FooView>();
 
             result = fixture.ResolveView(vm, "second");
-            Assert.That(result, Is.TypeOf<FooWithWeirdConvention>());
+            await Assert.That(result).IsTypeOf<FooWithWeirdConvention>();
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if a type cannot be found.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NoErrorIsRaisedIfATypeCannotBeFound()
+    public async Task NoErrorIsRaisedIfATypeCannotBeFound()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -303,15 +320,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Null);
+            await Assert.That(result).IsNull();
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if a service cannot be found.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NoErrorIsRaisedIfAServiceCannotBeFound()
+    public async Task NoErrorIsRaisedIfAServiceCannotBeFound()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -324,15 +342,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Null);
+            await Assert.That(result).IsNull();
         }
     }
 
     /// <summary>
     /// Tests that no errors are raised if the service does not implement IViewFor.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NoErrorIsRaisedIfTheServiceDoesNotImplementIViewFor()
+    public async Task NoErrorIsRaisedIfTheServiceDoesNotImplementIViewFor()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -346,15 +365,16 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Null);
+            await Assert.That(result).IsNull();
         }
     }
 
     /// <summary>
-    /// Tests that null is returned if the creation of the view fails.
+    /// Tests that an exception is thrown if the creation of the view fails.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NoErrorIsRaisedIfTheCreationOfTheViewFails()
+    public async Task ExceptionIsThrownIfTheCreationOfTheViewFails()
     {
         var resolver = new ModernDependencyResolver();
 
@@ -367,8 +387,13 @@ public partial class DefaultViewLocatorTests
             var fixture = new DefaultViewLocator();
             var vm = new FooViewModel();
 
-            var result = fixture.ResolveView(vm);
-            Assert.That(result, Is.Null);
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            {
+                fixture.ResolveView(vm);
+                await Task.CompletedTask;
+            });
+
+            await Assert.That(ex!.Message).IsEqualTo("This is a test failure.");
         }
     }
 

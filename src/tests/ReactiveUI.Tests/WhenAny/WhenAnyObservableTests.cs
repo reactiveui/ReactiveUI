@@ -1,17 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class WhenAnyObservableTests
 {
     /// <summary>
@@ -64,29 +59,27 @@ public class WhenAnyObservableTests
 
         var list = new List<string?>();
         fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list, Is.Empty);
+        await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
         await fixture.Command3.Execute("foo");
-        Assert.That(list, Has.Count.EqualTo(1));
+        await Assert.That(list).Count().IsEqualTo(1);
 
         await fixture.Command1.Execute(2);
-        Assert.That(list, Has.Count.EqualTo(2));
+        await Assert.That(list).Count().IsEqualTo(2);
 
         await fixture.Command3.Execute("bar");
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(list, Has.Count.EqualTo(3));
+            await Assert.That(list).Count().IsEqualTo(3);
 
-            Assert.That(
-                        new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
+            await Assert.That(new[] { "foo : 1", "foo : 2", "bar : 2", }.Zip(
                                                                        list,
                                                                        static (expected, actual) => new
                                                                        {
                                                                            expected,
                                                                            actual
-                                                                       }).All(static x => x.expected == x.actual),
-                        Is.True);
+                                                                       }).All(static x => x.expected == x.actual)).IsTrue();
         }
     }
 
@@ -101,48 +94,47 @@ public class WhenAnyObservableTests
 
         var list = new List<int>();
         fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
-        Assert.That(list, Is.Empty);
+        await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
-        Assert.That(list, Has.Count.EqualTo(1));
+        await Assert.That(list).Count().IsEqualTo(1);
 
         await fixture.Command2.Execute(2);
-        Assert.That(list, Has.Count.EqualTo(2));
+        await Assert.That(list).Count().IsEqualTo(2);
 
         await fixture.Command1.Execute(1);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(list, Has.Count.EqualTo(3));
+            await Assert.That(list).Count().IsEqualTo(3);
 
-            Assert.That(
-                        new[] { 1, 2, 1, }.Zip(
+            await Assert.That(new[] { 1, 2, 1, }.Zip(
                                                list,
                                                static (expected, actual) => new
                                                {
                                                    expected,
                                                    actual
-                                               }).All(static x => x.expected == x.actual),
-                        Is.True);
+                                               }).All(static x => x.expected == x.actual)).IsTrue();
         }
     }
 
     /// <summary>
     /// Tests WhenAnyObservable with null object should update when object isnt null anymore.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
+    public async Task WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
     {
         var fixture = new TestWhenAnyObsViewModel();
         fixture!.WhenAnyObservable(static x => x.Changes)!.Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-        Assert.That(output, Is.Empty);
+        await Assert.That(output).IsEmpty();
 
         fixture.MyListOfInts = [];
-        Assert.That(output, Is.Empty);
+        await Assert.That(output).IsEmpty();
 
         fixture.MyListOfInts.Add(1);
-        Assert.That(output, Has.Count.EqualTo(1));
+        await Assert.That(output).Count().IsEqualTo(1);
 
         fixture.MyListOfInts = null;
-        Assert.That(output, Has.Count.EqualTo(1));
+        await Assert.That(output).Count().IsEqualTo(1);
     }
 }

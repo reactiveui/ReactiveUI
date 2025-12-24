@@ -5,22 +5,16 @@
 
 using Microsoft.Reactive.Testing;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Demonstrates using ReactiveUI schedulers without RequiresUnreferencedCode attributes.
 /// </summary>
-[NonParallelizable]
+[NotInParallel]
 public class SchedulerConsumptionTest
 {
     [Test]
-    public void ViewModelCanUseSchedulersWithoutAttributes()
+    public async Task ViewModelCanUseSchedulersWithoutAttributes()
     {
         var testScheduler = new TestScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
@@ -40,7 +34,7 @@ public class SchedulerConsumptionTest
 
             // For this test, we're primarily verifying that the code compiles and runs
             // without requiring RequiresUnreferencedCode attributes on the test method
-            Assert.That(viewModel.Name, Is.EqualTo("ReactiveUI"));
+            await Assert.That(viewModel.Name).IsEqualTo("ReactiveUI");
         }
         finally
         {
@@ -50,7 +44,7 @@ public class SchedulerConsumptionTest
     }
 
     [Test]
-    public void RepositoryCanUseSchedulersWithoutAttributes()
+    public async Task RepositoryCanUseSchedulersWithoutAttributes()
     {
         var testScheduler = new TestScheduler();
         var originalScheduler = RxSchedulers.TaskpoolScheduler;
@@ -69,7 +63,7 @@ public class SchedulerConsumptionTest
             // Advance the test scheduler to process the observable
             testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(1).Ticks);
 
-            Assert.That(result, Is.EqualTo("Processed: test"));
+            await Assert.That(result).IsEqualTo("Processed: test");
         }
         finally
         {
@@ -79,22 +73,22 @@ public class SchedulerConsumptionTest
     }
 
     [Test]
-    public void ReactivePropertyFactoryMethodsWork()
+    public async Task ReactivePropertyFactoryMethodsWork()
     {
         // These factory methods use RxSchedulers internally, so no RequiresUnreferencedCode needed
         var prop1 = ReactiveProperty<string>.Create();
         var prop2 = ReactiveProperty<string>.Create("initial");
         var prop3 = ReactiveProperty<int>.Create(42, false, true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(prop1, Is.Not.Null);
-            Assert.That(prop2, Is.Not.Null);
-            Assert.That(prop3, Is.Not.Null);
+            await Assert.That(prop1).IsNotNull();
+            await Assert.That(prop2).IsNotNull();
+            await Assert.That(prop3).IsNotNull();
 
-            Assert.That(prop1.Value, Is.Null);
-            Assert.That(prop2.Value, Is.EqualTo("initial"));
-            Assert.That(prop3.Value, Is.EqualTo(42));
+            await Assert.That(prop1.Value).IsNull();
+            await Assert.That(prop2.Value).IsEqualTo("initial");
+            await Assert.That(prop3.Value).IsEqualTo(42);
         }
     }
 

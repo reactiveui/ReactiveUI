@@ -8,16 +8,16 @@ using Microsoft.Reactive.Testing;
 namespace ReactiveUI.Testing.Tests;
 
 /// <summary>
-/// Tests for <see cref="SchedulerExtensions"/>.
+/// Tests for SchedulerExtensions.
 /// </summary>
-[TestFixture]
 public sealed class SchedulerExtensionTests
 {
     /// <summary>
     /// Tests that WithScheduler sets both RxApp and RxSchedulers schedulers.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WithScheduler_ShouldSetBothRxAppAndRxSchedulersSchedulers()
+    public async Task WithScheduler_ShouldSetBothRxAppAndRxSchedulersSchedulers()
     {
         var testScheduler = new TestScheduler();
         var originalMainThread = RxApp.MainThreadScheduler;
@@ -28,25 +28,25 @@ public sealed class SchedulerExtensionTests
         using (SchedulerExtensions.WithScheduler(testScheduler))
         {
             // Verify schedulers
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
                 // Verify RxApp schedulers are set
-                Assert.That(RxApp.MainThreadScheduler, Is.EqualTo(testScheduler));
-                Assert.That(RxApp.TaskpoolScheduler, Is.EqualTo(testScheduler));
+                await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxApp.TaskpoolScheduler).IsEqualTo(testScheduler);
 
                 // Verify RxSchedulers are set
-                Assert.That(RxSchedulers.MainThreadScheduler, Is.EqualTo(testScheduler));
-                Assert.That(RxSchedulers.TaskpoolScheduler, Is.EqualTo(testScheduler));
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(testScheduler);
             }
         }
 
         // Verify schedulers are restored after disposal
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(RxApp.MainThreadScheduler, Is.EqualTo(originalMainThread));
-            Assert.That(RxApp.TaskpoolScheduler, Is.EqualTo(originalTaskpool));
-            Assert.That(RxSchedulers.MainThreadScheduler, Is.EqualTo(originalRxSchedulersMain));
-            Assert.That(RxSchedulers.TaskpoolScheduler, Is.EqualTo(originalRxSchedulersTask));
+            await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalMainThread);
+            await Assert.That(RxApp.TaskpoolScheduler).IsEqualTo(originalTaskpool);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalRxSchedulersMain);
+            await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(originalRxSchedulersTask);
         }
     }
 }

@@ -1,18 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class PocoObservableForPropertyTests : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
@@ -30,25 +25,21 @@ public class PocoObservableForPropertyTests : IDisposable
     }
 
     [Test]
-    public void CheckGetAffinityForObjectValues()
+    public async Task CheckGetAffinityForObjectValues()
     {
         RxApp.EnsureInitialized();
         var instance = new POCOObservableForProperty();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        instance.GetAffinityForObject(
+            await Assert.That(instance.GetAffinityForObject(
                             typeof(PocoType),
                             null!,
-                            false),
-                        Is.EqualTo(1));
-            Assert.That(
-                        instance.GetAffinityForObject(
+                            false)).IsEqualTo(1);
+            await Assert.That(instance.GetAffinityForObject(
                             typeof(INPCClass),
                             null!,
-                            false),
-                        Is.EqualTo(1));
+                            false)).IsEqualTo(1);
         }
     }
 

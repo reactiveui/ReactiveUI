@@ -1,14 +1,10 @@
-﻿using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 // Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests.Core;
+
 public class NewGameViewModelTests
 {
     private readonly NewGameViewModel _viewmodel;
@@ -21,14 +17,15 @@ public class NewGameViewModelTests
     /// <summary>
     /// Tests that determines whether this instance [can add up to seven players].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanAddUpToSevenPlayers()
+    public async Task CanAddUpToSevenPlayers()
     {
         foreach (var i in Enumerable.Range(1, 7))
         {
             _viewmodel.NewPlayerName = "Player" + i;
             _viewmodel.AddPlayer.Execute().Subscribe();
-            Assert.That(_viewmodel.Players, Has.Count.EqualTo(i));
+            await Assert.That(_viewmodel.Players).Count().IsEqualTo(i);
         }
     }
 }

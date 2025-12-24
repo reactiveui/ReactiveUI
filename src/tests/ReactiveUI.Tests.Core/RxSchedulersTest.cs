@@ -5,43 +5,39 @@
 
 using Microsoft.Reactive.Testing;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
 
 /// <summary>
 /// Tests the RxSchedulers class to ensure it works without RequiresUnreferencedCode attributes.
 /// </summary>
-[NonParallelizable]
+[NotInParallel]
 public class RxSchedulersTest
 {
     /// <summary>
     /// Tests that schedulers can be accessed without attributes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SchedulersCanBeAccessedWithoutAttributes()
+    public async Task SchedulersCanBeAccessedWithoutAttributes()
     {
         // This test method itself should not require RequiresUnreferencedCode
         // because it uses RxSchedulers instead of RxApp
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(mainScheduler, Is.Not.Null);
-            Assert.That(taskpoolScheduler, Is.Not.Null);
+            await Assert.That(mainScheduler).IsNotNull();
+            await Assert.That(taskpoolScheduler).IsNotNull();
         }
     }
 
     /// <summary>
     /// Tests that schedulers can be set and retrieved.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SchedulersCanBeSetAndRetrieved()
+    public async Task SchedulersCanBeSetAndRetrieved()
     {
         // Store original schedulers to ensure test isolation
         var originalMainScheduler = RxSchedulers.MainThreadScheduler;
@@ -55,11 +51,11 @@ public class RxSchedulersTest
             RxSchedulers.MainThreadScheduler = testScheduler;
             RxSchedulers.TaskpoolScheduler = testScheduler;
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
                 // Verify they were set
-                Assert.That(RxSchedulers.MainThreadScheduler, Is.EqualTo(testScheduler));
-                Assert.That(RxSchedulers.TaskpoolScheduler, Is.EqualTo(testScheduler));
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(testScheduler);
             }
         }
         finally
@@ -73,28 +69,29 @@ public class RxSchedulersTest
     /// <summary>
     /// Tests that RxSchedulers provides basic scheduler functionality.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SchedulersProvideBasicFunctionality()
+    public async Task SchedulersProvideBasicFunctionality()
     {
         var mainScheduler = RxSchedulers.MainThreadScheduler;
         var taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Verify they implement IScheduler
-            Assert.That(mainScheduler, Is.AssignableTo<IScheduler>());
-            Assert.That(taskpoolScheduler, Is.AssignableTo<IScheduler>());
+            await Assert.That(mainScheduler).IsAssignableTo<IScheduler>();
+            await Assert.That(taskpoolScheduler).IsAssignableTo<IScheduler>();
 
             // Verify they have Now property - only check if not using TestScheduler
             // TestScheduler.Now returns DateTimeOffset.MinValue by design
             if (mainScheduler is not TestScheduler)
             {
-                Assert.That(mainScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
+                await Assert.That(mainScheduler.Now).IsGreaterThan(DateTimeOffset.MinValue);
             }
 
             if (taskpoolScheduler is not TestScheduler)
             {
-                Assert.That(taskpoolScheduler.Now, Is.GreaterThan(DateTimeOffset.MinValue));
+                await Assert.That(taskpoolScheduler.Now).IsGreaterThan(DateTimeOffset.MinValue);
             }
         }
     }

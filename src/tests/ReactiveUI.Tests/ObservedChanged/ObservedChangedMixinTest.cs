@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,12 +6,6 @@
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
-
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests;
 
@@ -23,13 +17,14 @@ public class ObservedChangedMixinTest
     /// <summary>
     /// Tests that getting the value should actually return the value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void GetValueShouldActuallyReturnTheValue()
+    public async Task GetValueShouldActuallyReturnTheValue()
     {
         var input = new[] { "Foo", "Bar", "Baz" };
         var output = new List<string>();
 
-        new TestScheduler().With(scheduler =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
 
@@ -46,15 +41,16 @@ public class ObservedChangedMixinTest
 
             scheduler.AdvanceToMs(1000);
 
-            input.AssertAreEqual(output);
+            await input.AssertAreEqual(output);
         });
     }
 
     /// <summary>
     /// Tests that getting the value should return the value from a path.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void GetValueShouldReturnTheValueFromAPath()
+    public async Task GetValueShouldReturnTheValueFromAPath()
     {
         var input = new HostTestFixture
         {
@@ -64,14 +60,15 @@ public class ObservedChangedMixinTest
         Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
         var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
-        Assert.That(fixture.GetValue(), Is.EqualTo("Foo"));
+        await Assert.That(fixture.GetValue()).IsEqualTo("Foo");
     }
 
     /// <summary>
     /// Runs a smoke test that sets the value path.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SetValuePathSmokeTest()
+    public async Task SetValuePathSmokeTest()
     {
         var output = new HostTestFixture
         {
@@ -82,82 +79,85 @@ public class ObservedChangedMixinTest
         var fixture = new ObservedChange<TestFixture, string?>(new TestFixture { IsOnlyOneWord = "Bar" }, expression.Body, null);
 
         fixture.SetValueToProperty(output, static x => x.Child!.IsNotNullString);
-        Assert.That(output.Child.IsNotNullString, Is.EqualTo("Bar"));
+        await Assert.That(output.Child.IsNotNullString).IsEqualTo("Bar");
     }
 
     /// <summary>
     /// Runs a smoke test for the BindTo functionality.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void BindToSmokeTest() =>
-        new TestScheduler().With(static scheduler =>
+    public async Task BindToSmokeTest() =>
+        await new TestScheduler().With(static async scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
             input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.That(fixture.Child.IsNotNullString, Is.Null);
+            await Assert.That(fixture.Child.IsNotNullString).IsNull();
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
+            await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Foo");
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Bar"));
+            await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Bar");
         });
 
     /// <summary>
     /// Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DisposingDisconnectsTheBindTo() =>
-        new TestScheduler().With(static scheduler =>
+    public async Task DisposingDisconnectsTheBindTo() =>
+        await new TestScheduler().With(static async scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
             var subscription = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.That(fixture.Child.IsNotNullString, Is.Null);
+            await Assert.That(fixture.Child.IsNotNullString).IsNull();
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
+            await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Foo");
 
             subscription.Dispose();
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.That(fixture.Child.IsNotNullString, Is.EqualTo("Foo"));
+            await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Foo");
         });
 
     /// <summary>
     /// Tests to make sure that BindTo can handle intermediate object switching.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void BindToIsNotFooledByIntermediateObjectSwitching() =>
-        new TestScheduler().With(static scheduler =>
+    public async Task BindToIsNotFooledByIntermediateObjectSwitching() =>
+        await new TestScheduler().With(static async scheduler =>
         {
             var input = new ScheduledSubject<string>(scheduler);
             var fixture = new HostTestFixture { Child = new TestFixture() };
 
             input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
-            Assert.That(fixture.Child.IsNotNullString, Is.Null);
+            await Assert.That(fixture.Child.IsNotNullString).IsNull();
 
             input.OnNext("Foo");
             scheduler.Start();
-            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Foo"));
+            await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Foo");
 
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Foo"));
+            await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Foo");
 
             input.OnNext("Bar");
             scheduler.Start();
-            Assert.That(fixture.Child!.IsNotNullString, Is.EqualTo("Bar"));
+            await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Bar");
         });
 
     /// <summary>

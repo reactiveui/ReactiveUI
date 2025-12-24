@@ -7,15 +7,11 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
 
-/// <summary>
-/// Tests ensuring the builder blocks reflection-based initialization.
-/// </summary>
-[TestFixture]
-[NonParallelizable]
+[NotInParallel]
 public class ReactiveUIBuilderBlockingTests
 {
     [Test]
-    public void Build_SetsFlag_AndBlocks_InitializeReactiveUI()
+    public async Task Build_SetsFlag_AndBlocks_InitializeReactiveUI()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -26,6 +22,6 @@ public class ReactiveUIBuilderBlockingTests
         locator.InitializeReactiveUI();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
-        Assert.That(observableProperty, Is.Not.Null);
+        await Assert.That(observableProperty).IsNotNull();
     }
 }

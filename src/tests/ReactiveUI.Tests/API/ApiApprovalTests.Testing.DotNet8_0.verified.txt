@@ -1,5 +1,4 @@
-﻿[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v8.0", FrameworkDisplayName=".NET 8.0")]
-namespace ReactiveUI.Testing
+﻿namespace ReactiveUI.Testing
 {
     public abstract class AppBuilderTestBase
     {

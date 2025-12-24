@@ -77,8 +77,10 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
                 }
             });
 
+            var scheduler = RxApp.MainThreadScheduler;
+
             ei.AddEventHandler(sender, handler);
-            return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
+            return Disposable.Create(() => scheduler.Schedule(() => ei.RemoveEventHandler(sender, handler)));
         });
     }
 }

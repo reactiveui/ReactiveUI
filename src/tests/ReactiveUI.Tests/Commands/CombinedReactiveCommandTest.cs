@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -8,12 +8,6 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
-
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests;
 
@@ -25,8 +19,9 @@ public class CombinedReactiveCommandTest
     /// <summary>
     /// Tests that determines whether this instance [can execute is false if any child cannot execute].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsFalseIfAnyChildCannotExecute()
+    public async Task CanExecuteIsFalseIfAnyChildCannotExecute()
     {
         var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.Create(static () => Observables.Unit, Observables.False, ImmediateScheduler.Instance);
@@ -34,15 +29,16 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.That(canExecute, Has.Count.EqualTo(1));
-        Assert.That(canExecute[0], Is.False);
+        await Assert.That(canExecute).Count().IsEqualTo(1);
+        await Assert.That(canExecute[0]).IsFalse();
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute is false if parent can execute is false].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteIsFalseIfParentCanExecuteIsFalse()
+    public async Task CanExecuteIsFalseIfParentCanExecuteIsFalse()
     {
         var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -50,15 +46,16 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, Observables.False, ImmediateScheduler.Instance);
         fixture.CanExecute.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var canExecute).Subscribe();
 
-        Assert.That(canExecute, Has.Count.EqualTo(1));
-        Assert.That(canExecute[0], Is.False);
+        await Assert.That(canExecute).Count().IsEqualTo(1);
+        await Assert.That(canExecute[0]).IsFalse();
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures in child can execute through thrown exceptions].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
+    public async Task CanExecuteTicksFailuresInChildCanExecuteThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
         var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -69,15 +66,16 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
-        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
+        await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+        await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
     }
 
     /// <summary>
     /// Test that determines whether this instance [can execute ticks failures through thrown exceptions].
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CanExecuteTicksFailuresThroughThrownExceptions()
+    public async Task CanExecuteTicksFailuresThroughThrownExceptions()
     {
         var canExecuteSubject = new Subject<bool>();
         var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -88,17 +86,18 @@ public class CombinedReactiveCommandTest
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
-        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
-        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
+        await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+        await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
     }
 
     /// <summary>
     /// A test that checks that all the exceptions that were delivered through the output scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExceptionsAreDeliveredOnOutputScheduler() =>
-        new TestScheduler().With(
-            scheduler =>
+    public async Task ExceptionsAreDeliveredOnOutputScheduler() =>
+        await new TestScheduler().With(
+            async scheduler =>
             {
                 var child = ReactiveCommand.CreateFromObservable(() => Observable.Throw<Unit>(new InvalidOperationException("oops")));
                 var childCommands = new[] { child };
@@ -106,16 +105,17 @@ public class CombinedReactiveCommandTest
                 Exception? exception = null;
                 fixture.ThrownExceptions.Subscribe(ex => exception = ex);
                 fixture.Execute().Subscribe(_ => { }, _ => { });
-                Assert.That(exception, Is.Null);
+                await Assert.That(exception).IsNull();
                 scheduler.Start();
-                Assert.That(exception, Is.TypeOf<InvalidOperationException>());
+                await Assert.That(exception).IsTypeOf<InvalidOperationException>();
             });
 
     /// <summary>
     /// A test that executes the executes all child commands.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteExecutesAllChildCommands()
+    public async Task ExecuteExecutesAllChildCommands()
     {
         var child1 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.Create(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
@@ -130,47 +130,48 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.That(isExecuting, Has.Count.EqualTo(3));
-        using (Assert.EnterMultipleScope())
+        await Assert.That(isExecuting).Count().IsEqualTo(3);
+        using (Assert.Multiple())
         {
-            Assert.That(isExecuting[0], Is.False);
-            Assert.That(isExecuting[1], Is.True);
-            Assert.That(isExecuting[2], Is.False);
+            await Assert.That(isExecuting[0]).IsFalse();
+            await Assert.That(isExecuting[1]).IsTrue();
+            await Assert.That(isExecuting[2]).IsFalse();
 
-            Assert.That(child1IsExecuting, Has.Count.EqualTo(3));
+            await Assert.That(child1IsExecuting).Count().IsEqualTo(3);
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(child1IsExecuting[0], Is.False);
-            Assert.That(child1IsExecuting[1], Is.True);
-            Assert.That(child1IsExecuting[2], Is.False);
+            await Assert.That(child1IsExecuting[0]).IsFalse();
+            await Assert.That(child1IsExecuting[1]).IsTrue();
+            await Assert.That(child1IsExecuting[2]).IsFalse();
 
-            Assert.That(child2IsExecuting, Has.Count.EqualTo(3));
+            await Assert.That(child2IsExecuting).Count().IsEqualTo(3);
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(child2IsExecuting[0], Is.False);
-            Assert.That(child2IsExecuting[1], Is.True);
-            Assert.That(child2IsExecuting[2], Is.False);
+            await Assert.That(child2IsExecuting[0]).IsFalse();
+            await Assert.That(child2IsExecuting[1]).IsTrue();
+            await Assert.That(child2IsExecuting[2]).IsFalse();
 
-            Assert.That(child3IsExecuting, Has.Count.EqualTo(3));
+            await Assert.That(child3IsExecuting).Count().IsEqualTo(3);
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(child3IsExecuting[0], Is.False);
-            Assert.That(child3IsExecuting[1], Is.True);
-            Assert.That(child3IsExecuting[2], Is.False);
+            await Assert.That(child3IsExecuting[0]).IsFalse();
+            await Assert.That(child3IsExecuting[1]).IsTrue();
+            await Assert.That(child3IsExecuting[2]).IsFalse();
         }
     }
 
     /// <summary>
     /// Test that executes the ticks errors in any child command through thrown exceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
+    public async Task ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
     {
         var child1 = ReactiveCommand.CreateFromObservable(static () => Observables.Unit, outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.CreateFromObservable(static () => Observable.Throw<Unit>(new InvalidOperationException("oops")), outputScheduler: ImmediateScheduler.Instance);
@@ -180,15 +181,16 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe(static _ => { }, static _ => { });
 
-        Assert.That(thrownExceptions, Has.Count.EqualTo(1));
-        Assert.That(thrownExceptions[0].Message, Is.EqualTo("oops"));
+        await Assert.That(thrownExceptions).Count().IsEqualTo(1);
+        await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
     }
 
     /// <summary>
     /// Test that executes the ticks through the results.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExecuteTicksThroughTheResults()
+    public async Task ExecuteTicksThroughTheResults()
     {
         var child1 = ReactiveCommand.CreateFromObservable(static () => Observable.Return(1), outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.CreateFromObservable(static () => Observable.Return(2), outputScheduler: ImmediateScheduler.Instance);
@@ -199,22 +201,23 @@ public class CombinedReactiveCommandTest
 
         fixture.Execute().Subscribe();
 
-        Assert.That(results, Has.Count.EqualTo(1));
-        Assert.That(results[0], Has.Count.EqualTo(2));
-        using (Assert.EnterMultipleScope())
+        await Assert.That(results).Count().IsEqualTo(1);
+        await Assert.That(results[0]).Count().IsEqualTo(2);
+        using (Assert.Multiple())
         {
-            Assert.That(results[0][0], Is.EqualTo(1));
-            Assert.That(results[0][1], Is.EqualTo(2));
+            await Assert.That(results[0][0]).IsEqualTo(1);
+            await Assert.That(results[0][1]).IsEqualTo(2);
         }
     }
 
     /// <summary>
     /// Test that checks that results is ticked through specified scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ResultIsTickedThroughSpecifiedScheduler() =>
-        new TestScheduler().WithAsync(
-            static scheduler =>
+    public async Task ResultIsTickedThroughSpecifiedScheduler() =>
+        await new TestScheduler().WithAsync(
+static async scheduler =>
             {
                 // Allow scheduler to run freely
                 var child1 = ReactiveCommand.Create(static () => Observable.Return(1));
@@ -224,10 +227,10 @@ public class CombinedReactiveCommandTest
                 fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
 
                 fixture.Execute().Subscribe();
-                Assert.That(results, Is.Empty);
+                await Assert.That(results).IsEmpty();
 
                 scheduler.AdvanceByMs(1);
-                Assert.That(results, Has.Count.EqualTo(1));
+                await Assert.That(results).Count().IsEqualTo(1);
                 return Task.CompletedTask;
             });
 }

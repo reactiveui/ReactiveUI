@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,13 +9,12 @@ using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelControlHost;
 
 namespace ReactiveUI.Tests.Winforms;
 
-[TestFixture]
 public class WinFormsViewModelViewHostTests
 {
     public WinFormsViewModelViewHostTests() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
     [Test]
-    public void SettingViewModelShouldAddTheViewtoItsControls()
+    public async Task SettingViewModelShouldAddTheViewtoItsControls()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var target = new WinFormsViewModelViewHost
@@ -25,15 +24,15 @@ public class WinFormsViewModelViewHostTests
             ViewModel = new FakeWinformViewModel()
         };
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(target.CurrentView, Is.TypeOf<FakeWinformsView>());
-            Assert.That(target.Controls.OfType<FakeWinformsView>().Count(), Is.EqualTo(1));
+            await Assert.That(target.CurrentView).IsTypeOf<FakeWinformsView>();
+            await Assert.That(target.Controls.OfType<FakeWinformsView>().Count()).IsEqualTo(1);
         }
     }
 
     [Test]
-    public void ShouldDisposePreviousView()
+    public async Task ShouldDisposePreviousView()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
         var target = new WinFormsViewModelViewHost
@@ -51,25 +50,25 @@ public class WinFormsViewModelViewHostTests
         // switch the viewmodel
         target.ViewModel = new FakeWinformViewModel();
 
-        Assert.That(isDisposed, Is.True);
+        await Assert.That(isDisposed).IsTrue();
     }
 
     [Test]
-    public void ShouldSetDefaultContentWhenViewModelIsNull()
+    public async Task ShouldSetDefaultContentWhenViewModelIsNull()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
         var target = new WinFormsViewModelViewHost { DefaultContent = defaultContent, ViewLocator = viewLocator };
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(defaultContent, Is.EqualTo(target.CurrentView));
-            Assert.That(target.Controls.Contains(defaultContent), Is.True);
+            await Assert.That(defaultContent).IsEqualTo(target.CurrentView);
+            await Assert.That(target.Controls.Contains(defaultContent)).IsTrue();
         }
     }
 
     [Test]
-    public void ShouldCacheViewWhenEnabled()
+    public async Task ShouldCacheViewWhenEnabled()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
@@ -82,11 +81,11 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.Content;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.That(ReferenceEquals(cachedView, target.Content), Is.True);
+        await Assert.That(ReferenceEquals(cachedView, target.Content)).IsTrue();
     }
 
     [Test]
-    public void ShouldNotCacheViewWhenDisabled()
+    public async Task ShouldNotCacheViewWhenDisabled()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var defaultContent = new Control();
@@ -99,6 +98,6 @@ public class WinFormsViewModelViewHostTests
         };
         var cachedView = target.CurrentView;
         target.ViewModel = new FakeWinformViewModel();
-        Assert.That(ReferenceEquals(cachedView, target.CurrentView), Is.False);
+        await Assert.That(ReferenceEquals(cachedView, target.CurrentView)).IsFalse();
     }
 }

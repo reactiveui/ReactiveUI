@@ -1,66 +1,65 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using DynamicData;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class ViewModelActivatorTests
 {
     /// <summary>
     /// Tests the activating ticks activated observable.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TestActivatingTicksActivatedObservable()
+    public async Task TestActivatingTicksActivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
         viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
         viewModelActivator.Activate();
 
-        Assert.That(activated, Has.Count.EqualTo(1));
+        await Assert.That(activated).Count().IsEqualTo(1);
     }
 
     /// <summary>
     /// Tests the deactivating ignoring reference count ticks deactivated observable.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TestDeactivatingIgnoringRefCountTicksDeactivatedObservable()
+    public async Task TestDeactivatingIgnoringRefCountTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
         viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         viewModelActivator.Deactivate(true);
 
-        Assert.That(deactivated, Has.Count.EqualTo(1));
+        await Assert.That(deactivated).Count().IsEqualTo(1);
     }
 
     /// <summary>
     /// Tests the deactivating count doesnt tick deactivated observable.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TestDeactivatingCountDoesntTickDeactivatedObservable()
+    public async Task TestDeactivatingCountDoesntTickDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
         viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         viewModelActivator.Deactivate(false);
 
-        Assert.That(deactivated, Is.Empty);
+        await Assert.That(deactivated).IsEmpty();
     }
 
     /// <summary>
     /// Tests the deactivating following activating ticks deactivated observable.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TestDeactivatingFollowingActivatingTicksDeactivatedObservable()
+    public async Task TestDeactivatingFollowingActivatingTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
         viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
@@ -68,30 +67,31 @@ public class ViewModelActivatorTests
         viewModelActivator.Activate();
         viewModelActivator.Deactivate(false);
 
-        Assert.That(deactivated, Has.Count.EqualTo(1));
+        await Assert.That(deactivated).Count().IsEqualTo(1);
     }
 
     /// <summary>
     /// Tests the disposing after activation deactivates view model.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TestDisposingAfterActivationDeactivatesViewModel()
+    public async Task TestDisposingAfterActivationDeactivatesViewModel()
     {
         var viewModelActivator = new ViewModelActivator();
         viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
         viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         using (viewModelActivator.Activate())
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(activated, Has.Count.EqualTo(1));
-            Assert.That(deactivated, Is.Empty);
+            await Assert.That(activated).Count().IsEqualTo(1);
+            await Assert.That(deactivated).IsEmpty();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(activated, Has.Count.EqualTo(1));
-            Assert.That(deactivated, Has.Count.EqualTo(1));
+            await Assert.That(activated).Count().IsEqualTo(1);
+            await Assert.That(deactivated).Count().IsEqualTo(1);
         }
     }
 }

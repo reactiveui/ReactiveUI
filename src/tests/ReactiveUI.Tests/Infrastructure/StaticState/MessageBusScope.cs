@@ -13,13 +13,13 @@ namespace ReactiveUI.Tests.Infrastructure.StaticState;
 /// <remarks>
 /// This helper is necessary because MessageBus.Current maintains a static/global reference
 /// that can leak between parallel test executions, causing intermittent failures.
-/// Tests using this scope should also be marked with [NonParallelizable] to prevent
+/// Tests using this scope should also be marked with [NotInParallel] to prevent
 /// concurrent modifications to the shared state.
 /// </remarks>
 /// <example>
 /// <code>
 /// [TestFixture]
-/// [NonParallelizable]
+/// [NotInParallel]
 /// public class MyTests
 /// {
 ///     private MessageBusScope _messageBusScope;

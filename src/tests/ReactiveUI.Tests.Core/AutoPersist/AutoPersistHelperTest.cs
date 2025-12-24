@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -7,21 +7,17 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class AutoPersistHelperTest
 {
     /// <summary>
     /// Test the automatic persist doesnt work on non data contract classes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutoPersistDoesntWorkOnNonDataContractClasses()
+    public async Task AutoPersistDoesntWorkOnNonDataContractClasses()
     {
         var fixture = new HostTestFixture();
 
@@ -35,15 +31,16 @@ public class AutoPersistHelperTest
             shouldDie = false;
         }
 
-        Assert.That(shouldDie, Is.False);
+        await Assert.That(shouldDie).IsFalse();
     }
 
     /// <summary>
     /// Test the automatic persist helper shouldnt trigger on non persistable properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
-        new TestScheduler().With(scheduler =>
+    public async Task AutoPersistHelperShouldntTriggerOnNonPersistableProperties() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             var manualSave = new Subject<Unit>();
@@ -60,20 +57,21 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.Zero);
+            await Assert.That(timesSaved).IsEqualTo(0);
 
             // Change to not serialized = no saving
             fixture.NotSerialized = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.Zero);
+            await Assert.That(timesSaved).IsEqualTo(0);
         });
 
     /// <summary>
     /// Tests the automatic persist helper saves on interval.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutoPersistHelperSavesOnInterval() =>
-        new TestScheduler().With(scheduler =>
+    public async Task AutoPersistHelperSavesOnInterval() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             var manualSave = new Subject<Unit>();
@@ -90,32 +88,33 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.Zero);
+            await Assert.That(timesSaved).IsEqualTo(0);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(1));
+            await Assert.That(timesSaved).IsEqualTo(1);
 
             // Two fast changes = one save
             fixture.IsNotNullString = "Foo";
             fixture.IsNotNullString = "Bar";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(2));
+            await Assert.That(timesSaved).IsEqualTo(2);
 
             // Trigger save twice = one save
             manualSave.OnNext(Unit.Default);
             manualSave.OnNext(Unit.Default);
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(3));
+            await Assert.That(timesSaved).IsEqualTo(3);
         });
 
     /// <summary>
     /// Tests the automatic persist helper disconnects.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutoPersistHelperDisconnects() =>
-        new TestScheduler().With(scheduler =>
+    public async Task AutoPersistHelperDisconnects() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             var manualSave = new Subject<Unit>();
@@ -132,23 +131,23 @@ public class AutoPersistHelperTest
 
             // No changes = no saving
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.Zero);
+            await Assert.That(timesSaved).IsEqualTo(0);
 
             // Change = one save
             fixture.IsNotNullString = "Foo";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(1));
+            await Assert.That(timesSaved).IsEqualTo(1);
 
             // Two changes after dispose = no save
             disp.Dispose();
             fixture.IsNotNullString = "Foo";
             fixture.IsNotNullString = "Bar";
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(1));
+            await Assert.That(timesSaved).IsEqualTo(1);
 
             // Trigger save after dispose = no save
             manualSave.OnNext(Unit.Default);
             scheduler.AdvanceByMs(2 * 100);
-            Assert.That(timesSaved, Is.EqualTo(1));
+            await Assert.That(timesSaved).IsEqualTo(1);
         });
 }

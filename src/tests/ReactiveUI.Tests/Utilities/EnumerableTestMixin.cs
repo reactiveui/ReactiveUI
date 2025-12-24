@@ -5,27 +5,21 @@
 
 using System.Diagnostics;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
 
 public static class EnumerableTestMixin
 {
-    public static void AssertAreEqual<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    public static async Task AssertAreEqual<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         var left = lhs.ToArray();
         var right = rhs.ToArray();
 
         try
         {
-            Assert.That(left, Has.Length.EqualTo(right.Length), "Sequence lengths differ.");
+            await Assert.That(left.Length).IsEqualTo(right.Length); // Sequence lengths differ.
             for (var i = 0; i < left.Length; i++)
             {
-                Assert.That(left[i], Is.EqualTo(right[i]), $"Sequences differ at index {i}.");
+                await Assert.That(left[i]).IsEqualTo(right[i]); // Sequences differ at index {i}.
             }
         }
         catch

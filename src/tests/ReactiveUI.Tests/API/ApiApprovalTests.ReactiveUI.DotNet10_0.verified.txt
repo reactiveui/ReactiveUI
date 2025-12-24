@@ -13,9 +13,6 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.19041.0")]
-[assembly: System.Runtime.Versioning.TargetFramework(".NETCoreApp,Version=v10.0", FrameworkDisplayName=".NET 10.0")]
-[assembly: System.Runtime.Versioning.TargetPlatform("Windows10.0.19041.0")]
 namespace ReactiveUI
 {
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]

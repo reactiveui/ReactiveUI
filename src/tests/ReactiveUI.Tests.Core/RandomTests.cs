@@ -14,7 +14,8 @@ using TUnit.Core;
 using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class RandomTests : IDisposable
 {
     private MessageBusScope? _messageBusScope;
@@ -32,25 +33,21 @@ public class RandomTests : IDisposable
     }
 
     [Test]
-    public void StringConverterAffinityTest()
+    public async Task StringConverterAffinityTest()
     {
         var fixture = new StringConverter();
         var result = fixture.GetAffinityForObjects(
                                                    typeof(object),
                                                    typeof(string));
-        Assert.That(
-                    result,
-                    Is.EqualTo(2));
+        await Assert.That(result).IsEqualTo(2);
         result = fixture.GetAffinityForObjects(
                                                typeof(object),
                                                typeof(int));
-        Assert.That(
-                    result,
-                    Is.Zero);
+        await Assert.That(result).IsEqualTo(0);
     }
 
     [Test]
-    public void StringConverterTryConvertTest()
+    public async Task StringConverterTryConvertTest()
     {
         var fixture = new StringConverter();
         var expected = fixture.GetType().FullName;
@@ -59,89 +56,69 @@ public class RandomTests : IDisposable
                                         typeof(string),
                                         null,
                                         out var actualResult);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        result,
-                        Is.True);
-            Assert.That(
-                        actualResult,
-                        Is.EqualTo(expected));
+            await Assert.That(result).IsTrue();
+            await Assert.That(actualResult).IsEqualTo(expected);
         }
     }
 
     [Test]
-    public void UnhandledErrorExceptionTest()
+    public async Task UnhandledErrorExceptionTest()
     {
         var fixture = new UnhandledErrorException();
-        Assert.That(
-                    fixture.Message,
-                    Is.EqualTo("Exception of type 'ReactiveUI.UnhandledErrorException' was thrown."));
+        await Assert.That(fixture.Message).IsEqualTo("Exception of type 'ReactiveUI.UnhandledErrorException' was thrown.");
     }
 
     [Test]
-    public void UnhandledErrorExceptionTestWithMessage()
+    public async Task UnhandledErrorExceptionTestWithMessage()
     {
         var fixture = new UnhandledErrorException("We are terribly sorry but a unhandled error occured.");
-        Assert.That(
-                    fixture.Message,
-                    Is.EqualTo("We are terribly sorry but a unhandled error occured."));
+        await Assert.That(fixture.Message).IsEqualTo("We are terribly sorry but a unhandled error occured.");
     }
 
     [Test]
-    public void UnhandledErrorExceptionTestWithMessageAndInnerException()
+    public async Task UnhandledErrorExceptionTestWithMessageAndInnerException()
     {
         var fixture = new UnhandledErrorException(
                                                   "We are terribly sorry but a unhandled error occured.",
                                                   new Exception("Inner Exception added."));
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.Message,
-                        Is.EqualTo("We are terribly sorry but a unhandled error occured."));
-            Assert.That(
-                        fixture.InnerException?.Message,
-                        Is.EqualTo("Inner Exception added."));
+            await Assert.That(fixture.Message).IsEqualTo("We are terribly sorry but a unhandled error occured.");
+            await Assert.That(fixture.InnerException?.Message).IsEqualTo("Inner Exception added.");
         }
     }
 
     [Test]
-    public void ViewLocatorNotFoundExceptionTest()
+    public async Task ViewLocatorNotFoundExceptionTest()
     {
         var fixture = new ViewLocatorNotFoundException();
-        Assert.That(
-                    fixture.Message,
-                    Is.EqualTo("Exception of type 'ReactiveUI.ViewLocatorNotFoundException' was thrown."));
+        await Assert.That(fixture.Message).IsEqualTo("Exception of type 'ReactiveUI.ViewLocatorNotFoundException' was thrown.");
     }
 
     [Test]
-    public void ViewLocatorNotFoundExceptionTestWithMessage()
+    public async Task ViewLocatorNotFoundExceptionTestWithMessage()
     {
         var fixture = new ViewLocatorNotFoundException("We are terribly sorry but the View Locator was Not Found.");
-        Assert.That(
-                    fixture.Message,
-                    Is.EqualTo("We are terribly sorry but the View Locator was Not Found."));
+        await Assert.That(fixture.Message).IsEqualTo("We are terribly sorry but the View Locator was Not Found.");
     }
 
     [Test]
-    public void ViewLocatorNotFoundExceptionTestWithMessageAndInnerException()
+    public async Task ViewLocatorNotFoundExceptionTestWithMessageAndInnerException()
     {
         var fixture = new ViewLocatorNotFoundException(
                                                        "We are terribly sorry but the View Locator was Not Found.",
                                                        new Exception("Inner Exception added."));
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.Message,
-                        Is.EqualTo("We are terribly sorry but the View Locator was Not Found."));
-            Assert.That(
-                        fixture.InnerException?.Message,
-                        Is.EqualTo("Inner Exception added."));
+            await Assert.That(fixture.Message).IsEqualTo("We are terribly sorry but the View Locator was Not Found.");
+            await Assert.That(fixture.InnerException?.Message).IsEqualTo("Inner Exception added.");
         }
     }
 
     [Test]
-    public void ViewLocatorCurrentUsesAppLocatorTest()
+    public async Task ViewLocatorCurrentUsesAppLocatorTest()
     {
         // Ensure RxApp is initialized so IViewLocator is registered
         RxApp.EnsureInitialized();
@@ -150,29 +127,28 @@ public class RandomTests : IDisposable
         var fromViewLocator = ViewLocator.Current;
         var fromAppLocator = AppLocator.Current.GetService<IViewLocator>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fromViewLocator, Is.Not.Null);
-            Assert.That(fromAppLocator, Is.Not.Null);
-            Assert.That(fromViewLocator, Is.SameAs(fromAppLocator));
+            await Assert.That(fromViewLocator).IsNotNull();
+            await Assert.That(fromAppLocator).IsNotNull();
+            await Assert.That(fromViewLocator).IsSameReferenceAs(fromAppLocator);
         }
     }
 
     [Test]
-    public void ViewLocatorCurrentTest()
+    public async Task ViewLocatorCurrentTest()
     {
         RxApp.EnsureInitialized();
         var fixture = ViewLocator.Current;
-        Assert.That(
-                    fixture,
-                    Is.Not.Null);
+        await Assert.That(fixture).IsNotNull();
     }
 
     /// <summary>
     /// Tests that ViewContractAttribute correctly stores contract value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewContractAttribute_ShouldStoreContractValue()
+    public async Task ViewContractAttribute_ShouldStoreContractValue()
     {
         // Arrange
         const string expectedContract = "TestContract";
@@ -181,70 +157,62 @@ public class RandomTests : IDisposable
         var attribute = new ViewContractAttribute(expectedContract);
 
         // Assert
-        Assert.That(
-                    attribute.Contract,
-                    Is.EqualTo(expectedContract));
+        await Assert.That(attribute.Contract).IsEqualTo(expectedContract);
     }
 
     /// <summary>
     /// Tests that ViewContractAttribute handles null contract.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewContractAttribute_ShouldHandleNullContract()
+    public async Task ViewContractAttribute_ShouldHandleNullContract()
     {
         // Act
         var attribute = new ViewContractAttribute(null!);
 
         // Assert
-        Assert.That(
-                    attribute.Contract,
-                    Is.Null);
+        await Assert.That(attribute.Contract).IsNull();
     }
 
     /// <summary>
     /// Tests TriggerUpdate enum values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TriggerUpdate_ShouldHaveCorrectValues()
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    public async Task TriggerUpdate_ShouldHaveCorrectValues()
     {
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        (int)TriggerUpdate.ViewToViewModel,
-                        Is.Zero);
-            Assert.That(
-                        (int)TriggerUpdate.ViewModelToView,
-                        Is.EqualTo(1));
+            await Assert.That((int)TriggerUpdate.ViewToViewModel).IsEqualTo(0);
+            await Assert.That((int)TriggerUpdate.ViewModelToView).IsEqualTo(1);
         }
     }
 
     /// <summary>
     /// Tests BindingDirection enum values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void BindingDirection_ShouldHaveCorrectValues()
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    public async Task BindingDirection_ShouldHaveCorrectValues()
     {
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        (int)BindingDirection.OneWay,
-                        Is.Zero);
-            Assert.That(
-                        (int)BindingDirection.TwoWay,
-                        Is.EqualTo(1));
-            Assert.That(
-                        (int)BindingDirection.AsyncOneWay,
-                        Is.EqualTo(2));
+            await Assert.That((int)BindingDirection.OneWay).IsEqualTo(0);
+            await Assert.That((int)BindingDirection.TwoWay).IsEqualTo(1);
+            await Assert.That((int)BindingDirection.AsyncOneWay).IsEqualTo(2);
         }
     }
 
     /// <summary>
     /// Tests ObservedChange constructor and properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ObservedChange_ShouldStoreValues()
+    public async Task ObservedChange_ShouldStoreValues()
     {
         // Arrange
         const string sender = "test sender";
@@ -257,26 +225,21 @@ public class RandomTests : IDisposable
                                                              expression,
                                                              value);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        observedChange.Sender,
-                        Is.EqualTo(sender));
-            Assert.That(
-                        observedChange.Expression,
-                        Is.EqualTo(expression));
-            Assert.That(
-                        observedChange.Value,
-                        Is.EqualTo(value));
+            await Assert.That(observedChange.Sender).IsEqualTo(sender);
+            await Assert.That(observedChange.Expression).IsEqualTo(expression);
+            await Assert.That(observedChange.Value).IsEqualTo(value);
         }
     }
 
     /// <summary>
     /// Tests ReactivePropertyChangedEventArgs constructor and properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ReactivePropertyChangedEventArgs_ShouldStoreValues()
+    public async Task ReactivePropertyChangedEventArgs_ShouldStoreValues()
     {
         // Arrange
         const string sender = "test sender";
@@ -287,23 +250,20 @@ public class RandomTests : IDisposable
                                                                      sender,
                                                                      propertyName);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        eventArgs.Sender,
-                        Is.EqualTo(sender));
-            Assert.That(
-                        eventArgs.PropertyName,
-                        Is.EqualTo(propertyName));
+            await Assert.That(eventArgs.Sender).IsEqualTo(sender);
+            await Assert.That(eventArgs.PropertyName).IsEqualTo(propertyName);
         }
     }
 
     /// <summary>
     /// Tests EqualityTypeConverter with matching types.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void EqualityTypeConverter_ShouldConvertMatchingTypes()
+    public async Task EqualityTypeConverter_ShouldConvertMatchingTypes()
     {
         // Arrange
         var converter = new EqualityTypeConverter();
@@ -319,40 +279,32 @@ public class RandomTests : IDisposable
                                           null,
                                           out var converted);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        affinity,
-                        Is.EqualTo(100));
-            Assert.That(
-                        result,
-                        Is.True);
-            Assert.That(
-                        converted,
-                        Is.EqualTo(testValue));
+            await Assert.That(affinity).IsEqualTo(100);
+            await Assert.That(result).IsTrue();
+            await Assert.That(converted).IsEqualTo(testValue);
         }
     }
 
     /// <summary>
     /// Tests RxApp cache constants.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void RxApp_ShouldHaveCacheConstants()
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    public async Task RxApp_ShouldHaveCacheConstants()
     {
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
 #if ANDROID || IOS
         Assert.That(RxApp.SmallCacheLimit, Is.EqualTo(32));
         Assert.That(RxApp.BigCacheLimit, Is.EqualTo(64));
 #else
-            Assert.That(
-                        RxApp.SmallCacheLimit,
-                        Is.EqualTo(64));
-            Assert.That(
-                        RxApp.BigCacheLimit,
-                        Is.EqualTo(256));
+            await Assert.That(RxApp.SmallCacheLimit).IsEqualTo(64);
+            await Assert.That(RxApp.BigCacheLimit).IsEqualTo(256);
         }
 #endif
     }
@@ -360,64 +312,56 @@ public class RandomTests : IDisposable
     /// <summary>
     /// Tests various type converters affinity.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TypeConverters_ShouldHaveCorrectAffinity()
+    public async Task TypeConverters_ShouldHaveCorrectAffinity()
     {
         // Arrange & Act
         var intConverter = new IntegerToStringTypeConverter();
         var doubleConverter = new DoubleToStringTypeConverter();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert - These converters return 10 for their type conversions
-            Assert.That(
-                        intConverter.GetAffinityForObjects(
+            await Assert.That(intConverter.GetAffinityForObjects(
                                                            typeof(int),
-                                                           typeof(string)),
-                        Is.EqualTo(10));
-            Assert.That(
-                        doubleConverter.GetAffinityForObjects(
+                                                           typeof(string))).IsEqualTo(10);
+            await Assert.That(doubleConverter.GetAffinityForObjects(
                                                               typeof(double),
-                                                              typeof(string)),
-                        Is.EqualTo(10));
-            Assert.That(
-                        intConverter.GetAffinityForObjects(
+                                                              typeof(string))).IsEqualTo(10);
+            await Assert.That(intConverter.GetAffinityForObjects(
                                                            typeof(string),
-                                                           typeof(int)),
-                        Is.EqualTo(10));
+                                                           typeof(int))).IsEqualTo(10);
         }
     }
 
     /// <summary>
     /// Tests DummySuspensionDriver methods.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DummySuspensionDriver_ShouldWork()
+    public async Task DummySuspensionDriver_ShouldWork()
     {
         // Arrange
         var driver = new DummySuspensionDriver();
         var state = new { TestProperty = "test" };
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Act & Assert
-            Assert.That(
-                        driver.InvalidateState(),
-                        Is.Not.Null);
-            Assert.That(
-                        driver.LoadState(),
-                        Is.Not.Null);
-            Assert.That(
-                        driver.SaveState(state),
-                        Is.Not.Null);
+            await Assert.That(driver.InvalidateState()).IsNotNull();
+            await Assert.That(driver.LoadState()).IsNotNull();
+            await Assert.That(driver.SaveState(state)).IsNotNull();
         }
     }
 
     /// <summary>
     /// Tests RegistrationNamespace enum values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void RegistrationNamespace_ShouldHaveAllExpectedValues()
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    public async Task RegistrationNamespace_ShouldHaveAllExpectedValues()
     {
         var expectedValues = new[]
         {
@@ -428,226 +372,164 @@ public class RandomTests : IDisposable
         };
 
         var actualValues = Enum.GetValues<RegistrationNamespace>();
-        Assert.That(
-                    actualValues,
-                    Is.EqualTo(expectedValues),
-                    "RegistrationNamespace values changed unexpectedly.");
+        await Assert.That(actualValues).IsEquivalentTo(expectedValues);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        (int)RegistrationNamespace.None,
-                        Is.Zero);
-            Assert.That(
-                        (int)RegistrationNamespace.Winforms,
-                        Is.EqualTo(1));
-            Assert.That(
-                        (int)RegistrationNamespace.Wpf,
-                        Is.EqualTo(2));
-            Assert.That(
-                        (int)RegistrationNamespace.Uno,
-                        Is.EqualTo(3));
-            Assert.That(
-                        (int)RegistrationNamespace.UnoWinUI,
-                        Is.EqualTo(4));
-            Assert.That(
-                        (int)RegistrationNamespace.Blazor,
-                        Is.EqualTo(5));
-            Assert.That(
-                        (int)RegistrationNamespace.Drawing,
-                        Is.EqualTo(6));
-            Assert.That(
-                        (int)RegistrationNamespace.Avalonia,
-                        Is.EqualTo(7));
-            Assert.That(
-                        (int)RegistrationNamespace.Maui,
-                        Is.EqualTo(8));
-            Assert.That(
-                        (int)RegistrationNamespace.Uwp,
-                        Is.EqualTo(9));
-            Assert.That(
-                        (int)RegistrationNamespace.WinUI,
-                        Is.EqualTo(10));
+            await Assert.That((int)RegistrationNamespace.None).IsEqualTo(0);
+            await Assert.That((int)RegistrationNamespace.Winforms).IsEqualTo(1);
+            await Assert.That((int)RegistrationNamespace.Wpf).IsEqualTo(2);
+            await Assert.That((int)RegistrationNamespace.Uno).IsEqualTo(3);
+            await Assert.That((int)RegistrationNamespace.UnoWinUI).IsEqualTo(4);
+            await Assert.That((int)RegistrationNamespace.Blazor).IsEqualTo(5);
+            await Assert.That((int)RegistrationNamespace.Drawing).IsEqualTo(6);
+            await Assert.That((int)RegistrationNamespace.Avalonia).IsEqualTo(7);
+            await Assert.That((int)RegistrationNamespace.Maui).IsEqualTo(8);
+            await Assert.That((int)RegistrationNamespace.Uwp).IsEqualTo(9);
+            await Assert.That((int)RegistrationNamespace.WinUI).IsEqualTo(10);
         }
     }
 
     /// <summary>
     /// Tests type converter conversions with actual values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void TypeConverters_ShouldConvertValues()
+    public async Task TypeConverters_ShouldConvertValues()
     {
         // Arrange
         var intConverter = new IntegerToStringTypeConverter();
         var doubleConverter = new DoubleToStringTypeConverter();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Act & Assert
-            Assert.That(
-                        intConverter.TryConvert(
+            await Assert.That(intConverter.TryConvert(
                                                 42,
                                                 typeof(string),
                                                 null,
-                                                out var intResult),
-                        Is.True);
-            Assert.That(
-                        intResult,
-                        Is.EqualTo("42"));
+                                                out var intResult)).IsTrue();
+            await Assert.That(intResult).IsEqualTo("42");
 
-            Assert.That(
-                        intConverter.TryConvert(
+            await Assert.That(intConverter.TryConvert(
                                                 "42",
                                                 typeof(int),
                                                 null,
-                                                out var intBackResult),
-                        Is.True);
-            Assert.That(
-                        intBackResult,
-                        Is.EqualTo(42));
+                                                out var intBackResult)).IsTrue();
+            await Assert.That(intBackResult).IsEqualTo(42);
 
-            Assert.That(
-                        doubleConverter.TryConvert(
+            await Assert.That(doubleConverter.TryConvert(
                                                    42.5,
                                                    typeof(string),
                                                    null,
-                                                   out var doubleResult),
-                        Is.True);
-            Assert.That(
-                        doubleResult,
-                        Is.EqualTo("42.5"));
+                                                   out var doubleResult)).IsTrue();
+            await Assert.That(doubleResult).IsEqualTo("42.5");
         }
     }
 
     /// <summary>
     /// Tests PreserveAttribute instantiation.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void PreserveAttribute_ShouldInstantiate()
+    public async Task PreserveAttribute_ShouldInstantiate()
     {
         // Act
         var attribute = new PreserveAttribute();
 
         // Assert
-        Assert.That(
-                    attribute,
-                    Is.Not.Null);
-        Assert.That(
-                    attribute,
-                    Is.TypeOf<PreserveAttribute>());
+        await Assert.That(attribute).IsNotNull();
+        await Assert.That(attribute).IsTypeOf<PreserveAttribute>();
     }
 
     /// <summary>
     /// Tests MessageBus.Current static property for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MessageBus_Current_ShouldBeAccessible()
+    public async Task MessageBus_Current_ShouldBeAccessible()
     {
         // Act
         var current = MessageBus.Current;
 
         // Assert
-        Assert.That(
-                    current,
-                    Is.Not.Null);
-        Assert.That(
-                    current,
-                    Is.AssignableTo<IMessageBus>());
+        await Assert.That(current).IsNotNull();
+        await Assert.That(current).IsAssignableTo<IMessageBus>();
     }
 
     /// <summary>
     /// Tests NotAWeakReference functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NotAWeakReference_ShouldWorkCorrectly()
+    public async Task NotAWeakReference_ShouldWorkCorrectly()
     {
         // Arrange
         const string target = "test target";
         var weakRef = new NotAWeakReference(target);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Act & Assert
-            Assert.That(
-                        weakRef.Target,
-                        Is.EqualTo(target));
-            Assert.That(
-                        weakRef.IsAlive,
-                        Is.True);
+            await Assert.That(weakRef.Target).IsEqualTo(target);
+            await Assert.That(weakRef.IsAlive).IsTrue();
         }
 
         // NotAWeakReference always holds strong reference
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        weakRef.IsAlive,
-                        Is.True);
-            Assert.That(
-                        weakRef.Target,
-                        Is.EqualTo(target));
+            await Assert.That(weakRef.IsAlive).IsTrue();
+            await Assert.That(weakRef.Target).IsEqualTo(target);
         }
     }
 
     /// <summary>
     /// Tests SingletonPropertyChangedEventArgs static properties for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SingletonPropertyChangedEventArgs_StaticProperties_ShouldWork()
+    public async Task SingletonPropertyChangedEventArgs_StaticProperties_ShouldWork()
     {
         // Act & Assert
-        Assert.That(
-                    SingletonPropertyChangedEventArgs.Value,
-                    Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(SingletonPropertyChangedEventArgs.Value).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        SingletonPropertyChangedEventArgs.Value.PropertyName,
-                        Is.EqualTo("Value"));
+            await Assert.That(SingletonPropertyChangedEventArgs.Value.PropertyName).IsEqualTo("Value");
 
-            Assert.That(
-                        SingletonPropertyChangedEventArgs.HasErrors,
-                        Is.Not.Null);
+            await Assert.That(SingletonPropertyChangedEventArgs.HasErrors).IsNotNull();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        SingletonPropertyChangedEventArgs.HasErrors.PropertyName,
-                        Is.EqualTo("HasErrors"));
+            await Assert.That(SingletonPropertyChangedEventArgs.HasErrors.PropertyName).IsEqualTo("HasErrors");
 
-            Assert.That(
-                        SingletonPropertyChangedEventArgs.ErrorMessage,
-                        Is.Not.Null);
+            await Assert.That(SingletonPropertyChangedEventArgs.ErrorMessage).IsNotNull();
         }
 
-        Assert.That(
-                    SingletonPropertyChangedEventArgs.ErrorMessage.PropertyName,
-                    Is.EqualTo("ErrorMessage"));
+        await Assert.That(SingletonPropertyChangedEventArgs.ErrorMessage.PropertyName).IsEqualTo("ErrorMessage");
     }
 
     /// <summary>
     /// Tests SingletonDataErrorsChangedEventArgs static properties for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SingletonDataErrorsChangedEventArgs_StaticProperties_ShouldWork()
+    public async Task SingletonDataErrorsChangedEventArgs_StaticProperties_ShouldWork()
     {
         // Act & Assert
-        Assert.That(
-                    SingletonDataErrorsChangedEventArgs.Value,
-                    Is.Not.Null);
-        Assert.That(
-                    SingletonDataErrorsChangedEventArgs.Value.PropertyName,
-                    Is.EqualTo("Value"));
+        await Assert.That(SingletonDataErrorsChangedEventArgs.Value).IsNotNull();
+        await Assert.That(SingletonDataErrorsChangedEventArgs.Value.PropertyName).IsEqualTo("Value");
     }
 
     /// <summary>
     /// Tests ViewContractAttribute attribute usage for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewContractAttribute_ShouldHaveCorrectAttributeUsage()
+    public async Task ViewContractAttribute_ShouldHaveCorrectAttributeUsage()
     {
         // Arrange
         var attributeType = typeof(ViewContractAttribute);
@@ -656,79 +538,62 @@ public class RandomTests : IDisposable
         var attributeUsage = attributeType.GetCustomAttribute<AttributeUsageAttribute>();
 
         // Assert
-        Assert.That(
-                    attributeUsage,
-                    Is.Not.Null);
-        Assert.That(
-                    attributeUsage.ValidOn,
-                    Is.EqualTo(AttributeTargets.Class));
+        await Assert.That(attributeUsage).IsNotNull();
+        await Assert.That(attributeUsage.ValidOn).IsEqualTo(AttributeTargets.Class);
     }
 
     /// <summary>
     /// Tests SingleInstanceViewAttribute for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SingleInstanceViewAttribute_ShouldWork()
+    public async Task SingleInstanceViewAttribute_ShouldWork()
     {
         // Act
         var attribute = new SingleInstanceViewAttribute();
 
         // Assert
-        Assert.That(
-                    attribute,
-                    Is.Not.Null);
-        Assert.That(
-                    attribute,
-                    Is.TypeOf<SingleInstanceViewAttribute>());
+        await Assert.That(attribute).IsNotNull();
+        await Assert.That(attribute).IsTypeOf<SingleInstanceViewAttribute>();
 
         // Test attribute usage
         var attributeType = typeof(SingleInstanceViewAttribute);
         var attributeUsage = attributeType.GetCustomAttribute<AttributeUsageAttribute>();
-        Assert.That(
-                    attributeUsage,
-                    Is.Not.Null);
-        Assert.That(
-                    attributeUsage.ValidOn,
-                    Is.EqualTo(AttributeTargets.Class));
+        await Assert.That(attributeUsage).IsNotNull();
+        await Assert.That(attributeUsage.ValidOn).IsEqualTo(AttributeTargets.Class);
     }
 
     /// <summary>
     /// Tests LocalizableAttribute for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void LocalizableAttribute_ShouldWork()
+    public async Task LocalizableAttribute_ShouldWork()
     {
         // Act
         var localizableTrue = new LocalizableAttribute(true);
         var localizableFalse = new LocalizableAttribute(false);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        localizableTrue,
-                        Is.Not.Null);
-            Assert.That(
-                        localizableFalse,
-                        Is.Not.Null);
+            await Assert.That(localizableTrue).IsNotNull();
+            await Assert.That(localizableFalse).IsNotNull();
         }
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                            localizableTrue.IsLocalizable,
-                            Is.True);
-            Assert.That(
-                        localizableFalse.IsLocalizable,
-                        Is.False);
+            await Assert.That(localizableTrue.IsLocalizable).IsTrue();
+            await Assert.That(localizableFalse.IsLocalizable).IsFalse();
         }
     }
 
     /// <summary>
     /// Tests WhenAnyMixin functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyMixin_ShouldWork()
+    public async Task WhenAnyMixin_ShouldWork()
     {
         // Arrange
         var testObject = new TestFixture { IsOnlyOneWord = "Initial" };
@@ -741,25 +606,20 @@ public class RandomTests : IDisposable
         testObject.IsOnlyOneWord = "Updated";
 
         // Assert
-        Assert.That(
-                    changes,
-                    Has.Count.EqualTo(2)); // Initial + Updated
-        using (Assert.EnterMultipleScope())
+        await Assert.That(changes).Count().IsEqualTo(2); // Initial + Updated
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        changes[0],
-                        Is.EqualTo("Initial"));
-            Assert.That(
-                        changes[1],
-                        Is.EqualTo("Updated"));
+            await Assert.That(changes[0]).IsEqualTo("Initial");
+            await Assert.That(changes[1]).IsEqualTo("Updated");
         }
     }
 
     /// <summary>
     /// Tests ObservableAsPropertyHelper functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ObservableAsPropertyHelper_ShouldWork()
+    public async Task ObservableAsPropertyHelper_ShouldWork()
     {
         // Arrange
         var subject = new Subject<string>();
@@ -774,23 +634,20 @@ public class RandomTests : IDisposable
         // Act
         subject.OnNext("John");
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        testObject.FirstName,
-                        Is.EqualTo("John"));
-            Assert.That(
-                        testObject._firstNameHelper.Value,
-                        Is.EqualTo("John"));
+            await Assert.That(testObject.FirstName).IsEqualTo("John");
+            await Assert.That(testObject._firstNameHelper.Value).IsEqualTo("John");
         }
     }
 
     /// <summary>
     /// Tests ReactiveNotifyPropertyChangedMixin functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ReactiveNotifyPropertyChangedMixin_ShouldWork()
+    public async Task ReactiveNotifyPropertyChangedMixin_ShouldWork()
     {
         // Arrange
         var testObject = new AccountUser();
@@ -803,16 +660,15 @@ public class RandomTests : IDisposable
         testObject.Name = "Test User";
 
         // Assert
-        Assert.That(
-                    changes,
-                    Does.Contain("Name"));
+        await Assert.That(changes).Contains("Name");
     }
 
     /// <summary>
     /// Tests ExpressionMixins functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ExpressionMixins_ShouldWork()
+    public async Task ExpressionMixins_ShouldWork()
     {
         // Arrange
         Expression<Func<TestFixture, string?>> expression = x => x.IsOnlyOneWord;
@@ -821,16 +677,15 @@ public class RandomTests : IDisposable
         var propertyName = expression.Body.GetMemberInfo()?.Name;
 
         // Assert
-        Assert.That(
-                    propertyName,
-                    Is.EqualTo("IsOnlyOneWord"));
+        await Assert.That(propertyName).IsEqualTo("IsOnlyOneWord");
     }
 
     /// <summary>
     /// Tests DisposableMixins functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DisposableMixins_ShouldWork()
+    public async Task DisposableMixins_ShouldWork()
     {
         // Arrange
         var disposable1 = Disposable.Create(() => { });
@@ -842,16 +697,15 @@ public class RandomTests : IDisposable
         disposable2.DisposeWith(compositeDisposable);
 
         // Verify they are added to the composite
-        Assert.That(
-                    compositeDisposable,
-                    Has.Count.EqualTo(2));
+        await Assert.That(compositeDisposable).Count().IsEqualTo(2);
     }
 
     /// <summary>
     /// Tests CompatMixins functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void CompatMixins_ShouldWork()
+    public async Task CompatMixins_ShouldWork()
     {
         // Arrange
         var items = new[] { 1, 2, 3, 4, 5 };
@@ -861,60 +715,52 @@ public class RandomTests : IDisposable
         items.Run(x => processedItems.Add(x * 2));
         var skippedLast = items.SkipLast(2).ToList();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Assert
-            Assert.That(
-                        processedItems,
-                        Is.EqualTo(new[] { 2, 4, 6, 8, 10 }));
-            Assert.That(
-                        skippedLast,
-                        Is.EqualTo(new[] { 1, 2, 3 }));
+            await Assert.That(processedItems).IsEquivalentTo(new[] { 2, 4, 6, 8, 10 });
+            await Assert.That(skippedLast).IsEquivalentTo(new[] { 1, 2, 3 });
         }
     }
 
     /// <summary>
     /// Tests ViewForMixins functionality for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ViewForMixins_ShouldWork()
+    public async Task ViewForMixins_ShouldWork()
     {
         // Arrange
         var viewModel = new FakeViewModel { Name = "Test" };
         var view = new FakeView { ViewModel = viewModel };
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
             // Act - Test that the view correctly exposes the viewmodel
-            Assert.That(
-                        view.ViewModel,
-                        Is.EqualTo(viewModel));
-            Assert.That(
-                        viewModel.Name,
-                        Is.EqualTo("Test"));
+            await Assert.That(view.ViewModel).IsEqualTo(viewModel);
+            await Assert.That(viewModel.Name).IsEqualTo("Test");
         }
 
         // Set property directly since binding setup might be complex in test environment
         view.SomeProperty = viewModel.Name;
 
         // Assert
-        Assert.That(
-                    view.SomeProperty,
-                    Is.EqualTo("Test"));
+        await Assert.That(view.SomeProperty).IsEqualTo("Test");
     }
 
     /// <summary>
     /// Tests Observables static members for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void Observables_StaticMembers_ShouldWork()
+    public async Task Observables_StaticMembers_ShouldWork()
     {
         // Act & Assert
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(Observables.Unit, Is.Not.Null);
-            Assert.That(Observables.True, Is.Not.Null);
-            Assert.That(Observables.False, Is.Not.Null);
+            await Assert.That(Observables.Unit).IsNotNull();
+            await Assert.That(Observables.True).IsNotNull();
+            await Assert.That(Observables.False).IsNotNull();
         }
 
         // Test that they emit expected values
@@ -926,19 +772,20 @@ public class RandomTests : IDisposable
         Observables.False.Subscribe(x => falseValue = x);
         Observables.Unit.Subscribe(x => unitValue = x);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(trueValue, Is.True);
-            Assert.That(falseValue, Is.False);
-            Assert.That(unitValue, Is.EqualTo(Unit.Default));
+            await Assert.That(trueValue).IsTrue();
+            await Assert.That(falseValue).IsFalse();
+            await Assert.That(unitValue).IsEqualTo(Unit.Default);
         }
     }
 
     /// <summary>
     /// Tests additional type converters for 100% coverage.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AdditionalTypeConverters_ShouldWork()
+    public async Task AdditionalTypeConverters_ShouldWork()
     {
         // Test all the other type converters
         var converters = new IBindingTypeConverter[]
@@ -956,9 +803,7 @@ public class RandomTests : IDisposable
             var affinity = converter.GetAffinityForObjects(
                                                            typeof(object),
                                                            typeof(string));
-            Assert.That(
-                        affinity,
-                        Is.GreaterThanOrEqualTo(0));
+            await Assert.That(affinity).IsGreaterThanOrEqualTo(0);
         }
     }
 

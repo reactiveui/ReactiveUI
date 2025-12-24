@@ -7,14 +7,9 @@ using System.Diagnostics;
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests.Core;
-[NonParallelizable]
+
+[NotInParallel]
 public class RxAppTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
@@ -34,11 +29,12 @@ public class RxAppTest : IDisposable
     /// <summary>
     /// Tests that schedulers should be current thread in test runner.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SchedulerShouldBeCurrentThreadInTestRunner()
+    public async Task SchedulerShouldBeCurrentThreadInTestRunner()
     {
         Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
-        Assert.That(RxApp.MainThreadScheduler, Is.EqualTo(CurrentThreadScheduler.Instance));
+        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
     }
 
     public void Dispose()

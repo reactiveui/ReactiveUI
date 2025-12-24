@@ -119,7 +119,7 @@ public static class ReactiveCommand
     {
         execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
-        return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxSchedulers.TaskpoolScheduler), canExecute, outputScheduler);
+        return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public static class ReactiveCommand
     {
         execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
-        return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxSchedulers.TaskpoolScheduler), canExecute, outputScheduler);
+        return CreateFromObservable(() => Observable.Start(execute, backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ public static class ReactiveCommand
     {
         execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
-        return CreateFromObservable<TParam, Unit>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxSchedulers.TaskpoolScheduler), canExecute, outputScheduler);
+        return CreateFromObservable<TParam, Unit>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
 
     /// <summary>
@@ -309,7 +309,7 @@ public static class ReactiveCommand
     {
         execute.ArgumentNullExceptionThrowIfNull(nameof(execute));
 
-        return CreateFromObservable<TParam, TResult>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxSchedulers.TaskpoolScheduler), canExecute, outputScheduler);
+        return CreateFromObservable<TParam, TResult>(p => Observable.Start(() => execute(p), backgroundScheduler ?? RxApp.TaskpoolScheduler), canExecute, outputScheduler);
     }
 
     /// <summary>

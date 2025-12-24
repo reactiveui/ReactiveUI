@@ -6,9 +6,8 @@
 namespace ReactiveUI.AOTTests;
 
 /// <summary>
-/// Tests for AOT-friendly mapping and ResolveView contract usage.
+/// Tests for ViewLocator AOT mappings.
 /// </summary>
-[TestFixture]
 public class ViewLocatorAOTMappingTests
 {
     /// <summary>
@@ -22,8 +21,9 @@ public class ViewLocatorAOTMappingTests
     /// <summary>
     /// Map/Resolve with contract and default fallback works.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void Map_ResolveView_UsesAOTMappingWithContract()
+    public async Task Map_ResolveView_UsesAOTMappingWithContract()
     {
         var locator = new DefaultViewLocator();
 
@@ -34,30 +34,31 @@ public class ViewLocatorAOTMappingTests
         var vm = new VmA();
 
         var viewMobile = locator.ResolveView(vm, "mobile");
-        Assert.That(viewMobile, Is.TypeOf<ViewA>());
+        await Assert.That(viewMobile).IsTypeOf<ViewA>();
 
         var viewDefaultFromExplicit = locator.ResolveView(vm, string.Empty);
-        Assert.That(viewDefaultFromExplicit, Is.TypeOf<ViewADefault>());
+        await Assert.That(viewDefaultFromExplicit).IsTypeOf<ViewADefault>();
 
         // Unknown contract falls back to default mapping
         var viewFallback = locator.ResolveView(vm, "unknown");
-        Assert.That(viewFallback, Is.TypeOf<ViewADefault>());
+        await Assert.That(viewFallback).IsTypeOf<ViewADefault>();
     }
 
     /// <summary>
     /// Unmap removes a mapping for a contract.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void Unmap_RemovesMapping()
+    public async Task Unmap_RemovesMapping()
     {
         var locator = new DefaultViewLocator();
         locator.Map<VmB, ViewB>(static () => new ViewB(), contract: "c1");
 
         var vm = new VmB();
-        Assert.That(locator.ResolveView(vm, "c1"), Is.TypeOf<ViewB>());
+        await Assert.That(locator.ResolveView(vm, "c1")).IsTypeOf<ViewB>();
 
         locator.Unmap<VmB>("c1");
-        Assert.That(locator.ResolveView(vm, "c1"), Is.Null);
+        await Assert.That(locator.ResolveView(vm, "c1")).IsNull();
     }
 
     private sealed class ViewADefault : IViewFor<VmA>

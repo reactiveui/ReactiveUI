@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,9 +6,8 @@
 namespace ReactiveUI.Testing.Tests;
 
 /// <summary>
-/// TestSequencerTests.
+/// A series of tests associated with the test sequencer.
 /// </summary>
-[TestFixture]
 public class TestSequencerTests
 {
     /// <summary>
@@ -22,38 +21,38 @@ public class TestSequencerTests
         var subject = new Subject<Unit>();
         subject.Subscribe(async void (_) => await testSequencer.AdvancePhaseAsync());
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(testSequencer.CurrentPhase, Is.Zero);
-            Assert.That(testSequencer.CompletedPhases, Is.Zero);
+            await Assert.That(testSequencer.CurrentPhase).IsEqualTo(0);
+            await Assert.That(testSequencer.CompletedPhases).IsEqualTo(0);
         }
 
         subject.OnNext(Unit.Default);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
-            Assert.That(testSequencer.CompletedPhases, Is.Zero);
+            await Assert.That(testSequencer.CurrentPhase).IsEqualTo(1);
+            await Assert.That(testSequencer.CompletedPhases).IsEqualTo(0);
         }
 
         await testSequencer.AdvancePhaseAsync("Phase 1");
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(1));
-            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+            await Assert.That(testSequencer.CurrentPhase).IsEqualTo(1);
+            await Assert.That(testSequencer.CompletedPhases).IsEqualTo(1);
         }
 
         subject.OnNext(Unit.Default);
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
-            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(1));
+            await Assert.That(testSequencer.CurrentPhase).IsEqualTo(2);
+            await Assert.That(testSequencer.CompletedPhases).IsEqualTo(1);
         }
 
         await testSequencer.AdvancePhaseAsync("Phase 2");
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(testSequencer.CurrentPhase, Is.EqualTo(2));
-            Assert.That(testSequencer.CompletedPhases, Is.EqualTo(2));
+            await Assert.That(testSequencer.CurrentPhase).IsEqualTo(2);
+            await Assert.That(testSequencer.CompletedPhases).IsEqualTo(2);
         }
     }
 }

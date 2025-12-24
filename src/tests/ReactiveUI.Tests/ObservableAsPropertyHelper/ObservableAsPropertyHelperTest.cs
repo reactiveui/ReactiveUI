@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,25 +9,21 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
-
 namespace ReactiveUI.Tests;
+
 public class ObservableAsPropertyHelperTest
 {
     /// <summary>
     /// Tests that Observable As Property Helpers should fire change notifications.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldFireChangeNotifications()
+    public async Task OaphShouldFireChangeNotifications()
     {
         var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
         var output = new List<int>();
 
-        new TestScheduler().With(scheduler =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new ObservableAsPropertyHelper<int>(
                                                               input,
@@ -37,12 +33,12 @@ public class ObservableAsPropertyHelperTest
 
             scheduler.Start();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.Value, Is.EqualTo(input.LastAsync().Wait()));
+                await Assert.That(fixture.Value).IsEqualTo(input.LastAsync().Wait());
 
                 // Suppresses duplicate notifications (note single '3')
-                Assert.That(output, Is.EqualTo([-5, 1, 2, 3, 4]));
+                await Assert.That(output).IsEquivalentTo([-5, 1, 2, 3, 4]);
             }
         });
     }
@@ -50,13 +46,14 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests that Observable As Property Helpers should skip first value if it matches the initial value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldSkipFirstValueIfItMatchesTheInitialValue()
+    public async Task OaphShouldSkipFirstValueIfItMatchesTheInitialValue()
     {
         var input = new[] { 1, 2, 3 }.ToObservable();
         var output = new List<int>();
 
-        new TestScheduler().With(scheduler =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new ObservableAsPropertyHelper<int>(
                                                               input,
@@ -66,10 +63,10 @@ public class ObservableAsPropertyHelperTest
 
             scheduler.Start();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.Value, Is.EqualTo(input.LastAsync().Wait()));
-                Assert.That(output, Is.EqualTo([1, 2, 3]));
+                await Assert.That(fixture.Value).IsEqualTo(input.LastAsync().Wait());
+                await Assert.That(output).IsEquivalentTo([1, 2, 3]);
             }
         });
     }
@@ -77,12 +74,13 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Tests that OAPH should provide initial value immediately regardless of scheduler.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
+    public async Task OaphShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
     {
         var output = new List<int>();
 
-        new TestScheduler().With(scheduler =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new ObservableAsPropertyHelper<int>(
                                                               Observable<int>.Never,
@@ -90,16 +88,17 @@ public class ObservableAsPropertyHelperTest
                                                               32,
                                                               scheduler: scheduler);
 
-            Assert.That(fixture.Value, Is.EqualTo(32));
+            await Assert.That(fixture.Value).IsEqualTo(32);
         });
     }
 
     /// <summary>
     /// Tests that OAPH should provide latest value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldProvideLatestValue() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OaphShouldProvideLatestValue() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var input = new Subject<int>();
 
@@ -109,22 +108,23 @@ public class ObservableAsPropertyHelperTest
                                                               -5,
                                                               scheduler: scheduler);
 
-            Assert.That(fixture.Value, Is.EqualTo(-5));
+            await Assert.That(fixture.Value).IsEqualTo(-5);
 
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
             scheduler.Start();
-            Assert.That(fixture.Value, Is.EqualTo(4));
+            await Assert.That(fixture.Value).IsEqualTo(4);
 
             input.OnCompleted();
             scheduler.Start();
-            Assert.That(fixture.Value, Is.EqualTo(4));
+            await Assert.That(fixture.Value).IsEqualTo(4);
         });
 
     /// <summary>
     /// OAPH should subscribe immediately to source.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldSubscribeImmediatelyToSource()
+    public async Task OaphShouldSubscribeImmediatelyToSource()
     {
         var isSubscribed = false;
 
@@ -138,18 +138,19 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(isSubscribed, Is.True);
-            Assert.That(fixture.Value, Is.EqualTo(42));
+            await Assert.That(isSubscribed).IsTrue();
+            await Assert.That(fixture.Value).IsEqualTo(42);
         }
     }
 
     /// <summary>
     /// Defer subscription parameter defers subscription to source.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphDeferSubscriptionParameterDefersSubscriptionToSource()
+    public async Task OaphDeferSubscriptionParameterDefersSubscriptionToSource()
     {
         var isSubscribed = false;
 
@@ -163,20 +164,21 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(isSubscribed, Is.False);
-            Assert.That(fixture.Value, Is.EqualTo(42));
+            await Assert.That(isSubscribed).IsFalse();
+            await Assert.That(fixture.Value).IsEqualTo(42);
         }
 
-        Assert.That(isSubscribed, Is.True);
+        await Assert.That(isSubscribed).IsTrue();
     }
 
     /// <summary>
     /// Defer subscription: IsSubscribed is not true initially.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
+    public async Task OaphDeferSubscriptionParameterIsSubscribedIsNotTrueInitially()
     {
         var observable = Observable.Create<int>(static o =>
         {
@@ -187,19 +189,20 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, static _ => { }, 0, true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.False);
-            Assert.That(fixture.Value, Is.EqualTo(42));
-            Assert.That(fixture.IsSubscribed, Is.True);
+            await Assert.That(fixture.IsSubscribed).IsFalse();
+            await Assert.That(fixture.Value).IsEqualTo(42);
+            await Assert.That(fixture.IsSubscribed).IsTrue();
         }
     }
 
     /// <summary>
     /// Defer subscription should not throw if disposed.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphDeferSubscriptionShouldNotThrowIfDisposed()
+    public async Task OaphDeferSubscriptionShouldNotThrowIfDisposed()
     {
         var observable = Observable.Create<int>(o =>
         {
@@ -210,59 +213,65 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, 0, true);
 
-        Assert.That(fixture.IsSubscribed, Is.False);
+        await Assert.That(fixture.IsSubscribed).IsFalse();
         fixture.Dispose();
 
-        Assert.DoesNotThrow(() =>
+        await Assert.That(() =>
         {
             var value = fixture.Value;
-            Assert.That(value, Is.Zero);
-        });
+            return Task.CompletedTask;
+        }).ThrowsNothing();
+
+        var value = fixture.Value;
+        await Assert.That(value).IsEqualTo(0);
     }
 
     /// <summary>
     /// Verifies that deferring subscription with an initial value does not emit the initial value.
     /// </summary>
     /// <param name="initialValue">The initial value to test with.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public void OaphDeferSubscriptionWithInitialValueShouldNotEmitInitialValue(int initialValue)
+    public async Task OaphDeferSubscriptionWithInitialValueShouldNotEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: true);
 
-        Assert.That(fixture.IsSubscribed, Is.False);
+        await Assert.That(fixture.IsSubscribed).IsFalse();
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(emittedValue, Is.Null);
-            Assert.That(fixture.IsSubscribed, Is.False);
+            await Assert.That(emittedValue).IsNull();
+            await Assert.That(fixture.IsSubscribed).IsFalse();
         }
     }
 
     /// <summary>
     /// Defer subscription with initial function value should not emit initial value nor access function.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
+    public async Task OaphDeferSubscriptionWithInitialFuncValueShouldNotEmitInitialValueNorAccessFunc()
     {
         var observable = Observable.Empty<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
                                                           observable, _ => { }, getInitialValue: ThrowIfAccessed, deferSubscription: true);
 
-        Assert.That(fixture.IsSubscribed, Is.False);
+        await Assert.That(fixture.IsSubscribed).IsFalse();
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(emittedValue, Is.Null);
-            Assert.That(fixture.IsSubscribed, Is.False);
+            await Assert.That(emittedValue).IsNull();
+            await Assert.That(fixture.IsSubscribed).IsFalse();
         }
 
         return;
@@ -276,21 +285,23 @@ public class ObservableAsPropertyHelperTest
     /// <param name="initialValue">
     /// The initial value set before any subscription occurs.
     /// </param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public void OaphDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
+    public async Task OaphDeferSubscriptionWithInitialValueEmitInitialValueWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
         var fixture = new ObservableAsPropertyHelper<int>(observable, static _ => { }, initialValue, deferSubscription: true);
 
-        Assert.That(fixture.IsSubscribed, Is.False);
+        await Assert.That(fixture.IsSubscribed).IsFalse();
 
         var result = fixture.Value;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.True);
-            Assert.That(result, Is.EqualTo(initialValue));
+            await Assert.That(fixture.IsSubscribed).IsTrue();
+            await Assert.That(result).IsEqualTo(initialValue);
         }
     }
 
@@ -299,8 +310,9 @@ public class ObservableAsPropertyHelperTest
     /// only when subscribed and confirms the function is accessed at that point.
     /// Ensures that the subscription state and access status align with the expected behavior.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
+    public async Task OaphDeferSubscriptionWithInitialFuncValueEmitInitialValueWhenSubscribed()
     {
         var observable = Observable.Empty<int>();
         var wasAccessed = false;
@@ -308,19 +320,19 @@ public class ObservableAsPropertyHelperTest
         var fixture = new ObservableAsPropertyHelper<int>(
                                                           observable, _ => { }, getInitialValue: GetInitialValue, deferSubscription: true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.False);
-            Assert.That(wasAccessed, Is.False);
+            await Assert.That(fixture.IsSubscribed).IsFalse();
+            await Assert.That(wasAccessed).IsFalse();
         }
 
         var result = fixture.Value;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.True);
-            Assert.That(wasAccessed, Is.True);
-            Assert.That(result, Is.EqualTo(42));
+            await Assert.That(fixture.IsSubscribed).IsTrue();
+            await Assert.That(wasAccessed).IsTrue();
+            await Assert.That(result).IsEqualTo(42);
         }
 
         return;
@@ -336,9 +348,11 @@ public class ObservableAsPropertyHelperTest
     /// Verifies that deferring subscription with an initial function value does not trigger OnChanged when subscribed.
     /// </summary>
     /// <param name="initialValue">The initial value to set before any subscription occurs.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
+    public async Task OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
 
@@ -348,21 +362,21 @@ public class ObservableAsPropertyHelperTest
         var fixture = new ObservableAsPropertyHelper<int>(
                                                           observable, OnChanged, OnChanging, () => initialValue, true);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.False);
-            Assert.That(wasOnChangingCalled, Is.False);
-            Assert.That(wasOnChangedCalled, Is.False);
+            await Assert.That(fixture.IsSubscribed).IsFalse();
+            await Assert.That(wasOnChangingCalled).IsFalse();
+            await Assert.That(wasOnChangedCalled).IsFalse();
         }
 
         var result = fixture.Value;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(fixture.IsSubscribed, Is.True);
-            Assert.That(wasOnChangingCalled, Is.False);
-            Assert.That(wasOnChangedCalled, Is.False);
-            Assert.That(result, Is.EqualTo(initialValue));
+            await Assert.That(fixture.IsSubscribed).IsTrue();
+            await Assert.That(wasOnChangingCalled).IsFalse();
+            await Assert.That(wasOnChangedCalled).IsFalse();
+            await Assert.That(result).IsEqualTo(initialValue);
         }
 
         return;
@@ -377,9 +391,11 @@ public class ObservableAsPropertyHelperTest
     /// when the source observable provides the same initial value.
     /// </summary>
     /// <param name="initialValue">The initial value provided to the ObservableAsPropertyHelper.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public void OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(int initialValue)
+    public async Task OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(int initialValue)
     {
         var observable = new Subject<int>();
         var wasOnChangingCalled = false;
@@ -388,14 +404,14 @@ public class ObservableAsPropertyHelperTest
         var fixture = new ObservableAsPropertyHelper<int>(observable, OnChanged, OnChanging, () => initialValue, true);
 
         var result = fixture.Value;
-        Assert.That(result, Is.EqualTo(initialValue));
+        await Assert.That(result).IsEqualTo(initialValue);
 
         observable.OnNext(initialValue);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(wasOnChangingCalled, Is.False);
-            Assert.That(wasOnChangedCalled, Is.False);
+            await Assert.That(wasOnChangingCalled).IsFalse();
+            await Assert.That(wasOnChangedCalled).IsFalse();
         }
 
         return;
@@ -409,61 +425,65 @@ public class ObservableAsPropertyHelperTest
     /// Verifies that the initial value of an Observable As Property Helper is emitted correctly.
     /// </summary>
     /// <param name="initialValue">The initial value provided to the Observable As Property Helper.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public void OaphInitialValueShouldEmitInitialValue(int initialValue)
+    public async Task OaphInitialValueShouldEmitInitialValue(int initialValue)
     {
         var observable = Observable.Empty<int>();
         var fixture = new ObservableAsPropertyHelper<int>(observable, _ => { }, initialValue, deferSubscription: false);
 
-        Assert.That(fixture.IsSubscribed, Is.True);
+        await Assert.That(fixture.IsSubscribed).IsTrue();
 
         int? emittedValue = null;
         fixture.Source.Subscribe(val => emittedValue = val);
 
-        Assert.That(emittedValue, Is.EqualTo(initialValue));
+        await Assert.That(emittedValue).IsEqualTo(initialValue);
     }
 
     /// <summary>
     /// OAPH should rethrow errors via ThrownExceptions.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OaphShouldRethrowErrors() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OaphShouldRethrowErrors() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var input = new Subject<int>();
             var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
             var errors = new List<Exception>();
 
-            Assert.That(fixture.Value, Is.EqualTo(-5));
+            await Assert.That(fixture.Value).IsEqualTo(-5);
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
             fixture.ThrownExceptions.Subscribe(errors.Add);
 
             scheduler.Start();
-            Assert.That(fixture.Value, Is.EqualTo(4));
+            await Assert.That(fixture.Value).IsEqualTo(4);
 
             input.OnError(new Exception("Die!"));
             scheduler.Start();
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(fixture.Value, Is.EqualTo(4));
-                Assert.That(errors, Has.Count.EqualTo(1));
+                await Assert.That(fixture.Value).IsEqualTo(4);
+                await Assert.That(errors).Count().IsEqualTo(1);
             }
         });
 
     /// <summary>
     /// No thrown-exceptions subscriber equals OAPH death.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NoThrownExceptionsSubscriberEqualsOaphDeath() =>
-        new TestScheduler().With(scheduler =>
+    public async Task NoThrownExceptionsSubscriberEqualsOaphDeath() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var input = new Subject<int>();
             var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: ImmediateScheduler.Instance);
 
-            Assert.That(fixture.Value, Is.EqualTo(-5));
+            await Assert.That(fixture.Value).IsEqualTo(-5);
             new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
             input.OnError(new Exception("Die!"));
@@ -478,18 +498,19 @@ public class ObservableAsPropertyHelperTest
                 failed = ex.InnerException?.Message != "Die!";
             }
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(failed, Is.False);
-                Assert.That(fixture.Value, Is.EqualTo(4));
+                await Assert.That(failed).IsFalse();
+                await Assert.That(fixture.Value).IsEqualTo(4);
             }
         });
 
     /// <summary>
     /// ToProperty should fire both Changing and Changed.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ToPropertyShouldFireBothChangingAndChanged()
+    public async Task ToPropertyShouldFireBothChangingAndChanged()
     {
         var fixture = new OaphTestFixture();
 
@@ -501,36 +522,37 @@ public class ObservableAsPropertyHelperTest
         fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, beforeChange: false)
                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resultChanging, Is.Empty);
-            Assert.That(resultChanged, Is.Empty);
+            await Assert.That(resultChanging).IsEmpty();
+            await Assert.That(resultChanged).IsEmpty();
         }
 
         fixture.IsOnlyOneWord = "FooBar";
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resultChanging, Has.Count.EqualTo(1));
-            Assert.That(resultChanged, Has.Count.EqualTo(1));
-            Assert.That(resultChanging[0].Value, Is.EqualTo(string.Empty));
-            Assert.That(resultChanged[0].Value, Is.EqualTo("Foo"));
+            await Assert.That(resultChanging).Count().IsEqualTo(1);
+            await Assert.That(resultChanged).Count().IsEqualTo(1);
+            await Assert.That(resultChanging[0].Value).IsEqualTo(string.Empty);
+            await Assert.That(resultChanged[0].Value).IsEqualTo("Foo");
         }
 
         fixture.IsOnlyOneWord = "Bazz";
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(resultChanging, Has.Count.EqualTo(2));
-            Assert.That(resultChanged, Has.Count.EqualTo(2));
-            Assert.That(resultChanging[1].Value, Is.EqualTo("Foo"));
-            Assert.That(resultChanged[1].Value, Is.EqualTo("Baz"));
+            await Assert.That(resultChanging).Count().IsEqualTo(2);
+            await Assert.That(resultChanged).Count().IsEqualTo(2);
+            await Assert.That(resultChanging[1].Value).IsEqualTo("Foo");
+            await Assert.That(resultChanged[1].Value).IsEqualTo("Baz");
         }
     }
 
     /// <summary>
     /// ToProperty(nameof) should raise standard notifications.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ToProperty_NameOf_ShouldFireBothChangingAndChanged()
+    public async Task ToProperty_NameOf_ShouldFireBothChangingAndChanged()
     {
         var fixture = new OaphNameOfTestFixture();
 
@@ -540,18 +562,18 @@ public class ObservableAsPropertyHelperTest
         fixture.PropertyChanging += (_, _) => changing = true;
         fixture.PropertyChanged += (_, _) => changed = true;
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changing, Is.False);
-            Assert.That(changed, Is.False);
+            await Assert.That(changing).IsFalse();
+            await Assert.That(changed).IsFalse();
         }
 
         fixture.IsOnlyOneWord = "baz";
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changing, Is.True);
-            Assert.That(changed, Is.True);
+            await Assert.That(changing).IsTrue();
+            await Assert.That(changed).IsTrue();
         }
     }
 
@@ -562,11 +584,13 @@ public class ObservableAsPropertyHelperTest
     /// <param name="testWords">An array of input strings to evaluate.</param>
     /// <param name="first3Letters">An array of expected first three letters for each input string in <paramref name="testWords"/>.</param>
     /// <param name="last3Letters">An array of expected last three letters for each input string in <paramref name="testWords"/>.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
     [Arguments(
                  new[] { "FooBar", "Bazz" },
                  new[] { "Foo", "Baz" },
                  new[] { "Bar", "azz" })]
-    public void ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
+    public async Task ToProperty_NameOf_ValidValuesProduced(string[] testWords, string[] first3Letters, string[] last3Letters)
     {
         if (testWords is null)
         {
@@ -597,31 +621,31 @@ public class ObservableAsPropertyHelperTest
                .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();
         var changed = new[] { firstThreeChanged!, lastThreeChanged };
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(changed.All(x => x.Count == 0), Is.True);
-            Assert.That(changing.All(x => x.Count == 0), Is.True);
+            await Assert.That(changed.All(x => x.Count == 0)).IsTrue();
+            await Assert.That(changing.All(x => x.Count == 0)).IsTrue();
         }
 
         for (var i = 0; i < testWords.Length; ++i)
         {
             fixture.IsOnlyOneWord = testWords[i];
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(changed.All(x => x.Count == i + 1), Is.True);
-                Assert.That(changing.All(x => x.Count == i + 1), Is.True);
-                Assert.That(firstThreeChanged[i].Value, Is.EqualTo(first3Letters[i]));
-                Assert.That(lastThreeChanged[i].Value, Is.EqualTo(last3Letters[i]));
+                await Assert.That(changed.All(x => x.Count == i + 1)).IsTrue();
+                await Assert.That(changing.All(x => x.Count == i + 1)).IsTrue();
+                await Assert.That(firstThreeChanged[i].Value).IsEqualTo(first3Letters[i]);
+                await Assert.That(lastThreeChanged[i].Value).IsEqualTo(last3Letters[i]);
             }
 
             var firstChanging = i < 1 ? string.Empty : first3Letters[i - 1];
             var lastChanging = i < 1 ? string.Empty : last3Letters[i - 1]; // fixed from i - i
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(firstThreeChanging[i].Value, Is.EqualTo(firstChanging));
-                Assert.That(lastThreeChanging[i].Value, Is.EqualTo(lastChanging));
+                await Assert.That(firstThreeChanging[i].Value).IsEqualTo(firstChanging);
+                await Assert.That(lastThreeChanging[i].Value).IsEqualTo(lastChanging);
             }
         }
     }
@@ -629,8 +653,9 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// ToProperty with indexer notifies expected property name.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
+    public async Task ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
     {
         var fixture = new OAPHIndexerTestFixture(0, ImmediateScheduler.Instance);
         var propertiesChanged = new List<string>();
@@ -645,7 +670,7 @@ public class ObservableAsPropertyHelperTest
 
         fixture.Text = "awesome";
 
-        Assert.That(propertiesChanged, Is.EqualTo(["Text", "Item[]"]));
+        await Assert.That(propertiesChanged).IsEquivalentTo(["Text", "Item[]"]);
     }
 
     /// <summary>
@@ -686,8 +711,9 @@ public class ObservableAsPropertyHelperTest
     /// <summary>
     /// Nullable types test shouldn't need decorators with ToProperty.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NullableTypesTestShouldNotNeedDecorators2_ToProperty()
+    public async Task NullableTypesTestShouldNotNeedDecorators2_ToProperty()
     {
         var fixture = new WhenAnyTestFixture();
         fixture.WhenAnyValue(
@@ -701,6 +727,6 @@ public class ObservableAsPropertyHelperTest
                })
                .ToProperty(fixture, static x => x.AccountsFound, out fixture._accountsFound);
 
-        Assert.That(fixture.AccountsFound, Is.EqualTo(3));
+        await Assert.That(fixture.AccountsFound).IsEqualTo(3);
     }
 }

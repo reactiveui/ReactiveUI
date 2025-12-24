@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Threading.Tasks;
 
 using Autofac;
 
@@ -16,16 +18,17 @@ using Splat.Ninject;
 namespace ReactiveUI.Splat.Tests;
 
 /// <summary>
-/// Tests for checking the various adapters in splat.
+/// Tests for checking the splat adapters register ReactiveUI services.
 /// </summary>
-[TestFixture]
+[NotInParallel] // These tests modify global state (Locator.CurrentMutable)
 public class SplatAdapterTests
 {
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
+    public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new DryIoc.Container();
@@ -34,19 +37,20 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
+    public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new DryIoc.Container();
@@ -55,19 +59,20 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter))).IsTrue();
         }
     }
 
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
+    public async Task AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
@@ -77,19 +82,20 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
+    public async Task AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
@@ -100,19 +106,20 @@ public class SplatAdapterTests
 
         var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter))).IsTrue();
         }
     }
 
     /// <summary>
     /// Should register ReactiveUI binding type converters.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
+    public async Task NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
@@ -121,19 +128,20 @@ public class SplatAdapterTests
 
         var converters = container.GetAll<IBindingTypeConverter>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(StringConverter))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(EqualityTypeConverter))).IsTrue();
         }
     }
 
     /// <summary>
     /// Should register ReactiveUI creates command bindings.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NinjectDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
+    public async Task NinjectDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
@@ -142,11 +150,11 @@ public class SplatAdapterTests
 
         var converters = container.GetAll<ICreatesCommandBinding>().ToList();
 
-        Assert.That(converters, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
+        await Assert.That(converters).IsNotNull();
+        using (Assert.Multiple())
         {
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent)), Is.True);
-            Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter)), Is.True);
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaEvent))).IsTrue();
+            await Assert.That(converters.Any(static x => x.GetType() == typeof(CreatesCommandBindingViaCommandParameter))).IsTrue();
         }
     }
 }

@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
+    <!-- AOT tests only support modern .NET where AOT is available -->
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

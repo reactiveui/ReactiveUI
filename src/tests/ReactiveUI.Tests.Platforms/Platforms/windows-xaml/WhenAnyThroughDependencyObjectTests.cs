@@ -1,28 +1,24 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if NETFX_CORE
-#else
-
-#endif
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// Tests that WhenAny dependency objects.
 /// </summary>
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public class WhenAnyThroughDependencyObjectTests
 {
     /// <summary>
     /// Tests that WhenAny through a view shouldn't give null values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void WhenAnyThroughAViewShouldntGiveNullValues()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WhenAnyThroughAViewShouldntGiveNullValues()
     {
         var vm = new HostTestFixture()
         {
@@ -38,19 +34,19 @@ public class WhenAnyThroughDependencyObjectTests
 
         var output = new List<string?>();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(output, Is.Empty);
-            Assert.That(fixture.ViewModel, Is.Null);
+            await Assert.That(output).IsEmpty();
+            await Assert.That(fixture.ViewModel).IsNull();
         }
 
         fixture.WhenAnyValue(static x => x.ViewModel!.Child!.IsNotNullString).Subscribe(output.Add);
 
         fixture.ViewModel = vm;
-        Assert.That(output, Has.Count.EqualTo(1));
+        await Assert.That(output).Count().IsEqualTo(1);
 
         fixture.ViewModel.Child.IsNotNullString = "Bar";
-        Assert.That(output, Has.Count.EqualTo(2));
-        new[] { "Foo", "Bar" }.AssertAreEqual(output);
+        await Assert.That(output).Count().IsEqualTo(2);
+        await new[] { "Foo", "Bar" }.AssertAreEqual(output);
     }
 }

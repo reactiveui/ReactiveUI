@@ -1,16 +1,15 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Threading;
-
 using Splat.Builder;
+using TUnit.Core;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
-[TestFixture]
-[Apartment(ApartmentState.STA)]
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;
@@ -31,26 +30,26 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void RegisterViewsForViewModelShouldRegisterAllViews()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>(), Has.Exactly(1).Items);
-            Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>(), Has.Exactly(1).Items);
-            Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>(), Has.Exactly(1).Items);
-            Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>(), Has.Exactly(1).Items);
+            await Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>()).Count().IsEqualTo(1);
         }
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void NonContractRegistrationsShouldResolveCorrectly()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task NonContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetService<IViewFor<AnotherViewModel>>(), Is.TypeOf<AnotherView>());
+            await Assert.That(_resolver.GetService<IViewFor<AnotherViewModel>>()).IsTypeOf<AnotherView>();
         }
     }
 
@@ -58,64 +57,64 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     public void Dispose() => _resolver?.Dispose();
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void ContractRegistrationsShouldResolveCorrectly()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task ContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract"), Is.TypeOf<ContractExampleView>());
+            await Assert.That(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract")).IsTypeOf<ContractExampleView>();
         }
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(SingleInstanceExampleView.Instances, Is.Zero);
+            await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(0);
 
             var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
-            Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(1));
+            await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(1);
 
             var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(SingleInstanceExampleView.Instances, Is.EqualTo(1));
+                await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(1);
 
-                Assert.That(instance2, Is.SameAs(instance));
+                await Assert.That(instance2).IsSameReferenceAs(instance);
             }
         }
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void SingleInstanceViewsWithContractShouldResolveCorrectly()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task SingleInstanceViewsWithContractShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(SingleInstanceWithContractExampleView.Instances, Is.Zero);
+            await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(0);
 
             var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
-            Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(1));
+            await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);
 
             var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(SingleInstanceWithContractExampleView.Instances, Is.EqualTo(1));
+                await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);
 
-                Assert.That(instance2, Is.SameAs(instance));
+                await Assert.That(instance2).IsSameReferenceAs(instance);
             }
         }
     }
 
     [Test]
-    [Apartment(ApartmentState.STA)]
-    public void SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
+    [TestExecutor<STAThreadExecutor>]
+    public async Task SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
     {
         using (_resolver.WithResolver())
         {
-            Assert.That(NeverUsedView.Instances, Is.Zero);
+            await Assert.That(NeverUsedView.Instances).IsEqualTo(0);
         }
     }
 }

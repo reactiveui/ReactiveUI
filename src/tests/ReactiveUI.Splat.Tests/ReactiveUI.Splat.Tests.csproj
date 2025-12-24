@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -13,7 +13,6 @@
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Linq" />

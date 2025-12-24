@@ -30,7 +30,7 @@
     <LangVersion>preview</LangVersion>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -41,7 +41,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
-    <EnableNUnitRunner>true</EnableNUnitRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <TUnitImplicitUsings>false</TUnitImplicitUsings>
     <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
@@ -76,8 +75,12 @@
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
 
-    <ReactiveUITestingTargets>$(ReactiveUIModernTargets)</ReactiveUITestingTargets>
-    <ReactiveUITestingTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUITestingTargets);net462;net472;net481</ReactiveUITestingTargets>
+    <!-- Testing target frameworks for non-platform tests (core .NET + .NET Framework) -->
+    <ReactiveUITestingTargets>net8.0;net9.0;net10.0</ReactiveUITestingTargets>
+
+    <!-- Testing target frameworks for UI platform tests (.NET Framework + Windows-specific TFMs) -->
+    <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
+    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>

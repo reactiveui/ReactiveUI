@@ -7,11 +7,10 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Drawing;
 
-[TestFixture]
 public class ReactiveUIBuilderDrawingTests
 {
     [Test]
-    public void WithDrawing_Should_Register_Services()
+    public async Task WithDrawing_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
@@ -22,6 +21,6 @@ public class ReactiveUIBuilderDrawingTests
         // Drawing registers bitmap loader in non-NETSTANDARD contexts; we can still assert no exception and core services with chaining
         locator.CreateReactiveUIBuilder().WithDrawing().Build();
         var bindingConverters = locator.GetServices<IBindingTypeConverter>();
-        Assert.That(bindingConverters, Is.Not.Null);
+        await Assert.That(bindingConverters).IsNotNull();
     }
 }

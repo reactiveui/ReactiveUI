@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 #else
 using System.Windows;
 using System.Windows.Controls;
+using PropertyMetadata = System.Windows.PropertyMetadata;
 #endif
 
 namespace ReactiveUI.Tests.Xaml;

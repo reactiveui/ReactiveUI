@@ -6,7 +6,7 @@
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUITestTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
@@ -17,7 +17,6 @@
   </ItemGroup>
   <!-- Global usings -->
   <ItemGroup>
-    <Using Include="NUnit.Framework" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />

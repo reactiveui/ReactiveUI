@@ -9,13 +9,10 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
 
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
+using TUnit.Assertions.Enums;
 
 namespace ReactiveUI.Tests;
+
 public class ReactiveNotifyPropertyChangedMixinTest
 {
     /// <summary>
@@ -26,8 +23,9 @@ public class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>
     /// Verifies that any change in a deep expression list triggers the update sequence.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void AnyChangeInExpressionListTriggersUpdate()
+    public async Task AnyChangeInExpressionListTriggersUpdate()
     {
         var obj = new ObjChain1();
         var obsUpdated = false;
@@ -37,34 +35,27 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         obsUpdated = false;
         obj.Model.Model.Model.SomeOtherParam = 42;
-        Assert.That(
-                    obsUpdated,
-                    Is.True);
+        await Assert.That(obsUpdated).IsTrue();
 
         obsUpdated = false;
         obj.Model.Model.Model = new HostTestFixture();
-        Assert.That(
-                    obsUpdated,
-                    Is.True);
+        await Assert.That(obsUpdated).IsTrue();
 
         obsUpdated = false;
         obj.Model.Model = new ObjChain3 { Model = new HostTestFixture { SomeOtherParam = 10 } };
-        Assert.That(
-                    obsUpdated,
-                    Is.True);
+        await Assert.That(obsUpdated).IsTrue();
 
         obsUpdated = false;
         obj.Model = new ObjChain2();
-        Assert.That(
-                    obsUpdated,
-                    Is.True);
+        await Assert.That(obsUpdated).IsTrue();
     }
 
     /// <summary>
     /// Ensures multi-property expressions are correctly rewritten and resolved.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void MultiPropertyExpressionsShouldBeProperlyResolved()
+    public async Task MultiPropertyExpressionsShouldBeProperlyResolved()
     {
         var data = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
         {
@@ -74,14 +65,13 @@ public class ReactiveNotifyPropertyChangedMixinTest
             { static x => x.Child!.Changed, ["Child", "Changed"] },
         };
 
-        var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, Type[]>
+        var dataTypes = new Dictionary<Expression<Func<HostTestFixture, object>>, string[]>
         {
-            { static x => x.Child!.IsOnlyOneWord!.Length, [typeof(TestFixture), typeof(string), typeof(int)] },
-            { static x => x.SomeOtherParam, [typeof(int)] },
-            { static x => x.Child!.IsNotNullString!, [typeof(TestFixture), typeof(string)] },
+            { static x => x.Child!.IsOnlyOneWord!.Length, [typeof(TestFixture).FullName!, typeof(string).FullName!, typeof(int).FullName!] },
+            { static x => x.SomeOtherParam, [typeof(int).FullName!] },
+            { static x => x.Child!.IsNotNullString!, [typeof(TestFixture).FullName!, typeof(string).FullName!] },
             {
-                static x => x.Child!.Changed, [typeof(TestFixture), typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>)
-                ]
+                static x => x.Child!.Changed, [typeof(TestFixture).FullName!, typeof(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>).FullName!]
             },
         };
 
@@ -91,35 +81,33 @@ public class ReactiveNotifyPropertyChangedMixinTest
         var resultTypes = dataTypes.Keys
                                    .Select(static x => new
                                    {
-                                       input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain()
+                                       input = x,
+                                       output = Reflection.Rewrite(x.Body).GetExpressionChain()
                                    }).ToArray();
 
         foreach (var x in results)
         {
             var names = x.output.Select(static y =>
                                             y.GetMemberInfo()?.Name ??
-                                            throw new InvalidOperationException("propertyName should not be null."));
+                                            throw new InvalidOperationException("propertyName should not be null.")).ToArray();
 
-            Assert.That(
-                        names,
-                        Is.EqualTo(data[x.input]));
+            await Assert.That(names).IsEquivalentTo(data[x.input], CollectionOrdering.Matching);
         }
 
         foreach (var x in resultTypes)
         {
-            var types = x.output.Select(static y => y.Type);
-            Assert.That(
-                        types,
-                        Is.EqualTo(dataTypes[x.input]));
+            var types = x.output.Select(static y => y.Type.FullName!).ToArray();
+            await Assert.That(types).IsEquivalentTo(dataTypes[x.input], CollectionOrdering.Matching);
         }
     }
 
     /// <summary>
     /// Verifies child change notification behavior when the host property changes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
-        new TestScheduler().With(static scheduler =>
+    public async Task OFPChangingTheHostPropertyShouldFireAChildChangeNotificationOnlyIfThePreviousChildIsDifferent() =>
+        await new TestScheduler().With(static async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture() };
             fixture.ObservableForProperty(static x => x.Child!.IsOnlyOneWord)
@@ -129,29 +117,24 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.Child = new TestFixture { IsOnlyOneWord = "Bar" };
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
         });
 
     /// <summary>
     /// Observes a named property and verifies notifications and values.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPNamedPropertyTest() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPNamedPropertyTest() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -161,48 +144,35 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", "Baz"]);
             }
         });
 
     /// <summary>
     /// Observes a named property before change and verifies notifications.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPNamedPropertyTestBeforeChange() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPNamedPropertyTestBeforeChange() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture { IsOnlyOneWord = "Pre" };
             fixture.ObservableForProperty(
@@ -213,42 +183,31 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    .Subscribe();
 
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Is.Empty);
+            await Assert.That(changes).IsEmpty();
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Pre", "Foo"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Pre", "Foo"]);
             }
         });
 
     /// <summary>
     /// Observes a named property with no initial-skip and verifies notifications.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPNamedPropertyTestNoSkipInitial() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPNamedPropertyTestNoSkipInitial() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture { IsOnlyOneWord = "Pre" };
             fixture.ObservableForProperty(
@@ -260,36 +219,27 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    .Subscribe();
 
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Pre", "Foo"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Pre", "Foo"]);
             }
         });
 
     /// <summary>
     /// Verifies that repeated values are de-duplicated.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPNamedPropertyTestRepeats() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPNamedPropertyTestRepeats() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -299,48 +249,35 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", "Foo"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", "Foo"]);
             }
         });
 
     /// <summary>
     /// Verifies re-subscription behavior when replacing the host.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPReplacingTheHostShouldResubscribeTheObservable() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPReplacingTheHostShouldResubscribeTheObservable() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture() };
             fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
@@ -350,62 +287,45 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             // From "Bar" to null (new TestFixture with null IsOnlyOneWord)
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
             // Setting null again doesn't change
             fixture.Child.IsOnlyOneWord = null!;
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(4));
+            await Assert.That(changes).Count().IsEqualTo(4);
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(4));
+            await Assert.That(changes).Count().IsEqualTo(4);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", null, "Baz"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", null, "Baz"]);
             }
         });
 
     /// <summary>
     /// Verifies re-subscription behavior when host becomes null and then is restored.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPReplacingTheHostWithNullThenSettingItBackShouldResubscribeTheObservable() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture() };
             var fixtureProp = fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord);
@@ -418,50 +338,37 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             // Child becomes null
             fixture.Child = null!;
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             // From "Bar" to null (child restored but value is null)
             fixture.Child = new TestFixture();
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", null]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", null]);
             }
         });
 
     /// <summary>
     /// Ensures ObservableForProperty works with non-reactive INPC objects.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPShouldWorkWithINPCObjectsToo() =>
-        new TestScheduler().With(static scheduler =>
+    public async Task OFPShouldWorkWithINPCObjectsToo() =>
+        await new TestScheduler().With(static async scheduler =>
         {
             var fixture = new NonReactiveINPCObject { InpcProperty = null! };
             fixture.ObservableForProperty(static x => x.InpcProperty.IsOnlyOneWord)
@@ -471,29 +378,24 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.InpcProperty = new TestFixture();
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.InpcProperty.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.InpcProperty.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
         });
 
     /// <summary>
     /// Simple child property observation test.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPSimpleChildPropertyTest() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPSimpleChildPropertyTest() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture() };
             fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord)
@@ -503,48 +405,35 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.Child.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
             fixture.Child.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "Child.IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", "Baz"]);
             }
         });
 
     /// <summary>
     /// Simple property observation test.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void OFPSimplePropertyTest() =>
-        new TestScheduler().With(scheduler =>
+    public async Task OFPSimplePropertyTest() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new TestFixture();
             fixture.ObservableForProperty(x => x.IsOnlyOneWord)
@@ -554,47 +443,34 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
             fixture.IsOnlyOneWord = "Foo";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(1));
+            await Assert.That(changes).Count().IsEqualTo(1);
 
             fixture.IsOnlyOneWord = "Bar";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(2));
+            await Assert.That(changes).Count().IsEqualTo(2);
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
             fixture.IsOnlyOneWord = "Baz";
             scheduler.Start();
-            Assert.That(
-                        changes,
-                        Has.Count.EqualTo(3));
+            await Assert.That(changes).Count().IsEqualTo(3);
 
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            changes.All(x => x.Sender == fixture),
-                            Is.True);
-                Assert.That(
-                            changes.All(x => x.GetPropertyName() == "IsOnlyOneWord"),
-                            Is.True);
-                Assert.That(
-                            changes.Select(x => x.Value),
-                            Is.EqualTo(["Foo", "Bar", "Baz"]));
+                await Assert.That(changes.All(x => x.Sender == fixture)).IsTrue();
+                await Assert.That(changes.All(x => x.GetPropertyName() == "IsOnlyOneWord")).IsTrue();
+                await Assert.That(changes.Select(x => x.Value!)).IsEquivalentTo(["Foo", "Bar", "Baz"]);
             }
         });
 
     /// <summary>
     /// Subscribing to WhenAny should push the current value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void SubscriptionToWhenAnyShouldReturnCurrentValue()
+    public async Task SubscriptionToWhenAnyShouldReturnCurrentValue()
     {
         var obj = new HostTestFixture();
         var observedValue = 1;
@@ -602,20 +478,19 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         obj.SomeOtherParam = 42;
 
-        Assert.That(
-                    observedValue,
-                    Is.EqualTo(obj.SomeOtherParam));
+        await Assert.That(observedValue).IsEqualTo(obj.SomeOtherParam);
     }
 
     /// <summary>
     /// WhenAny executes on the current synchronization context.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyShouldRunInContext()
+    public async Task WhenAnyShouldRunInContext()
     {
         var tid = Environment.CurrentManagedThreadId;
 
-        TaskPoolScheduler.Default.With(_ =>
+        await TaskPoolScheduler.Default.WithAsync(async _ =>
         {
             var whenAnyTid = 0;
             var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
@@ -630,17 +505,16 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 Thread.Sleep(250);
             }
 
-            Assert.That(
-                        whenAnyTid,
-                        Is.EqualTo(tid));
+            await Assert.That(whenAnyTid).IsEqualTo(tid);
         });
     }
 
     /// <summary>
     /// WhenAny works with "normal" CLR properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyShouldWorkEvenWithNormalProperties()
+    public async Task WhenAnyShouldWorkEvenWithNormalProperties()
     {
         var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
@@ -660,55 +534,32 @@ public class ReactiveNotifyPropertyChangedMixinTest
         var output4 = new List<int?>();
         fixture.WhenAnyValue(static x => x.NullableInt).Subscribe(output4.Add);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        output,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output[0]!.Sender,
-                        Is.EqualTo(fixture));
-            Assert.That(
-                        output[0]!.GetPropertyName(),
-                        Is.EqualTo("PocoProperty"));
-            Assert.That(
-                        output[0]!.Value,
-                        Is.EqualTo("Bamf"));
+            await Assert.That(output).Count().IsEqualTo(1);
+            await Assert.That(output[0]!.Sender).IsEqualTo(fixture);
+            await Assert.That(output[0]!.GetPropertyName()).IsEqualTo("PocoProperty");
+            await Assert.That(output[0]!.Value).IsEqualTo("Bamf");
 
-            Assert.That(
-                        output2,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output2[0],
-                        Is.EqualTo("Bamf"));
+            await Assert.That(output2).Count().IsEqualTo(1);
+            await Assert.That(output2[0]).IsEqualTo("Bamf");
 
-            Assert.That(
-                        output3,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output3[0]!.Sender,
-                        Is.EqualTo(fixture));
-            Assert.That(
-                        output3[0]!.GetPropertyName(),
-                        Is.EqualTo("NullableInt"));
-            Assert.That(
-                        output3[0]!.Value,
-                        Is.Null);
+            await Assert.That(output3).Count().IsEqualTo(1);
+            await Assert.That(output3[0]!.Sender).IsEqualTo(fixture);
+            await Assert.That(output3[0]!.GetPropertyName()).IsEqualTo("NullableInt");
+            await Assert.That(output3[0]!.Value).IsNull();
 
-            Assert.That(
-                        output4,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output4[0],
-                        Is.Null);
+            await Assert.That(output4).Count().IsEqualTo(1);
+            await Assert.That(output4[0]).IsNull();
         }
     }
 
     /// <summary>
     /// The <c>Changed</c> stream contains valid sender and property name data.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ChangedShouldHaveValidData()
+    public async Task ChangedShouldHaveValidData()
     {
         var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
@@ -723,36 +574,29 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        sender,
-                        Is.EqualTo(fixture));
-            Assert.That(
-                        propertyName,
-                        Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
+            await Assert.That(sender).IsEqualTo(fixture);
+            await Assert.That(propertyName).IsEqualTo(nameof(fixture.UsesExprRaiseSet));
         }
 
         sender = null;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        sender,
-                        Is.Null);
-            Assert.That(
-                        propertyName,
-                        Is.Null);
+            await Assert.That(sender).IsNull();
+            await Assert.That(propertyName).IsNull();
         }
     }
 
     /// <summary>
     /// The <c>Changing</c> stream contains valid sender and property name data.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ChangingShouldHaveValidData()
+    public async Task ChangingShouldHaveValidData()
     {
         var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
@@ -767,37 +611,30 @@ public class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.UsesExprRaiseSet = "abc";
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        sender,
-                        Is.EqualTo(fixture));
-            Assert.That(
-                        propertyName,
-                        Is.EqualTo(nameof(fixture.UsesExprRaiseSet)));
+            await Assert.That(sender).IsEqualTo(fixture);
+            await Assert.That(propertyName).IsEqualTo(nameof(fixture.UsesExprRaiseSet));
         }
 
         sender = null;
         propertyName = null;
         fixture.PocoProperty = "abc";
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        sender,
-                        Is.Null);
-            Assert.That(
-                        propertyName,
-                        Is.Null);
+            await Assert.That(sender).IsNull();
+            await Assert.That(propertyName).IsNull();
         }
     }
 
     /// <summary>
     /// Smoke test for <c>WhenAny</c> combining two properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnySmokeTest() =>
-        new TestScheduler().With(scheduler =>
+    public async Task WhenAnySmokeTest() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture(), SomeOtherParam = 5 };
             fixture.Child.IsNotNullString = "Foo";
@@ -815,82 +652,47 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    });
 
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(1));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(1));
-                Assert.That(
-                            output1[0].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output2[0].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output1[0].Value,
-                            Is.EqualTo(5));
-                Assert.That(
-                            output2[0].Value,
-                            Is.EqualTo("Foo"));
+                await Assert.That(output1).Count().IsEqualTo(1);
+                await Assert.That(output2).Count().IsEqualTo(1);
+                await Assert.That(output1[0].Sender).IsEqualTo(fixture);
+                await Assert.That(output2[0].Sender).IsEqualTo(fixture);
+                await Assert.That(output1[0].Value).IsEqualTo(5);
+                await Assert.That(output2[0].Value).IsEqualTo("Foo");
             }
 
             fixture.SomeOtherParam = 10;
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            output1[1].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output2[1].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output1[1].Value,
-                            Is.EqualTo(10));
-                Assert.That(
-                            output2[1].Value,
-                            Is.EqualTo("Foo"));
+                await Assert.That(output1).Count().IsEqualTo(2);
+                await Assert.That(output2).Count().IsEqualTo(2);
+                await Assert.That(output1[1].Sender).IsEqualTo(fixture);
+                await Assert.That(output2[1].Sender).IsEqualTo(fixture);
+                await Assert.That(output1[1].Value).IsEqualTo(10);
+                await Assert.That(output2[1].Value).IsEqualTo("Foo");
             }
 
             fixture.Child.IsNotNullString = "Bar";
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            output1[2].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output2[2].Sender,
-                            Is.EqualTo(fixture));
-                Assert.That(
-                            output1[2].Value,
-                            Is.EqualTo(10));
-                Assert.That(
-                            output2[2].Value,
-                            Is.EqualTo("Bar"));
+                await Assert.That(output1).Count().IsEqualTo(3);
+                await Assert.That(output2).Count().IsEqualTo(3);
+                await Assert.That(output1[2].Sender).IsEqualTo(fixture);
+                await Assert.That(output2[2].Sender).IsEqualTo(fixture);
+                await Assert.That(output1[2].Value).IsEqualTo(10);
+                await Assert.That(output2[2].Value).IsEqualTo("Bar");
             }
         });
 
     /// <summary>
     /// WhenAnyValue supports normal CLR properties.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueShouldWorkEvenWithNormalProperties()
+    public async Task WhenAnyValueShouldWorkEvenWithNormalProperties()
     {
         var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
@@ -901,29 +703,22 @@ public class ReactiveNotifyPropertyChangedMixinTest
                              static x => x.IsOnlyOneWord,
                              static x => x?.Length).Subscribe(output2.Add);
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        output1,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output1[0],
-                        Is.EqualTo("Bamf"));
-            Assert.That(
-                        output2,
-                        Has.Count.EqualTo(1));
-            Assert.That(
-                        output2[0],
-                        Is.EqualTo(3));
+            await Assert.That(output1).Count().IsEqualTo(1);
+            await Assert.That(output1[0]).IsEqualTo("Bamf");
+            await Assert.That(output2).Count().IsEqualTo(1);
+            await Assert.That(output2[0]).IsEqualTo(3);
         }
     }
 
     /// <summary>
     /// Smoke test for WhenAnyValue combining two properties with a projector.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueSmokeTest() =>
-        new TestScheduler().With(scheduler =>
+    public async Task WhenAnyValueSmokeTest() =>
+        await new TestScheduler().With(async scheduler =>
         {
             var fixture = new HostTestFixture { Child = new TestFixture(), SomeOtherParam = 5 };
             fixture.Child.IsNotNullString = "Foo";
@@ -941,64 +736,41 @@ public class ReactiveNotifyPropertyChangedMixinTest
                    });
 
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(1));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(1));
-                Assert.That(
-                            output1[0],
-                            Is.EqualTo(5));
-                Assert.That(
-                            output2[0],
-                            Is.EqualTo("Foo"));
+                await Assert.That(output1).Count().IsEqualTo(1);
+                await Assert.That(output2).Count().IsEqualTo(1);
+                await Assert.That(output1[0]).IsEqualTo(5);
+                await Assert.That(output2[0]).IsEqualTo("Foo");
             }
 
             fixture.SomeOtherParam = 10;
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(2));
-                Assert.That(
-                            output1[1],
-                            Is.EqualTo(10));
-                Assert.That(
-                            output2[1],
-                            Is.EqualTo("Foo"));
+                await Assert.That(output1).Count().IsEqualTo(2);
+                await Assert.That(output2).Count().IsEqualTo(2);
+                await Assert.That(output1[1]).IsEqualTo(10);
+                await Assert.That(output2[1]).IsEqualTo("Foo");
             }
 
             fixture.Child.IsNotNullString = "Bar";
             scheduler.Start();
-            using (Assert.EnterMultipleScope())
+            using (Assert.Multiple())
             {
-                Assert.That(
-                            output1,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            output2,
-                            Has.Count.EqualTo(3));
-                Assert.That(
-                            output1[2],
-                            Is.EqualTo(10));
-                Assert.That(
-                            output2[2],
-                            Is.EqualTo("Bar"));
+                await Assert.That(output1).Count().IsEqualTo(3);
+                await Assert.That(output2).Count().IsEqualTo(3);
+                await Assert.That(output1[2]).IsEqualTo(10);
+                await Assert.That(output2[2]).IsEqualTo("Bar");
             }
         });
 
     /// <summary>
     /// Ensures intermediate objects are eligible for GC when property value changes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
+    public async Task ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
     {
         static (ObjChain1, WeakReference) GetWeakReference1()
         {
@@ -1034,17 +806,11 @@ public class ReactiveNotifyPropertyChangedMixinTest
         GC.Collect();
         GC.WaitForPendingFinalizers();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        weakRef1.IsAlive,
-                        Is.False);
-            Assert.That(
-                        weakRef2.IsAlive,
-                        Is.False);
-            Assert.That(
-                        weakRef3.IsAlive,
-                        Is.False);
+            await Assert.That(weakRef1.IsAlive).IsFalse();
+            await Assert.That(weakRef2.IsAlive).IsFalse();
+            await Assert.That(weakRef3.IsAlive).IsFalse();
         }
 
         // Keep objs alive till after GC (prevent JIT optimization)
@@ -1056,40 +822,37 @@ public class ReactiveNotifyPropertyChangedMixinTest
     /// <summary>
     /// Throws when WhenAnyValue receives an unsupported Equal expression.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueUnsupportedExpressionType_Equal()
+    public async Task WhenAnyValueUnsupportedExpressionType_Equal()
     {
         var fixture = new TestFixture();
         var exception =
             Assert.Throws<NotSupportedException>(() => fixture.WhenAnyValue(x => x.IsNotNullString == x.IsOnlyOneWord)
                                                               .Subscribe());
 
-        Assert.That(
-                    exception!.Message,
-                    Is.EqualTo(
-                               "Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?"));
+        await Assert.That(exception!.Message).IsEqualTo("Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?");
     }
 
     /// <summary>
     /// Throws when WhenAnyValue receives an unsupported Constant expression.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueUnsupportedExpressionType_Constant()
+    public async Task WhenAnyValueUnsupportedExpressionType_Constant()
     {
         var fixture = new TestFixture();
         var exception = Assert.Throws<NotSupportedException>(() => fixture.WhenAnyValue(_ => Dummy).Subscribe());
 
-        Assert.That(
-                    exception!.Message,
-                    Is.EqualTo(
-                               "Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?"));
+        await Assert.That(exception!.Message).IsEqualTo("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?");
     }
 
     /// <summary>
     /// Nullable pipeline works without extra decorators.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NullableTypesTestShouldntNeedDecorators()
+    public async Task NullableTypesTestShouldntNeedDecorators()
     {
         var fixture = new WhenAnyTestFixture();
         IEnumerable<AccountUser?>? result = null;
@@ -1098,16 +861,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName)))
                .Subscribe(dict => result = dict);
 
-        Assert.That(
-                    result!.Count(),
-                    Is.EqualTo(3));
+        await Assert.That(result!.Count()).IsEqualTo(3);
     }
 
     /// <summary>
     /// Nullable tuple pipeline works without extra decorators.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NullableTypesTestShouldntNeedDecorators2()
+    public async Task NullableTypesTestShouldntNeedDecorators2()
     {
         var fixture = new WhenAnyTestFixture();
         IEnumerable<AccountUser?>? result = null;
@@ -1122,16 +884,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(dict => result = dict);
 
-        Assert.That(
-                    result!.Count(),
-                    Is.EqualTo(3));
+        await Assert.That(result!.Count()).IsEqualTo(3);
     }
 
     /// <summary>
     /// Non-nullable pipeline works without extra decorators.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NonNullableTypesTestShouldntNeedDecorators()
+    public async Task NonNullableTypesTestShouldntNeedDecorators()
     {
         var fixture = new WhenAnyTestFixture();
         IEnumerable<AccountUser>? result = null;
@@ -1140,16 +901,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName)))
                .Subscribe(dict => result = dict);
 
-        Assert.That(
-                    result!.Count(),
-                    Is.EqualTo(3));
+        await Assert.That(result!.Count()).IsEqualTo(3);
     }
 
     /// <summary>
     /// Non-nullable tuple pipeline works without extra decorators.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void NonNullableTypesTestShouldntNeedDecorators2()
+    public async Task NonNullableTypesTestShouldntNeedDecorators2()
     {
         var fixture = new WhenAnyTestFixture();
         IEnumerable<AccountUser>? result = null;
@@ -1164,92 +924,76 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(dict => result = dict);
 
-        Assert.That(
-                    result!.Count(),
-                    Is.EqualTo(3));
+        await Assert.That(result!.Count()).IsEqualTo(3);
     }
 
     /// <summary>
     /// WhenAnyValue with one parameter returns the value.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith1Paramerters()
+    public async Task WhenAnyValueWith1Paramerters()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
         fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1"));
+        await Assert.That(result).IsEqualTo("1");
     }
 
     /// <summary>
     /// WhenAnyValue with one parameter reflects sequential changes (nullable target set later).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith1ParamertersSequentialCheck()
+    public async Task WhenAnyValueWith1ParamertersSequentialCheck()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = string.Empty;
         fixture.Value1 = null!;
         fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.Null);
+        await Assert.That(result).IsNull();
 
         fixture.Value1 = "A";
-        Assert.That(
-                    result,
-                    Is.EqualTo("A"));
+        await Assert.That(result).IsEqualTo("A");
 
         fixture.Value1 = "B";
-        Assert.That(
-                    result,
-                    Is.EqualTo("B"));
+        await Assert.That(result).IsEqualTo("B");
 
         fixture.Value1 = null!;
-        Assert.That(
-                    result,
-                    Is.Null);
+        await Assert.That(result).IsNull();
     }
 
     /// <summary>
     /// WhenAnyValue with one parameter (already nullable) reflects sequential changes.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith1ParamertersSequentialCheckNullable()
+    public async Task WhenAnyValueWith1ParamertersSequentialCheckNullable()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = string.Empty;
         fixture.WhenAnyValue(x => x.Value2).Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.Null);
+        await Assert.That(result).IsNull();
 
         fixture.Value2 = "A";
-        Assert.That(
-                    result,
-                    Is.EqualTo("A"));
+        await Assert.That(result).IsEqualTo("A");
 
         fixture.Value2 = "B";
-        Assert.That(
-                    result,
-                    Is.EqualTo("B"));
+        await Assert.That(result).IsEqualTo("B");
 
         fixture.Value2 = null;
-        Assert.That(
-                    result,
-                    Is.Null);
+        await Assert.That(result).IsNull();
     }
 
     /// <summary>
     /// WhenAnyValue with two parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith2ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith2ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1263,16 +1007,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1"));
+        await Assert.That(result).IsEqualTo("1");
     }
 
     /// <summary>
     /// WhenAnyValue with two parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith2ParamertersReturnsValues()
+    public async Task WhenAnyValueWith2ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1287,16 +1030,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1"));
+        await Assert.That(result).IsEqualTo("1");
     }
 
     /// <summary>
     /// WhenAnyValue with three parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith3ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith3ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1311,16 +1053,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13"));
+        await Assert.That(result).IsEqualTo("13");
     }
 
     /// <summary>
     /// WhenAnyValue with three parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith3ParamertersReturnsValues()
+    public async Task WhenAnyValueWith3ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1336,16 +1077,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13"));
+        await Assert.That(result).IsEqualTo("13");
     }
 
     /// <summary>
     /// WhenAnyValue with four parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith4ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith4ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1361,16 +1101,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13"));
+        await Assert.That(result).IsEqualTo("13");
     }
 
     /// <summary>
     /// WhenAnyValue with four parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith4ParamertersReturnsValues()
+    public async Task WhenAnyValueWith4ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1387,16 +1126,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13"));
+        await Assert.That(result).IsEqualTo("13");
     }
 
     /// <summary>
     /// WhenAnyValue with five parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith5ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith5ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1413,16 +1151,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("135"));
+        await Assert.That(result).IsEqualTo("135");
     }
 
     /// <summary>
     /// WhenAnyValue with five parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith5ParamertersReturnsValues()
+    public async Task WhenAnyValueWith5ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1440,16 +1177,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("135"));
+        await Assert.That(result).IsEqualTo("135");
     }
 
     /// <summary>
     /// WhenAnyValue with six parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith6ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith6ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1467,16 +1203,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("135"));
+        await Assert.That(result).IsEqualTo("135");
     }
 
     /// <summary>
     /// WhenAnyValue with six parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith6ParamertersReturnsValues()
+    public async Task WhenAnyValueWith6ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1495,16 +1230,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("135"));
+        await Assert.That(result).IsEqualTo("135");
     }
 
     /// <summary>
     /// WhenAnyValue with seven parameters (tuple result).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith7ParamertersReturnsTuple()
+    public async Task WhenAnyValueWith7ParamertersReturnsTuple()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1523,16 +1257,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1357"));
+        await Assert.That(result).IsEqualTo("1357");
     }
 
     /// <summary>
     /// WhenAnyValue with seven parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith7ParamertersReturnsValues()
+    public async Task WhenAnyValueWith7ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1552,16 +1285,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1357"));
+        await Assert.That(result).IsEqualTo("1357");
     }
 
     /// <summary>
     /// WhenAnyValue with eight parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith8ParamertersReturnsValues()
+    public async Task WhenAnyValueWith8ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1582,16 +1314,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1357"));
+        await Assert.That(result).IsEqualTo("1357");
     }
 
     /// <summary>
     /// WhenAnyValue with nine parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith9ParamertersReturnsValues()
+    public async Task WhenAnyValueWith9ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1613,16 +1344,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13579"));
+        await Assert.That(result).IsEqualTo("13579");
     }
 
     /// <summary>
     /// WhenAnyValue with ten parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith10ParamertersReturnsValues()
+    public async Task WhenAnyValueWith10ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1645,16 +1375,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("13579"));
+        await Assert.That(result).IsEqualTo("13579");
     }
 
     /// <summary>
     /// WhenAnyValue with eleven parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith11ParamertersReturnsValues()
+    public async Task WhenAnyValueWith11ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1681,16 +1410,15 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1357911"));
+        await Assert.That(result).IsEqualTo("1357911");
     }
 
     /// <summary>
     /// WhenAnyValue with twelve parameters (values projector).
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWith12ParamertersReturnsValues()
+    public async Task WhenAnyValueWith12ParamertersReturnsValues()
     {
         var fixture = new WhenAnyTestFixture();
         string? result = null;
@@ -1718,58 +1446,41 @@ public class ReactiveNotifyPropertyChangedMixinTest
                })
                .Subscribe(value => result = value);
 
-        Assert.That(
-                    result,
-                    Is.EqualTo("1357911"));
+        await Assert.That(result).IsEqualTo("1357911");
     }
 
     /// <summary>
     /// Verifies ToProperty projections for owner and owner name.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public void WhenAnyValueWithToProperty()
+    public async Task WhenAnyValueWithToProperty()
     {
         var fixture = new HostTestFixture();
 
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.Owner,
-                        Is.Null);
-            Assert.That(
-                        fixture.OwnerName,
-                        Is.Null);
+            await Assert.That(fixture.Owner).IsNull();
+            await Assert.That(fixture.OwnerName).IsNull();
         }
 
         fixture.Owner = new() { Name = "Fred" };
-        using (Assert.EnterMultipleScope())
+        using (Assert.Multiple())
         {
-            Assert.That(
-                        fixture.Owner,
-                        Is.Not.Null);
-            Assert.That(
-                        fixture.OwnerName,
-                        Is.EqualTo("Fred"));
+            await Assert.That(fixture.Owner).IsNotNull();
+            await Assert.That(fixture.OwnerName).IsEqualTo("Fred");
         }
 
         fixture.Owner!.Name = "Wilma";
-        Assert.That(
-                    fixture.OwnerName,
-                    Is.EqualTo("Wilma"));
+        await Assert.That(fixture.OwnerName).IsEqualTo("Wilma");
 
         fixture.Owner.Name = null;
-        Assert.That(
-                    fixture.OwnerName,
-                    Is.Null);
+        await Assert.That(fixture.OwnerName).IsNull();
 
         fixture.Owner.Name = "Barney";
-        Assert.That(
-                    fixture.OwnerName,
-                    Is.EqualTo("Barney"));
+        await Assert.That(fixture.OwnerName).IsEqualTo("Barney");
 
         fixture.Owner.Name = "Betty";
-        Assert.That(
-                    fixture.OwnerName,
-                    Is.EqualTo("Betty"));
+        await Assert.That(fixture.OwnerName).IsEqualTo("Betty");
     }
 }
