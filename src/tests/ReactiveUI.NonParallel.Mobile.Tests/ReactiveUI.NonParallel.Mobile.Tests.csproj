@@ -1,0 +1,62 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Target mobile platforms - Android and iOS -->
+    <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+  </ItemGroup>
+
+  <!-- Exclude platform files by default -->
+  <ItemGroup>
+    <Compile Remove="Platforms\**\*.cs" />
+    <None Include="Platforms\**\*.cs" />
+  </ItemGroup>
+
+  <!-- Platform-specific includes -->
+  <Choose>
+    <When Condition=" $(TargetFramework.Contains('-android')) ">
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.AndroidX\ReactiveUI.AndroidX.csproj" />
+        <Compile Include="Platforms\android\**\*.cs" />
+        <Compile Include="Platforms\AndroidX\**\*.cs" />
+      </ItemGroup>
+    </When>
+    <When Condition=" $(TargetFramework.Contains('-ios')) OR $(TargetFramework.Contains('-maccatalyst')) ">
+      <ItemGroup>
+        <Compile Include="Platforms\cocoa\**\*.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!-- Global usings -->
+  <ItemGroup>
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+  </ItemGroup>
+</Project>
