@@ -38,7 +38,12 @@ public static class AssemblyHooks
         Console.WriteLine("[ASSEMBLY] Thread details:");
         foreach (ProcessThread thread in process.Threads)
         {
+#if WINDOWS
             Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}, Priority={thread.PriorityLevel}");
+#else
+            // PriorityLevel is not supported on macOS/Linux
+            Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}");
+#endif
         }
 
         // Force garbage collection to clean up any finalizable objects
