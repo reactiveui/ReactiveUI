@@ -177,7 +177,10 @@ public class MessageBusTest : IDisposable
             otherThreadId = Environment.CurrentManagedThreadId;
             mb.Listen<int>().Subscribe(_ => listenedThreadId = Environment.CurrentManagedThreadId);
             mb.SendMessage(42);
-        }));
+        }))
+        {
+            Name = "MessageBus-TestThread"
+        };
 
         otherThread.Start();
         otherThread.Join();

@@ -26,31 +26,51 @@ public static class AssemblyHooks
 
     /// <summary>
     /// Called after all tests in this assembly complete.
+    /// THIS IS THE LAST TEST ASSEMBLY (on Windows) - if process doesn't exit after this, we have a thread leak.
     /// </summary>
     [After(HookType.Assembly)]
     public static void AssemblyTeardown()
     {
         var process = Process.GetCurrentProcess();
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.NonParallel.Tests - Ending at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Active threads: {process.Threads.Count}");
+        Console.WriteLine($"[ASSEMBLY] ReactiveUI.NonParallel.Tests - FINAL ASSEMBLY ENDING at {DateTime.Now:HH:mm:ss.fff}");
+        Console.WriteLine($"[ASSEMBLY] Active threads BEFORE cleanup: {process.Threads.Count}");
 
         // List all threads with their states
         Console.WriteLine("[ASSEMBLY] Thread details:");
         foreach (ProcessThread thread in process.Threads)
         {
 #if WINDOWS
-            Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}, Priority={thread.PriorityLevel}");
+            Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}, Priority={thread.PriorityLevel}, StartTime={thread.StartTime:HH:mm:ss}");
 #else
-            // PriorityLevel is not supported on macOS/Linux
+            // PriorityLevel and StartTime are not supported on macOS/Linux
             Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}");
 #endif
         }
 
         // Force garbage collection to clean up any finalizable objects
+        Console.WriteLine("[ASSEMBLY] Running GC.Collect()...");
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
 
-        Console.WriteLine($"[ASSEMBLY] After GC - Active threads: {Process.GetCurrentProcess().Threads.Count}");
+        Console.WriteLine($"[ASSEMBLY] Active threads AFTER GC: {Process.GetCurrentProcess().Threads.Count}");
+
+        // Give thread pool a chance to shut down
+        Console.WriteLine("[ASSEMBLY] Waiting for ThreadPool to drain...");
+        Thread.Sleep(1000);
+
+        Console.WriteLine($"[ASSEMBLY] Active threads AFTER wait: {Process.GetCurrentProcess().Threads.Count}");
+
+        // Last resort: Check for any known test threads that should be background threads
+        // This helps diagnose which threads are preventing exit
+        // Arbitrary threshold - normal process has ~8-10 system threads
+        var finalThreadCount = Process.GetCurrentProcess().Threads.Count;
+        if (finalThreadCount > 10)
+        {
+            Console.WriteLine($"[ASSEMBLY] WARNING: {finalThreadCount} threads still active!");
+            Console.WriteLine("[ASSEMBLY] Suspected test fixture cleanup issue - check WpfActiveContentFixture disposal");
+        }
+
+        Console.WriteLine("[ASSEMBLY] If process doesn't exit now, we have a foreground thread or resource leak!");
     }
 }

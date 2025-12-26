@@ -14,6 +14,7 @@ namespace ReactiveUI.Tests.Wpf;
 public class WpfActiveContentFixture : IDisposable
 {
     private readonly Thread? _uiThread;
+    private readonly ManualResetEventSlim _shutdownEvent = new(false);
     private bool _loadComplete;
     private bool _disposedValue;
 
@@ -26,17 +27,34 @@ public class WpfActiveContentFixture : IDisposable
         {
             _uiThread = new Thread(() =>
             {
-                // Create dispatcher without showing windows
-                SynchronizationContext.SetSynchronizationContext(
-                    new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
+                try
+                {
+                    // Create dispatcher without showing windows
+                    SynchronizationContext.SetSynchronizationContext(
+                        new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher));
 
-                App = new WpfActiveContentApp();
-                App.Startup += (s, e) => _loadComplete = true;
+                    App = new WpfActiveContentApp();
+                    App.Startup += (s, e) => _loadComplete = true;
 
-                // Don't call App.Run() - instead run a frame
-                _loadComplete = true;
-                Dispatcher.Run();
-            });
+                    // Signal that we're ready
+                    _loadComplete = true;
+
+                    // Run the dispatcher
+                    Dispatcher.Run();
+
+                    Console.WriteLine("[WpfFixture] Dispatcher.Run() exited cleanly");
+                }
+                finally
+                {
+                    // Signal that the thread is shutting down
+                    _shutdownEvent.Set();
+                    Console.WriteLine("[WpfFixture] UI thread shutdown complete");
+                }
+            })
+            {
+                Name = "WPF-UIThread-Test",
+                IsBackground = false // Keep as foreground to ensure proper cleanup
+            };
             _uiThread.SetApartmentState(ApartmentState.STA);
             _uiThread.Start();
             while (!_loadComplete)
@@ -68,30 +86,61 @@ public class WpfActiveContentFixture : IDisposable
     {
         if (!_disposedValue && disposing)
         {
-            if (App?.Dispatcher != null)
+            Console.WriteLine("[WpfFixture] Starting disposal...");
+
+            if (App?.Dispatcher != null && !App.Dispatcher.HasShutdownStarted)
             {
-                // Must invoke shutdown on the Dispatcher's thread
-                App.Dispatcher.Invoke(() =>
+                try
                 {
+                    // Request shutdown on the Dispatcher's thread
                     App.Dispatcher.InvokeShutdown();
-                });
-            }
-
-            // Wait for UI thread to shut down with a timeout to prevent hanging
-            if (_uiThread != null && !_uiThread.Join(TimeSpan.FromSeconds(5)))
-            {
-                // If thread doesn't shut down in 5 seconds, interrupt it
-                _uiThread.Interrupt();
-
-                // Give it one more second after interrupt
-                if (!_uiThread.Join(TimeSpan.FromSeconds(1)))
+                    Console.WriteLine("[WpfFixture] Dispatcher.InvokeShutdown() called");
+                }
+                catch (Exception ex)
                 {
-                    // Last resort - thread is truly stuck
-                    Console.WriteLine("[WARNING] WPF UI thread did not shut down cleanly");
+                    Console.WriteLine($"[WpfFixture] Error during dispatcher shutdown: {ex.Message}");
                 }
             }
 
+            // Wait for the shutdown event with a timeout
+            if (_uiThread != null)
+            {
+                if (_shutdownEvent.Wait(TimeSpan.FromSeconds(3)))
+                {
+                    Console.WriteLine("[WpfFixture] UI thread shut down cleanly via shutdown event");
+                }
+                else if (_uiThread.Join(TimeSpan.FromSeconds(2)))
+                {
+                    Console.WriteLine("[WpfFixture] UI thread shut down cleanly via Join");
+                }
+                else
+                {
+                    // If thread doesn't shut down in 5 seconds total, try to abort gracefully
+                    Console.WriteLine("[WpfFixture] WARNING: UI thread did not shut down within timeout");
+
+                    // Try interrupt as last resort
+                    try
+                    {
+                        _uiThread.Interrupt();
+                        if (_uiThread.Join(TimeSpan.FromSeconds(1)))
+                        {
+                            Console.WriteLine("[WpfFixture] UI thread shut down after interrupt");
+                        }
+                        else
+                        {
+                            Console.WriteLine("[WpfFixture] ERROR: WPF UI thread is stuck and did not shut down");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[WpfFixture] Error during thread interrupt: {ex.Message}");
+                    }
+                }
+            }
+
+            _shutdownEvent.Dispose();
             _disposedValue = true;
+            Console.WriteLine("[WpfFixture] Disposal complete");
         }
     }
 }
