@@ -59,7 +59,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         Reflection.ThrowIfMethodsNotOverloaded(
                                                nameof(AutoSuspendHelper),
-                                               appDelegate,
+                                               typeof(NSApplicationDelegate),
                                                nameof(ApplicationShouldTerminate),
                                                nameof(DidFinishLaunching),
                                                nameof(DidResignActive),

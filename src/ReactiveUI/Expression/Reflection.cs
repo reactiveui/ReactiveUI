@@ -380,10 +380,34 @@ public static class Reflection
 #endif
     public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
     {
+        if (targetObject is null)
+        {
+            throw new ArgumentNullException(nameof(targetObject));
+        }
+
+        ThrowIfMethodsNotOverloaded(callingTypeName, targetObject.GetType(), methodsToCheck);
+    }
+
+    /// <summary>
+    /// Checks to make sure that the specified method names on the target object
+    /// are overriden.
+    /// </summary>
+    /// <param name="callingTypeName">The name of the calling type.</param>
+    /// <param name="targetType">The type to check.</param>
+    /// <param name="methodsToCheck">The name of the methods to check.</param>
+    /// <exception cref="Exception">Thrown if the methods aren't overriden on the target object.</exception>
+    public static void ThrowIfMethodsNotOverloaded(
+        string callingTypeName,
+#if NET6_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+#endif
+        Type targetType,
+        params string[] methodsToCheck) // TODO: Create Test
+    {
         var (methodName, methodImplementation) = methodsToCheck
                                                  .Select(x =>
                                                  {
-                                                     var methods = targetObject.GetType().GetTypeInfo().DeclaredMethods;
+                                                     var methods = targetType.GetTypeInfo().DeclaredMethods;
                                                      return (methodName: x, methodImplementation: methods.FirstOrDefault(y => y.Name == x));
                                                  })
                                                  .FirstOrDefault(x => x.methodImplementation is null);

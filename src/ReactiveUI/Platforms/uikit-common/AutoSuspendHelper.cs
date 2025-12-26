@@ -67,7 +67,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     {
         Reflection.ThrowIfMethodsNotOverloaded(
                                                nameof(AutoSuspendHelper),
-                                               appDelegate,
+                                               typeof(UIApplicationDelegate),
                                                nameof(FinishedLaunching),
                                                nameof(OnActivated),
                                                nameof(DidEnterBackground));
