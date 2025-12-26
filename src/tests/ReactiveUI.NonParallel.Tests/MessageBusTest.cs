@@ -8,6 +8,7 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests.Core;
@@ -181,6 +182,9 @@ public class MessageBusTest : IDisposable
         {
             Name = "MessageBus-TestThread"
         };
+
+        // Track this thread for diagnostics
+        ManagedThreadTracker.Register(otherThread);
 
         otherThread.Start();
         otherThread.Join();

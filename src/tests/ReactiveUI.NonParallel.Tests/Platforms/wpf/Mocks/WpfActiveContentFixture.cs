@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Threading;
+using ReactiveUI.Tests.Infrastructure;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -56,6 +57,10 @@ public class WpfActiveContentFixture : IDisposable
                 IsBackground = false // Keep as foreground to ensure proper cleanup
             };
             _uiThread.SetApartmentState(ApartmentState.STA);
+
+            // Track this thread for diagnostics
+            ManagedThreadTracker.Register(_uiThread);
+
             _uiThread.Start();
             while (!_loadComplete)
             {
