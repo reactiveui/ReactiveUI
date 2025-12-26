@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Assembly-level hooks for diagnostics and tracking test execution.
 /// </summary>
-public class AssemblyHooks
+public static class AssemblyHooks
 {
     /// <summary>
     /// Called before any tests in this assembly start.
@@ -25,7 +25,7 @@ public class AssemblyHooks
 
     /// <summary>
     /// Called after all tests in this assembly complete.
-    /// THIS IS THE LAST TEST ASSEMBLY - if process doesn't exit after this, we have a thread leak!
+    /// THIS IS THE LAST TEST ASSEMBLY - if process doesn't exit after this, we have a thread leak.
     /// </summary>
     [After(HookType.Assembly)]
     public static void AssemblyTeardown()

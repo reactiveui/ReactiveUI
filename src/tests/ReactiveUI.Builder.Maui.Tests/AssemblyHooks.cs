@@ -11,7 +11,7 @@ namespace ReactiveUI.Builder.Maui.Tests;
 /// <summary>
 /// Assembly-level hooks for diagnostics and tracking test execution.
 /// </summary>
-public class AssemblyHooks
+public static class AssemblyHooks
 {
     /// <summary>
     /// Called before any tests in this assembly start.
