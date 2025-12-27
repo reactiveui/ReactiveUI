@@ -54,7 +54,7 @@ public class WpfActiveContentFixture : IDisposable
             })
             {
                 Name = "WPF-UIThread-Test",
-                IsBackground = false // Keep as foreground to ensure proper cleanup
+                IsBackground = true // Background so it doesn't hang the process if cleanup fails
             };
             _uiThread.SetApartmentState(ApartmentState.STA);
 
@@ -98,12 +98,24 @@ public class WpfActiveContentFixture : IDisposable
                 try
                 {
                     // Request shutdown on the Dispatcher's thread
-                    App.Dispatcher.InvokeShutdown();
-                    Console.WriteLine("[WpfFixture] Dispatcher.InvokeShutdown() called");
+                    // Use Invoke to ensure we are on the right thread and Application.Shutdown to close windows
+                    App.Dispatcher.Invoke(() =>
+                    {
+                        Console.WriteLine("[WpfFixture] Calling Application.Shutdown()");
+                        App.Shutdown();
+                    });
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[WpfFixture] Error during dispatcher shutdown: {ex.Message}");
+                    Console.WriteLine($"[WpfFixture] Error during application shutdown: {ex.Message}");
+                    try
+                    {
+                         App.Dispatcher.InvokeShutdown();
+                    }
+                    catch (Exception ex2)
+                    {
+                         Console.WriteLine($"[WpfFixture] Error during dispatcher shutdown: {ex2.Message}");
+                    }
                 }
             }
 
