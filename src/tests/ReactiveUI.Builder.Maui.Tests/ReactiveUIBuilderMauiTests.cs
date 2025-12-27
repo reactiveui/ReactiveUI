@@ -10,8 +10,6 @@ using Microsoft.Maui.Dispatching;
 
 using Splat.Builder;
 
-using TUnit.Core.Executors;
-
 namespace ReactiveUI.Builder.Maui.Tests;
 
 /// <summary>
@@ -19,36 +17,11 @@ namespace ReactiveUI.Builder.Maui.Tests;
 /// </summary>
 public class ReactiveUIBuilderMauiTests
 {
-    private static IDisposable? MauiState;
-
-    /// <summary>
-    /// Run before each test.
-    /// </summary>
-    [Before(Class)]
-    public static void SetUp()
-    {
-        AppBuilder.ResetBuilderStateForTests();
-        MauiState = MauiTestScope.Enter();
-    }
-
-    /// <summary>
-    /// Cleans up after each test.
-    /// </summary>
-    [After(Class)]
-    public static void TearDown()
-    {
-        MauiState?.Dispose();
-        MauiState = null;
-    }
-
     /// <summary>
     /// Verifies that the WithMaui builder extension registers required MAUI services.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-#if WINDOWS
-    [TestExecutor<STAThreadExecutor>]
-#endif
     public async Task WithMaui_Should_Register_Services()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -70,9 +43,6 @@ public class ReactiveUIBuilderMauiTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-#if WINDOWS
-    [TestExecutor<STAThreadExecutor>]
-#endif
     public async Task WithMauiScheduler_Should_Use_Custom_Dispatcher_When_Provided()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -103,9 +73,6 @@ public class ReactiveUIBuilderMauiTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous test operation.</returns>
     [Test]
-#if WINDOWS
-    [TestExecutor<STAThreadExecutor>]
-#endif
     public async Task WithMauiScheduler_Should_Use_CurrentThread_When_In_Unit_Test_Runner()
     {
         AppBuilder.ResetBuilderStateForTests();
