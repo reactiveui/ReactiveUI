@@ -870,16 +870,12 @@ namespace ReactiveUI
     {
         public static System.IDisposable InvokeCommand<T>(this System.IObservable<T> item, System.Windows.Input.ICommand? command) { }
         public static System.IDisposable InvokeCommand<T, TResult>(this System.IObservable<T> item, ReactiveUI.ReactiveCommandBase<T, TResult>? command) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InvokeCommand uses WhenAnyValue which requires dynamic code generation for expres" +
-            "sion tree analysis.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InvokeCommand uses WhenAnyValue which may reference members that could be trimmed" +
-            ".")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The WinUI implementation of InvokeCommand may use methods that require unreferenc" +
+            "ed code")]
         public static System.IDisposable InvokeCommand<T, TTarget>(this System.IObservable<T> item, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, System.Windows.Input.ICommand?>> commandProperty)
             where TTarget :  class { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("InvokeCommand uses WhenAnyValue which requires dynamic code generation for expres" +
-            "sion tree analysis.")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("InvokeCommand uses WhenAnyValue which may reference members that could be trimmed" +
-            ".")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The WinUI implementation of InvokeCommand may use methods that require unreferenc" +
+            "ed code")]
         public static System.IDisposable InvokeCommand<T, TResult, TTarget>(this System.IObservable<T> item, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget, ReactiveUI.ReactiveCommandBase<T, TResult>?>> commandProperty)
             where TTarget :  class { }
     }
