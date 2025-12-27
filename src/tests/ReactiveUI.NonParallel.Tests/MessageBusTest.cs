@@ -169,6 +169,7 @@ public class MessageBusTest : IDisposable
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
         var mb = new MessageBus();
+        mb.RegisterScheduler<int>(ImmediateScheduler.Instance);
         int? listenedThreadId = null;
         int? otherThreadId = null;
         var thisThreadId = Environment.CurrentManagedThreadId;
