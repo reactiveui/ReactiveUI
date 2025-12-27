@@ -30,595 +30,576 @@ using System.Diagnostics.CodeAnalysis;
 // except for this section
 
 int maxFuncLength = 12;
+
+void EmitWhenAnyValueRequiresUnreferencedCode()
+{
+#>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenAnyValue creates an Expression which requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+#endif
+<#
+}
+
+void EmitWhenAnyRequiresUnreferencedCode()
+{
+#>
+#if NET6_0_OR_GREATER
+    [RequiresUnreferencedCode("WhenAny creates an Expression which requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+#endif
+<#
+}
+
+void EmitWinUIWhenAnyValueRequiresUnreferencedCode()
+{
+#>
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("The WinUI implementation of WhenAnyValue may use methods that require unreferenced code")]
+#endif
+<#
+}
+
+void EmitWinUIWhenAnyRequiresUnreferencedCode()
+{
+#>
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("The WinUI implementation of WhenAny may use methods that require unreferenced code")]
+#endif
+<#
+}
+
+void EmitWinUIWhenAnyObservableUnreferencedCode()
+{
+#>
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("The WinUI implementation of WhenAnyObservable may use methods that require unreferenced code")]
+#endif
+<#
+}
 #>
 
-namespace ReactiveUI
+namespace ReactiveUI;
+
+/// <summary>Extension methods associated with the WhenAny/WhenAnyValue classes.</summary>
+public static class WhenAnyMixin
 {
-    /// <summary>Extension methods associated with the WhenAny/WhenAnyValue classes.</summary>
-    public static class WhenAnyMixin
+    /// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of a
+    /// property on an object has changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+        this TSender? sender,
+        Expression<Func<TSender, TRet>> property1)
     {
-        /// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of a
-        /// property on an object has changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
-            this TSender? sender,
-            Expression<Func<TSender, TRet>> property1)
-        {
-            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
-        }
-
-        /// <summary>
-        /// AOT-friendly overload that avoids expression trees by using a property name.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="propertyName">The property name to observe.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
-            this TSender? sender,
-            string propertyName)
-        {
-            return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: true)
-                          .Select(x => x.Value);
-        }
-
-        /// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of a
-        /// property on an object has changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
-            this TSender? sender,
-            Expression<Func<TSender, TRet>> property1,
-            bool isDistinct)
-        {
-            return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value, isDistinct);
-        }
-
-        /// <summary>
-        /// AOT-friendly overload that avoids expression trees by using a property name and distinct option.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
-            this TSender? sender,
-            string propertyName,
-            bool isDistinct)
-        {
-            return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: isDistinct)
-                          .Select(x => x.Value);
-        }
-
-        <# for(int length=1; length <= maxFuncLength; length++) { #>
-        <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
-        <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
-        <# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
-        <# string valuePropertyParams = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("property{0}", x))); #>
-        <# string valueSelectorParams = String.Join(", ", Enumerable.Range(1, length).Select(x => "c" + x)); #>
-        <# string valueSelectorArgs = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("c{0}.Value", x))); #>
-        <# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender?, object?>")); #>
-        <# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
-
-        <# if (length != 1 && length <= 7) { #>/// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of one or more
-        /// properties on an object have changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
-
-            <# } #>)
-        {
-            return sender!.WhenAny(<#= valuePropertyParams #>,
-                                (<#= valueSelectorParams #>) =>
-                                    (<#= valueSelectorArgs #>));
-        }
-        <# } #>
-
-        <# if (length != 1 && length <= 7) { #>/// <summary>
-        /// AOT-friendly tuple overloads using property names instead of expressions.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            string property<#=i#>Name<# if (i != length) { #>,<# } #>
-            <# } #>)
-        {
-            <# for(int i=1; i <= length; i++) { #>
-            var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: true);
-            <# } #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                o<#=i#>.Select(x => x.Value)<#= i != length ? "," : string.Empty #>
-                <# } #>
-            , (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>) =>
-                (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>)
-            );
-        }
-        <# } #>
-
-        <# if (length != 1 && length <= 7) { #>/// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of one or more
-        /// properties on an object have changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
-
-            <# } #>,
-            bool isDistinct)
-        {
-            return sender!.WhenAny(<#= valuePropertyParams #>,
-                                (<#= valueSelectorParams #>) =>
-                                    (<#= valueSelectorArgs #>),
-                                    isDistinct);
-        }
-        <# } #>
-
-        <# if (length != 1 && length <= 7) { #>/// <summary>
-        /// AOT-friendly tuple overloads using property names with distinct option.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            string property<#=i#>Name<# if (i != length) { #>,<# } #>
-            <# } #>,
-            bool isDistinct)
-        {
-            <# for(int i=1; i <= length; i++) { #>
-            var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
-            <# } #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                o<#=i#>.Select(x => x.Value)<#= i != length ? "," : string.Empty #>
-                <# } #>
-            , (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>) =>
-                (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>)
-            );
-        }
-        <# } #>
-
-        /// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of one or more
-        /// properties on an object have changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
-            <# } #>
-            Func<<#= String.Join(",", templParams) #>, TRet> selector)
-        {
-            return sender!.WhenAny(<#= valuePropertyParams #>,
-                                (<#= valueSelectorParams #>) =>
-                                    selector(<#= valueSelectorArgs #>));
-        }
-
-        /// <summary>
-        /// AOT-friendly selector overload using property names.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            string property<#=i#>Name,
-            <# } #>
-            Func<<#= String.Join(",", templParams) #>, TRet> selector)
-        {
-            <# for(int i=1; i <= length; i++) { #>
-            var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
-            <# } #>
-            <# if (length == 1) { #>
-            return o1.Select(selector);
-            <# } else { #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                o<#=i#><#= i != length ? "," : string.Empty #>
-                <# } #>
-            , selector);
-            <# } #>
-        }
-
-        /// <summary>
-        /// WhenAnyValue allows you to observe whenever the value of one or more
-        /// properties on an object have changed, providing an initial value when
-        /// the Observable is set up, unlike ObservableForProperty(). Use this
-        /// method in constructors to set up bindings between properties that also
-        /// need an initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
-            <# } #>
-            Func<<#= String.Join(",", templParams) #>, TRet> selector,
-                        bool isDistinct)
-        {
-            return sender!.WhenAny(<#= valuePropertyParams #>,
-                                (<#= valueSelectorParams #>) =>
-                                    selector(<#= valueSelectorArgs #>),
-                                    isDistinct);
-        }
-
-        /// <summary>
-        /// AOT-friendly selector overload using property names and distinct option.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyValue uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyValue may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-            this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-            string property<#=i#>Name,
-            <# } #>
-            Func<<#= String.Join(",", templParams) #>, TRet> selector,
-            bool isDistinct)
-        {
-            <# for(int i=1; i <= length; i++) { #>
-            var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
-            <# } #>
-            <# if (length == 1) { #>
-            return o1.Select(selector);
-            <# } else { #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                o<#=i#><#= i != length ? "," : string.Empty #>
-                <# } #>
-            , selector);
-            <# } #>
-        }
-
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
-            <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector)
-        {
-            <# if (length == 1){ #>
-                return sender!.ObservableForProperty(property<#=1#>, false, false).Select(selector);
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    sender!.ObservableForProperty(property<#=i#>, false, false),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
-        /// <summary>
-        /// AOT-friendly WhenAny overload using property names.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                string property<#=i#>Name,
-            <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector)
-        {
-            <# if (length == 1){ #>
-                return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false)
-                              .Select(c1 => selector(c1));
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, false, false),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, T<#=i#>>> property<#=i#>,
-            <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector,
-                            bool isDistinct)
-        {
-            <# if (length == 1){ #>
-                return sender!.ObservableForProperty(property<#=1#>, false, false, isDistinct).Select(selector);
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    sender!.ObservableForProperty(property<#=i#>, false, false, isDistinct),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
-        /// <summary>
-        /// AOT-friendly WhenAny overload using property names and distinct option.
-        /// </summary>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAny uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAny may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                string property<#=i#>Name,
-            <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector,
-                            bool isDistinct)
-        {
-            <# if (length == 1){ #>
-                return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct)
-                              .Select(c1 => selector(c1));
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, false, false, isDistinct),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                Expression? property<#=i#>,
-            <# } #>
-                Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
-        {
-            <# if (length == 1){ #>
-                return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false).Select(selector);
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-
-        /// <summary>
-        /// WhenAny allows you to observe whenever one or more properties on an
-        /// object have changed, providing an initial value when the Observable
-        /// is set up, unlike ObservableForProperty(). Use this method in
-        /// constructors to set up bindings between properties that also need an
-        /// initial setup.
-        /// </summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
-/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
-        /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyDynamic uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyDynamic may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
-                this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                Expression? property<#=i#>,
-            <# } #>
-                Func<<#= dynamicSelectorTypeParams #>, TRet> selector,
-                bool isDistinct)
-        {
-            <# if (length == 1){ #>
-                return ReactiveNotifyPropertyChangedMixin
-                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false, isDistinct).Select(selector);
-            <# }else{ #>
-            return Observable.CombineLatest(
-                <# for(int i=1; i <= length; i++) { #>
-                    ReactiveNotifyPropertyChangedMixin
-                        .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false, isDistinct),
-                <# } #>
-                selector
-            );
-            <# } #>
-        }
-    <# } #>
+        return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value);
     }
 
-    /// <summary>A mixin which provides support for subscribing to observable properties.</summary>
-    public static class WhenAnyObservableMixin
+    /// <summary>
+    /// AOT-friendly overload that avoids expression trees by using a property name.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="propertyName">The property name to observe.</param>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+        this TSender? sender,
+        string propertyName)
     {
-        /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        /// <param name="obs1">The first observable to observe.</param>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
-            where TSender : class
-        {
-            return sender.WhenAny(obs1, x => x.Value!.EmptyIfNull()).Switch();
-        }
+        return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: true)
+                        .Select(x => x.Value);
+    }
+
+    /// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of a
+    /// property on an object has changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="property1">The first property chain to reference. This will be a expression pointing to a end property or field.</param>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+        this TSender? sender,
+        Expression<Func<TSender, TRet>> property1,
+        bool isDistinct)
+    {
+        return sender!.WhenAny(property1, (IObservedChange<TSender, TRet> c1) => c1.Value, isDistinct);
+    }
+
+    /// <summary>
+    /// AOT-friendly overload that avoids expression trees by using a property name and distinct option.
+    /// </summary>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet>(
+        this TSender? sender,
+        string propertyName,
+        bool isDistinct)
+    {
+        return sender!.ObservableForProperty<TSender, TRet>(propertyName, beforeChange: false, skipInitial: false, isDistinct: isDistinct)
+                        .Select(x => x.Value);
+    }
+
+    <# for(int length=1; length <= maxFuncLength; length++) { #>
+    <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+    <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
+    <# string selectorTypeParams = String.Join(", ", templParams.Select(x => String.Format("IObservedChange<TSender, {0}>", x))); #>
+    <# string valuePropertyParams = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("property{0}", x))); #>
+    <# string valueSelectorParams = String.Join(", ", Enumerable.Range(1, length).Select(x => "c" + x)); #>
+    <# string valueSelectorArgs = String.Join(", ", Enumerable.Range(1, length).Select(x => String.Format("c{0}.Value", x))); #>
+    <# string dynamicSelectorTypeParams = String.Join(", ", templParams.Select(x => "IObservedChange<TSender?, object?>")); #>
+    <# string selectorCall = "selector(" + String.Join(", ", Enumerable.Range(1, length).Select(x => "islot" + x.ToString())) + ")"; #>
+
+    <# if (length != 1 && length <= 7) { #>/// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of one or more
+    /// properties on an object have changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
+
+        <# } #>)
+    {
+        return sender!.WhenAny(<#= valuePropertyParams #>,
+                            (<#= valueSelectorParams #>) =>
+                                (<#= valueSelectorArgs #>));
+    }
+    <# } #>
+
+    <# if (length != 1 && length <= 7) { #>/// <summary>
+    /// AOT-friendly tuple overloads using property names instead of expressions.
+    /// </summary>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        string property<#=i#>Name<# if (i != length) { #>,<# } #>
+        <# } #>)
+    {
+        <# for(int i=1; i <= length; i++) { #>
+        var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: true);
+        <# } #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+            o<#=i#>.Select(x => x.Value)<#= i != length ? "," : string.Empty #>
+            <# } #>
+        , (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>) =>
+            (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>)
+        );
+    }
+    <# } #>
+
+    <# if (length != 1 && length <= 7) { #>/// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of one or more
+    /// properties on an object have changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        Expression<Func<TSender, T<#=i#>>> property<#=i#><# if (i != length) { #>,<# } #>
+
+        <# } #>,
+        bool isDistinct)
+    {
+        return sender!.WhenAny(<#= valuePropertyParams #>,
+                            (<#= valueSelectorParams #>) =>
+                                (<#= valueSelectorArgs #>),
+                                isDistinct);
+    }
+    <# } #>
+
+    <# if (length != 1 && length <= 7) { #>/// <summary>
+    /// AOT-friendly tuple overloads using property names with distinct option.
+    /// </summary>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<(<#= String.Join(",", templParams) #>)> WhenAnyValue<TSender, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        string property<#=i#>Name<# if (i != length) { #>,<# } #>
+        <# } #>,
+        bool isDistinct)
+    {
+        <# for(int i=1; i <= length; i++) { #>
+        var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct);
+        <# } #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+            o<#=i#>.Select(x => x.Value)<#= i != length ? "," : string.Empty #>
+            <# } #>
+        , (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>) =>
+            (<#= String.Join(",", Enumerable.Range(1, length).Select(x => "v" + x)) #>)
+        );
+    }
+    <# } #>
+
+    /// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of one or more
+    /// properties on an object have changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+        <# } #>
+        Func<<#= String.Join(",", templParams) #>, TRet> selector)
+    {
+        return sender!.WhenAny(<#= valuePropertyParams #>,
+                            (<#= valueSelectorParams #>) =>
+                                selector(<#= valueSelectorArgs #>));
+    }
+
+    /// <summary>
+    /// AOT-friendly selector overload using property names.
+    /// </summary>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        string property<#=i#>Name,
+        <# } #>
+        Func<<#= String.Join(",", templParams) #>, TRet> selector)
+    {
+        <# for(int i=1; i <= length; i++) { #>
+        var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: true).Select(x => x.Value);
+        <# } #>
+        <# if (length == 1) { #>
+        return o1.Select(selector);
+        <# } else { #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+            o<#=i#><#= i != length ? "," : string.Empty #>
+            <# } #>
+        , selector);
+        <# } #>
+    }
+
+    /// <summary>
+    /// WhenAnyValue allows you to observe whenever the value of one or more
+    /// properties on an object have changed, providing an initial value when
+    /// the Observable is set up, unlike ObservableForProperty(). Use this
+    /// method in constructors to set up bindings between properties that also
+    /// need an initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+<# EmitWinUIWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+        <# } #>
+        Func<<#= String.Join(",", templParams) #>, TRet> selector,
+                    bool isDistinct)
+    {
+        return sender!.WhenAny(<#= valuePropertyParams #>,
+                            (<#= valueSelectorParams #>) =>
+                                selector(<#= valueSelectorArgs #>),
+                                isDistinct);
+    }
+
+    /// <summary>
+    /// AOT-friendly selector overload using property names and distinct option.
+    /// </summary>
+<# EmitWhenAnyValueRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyValue<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+        this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+        string property<#=i#>Name,
+        <# } #>
+        Func<<#= String.Join(",", templParams) #>, TRet> selector,
+        bool isDistinct)
+    {
+        <# for(int i=1; i <= length; i++) { #>
+        var o<#=i#> = sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, beforeChange: false, skipInitial: false, isDistinct: isDistinct).Select(x => x.Value);
+        <# } #>
+        <# if (length == 1) { #>
+        return o1.Select(selector);
+        <# } else { #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+            o<#=i#><#= i != length ? "," : string.Empty #>
+            <# } #>
+        , selector);
+        <# } #>
+    }
+
+    /// <summary>
+    /// WhenAny allows you to observe whenever one or more properties on an
+    /// object have changed, providing an initial value when the Observable
+    /// is set up, unlike ObservableForProperty(). Use this method in
+    /// constructors to set up bindings between properties that also need an
+    /// initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+<# EmitWinUIWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+        <# } #>
+            Func<<#= selectorTypeParams #>, TRet> selector)
+    {
+        <# if (length == 1){ #>
+            return sender!.ObservableForProperty(property<#=1#>, false, false).Select(selector);
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                sender!.ObservableForProperty(property<#=i#>, false, false),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+
+    /// <summary>
+    /// AOT-friendly WhenAny overload using property names.
+    /// </summary>
+<# EmitWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            string property<#=i#>Name,
+        <# } #>
+            Func<<#= selectorTypeParams #>, TRet> selector)
+    {
+        <# if (length == 1){ #>
+            return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false)
+                            .Select(c1 => selector(c1));
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, false, false),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+
+    /// <summary>
+    /// WhenAny allows you to observe whenever one or more properties on an
+    /// object have changed, providing an initial value when the Observable
+    /// is set up, unlike ObservableForProperty(). Use this method in
+    /// constructors to set up bindings between properties that also need an
+    /// initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+<# EmitWinUIWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            Expression<Func<TSender, T<#=i#>>> property<#=i#>,
+        <# } #>
+            Func<<#= selectorTypeParams #>, TRet> selector,
+                        bool isDistinct)
+    {
+        <# if (length == 1){ #>
+            return sender!.ObservableForProperty(property<#=1#>, false, false, isDistinct).Select(selector);
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                sender!.ObservableForProperty(property<#=i#>, false, false, isDistinct),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+
+    /// <summary>
+    /// AOT-friendly WhenAny overload using property names and distinct option.
+    /// </summary>
+<# EmitWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAny<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            string property<#=i#>Name,
+        <# } #>
+            Func<<#= selectorTypeParams #>, TRet> selector,
+                        bool isDistinct)
+    {
+        <# if (length == 1){ #>
+            return sender!.ObservableForProperty<TSender, T1>(property1Name, false, false, isDistinct)
+                            .Select(c1 => selector(c1));
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                sender!.ObservableForProperty<TSender, T<#=i#>>(property<#=i#>Name, false, false, isDistinct),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+
+    /// <summary>
+    /// WhenAny allows you to observe whenever one or more properties on an
+    /// object have changed, providing an initial value when the Observable
+    /// is set up, unlike ObservableForProperty(). Use this method in
+    /// constructors to set up bindings between properties that also need an
+    /// initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+<# EmitWinUIWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            Expression? property<#=i#>,
+        <# } #>
+            Func<<#= dynamicSelectorTypeParams #>, TRet> selector)
+    {
+        <# if (length == 1){ #>
+            return ReactiveNotifyPropertyChangedMixin
+                .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false).Select(selector);
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+
+    /// <summary>
+    /// WhenAny allows you to observe whenever one or more properties on an
+    /// object have changed, providing an initial value when the Observable
+    /// is set up, unlike ObservableForProperty(). Use this method in
+    /// constructors to set up bindings between properties that also need an
+    /// initial setup.
+    /// </summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
+/// <param name="property<#=i#>">The <#=i#> property chain to reference. This will be a expression pointing to a end property or field.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties.</param>
+    /// <param name="isDistinct">if set to <c>true</c> [is distinct].</param>
+<# EmitWinUIWhenAnyRequiresUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyDynamic<TSender, TRet>(
+            this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            Expression? property<#=i#>,
+        <# } #>
+            Func<<#= dynamicSelectorTypeParams #>, TRet> selector,
+            bool isDistinct)
+    {
+        <# if (length == 1){ #>
+            return ReactiveNotifyPropertyChangedMixin
+                .SubscribeToExpressionChain<TSender,object?>(sender, property<#=1#>, false, false, isDistinct).Select(selector);
+        <# }else{ #>
+        return Observable.CombineLatest(
+            <# for(int i=1; i <= length; i++) { #>
+                ReactiveNotifyPropertyChangedMixin
+                    .SubscribeToExpressionChain<TSender,object?>(sender, property<#=i#>, false, false, isDistinct),
+            <# } #>
+            selector
+        );
+        <# } #>
+    }
+<# } #>
+}
+
+/// <summary>A mixin which provides support for subscribing to observable properties.</summary>
+public static class WhenAnyObservableMixin
+{
+    /// <summary>Observe a observable which is set to a property, and automatically subscribe to the most recent emitted value.</summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    /// <param name="obs1">The first observable to observe.</param>
+<# EmitWinUIWhenAnyObservableUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, Expression<Func<TSender, IObservable<TRet>?>> obs1)
+        where TSender : class
+    {
+        return sender.WhenAny(obs1, x => x.Value!.EmptyIfNull()).Switch();
+    }
 
 <# for(int length=2; length <= maxFuncLength; length++) { #>
-        /// <summary>Monitor a property that is an observable, and subscribe to the most recent emitted value.</summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
+    /// <summary>Monitor a property that is an observable, and subscribe to the most recent emitted value.</summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
 /// <param name="obs<#=i#>">The <#=i#> property chain to reference which ends with an observable. This will be a expression pointing to a end property or field which must be an observable.</param>
-        <# } #>
+    <# } #>
 <# string paramsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "Expression<Func<TSender, IObservable<TRet>?>> obs" + x.ToString())); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
 <# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, <#= paramsStr #>)
-            where TSender : class
-        {
-            return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
-                .Select(x => x.Merge()).Switch();
-        }
+<# EmitWinUIWhenAnyObservableUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyObservable<TSender, TRet>(this TSender? sender, <#= paramsStr #>)
+        where TSender : class
+    {
+        return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => new[] {<#= valsStr #>})
+            .Select(x => x.Merge()).Switch();
+    }
 <# } #>
 
 <# for(int length=2; length <= maxFuncLength; length++) { #>
-        /// <summary>Monitor a property that is an observable, and subscribe to the most recent emitted value.</summary>
-        /// <param name="sender">The object where the property chain starts.</param>
-        <# for(int i=1; i <= length; i++) { #>
+    /// <summary>Monitor a property that is an observable, and subscribe to the most recent emitted value.</summary>
+    /// <param name="sender">The object where the property chain starts.</param>
+    <# for(int i=1; i <= length; i++) { #>
 /// <param name="obs<#=i#>">The <#=i#> property chain to reference.</param>
-        <# } #>/// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
+    <# } #>/// <param name="selector">The selector which will determine the final value from the properties. This must be an observable.</param>
 <# var templParams = Enumerable.Range(1, length).Select(x => "T" + x.ToString() + "?"); #>
 <# var templParamsDec = Enumerable.Range(1, length).Select(x => "T" + x.ToString()); #>
 <# string varsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "obs" + x.ToString())); #>
 <# string valsStr = String.Join(", ", Enumerable.Range(1, length).Select(x => "o" + x.ToString() + ".Value!.EmptyIfNull()")); #>
 <# string selectorTypeParams = String.Join(", ", templParams); #>
-#if NET6_0_OR_GREATER
-        [RequiresDynamicCode("WhenAnyObservable uses expression trees which require dynamic code generation in AOT scenarios.")]
-        [RequiresUnreferencedCode("WhenAnyObservable may reference members that could be trimmed in AOT scenarios.")]
-#endif
-        public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(this TSender? sender,
-            <# for(int i=1; i <= length; i++) { #>
-                Expression<Func<TSender, IObservable<T<#=i#>>?>> obs<#=i#>,
-            <# } #>
-                Func<<#= selectorTypeParams #>, TRet> selector)
-            where TSender : class
-        {
-            return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => Observable.CombineLatest(<#= valsStr #>, selector))
-                .Switch();
-        }
+<# EmitWinUIWhenAnyObservableUnreferencedCode(); #>
+    public static IObservable<TRet> WhenAnyObservable<TSender, TRet, <#= String.Join(",", templParamsDec) #>>(this TSender? sender,
+        <# for(int i=1; i <= length; i++) { #>
+            Expression<Func<TSender, IObservable<T<#=i#>>?>> obs<#=i#>,
+        <# } #>
+            Func<<#= selectorTypeParams #>, TRet> selector)
+        where TSender : class
+    {
+        return sender.WhenAny(<#= varsStr #>, (<#=varsStr.Replace("obs", "o")#>) => Observable.CombineLatest(<#= valsStr #>, selector))
+            .Switch();
+    }
 <# } #>
 }
 
-    internal static class ObservableExtensions
+internal static class ObservableExtensions
+{
+    public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
     {
-        public static IObservable<T> EmptyIfNull<T>(this IObservable<T> @this)
-        {
-            return @this ?? Observable.Empty<T>();
-        }
+        return @this ?? Observable.Empty<T>();
     }
 }

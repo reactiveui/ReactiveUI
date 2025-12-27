@@ -19,10 +19,6 @@ public static class ObservedChangedMixin
     /// <returns>
     /// The name of the property which has changed.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("TryGetValue uses expression chain analysis and reflection which require dynamic code generation.")]
-    [RequiresUnreferencedCode("TryGetValue uses expression chain analysis and reflection which may reference members that could be trimmed.")]
-#endif
     public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
         item is null
             ? throw new ArgumentNullException(nameof(item))
@@ -40,10 +36,6 @@ public static class ObservedChangedMixin
     /// <returns>
     /// The current value of the property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetValue uses expression chain analysis and reflection which require dynamic code generation.")]
-    [RequiresUnreferencedCode("GetValue uses expression chain analysis and reflection which may reference members that could be trimmed.")]
-#endif
     public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
         item is null
             ? throw new ArgumentNullException(nameof(item))
@@ -63,10 +55,6 @@ public static class ObservedChangedMixin
     /// <returns>
     /// The current value of the property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetValueOrDefault uses expression chain analysis and reflection which require dynamic code generation.")]
-    [RequiresUnreferencedCode("GetValueOrDefault uses expression chain analysis and reflection which may reference members that could be trimmed.")]
-#endif
     public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) => // TODO: Create Test
         item is null ? throw new ArgumentNullException(nameof(item)) : !item.TryGetValue(out var returnValue) ? default : returnValue;
 
@@ -83,10 +71,6 @@ public static class ObservedChangedMixin
     /// An Observable representing the stream of current values of
     /// the given change notification stream.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Value method uses GetValue which requires expression chain analysis and reflection.")]
-    [RequiresUnreferencedCode("Value method uses GetValue which may reference members that could be trimmed.")]
-#endif
     public static IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> item) => // TODO: Create Test
         item.Select(GetValue);
 
@@ -106,10 +90,6 @@ public static class ObservedChangedMixin
     /// <returns>
     /// True if the entire expression was able to be followed, false otherwise.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("TryGetValue uses expression chain analysis and reflection which require dynamic code generation.")]
-    [RequiresUnreferencedCode("TryGetValue uses expression chain analysis and reflection which may reference members that could be trimmed.")]
-#endif
     internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item, out TValue changeValue)
     {
         if (!Equals(item.Value, default(TValue)))
@@ -140,10 +120,6 @@ public static class ObservedChangedMixin
     /// <param name="property">
     /// The target property to apply the change to.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("TryGetValue uses expression chain analysis and reflection which require dynamic code generation.")]
-    [RequiresUnreferencedCode("TryGetValue uses expression chain analysis and reflection which may reference members that could be trimmed.")]
-#endif
     internal static void SetValueToProperty<TSender, TValue, TTarget>(
         this IObservedChange<TSender, TValue> item,
         TTarget target,

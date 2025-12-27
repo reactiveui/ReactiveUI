@@ -26,11 +26,12 @@ public interface ICreatesCommandBinding
     /// event target.</param>
     /// <returns>A positive integer if BCTO is supported, zero or a negative
     /// value otherwise.</returns>
+    int GetAffinityForObject(
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
-    int GetAffinityForObject(Type type, bool hasEventTarget);
+        Type type,
+        bool hasEventTarget);
 
     /// <summary>
     /// Returns a positive integer when this class supports binding a command

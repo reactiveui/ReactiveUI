@@ -25,8 +25,7 @@ public interface ICreatesObservableForProperty : IEnableLogger
     /// <param name="beforeChanged">If true, returns whether GNFP is supported before a change occurs.</param>
     /// <returns>A positive integer if GNFP is supported, zero or a negative
     /// value otherwise.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+#if NET6_0_OR_GREATER && WINUI_TARGET
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
     int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false);
@@ -48,8 +47,8 @@ public interface ICreatesObservableForProperty : IEnableLogger
     /// <returns>An IObservable which is signaled whenever the specified
     /// property on the object changes. If this cannot be done for a
     /// specified value of beforeChanged, return Observable.Never.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
+
+#if NET6_0_OR_GREATER && WINUI_TARGET
     [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
 #endif
     IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);

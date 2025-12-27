@@ -8,10 +8,6 @@ using System.Windows.Input;
 
 namespace ReactiveUI;
 
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("CreatesCommandBinding uses reflection and generic method instantiation")]
-[RequiresUnreferencedCode("CreatesCommandBinding may reference members that could be trimmed")]
-#endif
 internal static class CreatesCommandBinding
 {
     private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandCache =

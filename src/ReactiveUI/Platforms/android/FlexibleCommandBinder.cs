@@ -19,11 +19,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
+    public int GetAffinityForObject(
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+        Type type,
+        bool hasEventTarget)
     {
         if (hasEventTarget)
         {

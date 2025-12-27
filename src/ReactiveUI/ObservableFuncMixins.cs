@@ -22,9 +22,8 @@ public static class ObservableFuncMixins
     /// <returns>
     /// An observable Result.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("The WinUI implementation of ToObservable may use methods that require unreferenced code")]
 #endif
     public static IObservable<TResult?> ToObservable<TSource, TResult>(
         this Expression<Func<TSource, TResult?>> expression,

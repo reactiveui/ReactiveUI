@@ -51,7 +51,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 #endif
 
     /// <inheritdoc/>
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+    public int GetAffinityForObject(
+#if NET6_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+        Type type,
+        bool hasEventTarget)
     {
         if (!_validTypes.Any(x => x.IsAssignableFrom(type)))
         {

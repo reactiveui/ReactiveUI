@@ -59,18 +59,10 @@ public class KVOObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) =>
         _declaredInNSObject.Get((type, propertyName)) ? 15 : 0;
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         if (sender is not NSObject obj)

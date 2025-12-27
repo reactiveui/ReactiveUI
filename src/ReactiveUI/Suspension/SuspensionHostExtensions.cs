@@ -57,7 +57,6 @@ public static class SuspensionHostExtensions
     /// react to hot reloads or state restoration.
     /// </remarks>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObserveAppState uses WhenAny which requires dynamic code generation for expression tree analysis")]
     [RequiresUnreferencedCode("ObserveAppState uses WhenAny which may reference members that could be trimmed")]
 #endif
     public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)

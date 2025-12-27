@@ -22,10 +22,15 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+    // [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
+    // [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+    public int GetAffinityForObject(
+#if NET6_0_OR_GREATER
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+        Type type,
+        bool hasEventTarget)
     {
         var isWinformControl = typeof(Control).IsAssignableFrom(type);
 

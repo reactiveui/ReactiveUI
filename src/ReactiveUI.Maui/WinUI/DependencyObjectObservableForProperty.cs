@@ -21,7 +21,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 {
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
@@ -41,7 +40,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
@@ -92,7 +90,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ActuallyGetProperty uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("ActuallyGetProperty uses methods that may require unreferenced code")]
 #endif
     private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
@@ -113,7 +110,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ActuallyGetField uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("ActuallyGetField uses methods that may require unreferenced code")]
 #endif
     private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
@@ -134,7 +130,6 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetDependencyPropertyFetcher uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetDependencyPropertyFetcher uses methods that may require unreferenced code")]
 #endif
     private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)

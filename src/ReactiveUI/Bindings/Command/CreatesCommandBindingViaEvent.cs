@@ -30,11 +30,12 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     ];
 
     /// <inheritdoc/>
+    public int GetAffinityForObject(
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Event binding requires dynamic code generation")]
-    [RequiresUnreferencedCode("Event binding may reference members that could be trimmed")]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+        Type type,
+        bool hasEventTarget)
     {
         if (hasEventTarget)
         {

@@ -14,11 +14,12 @@ namespace ReactiveUI;
 public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
     /// <inheritdoc/>
+    public int GetAffinityForObject(
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Property access requires dynamic code generation")]
-    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+        Type type,
+        bool hasEventTarget)
     {
         if (hasEventTarget)
         {

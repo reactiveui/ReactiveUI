@@ -17,16 +17,14 @@ public class POCOObservableForProperty : ICreatesObservableForProperty
     private static readonly ConcurrentDictionary<(Type, string), bool> _hasWarned = new();
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses reflection and type analysis")]
-    [RequiresUnreferencedCode("GetAffinityForObject may reference members that could be trimmed")]
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
 #endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses reflection and type analysis")]
-    [RequiresUnreferencedCode("GetNotificationForProperty may reference members that could be trimmed")]
+#if NET6_0_OR_GREATER && WINUI_TARGET
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {

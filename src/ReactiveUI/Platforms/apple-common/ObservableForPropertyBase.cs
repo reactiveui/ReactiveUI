@@ -28,10 +28,6 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config = [];
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (beforeChanged)
@@ -54,10 +50,6 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
