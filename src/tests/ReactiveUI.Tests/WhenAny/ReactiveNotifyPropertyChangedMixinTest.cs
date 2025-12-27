@@ -334,8 +334,6 @@ public class ReactiveNotifyPropertyChangedMixinTest
                 .Bind(out var changes)
                 .Subscribe();
 
-            fixtureProp.Subscribe(x => Console.WriteLine(x.Value));
-
             fixture.Child.IsOnlyOneWord = "Foo";
             scheduler.Start();
             await Assert.That(changes).Count().IsEqualTo(1);

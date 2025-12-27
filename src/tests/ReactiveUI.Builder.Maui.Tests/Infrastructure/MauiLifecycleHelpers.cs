@@ -90,11 +90,6 @@ internal static class MauiLifecycleHelpers
     {
         ArgumentNullException.ThrowIfNull(page);
 
-        Console.WriteLine($"[MauiLifecycleHelpers] TriggerAppearing called on {page.GetType().Name}");
-
-        // First, check if there are any event handlers registered
-        CheckEventHandlers(page, "Appearing");
-
         // SendAppearing() raises the event, while OnAppearing() is just a virtual method for derived classes
         // Try SendAppearing first, then OnAppearing as fallback
         var methodNames = new[] { "SendAppearing", "OnAppearing", "RaiseAppearing" };
@@ -104,17 +99,12 @@ internal static class MauiLifecycleHelpers
             var method = FindMethod(page.GetType(), methodName);
             if (method is not null)
             {
-                Console.WriteLine($"[MauiLifecycleHelpers] Found and invoking {methodName}");
                 InvokeMethod(page, method);
-
-                // Check again after invoking
-                CheckEventHandlers(page, "Appearing");
                 return;
             }
         }
 
         // If no method found, try to manually invoke event handlers
-        Console.WriteLine("[MauiLifecycleHelpers] No lifecycle method found, trying manual event trigger");
         TriggerEventHandlers(page, "Appearing");
     }
 
@@ -187,8 +177,6 @@ internal static class MauiLifecycleHelpers
 
     private static void TriggerEventHandlers(object target, string eventName)
     {
-        Console.WriteLine($"[MauiLifecycleHelpers] Attempting to trigger event handlers for {eventName} on {target.GetType().Name}");
-
         // Try to find the event backing field using different naming patterns
         var fieldPatterns = new[] { eventName, $"_{eventName}", $"{eventName}Event", $"_{char.ToLower(eventName[0])}{eventName.Substring(1)}" };
         FieldInfo? eventField = null;
@@ -198,61 +186,17 @@ internal static class MauiLifecycleHelpers
             eventField = target.GetType().GetField(pattern, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (eventField is not null)
             {
-                Console.WriteLine($"[MauiLifecycleHelpers] Found event field: {pattern}");
                 break;
             }
         }
 
         if (eventField?.GetValue(target) is MulticastDelegate eventDelegate)
         {
-            Console.WriteLine($"[MauiLifecycleHelpers] Found {eventDelegate.GetInvocationList().Length} event handlers for {eventName}");
             foreach (var handler in eventDelegate.GetInvocationList())
             {
-                Console.WriteLine($"[MauiLifecycleHelpers] Invoking handler: {handler.Method.Name}");
                 handler.Method.Invoke(handler.Target, [target, EventArgs.Empty]);
             }
         }
-        else
-        {
-            Console.WriteLine($"[MauiLifecycleHelpers] No event field or handlers found for {eventName}. EventField: {eventField?.Name ?? "null"}, Value: {eventField?.GetValue(target)?.GetType().Name ?? "null"}");
-
-            // Try to raise the event by calling the add accessor to see if subscriptions work
-            var eventInfo = target.GetType().GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public);
-            if (eventInfo is not null)
-            {
-                Console.WriteLine($"[MauiLifecycleHelpers] Event {eventName} exists as a public event");
-            }
-        }
     }
 
-    private static void CheckEventHandlers(object target, string eventName)
-    {
-        var eventInfo = target.GetType().GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public);
-        if (eventInfo is null)
-        {
-            Console.WriteLine($"[MauiLifecycleHelpers] Event {eventName} not found");
-            return;
-        }
-
-        // Try to find the backing field
-        var fieldPatterns = new[] { eventName, $"_{eventName}", $"{eventName}Event", $"_{char.ToLower(eventName[0])}{eventName.Substring(1)}" };
-        foreach (var pattern in fieldPatterns)
-        {
-            var field = target.GetType().GetField(pattern, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            if (field is not null)
-            {
-                var value = field.GetValue(target);
-                if (value is MulticastDelegate del)
-                {
-                    Console.WriteLine($"[MauiLifecycleHelpers] {eventName} has {del.GetInvocationList().Length} handler(s)");
-                    return;
-                }
-
-                Console.WriteLine($"[MauiLifecycleHelpers] {eventName} field found but has no handlers (value: {value?.GetType().Name ?? "null"})");
-                return;
-            }
-        }
-
-        Console.WriteLine($"[MauiLifecycleHelpers] {eventName} backing field not found - event may use different storage mechanism");
-    }
 }

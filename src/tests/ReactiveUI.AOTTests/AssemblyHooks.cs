@@ -8,22 +8,18 @@ using TUnit.Core;
 namespace ReactiveUI.AOTTests;
 
 /// <summary>
-/// Assembly-level hooks for diagnostics and tracking test execution.
+/// Assembly-level hooks for test initialization and cleanup.
 /// </summary>
-public class AssemblyHooks
+public static class AssemblyHooks
 {
-    private static int _testCount;
-
     /// <summary>
     /// Called before any tests in this assembly start.
     /// </summary>
     [Before(HookType.Assembly)]
     public static void AssemblySetup()
     {
-        _testCount = 0;
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.AOTTests - Starting test session at {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Process ID: {Environment.ProcessId}");
-        Console.WriteLine($"[ASSEMBLY] Thread ID: {Environment.CurrentManagedThreadId}");
+        // Override ModeDetector to ensure we're detected as being in a unit test runner
+        ModeDetector.OverrideModeDetector(new TestModeDetector());
     }
 
     /// <summary>
@@ -32,27 +28,18 @@ public class AssemblyHooks
     [After(HookType.Assembly)]
     public static void AssemblyTeardown()
     {
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.AOTTests - Ending test session at {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Total tests executed: {_testCount}");
-        Console.WriteLine($"[ASSEMBLY] Active threads: {System.Diagnostics.Process.GetCurrentProcess().Threads.Count}");
+        // Clean up resources
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     /// <summary>
-    /// Called before each test starts.
+    /// Mode detector that always indicates we're in a unit test runner.
     /// </summary>
-    [Before(HookType.Test)]
-    public void BeforeTest()
+    private sealed class TestModeDetector : IModeDetector
     {
-        Interlocked.Increment(ref _testCount);
-        Console.WriteLine($"[TEST #{_testCount} START] at {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-    }
-
-    /// <summary>
-    /// Called after each test completes.
-    /// </summary>
-    [After(HookType.Test)]
-    public void AfterTest()
-    {
-        Console.WriteLine($"[TEST #{_testCount} END] at {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
+        public bool? InUnitTestRunner() => true;
+        public bool? InDesignMode() => false;
     }
 }

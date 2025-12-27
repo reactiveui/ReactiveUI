@@ -3,13 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using TUnit.Core;
 
 namespace ReactiveUI.Builder.Tests;
 
 /// <summary>
-/// Assembly-level hooks for diagnostics and tracking test execution.
+/// Assembly-level hooks for test initialization and cleanup.
 /// </summary>
 public static class AssemblyHooks
 {
@@ -19,8 +18,8 @@ public static class AssemblyHooks
     [Before(HookType.Assembly)]
     public static void AssemblySetup()
     {
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.Builder.Tests - Starting at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Process ID: {Environment.ProcessId}, Threads: {Process.GetCurrentProcess().Threads.Count}");
+        // Override ModeDetector to ensure we're detected as being in a unit test runner
+        ModeDetector.OverrideModeDetector(new TestModeDetector());
     }
 
     /// <summary>
@@ -29,15 +28,18 @@ public static class AssemblyHooks
     [After(HookType.Assembly)]
     public static void AssemblyTeardown()
     {
-        var process = Process.GetCurrentProcess();
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.Builder.Tests - Ending at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Active threads: {process.Threads.Count}");
-
-        // Force garbage collection
+        // Clean up resources
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
+    }
 
-        Console.WriteLine($"[ASSEMBLY] After GC - Active threads: {Process.GetCurrentProcess().Threads.Count}");
+    /// <summary>
+    /// Mode detector that always indicates we're in a unit test runner.
+    /// </summary>
+    private sealed class TestModeDetector : IModeDetector
+    {
+        public bool? InUnitTestRunner() => true;
+        public bool? InDesignMode() => false;
     }
 }

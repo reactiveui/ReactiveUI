@@ -3,14 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Diagnostics;
 using TUnit.Core;
 
 namespace ReactiveUI.Tests.Core;
 
 /// <summary>
-/// Assembly-level hooks for diagnostics and tracking test execution.
+/// Assembly-level hooks for test initialization and cleanup.
 /// </summary>
 public static class AssemblyHooks
 {
@@ -20,57 +18,28 @@ public static class AssemblyHooks
     [Before(HookType.Assembly)]
     public static void AssemblySetup()
     {
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.NonParallel.Tests - Starting at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Process ID: {Environment.ProcessId}, Threads: {Process.GetCurrentProcess().Threads.Count}");
+        // Override ModeDetector to ensure we're detected as being in a unit test runner
+        ModeDetector.OverrideModeDetector(new TestModeDetector());
     }
 
     /// <summary>
     /// Called after all tests in this assembly complete.
-    /// THIS IS THE LAST TEST ASSEMBLY (on Windows) - if process doesn't exit after this, we have a thread leak.
     /// </summary>
     [After(HookType.Assembly)]
     public static void AssemblyTeardown()
     {
-        var process = Process.GetCurrentProcess();
-        Console.WriteLine($"[ASSEMBLY] ReactiveUI.NonParallel.Tests - FINAL ASSEMBLY ENDING at {DateTime.Now:HH:mm:ss.fff}");
-        Console.WriteLine($"[ASSEMBLY] Active threads BEFORE cleanup: {process.Threads.Count}");
-
-        // List all threads with their states
-        Console.WriteLine("[ASSEMBLY] Thread details:");
-        foreach (ProcessThread thread in process.Threads)
-        {
-#if WINDOWS
-            Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}, Priority={thread.PriorityLevel}, StartTime={thread.StartTime:HH:mm:ss}");
-#else
-            // PriorityLevel and StartTime are not supported on macOS/Linux
-            Console.WriteLine($"  Thread {thread.Id}: State={thread.ThreadState}");
-#endif
-        }
-
-        // Force garbage collection to clean up any finalizable objects
-        Console.WriteLine("[ASSEMBLY] Running GC.Collect()...");
+        // Clean up resources
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
+    }
 
-        Console.WriteLine($"[ASSEMBLY] Active threads AFTER GC: {Process.GetCurrentProcess().Threads.Count}");
-
-        // Give thread pool a chance to shut down
-        Console.WriteLine("[ASSEMBLY] Waiting for ThreadPool to drain...");
-        Thread.Sleep(1000);
-
-        Console.WriteLine($"[ASSEMBLY] Active threads AFTER wait: {Process.GetCurrentProcess().Threads.Count}");
-
-        // Last resort: Check for any known test threads that should be background threads
-        // This helps diagnose which threads are preventing exit
-        // Arbitrary threshold - normal process has ~8-10 system threads
-        var finalThreadCount = Process.GetCurrentProcess().Threads.Count;
-        if (finalThreadCount > 10)
-        {
-            Console.WriteLine($"[ASSEMBLY] WARNING: {finalThreadCount} threads still active!");
-            Console.WriteLine("[ASSEMBLY] Suspected test fixture cleanup issue - check for foreground threads");
-        }
-
-        Console.WriteLine("[ASSEMBLY] If process doesn't exit now, we have a foreground thread or resource leak!");
+    /// <summary>
+    /// Mode detector that always indicates we're in a unit test runner.
+    /// </summary>
+    private sealed class TestModeDetector : IModeDetector
+    {
+        public bool? InUnitTestRunner() => true;
+        public bool? InDesignMode() => false;
     }
 }

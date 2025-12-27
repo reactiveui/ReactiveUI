@@ -14,16 +14,6 @@ public class ReflectionTypeEqualityTests
         var typeFromTypeof = typeof(FooView);
         var aqnFromTypeof = typeFromTypeof.AssemblyQualifiedName!;
 
-        // Count how many times ReactiveUI.Tests.Core is loaded
-        var testAssemblies = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => a.GetName().Name == "ReactiveUI.Tests.Core")
-            .ToList();
-        Console.WriteLine($"ReactiveUI.Tests.Core loaded {testAssemblies.Count} times");
-        foreach (var asm in testAssemblies)
-        {
-            Console.WriteLine($"  - {asm.FullName}, Location: {asm.Location}, HashCode: {asm.GetHashCode()}");
-        }
-
         // Search through all loaded assemblies
         bool found = false;
         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())

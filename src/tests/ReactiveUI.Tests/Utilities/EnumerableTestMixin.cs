@@ -14,19 +14,10 @@ public static class EnumerableTestMixin
         var left = lhs.ToArray();
         var right = rhs.ToArray();
 
-        try
+        await Assert.That(left.Length).IsEqualTo(right.Length); // Sequence lengths differ.
+        for (var i = 0; i < left.Length; i++)
         {
-            await Assert.That(left.Length).IsEqualTo(right.Length); // Sequence lengths differ.
-            for (var i = 0; i < left.Length; i++)
-            {
-                await Assert.That(left[i]).IsEqualTo(right[i]); // Sequences differ at index {i}.
-            }
-        }
-        catch
-        {
-            Debug.WriteLine("lhs: [{0}]", string.Join(",", left));
-            Debug.WriteLine("rhs: [{0}]", string.Join(",", right));
-            throw;
+            await Assert.That(left[i]).IsEqualTo(right[i]); // Sequences differ at index {i}.
         }
     }
 

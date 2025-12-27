@@ -33,7 +33,6 @@ public class RxAppTest : IDisposable
     [Test]
     public async Task SchedulerShouldBeCurrentThreadInTestRunner()
     {
-        Debug.WriteLine(RxApp.MainThreadScheduler.GetType().FullName);
         await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
     }
 
