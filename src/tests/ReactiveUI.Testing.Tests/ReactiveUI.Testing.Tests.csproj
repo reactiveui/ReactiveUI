@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Reactive" />
