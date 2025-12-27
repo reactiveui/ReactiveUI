@@ -12,7 +12,7 @@ namespace ReactiveUI.Testing;
 /// </summary>
 public static class SchedulerExtensions
 {
-    private static readonly AutoResetEvent _schedulerGate = new(true);
+    private static readonly SemaphoreSlim _schedulerGate = new(1, 1);
 
     /// <summary>
     /// WithScheduler overrides the default Deferred and Taskpool schedulers
@@ -29,7 +29,7 @@ public static class SchedulerExtensions
 #endif
     public static IDisposable WithScheduler(IScheduler scheduler)
     {
-        _schedulerGate.WaitOne();
+        _schedulerGate.Wait();
         var prevDef = RxApp.MainThreadScheduler;
         var prevTask = RxApp.TaskpoolScheduler;
         var prevRxDef = RxSchedulers.MainThreadScheduler;
@@ -46,7 +46,7 @@ public static class SchedulerExtensions
             RxApp.TaskpoolScheduler = prevTask;
             RxSchedulers.MainThreadScheduler = prevRxDef;
             RxSchedulers.TaskpoolScheduler = prevRxTask;
-            _schedulerGate.Set();
+            _schedulerGate.Release();
         });
     }
 
