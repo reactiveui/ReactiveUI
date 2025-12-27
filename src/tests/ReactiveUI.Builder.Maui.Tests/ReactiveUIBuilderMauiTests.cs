@@ -96,10 +96,6 @@ public class ReactiveUIBuilderMauiTests
     private sealed class AlwaysTrueModeDetector : IModeDetector
     {
         public bool? InUnitTestRunner() => true;
-
-#pragma warning disable CA1822 // Mark members as static
-        public bool? InDesignMode() => false;
-#pragma warning restore CA1822 // Mark members as static
     }
 
     private sealed class TestDispatcher : IDispatcher
