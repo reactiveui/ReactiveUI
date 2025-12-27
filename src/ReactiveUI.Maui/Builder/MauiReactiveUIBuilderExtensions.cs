@@ -13,6 +13,10 @@ namespace ReactiveUI.Builder;
 /// </summary>
 public static partial class MauiReactiveUIBuilderExtensions
 {
+#if WINUI_TARGET
+    private static readonly Lazy<IScheduler> LazyWinUIMauiMainThreadScheduler = new(() => new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current));
+#endif
+
     /// <summary>
     /// Gets the MAUI main thread scheduler.
     /// </summary>
@@ -22,8 +26,6 @@ public static partial class MauiReactiveUIBuilderExtensions
     public static IScheduler MauiMainThreadScheduler { get; } = DefaultScheduler.Instance;
 
 #if WINUI_TARGET
-    private static readonly Lazy<IScheduler> LazyWinUIMauiMainThreadScheduler = new(() => new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current));
-
     /// <summary>
     /// Gets a scheduler that schedules work on the WinUI or .NET MAUI main UI thread, if available.
     /// </summary>
