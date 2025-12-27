@@ -96,7 +96,7 @@ public sealed partial class ActivationForViewFetcherTests
     /// <summary>
     /// Test page that tracks activation count.
     /// </summary>
-    private sealed partial class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView
+    private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TestPage"/> class.
@@ -132,7 +132,7 @@ public sealed partial class ActivationForViewFetcherTests
     /// <summary>
     /// Test view that tracks activation count.
     /// </summary>
-    private sealed partial class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView
+    private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TestView"/> class.
@@ -168,7 +168,7 @@ public sealed partial class ActivationForViewFetcherTests
     /// <summary>
     /// Test view model that tracks activation count.
     /// </summary>
-    private sealed partial class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+    private sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.

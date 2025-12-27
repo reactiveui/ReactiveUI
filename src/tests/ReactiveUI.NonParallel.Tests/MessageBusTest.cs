@@ -168,18 +168,23 @@ public class MessageBusTest : IDisposable
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
-        var mb = new MessageBus();
-        mb.RegisterScheduler<int>(ImmediateScheduler.Instance);
+        var messageBus = new MessageBus();
+        messageBus.RegisterScheduler<int>(ImmediateScheduler.Instance);
         int? listenedThreadId = null;
         int? otherThreadId = null;
         var thisThreadId = Environment.CurrentManagedThreadId;
 
-        await Task.Run(() =>
-        {
-            otherThreadId = Environment.CurrentManagedThreadId;
-            mb.Listen<int>().Subscribe(_ => listenedThreadId = Environment.CurrentManagedThreadId);
-            mb.SendMessage(42);
-        });
+        // Use LongRunning to force a dedicated thread instead of ThreadPool thread reuse
+        await Task.Factory.StartNew(
+            () =>
+            {
+                otherThreadId = Environment.CurrentManagedThreadId;
+                messageBus.Listen<int>().Subscribe(_ => listenedThreadId = Environment.CurrentManagedThreadId);
+                messageBus.SendMessage(42);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default);
 
         using (Assert.Multiple())
         {
