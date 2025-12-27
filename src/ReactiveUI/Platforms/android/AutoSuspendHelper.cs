@@ -88,8 +88,8 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// Gets or sets the latest bundle.
     /// </summary>
     /// <remarks>
-    /// Updated whenever <see cref="Activity.OnSaveInstanceState"/> runs so callers can detect whether
-    /// <see cref="OnActivityCreated(Activity?, Bundle?)"/> represents a cold launch (<see langword="null"/>) or a
+    /// Updated whenever <see cref="Activity.OnSaveInstanceState(Bundle)"/> runs so callers can detect whether
+    /// <see cref="ObservableLifecycle.OnActivityCreated(Activity?, Bundle?)"/> represents a cold launch (<see langword="null"/>) or a
     /// recreation with persisted state.
     /// </remarks>
     public static Bundle? LatestBundle { get; set; }
