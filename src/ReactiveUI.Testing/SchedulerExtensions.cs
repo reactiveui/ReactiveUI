@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Threading;
 using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Testing;
@@ -12,8 +13,6 @@ namespace ReactiveUI.Testing;
 /// </summary>
 public static class SchedulerExtensions
 {
-    private static readonly SemaphoreSlim _schedulerGate = new(1, 1);
-
     /// <summary>
     /// WithScheduler overrides the default Deferred and Taskpool schedulers
     /// with the given scheduler until the return value is disposed. This
@@ -29,24 +28,16 @@ public static class SchedulerExtensions
 #endif
     public static IDisposable WithScheduler(IScheduler scheduler)
     {
-        _schedulerGate.Wait();
         var prevDef = RxApp.MainThreadScheduler;
         var prevTask = RxApp.TaskpoolScheduler;
-        var prevRxDef = RxSchedulers.MainThreadScheduler;
-        var prevRxTask = RxSchedulers.TaskpoolScheduler;
 
         RxApp.MainThreadScheduler = scheduler;
         RxApp.TaskpoolScheduler = scheduler;
-        RxSchedulers.MainThreadScheduler = scheduler;
-        RxSchedulers.TaskpoolScheduler = scheduler;
 
         return Disposable.Create(() =>
         {
             RxApp.MainThreadScheduler = prevDef;
             RxApp.TaskpoolScheduler = prevTask;
-            RxSchedulers.MainThreadScheduler = prevRxDef;
-            RxSchedulers.TaskpoolScheduler = prevRxTask;
-            _schedulerGate.Release();
         });
     }
 

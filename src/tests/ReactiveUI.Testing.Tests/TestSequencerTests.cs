@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Threading;
+
 namespace ReactiveUI.Testing.Tests;
 
 /// <summary>
@@ -19,7 +21,24 @@ public class TestSequencerTests
     {
         using var testSequencer = new TestSequencer();
         var subject = new Subject<Unit>();
-        subject.Subscribe(async void (_) => await testSequencer.AdvancePhaseAsync());
+
+        // Track async operations to ensure proper coordination
+        var tcs = new TaskCompletionSource<bool>();
+        var advanceCount = 0;
+
+        subject.Subscribe(async _ =>
+        {
+            try
+            {
+                await testSequencer.AdvancePhaseAsync();
+                Interlocked.Increment(ref advanceCount);
+                tcs.TrySetResult(true);
+            }
+            catch (Exception ex)
+            {
+                tcs.TrySetException(ex);
+            }
+        });
 
         using (Assert.Multiple())
         {
@@ -27,13 +46,20 @@ public class TestSequencerTests
             await Assert.That(testSequencer.CompletedPhases).IsEqualTo(0);
         }
 
+        // Trigger first advance from subscription
+        tcs = new TaskCompletionSource<bool>();
         subject.OnNext(Unit.Default);
+
+        // Wait briefly for async handler to start
+        await Task.Delay(10);
+
         using (Assert.Multiple())
         {
             await Assert.That(testSequencer.CurrentPhase).IsEqualTo(1);
             await Assert.That(testSequencer.CompletedPhases).IsEqualTo(0);
         }
 
+        // Complete Phase 1 from main thread
         await testSequencer.AdvancePhaseAsync("Phase 1");
         using (Assert.Multiple())
         {
@@ -41,13 +67,20 @@ public class TestSequencerTests
             await Assert.That(testSequencer.CompletedPhases).IsEqualTo(1);
         }
 
+        // Trigger second advance from subscription
+        tcs = new TaskCompletionSource<bool>();
         subject.OnNext(Unit.Default);
+
+        // Wait briefly for async handler to start
+        await Task.Delay(10);
+
         using (Assert.Multiple())
         {
             await Assert.That(testSequencer.CurrentPhase).IsEqualTo(2);
             await Assert.That(testSequencer.CompletedPhases).IsEqualTo(1);
         }
 
+        // Complete Phase 2 from main thread
         await testSequencer.AdvancePhaseAsync("Phase 2");
         using (Assert.Multiple())
         {
