@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
 using TUnit.Core;
 
 namespace ReactiveUI.Tests;
@@ -40,6 +41,5 @@ public static class AssemblyHooks
     private sealed class TestModeDetector : IModeDetector
     {
         public bool? InUnitTestRunner() => true;
-        public bool? InDesignMode() => false;
     }
 }

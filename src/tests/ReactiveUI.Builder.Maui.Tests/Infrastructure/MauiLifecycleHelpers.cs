@@ -198,5 +198,4 @@ internal static class MauiLifecycleHelpers
             }
         }
     }
-
 }
