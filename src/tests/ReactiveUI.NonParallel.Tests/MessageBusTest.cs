@@ -173,22 +173,12 @@ public class MessageBusTest : IDisposable
         int? otherThreadId = null;
         var thisThreadId = Environment.CurrentManagedThreadId;
 
-        var otherThread = new Thread(new ThreadStart(() =>
+        await Task.Run(() =>
         {
             otherThreadId = Environment.CurrentManagedThreadId;
             mb.Listen<int>().Subscribe(_ => listenedThreadId = Environment.CurrentManagedThreadId);
             mb.SendMessage(42);
-        }))
-        {
-            Name = "MessageBus-TestThread",
-            IsBackground = true // Background thread so it doesn't prevent test process from exiting
-        };
-
-        // Track this thread for diagnostics
-        ManagedThreadTracker.Register(otherThread);
-
-        otherThread.Start();
-        otherThread.Join();
+        });
 
         using (Assert.Multiple())
         {

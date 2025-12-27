@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using ReactiveUI.Tests.Infrastructure;
 using TUnit.Core;
 
 namespace ReactiveUI.Tests.Core;
@@ -61,17 +60,6 @@ public static class AssemblyHooks
         Thread.Sleep(1000);
 
         Console.WriteLine($"[ASSEMBLY] Active threads AFTER wait: {Process.GetCurrentProcess().Threads.Count}");
-
-        // Show tracked managed threads with their names
-        var trackedThreads = ManagedThreadTracker.GetSnapshot();
-        if (trackedThreads.Count > 0)
-        {
-            Console.WriteLine($"[ASSEMBLY] Tracked managed threads ({trackedThreads.Count}):");
-            foreach (var thread in trackedThreads)
-            {
-                Console.WriteLine($"  ManagedThreadId {thread.Key}: Name='{thread.Value.Name}', IsBackground={thread.Value.IsBackground}");
-            }
-        }
 
         // Last resort: Check for any known test threads that should be background threads
         // This helps diagnose which threads are preventing exit
