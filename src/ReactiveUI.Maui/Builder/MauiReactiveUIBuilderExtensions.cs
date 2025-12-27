@@ -22,13 +22,15 @@ public static partial class MauiReactiveUIBuilderExtensions
     public static IScheduler MauiMainThreadScheduler { get; } = DefaultScheduler.Instance;
 
 #if WINUI_TARGET
+    private static readonly Lazy<IScheduler> LazyWinUIMauiMainThreadScheduler = new(() => new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current));
+
     /// <summary>
     /// Gets a scheduler that schedules work on the WinUI or .NET MAUI main UI thread, if available.
     /// </summary>
     /// <remarks>Use this scheduler to ensure that actions are executed on the main thread in WinUI or .NET
     /// MAUI applications. This is useful for updating UI elements or performing operations that require main thread
     /// access. If called from a non-main thread, scheduled actions will be marshaled to the main UI thread.</remarks>
-    public static IScheduler WinUIMauiMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current);
+    public static IScheduler WinUIMauiMainThreadScheduler => LazyWinUIMauiMainThreadScheduler.Value;
 #endif
 
 #if ANDROID
