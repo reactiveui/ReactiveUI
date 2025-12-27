@@ -61,6 +61,7 @@ public class AndroidObservableForWidgets : ICreatesObservableForProperty
                    dispatchItem.Invoke(sender!, expression);
     }
 
+    [SupportedOSPlatform("android23.0")]
     private static DispatchItem CreateFromAdapterView()
     {
         // AdapterView is more complicated because there are two events - one for select and one for deselect
