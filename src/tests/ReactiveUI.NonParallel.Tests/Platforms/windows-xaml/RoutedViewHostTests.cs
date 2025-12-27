@@ -29,35 +29,27 @@ public class RoutedViewHostTests
     {
         Locator.CurrentMutable.InitializeSplat();
         Locator.CurrentMutable.InitializeReactiveUI();
+
         var uc = new RoutedViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
         };
-        var window = new WpfTestWindow();
-        window.RootGrid.Children.Add(uc);
 
         var activation = new ActivationForViewFetcher();
-
-        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
-
         activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
+        // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
         {
             RoutedEvent = FrameworkElement.LoadedEvent
         };
-
-        window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(windowActivated);
         new[] { true }.AssertAreEqual(controlActivated);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         await Assert.That(uc.Content).IsNotNull();
-
-        window.Dispatcher.InvokeShutdown();
     }
 
     [Test]
@@ -75,25 +67,18 @@ public class RoutedViewHostTests
             DefaultContent = new System.Windows.Controls.Label(),
             Router = Locator.Current.GetService<RoutingState>()!
         };
-        var window = new WpfTestWindow();
-        window.RootGrid.Children.Add(uc);
 
         var activation = new ActivationForViewFetcher();
-
-        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
-
         activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
+        // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
         {
             RoutedEvent = FrameworkElement.LoadedEvent
         };
-
-        window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(windowActivated);
         new[] { true }.AssertAreEqual(controlActivated);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -105,8 +90,6 @@ public class RoutedViewHostTests
         uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
-
-        window.Dispatcher.InvokeShutdown();
     }
 
     [Test]
@@ -124,37 +107,27 @@ public class RoutedViewHostTests
             DefaultContent = new System.Windows.Controls.Label(),
             Router = Locator.Current.GetService<RoutingState>()!
         };
-        var window = new WpfTestWindow();
-        window.RootGrid.Children.Add(uc);
 
         var activation = new ActivationForViewFetcher();
-
-        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
-
         activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
-
-        var loaded = new RoutedEventArgs
-        {
-            RoutedEvent = FrameworkElement.LoadedEvent
-        };
 
         // Test navigation before Activation.
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-        // Activate
-        window.RaiseEvent(loaded);
+        // Activate by raising the Loaded event
+        var loaded = new RoutedEventArgs
+        {
+            RoutedEvent = FrameworkElement.LoadedEvent
+        };
         uc.RaiseEvent(loaded);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(windowActivated);
         new[] { true }.AssertAreEqual(controlActivated);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
         // Test Navigation before activated
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
-
-        window.Dispatcher.InvokeShutdown();
     }
 }

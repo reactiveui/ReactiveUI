@@ -80,7 +80,7 @@ public static class AssemblyHooks
         if (finalThreadCount > 10)
         {
             Console.WriteLine($"[ASSEMBLY] WARNING: {finalThreadCount} threads still active!");
-            Console.WriteLine("[ASSEMBLY] Suspected test fixture cleanup issue - check WpfActiveContentFixture disposal");
+            Console.WriteLine("[ASSEMBLY] Suspected test fixture cleanup issue - check for foreground threads");
         }
 
         Console.WriteLine("[ASSEMBLY] If process doesn't exit now, we have a foreground thread or resource leak!");

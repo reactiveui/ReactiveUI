@@ -180,7 +180,8 @@ public class MessageBusTest : IDisposable
             mb.SendMessage(42);
         }))
         {
-            Name = "MessageBus-TestThread"
+            Name = "MessageBus-TestThread",
+            IsBackground = true // Background thread so it doesn't prevent test process from exiting
         };
 
         // Track this thread for diagnostics

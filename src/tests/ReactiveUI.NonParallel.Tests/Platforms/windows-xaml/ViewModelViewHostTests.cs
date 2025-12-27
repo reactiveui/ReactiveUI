@@ -30,35 +30,22 @@ public class ViewModelViewHostTests
         {
             DefaultContent = new System.Windows.Controls.Label()
         };
-        var window = new WpfTestWindow();
-        window.RootGrid.Children.Add(uc);
 
         var activation = new ActivationForViewFetcher();
-
-        activation.GetActivationForView(window)
-             .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance)
-             .Bind(out var windowActivated)
-             .Subscribe();
-
         activation.GetActivationForView(uc)
             .ToObservableChangeSet(scheduler: ImmediateScheduler.Instance)
             .Bind(out var controlActivated)
             .Subscribe();
 
+        // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
         {
             RoutedEvent = FrameworkElement.LoadedEvent
         };
-
-        window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(windowActivated);
         await new[] { true }.AssertAreEqual(controlActivated);
-
         await Assert.That(uc.Content).IsNotNull();
-
-        window.Dispatcher.InvokeShutdown();
     }
 
     [Test]
@@ -73,29 +60,20 @@ public class ViewModelViewHostTests
             DefaultContent = new System.Windows.Controls.Label(),
             ViewModel = Locator.Current.GetService<TestViewModel>()
         };
-        var window = new WpfTestWindow();
-        window.RootGrid.Children.Add(uc);
 
         var activation = new ActivationForViewFetcher();
-
-        activation.GetActivationForView(window).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var windowActivated).Subscribe();
-
         activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
+        // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
         {
             RoutedEvent = FrameworkElement.LoadedEvent
         };
-
-        window.RaiseEvent(loaded);
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(windowActivated);
         await new[] { true }.AssertAreEqual(controlActivated);
 
         // Test IViewFor<ViewModel> after activated
         await Assert.That(uc.Content).IsTypeOf<TestView>();
-
-        window.Dispatcher.InvokeShutdown();
     }
 }
