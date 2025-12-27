@@ -12,11 +12,11 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// <see cref="SuspensionHost"/> backs <see cref="RxApp.SuspensionHost"/> and provides concrete observables that are wired up
-/// by helpers such as AutoSuspendHelper. Platform hosts push their lifecycle notifications into the
-/// <c>ReplaySubject</c> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
+/// by helpers such as <c>AutoSuspendHelper</c>. Platform hosts push their lifecycle notifications into the
+/// <see cref="ReplaySubject{T}"/> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
 /// </para>
 /// <para>
-/// Consumers rarely instantiate this type directly; instead call <c>RxApp.SuspensionHost</c> to access the singleton. The
+/// Consumers rarely instantiate this type directly; instead call <see cref="RxApp.SuspensionHost"/> to access the singleton. The
 /// object is intentionally thread-safe via <see cref="ReplaySubject{T}"/> so events raised prior to subscription are
 /// replayed to late subscribers.
 /// </para>

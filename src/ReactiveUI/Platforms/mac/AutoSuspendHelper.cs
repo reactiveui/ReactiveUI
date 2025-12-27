@@ -84,7 +84,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <param name="sender">The sender.</param>
     /// <returns>The termination reply from the application.</returns>
     /// <remarks>
-    /// Delays the OS shutdown until SuspensionHost ShouldPersistState subscribers finish writing
+    /// Delays the OS shutdown until <see cref="ISuspensionHost.ShouldPersistState"/> subscribers finish writing
     /// <see cref="ISuspensionHost.AppState"/>, replying with <see cref="NSApplication.ReplyToApplicationShouldTerminate(bool)"/>
     /// once persistence completes.
     /// </remarks>

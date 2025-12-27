@@ -12,7 +12,7 @@ namespace ReactiveUI;
 /// <para>
 /// These helpers provide strongly-typed access to the current application state and wire up the
 /// <see cref="ISuspensionDriver"/> responsible for persisting it. They are typically invoked from platform bootstrap
-/// classes after registering an AutoSuspendHelper.
+/// classes after registering an <c>AutoSuspendHelper</c>.
 /// </para>
 /// </remarks>
 public static class SuspensionHostExtensions
