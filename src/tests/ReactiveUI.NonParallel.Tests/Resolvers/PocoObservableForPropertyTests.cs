@@ -151,29 +151,42 @@ public class PocoObservableForPropertyTests : IDisposable
     public async Task GetNotificationForPropertyNeverCompletes()
     {
         RxApp.EnsureInitialized();
-        var instance = new POCOObservableForProperty();
-        var poco = new PocoType { Property1 = "Test" };
-        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+        var testScheduler = new Microsoft.Reactive.Testing.TestScheduler();
+        var originalScheduler = RxApp.MainThreadScheduler;
 
-        var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), false, true);
-
-        // Take 2 items - should only get 1 since POCO doesn't change
-        var results = new List<IObservedChange<object, object?>>();
-        var completed = false;
-
-        observable
-            .Take(TimeSpan.FromMilliseconds(100))
-            .Subscribe(
-                results.Add,
-                onCompleted: () => completed = true);
-
-        await Task.Delay(150);
-
-        // Should have received exactly 1 item (the initial value) and completed
-        using (Assert.Multiple())
+        try
         {
-            await Assert.That(results).Count().IsEqualTo(1);
-            await Assert.That(completed).IsTrue();
+            RxApp.MainThreadScheduler = testScheduler;
+
+            var instance = new POCOObservableForProperty();
+            var poco = new PocoType { Property1 = "Test" };
+            Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+            var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), false, true);
+
+            // Take 2 items - should only get 1 since POCO doesn't change
+            var results = new List<IObservedChange<object, object?>>();
+            var completed = false;
+
+            observable
+                .Take(TimeSpan.FromMilliseconds(100), testScheduler)
+                .Subscribe(
+                    results.Add,
+                    onCompleted: () => completed = true);
+
+            // Advance virtual time to trigger the Take timeout
+            testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(150).Ticks);
+
+            // Should have received exactly 1 item (the initial value) and completed
+            using (Assert.Multiple())
+            {
+                await Assert.That(results).Count().IsEqualTo(1);
+                await Assert.That(completed).IsTrue();
+            }
+        }
+        finally
+        {
+            RxApp.MainThreadScheduler = originalScheduler;
         }
     }
 

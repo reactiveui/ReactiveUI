@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using ReactiveUI.Tests.Mixins;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
@@ -293,7 +294,7 @@ public class WpfCommandBindingImplementationTests
     [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
     {
-        var testLogger = new TestLogger();
+        var testLogger = new LoggingRegistrationScope.TestLogger();
         Locator.CurrentMutable.RegisterConstant<ILogger>(testLogger);
 
         var vm = new CommandBindingViewModel();

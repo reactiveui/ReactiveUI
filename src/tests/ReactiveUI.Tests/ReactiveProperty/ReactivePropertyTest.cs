@@ -53,7 +53,7 @@ public class ReactivePropertyTest : ReactiveTest
     }
 
     [Test]
-    public void ValidationLengthIsCorrectlyHandled()
+    public async Task ValidationLengthIsCorrectlyHandled()
     {
         var target = new ReactivePropertyVM();
         IEnumerable? error = null;
@@ -66,7 +66,7 @@ public class ReactivePropertyTest : ReactiveTest
 
         target.LengthLessThanFiveProperty.Value = "a";
         target.LengthLessThanFiveProperty.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(error).IsNull();
 
         target.LengthLessThanFiveProperty.Value = "aaaaaa";
         target.LengthLessThanFiveProperty.HasErrors.Should().BeTrue();
@@ -175,14 +175,14 @@ public class ReactivePropertyTest : ReactiveTest
         rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(error).IsNull();
 
         rp.Value = "dummy";
         tcs.SetResult(null);
         await Task.Yield();
 
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(error).IsNull();
     }
 
     [Test]
@@ -192,15 +192,17 @@ public class ReactivePropertyTest : ReactiveTest
         using var rp = new ReactiveProperty<string>().AddValidationError(_ => tcs.Task);
 
         IEnumerable? error = null;
-        rp.ObserveErrorChanged.Subscribe(x => error = x);
+        rp.ObserveErrorChanged
+            .ObserveOn(ImmediateScheduler.Instance)
+            .Subscribe(x => error = x);
 
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        error.Should().BeNull();
 
         var errorMessage = "error occured!!";
         rp.Value = "dummy";  //--- push value
         tcs.SetResult(errorMessage);    //--- validation error!
-        await Task.Delay(10);
+        await Task.Yield();
 
         rp.HasErrors.Should().BeTrue();
         error.Should().NotBeNull();
@@ -223,22 +225,22 @@ public class ReactivePropertyTest : ReactiveTest
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(0).Ticks);
         rp.Value = string.Empty;
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        error.Should().BeNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(300).Ticks);
         rp.Value = "a";
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        error.Should().BeNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(700).Ticks);
         rp.Value = "b";
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        error.Should().BeNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(1100).Ticks);
         rp.Value = string.Empty;
         rp.HasErrors.Should().BeFalse();
-        error; Assert.That(.Should().BeNull()_value, Is.Null);
+        error.Should().BeNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(2500).Ticks);
         rp.HasErrors.Should().BeTrue();
@@ -247,7 +249,7 @@ public class ReactivePropertyTest : ReactiveTest
     }
 
     [Test]
-    public void ValidationErrorChangedTest()
+    public async Task ValidationErrorChangedTest()
     {
         var errors = new List<IEnumerable?>();
         using var rprop = new ReactiveProperty<string>()
@@ -260,7 +262,7 @@ public class ReactivePropertyTest : ReactiveTest
 
         rprop.Value = "OK";
         errors.Count.Should().Be(1);
-        errors.Last(); Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(errors.Last()).IsNull();
 
         rprop.Value = null;
         errors.Count.Should().Be(2);

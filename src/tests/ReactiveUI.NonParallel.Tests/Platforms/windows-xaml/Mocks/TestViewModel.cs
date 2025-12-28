@@ -15,9 +15,13 @@ public class TestViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref _someProp, value);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Gets the URL path segment.
+    /// </summary>
     public string UrlPathSegment => "Test";
 
-    /// <inheritdoc/>
-    public IScreen HostScreen { get; } = new TestScreen();
+    /// <summary>
+    /// Gets or sets the host screen.
+    /// </summary>
+    public IScreen HostScreen { get; set; } = new TestScreen();
 }

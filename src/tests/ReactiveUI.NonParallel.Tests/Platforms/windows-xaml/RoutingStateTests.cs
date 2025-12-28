@@ -245,6 +245,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test FindViewModelInStack finds the correct view model.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task FindViewModelInStackFindsCorrectViewModel()
     {
@@ -265,6 +266,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test FindViewModelInStack returns null when not found.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task FindViewModelInStackReturnsNullWhenNotFound()
     {
@@ -277,6 +279,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test FindViewModelInStack searches from top of stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task FindViewModelInStackSearchesFromTop()
     {
@@ -307,6 +310,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test GetCurrentViewModel returns the top view model.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetCurrentViewModelReturnsTopViewModel()
     {
@@ -325,6 +329,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test GetCurrentViewModel returns null for empty stack.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetCurrentViewModelReturnsNullForEmptyStack()
     {
@@ -347,6 +352,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test WhenNavigatedToObservable fires when navigated to.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WhenNavigatedToObservableFires()
     {
@@ -364,6 +370,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test WhenNavigatedToObservable completes when removed.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WhenNavigatedToObservableCompletesWhenRemoved()
     {
@@ -382,6 +389,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test WhenNavigatingFromObservable fires when navigating away.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WhenNavigatingFromObservableFires()
     {
@@ -401,6 +409,7 @@ public class RoutingStateTests
     /// <summary>
     /// Test WhenNavigatedTo sets up and tears down correctly.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WhenNavigatedToSetsUpAndTearsDown()
     {
@@ -459,6 +468,7 @@ public class RoutingStateTests
     private class AlternateViewModel : ReactiveObject, IRoutableViewModel
     {
         public string? UrlPathSegment { get; set; }
-        public IScreen? HostScreen { get; set; }
+
+        public IScreen HostScreen { get; set; } = null!;
     }
 }

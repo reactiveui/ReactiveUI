@@ -494,14 +494,10 @@ public class ReactiveNotifyPropertyChangedMixinTest
             var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz", PocoProperty = "Bamf" };
 
             fixture.WhenAnyValue(x => x.IsNotNullString)
+                   .ObserveOn(ImmediateScheduler.Instance)
                    .Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
 
-            var timeout = 10;
             fixture.IsNotNullString = "Bar";
-            while (--timeout > 0 && whenAnyTid == 0)
-            {
-                Thread.Sleep(250);
-            }
 
             await Assert.That(whenAnyTid).IsEqualTo(tid);
         });
