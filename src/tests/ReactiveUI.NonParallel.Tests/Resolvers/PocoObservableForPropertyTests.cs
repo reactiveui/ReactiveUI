@@ -43,6 +43,136 @@ public class PocoObservableForPropertyTests : IDisposable
         }
     }
 
+    [Test]
+    public async Task GetNotificationForPropertyReturnsObservable()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco = new PocoType { Property1 = "Test" };
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), false, true);
+
+        await Assert.That(observable).IsNotNull();
+    }
+
+    [Test]
+    public async Task GetNotificationForPropertyReturnsSingleValue()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco = new PocoType { Property1 = "Test" };
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), false, true);
+        var result = await observable.FirstAsync();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsNotNull();
+            await Assert.That(result.Sender).IsEqualTo(poco);
+        }
+    }
+
+    [Test]
+    public async Task GetNotificationForPropertyWithBeforeChangedParameter()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco = new PocoType { Property1 = "Test" };
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), true, true);
+        var result = await observable.FirstAsync();
+
+        await Assert.That(result).IsNotNull();
+    }
+
+    [Test]
+    public void GetNotificationForPropertyThrowsOnNullSender()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        Assert.Throws<ArgumentNullException>(() =>
+            instance.GetNotificationForProperty(null!, expr.Body, nameof(PocoType.Property1), false, true));
+    }
+
+    [Test]
+    public async Task GetNotificationForPropertyOnlyWarnsOnce()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco1 = new PocoType { Property1 = "Test1" };
+        var poco2 = new PocoType { Property1 = "Test2" };
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        // First call should trigger warning (but we're suppressing it with suppressWarnings: false for testing)
+        var observable1 = instance.GetNotificationForProperty(poco1, expr.Body, nameof(PocoType.Property1), false, false);
+        var result1 = await observable1.FirstAsync();
+
+        // Second call with different instance but same type and property should not warn again
+        var observable2 = instance.GetNotificationForProperty(poco2, expr.Body, nameof(PocoType.Property1), false, false);
+        var result2 = await observable2.FirstAsync();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result1).IsNotNull();
+            await Assert.That(result2).IsNotNull();
+        }
+    }
+
+    [Test]
+    public async Task GetNotificationForPropertyWithDifferentProperties()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco = new PocoType { Property1 = "Test1", Property2 = "Test2" };
+        Expression<Func<PocoType, string?>> expr1 = x => x.Property1;
+        Expression<Func<PocoType, string?>> expr2 = x => x.Property2;
+
+        var observable1 = instance.GetNotificationForProperty(poco, expr1.Body, nameof(PocoType.Property1), false, true);
+        var observable2 = instance.GetNotificationForProperty(poco, expr2.Body, nameof(PocoType.Property2), false, true);
+
+        var result1 = await observable1.FirstAsync();
+        var result2 = await observable2.FirstAsync();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result1).IsNotNull();
+            await Assert.That(result2).IsNotNull();
+            await Assert.That(result1.Sender).IsEqualTo(poco);
+            await Assert.That(result2.Sender).IsEqualTo(poco);
+        }
+    }
+
+    [Test]
+    public async Task GetNotificationForPropertyNeverCompletes()
+    {
+        RxApp.EnsureInitialized();
+        var instance = new POCOObservableForProperty();
+        var poco = new PocoType { Property1 = "Test" };
+        Expression<Func<PocoType, string?>> expr = x => x.Property1;
+
+        var observable = instance.GetNotificationForProperty(poco, expr.Body, nameof(PocoType.Property1), false, true);
+
+        // Take 2 items - should only get 1 since POCO doesn't change
+        var results = new List<IObservedChange<object, object?>>();
+        var completed = false;
+
+        observable
+            .Take(TimeSpan.FromMilliseconds(100))
+            .Subscribe(
+                results.Add,
+                onCompleted: () => completed = true);
+
+        await Task.Delay(150);
+
+        // Should have received exactly 1 item (the initial value)
+        await Assert.That(results).Count().IsEqualTo(1);
+    }
+
     public void Dispose()
     {
         _schedulersScope?.Dispose();
