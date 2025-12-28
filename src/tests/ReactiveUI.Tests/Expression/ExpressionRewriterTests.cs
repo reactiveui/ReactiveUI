@@ -152,6 +152,30 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
+    [Test]
+    public void Rewrite_WithUnaryExpressionNotArrayLengthOrConvert_Throws()
+    {
+        // Create a unary expression that is not ArrayLength or Convert (e.g., Not)
+        // This should trigger the unsupported expression path
+        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(bool), "x");
+        var notExpr = System.Linq.Expressions.Expression.Not(parameter);
+
+        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(notExpr));
+    }
+
+    [Test]
+    public void Rewrite_WithIndexExpressionNonConstantArguments_Throws()
+    {
+        // Create an IndexExpression with non-constant arguments
+        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(TestClass), "x");
+        var listProperty = System.Linq.Expressions.Expression.Property(parameter, "List");
+        var indexer = typeof(List<int>).GetProperty("Item")!;
+        var nonConstantArg = System.Linq.Expressions.Expression.Parameter(typeof(int), "index");
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, new[] { nonConstantArg });
+
+        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
+    }
+
 #pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class TestClass
     {
