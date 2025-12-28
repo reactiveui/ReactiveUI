@@ -1,7 +1,7 @@
 {
   "platform": {
     "execution": {
-      "parallel": true
+      "parallel": false
     }
   },
   "extensions": [

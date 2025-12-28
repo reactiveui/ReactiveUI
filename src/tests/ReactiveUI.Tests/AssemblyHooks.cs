@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using Splat;
 using TUnit.Core;
 
 namespace ReactiveUI.Tests;
@@ -21,18 +22,6 @@ public static class AssemblyHooks
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-    }
-
-    /// <summary>
-    /// Called after all tests in this assembly complete.
-    /// </summary>
-    [After(HookType.Assembly)]
-    public static void AssemblyTeardown()
-    {
-        // Clean up resources
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
     }
 
     /// <summary>

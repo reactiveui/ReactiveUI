@@ -12,6 +12,7 @@ namespace ReactiveUI.AOTTests;
 /// <summary>
 /// Tests for testing the AOT and making sure trimming is correct.
 /// </summary>
+[NotInParallel]
 public class ComprehensiveAOTMarkupTests
 {
     /// <summary>

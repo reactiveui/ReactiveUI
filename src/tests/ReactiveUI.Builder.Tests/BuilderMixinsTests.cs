@@ -209,7 +209,7 @@ public class BuilderMixinsTests
             b => executed.Add("first"),
             b => executed.Add("second"));
 
-        await Assert.That(executed).IsEquivalentTo(new[] { "first", "second" });
+        await Assert.That(executed).IsEquivalentTo(["first", "second"]);
     }
 
     [Test]

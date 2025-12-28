@@ -3,16 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Linq.Expressions;
 using System.Reflection;
 
 using ReactiveUI.Tests.Infrastructure.StaticState;
-
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
-
-using static TUnit.Assertions.Assert;
 
 namespace ReactiveUI.Tests.Core;
 
@@ -217,7 +210,7 @@ public class RandomTests : IDisposable
     {
         // Arrange
         const string sender = "test sender";
-        var expression = Expression.Constant("test");
+        var expression = System.Linq.Expressions.Expression.Constant("test");
         const int value = 42;
 
         // Act
@@ -719,8 +712,8 @@ public class RandomTests : IDisposable
         using (Assert.Multiple())
         {
             // Assert
-            await Assert.That(processedItems).IsEquivalentTo(new[] { 2, 4, 6, 8, 10 });
-            await Assert.That(skippedLast).IsEquivalentTo(new[] { 1, 2, 3 });
+            await Assert.That(processedItems).IsEquivalentTo([2, 4, 6, 8, 10]);
+            await Assert.That(skippedLast).IsEquivalentTo([1, 2, 3]);
         }
     }
 

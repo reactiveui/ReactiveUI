@@ -23,4 +23,14 @@ public class ReactiveUIBuilderDrawingTests
         var bindingConverters = locator.GetServices<IBindingTypeConverter>();
         await Assert.That(bindingConverters).IsNotNull();
     }
+
+    [Test]
+    public async Task WithDrawing_ThrowsArgumentNullException_WhenBuilderIsNull()
+    {
+        IReactiveUIBuilder? builder = null;
+
+        var exception = await Assert.That(() => builder!.WithDrawing()).Throws<ArgumentNullException>();
+        await Assert.That(exception).IsNotNull();
+        await Assert.That(exception.ParamName).IsEqualTo("builder");
+    }
 }

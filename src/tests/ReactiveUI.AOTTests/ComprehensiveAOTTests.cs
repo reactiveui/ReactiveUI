@@ -14,6 +14,7 @@ namespace ReactiveUI.AOTTests;
 /// components. These tests demonstrate approaches for property binding, command execution, message bus communication,
 /// dependency injection, and view model activation that work reliably in ahead-of-time (AOT) compilation environments.
 /// </summary>
+[NotInParallel]
 public class ComprehensiveAOTTests
 {
     /// <summary>
@@ -76,7 +77,7 @@ public class ComprehensiveAOTTests
         var messageBus = new MessageBus();
         var receivedMessages = new List<string>();
 
-        messageBus.Listen<string>().Subscribe(msg => receivedMessages.Add(msg));
+        messageBus.Listen<string>().ObserveOn(ImmediateScheduler.Instance).Subscribe(msg => receivedMessages.Add(msg));
 
         messageBus.SendMessage("Message1");
         messageBus.SendMessage("Message2");
@@ -97,14 +98,14 @@ public class ComprehensiveAOTTests
     public async Task ReactiveCommand_WithProperSuppression_WorksInAOT()
     {
         var executed = false;
-        var command = ReactiveCommand.Create(() => executed = true);
+        var command = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
 
         var canExecute = true;
-        command.CanExecute.Subscribe(canExec => canExecute = canExec);
+        command.CanExecute.ObserveOn(ImmediateScheduler.Instance).Subscribe(canExec => canExecute = canExec);
 
         await Assert.That(canExecute).IsTrue();
 
-        command.Execute().Subscribe();
+        command.Execute().ObserveOn(ImmediateScheduler.Instance).Subscribe();
         await Assert.That(executed).IsTrue();
     }
 
@@ -123,7 +124,7 @@ public class ComprehensiveAOTTests
         var property = new ReactiveProperty<string>("initial", scheduler, false, false);
 
         var values = new List<string>();
-        property.Subscribe(value => values.Add(value ?? string.Empty));
+        property.ObserveOn(ImmediateScheduler.Instance).Subscribe(value => values.Add(value ?? string.Empty));
 
         property.Value = "changed";
 
