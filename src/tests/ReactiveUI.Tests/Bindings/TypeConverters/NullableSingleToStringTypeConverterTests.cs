@@ -133,4 +133,15 @@ public class NullableSingleToStringTypeConverterTests
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
     }
+
+    [Test]
+    public async Task TryConvert_StringToSingleWithRounding_RoundsCorrectly()
+    {
+        var converter = new NullableSingleToStringTypeConverter();
+
+        var result = converter.TryConvert("123.456789", typeof(float?), 2, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That((float)output!).IsEqualTo(123.46f).Within(0.01f);
+    }
 }

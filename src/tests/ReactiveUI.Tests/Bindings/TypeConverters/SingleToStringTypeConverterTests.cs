@@ -122,4 +122,15 @@ public class SingleToStringTypeConverterTests
 
         await Assert.That(result).IsFalse();
     }
+
+    [Test]
+    public async Task TryConvert_StringToSingleWithRounding_RoundsCorrectly()
+    {
+        var converter = new SingleToStringTypeConverter();
+
+        var result = converter.TryConvert("123.456789", typeof(float), 2, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That((float)output!).IsEqualTo(123.46f).Within(0.01f);
+    }
 }

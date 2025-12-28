@@ -134,4 +134,15 @@ public class DecimalToStringTypeConverterTests
 
         await Assert.That(result).IsFalse();
     }
+
+    [Test]
+    public async Task TryConvert_StringToDecimalWithRounding_RoundsCorrectly()
+    {
+        var converter = new DecimalToStringTypeConverter();
+
+        var result = converter.TryConvert("123.456789", typeof(decimal), 2, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123.46m);
+    }
 }

@@ -133,4 +133,15 @@ public class DoubleToStringTypeConverterTests
 
         await Assert.That(result).IsFalse();
     }
+
+    [Test]
+    public async Task TryConvert_StringToDoubleWithRounding_RoundsCorrectly()
+    {
+        var converter = new DoubleToStringTypeConverter();
+
+        var result = converter.TryConvert("123.456789", typeof(double), 2, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That((double)output!).IsEqualTo(123.46).Within(0.01);
+    }
 }
