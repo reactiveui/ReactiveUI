@@ -7,8 +7,3 @@
 // Required because MAUI infrastructure (especially on Windows) uses thread-affine resources
 // like DispatcherQueue and WindowsXamlManager that cannot be safely shared across concurrent tests.
 [assembly: NotInParallel]
-
-// Sets a 3-second timeout for all tests in this assembly.
-// MAUI initialization can be expensive, so this generous timeout prevents spurious failures
-// while still catching truly hung tests.
-[assembly: Timeout(3000)]
