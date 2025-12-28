@@ -12,7 +12,7 @@
         "skipAutoProperties": true,
         "modulePaths": {
           "include": [ "ReactiveUI\\..*" ],
-          "exclude": [ ".*\\.Tests", ".*\\.TestRunner\\..*" ]
+          "exclude": [ ".*Tests.*", ".*TestRunner.*" ]
         }
       }
     }
