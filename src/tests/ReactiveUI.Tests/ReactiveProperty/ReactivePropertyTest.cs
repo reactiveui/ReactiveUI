@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,41 +13,41 @@ namespace ReactiveUI.Tests.ReactiveProperty;
 public class ReactivePropertyTest : ReactiveTest
 {
     [Test]
-    public void DefaultValueIsRaisedOnSubscribe()
+    public async Task DefaultValueIsRaisedOnSubscribe()
     {
         using var rp = new ReactiveProperty<string>();
-        Assert.That(rp.Value, Is.Null);
-        rp.Subscribe(Assert.Null);
+        await Assert.That(rp.Value).IsNull();
+        rp.Subscribe(async x => await Assert.That(x).IsNull());
     }
 
     [Test]
-    public void InitialValue()
+    public async Task InitialValue()
     {
         using var rp = new ReactiveProperty<string>("ReactiveUI");
-        Assert.That("ReactiveUI", Is.EqualTo(rp.Value));
-        rp.Subscribe(x => Assert.That("ReactiveUI", Is.EqualTo(x)));
+        await Assert.That(rp.Value).IsEqualTo("ReactiveUI");
+        rp.Subscribe(async x => await Assert.That(x).IsEqualTo("ReactiveUI"));
     }
 
     [Test]
-    public void InitialValueSkipCurrent()
+    public async Task InitialValueSkipCurrent()
     {
         using var rp = new ReactiveProperty<string>("ReactiveUI", true, false);
-        Assert.That("ReactiveUI", Is.EqualTo(rp.Value));
+        await Assert.That(rp.Value).IsEqualTo("ReactiveUI");
 
         // current value should be skipped
-        rp.Subscribe(x => Assert.That("ReactiveUI 2", Is.EqualTo(x)));
+        rp.Subscribe(async x => await Assert.That(x).IsEqualTo("ReactiveUI 2"));
         rp.Value = "ReactiveUI 2";
-        Assert.That("ReactiveUI 2", Is.EqualTo(rp.Value));
+        await Assert.That(rp.Value).IsEqualTo("ReactiveUI 2");
     }
 
     [Test]
-    public void SetValueRaisesEvents()
+    public async Task SetValueRaisesEvents()
     {
         using var rp = new ReactiveProperty<string>();
-        rp.Value; Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(rp.Value).IsNull();
         rp.Value = "ReactiveUI";
-        Assert.That("ReactiveUI", Is.EqualTo(rp.Value));
-        rp.Subscribe(x => Assert.That("ReactiveUI", Is.EqualTo(x)));
+        await Assert.That(rp.Value).IsEqualTo("ReactiveUI");
+        rp.Subscribe(async x => await Assert.That(x).IsEqualTo("ReactiveUI"));
     }
 
     [Test]
@@ -59,25 +59,25 @@ public class ReactivePropertyTest : ReactiveTest
             .ObserveErrorChanged
             .Subscribe(x => error = x);
 
-        target.LengthLessThanFiveProperty.HasErrors.Should().BeTrue();
-        Assert.That("required", Is.EqualTo(error?.OfType<string>().First()));
+        await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
+        await Assert.That(error?.OfType<string>().First()).IsEqualTo("required");
 
         target.LengthLessThanFiveProperty.Value = "a";
-        target.LengthLessThanFiveProperty.HasErrors.Should().BeFalse();
+        await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsFalse();
         await Assert.That(error).IsNull();
 
         target.LengthLessThanFiveProperty.Value = "aaaaaa";
-        target.LengthLessThanFiveProperty.HasErrors.Should().BeTrue();
-        error.Should().NotBeNull();
-        Assert.That("5over", Is.EqualTo(error?.OfType<string>().First()));
+        await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
+        await Assert.That(error).IsNotNull();
+        await Assert.That(error?.OfType<string>().First()).IsEqualTo("5over");
 
         target.LengthLessThanFiveProperty.Value = null;
-        target.LengthLessThanFiveProperty.HasErrors.Should().BeTrue();
-        Assert.That("required", Is.EqualTo(error?.OfType<string>().First()));
+        await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
+        await Assert.That(error?.OfType<string>().First()).IsEqualTo("required");
     }
 
     [Test]
-    public void ValidationIsRequiredIsCorrectlyHandled()
+    public async Task ValidationIsRequiredIsCorrectlyHandled()
     {
         var target = new ReactivePropertyVM();
         var errors = new List<IEnumerable?>();
@@ -86,22 +86,22 @@ public class ReactivePropertyTest : ReactiveTest
             .Where(x => x != null)
             .Subscribe(errors.Add);
 
-        errors.Count.Should().Be(1);
-        errors[0]?.Cast<string>().Should().Equal("error!");
-        target.IsRequiredProperty.HasErrors.Should().BeTrue();
+        await Assert.That(errors.Count).IsEqualTo(1);
+        await Assert.That(errors[0]?.Cast<string>()).IsEquivalentTo(new[] { "error!" });
+        await Assert.That(target.IsRequiredProperty.HasErrors).IsTrue();
 
         target.IsRequiredProperty.Value = "a";
-        errors.Count.Should().Be(1);
-        target.IsRequiredProperty.HasErrors.Should().BeFalse();
+        await Assert.That(errors.Count).IsEqualTo(1);
+        await Assert.That(target.IsRequiredProperty.HasErrors).IsFalse();
 
         target.IsRequiredProperty.Value = null;
-        errors.Count.Should().Be(2);
-        errors[1]?.Cast<string>().Should().Equal("error!");
-        target.IsRequiredProperty.HasErrors.Should().BeTrue();
+        await Assert.That(errors.Count).IsEqualTo(2);
+        await Assert.That(errors[1]?.Cast<string>()).IsEquivalentTo(new[] { "error!" });
+        await Assert.That(target.IsRequiredProperty.HasErrors).IsTrue();
     }
 
     [Test]
-    public void ValidationTaskTest()
+    public async Task ValidationTaskTest()
     {
         var target = new ReactivePropertyVM();
         var errors = new List<IEnumerable?>();
@@ -109,20 +109,20 @@ public class ReactivePropertyTest : ReactiveTest
             .ObserveErrorChanged
             .Where(x => x != null)
             .Subscribe(errors.Add);
-        errors.Count.Should().Be(1);
-        errors[0]?.OfType<string>().Should().Equal("required");
+        await Assert.That(errors.Count).IsEqualTo(1);
+        await Assert.That(errors[0]?.OfType<string>()).IsEquivalentTo(new[] { "required" });
 
         target.TaskValidationTestProperty.Value = "a";
-        target.TaskValidationTestProperty.HasErrors.Should().BeFalse();
-        errors.Count.Should().Be(1);
+        await Assert.That(target.TaskValidationTestProperty.HasErrors).IsFalse();
+        await Assert.That(errors.Count).IsEqualTo(1);
 
         target.TaskValidationTestProperty.Value = null;
-        target.TaskValidationTestProperty.HasErrors.Should().BeTrue();
-        errors.Count.Should().Be(2);
+        await Assert.That(target.TaskValidationTestProperty.HasErrors).IsTrue();
+        await Assert.That(errors.Count).IsEqualTo(2);
     }
 
     [Test]
-    public void ValidationWithCustomErrorMessage()
+    public async Task ValidationWithCustomErrorMessage()
     {
         var target = new ReactivePropertyVM();
         target.CustomValidationErrorMessageProperty.Value = string.Empty;
@@ -132,11 +132,11 @@ public class ReactivePropertyTest : ReactiveTest
             .Cast<string>()
             .First();
 
-        Assert.That("Custom validation error message for CustomValidationErrorMessageProperty", Is.EqualTo(errorMessage));
+        await Assert.That(errorMessage).IsEqualTo("Custom validation error message for CustomValidationErrorMessageProperty");
     }
 
     [Test]
-    public void ValidationWithCustomErrorMessageWithDisplayName()
+    public async Task ValidationWithCustomErrorMessageWithDisplayName()
     {
         var target = new ReactivePropertyVM();
         target.CustomValidationErrorMessageWithDisplayNameProperty.Value = string.Empty;
@@ -146,11 +146,11 @@ public class ReactivePropertyTest : ReactiveTest
             .Cast<string>()
             .First();
 
-        Assert.That("Custom validation error message for CustomName", Is.EqualTo(errorMessage));
+        await Assert.That(errorMessage).IsEqualTo("Custom validation error message for CustomName");
     }
 
     [Test]
-    public void ValidationWithCustomErrorMessageWithResource()
+    public async Task ValidationWithCustomErrorMessageWithResource()
     {
         var target = new ReactivePropertyVM();
         target.CustomValidationErrorMessageWithResourceProperty.Value = string.Empty;
@@ -160,7 +160,7 @@ public class ReactivePropertyTest : ReactiveTest
             .Cast<string>()
             .First();
 
-        Assert.That("Oops!? FromResource is required.", Is.EqualTo(errorMessage));
+        await Assert.That(errorMessage).IsEqualTo("Oops!? FromResource is required.");
     }
 
     [Test]
@@ -172,15 +172,15 @@ public class ReactivePropertyTest : ReactiveTest
         IEnumerable? error = null;
         rp.ObserveErrorChanged.Subscribe(x => error = x);
 
-        rp.HasErrors.Should().BeFalse();
-        await Assert.That(error).IsNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error == null).IsTrue();
 
         rp.Value = "dummy";
         tcs.SetResult(null);
         await Task.Yield();
 
-        rp.HasErrors.Should().BeFalse();
-        await Assert.That(error).IsNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error == null).IsTrue();
     }
 
     [Test]
@@ -194,22 +194,22 @@ public class ReactivePropertyTest : ReactiveTest
             .ObserveOn(ImmediateScheduler.Instance)
             .Subscribe(x => error = x);
 
-        rp.HasErrors.Should().BeFalse();
-        error.Should().BeNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error).IsNull();
 
         var errorMessage = "error occured!!";
         rp.Value = "dummy";  //--- push value
         tcs.SetResult(errorMessage);    //--- validation error!
         await Task.Yield();
 
-        rp.HasErrors.Should().BeTrue();
-        error.Should().NotBeNull();
-        error?.Cast<string>().Should().Equal(errorMessage);
-        rp.GetErrors("Value")?.Cast<string>().Should().Equal(errorMessage);
+        await Assert.That(rp.HasErrors).IsTrue();
+        await Assert.That(error).IsNotNull();
+        await Assert.That(error?.Cast<string>()).IsEquivalentTo(new[] { errorMessage });
+        await Assert.That(rp.GetErrors("Value")?.Cast<string>()).IsEquivalentTo(new[] { errorMessage });
     }
 
     [Test]
-    public void ValidationWithAsyncThrottleTest()
+    public async Task ValidationWithAsyncThrottleTest()
     {
         var scheduler = new TestScheduler();
         using var rp = new ReactiveProperty<string>()
@@ -222,28 +222,28 @@ public class ReactivePropertyTest : ReactiveTest
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(0).Ticks);
         rp.Value = string.Empty;
-        rp.HasErrors.Should().BeFalse();
-        error.Should().BeNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error).IsNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(300).Ticks);
         rp.Value = "a";
-        rp.HasErrors.Should().BeFalse();
-        error.Should().BeNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error).IsNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(700).Ticks);
         rp.Value = "b";
-        rp.HasErrors.Should().BeFalse();
-        error.Should().BeNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error).IsNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(1100).Ticks);
         rp.Value = string.Empty;
-        rp.HasErrors.Should().BeFalse();
-        error.Should().BeNull();
+        await Assert.That(rp.HasErrors).IsFalse();
+        await Assert.That(error).IsNull();
 
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(2500).Ticks);
-        rp.HasErrors.Should().BeTrue();
-        error.Should().NotBeNull();
-        error?.Cast<string>().Should().Equal("required");
+        await Assert.That(rp.HasErrors).IsTrue();
+        await Assert.That(error).IsNotNull();
+        await Assert.That(error?.Cast<string>()).IsEquivalentTo(new[] { "required" });
     }
 
     [Test]
@@ -256,52 +256,52 @@ public class ReactivePropertyTest : ReactiveTest
         // old version behavior
         rprop.ObserveErrorChanged.Skip(1).Subscribe(errors.Add);
 
-        errors.Count.Should().Be(0);
+        await Assert.That(errors.Count).IsEqualTo(0);
 
         rprop.Value = "OK";
-        errors.Count.Should().Be(1);
-        await Assert.That(errors.Last()).IsNull();
+        await Assert.That(errors.Count).IsEqualTo(1);
+        await Assert.That(errors.Last() == null).IsTrue();
 
         rprop.Value = null;
-        errors.Count.Should().Be(2);
-        errors.Last()?.OfType<string>().Should().Equal("error");
+        await Assert.That(errors.Count).IsEqualTo(2);
+        await Assert.That(errors.Last()?.OfType<string>()).IsEquivalentTo(new[] { "error" });
     }
 
     [Test]
-    public void ValidationIgnoreInitialErrorAndRefresh()
+    public async Task ValidationIgnoreInitialErrorAndRefresh()
     {
         using var rp = new ReactiveProperty<string>()
             .AddValidationError(x => string.IsNullOrEmpty(x) ? "error" : null, true);
 
-        rp.HasErrors.Should().BeFalse();
+        await Assert.That(rp.HasErrors).IsFalse();
         rp.Refresh();
-        rp.HasErrors.Should().BeTrue();
+        await Assert.That(rp.HasErrors).IsTrue();
     }
 
     [Test]
-    public void IgnoreInitialErrorAndCheckValidation()
+    public async Task IgnoreInitialErrorAndCheckValidation()
     {
         using var rp = new ReactiveProperty<string>()
             .AddValidationError(x => string.IsNullOrEmpty(x) ? "error" : null, true);
 
-        rp.HasErrors.Should().BeFalse();
+        await Assert.That(rp.HasErrors).IsFalse();
         rp.CheckValidation();
-        rp.HasErrors.Should().BeTrue();
+        await Assert.That(rp.HasErrors).IsTrue();
     }
 
     [Test]
-    public void IgnoreInitErrorAndUpdateValue()
+    public async Task IgnoreInitErrorAndUpdateValue()
     {
         using var rp = new ReactiveProperty<string>()
             .AddValidationError(x => string.IsNullOrEmpty(x) ? "error" : null, true);
 
-        rp.HasErrors.Should().BeFalse();
+        await Assert.That(rp.HasErrors).IsFalse();
         rp.Value = string.Empty;
-        rp.HasErrors.Should().BeTrue();
+        await Assert.That(rp.HasErrors).IsTrue();
     }
 
     [Test]
-    public void ObserveErrors()
+    public async Task ObserveErrors()
     {
         using var rp = new ReactiveProperty<string>()
             .AddValidationError(x => x == null ? "Error" : null);
@@ -310,13 +310,13 @@ public class ReactivePropertyTest : ReactiveTest
         rp.ObserveErrorChanged.Subscribe(results.Add);
         rp.Value = "OK";
 
-        results.Count.Should().Be(2);
-        results[0]?.OfType<string>().Should().Equal("Error");
-        results[1]; Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(results.Count).IsEqualTo(2);
+        await Assert.That(results[0]?.OfType<string>()).IsEquivalentTo(new[] { "Error" });
+        await Assert.That(results[1] == null).IsTrue();
     }
 
     [Test]
-    public void ObserveHasError()
+    public async Task ObserveHasError()
     {
         using var rp = new ReactiveProperty<string>()
             .AddValidationError(x => x == null ? "Error" : null);
@@ -325,24 +325,24 @@ public class ReactivePropertyTest : ReactiveTest
         rp.ObserveHasErrors.Subscribe(x => results.Add(x));
         rp.Value = "OK";
 
-        results.Count.Should().Be(2);
-        results[0].Should().BeTrue();
-        results[1].Should().BeFalse();
+        await Assert.That(results.Count).IsEqualTo(2);
+        await Assert.That(results[0]).IsTrue();
+        await Assert.That(results[1]).IsFalse();
     }
 
     [Test]
-    public void CheckValidation()
+    public async Task CheckValidation()
     {
         var minValue = 0;
         using var rp = new ReactiveProperty<int>(0)
             .AddValidationError(x => x < minValue ? "Error" : null);
-        rp.GetErrors("Value"); Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(rp.GetErrors("Value") == null).IsTrue();
 
         minValue = 1;
-        rp.GetErrors("Value"); Assert.That(.Should().BeNull()_value, Is.Null);
+        await Assert.That(rp.GetErrors("Value") == null).IsTrue();
 
         rp.CheckValidation();
-        rp.GetErrors("Value")?.OfType<string>().Should().Equal("Error");
+        await Assert.That(rp.GetErrors("Value")?.OfType<string>()).IsEquivalentTo(new[] { "Error" });
     }
 
     [Test]
@@ -352,25 +352,26 @@ public class ReactivePropertyTest : ReactiveTest
         var collector = new List<int>();
         rp.Subscribe(x => collector.Add(x));
 
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
+
         // Allow potential async propagation
         await Task.Yield();
-        collector.Should().Equal(0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
 
         rp.Value = 1;
-        rp.Value.Should().Be(1);
+        await Assert.That(rp.Value).IsEqualTo(1);
         await Task.Yield();
-        collector.Should().Equal(0, 1);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1 });
 
         rp.Value = 2;
-        rp.Value.Should().Be(2);
+        await Assert.That(rp.Value).IsEqualTo(2);
         await Task.Yield();
-        collector.Should().Equal(0, 1, 2);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1, 2 });
 
         rp.Value = 3;
-        rp.Value.Should().Be(3);
+        await Assert.That(rp.Value).IsEqualTo(3);
         await Task.Yield();
-        collector.Should().Equal(0, 1, 2, 3);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1, 2, 3 });
     }
 
     [Test]
@@ -381,12 +382,12 @@ public class ReactivePropertyTest : ReactiveTest
         rp.Subscribe(x => collector.Add(x));
 
         await Task.Yield();
-        collector.Should().Equal(0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
 
         // refresh should always produce a value even if it is the same and duplicates are not allowed
         rp.Refresh();
         await Task.Yield();
-        collector.Should().Equal(0, 0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0 });
     }
 
     [Test]
@@ -396,24 +397,24 @@ public class ReactivePropertyTest : ReactiveTest
         var collector = new List<int>();
         rp.Subscribe(x => collector.Add(x));
 
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
         await Task.Yield();
-        collector.Should().Equal(0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
 
         rp.Value = 0;
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
         await Task.Yield();
-        collector.Should().Equal(0, 0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0 });
 
         rp.Value = 0;
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
         await Task.Yield();
-        collector.Should().Equal(0, 0, 0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0, 0 });
 
         rp.Value = 0;
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
         await Task.Yield();
-        collector.Should().Equal(0, 0, 0, 0);
+        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0, 0, 0 });
     }
 
     [Test]
@@ -424,40 +425,40 @@ public class ReactivePropertyTest : ReactiveTest
         var collector2 = new List<int>();
         rp.Subscribe(x => collector1.Add(x));
 
-        rp.Value.Should().Be(0);
+        await Assert.That(rp.Value).IsEqualTo(0);
         await Task.Yield();
-        collector1.Should().Equal(0);
+        await Assert.That(collector1).IsEquivalentTo(new[] { 0 });
 
         rp.Value = 1;
-        rp.Value.Should().Be(1);
+        await Assert.That(rp.Value).IsEqualTo(1);
         await Task.Yield();
-        collector1.Should().Equal(0, 1);
+        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1 });
 
         rp.Value = 2;
-        rp.Value.Should().Be(2);
+        await Assert.That(rp.Value).IsEqualTo(2);
         await Task.Yield();
-        collector1.Should().Equal(0, 1, 2);
+        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1, 2 });
 
         // second subscriber
         rp.Subscribe(x => collector2.Add(x));
-        rp.Value.Should().Be(2);
+        await Assert.That(rp.Value).IsEqualTo(2);
         await Task.Yield();
-        collector2.Should().Equal(2);
+        await Assert.That(collector2).IsEquivalentTo(new[] { 2 });
 
         rp.Value = 3;
-        rp.Value.Should().Be(3);
+        await Assert.That(rp.Value).IsEqualTo(3);
         await Task.Yield();
-        collector1.Should().Equal(0, 1, 2, 3);
-        collector2.Should().Equal(2, 3);
+        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1, 2, 3 });
+        await Assert.That(collector2).IsEquivalentTo(new[] { 2, 3 });
     }
 
     [Test]
-    public void TestMultipleSubstribers()
+    public async Task TestMultipleSubstribers()
     {
         using var vm = new SubcribeTestViewModel(1000);
-        vm.SubscriberCount.Should().Be(1000);
-        vm.StartupTime.Should().BeLessThan(2000);
-        vm.SubscriberEvents.Should().Be(1000);
+        await Assert.That(vm.SubscriberCount).IsEqualTo(1000);
+        await Assert.That(vm.StartupTime).IsLessThan(2000);
+        await Assert.That(vm.SubscriberEvents).IsEqualTo(1000);
     }
 
     [Test]
@@ -501,9 +502,10 @@ public class ReactivePropertyTest : ReactiveTest
     }
 
     [Test]
-    public void ObserveValidationErrors_ThrowsOnNull()
+    public async Task ObserveValidationErrors_ThrowsOnNull()
     {
         ReactiveProperty<string>? nullProperty = null;
-        Assert.Throws<ArgumentNullException>(() => nullProperty!.ObserveValidationErrors());
+        await Assert.That(() => nullProperty!.ObserveValidationErrors())
+            .Throws<ArgumentNullException>();
     }
 }
