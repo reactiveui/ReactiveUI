@@ -217,6 +217,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
         _validationDisposable.Disposable = Observable
             .CombineLatest(validators)
+            .ObserveOn(_scheduler)
             .Select(xs =>
             {
                 if (xs.Count == 0 || xs.All(x => x == null))
@@ -228,8 +229,8 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                     .Where(x => x != null)
                     .OfType<string>();
                 var others = xs
-                    .Where(x => x is not string or null)
-                    .SelectMany(x => x!.Cast<object?>());
+                    .Where(x => x is not null and not string)
+                    .SelectMany(x => x!.OfType<object?>());
 
                 return strings.Concat(others);
             })

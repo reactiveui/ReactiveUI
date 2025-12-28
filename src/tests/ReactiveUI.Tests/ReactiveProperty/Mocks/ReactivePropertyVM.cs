@@ -11,25 +11,27 @@ namespace ReactiveUI.Tests.ReactiveProperty.Mocks;
 
 public class ReactivePropertyVM : ReactiveObject
 {
-    public ReactivePropertyVM()
+    public ReactivePropertyVM(IScheduler? scheduler = null)
     {
-        IsRequiredProperty = new ReactiveProperty<string>()
+        scheduler ??= ImmediateScheduler.Instance;
+
+        IsRequiredProperty = new ReactiveProperty<string>(default, scheduler, false, false)
             .AddValidation(() => IsRequiredProperty);
 
-        LengthLessThanFiveProperty = new ReactiveProperty<string>()
+        LengthLessThanFiveProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                                      .AddValidation(() => LengthLessThanFiveProperty)
                                      .AddValidationError(s => string.IsNullOrWhiteSpace(s) ? "required" : null);
 
-        TaskValidationTestProperty = new ReactiveProperty<string>()
+        TaskValidationTestProperty = new ReactiveProperty<string>(default, scheduler, false, false)
             .AddValidationError(async s => await Task.FromResult(string.IsNullOrWhiteSpace(s) ? "required" : null));
 
-        CustomValidationErrorMessageProperty = new ReactiveProperty<string>()
+        CustomValidationErrorMessageProperty = new ReactiveProperty<string>(default, scheduler, false, false)
             .AddValidation(() => CustomValidationErrorMessageProperty);
 
-        CustomValidationErrorMessageWithDisplayNameProperty = new ReactiveProperty<string>()
+        CustomValidationErrorMessageWithDisplayNameProperty = new ReactiveProperty<string>(default, scheduler, false, false)
             .AddValidation(() => CustomValidationErrorMessageWithDisplayNameProperty);
 
-        CustomValidationErrorMessageWithResourceProperty = new ReactiveProperty<string>()
+        CustomValidationErrorMessageWithResourceProperty = new ReactiveProperty<string>(default, scheduler, false, false)
             .AddValidation(() => CustomValidationErrorMessageWithResourceProperty);
     }
 
