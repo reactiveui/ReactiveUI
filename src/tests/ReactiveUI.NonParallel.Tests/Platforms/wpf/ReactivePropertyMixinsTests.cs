@@ -184,15 +184,14 @@ public class ReactivePropertyMixinsTests
     public async Task ObserveValidationErrors_ShouldReturnObservableOfErrors()
     {
         // Arrange
-        var property = new ReactiveProperty<string>();
+        var property = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false);
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.ObserveOn(ImmediateScheduler.Instance)
-                  .Subscribe(error => errors.Add(error));
+        observable.Subscribe(error => errors.Add(error));
         property.Value = null;
 
         // Assert
@@ -203,15 +202,14 @@ public class ReactivePropertyMixinsTests
     public async Task ObserveValidationErrors_WhenNoErrors_ShouldReturnNull()
     {
         // Arrange
-        var property = new ReactiveProperty<string>("Valid");
+        var property = new ReactiveProperty<string>("Valid", ImmediateScheduler.Instance, false, false);
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
 
         string? lastError = "initial";
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.ObserveOn(ImmediateScheduler.Instance)
-                  .Subscribe(error => lastError = error);
+        observable.Subscribe(error => lastError = error);
         property.Value = "Valid Value";
 
         // Assert
@@ -233,7 +231,7 @@ public class ReactivePropertyMixinsTests
     public async Task ObserveValidationErrors_ShouldEmitOnlyFirstError()
     {
         // Arrange
-        var property = new ReactiveProperty<string>();
+        var property = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false);
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error1" : null)
                 .AddValidationError(x => string.IsNullOrEmpty(x) ? "Error2" : null);
 
@@ -241,8 +239,7 @@ public class ReactivePropertyMixinsTests
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.ObserveOn(ImmediateScheduler.Instance)
-                  .Subscribe(error => errors.Add(error));
+        observable.Subscribe(error => errors.Add(error));
         property.Value = null;
 
         // Assert
@@ -253,13 +250,12 @@ public class ReactivePropertyMixinsTests
     public async Task ObserveValidationErrors_ShouldUpdateWhenErrorsChange()
     {
         // Arrange
-        var property = new ReactiveProperty<string>();
+        var property = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false);
         property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
 
         var errorHistory = new List<string?>();
         var observable = property.ObserveValidationErrors();
-        observable.ObserveOn(ImmediateScheduler.Instance)
-                  .Subscribe(error => errorHistory.Add(error));
+        observable.Subscribe(error => errorHistory.Add(error));
 
         // Act
         property.Value = null;  // Should trigger error
@@ -272,27 +268,29 @@ public class ReactivePropertyMixinsTests
 
     private class TestViewModel : ReactiveObject
     {
-        public TestViewModel()
+        public TestViewModel(IScheduler? scheduler = null)
         {
-            RequiredProperty = new ReactiveProperty<string>()
+            scheduler ??= ImmediateScheduler.Instance;
+
+            RequiredProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => RequiredProperty);
 
-            StringLengthProperty = new ReactiveProperty<string>()
+            StringLengthProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => StringLengthProperty);
 
-            RangeProperty = new ReactiveProperty<int>()
+            RangeProperty = new ReactiveProperty<int>(default, scheduler, false, false)
                 .AddValidation(() => RangeProperty);
 
-            DisplayNameProperty = new ReactiveProperty<string>()
+            DisplayNameProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => DisplayNameProperty);
 
-            MultiValidationProperty = new ReactiveProperty<string>()
+            MultiValidationProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => MultiValidationProperty);
 
-            CustomErrorMessageProperty = new ReactiveProperty<string>()
+            CustomErrorMessageProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => CustomErrorMessageProperty);
 
-            NoValidationProperty = new ReactiveProperty<string>()
+            NoValidationProperty = new ReactiveProperty<string>(default, scheduler, false, false)
                 .AddValidation(() => NoValidationProperty);
         }
 
