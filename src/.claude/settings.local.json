@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(paste:*)",
+      "Bash(grep:*)",
+      "Bash(for var in assembly changeSet childCommands collection command controlProperty execute expression factory from handler info item member node observable onAdd onChanged onRemove property propertyExpression propertyName registerFunction registrationNamespaces resolver selector self selfSelector sender source target targetType toType type view viewModel viewProperty viewToVmConverter vmProperty vmToViewConverter withParameter)",
+      "Bash(do)",
+      "Bash(find:*)",
+      "Bash(dotnet test:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}

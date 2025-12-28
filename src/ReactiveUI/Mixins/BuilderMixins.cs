@@ -26,10 +26,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">scheduler.</exception>
     public static IReactiveUIBuilder WithTaskPoolScheduler(this IReactiveUIBuilder builder, IScheduler scheduler, bool setRxApp = true)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithTaskPoolScheduler(scheduler, setRxApp);
         return builder;
@@ -47,10 +44,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">builder.</exception>
     public static IReactiveUIBuilder WithMainThreadScheduler(this IReactiveUIBuilder builder, IScheduler scheduler, bool setRxApp = true)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithMainThreadScheduler(scheduler, setRxApp);
         return builder;
@@ -67,10 +61,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">builder.</exception>
     public static IReactiveUIBuilder WithRegistrationOnBuild(this IReactiveUIBuilder builder, Action<IMutableDependencyResolver> configureAction)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithRegistrationOnBuild(configureAction);
         return builder;
@@ -87,10 +78,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">builder.</exception>
     public static IReactiveUIBuilder WithRegistration(this IReactiveUIBuilder builder, Action<IMutableDependencyResolver> configureAction)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithRegistration(configureAction);
         return builder;
@@ -111,10 +99,7 @@ public static class BuilderMixins
 #endif
     public static IReactiveUIBuilder WithViewsFromAssembly(this IReactiveUIBuilder builder, Assembly assembly)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithViewsFromAssembly(assembly);
         return builder;
@@ -136,10 +121,7 @@ public static class BuilderMixins
     public static IReactiveUIBuilder WithPlatformModule<T>(this IReactiveUIBuilder builder)
         where T : IWantsToRegisterStuff, new()
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.WithPlatformModule<T>();
         return builder;
@@ -158,10 +140,7 @@ public static class BuilderMixins
     public static IReactiveUIBuilder UsingSplatModule<T>(this IReactiveUIBuilder builder, T registrationModule)
         where T : IModule
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         builder.UsingSplatModule(registrationModule);
         return builder;
@@ -177,10 +156,7 @@ public static class BuilderMixins
     /// </returns>
     public static IReactiveUIBuilder UsingSplatBuilder(this IReactiveUIBuilder reactiveUIBuilder, Action<IAppBuilder>? appBuilder)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         appBuilder?.Invoke(reactiveUIBuilder);
         return reactiveUIBuilder;
@@ -201,10 +177,7 @@ public static class BuilderMixins
         IScheduler mainThreadScheduler,
         Action<IMutableDependencyResolver> platformServices)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder
             .WithMainThreadScheduler(mainThreadScheduler)
@@ -223,10 +196,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
     public static IReactiveUIBuilder ForPlatforms(this IReactiveUIBuilder reactiveUIBuilder, params Action<IReactiveUIBuilder>[] platformConfigurations)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.ForPlatforms(platformConfigurations);
         return reactiveUIBuilder;
@@ -243,10 +213,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
     public static IReactiveUIBuilder ConfigureMessageBus(this IReactiveUIBuilder reactiveUIBuilder, Action<MessageBus> configure)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.ConfigureMessageBus(configure);
         return reactiveUIBuilder;
@@ -263,10 +230,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
     public static IReactiveUIBuilder ConfigureViewLocator(this IReactiveUIBuilder reactiveUIBuilder, Action<DefaultViewLocator> configure)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.ConfigureViewLocator(configure);
         return reactiveUIBuilder;
@@ -283,10 +247,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
     public static IReactiveUIBuilder ConfigureSuspensionDriver(this IReactiveUIBuilder reactiveUIBuilder, Action<ISuspensionDriver> configure)
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.ConfigureSuspensionDriver(configure);
         return reactiveUIBuilder;
@@ -304,10 +265,7 @@ public static class BuilderMixins
     public static IReactiveUIBuilder RegisterViewModel<TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
         where TViewModel : class, IReactiveObject, new()
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.RegisterViewModel<TViewModel>();
         return reactiveUIBuilder;
@@ -329,10 +287,7 @@ public static class BuilderMixins
 #endif
         where TViewModel : class, IReactiveObject, new()
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.RegisterSingletonViewModel<TViewModel>();
         return reactiveUIBuilder;
@@ -352,10 +307,7 @@ public static class BuilderMixins
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.RegisterView<TView, TViewModel>();
         return reactiveUIBuilder;
@@ -375,10 +327,7 @@ public static class BuilderMixins
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
-        if (reactiveUIBuilder == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIBuilder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.RegisterSingletonView<TView, TViewModel>();
         return reactiveUIBuilder;
@@ -481,10 +430,7 @@ public static class BuilderMixins
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
     public static IReactiveUIInstance WithInstance<T1, T2, T3, T4>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?> action)
     {
-        if (reactiveUIInstance == null)
-        {
-            throw new ArgumentNullException(nameof(reactiveUIInstance));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
 
         if (reactiveUIInstance.Current is null)
         {

@@ -40,10 +40,7 @@ public class ControlScheduler : LocalScheduler, ISchedulerPeriodic
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
     public override IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
     {
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         if (_control.IsDisposed)
         {
@@ -74,10 +71,7 @@ public class ControlScheduler : LocalScheduler, ISchedulerPeriodic
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is null.</exception>
     public override IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
     {
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         var dt = Scheduler.Normalize(dueTime);
         if (dt.Ticks == 0)
@@ -161,10 +155,7 @@ public class ControlScheduler : LocalScheduler, ISchedulerPeriodic
             throw new ArgumentOutOfRangeException(nameof(period));
         }
 
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         var createTimer = new Func<IScheduler, TState, IDisposable>((scheduler1, state1) =>
         {

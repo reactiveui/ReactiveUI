@@ -28,7 +28,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
     /// <exception cref="InvalidCastException">If we cannot cast the object.</exception>
     public static object? DoReferenceCast(object? from, Type targetType)
     {
-        targetType.ArgumentNullExceptionThrowIfNull(nameof(targetType));
+        ArgumentExceptionHelper.ThrowIfNull(targetType);
         var backingNullableType = Nullable.GetUnderlyingType(targetType);
 
         if (backingNullableType is null)
@@ -97,7 +97,7 @@ public class EqualityTypeConverter : IBindingTypeConverter
     /// <inheritdoc/>
     public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
     {
-        toType.ArgumentNullExceptionThrowIfNull(nameof(toType));
+        ArgumentExceptionHelper.ThrowIfNull(toType);
 
         var mi = _referenceCastCache.Get(toType);
 
@@ -117,8 +117,8 @@ public class EqualityTypeConverter : IBindingTypeConverter
 
     private static bool IsInstanceOfType(object from, Type targetType)
     {
-        from.ArgumentNullExceptionThrowIfNull(nameof(from));
-        targetType.ArgumentNullExceptionThrowIfNull(nameof(targetType));
+        ArgumentExceptionHelper.ThrowIfNull(from);
+        ArgumentExceptionHelper.ThrowIfNull(targetType);
         return targetType.IsInstanceOfType(from);
     }
 }

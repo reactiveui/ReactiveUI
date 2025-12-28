@@ -3,9 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if !NETFX_CORE
 using System.Windows.Threading;
-#endif
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -19,11 +17,9 @@ public static class DispatcherUtilities
     /// </summary>
     public static void DoEvents()
     {
-#if !NETFX_CORE
         var frame = new DispatcherFrame();
         Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
         Dispatcher.PushFrame(frame);
-#endif
     }
 
     /// <summary>
@@ -33,14 +29,13 @@ public static class DispatcherUtilities
     /// <returns>Unused return value.</returns>
     public static object? ExitFrame(object f)
     {
-#if !NETFX_CORE
         if (f is not DispatcherFrame frame)
         {
             return null;
         }
 
         frame.Continue = false;
-#endif
+
         return null;
     }
 }

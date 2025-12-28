@@ -15,10 +15,10 @@ public class MessageBusExtensionsTests
 {
     private MessageBusScope _scope = null!;
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp() => _scope = new MessageBusScope();
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown() => _scope.Dispose();
 
     [Test]

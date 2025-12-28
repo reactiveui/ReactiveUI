@@ -21,6 +21,9 @@
     <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">

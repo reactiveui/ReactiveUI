@@ -27,15 +27,9 @@ public static class ControlObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, Control control)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (control == null)
-        {
-            throw new ArgumentNullException(nameof(control));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(control);
 
         return Synchronization.SubscribeOn(source, new ControlScheduler(control));
     }
@@ -50,15 +44,9 @@ public static class ControlObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="control"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, Control control)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (control == null)
-        {
-            throw new ArgumentNullException(nameof(control));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(control);
 
         return Synchronization.ObserveOn(source, new ControlScheduler(control));
     }

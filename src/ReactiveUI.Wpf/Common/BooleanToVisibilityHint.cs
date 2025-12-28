@@ -25,7 +25,7 @@ public enum BooleanToVisibilityHint
     /// </summary>
     Inverse = 1 << 1,
 
-#if !NETFX_CORE && !HAS_UNO
+#if !HAS_UNO
     /// <summary>
     /// Use the hidden version rather than the Collapsed.
     /// </summary>

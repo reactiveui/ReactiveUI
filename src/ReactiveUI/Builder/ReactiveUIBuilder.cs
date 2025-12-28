@@ -161,7 +161,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
 #endif
     public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
-        assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
+        ArgumentExceptionHelper.ThrowIfNull(assembly);
 
         // Register views immediately against the builder's resolver
         CurrentMutable.RegisterViewsForViewModels(assembly);

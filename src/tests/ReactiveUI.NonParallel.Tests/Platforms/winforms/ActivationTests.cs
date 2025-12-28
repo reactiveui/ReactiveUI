@@ -23,9 +23,7 @@ public class ActivationTests
     public async Task ActivationForViewFetcherSupportsDefaultWinformsComponents()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
-        var supportedComponents = new[] { typeof(Control), typeof(UserControl), typeof(Form) };
-
-        foreach (var c in supportedComponents)
+        foreach (var c in new[] { typeof(Control), typeof(UserControl), typeof(Form) })
         {
             await Assert.That(target.GetAffinityForView(c)).IsEqualTo(10);
         }

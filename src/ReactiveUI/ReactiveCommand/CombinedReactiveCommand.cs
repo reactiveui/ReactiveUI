@@ -54,7 +54,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         IObservable<bool>? canExecute,
         IScheduler? outputScheduler = null)
     {
-        childCommands.ArgumentNullExceptionThrowIfNull(nameof(childCommands));
+        ArgumentExceptionHelper.ThrowIfNull(childCommands);
 
         _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
 

@@ -290,9 +290,9 @@ public static class AutoPersistHelper
         where TItem : IReactiveObject
         where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
     {
-        onAdd.ArgumentNullExceptionThrowIfNull(nameof(onAdd));
-        onRemove.ArgumentNullExceptionThrowIfNull(nameof(onRemove));
-        collection.ArgumentNullExceptionThrowIfNull(nameof(collection));
+        ArgumentExceptionHelper.ThrowIfNull(onAdd);
+        ArgumentExceptionHelper.ThrowIfNull(onRemove);
+        ArgumentExceptionHelper.ThrowIfNull(collection);
 
         foreach (var v in collection)
         {

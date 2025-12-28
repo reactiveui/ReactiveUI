@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
 using System.Windows;
 
 using Microsoft.Xaml.Behaviors;
@@ -42,6 +43,24 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     public bool AutoResubscribeOnError { get; set; }
 
     /// <summary>
+    /// Gets or sets the scheduler to use for observing changes.
+    /// If null, uses RxSchedulers.MainThreadScheduler. This property is primarily for testing purposes.
+    /// </summary>
+    public IScheduler? SchedulerOverride { get; set; }
+
+    /// <summary>
+    /// Internal method for testing purposes that calls OnObservableChanged.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The event args.</param>
+#if NET6_0_OR_GREATER
+    [RequiresDynamicCode("InternalOnObservableChangedForTesting uses methods that require dynamic code generation")]
+    [RequiresUnreferencedCode("InternalOnObservableChangedForTesting uses methods that may require unreferenced code")]
+#endif
+    internal static void InternalOnObservableChangedForTesting(DependencyObject sender, DependencyPropertyChangedEventArgs e) =>
+        OnObservableChanged(sender, e);
+
+    /// <summary>
     /// Called when [observable changed].
     /// </summary>
     /// <param name="sender">The sender.</param>
@@ -52,10 +71,8 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
 #endif
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        if (sender is not ObservableTrigger triggerItem)
-        {
-            throw new ArgumentException("Sender must be of type " + nameof(ObservableTrigger), nameof(sender));
-        }
+        ArgumentExceptionHelper.ThrowIfNotOfType<ObservableTrigger>(sender, nameof(sender));
+        var triggerItem = (ObservableTrigger)sender;
 
         if (triggerItem._watcher is not null)
         {
@@ -63,7 +80,14 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
             triggerItem._watcher = null;
         }
 
-        triggerItem._watcher = ((IObservable<object>)e.NewValue).ObserveOn(RxSchedulers.MainThreadScheduler).Subscribe(
+        if (e == default)
+        {
+            throw new ArgumentNullException(nameof(e));
+        }
+
+        var newValue = (IObservable<object>)e.NewValue;
+        var scheduler = triggerItem.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
+        triggerItem._watcher = newValue.ObserveOn(scheduler).Subscribe(
          triggerItem.InvokeActions,
          _ =>
          {

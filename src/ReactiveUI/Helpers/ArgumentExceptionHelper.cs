@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Helpers;
@@ -237,6 +236,35 @@ internal static class ArgumentExceptionHelper
         if (value.CompareTo(other) <= 0)
         {
             throw new ArgumentOutOfRangeException(paramName, $"The value cannot be less than or equal to {other}.");
+        }
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentException"/> if <paramref name="argument"/> is not of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The expected type.</typeparam>
+    /// <param name="argument">The argument to validate.</param>
+    /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
+    public static void ThrowIfNotOfType<T>([NotNull] object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+    {
+        if (argument is not T)
+        {
+            throw new ArgumentException($"Argument must be of type {typeof(T).Name}.", paramName);
+        }
+    }
+
+    /// <summary>
+    /// Throws an <see cref="ArgumentNullException"/> if <paramref name="argument"/> is default.
+    /// </summary>
+    /// <typeparam name="T">The struct type.</typeparam>
+    /// <param name="argument">The argument to validate.</param>
+    /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
+    public static void ThrowIfDefault<T>(T argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+        where T : struct
+    {
+        if (EqualityComparer<T>.Default.Equals(argument, default))
+        {
+            throw new ArgumentNullException(paramName);
         }
     }
 }

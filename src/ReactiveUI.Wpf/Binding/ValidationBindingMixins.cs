@@ -37,15 +37,9 @@ public static class ValidationBindingMixins
         where TView : class, IViewFor
         where TViewModel : class
     {
-        if (viewModelPropertySelector == null)
-        {
-            throw new ArgumentNullException(nameof(viewModelPropertySelector));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(viewModelPropertySelector);
 
-        if (frameworkElementSelector == null)
-        {
-            throw new ArgumentNullException(nameof(frameworkElementSelector));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(frameworkElementSelector);
 
         return new ValidationBindingWpf<TView, TViewModel, TVProp, TType>(view, viewModel, viewModelPropertySelector, frameworkElementSelector);
     }

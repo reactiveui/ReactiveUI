@@ -32,7 +32,7 @@ public sealed partial class DefaultViewLocator
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>
     {
-        factory.ArgumentNullExceptionThrowIfNull(nameof(factory));
+        ArgumentExceptionHelper.ThrowIfNull(factory);
         _aotMappings[(typeof(TViewModel), contract ?? string.Empty)] = () => factory();
         return this;
     }

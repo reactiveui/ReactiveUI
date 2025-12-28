@@ -25,15 +25,9 @@ public static class DispatcherObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="dispatcher"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, Dispatcher dispatcher)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcher));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcher);
 
         return ObserveOn_(source, dispatcher);
     }
@@ -49,15 +43,9 @@ public static class DispatcherObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="dispatcher"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, Dispatcher dispatcher, DispatcherPriority priority)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcher));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcher);
 
         return ObserveOn_(source, dispatcher, priority);
     }
@@ -72,15 +60,9 @@ public static class DispatcherObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="scheduler"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, DispatcherScheduler scheduler)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (scheduler == null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         return ObserveOn_(source, scheduler.Dispatcher, scheduler.Priority);
     }
@@ -96,15 +78,9 @@ public static class DispatcherObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="dispatcherObject"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, DispatcherObject dispatcherObject)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcherObject == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcherObject));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcherObject);
 
         return ObserveOn_(source, dispatcherObject.Dispatcher);
     }
@@ -120,15 +96,9 @@ public static class DispatcherObservable
     /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="dispatcherObject"/> is null.</exception>
     public static IObservable<TSource> ObserveOn<TSource>(this IObservable<TSource> source, DispatcherObject dispatcherObject, DispatcherPriority priority)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcherObject == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcherObject));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcherObject);
 
         return ObserveOn_(source, dispatcherObject.Dispatcher, priority);
     }
@@ -162,15 +132,9 @@ public static class DispatcherObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, Dispatcher dispatcher)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcher));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcher);
 
         return SubscribeOn_(source, dispatcher);
     }
@@ -190,15 +154,9 @@ public static class DispatcherObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, Dispatcher dispatcher, DispatcherPriority priority)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcher == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcher));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcher);
 
         return SubscribeOn_(source, dispatcher, priority);
     }
@@ -218,15 +176,9 @@ public static class DispatcherObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, DispatcherScheduler scheduler)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (scheduler == null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         return SubscribeOn_(source, scheduler.Dispatcher, scheduler.Priority);
     }
@@ -245,15 +197,9 @@ public static class DispatcherObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, DispatcherObject dispatcherObject)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcherObject == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcherObject));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcherObject);
 
         return SubscribeOn_(source, dispatcherObject.Dispatcher);
     }
@@ -273,15 +219,9 @@ public static class DispatcherObservable
     /// </remarks>
     public static IObservable<TSource> SubscribeOn<TSource>(this IObservable<TSource> source, DispatcherObject dispatcherObject, DispatcherPriority priority)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (dispatcherObject == null)
-        {
-            throw new ArgumentNullException(nameof(dispatcherObject));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dispatcherObject);
 
         return SubscribeOn_(source, dispatcherObject.Dispatcher, priority);
     }

@@ -4,14 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using PropertyMetadata = System.Windows.PropertyMetadata;
-
-#if NETFX_CORE
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#else
 using System.Windows.Controls;
-#endif
+using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml;
 

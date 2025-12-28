@@ -30,7 +30,7 @@ public class POCOObservableForProperty : ICreatesObservableForProperty
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        sender.ArgumentNullExceptionThrowIfNull(nameof(sender));
+        ArgumentExceptionHelper.ThrowIfNull(sender);
 
         var type = sender.GetType();
         if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)

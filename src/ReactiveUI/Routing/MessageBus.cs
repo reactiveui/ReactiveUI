@@ -110,7 +110,7 @@ public class MessageBus : IMessageBus
         IObservable<T> source,
         string? contract = null)
     {
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
         return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
     }

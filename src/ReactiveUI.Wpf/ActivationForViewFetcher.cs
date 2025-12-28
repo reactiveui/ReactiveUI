@@ -31,13 +31,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         var viewLoaded = Observable.FromEvent<RoutedEventHandler, bool>(
-                                                                        eventHandler =>
-                                                                        {
-                                                                            void Handler(object sender, RoutedEventArgs e) => eventHandler(true);
-                                                                            return Handler;
-                                                                        },
-                                                                        x => fe.Loaded += x,
-                                                                        x => fe.Loaded -= x);
+            eventHandler =>
+            {
+                void Handler(object sender, RoutedEventArgs e) => eventHandler(true);
+                return Handler;
+            },
+            x => fe.Loaded += x,
+            x => fe.Loaded -= x);
 
         var hitTestVisible = Observable.FromEvent<DependencyPropertyChangedEventHandler, bool>(
          eventHandler =>
@@ -49,13 +49,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
          x => fe.IsHitTestVisibleChanged -= x);
 
         var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
-                                                                          eventHandler =>
-                                                                          {
-                                                                              void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
-                                                                              return Handler;
-                                                                          },
-                                                                          x => fe.Unloaded += x,
-                                                                          x => fe.Unloaded -= x);
+            eventHandler =>
+            {
+                void Handler(object sender, RoutedEventArgs e) => eventHandler(false);
+                return Handler;
+            },
+            x => fe.Unloaded += x,
+            x => fe.Unloaded -= x);
 
         var windowActivation = GetActivationForWindow(view);
 
@@ -73,7 +73,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             return Observable<bool>.Empty;
         }
 
-        var viewClosed = Observable.FromEvent<EventHandler, bool>(
+        return Observable.FromEvent<EventHandler, bool>(
             eventHandler =>
             {
                 void Handler(object? sender, EventArgs e) => eventHandler(false);
@@ -81,7 +81,5 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             },
             x => window.Closed += x,
             x => window.Closed -= x);
-
-        return viewClosed;
     }
 }

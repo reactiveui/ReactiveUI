@@ -36,8 +36,8 @@ public static class DependencyResolverMixins
             return;
         }
 
-        resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
-        registrationNamespaces.ArgumentNullExceptionThrowIfNull(nameof(registrationNamespaces));
+        ArgumentExceptionHelper.ThrowIfNull(resolver);
+        ArgumentExceptionHelper.ThrowIfNull(registrationNamespaces);
 
         var possibleNamespaces = new Dictionary<RegistrationNamespace, string>
         {
@@ -95,8 +95,8 @@ public static class DependencyResolverMixins
 #endif
     public static void RegisterViewsForViewModels(this IMutableDependencyResolver resolver, Assembly assembly)
     {
-        resolver.ArgumentNullExceptionThrowIfNull(nameof(resolver));
-        assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
+        ArgumentExceptionHelper.ThrowIfNull(resolver);
+        ArgumentExceptionHelper.ThrowIfNull(assembly);
 
         // for each type that implements IViewFor
         foreach (var ti in assembly.DefinedTypes

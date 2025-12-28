@@ -4,7 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
+
 using ReactiveUI.Winforms;
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
 
@@ -14,6 +17,7 @@ namespace ReactiveUI.Tests.Winforms;
 public class PanelSetMethodBindingConverterTests
 {
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObjects_Returns_Zero_When_ToType_Is_Not_ControlCollection()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -23,6 +27,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObjects_Returns_Ten_When_FromType_Is_IEnumerable_Of_Control()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -32,6 +37,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObjects_Returns_Zero_When_FromType_Is_Not_IEnumerable_Of_Control()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -41,6 +47,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObjects_Returns_Zero_When_FromType_Is_Null()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -50,6 +57,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public void PerformSet_Throws_When_ToTarget_Is_Null()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -58,6 +66,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public void PerformSet_Throws_When_NewValue_Is_Not_IEnumerable_Control()
     {
         var converter = new PanelSetMethodBindingConverter();
@@ -67,6 +76,7 @@ public class PanelSetMethodBindingConverterTests
     }
 
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task PerformSet_Adds_Controls_To_Collection()
     {
         var converter = new PanelSetMethodBindingConverter();

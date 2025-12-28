@@ -27,7 +27,7 @@ public class ObservableAsPropertyHelperModeTests
             // be called recursively thus cause the subscription
             // to be called twice. Not sure if this is a reactive UI
             // or RX bug.
-            f.PropertyChanged += (e, s) => { _ = f.A; };
+            f.PropertyChanged += (e, s) => _ = f.A;
 
             using (Assert.Multiple())
             {
@@ -54,7 +54,7 @@ public class ObservableAsPropertyHelperModeTests
             // be called recursively thus cause the subscription
             // to be called twice. Not sure if this is a reactive UI
             // or RX bug.
-            f.PropertyChanged += (e, s) => { _ = f.A; };
+            f.PropertyChanged += (e, s) => _ = f.A;
 
             using (Assert.Multiple())
             {

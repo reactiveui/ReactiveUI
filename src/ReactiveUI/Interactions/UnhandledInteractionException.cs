@@ -89,7 +89,7 @@ public class UnhandledInteractionException<TInput, TOutput> : Exception
     /// <inheritdoc/>
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        info.ArgumentNullExceptionThrowIfNull(nameof(info));
+        ArgumentExceptionHelper.ThrowIfNull(info);
 
         info.AddValue(nameof(Input), Input);
         base.GetObjectData(info, context);

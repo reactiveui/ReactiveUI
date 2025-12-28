@@ -23,10 +23,7 @@ public static class ReactiveUIBuilderDrawingExtensions
 #endif
     public static IReactiveUIBuilder WithDrawing(this IReactiveUIBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder.WithPlatformModule<Drawing.Registrations>();
     }

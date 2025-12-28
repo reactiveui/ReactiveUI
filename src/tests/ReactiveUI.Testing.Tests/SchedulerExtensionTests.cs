@@ -295,4 +295,108 @@ public sealed class SchedulerExtensionTests
         // No assertions needed - if we get here without deadlock, the test passed
         await Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Tests that AdvanceToMs advances the scheduler to the specified time.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AdvanceToMs_ShouldAdvanceToSpecifiedTime()
+    {
+        var scheduler = new TestScheduler();
+        scheduler.AdvanceToMs(1000);
+
+        var expectedTicks = TimeSpan.FromMilliseconds(1000).Ticks;
+        await Assert.That(scheduler.Clock).IsEqualTo(expectedTicks);
+    }
+
+    /// <summary>
+    /// Tests that AdvanceByMs advances the scheduler by the specified time.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AdvanceByMs_ShouldAdvanceBySpecifiedTime()
+    {
+        var scheduler = new TestScheduler();
+        var initialTime = scheduler.Clock;
+
+        scheduler.AdvanceByMs(500);
+
+        var expectedTime = initialTime + TimeSpan.FromMilliseconds(500).Ticks;
+        await Assert.That(scheduler.Clock).IsEqualTo(expectedTime);
+    }
+
+    /// <summary>
+    /// Tests that OnNextAt creates a notification at the specified time.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnNextAt_ShouldCreateNotificationAtSpecifiedTime()
+    {
+        var scheduler = new TestScheduler();
+        var recorded = scheduler.OnNextAt(100, 42);
+
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(100));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
+            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnNext);
+            await Assert.That(recorded.Value.Value).IsEqualTo(42);
+        }
+    }
+
+    /// <summary>
+    /// Tests that OnErrorAt creates an error notification at the specified time.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnErrorAt_ShouldCreateErrorNotificationAtSpecifiedTime()
+    {
+        var scheduler = new TestScheduler();
+        var exception = new InvalidOperationException("Test error");
+        var recorded = scheduler.OnErrorAt<int>(200, exception);
+
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(200));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
+            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnError);
+            await Assert.That(recorded.Value.Exception).IsEqualTo(exception);
+        }
+    }
+
+    /// <summary>
+    /// Tests that OnCompletedAt creates a completion notification at the specified time.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnCompletedAt_ShouldCreateCompletionNotificationAtSpecifiedTime()
+    {
+        var scheduler = new TestScheduler();
+        var recorded = scheduler.OnCompletedAt<int>(300);
+
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(300));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
+            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnCompleted);
+        }
+    }
+
+    /// <summary>
+    /// Tests that FromTimeSpan converts TimeSpan to ticks correctly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task FromTimeSpan_ShouldConvertToTicks()
+    {
+        var scheduler = new TestScheduler();
+        var timeSpan = TimeSpan.FromMilliseconds(250);
+        var ticks = scheduler.FromTimeSpan(timeSpan);
+
+        await Assert.That(ticks).IsEqualTo(timeSpan.Ticks);
+    }
 }

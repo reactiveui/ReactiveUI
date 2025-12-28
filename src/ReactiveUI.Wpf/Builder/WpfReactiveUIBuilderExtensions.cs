@@ -25,10 +25,7 @@ public static class WpfReactiveUIBuilderExtensions
     /// <returns>The builder instance for chaining.</returns>
     public static IReactiveUIBuilder WithWpf(this IReactiveUIBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder
             .WithPlatformModule<Wpf.Registrations>()
@@ -43,10 +40,7 @@ public static class WpfReactiveUIBuilderExtensions
     /// <returns>The builder instance for chaining.</returns>
     public static IReactiveUIBuilder WithWpfScheduler(this IReactiveUIBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder.WithMainThreadScheduler(WpfMainThreadScheduler);
     }

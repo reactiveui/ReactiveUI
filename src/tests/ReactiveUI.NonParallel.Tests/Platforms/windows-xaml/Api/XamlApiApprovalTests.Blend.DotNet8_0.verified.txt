@@ -1,4 +1,5 @@
-﻿namespace ReactiveUI.Blend
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.NonParallel.Tests")]
+namespace ReactiveUI.Blend
 {
     [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("OnStateObservableChanged uses methods that require dynamic code generation")]
     [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("OnStateObservableChanged uses methods that may require unreferenced code")]
@@ -8,6 +9,7 @@
         public static readonly System.Windows.DependencyProperty TargetObjectProperty;
         public FollowObservableStateBehavior() { }
         public bool AutoResubscribeOnError { get; set; }
+        public System.Reactive.Concurrency.IScheduler? SchedulerOverride { get; set; }
         public System.IObservable<string> StateObservable { get; set; }
         public System.Windows.FrameworkElement TargetObject { get; set; }
         protected override void OnDetaching() { }
@@ -23,6 +25,7 @@
         public ObservableTrigger() { }
         public bool AutoResubscribeOnError { get; set; }
         public System.IObservable<object> Observable { get; set; }
+        public System.Reactive.Concurrency.IScheduler? SchedulerOverride { get; set; }
         [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("OnObservableChanged uses methods that require dynamic code generation")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("OnObservableChanged uses methods that may require unreferenced code")]
         protected static void OnObservableChanged(System.Windows.DependencyObject sender, System.Windows.DependencyPropertyChangedEventArgs e) { }

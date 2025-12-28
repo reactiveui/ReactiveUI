@@ -33,27 +33,27 @@ public partial class DefaultViewLocatorTests
 
         // Verify registration
         var hasReg = resolver.HasRegistration(typeof(IViewFor<FooViewModel>));
-        await Assert.That(hasReg).IsTrue();
+        await That(hasReg).IsTrue();
 
         using (resolver.WithResolver())
         {
             // Test direct GetService
             var service = AppLocator.Current.GetService(typeof(IViewFor<FooViewModel>));
-            await Assert.That(service).IsNotNull();
-            await Assert.That(service).IsTypeOf<FooView>();
+            await That(service).IsNotNull();
+            await That(service).IsTypeOf<FooView>();
 
             // Test that the ViewLocator can find the view by manually checking the type
             var vmType = typeof(FooViewModel);
             var expectedViewForType = typeof(IViewFor<FooViewModel>);
             var manualService = AppLocator.Current.GetService(expectedViewForType);
-            await Assert.That(manualService).IsNotNull();
+            await That(manualService).IsNotNull();
 
             // Test through ViewLocator
             var fixture = new DefaultViewLocator();
             var vm = new FooViewModel();
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsNotNull();
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsNotNull();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -76,7 +76,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -99,7 +99,7 @@ public partial class DefaultViewLocatorTests
             object vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -126,7 +126,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooWithWeirdConvention>();
+            await That(result).IsTypeOf<FooWithWeirdConvention>();
         }
     }
 
@@ -149,7 +149,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -172,7 +172,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -195,7 +195,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -218,7 +218,7 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModelWithWeirdName();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -241,7 +241,7 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -264,7 +264,7 @@ public partial class DefaultViewLocatorTests
             IFooViewModel vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
         }
     }
 
@@ -288,13 +288,13 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsNull();
+            await That(result).IsNull();
 
             result = fixture.ResolveView(vm, "first");
-            await Assert.That(result).IsTypeOf<FooView>();
+            await That(result).IsTypeOf<FooView>();
 
             result = fixture.ResolveView(vm, "second");
-            await Assert.That(result).IsTypeOf<FooWithWeirdConvention>();
+            await That(result).IsTypeOf<FooWithWeirdConvention>();
         }
     }
 
@@ -320,7 +320,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsNull();
+            await That(result).IsNull();
         }
     }
 
@@ -342,7 +342,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsNull();
+            await That(result).IsNull();
         }
     }
 
@@ -365,7 +365,7 @@ public partial class DefaultViewLocatorTests
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsNull();
+            await That(result).IsNull();
         }
     }
 
@@ -387,13 +387,13 @@ public partial class DefaultViewLocatorTests
             var fixture = new DefaultViewLocator();
             var vm = new FooViewModel();
 
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            var ex = await ThrowsAsync<InvalidOperationException>(async () =>
             {
                 fixture.ResolveView(vm);
                 await Task.CompletedTask;
             });
 
-            await Assert.That(ex!.Message).IsEqualTo("This is a test failure.");
+            await That(ex!.Message).IsEqualTo("This is a test failure.");
         }
     }
 
@@ -416,5 +416,159 @@ public partial class DefaultViewLocatorTests
 
             fixture.ResolveView((IStrangeInterfaceNotFollowingConvention)vm);
         }
+    }
+
+    /// <summary>
+    /// Tests that AOT mapping with Map method resolves views correctly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AotMapping_WithMapMethod_ResolvesViewCorrectly()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        using (resolver.WithResolver())
+        {
+            var fixture = new DefaultViewLocator();
+            fixture.Map<FooViewModel, FooViewForConcreteType>(() => new FooViewForConcreteType());
+
+            var vm = new FooViewModel();
+            var result = fixture.ResolveView(vm);
+
+            await That(result).IsNotNull();
+            await That(result).IsTypeOf<FooViewForConcreteType>();
+        }
+    }
+
+    /// <summary>
+    /// Tests that AOT mapping with contract resolves correct view.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AotMapping_WithContract_ResolvesCorrectView()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        using (resolver.WithResolver())
+        {
+            var fixture = new DefaultViewLocator();
+            fixture.Map<FooViewModel, FooViewForConcreteType>(() => new FooViewForConcreteType(), "contract1")
+                .Map<FooViewModel, AlternateFooView>(() => new AlternateFooView(), "contract2");
+
+            var vm = new FooViewModel();
+
+            var result1 = fixture.ResolveView(vm, "contract1");
+            await That(result1).IsTypeOf<FooViewForConcreteType>();
+
+            var result2 = fixture.ResolveView(vm, "contract2");
+            await That(result2).IsTypeOf<AlternateFooView>();
+        }
+    }
+
+    /// <summary>
+    /// Tests that AOT mapping with default contract is used when specific contract not found.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task AotMapping_FallsBackToDefaultContract_WhenSpecificNotFound()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        using (resolver.WithResolver())
+        {
+            var fixture = new DefaultViewLocator();
+            fixture.Map<FooViewModel, FooViewForConcreteType>(() => new FooViewForConcreteType());
+
+            var vm = new FooViewModel();
+            var result = fixture.ResolveView(vm, "nonexistent");
+
+            await That(result).IsNotNull();
+            await That(result).IsTypeOf<FooViewForConcreteType>();
+        }
+    }
+
+    /// <summary>
+    /// Tests that Unmap removes AOT mapping.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Unmap_RemovesAotMapping()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        using (resolver.WithResolver())
+        {
+            var fixture = new DefaultViewLocator();
+            fixture.Map<FooViewModel, FooViewForConcreteType>(() => new FooViewForConcreteType());
+
+            var vm = new FooViewModel();
+            var result = fixture.ResolveView(vm);
+            await That(result).IsTypeOf<FooViewForConcreteType>();
+
+            fixture.Unmap<FooViewModel>();
+            result = fixture.ResolveView(vm);
+            await That(result).IsNull();
+        }
+    }
+
+    /// <summary>
+    /// Tests that Unmap with contract removes only that contract mapping.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Unmap_WithContract_RemovesOnlyThatMapping()
+    {
+        var resolver = new ModernDependencyResolver();
+        resolver.InitializeSplat();
+        resolver.InitializeReactiveUI();
+
+        using (resolver.WithResolver())
+        {
+            var fixture = new DefaultViewLocator();
+            fixture.Map<FooViewModel, FooViewForConcreteType>(() => new FooViewForConcreteType())
+                .Map<FooViewModel, AlternateFooView>(() => new AlternateFooView(), "contract1");
+
+            var vm = new FooViewModel();
+
+            fixture.Unmap<FooViewModel>("contract1");
+
+            var defaultResult = fixture.ResolveView(vm);
+            await That(defaultResult).IsTypeOf<FooViewForConcreteType>();
+
+            var contract1Result = fixture.ResolveView(vm, "contract1");
+            await That(contract1Result).IsTypeOf<FooViewForConcreteType>();
+        }
+    }
+
+    /// <summary>
+    /// Test view that implements IViewFor for FooViewModel specifically.
+    /// </summary>
+    private class FooViewForConcreteType : IViewFor<FooViewModel>
+    {
+        /// <inheritdoc/>
+        object? IViewFor.ViewModel { get; set; }
+
+        /// <inheritdoc/>
+        public FooViewModel? ViewModel { get; set; }
+    }
+
+    /// <summary>
+    /// Another test view for testing contract-based AOT mapping.
+    /// </summary>
+    private class AlternateFooView : IViewFor<FooViewModel>
+    {
+        /// <inheritdoc/>
+        object? IViewFor.ViewModel { get; set; }
+
+        /// <inheritdoc/>
+        public FooViewModel? ViewModel { get; set; }
     }
 }

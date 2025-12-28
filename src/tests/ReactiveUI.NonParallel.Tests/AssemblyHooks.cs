@@ -16,7 +16,7 @@ public static class AssemblyHooks
     /// <summary>
     /// Called before any tests in this assembly start.
     /// </summary>
-    [Before(HookType.Assembly)]
+    [Before(Assembly)]
     public static void AssemblySetup()
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
@@ -26,7 +26,7 @@ public static class AssemblyHooks
     /// <summary>
     /// Called after all tests in this assembly complete.
     /// </summary>
-    [After(HookType.Assembly)]
+    [After(Assembly)]
     public static void AssemblyTeardown()
     {
         // Clean up resources

@@ -72,7 +72,7 @@ public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
+        ArgumentExceptionHelper.ThrowIfNull(target);
 
         var type = target!.GetType();
         var cmdPi = type.GetRuntimeProperty("Command");

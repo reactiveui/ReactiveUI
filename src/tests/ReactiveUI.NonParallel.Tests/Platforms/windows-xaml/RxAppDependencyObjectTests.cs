@@ -22,13 +22,13 @@ public class RxAppDependencyObjectTests
 {
     private RxAppSchedulersScope? _schedulersScope;
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();

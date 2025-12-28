@@ -20,13 +20,13 @@ public class PropertyBindingTest
 {
     private DispatcherSchedulerScope? _dispatcherScope;
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp()
     {
         _dispatcherScope = new DispatcherSchedulerScope();
     }
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown()
     {
         _dispatcherScope?.Dispose();
@@ -1810,9 +1810,7 @@ public class PropertyBindingTest
         using var source = new Subject<string>();
         using var subscription = source.BindTo(view, static x => x.ViewModel!.Nested.SomeText);
 
-        var values = new[] { "Delta", "Epsilon", "Zeta" };
-
-        foreach (var value in values)
+        foreach (var value in new[] { "Delta", "Epsilon", "Zeta" })
         {
             var replacement = new TrackingNestedValue();
             view.ViewModel!.Nested = replacement;

@@ -7,6 +7,8 @@ using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Tests.Winforms;
 
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -18,6 +20,7 @@ public class CanActivateViewFetcherTests
     /// Tests return negative for ICanActivate.
     /// </summary>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public void CanNotFetchActivatorForNonCanActivateableForm()
     {
         var form = new TestFormNotCanActivate();
@@ -29,6 +32,7 @@ public class CanActivateViewFetcherTests
     /// Tests return positive for ICanActivate.
     /// </summary>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public void CanGetActivationForViewForCanActivateableFormActivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -39,6 +43,7 @@ public class CanActivateViewFetcherTests
     /// Tests return negative for ICanActivate.
     /// </summary>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public void CanGetActivationForViewForCanActivateableFormDeactivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -50,6 +55,7 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnPositiveForICanActivate()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -62,6 +68,7 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnPositiveForICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -74,6 +81,7 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnZeroForNonICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();

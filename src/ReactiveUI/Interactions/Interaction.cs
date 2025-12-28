@@ -85,7 +85,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
     {
-        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         return RegisterHandler(interaction =>
         {
@@ -97,7 +97,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc />
     public IDisposable RegisterHandler(Func<IInteractionContext<TInput, TOutput>, Task> handler)
     {
-        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         return RegisterHandler(interaction => handler(interaction).ToObservable());
     }
@@ -105,7 +105,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <inheritdoc />
     public IDisposable RegisterHandler<TDontCare>(Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
     {
-        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> context) => handler(context).Select(_ => Unit.Default);
 

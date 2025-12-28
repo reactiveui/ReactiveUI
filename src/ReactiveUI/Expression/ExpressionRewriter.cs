@@ -15,7 +15,7 @@ internal class ExpressionRewriter : ExpressionVisitor
 {
     public override Expression Visit(Expression? node)
     {
-        node.ArgumentNullExceptionThrowIfNull(nameof(node));
+        ArgumentExceptionHelper.ThrowIfNull(node);
 
         switch (node!.NodeType)
         {

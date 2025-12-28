@@ -3,12 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if NETFX_CORE
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#else
-#endif
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -205,8 +199,7 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var received = 0;
-        var cmd = ReactiveCommand.Create<int>(i => received = i);
-        view.ViewModel.Command1 = cmd;
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
         view.ViewModel.Value = 10;
 
         view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
@@ -234,8 +227,7 @@ public class CommandBindingImplementationTests
         var view = new CommandBindView { ViewModel = new() };
 
         var received = 0;
-        var cmd = ReactiveCommand.Create<int>(i => received = i);
-        view.ViewModel.Command1 = cmd;
+        view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
         view.ViewModel.Value = 10;
         var value = view.ViewModel.WhenAnyValue(v => v.Value);
         var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));

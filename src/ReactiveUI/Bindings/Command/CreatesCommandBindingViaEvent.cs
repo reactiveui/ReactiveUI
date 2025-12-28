@@ -6,10 +6,6 @@
 using System.Reflection;
 using System.Windows.Input;
 
-#if NETFX_CORE
-using Windows.UI.Xaml.Input;
-#endif
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -23,10 +19,6 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         ("Click", typeof(EventArgs)),
         ("TouchUpInside", typeof(EventArgs)),
         ("MouseUp", typeof(EventArgs)),
-#if NETFX_CORE
-        ("PointerReleased", typeof(PointerRoutedEventArgs)),
-        ("Tapped", typeof(TappedRoutedEventArgs)),
-#endif
     ];
 
     /// <inheritdoc/>
@@ -76,7 +68,7 @@ public class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
+        ArgumentExceptionHelper.ThrowIfNull(target);
 
         var type = target!.GetType();
         var eventInfo = _defaultEventsToBind

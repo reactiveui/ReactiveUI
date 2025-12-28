@@ -12,13 +12,13 @@ public class AwaiterTest : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();
@@ -54,7 +54,6 @@ public class AwaiterTest : IDisposable
             },
             RxApp.TaskpoolScheduler);
 
-        var ret = await o;
-        return ret;
+        return await o;
     }
 }

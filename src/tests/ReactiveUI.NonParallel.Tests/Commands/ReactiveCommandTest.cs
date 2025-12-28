@@ -24,13 +24,13 @@ public class ReactiveCommandTest : IDisposable
         RxApp.EnsureInitialized();
     }
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp()
     {
         _schedulersScope = new RxAppSchedulersScope();
     }
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown()
     {
         _schedulersScope?.Dispose();
@@ -1427,11 +1427,11 @@ public class ReactiveCommandTest : IDisposable
         var executionCount = 0;
         var fixture1 =
             ReactiveCommand.Create(
-                                   () => { ++executionCount; },
+                                   () => ++executionCount,
                                    outputScheduler: ImmediateScheduler.Instance);
         var fixture2 =
             ReactiveCommand.Create<int>(
-                                        _ => { ++executionCount; },
+                                        _ => ++executionCount,
                                         outputScheduler: ImmediateScheduler.Instance);
         var fixture3 = ReactiveCommand.Create(
                                               () =>
@@ -1965,10 +1965,7 @@ public class ReactiveCommandTest : IDisposable
         var executed = false;
         var backgroundScheduler = ImmediateScheduler.Instance;
         var fixture = ReactiveCommand.CreateRunInBackground<int>(
-            param =>
-            {
-                executed = true;
-            },
+            param => executed = true,
             backgroundScheduler: backgroundScheduler,
             outputScheduler: ImmediateScheduler.Instance);
 

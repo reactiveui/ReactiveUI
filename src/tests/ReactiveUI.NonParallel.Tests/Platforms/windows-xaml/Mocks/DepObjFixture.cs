@@ -6,12 +6,6 @@
 using System.Windows;
 using PropertyMetadata = System.Windows.PropertyMetadata;
 
-#if NETFX_CORE
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-#else
-#endif
-
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>

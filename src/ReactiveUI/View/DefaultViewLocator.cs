@@ -102,7 +102,7 @@ public sealed partial class DefaultViewLocator : IViewLocator
 #endif
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
-        viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
+        ArgumentExceptionHelper.ThrowIfNull(viewModel);
 
         var mapped = TryResolveAOTMapping(viewModel!.GetType(), contract);
         if (mapped is not null)

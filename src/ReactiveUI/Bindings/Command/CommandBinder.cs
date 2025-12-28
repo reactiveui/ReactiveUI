@@ -128,7 +128,7 @@ public static class CommandBinder
         where TViewModel : class
         where TProp : ICommand
     {
-        view.ArgumentNullExceptionThrowIfNull(nameof(view));
+        ArgumentExceptionHelper.ThrowIfNull(view);
 
         return _binderImplementation.BindCommand(
                                                  viewModel,

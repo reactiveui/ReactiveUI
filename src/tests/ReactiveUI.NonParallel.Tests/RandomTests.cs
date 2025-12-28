@@ -14,13 +14,13 @@ public class RandomTests : IDisposable
 {
     private MessageBusScope? _messageBusScope;
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp()
     {
         _messageBusScope = new MessageBusScope();
     }
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown()
     {
         _messageBusScope?.Dispose();

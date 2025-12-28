@@ -35,8 +35,7 @@ public class CommandBindingImplementationTests
 
         await Assert.That(invokeCount).IsEqualTo(1);
 
-        var newCmd = ReactiveCommand.Create(() => { });
-        vm.Command1 = newCmd;
+        vm.Command1 = ReactiveCommand.Create(() => { });
 
         view.Command1.PerformClick();
         await Assert.That(invokeCount).IsEqualTo(1);
@@ -106,8 +105,7 @@ public class CommandBindingImplementationTests
         }
 
         // break the Command3 subscription
-        var newCmd = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
-        vm.Command3 = newCmd;
+        vm.Command3 = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
 
         // ensure that the invoke count does not update and that the Command3 is now using the new math
         view.Command1.PerformClick();

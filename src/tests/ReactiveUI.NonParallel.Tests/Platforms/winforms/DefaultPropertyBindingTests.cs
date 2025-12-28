@@ -32,10 +32,10 @@ public class DefaultPropertyBindingTests
     /// </summary>
     public DefaultPropertyBindingTests() => RxApp.EnsureInitialized();
 
-    [Before(HookType.Test)]
+    [Before(Test)]
     public void SetUp() => _schedulersScope = new RxAppSchedulersScope();
 
-    [After(HookType.Test)]
+    [After(Test)]
     public void TearDown() => _schedulersScope?.Dispose();
 
     /// <summary>

@@ -63,9 +63,8 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         var controlDpPropertyName = vet?.Last().GetMemberInfo()?.Name;
         _dpPropertyName = GetDependencyProperty(_control, controlDpPropertyName) ?? throw new ArgumentException($"Dependency property not found on {typeof(TVProp).Name}");
 
-        var somethingChanged = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression).Select(static tvm => (TVMProp?)tvm).Merge(
+        Changed = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression).Select(static tvm => (TVMProp?)tvm).Merge(
               view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value).Select(static p => default(TVMProp)));
-        Changed = somethingChanged;
         Direction = BindingDirection.TwoWay;
         Bind();
     }

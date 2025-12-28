@@ -23,8 +23,8 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
             where TViewModel : class
             where TView : class, IViewFor
     {
-        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
-        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
@@ -56,8 +56,8 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
             where TViewModel : class
             where TView : class, IViewFor
     {
-        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
-        handler.ArgumentNullExceptionThrowIfNull(nameof(handler));
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(handler);
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
