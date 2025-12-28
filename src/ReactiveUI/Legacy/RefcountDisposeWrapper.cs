@@ -5,6 +5,7 @@
 
 namespace ReactiveUI.Legacy;
 
+[ExcludeFromCodeCoverage]
 internal sealed class RefcountDisposeWrapper(IDisposable inner)
 {
     private IDisposable? _inner = inner;
