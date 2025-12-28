@@ -17,7 +17,7 @@ public class PlatformOperations : IPlatformOperations
     /// <inheritdoc/>
     public string? GetOrientation()
     {
-#if NETFX_CORE || HAS_UNO
+#if HAS_UNO
         try
         {
             return Windows.Graphics.Display.DisplayInformation.GetForCurrentView().CurrentOrientation.ToString();

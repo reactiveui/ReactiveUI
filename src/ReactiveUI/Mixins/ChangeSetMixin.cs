@@ -19,7 +19,7 @@ public static class ChangeSetMixin
     /// <returns>If the change set is caused by the count being changed.</returns>
     public static bool HasCountChanged(this IChangeSet changeSet) // TODO: Create Test
     {
-        changeSet.ArgumentNullExceptionThrowIfNull(nameof(changeSet));
+        ArgumentExceptionHelper.ThrowIfNull(changeSet);
 
         return changeSet.Adds > 0 || changeSet.Removes > 0;
     }

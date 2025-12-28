@@ -41,8 +41,8 @@ public static class ReactiveTableViewSourceExtensions
         Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
         where TCell : UITableViewCell
     {
-        ArgumentNullException.ThrowIfNull(sectionsObservable);
-        ArgumentNullException.ThrowIfNull(tableView);
+        ArgumentExceptionHelper.ThrowIfNull(sectionsObservable);
+        ArgumentExceptionHelper.ThrowIfNull(tableView);
 
         var source = new ReactiveTableViewSource<TSource>(tableView);
         if (initSource is not null)
@@ -120,7 +120,7 @@ public static class ReactiveTableViewSourceExtensions
         Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource = null)
         where TCell : UITableViewCell
     {
-        ArgumentNullException.ThrowIfNull(tableView);
+        ArgumentExceptionHelper.ThrowIfNull(tableView);
 
         var type = typeof(TCell);
         var cellKey = new NSString(type.ToString());

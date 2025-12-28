@@ -11,8 +11,8 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public class ComponentModelTypeConverter : IBindingTypeConverter
 {
-    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification="TypeDescriptor is safe to use here as we are not using reflection ourselves")]
-    [SuppressMessage("AOT", "IL2077:Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access otherwise can break functionality when ahead-of-time (AOT) compiling application code", Justification="TypeDescriptor is safe to use here as we are not using dynamic code ourselves")]
+    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "TypeDescriptor is safe to use here as we are not using reflection ourselves")]
+    [SuppressMessage("AOT", "IL2077:Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access otherwise can break functionality when ahead-of-time (AOT) compiling application code", Justification = "TypeDescriptor is safe to use here as we are not using dynamic code ourselves")]
     private readonly MemoizingMRUCache<(Type fromType, Type toType), TypeConverter?> _typeConverterCache = new(
      static (types, _) =>
      {

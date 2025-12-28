@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using Android.App;
 using Android.Views;
 
+using ReactiveUI.Helpers;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -61,7 +63,7 @@ public static partial class ControlFetcherMixin
 #endif
     public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        ArgumentNullException.ThrowIfNull(layoutHost);
+        ArgumentExceptionHelper.ThrowIfNull(layoutHost);
 
         var members = layoutHost.GetWireUpMembers(resolveMembers).ToList();
         foreach (var member in members)
@@ -90,7 +92,7 @@ public static partial class ControlFetcherMixin
 #endif
     public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        ArgumentNullException.ThrowIfNull(view);
+        ArgumentExceptionHelper.ThrowIfNull(view);
 
         var members = view.GetWireUpMembers(resolveMembers);
 
@@ -125,7 +127,7 @@ public static partial class ControlFetcherMixin
 #endif
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        ArgumentNullException.ThrowIfNull(fragment);
+        ArgumentExceptionHelper.ThrowIfNull(fragment);
 
         var members = fragment.GetWireUpMembers(resolveMembers);
 
@@ -158,7 +160,7 @@ public static partial class ControlFetcherMixin
 #endif
     public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit) // TODO: Create Test
     {
-        ArgumentNullException.ThrowIfNull(activity);
+        ArgumentExceptionHelper.ThrowIfNull(activity);
 
         var members = activity.GetWireUpMembers(resolveMembers);
 
@@ -208,9 +210,9 @@ public static partial class ControlFetcherMixin
 
     private static View? GetCachedControl(string? propertyName, object rootView, Func<View?> fetchControlFromView)
     {
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
-        ArgumentNullException.ThrowIfNull(fetchControlFromView);
+        ArgumentExceptionHelper.ThrowIfNull(fetchControlFromView);
 
         var ourViewCache = _viewCache.GetOrCreateValue(rootView);
 
@@ -231,27 +233,27 @@ public static partial class ControlFetcherMixin
 #endif
     private static int GetControlIdByName(Assembly assembly, string? name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentExceptionHelper.ThrowIfNull(name);
 
         var ids = _controlIds.GetOrAdd(
                                        assembly,
                                        static currentAssembly =>
                                        {
 #if NET8_0_OR_GREATER
-                                            var resources = Assembly.Load(currentAssembly
-                                                            .GetReferencedAssemblies()
-                                                            .First(static an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
-                                                            .GetModules()
-                                                            .SelectMany(static x => x.GetTypes())
-                                                            .First(static x => x.Name == "ResourceConstant");
+                                           var resources = Assembly.Load(currentAssembly
+                                                           .GetReferencedAssemblies()
+                                                           .First(static an => an.FullName.StartsWith("_Microsoft.Android.Resource.Designer")).ToString())
+                                                           .GetModules()
+                                                           .SelectMany(static x => x.GetTypes())
+                                                           .First(static x => x.Name == "ResourceConstant");
 #else
                                             var resources = currentAssembly.GetModules().SelectMany(x => x.GetTypes()).First(x => x.Name == "Resource");
 #endif
 
-                                            var idType = resources.GetNestedType("Id") ?? throw new InvalidOperationException("Id is not a valid nested type in the resources.");
-                                            return idType.GetFields()
-                                                        .Where(static x => x.FieldType == typeof(int))
-                                                        .ToDictionary(static k => k.Name, static v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
+                                           var idType = resources.GetNestedType("Id") ?? throw new InvalidOperationException("Id is not a valid nested type in the resources.");
+                                           return idType.GetFields()
+                                                       .Where(static x => x.FieldType == typeof(int))
+                                                       .ToDictionary(static k => k.Name, static v => ((int?)v.GetRawConstantValue()) ?? 0, StringComparer.InvariantCultureIgnoreCase);
                                        });
 
         return ids[name];

@@ -46,39 +46,34 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(sender);
-#else
-        if (sender is null)
-        {
-            throw new ArgumentNullException(nameof(sender));
-        }
-#endif
+        ArgumentExceptionHelper.ThrowIfNull(sender);
 
         var ei = EventInfoCache.Get((sender.GetType(), propertyName)) ?? throw new InvalidOperationException("Could not find a valid event for expression.");
         return Observable.Create<IObservedChange<object, object?>>(subj =>
-        {
-            var completed = false;
-            var handler = new EventHandler((o, e) =>
-            {
-                if (completed)
                 {
-                    return;
-                }
+                    var completed = false;
+                    var handler = new EventHandler((o, e) =>
+                    {
+                        if (completed)
+                        {
+                            return;
+                        }
 
-                try
-                {
-                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
-                }
-                catch (Exception ex)
-                {
-                    subj.OnError(ex);
-                    completed = true;
-                }
-            });
+                        try
+                        {
+                            subj.OnNext(new ObservedChange<object, object?>(sender, expression, default));
+                        }
+                        catch (Exception ex)
+                        {
+                            subj.OnError(ex);
+                            completed = true;
+                        }
+                    });
 
-            ei.AddEventHandler(sender, handler);
-            return Disposable.Create(() => ei.RemoveEventHandler(sender, handler));
-        });
+                    var scheduler = RxApp.MainThreadScheduler;
+
+                    ei.AddEventHandler(sender, handler);
+                    return Disposable.Create(() => scheduler.Schedule(() => ei.RemoveEventHandler(sender, handler)));
+                });
     }
 }

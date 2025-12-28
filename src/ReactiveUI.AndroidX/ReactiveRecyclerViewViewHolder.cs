@@ -6,7 +6,9 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+
 using Android.Views;
+
 using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.AndroidX;
@@ -45,7 +47,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         : base(view)
     {
         SetupRxObj();
-        ArgumentNullException.ThrowIfNull(view);
+        ArgumentExceptionHelper.ThrowIfNull(view);
 
         view.ViewAttachedToWindow += OnViewAttachedToWindow;
         view.ViewDetachedFromWindow += OnViewDetachedFromWindow;

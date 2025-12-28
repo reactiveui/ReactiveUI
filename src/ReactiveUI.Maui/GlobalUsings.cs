@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 global using System;
-global using System.ComponentModel;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Linq;
 global using System.Reactive;
@@ -14,4 +13,5 @@ global using System.Reactive.Disposables.Fluent;
 global using System.Reactive.Linq;
 global using System.Reactive.Subjects;
 global using System.Threading.Tasks;
+
 global using Splat;

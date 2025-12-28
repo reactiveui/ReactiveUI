@@ -6,6 +6,8 @@
 using System.Reflection;
 using System.Windows.Input;
 
+using ReactiveUI.Helpers;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -79,7 +81,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 #endif
     public IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(target);
 
         var type = target.GetType();
 
@@ -115,7 +117,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 #endif
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
-        ArgumentNullException.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(command);
 
         commandParameter ??= Observable.Return(target);
 

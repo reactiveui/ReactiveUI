@@ -53,9 +53,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
     {
-        vmProperty.ArgumentNullExceptionThrowIfNull(nameof(vmProperty));
+        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
 
-        controlProperty.ArgumentNullExceptionThrowIfNull(nameof(controlProperty));
+        ArgumentExceptionHelper.ThrowIfNull(controlProperty);
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);
@@ -108,9 +108,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         where TViewModel : class
         where TProp : ICommand
     {
-        vmProperty.ArgumentNullExceptionThrowIfNull(nameof(vmProperty));
+        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
 
-        controlProperty.ArgumentNullExceptionThrowIfNull(nameof(controlProperty));
+        ArgumentExceptionHelper.ThrowIfNull(controlProperty);
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);

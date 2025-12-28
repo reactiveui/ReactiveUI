@@ -38,7 +38,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         item.Activator.AddActivationBlock(block);
     }
@@ -56,7 +56,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Action<Action<IDisposable>> block)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         item.Activator.AddActivationBlock(() =>
         {
@@ -78,7 +78,7 @@ public static class ViewForMixins
     /// </param>
     public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block) // TODO: Create Test
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         item.Activator.AddActivationBlock(() =>
         {
@@ -105,7 +105,7 @@ public static class ViewForMixins
 #endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         return item.WhenActivated(block, null);
     }
@@ -132,7 +132,7 @@ public static class ViewForMixins
 #endif
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)

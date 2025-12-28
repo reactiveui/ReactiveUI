@@ -6,6 +6,7 @@
 using Android.App;
 using Android.Content;
 using Android.Runtime;
+
 using AndroidX.AppCompat.App;
 
 namespace ReactiveUI.AndroidX;

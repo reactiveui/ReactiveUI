@@ -79,10 +79,7 @@ public class DispatcherScheduler : LocalScheduler, ISchedulerPeriodic
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is <c>null</c>.</exception>
     public override IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
     {
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         var d = new SingleAssignmentDisposable();
 
@@ -111,10 +108,7 @@ public class DispatcherScheduler : LocalScheduler, ISchedulerPeriodic
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is <c>null</c>.</exception>
     public override IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
     {
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         var dt = Scheduler.Normalize(dueTime);
         if (dt.Ticks == 0)
@@ -181,10 +175,7 @@ public class DispatcherScheduler : LocalScheduler, ISchedulerPeriodic
             throw new ArgumentOutOfRangeException(nameof(period));
         }
 
-        if (action == null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(action);
 
         var timer = new System.Windows.Threading.DispatcherTimer(Priority, Dispatcher);
 

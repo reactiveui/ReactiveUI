@@ -100,6 +100,7 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
                     .RefCount(2);
 
             viewModelChanged
+                .Skip(1) // Skip the initial value to avoid unnecessary re-render when ViewModel changes
                 .Subscribe(_ => InvokeAsync(StateHasChanged))
                 .DisposeWith(_compositeDisposable);
 
@@ -126,7 +127,7 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
     /// Invokes the property changed event.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected virtual void OnPropertyChanged([CallerMemberName]string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     /// <summary>
     /// Cleans up the managed resources of the object.

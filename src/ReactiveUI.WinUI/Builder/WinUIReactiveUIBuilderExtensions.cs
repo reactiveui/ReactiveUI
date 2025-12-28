@@ -29,10 +29,7 @@ public static class WinUIReactiveUIBuilderExtensions
 #endif
     public static IReactiveUIBuilder WithWinUI(this IReactiveUIBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder
             .WithWinUIScheduler()
@@ -46,10 +43,7 @@ public static class WinUIReactiveUIBuilderExtensions
     /// <returns>The builder instance for chaining.</returns>
     public static IReactiveUIBuilder WithWinUIScheduler(this IReactiveUIBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder.WithMainThreadScheduler(WinUIMainThreadScheduler);
     }

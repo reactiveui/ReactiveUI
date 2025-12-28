@@ -4,12 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using CoreGraphics;
+
 using Foundation;
 
 #if UIKIT
 using UIKit;
 #else
 using AppKit;
+
 using UIControl = AppKit.NSControl;
 #endif
 

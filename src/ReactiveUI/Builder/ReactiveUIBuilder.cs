@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder;
@@ -160,7 +161,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
 #endif
     public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
-        assembly.ArgumentNullExceptionThrowIfNull(nameof(assembly));
+        ArgumentExceptionHelper.ThrowIfNull(assembly);
 
         // Register views immediately against the builder's resolver
         CurrentMutable.RegisterViewsForViewModels(assembly);

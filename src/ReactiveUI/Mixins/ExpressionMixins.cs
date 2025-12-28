@@ -96,7 +96,7 @@ public static class ExpressionMixins
 #endif
     public static MemberInfo? GetMemberInfo(this Expression expression)
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
 
         MemberInfo? info;
         switch (expression.NodeType)
@@ -127,7 +127,7 @@ public static class ExpressionMixins
 #endif
     public static Expression? GetParent(this Expression expression) // TODO: Create Test
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
 
         return expression.NodeType switch
         {
@@ -146,7 +146,7 @@ public static class ExpressionMixins
     /// <returns>An array of arguments.</returns>
     public static object?[]? GetArgumentsArray(this Expression expression) // TODO: Create Test
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
 
         if (expression.NodeType == ExpressionType.Index)
         {

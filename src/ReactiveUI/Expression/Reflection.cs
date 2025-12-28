@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -45,7 +45,7 @@ public static class Reflection
 #endif
     public static string ExpressionToPropertyNames(Expression? expression) // TODO: Create Test
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
         var sb = new StringBuilder();
 
         foreach (var exp in expression!.GetExpressionChain())
@@ -93,7 +93,7 @@ public static class Reflection
 #endif
     public static Func<object?, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member) // TODO: Create Test
     {
-        member.ArgumentNullExceptionThrowIfNull(nameof(member));
+        ArgumentExceptionHelper.ThrowIfNull(member);
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -119,7 +119,7 @@ public static class Reflection
 #endif
     public static Func<object?, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member) // TODO: Create Test
     {
-        member.ArgumentNullExceptionThrowIfNull(nameof(member));
+        ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueFetcherForProperty(member);
 
@@ -136,7 +136,7 @@ public static class Reflection
     /// <returns>A Func that takes in the object/indexes and sets the value.</returns>
     public static Action<object?, object?, object?[]?> GetValueSetterForProperty(MemberInfo? member) // TODO: Create Test
     {
-        member.ArgumentNullExceptionThrowIfNull(nameof(member));
+        ArgumentExceptionHelper.ThrowIfNull(member);
 
         var field = member as FieldInfo;
         if (field is not null)
@@ -162,7 +162,7 @@ public static class Reflection
 #endif
     public static Action<object?, object?, object?[]?>? GetValueSetterOrThrow(MemberInfo? member) // TODO: Create Test
     {
-        member.ArgumentNullExceptionThrowIfNull(nameof(member));
+        ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueSetterForProperty(member);
 
@@ -354,7 +354,7 @@ public static class Reflection
     Type type,
     string? eventName) // TODO: Create Test
     {
-        type.ArgumentNullExceptionThrowIfNull(nameof(type));
+        ArgumentExceptionHelper.ThrowIfNull(type);
 
         var ti = type;
         var ei = ti.GetRuntimeEvent(eventName!);
@@ -401,7 +401,7 @@ public static class Reflection
     /// <returns>If the property is static or not.</returns>
     public static bool IsStatic(this PropertyInfo item) // TODO: Create Test
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         var method = (item.GetMethod ?? item.SetMethod)!;
         return method.IsStatic;

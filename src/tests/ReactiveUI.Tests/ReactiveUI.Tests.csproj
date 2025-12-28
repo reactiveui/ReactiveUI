@@ -1,0 +1,40 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <!-- Global usings -->
+  <ItemGroup>
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+  </ItemGroup>
+</Project>

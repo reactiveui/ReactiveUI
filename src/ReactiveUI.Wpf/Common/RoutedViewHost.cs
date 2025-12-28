@@ -8,7 +8,7 @@ using ReactiveUI;
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#elif NETFX_CORE || HAS_UNO
+#elif HAS_UNO
 using System.Windows;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -65,9 +65,6 @@ public
 #endif
     public RoutedViewHost()
     {
-#if NETFX_CORE
-        DefaultStyleKey = typeof(RoutedViewHost);
-#endif
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
         VerticalContentAlignment = VerticalAlignment.Stretch;
 

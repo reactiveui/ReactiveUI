@@ -7,6 +7,20 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="ReactiveUI.Helpers" />
+    <Using Include="Splat" />
+  </ItemGroup>
+  <ItemGroup>
     <!-- Modern .NET 9 Android approach for AndroidX libraries -->
     <!-- Core AndroidX (AppCompat, RecyclerView, Fragment) available implicitly through .NET Android SDK -->
     

@@ -20,7 +20,7 @@ public class Registrations : IWantsToRegisterStuff
     [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));
+        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
 
         registerFunction(static () => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
         registerFunction(static () => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));

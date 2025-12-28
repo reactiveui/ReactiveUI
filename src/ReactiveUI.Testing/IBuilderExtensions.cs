@@ -4,133 +4,104 @@
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Testing;
-#pragma warning disable SA1402, SA1649, CA1040
-/// <summary>
-/// An interface for building.
-/// </summary>
-public interface IBuilder
-{
-}
 
 /// <summary>
 /// Default methods for the <see cref="IBuilder"/> abstraction.
 /// </summary>
+[SuppressMessage("Design", "RCS1263: Parameter not found", Justification = "False positive with extension class")]
 public static class IBuilderExtensions
 {
-    /// <summary>
-    /// Adds the specified field to the builder.
-    /// </summary>
-    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <summary>Extension methods associated with the IBuilder.</summary>
     /// <param name="builder">This builder.</param>
-    /// <param name="field">The field.</param>
-    /// <param name="value">The value.</param>
-    /// <returns>The builder.</returns>
-    public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
+    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
+    extension<TBuilder>(TBuilder builder)
         where TBuilder : IBuilder
     {
-        field = value;
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the specified list of fields to the builder.
-    /// </summary>
-    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    /// <typeparam name="TField">The type of the field.</typeparam>
-    /// <param name="builder">This builder.</param>
-    /// <param name="field">The field.</param>
-    /// <param name="values">The values.</param>
-    /// <returns>The builder.</returns>
-    public static TBuilder With<TBuilder, TField>(
-        this TBuilder builder,
-        ref List<TField>? field,
-        IEnumerable<TField> values)
-        where TBuilder : IBuilder
-    {
-        if (field is null)
+        /// <summary>
+        /// Adds the specified field to the builder.
+        /// </summary>
+        /// <typeparam name="TField">The type of the field.</typeparam>
+        /// <param name="field">The field.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The builder.</returns>
+        public TBuilder With<TField>(out TField field, TField value)
         {
-            throw new ArgumentNullException(nameof(field));
+            field = value;
+            return builder;
         }
 
-        field.AddRange(values);
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the specified field to the builder.
-    /// </summary>
-    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    /// <typeparam name="TField">The type of the field.</typeparam>
-    /// <param name="builder">This builder.</param>
-    /// <param name="field">The field.</param>
-    /// <param name="value">The value.</param>
-    /// <returns>The builder.</returns>
-    public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
-        where TBuilder : IBuilder
-    {
-        if (field is null)
+        /// <summary>
+        /// Adds the specified list of fields to the builder.
+        /// </summary>
+        /// <typeparam name="TField">The type of the field.</typeparam>
+        /// <param name="field">The field.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>The builder.</returns>
+        public TBuilder With<TField>(
+            ref List<TField>? field,
+            IEnumerable<TField> values)
         {
-            throw new ArgumentNullException(nameof(field));
+            ArgumentExceptionHelper.ThrowIfNull(field);
+
+            field.AddRange(values);
+
+            return builder;
         }
 
-        field.Add(value);
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the specified key value pair to the provided dictionary.
-    /// </summary>
-    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <typeparam name="TField">The type of the field.</typeparam>
-    /// <param name="builder">This builder.</param>
-    /// <param name="dictionary">The dictionary.</param>
-    /// <param name="keyValuePair">The key value pair.</param>
-    /// <returns>The builder.</returns>
-    public static TBuilder With<TBuilder, TKey, TField>(
-        this TBuilder builder,
-        ref Dictionary<TKey, TField> dictionary,
-        KeyValuePair<TKey, TField> keyValuePair)
-        where TBuilder : IBuilder
-        where TKey : notnull
-    {
-        if (dictionary is null)
+        /// <summary>
+        /// Adds the specified field to the builder.
+        /// </summary>
+        /// <typeparam name="TField">The type of the field.</typeparam>
+        /// <param name="field">The field.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The builder.</returns>
+        public TBuilder With<TField>(ref List<TField>? field, TField value)
         {
-            throw new ArgumentNullException(nameof(dictionary));
+            ArgumentExceptionHelper.ThrowIfNull(field);
+
+            field.Add(value);
+            return builder;
         }
 
-        dictionary.Add(keyValuePair.Key, keyValuePair.Value);
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds the specified key and value to the provided dictionary.
-    /// </summary>
-    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <typeparam name="TField">The type of the field.</typeparam>
-    /// <param name="builder">This builder.</param>
-    /// <param name="dictionary">The dictionary.</param>
-    /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
-    /// <returns>The builder.</returns>
-    public static TBuilder With<TBuilder, TKey, TField>(
-        this TBuilder builder,
-        ref Dictionary<TKey, TField> dictionary,
-        TKey key,
-        TField value)
-        where TBuilder : IBuilder
-        where TKey : notnull
-    {
-        if (dictionary is null)
+        /// <summary>
+        /// Adds the specified key value pair to the provided dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TField">The type of the field.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="keyValuePair">The key value pair.</param>
+        /// <returns>The builder.</returns>
+        public TBuilder With<TKey, TField>(
+            ref Dictionary<TKey, TField> dictionary,
+            KeyValuePair<TKey, TField> keyValuePair)
+            where TKey : notnull
         {
-            throw new ArgumentNullException(nameof(dictionary));
+            ArgumentExceptionHelper.ThrowIfNull(dictionary);
+
+            dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+            return builder;
         }
 
-        dictionary.Add(key, value);
-        return builder;
+        /// <summary>
+        /// Adds the specified key and value to the provided dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TField">The type of the field.</typeparam>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The builder.</returns>
+        public TBuilder With<TKey, TField>(
+            ref Dictionary<TKey, TField> dictionary,
+            TKey key,
+            TField value)
+            where TKey : notnull
+        {
+            ArgumentExceptionHelper.ThrowIfNull(dictionary);
+
+            dictionary.Add(key, value);
+            return builder;
+        }
     }
 
     /// <summary>
@@ -149,13 +120,9 @@ public static class IBuilderExtensions
         IDictionary<TKey, TField> keyValuePair)
         where TKey : notnull
     {
-        if (dictionary is null)
-        {
-            throw new ArgumentNullException(nameof(dictionary));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
         dictionary = (Dictionary<TKey, TField>)keyValuePair;
         return builder;
     }
 }
-#pragma warning restore SA1402, SA1649, CA1040

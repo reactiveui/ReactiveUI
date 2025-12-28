@@ -21,7 +21,7 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 #endif
     public void Register(Action<Func<object>, Type> registerFunction)
     {
-        registerFunction.ArgumentNullExceptionThrowIfNull(nameof(registerFunction));
+        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
 
         registerFunction(() => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
 

@@ -34,7 +34,7 @@ public class IROObservableForProperty : ICreatesObservableForProperty
 #endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
 
         if (sender is not IReactiveObject iro)
         {

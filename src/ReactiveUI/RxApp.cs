@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+
 using Splat.Builder;
 
 namespace ReactiveUI;

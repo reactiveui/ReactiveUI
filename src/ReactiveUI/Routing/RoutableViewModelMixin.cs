@@ -27,7 +27,7 @@ public static class RoutableViewModelMixin
     /// earlier than normal.</returns>
     public static IDisposable WhenNavigatedTo(this IRoutableViewModel item, Func<IDisposable> onNavigatedTo)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         IDisposable? inner = null;
 
@@ -69,7 +69,7 @@ public static class RoutableViewModelMixin
     /// navigation stack.</returns>
     public static IObservable<Unit> WhenNavigatedToObservable(this IRoutableViewModel item)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
         var navigationStackChanged = router.NavigationChanged.CountChanged();
@@ -101,7 +101,7 @@ public static class RoutableViewModelMixin
     /// stack.</returns>
     public static IObservable<Unit> WhenNavigatingFromObservable(this IRoutableViewModel item)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
         var navigationStackChanged = router.NavigationChanged.CountChanged();

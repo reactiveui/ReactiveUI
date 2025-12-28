@@ -1,0 +1,30 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bunit" />
+    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Bunit" />
+    <Using Include="ReactiveUI" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="Splat" />
+  </ItemGroup>
+</Project>

@@ -13,6 +13,9 @@ namespace ReactiveUI;
 /// UI Kit command binder platform registrations.
 /// </summary>
 /// <seealso cref="ReactiveUI.ICreatesCommandBinding" />
+#if NET6_0_OR_GREATER
+[RequiresUnreferencedCode("FlexibleCommandBinder uses reflection for property access and type checking which may require unreferenced code.")]
+#endif
 public class UIKitCommandBinders : FlexibleCommandBinder
 {
     /// <summary>

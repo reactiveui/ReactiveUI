@@ -23,10 +23,7 @@ public static class RxTest
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task AppBuilderTestAsync(Func<Task> testBody, int maxWaitMs = 60000)
     {
-        if (testBody is null)
-        {
-            throw new ArgumentNullException(nameof(testBody));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(testBody);
 
         // Try to acquire the global test gate with timeout to avoid deadlocks in CI.
         if (!await TestGate.WaitAsync(maxWaitMs).ConfigureAwait(false))

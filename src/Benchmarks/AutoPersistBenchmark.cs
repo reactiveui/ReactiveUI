@@ -48,12 +48,7 @@ namespace ReactiveUI.Benchmarks
         public void AutoPersistCollection()
         {
             var disposable = _collection?.AutoPersistCollection(
-                _ => Observable.Create<Unit>(
-                    _ =>
-                    {
-                        Console.WriteLine("Done stuff");
-                        return Disposable.Empty;
-                    }).Select(_ => Unit.Default),
+                _ => Observable.Return(Unit.Default),
                 TimeSpan.FromMilliseconds(200));
 
             for (int i = 0; i < 5; ++i)

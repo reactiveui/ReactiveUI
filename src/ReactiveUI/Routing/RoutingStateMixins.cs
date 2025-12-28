@@ -19,7 +19,7 @@ public static class RoutingStateMixins
     public static T? FindViewModelInStack<T>(this RoutingState item)
         where T : IRoutableViewModel
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         return item.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
     }
@@ -31,7 +31,7 @@ public static class RoutingStateMixins
     /// <returns>The matching ViewModel or null if none exists.</returns>
     public static IRoutableViewModel? GetCurrentViewModel(this RoutingState item)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         return item.NavigationStack.LastOrDefault();
     }

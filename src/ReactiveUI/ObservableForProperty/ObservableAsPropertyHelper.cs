@@ -158,8 +158,8 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         bool deferSubscription = false,
         IScheduler? scheduler = null)
     {
-        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
-        onChanged.ArgumentNullExceptionThrowIfNull(nameof(onChanged));
+        ArgumentExceptionHelper.ThrowIfNull(observable);
+        ArgumentExceptionHelper.ThrowIfNull(onChanged);
 
         scheduler ??= CurrentThreadScheduler.Instance;
         onChanging ??= _ => { };

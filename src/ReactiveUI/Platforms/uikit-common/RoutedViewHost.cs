@@ -192,7 +192,7 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <inheritdoc/>
     public override void PushViewController(NSViewController? viewController, bool animated)
     {
-        ArgumentNullException.ThrowIfNull(viewController);
+        ArgumentExceptionHelper.ThrowIfNull(viewController);
 
         base.PushViewController(viewController, animated);
 

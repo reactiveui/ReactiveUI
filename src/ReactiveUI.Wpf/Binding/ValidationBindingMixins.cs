@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+
 using ReactiveUI.Wpf.Binding;
 
 namespace ReactiveUI;
@@ -36,15 +37,9 @@ public static class ValidationBindingMixins
         where TView : class, IViewFor
         where TViewModel : class
     {
-        if (viewModelPropertySelector == null)
-        {
-            throw new ArgumentNullException(nameof(viewModelPropertySelector));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(viewModelPropertySelector);
 
-        if (frameworkElementSelector == null)
-        {
-            throw new ArgumentNullException(nameof(frameworkElementSelector));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(frameworkElementSelector);
 
         return new ValidationBindingWpf<TView, TViewModel, TVProp, TType>(view, viewModel, viewModelPropertySelector, frameworkElementSelector);
     }

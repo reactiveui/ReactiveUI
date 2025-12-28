@@ -39,10 +39,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
 #endif
     public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
     {
-        if (getCurrentViewProperties is null)
-        {
-            throw new ArgumentNullException(nameof(getCurrentViewProperties));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
 
         var viewProperties = getCurrentViewProperties();
         var lastViewProperty = viewProperties.LastOrDefault();

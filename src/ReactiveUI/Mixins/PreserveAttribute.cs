@@ -5,6 +5,7 @@
 
 namespace ReactiveUI;
 
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.All)]
 internal sealed class PreserveAttribute : Attribute
 {

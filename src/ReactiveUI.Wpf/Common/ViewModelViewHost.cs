@@ -8,7 +8,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-#elif NETFX_CORE || HAS_UNO
+#elif HAS_UNO
 
 using System.Windows;
 using Windows.UI.Xaml;
@@ -74,10 +74,6 @@ public
     /// </summary>
     public ViewModelViewHost()
     {
-#if NETFX_CORE
-        DefaultStyleKey = typeof(ViewModelViewHost);
-#endif
-
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
         Func<string?> platformGetter = () => default;
 

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+    <DefaultPackageDescription>A sample WPF application using ReactiveUI.</DefaultPackageDescription>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
+
+</Project>

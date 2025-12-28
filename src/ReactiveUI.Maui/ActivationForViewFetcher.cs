@@ -4,8 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+
 #if WINUI_TARGET
 using Microsoft.UI.Xaml;
+
 using Windows.Foundation;
 #endif
 

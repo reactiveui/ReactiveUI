@@ -1,3 +1,0 @@
-# C# files
-[*.cs]
-dotnet_diagnostic.SA1600.severity = none

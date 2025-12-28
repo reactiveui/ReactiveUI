@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Globalization;
 using System.Reflection;
 
@@ -103,7 +102,7 @@ public sealed partial class DefaultViewLocator : IViewLocator
 #endif
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
-        viewModel.ArgumentNullExceptionThrowIfNull(nameof(viewModel));
+        ArgumentExceptionHelper.ThrowIfNull(viewModel);
 
         var mapped = TryResolveAOTMapping(viewModel!.GetType(), contract);
         if (mapped is not null)
@@ -221,7 +220,12 @@ public sealed partial class DefaultViewLocator : IViewLocator
                 return null;
             }
 
-            var service = AppLocator.Current.GetService(viewType, contract);
+            var service = AppLocator.Current?.GetService(viewType, contract);
+
+            if (service is null)
+            {
+                return null;
+            }
 
             if (service is not IViewFor view)
             {

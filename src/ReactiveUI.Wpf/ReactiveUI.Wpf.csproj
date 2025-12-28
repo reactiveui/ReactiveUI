@@ -6,7 +6,26 @@
     <UseWpf>true</UseWpf>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;netframework;netcore</PackageTags>
     <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Threading" />
+    <Using Include="ReactiveUI.Helpers" />
+    <Using Include="Splat" />
+  </ItemGroup>
+
+  
 
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
@@ -19,5 +38,9 @@
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net46'))">
     <Compile Include="Rx\Internal\Constants.cs;Rx\**\Dispatcher*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
   </ItemGroup>
 </Project>

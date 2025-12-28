@@ -52,8 +52,8 @@ public static class ReactiveNotifyPropertyChangedMixin
         bool skipInitial,
         bool isDistinct)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
-        propertyName.ArgumentNullExceptionThrowIfNull(nameof(propertyName));
+        ArgumentExceptionHelper.ThrowIfNull(item);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         // Create a minimal expression to attach to ObservedChange for compatibility.
         var parameter = Expression.Parameter(typeof(TSender), "x");
@@ -309,7 +309,7 @@ public static class ReactiveNotifyPropertyChangedMixin
         bool skipInitial,
         bool isDistinct)
     {
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         /* x => x.Foo.Bar.Baz;
          *
@@ -360,8 +360,8 @@ public static class ReactiveNotifyPropertyChangedMixin
         Func<TValue?, TRet> selector) // TODO: Create Test
         where TSender : class
     {
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
-        selector.ArgumentNullExceptionThrowIfNull(nameof(selector));
+        ArgumentExceptionHelper.ThrowIfNull(property);
+        ArgumentExceptionHelper.ThrowIfNull(selector);
 
         return item.ObservableForProperty(property, false).Select(x => selector(x.Value));
     }
@@ -395,8 +395,8 @@ public static class ReactiveNotifyPropertyChangedMixin
         bool beforeChange) // TODO: Create Test
         where TSender : class
     {
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
-        selector.ArgumentNullExceptionThrowIfNull(nameof(selector));
+        ArgumentExceptionHelper.ThrowIfNull(property);
+        ArgumentExceptionHelper.ThrowIfNull(selector);
 
         return item.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
     }
@@ -592,7 +592,7 @@ public static class ReactiveNotifyPropertyChangedMixin
 #endif
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
     {
-        expression.ArgumentNullExceptionThrowIfNull(nameof(expression));
+        ArgumentExceptionHelper.ThrowIfNull(expression);
 
         var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The expression does not have valid member info", nameof(expression));
         var propertyName = memberInfo.Name;

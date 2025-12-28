@@ -1,0 +1,6 @@
+ignore:
+  - src/tests
+  - integrationtests
+  - benchmarks
+  - "**/Tests/"
+  - "**/*.Tests/"

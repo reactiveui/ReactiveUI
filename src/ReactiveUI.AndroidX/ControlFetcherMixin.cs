@@ -31,7 +31,7 @@ public static class ControlFetcherMixin
 #endif
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
     {
-        ArgumentNullException.ThrowIfNull(fragment);
+        ArgumentExceptionHelper.ThrowIfNull(fragment);
 
         foreach (var member in fragment.GetWireUpMembers(resolveMembers))
         {

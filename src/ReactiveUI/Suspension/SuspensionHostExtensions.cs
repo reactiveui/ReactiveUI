@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -18,14 +20,34 @@ namespace ReactiveUI;
 public static class SuspensionHostExtensions
 {
     /// <summary>
-    /// Func used to load app state exactly once.
+    /// Func used to load app state exactly once. Backing field for testing purposes.
     /// </summary>
-    private static Func<IObservable<Unit>>? ensureLoadAppStateFunc;
+    private static Func<IObservable<Unit>>? _ensureLoadAppStateFunc;
 
     /// <summary>
-    /// Suspension driver reference field to prevent introducing breaking change.
+    /// Suspension driver reference field. Backing field for testing purposes.
     /// </summary>
-    private static ISuspensionDriver? suspensionDriver;
+    private static ISuspensionDriver? _suspensionDriver;
+
+    /// <summary>
+    /// Gets or sets the ensure load app state function. Internal for testing purposes only.
+    /// </summary>
+    [SuppressMessage("Roslynator", "RCS1085:Use auto-implemented property", Justification = "Need explicit backing field for Interlocked.Exchange")]
+    internal static Func<IObservable<Unit>>? EnsureLoadAppStateFunc
+    {
+        get => _ensureLoadAppStateFunc;
+        set => _ensureLoadAppStateFunc = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the suspension driver. Internal for testing purposes only.
+    /// </summary>
+    [SuppressMessage("Roslynator", "RCS1085:Use auto-implemented property", Justification = "Need explicit backing field for Interlocked.Exchange")]
+    internal static ISuspensionDriver? SuspensionDriver
+    {
+        get => _suspensionDriver;
+        set => _suspensionDriver = value;
+    }
 
     /// <summary>
     /// Get the current App State of a class derived from ISuspensionHost.
@@ -39,9 +61,9 @@ public static class SuspensionHostExtensions
     /// </remarks>
     public static T GetAppState<T>(this ISuspensionHost item)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
-        Interlocked.Exchange(ref ensureLoadAppStateFunc, null)?.Invoke();
+        Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
 
         return (T)item.AppState!;
     }
@@ -63,7 +85,7 @@ public static class SuspensionHostExtensions
     public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
         where T : class
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         return item.WhenAny<ISuspensionHost, object?, object?>(nameof(item.AppState), static observedChange => observedChange.Value)
                    .WhereNotNull()
@@ -98,31 +120,31 @@ public static class SuspensionHostExtensions
 #endif
     public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
     {
-        item.ArgumentNullExceptionThrowIfNull(nameof(item));
+        ArgumentExceptionHelper.ThrowIfNull(item);
 
         var ret = new CompositeDisposable();
-        suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
+        _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
-        if (suspensionDriver is null)
+        if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
             return Disposable.Empty;
         }
 
-        ensureLoadAppStateFunc = () => EnsureLoadAppState(item, suspensionDriver);
+        _ensureLoadAppStateFunc = () => EnsureLoadAppState(item, _suspensionDriver);
 
         ret.Add(item.ShouldInvalidateState
-                    .SelectMany(_ => suspensionDriver.InvalidateState())
+                    .SelectMany(_ => _suspensionDriver.InvalidateState())
                     .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
                     .Subscribe(_ => item.Log().Info("Invalidated app state")));
 
         ret.Add(item.ShouldPersistState
-                    .SelectMany(x => suspensionDriver.SaveState(item.AppState!).Finally(x.Dispose))
+                    .SelectMany(x => _suspensionDriver.SaveState(item.AppState!).Finally(x.Dispose))
                     .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
                     .Subscribe(_ => item.Log().Info("Persisted application state")));
 
         ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                    .Do(_ => Interlocked.Exchange(ref ensureLoadAppStateFunc, null)?.Invoke())
+                    .Do(_ => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke())
                     .Subscribe());
 
         return ret;
@@ -145,9 +167,9 @@ public static class SuspensionHostExtensions
             return Observable.Return(Unit.Default);
         }
 
-        suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
+        _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
-        if (suspensionDriver is null)
+        if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
             return Observable.Return(Unit.Default);
@@ -155,7 +177,7 @@ public static class SuspensionHostExtensions
 
         try
         {
-            item.AppState = suspensionDriver.LoadState().Wait();
+            item.AppState = _suspensionDriver.LoadState().Wait();
         }
         catch (Exception ex)
         {

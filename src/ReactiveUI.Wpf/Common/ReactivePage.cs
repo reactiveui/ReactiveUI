@@ -9,7 +9,7 @@ using Microsoft.Maui.Controls;
 #elif HAS_WINUI
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-#elif NETFX_CORE || HAS_UNO
+#elif HAS_UNO
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 #else

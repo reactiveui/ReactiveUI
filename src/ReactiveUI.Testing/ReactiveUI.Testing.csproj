@@ -1,12 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing</AssemblyName>
     <RootNamespace>ReactiveUI.Testing</RootNamespace>
+    <IsTestProject>false</IsTestProject>
     <PackageDescription>Provides extensions for testing ReactiveUI based applications</PackageDescription>
     <PackageId>ReactiveUI.Testing</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing" />
     <PackageReference Include="System.Reactive" />

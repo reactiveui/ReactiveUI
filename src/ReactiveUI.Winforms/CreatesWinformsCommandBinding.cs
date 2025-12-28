@@ -82,18 +82,12 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
 #if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(command);
-        ArgumentNullException.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(target);
 #else
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(command);
 
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(target);
 #endif
 
         const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -122,18 +116,12 @@ public class CreatesWinformsCommandBinding : ICreatesCommandBinding
     public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
     {
 #if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(command);
-        ArgumentNullException.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(target);
 #else
-        if (command is null)
-        {
-            throw new ArgumentNullException(nameof(command));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(command);
 
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(target);
 #endif
 
         var ret = new CompositeDisposable();

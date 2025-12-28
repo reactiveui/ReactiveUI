@@ -2,7 +2,6 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
-    <IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
     <DebugType>embedded</DebugType>
     <Authors>.NET Foundation and Contributors</Authors>
     <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
@@ -18,6 +17,7 @@
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
+
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -30,13 +30,20 @@
     <LangVersion>preview</LangVersion>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <IsTestProject>$(MSBuildProjectName.Contains('.Test'))</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TUnitImplicitUsings>false</TUnitImplicitUsings>
+    <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -44,7 +51,7 @@
     <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
-    <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472</ReactiveUIFrameworkTargets>
+    <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472;net481</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
@@ -58,7 +65,7 @@
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
     <ReactiveUITestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestTargets>
 
-    <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveUIMauiTestTargets>
+<!--    <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveUIMauiTestTargets>-->
     <ReactiveUIMauiTestTargets>$(ReactiveUIMauiTestTargets);net9.0;net10.0</ReactiveUIMauiTestTargets>
     
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveMauiTargets>
@@ -68,11 +75,15 @@
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
     <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
 
-    <ReactiveUITestingTargets>netstandard2.0;$(ReactiveUIModernTargets)</ReactiveUITestingTargets>
-    <ReactiveUITestingTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUITestingTargets);net462;net472</ReactiveUITestingTargets>
+    <!-- Testing target frameworks for non-platform tests (core .NET + .NET Framework) -->
+    <ReactiveUITestingTargets>net8.0;net9.0;net10.0</ReactiveUITestingTargets>
+
+    <!-- Testing target frameworks for UI platform tests (.NET Framework + Windows-specific TFMs) -->
+    <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
+    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
     <!-- Start with core targets available on all platforms -->
-    <ReactiveUIFinalTargetFrameworks>netstandard2.0;$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
+    <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
 
     <!-- Add Android targets (available on all platforms with Android SDK) -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>
@@ -88,13 +99,26 @@
     <ReactiveUIFinalModernTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalModernTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalModernTargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Ensure all test runs use our runsettings to control cross-assembly parallelism -->
-    <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests.runsettings</RunSettingsFilePath>
-  </PropertyGroup>
+  <!-- MTP Native JSON Configuration -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <!-- Copy testconfig.json to each test project's output directory for MTP auto-discovery -->
+    <None Include="$(MSBuildThisFileDirectory)testconfig.json">
+      <Link>testconfig.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
+  <!-- AOT Compatibility Settings for non-test, non-WPF projects on modern .NET -->
   <PropertyGroup Condition="$(MSBuildProjectName.Contains('WPF')) != 'true' and '$(IsTestProject)' != 'true' and ($(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')))">
+    <!-- Mark this library as AOT-compatible -->
     <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Enable trim analyzers to verify library is trim-safe -->
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+
+    <!-- Treat trimming warnings as errors during build -->
+    <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
@@ -102,14 +126,12 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(IsTestProject)">
-    <PackageReference Include="NUnit"/>
-    <PackageReference Include="NUnit3TestAdapter"/>
-    <PackageReference Include="NUnit.Analyzers"/>
+    <PackageReference Include="TUnit"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="Microsoft.Reactive.Testing"/>
     <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="coverlet.msbuild" PrivateAssets="All"/>
-    <PackageReference Include="Verify.NUnit"/>
+    <PackageReference Include="Verify.TUnit"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">

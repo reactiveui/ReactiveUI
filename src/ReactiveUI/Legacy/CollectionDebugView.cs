@@ -7,6 +7,7 @@ using System.Diagnostics;
 
 namespace ReactiveUI.Legacy;
 
+[ExcludeFromCodeCoverage]
 internal sealed class CollectionDebugView<T>(ICollection<T> collection)
 {
     private readonly ICollection<T> _collection = collection ?? throw new ArgumentNullException(nameof(collection), "collection is null.");

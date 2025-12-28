@@ -53,7 +53,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     /// <inheritdoc/>
     public override Object InstantiateItem(ViewGroup container, int position)
     {
-        ArgumentNullException.ThrowIfNull(container);
+        ArgumentExceptionHelper.ThrowIfNull(container);
 
         var data = _list.Items[position];
 
@@ -74,9 +74,9 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     /// <inheritdoc/>
     public override void DestroyItem(ViewGroup container, int position, Object @object)
     {
-        ArgumentNullException.ThrowIfNull(container);
+        ArgumentExceptionHelper.ThrowIfNull(container);
 
-        ArgumentNullException.ThrowIfNull(@object);
+        ArgumentExceptionHelper.ThrowIfNull(@object);
 
         if (@object is not View view)
         {

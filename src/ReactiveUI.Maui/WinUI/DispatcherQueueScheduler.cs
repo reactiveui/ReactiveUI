@@ -6,6 +6,7 @@
 #if WINUI_TARGET
 #if IS_MAUI
 using System.Threading;
+
 #endif
 using Microsoft.UI.Dispatching;
 

@@ -52,9 +52,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         return source.ObservableToProperty(target, property, deferSubscription, scheduler);
     }
@@ -152,7 +152,7 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(property);
         return source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
     }
 
@@ -202,9 +202,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         var ret = source.ObservableToProperty(target, property, deferSubscription, scheduler);
 
@@ -314,7 +314,7 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(property);
         var ret = source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
 
         result = ret;
@@ -412,13 +412,10 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (string.IsNullOrWhiteSpace(property))
-        {
-            throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
-        }
+        ArgumentExceptionHelper.ThrowIfNullOrWhiteSpace(property);
 
         return source.ObservableToProperty(target, property, deferSubscription, scheduler);
     }
@@ -470,13 +467,10 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (string.IsNullOrWhiteSpace(property))
-        {
-            throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
-        }
+        ArgumentExceptionHelper.ThrowIfNullOrWhiteSpace(property);
 
         return source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
     }
@@ -527,13 +521,10 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (string.IsNullOrWhiteSpace(property))
-        {
-            throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
-        }
+        ArgumentExceptionHelper.ThrowIfNullOrWhiteSpace(property);
 
         result = source.ObservableToProperty(target, property, deferSubscription, scheduler);
 
@@ -590,13 +581,10 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null) // TODO: Create Test
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        source.ArgumentNullExceptionThrowIfNull(nameof(source));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(source);
 
-        if (string.IsNullOrWhiteSpace(property))
-        {
-            throw new ArgumentException($"'{nameof(property)}' cannot be null or whitespace", nameof(property));
-        }
+        ArgumentExceptionHelper.ThrowIfNullOrWhiteSpace(property);
 
         result = source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
 
@@ -616,9 +604,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null)
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(observable);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         var expression = Reflection.Rewrite(property.Body);
 
@@ -656,9 +644,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null)
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(observable);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         var expression = Reflection.Rewrite(property.Body);
 
@@ -697,9 +685,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null)
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(observable);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         return new ObservableAsPropertyHelper<TRet>(
                                                     observable,
@@ -722,9 +710,9 @@ public static class OAPHCreationHelperMixin
         IScheduler? scheduler = null)
         where TObj : class, IReactiveObject
     {
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
-        observable.ArgumentNullExceptionThrowIfNull(nameof(observable));
-        property.ArgumentNullExceptionThrowIfNull(nameof(property));
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentExceptionHelper.ThrowIfNull(observable);
+        ArgumentExceptionHelper.ThrowIfNull(property);
 
         return new ObservableAsPropertyHelper<TRet>(
                                                     observable,

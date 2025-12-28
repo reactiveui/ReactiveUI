@@ -5,7 +5,9 @@
 
 using System.Reflection;
 using System.Windows.Input;
+
 using Foundation;
+
 using ObjCRuntime;
 
 #if UIKIT
@@ -85,8 +87,8 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 #endif
     public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
     {
-        command.ArgumentNullExceptionThrowIfNull(nameof(command));
-        target.ArgumentNullExceptionThrowIfNull(nameof(target));
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(target);
 
         commandParameter ??= Observable.Return(target);
 

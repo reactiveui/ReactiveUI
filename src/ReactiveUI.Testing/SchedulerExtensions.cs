@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Threading;
 using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Testing;
@@ -12,8 +13,6 @@ namespace ReactiveUI.Testing;
 /// </summary>
 public static class SchedulerExtensions
 {
-    private static readonly AutoResetEvent _schedulerGate = new(true);
-
     /// <summary>
     /// WithScheduler overrides the default Deferred and Taskpool schedulers
     /// with the given scheduler until the return value is disposed. This
@@ -29,24 +28,16 @@ public static class SchedulerExtensions
 #endif
     public static IDisposable WithScheduler(IScheduler scheduler)
     {
-        _schedulerGate.WaitOne();
         var prevDef = RxApp.MainThreadScheduler;
         var prevTask = RxApp.TaskpoolScheduler;
-        var prevRxDef = RxSchedulers.MainThreadScheduler;
-        var prevRxTask = RxSchedulers.TaskpoolScheduler;
 
         RxApp.MainThreadScheduler = scheduler;
         RxApp.TaskpoolScheduler = scheduler;
-        RxSchedulers.MainThreadScheduler = scheduler;
-        RxSchedulers.TaskpoolScheduler = scheduler;
 
         return Disposable.Create(() =>
         {
             RxApp.MainThreadScheduler = prevDef;
             RxApp.TaskpoolScheduler = prevTask;
-            RxSchedulers.MainThreadScheduler = prevRxDef;
-            RxSchedulers.TaskpoolScheduler = prevRxTask;
-            _schedulerGate.Set();
         });
     }
 
@@ -68,10 +59,7 @@ public static class SchedulerExtensions
     public static TRet With<T, TRet>(this T scheduler, Func<T, TRet> block)
         where T : IScheduler
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         TRet ret;
         using (WithScheduler(scheduler))
@@ -100,10 +88,7 @@ public static class SchedulerExtensions
     public static async Task<TRet> WithAsync<T, TRet>(this T scheduler, Func<T, Task<TRet>> block)
         where T : IScheduler
     {
-        if (block is null)
-        {
-            throw new ArgumentNullException(nameof(block));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(block);
 
         TRet ret;
         using (WithScheduler(scheduler))
@@ -163,10 +148,7 @@ public static class SchedulerExtensions
     /// incremental, it sets the time.</param>
     public static void AdvanceToMs(this TestScheduler scheduler, double milliseconds)
     {
-        if (scheduler is null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         scheduler.AdvanceTo(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
     }
@@ -180,10 +162,7 @@ public static class SchedulerExtensions
     /// by, in milliseconds.</param>
     public static void AdvanceByMs(this TestScheduler scheduler, double milliseconds)
     {
-        if (scheduler is null)
-        {
-            throw new ArgumentNullException(nameof(scheduler));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(scheduler);
 
         scheduler.AdvanceBy(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
     }

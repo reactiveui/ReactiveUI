@@ -30,14 +30,7 @@ public class PanelSetMethodBindingConverter : ISetMethodBindingConverter
     /// <inheritdoc />
     public object PerformSet(object? toTarget, object? newValue, object?[]? arguments)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(toTarget);
-#else
-        if (toTarget is null)
-        {
-            throw new ArgumentNullException(nameof(toTarget));
-        }
-#endif
+        ArgumentExceptionHelper.ThrowIfNull(toTarget);
 
         if (newValue is not IEnumerable<Control> newValueEnumerable)
         {
