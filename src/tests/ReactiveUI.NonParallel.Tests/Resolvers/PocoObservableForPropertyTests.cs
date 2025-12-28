@@ -169,8 +169,12 @@ public class PocoObservableForPropertyTests : IDisposable
 
         await Task.Delay(150);
 
-        // Should have received exactly 1 item (the initial value)
-        await Assert.That(results).Count().IsEqualTo(1);
+        // Should have received exactly 1 item (the initial value) and completed
+        using (Assert.Multiple())
+        {
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(completed).IsTrue();
+        }
     }
 
     public void Dispose()
