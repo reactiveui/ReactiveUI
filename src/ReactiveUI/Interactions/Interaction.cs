@@ -124,8 +124,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
             .Select(handler => Observable.Defer(() => handler(context)))
             .Concat()
             .TakeWhile(_ => !context.IsHandled)
-            .IgnoreElements()
-            .Select(_ => default(TOutput)!)
+            .SelectMany(_ => Observable.Empty<TOutput>())
             .Concat(
                 Observable.Defer(
                     () => context.IsHandled
