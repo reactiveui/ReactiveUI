@@ -61,6 +61,23 @@ public class ViewLocatorAOTMappingTests
         await Assert.That(locator.ResolveView(vm, "c1")).IsNull();
     }
 
+    /// <summary>
+    /// Tests that AOT mapping is used without contract.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Map_ResolveView_UsesAOTMappingWithoutContract()
+    {
+        var locator = new DefaultViewLocator();
+        locator.Map<VmA, ViewA>(static () => new ViewA());
+
+        var vm = new VmA();
+        var view = locator.ResolveView(vm);
+
+        await Assert.That(view).IsNotNull();
+        await Assert.That(view).IsTypeOf<ViewA>();
+    }
+
     private sealed class ViewADefault : IViewFor<VmA>
     {
         object? IViewFor.ViewModel { get => ViewModel; set => ViewModel = (VmA?)value; }

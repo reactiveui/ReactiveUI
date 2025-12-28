@@ -439,6 +439,51 @@ public class SuspensionHostExtensionsTests
         await Assert.That(() => ((ISuspensionHost)null!).ObserveAppState<DummyAppState>()).Throws<ArgumentNullException>();
     }
 
+    /// <summary>
+    /// Verifies that EnsureLoadAppState with null driver after initially having one logs error and AppState remains null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task EnsureLoadAppState_DriverBecomesNull_LogsErrorAndAppStateRemainsNull()
+    {
+        using var host = new SuspensionHost
+        {
+            CreateNewAppState = () => new DummyAppState(),
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldPersistState = Observable.Never<IDisposable>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver();
+        driver.StateToLoad = new DummyAppState();
+
+        // Set up with a driver
+        using var disposable = host.SetupDefaultSuspendResume(driver);
+
+        // Clear both the static driver AND service locator to force the null branch in EnsureLoadAppState
+        var previousDrivers = Locator.Current.GetServices<ISuspensionDriver>().ToList();
+        Locator.CurrentMutable.UnregisterAll<ISuspensionDriver>();
+        try
+        {
+            SuspensionHostExtensions.SuspensionDriver = null;
+
+            // Now call GetAppState which should trigger EnsureLoadAppState
+            // It should hit the null driver branch and log error, leaving AppState null
+            var state = host.GetAppState<DummyAppState>();
+
+            // State should be null since driver became null and couldn't load
+            await Assert.That(state).IsNull();
+        }
+        finally
+        {
+            foreach (var previousDriver in previousDrivers)
+            {
+                Locator.CurrentMutable.RegisterConstant<ISuspensionDriver>(previousDriver);
+            }
+        }
+    }
+
     private class TestSuspensionDriver : ISuspensionDriver
     {
         public int LoadStateCallCount { get; private set; }

@@ -16,21 +16,21 @@ public class BuilderSchedulerMixinsTests
     public void SetUp() => AppBuilder.ResetBuilderStateForTests();
 
     [Test]
-    public void WithTaskPoolScheduler_throws_when_builder_null()
+    public void WithTaskPoolScheduler_Throws_When_Builder_Null()
     {
         var scheduler = ImmediateScheduler.Instance;
         Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithTaskPoolScheduler(null!, scheduler));
     }
 
     [Test]
-    public void WithMainThreadScheduler_throws_when_builder_null()
+    public void WithMainThreadScheduler_Throws_When_Builder_Null()
     {
         var scheduler = ImmediateScheduler.Instance;
         Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithMainThreadScheduler(null!, scheduler));
     }
 
     [Test]
-    public async Task WithTaskPoolScheduler_sets_scheduler_and_rx_schedulers()
+    public async Task WithTaskPoolScheduler_Sets_Scheduler_And_Rx_Schedulers()
     {
         var original = RxSchedulers.TaskpoolScheduler;
         try
@@ -55,7 +55,7 @@ public class BuilderSchedulerMixinsTests
     }
 
     [Test]
-    public async Task WithMainThreadScheduler_sets_scheduler_and_rx_schedulers()
+    public async Task WithMainThreadScheduler_Sets_Scheduler_And_Rx_Schedulers()
     {
         var original = RxSchedulers.MainThreadScheduler;
         try
@@ -77,5 +77,29 @@ public class BuilderSchedulerMixinsTests
         {
             RxSchedulers.MainThreadScheduler = original;
         }
+    }
+
+    [Test]
+    public async Task WithTaskPoolScheduler_Extension_Method_Returns_Builder()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        var scheduler = ImmediateScheduler.Instance;
+
+        var result = BuilderMixins.WithTaskPoolScheduler(builder, scheduler);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public async Task WithMainThreadScheduler_Extension_Method_Returns_Builder()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        var scheduler = ImmediateScheduler.Instance;
+
+        var result = BuilderMixins.WithMainThreadScheduler(builder, scheduler);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
     }
 }

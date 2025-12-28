@@ -169,7 +169,7 @@ public class BuilderMixinsTests
     }
 
     [Test]
-    public async Task UsingSplatBuilder_executes_callback()
+    public async Task UsingSplatBuilder_Executes_Callback()
     {
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
@@ -178,6 +178,17 @@ public class BuilderMixinsTests
         BuilderMixins.UsingSplatBuilder(builder, _ => invoked = true);
 
         await Assert.That(invoked).IsTrue();
+    }
+
+    [Test]
+    public async Task UsingSplatBuilder_Handles_Null_Callback()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+
+        var result = BuilderMixins.UsingSplatBuilder(builder, null);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
     }
 
     [Test]

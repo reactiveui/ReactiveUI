@@ -1959,6 +1959,39 @@ public class ReactiveCommandTest : IDisposable
         }
     }
 
+    [Test]
+    public async Task CreateRunInBackground_With_TParam_Uses_BackgroundScheduler_When_Provided()
+    {
+        var executed = false;
+        var backgroundScheduler = ImmediateScheduler.Instance;
+        var fixture = ReactiveCommand.CreateRunInBackground<int>(
+            param =>
+            {
+                executed = true;
+            },
+            backgroundScheduler: backgroundScheduler,
+            outputScheduler: ImmediateScheduler.Instance);
+
+        await fixture.Execute(42);
+        await Assert.That(executed).IsTrue();
+    }
+
+    [Test]
+    public async Task CreateRunInBackground_With_TParam_TResult_Uses_BackgroundScheduler_When_Provided()
+    {
+        var backgroundScheduler = ImmediateScheduler.Instance;
+        var fixture = ReactiveCommand.CreateRunInBackground<int, string>(
+            param => param.ToString(),
+            backgroundScheduler: backgroundScheduler,
+            outputScheduler: ImmediateScheduler.Instance);
+        fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();
+
+        await fixture.Execute(42);
+
+        await Assert.That(results).Count().IsEqualTo(1);
+        await Assert.That(results[0]).IsEqualTo("42");
+    }
+
     public void Dispose()
     {
         _schedulersScope?.Dispose();

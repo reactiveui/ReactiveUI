@@ -221,4 +221,57 @@ public class DefaultPropertyBindingTests
             await Assert.That(test4).IsEqualTo(0);
         }
     }
+
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_BeforeChanged()
+    {
+        var fixture = new WinformsCreatesObservableForProperty();
+        var affinity = fixture.GetAffinityForObject(typeof(TextBox), "Text", beforeChanged: true);
+
+        await Assert.That(affinity).IsEqualTo(0);
+    }
+
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonComponent()
+    {
+        var fixture = new WinformsCreatesObservableForProperty();
+        var affinity = fixture.GetAffinityForObject(typeof(string), "Length", beforeChanged: false);
+
+        await Assert.That(affinity).IsEqualTo(0);
+    }
+
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonExistent_Event()
+    {
+        var fixture = new WinformsCreatesObservableForProperty();
+        var affinity = fixture.GetAffinityForObject(typeof(TextBox), "NonExistentProperty", beforeChanged: false);
+
+        await Assert.That(affinity).IsEqualTo(0);
+    }
+
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task WinformsCreatesObservableForProperty_GetNotificationForProperty_Throws_For_NonExistent_Event()
+    {
+        var input = new TextBox();
+        var fixture = new WinformsCreatesObservableForProperty();
+
+        Expression<Func<TextBox, string>> expression = static x => x.Text;
+        var propertyName = "NonExistentProperty"; // Property with no corresponding event
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        {
+            var observable = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
+                .ObserveOn(ImmediateScheduler.Instance);
+
+            // Need to subscribe to actually execute the observable creation
+            observable.Subscribe();
+            return Task.CompletedTask;
+        });
+
+        await Assert.That(exception!.Message).Contains("Could not find a valid event");
+    }
 }
