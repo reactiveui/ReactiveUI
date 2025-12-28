@@ -21,6 +21,9 @@
     <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOsPlatform('OSX')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
