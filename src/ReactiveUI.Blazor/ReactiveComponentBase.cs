@@ -98,6 +98,7 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
                     .RefCount(2);
 
             viewModelChanged
+                .Skip(1) // Skip the initial value to avoid unnecessary re-render when ViewModel changes
                 .Subscribe(_ => InvokeAsync(StateHasChanged))
                 .DisposeWith(_compositeDisposable);
 

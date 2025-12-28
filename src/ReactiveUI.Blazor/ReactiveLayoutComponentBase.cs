@@ -29,6 +29,7 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc />
+    [Parameter]
     public T? ViewModel
     {
         get => _viewModel;
@@ -98,6 +99,7 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
                     .RefCount(2);
 
             viewModelChanged
+                .Skip(1) // Skip the initial value to avoid unnecessary re-render when ViewModel changes
                 .Subscribe(_ => InvokeAsync(StateHasChanged))
                 .DisposeWith(_compositeDisposable);
 

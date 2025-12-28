@@ -9,14 +9,15 @@
     <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.110</MauiVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0-rc.1.25451.107</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.9</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.20</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.11</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.22</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Akavache.Sqlite3" Version="11.5.1" />
     <PackageVersion Include="Akavache.SystemTextJson" Version="11.5.1" />
+    <PackageVersion Include="bunit" Version="2.4.2" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />

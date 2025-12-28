@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Builder.WpfApp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.NonParallel.Tests", "tests\ReactiveUI.NonParallel.Tests\ReactiveUI.NonParallel.Tests.csproj", "{C4338ACD-DFDC-1724-6F35-36519B285D1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveUI.Blazor.Tests", "tests\ReactiveUI.Blazor.Tests\ReactiveUI.Blazor.Tests.csproj", "{928C9161-B7A5-41EA-991C-C4FB44605F97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -347,6 +349,22 @@ Global
 		{C4338ACD-DFDC-1724-6F35-36519B285D1A}.Release|x64.Build.0 = Release|Any CPU
 		{C4338ACD-DFDC-1724-6F35-36519B285D1A}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4338ACD-DFDC-1724-6F35-36519B285D1A}.Release|x86.Build.0 = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|arm64.Build.0 = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|x64.Build.0 = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Debug|x86.Build.0 = Debug|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|arm64.ActiveCfg = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|arm64.Build.0 = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|x64.ActiveCfg = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|x64.Build.0 = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|x86.ActiveCfg = Release|Any CPU
+		{928C9161-B7A5-41EA-991C-C4FB44605F97}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -360,6 +378,7 @@ Global
 		{2A4B719C-4958-AD92-4A22-6472AAF98A37} = {2AE709FA-BE58-4287-BFD3-E80BEB605125}
 		{B5B3101B-6638-418D-AE82-59984D9D6AC7} = {3F9A8B1C-5D2E-4A7F-9B8C-1E6D4F5A7B9C}
 		{C4338ACD-DFDC-1724-6F35-36519B285D1A} = {2AE709FA-BE58-4287-BFD3-E80BEB605125}
+		{928C9161-B7A5-41EA-991C-C4FB44605F97} = {2AE709FA-BE58-4287-BFD3-E80BEB605125}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9326B58C-0AD3-4527-B3F4-86B54673C62E}
