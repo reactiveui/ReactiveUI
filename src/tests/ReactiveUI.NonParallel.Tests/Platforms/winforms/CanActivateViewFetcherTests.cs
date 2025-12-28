@@ -89,8 +89,6 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-#pragma warning disable CA1812 // Class is not instantiated
-
     private class CanActivateStub : ICanActivate
     {
         public IObservable<Unit> Activated { get; } = Observable.Empty<Unit>();

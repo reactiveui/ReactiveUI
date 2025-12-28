@@ -208,7 +208,6 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class ClickableControl
     {
         public event EventHandler? Click;
@@ -222,5 +221,4 @@ public class CreatesCommandBindingViaEventTests
 
         public void RaiseMouseUp() => MouseUp?.Invoke(this, EventArgs.Empty);
     }
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 }

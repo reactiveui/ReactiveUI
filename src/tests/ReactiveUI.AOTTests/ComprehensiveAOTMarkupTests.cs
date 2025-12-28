@@ -108,9 +108,7 @@ public class ComprehensiveAOTMarkupTests
         var hasErrors = false;
         property.ObserveHasErrors.Subscribe(errors => hasErrors = errors);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
         await Assert.That(valueChanges).Contains("initial");
@@ -315,9 +313,7 @@ public class ComprehensiveAOTMarkupTests
             .Where(errs => errs != null)
             .Subscribe(errs => validationErrors.AddRange(errs!.OfType<string>()));
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Value required" : null);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Value required" : null);
         property.Value = string.Empty;
 
         using (Assert.Multiple())

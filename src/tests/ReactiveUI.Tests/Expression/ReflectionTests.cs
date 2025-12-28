@@ -418,19 +418,16 @@ public class ReflectionTests
         await Assert.That(args).IsNull();
     }
 
-#pragma warning disable CA1050 // Declare types in namespaces
-#pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
-#pragma warning disable SA1201 // Elements should appear in the correct order
-#pragma warning disable SA1401 // Fields should be private
     public class TestClass
     {
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private", Justification = "Public field required for reflection tests")]
+        public int PublicField;
+
+        public event EventHandler? TestEvent;
+
         public static string? StaticProperty { get; set; }
 
         public string? Property { get; set; }
-
-        public int PublicField;
 
         public TestClass? Nested { get; set; }
 
@@ -440,14 +437,6 @@ public class ReflectionTests
 
         public Dictionary<string, int> Dictionary { get; set; } = new Dictionary<string, int> { { "key", 42 } };
 
-        public event EventHandler? TestEvent;
-
         public void RaiseTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
-#pragma warning restore SA1401 // Fields should be private
-#pragma warning restore SA1201 // Elements should appear in the correct order
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
-#pragma warning restore CA1051 // Do not declare visible instance fields
-#pragma warning restore CA1822 // Mark members as static
-#pragma warning restore CA1050 // Declare types in namespaces
 }

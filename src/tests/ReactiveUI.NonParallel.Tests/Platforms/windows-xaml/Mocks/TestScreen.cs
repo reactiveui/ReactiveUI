@@ -10,11 +10,9 @@ public class TestScreen : ReactiveObject, IScreen
     private RoutingState? _router;
 
     /// <inheritdoc/>
-    public RoutingState? Router
+    public RoutingState Router
     {
-#pragma warning disable CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
-        get => _router;
-#pragma warning restore CS8766 // Nullability of reference types in return type doesn't match implicitly implemented member (possibly because of nullability attributes).
+        get => _router!;
         set => this.RaiseAndSetIfChanged(ref _router, value);
     }
 }

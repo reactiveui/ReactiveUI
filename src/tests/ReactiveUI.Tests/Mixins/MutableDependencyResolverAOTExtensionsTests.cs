@@ -154,12 +154,10 @@ public class MutableDependencyResolverAOTExtensionsTests
         await Assert.That(result).IsSameReferenceAs(resolver);
     }
 
-    [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by DI container in tests")]
     private class TestViewModel : ReactiveObject
     {
     }
 
-    [SuppressMessage("Performance", "CA1812:Avoid uninstantiated internal classes", Justification = "Instantiated by DI container in tests")]
     private class TestView : IViewFor<TestViewModel>
     {
         public TestViewModel? ViewModel { get; set; }

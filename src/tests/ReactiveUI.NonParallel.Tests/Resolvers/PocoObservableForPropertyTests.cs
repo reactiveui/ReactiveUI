@@ -196,7 +196,6 @@ public class PocoObservableForPropertyTests : IDisposable
         _schedulersScope = null;
     }
 
-    [SuppressMessage("Style", "CA1812: Avoid uninstantiated internal classes", Justification = "Used in tests via reflection.")]
     private class PocoType
     {
         public string? Property1 { get; set; }
@@ -204,7 +203,6 @@ public class PocoObservableForPropertyTests : IDisposable
         public string? Property2 { get; set; }
     }
 
-    [SuppressMessage("Style", "CA1812: Avoid uninstantiated internal classes", Justification = "Used in tests via reflection.")]
     private class INPCClass : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;

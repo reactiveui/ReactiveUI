@@ -29,9 +29,7 @@ public class RoutableViewModelMixinTests
             return Disposable.Empty;
         });
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -56,11 +54,9 @@ public class RoutableViewModelMixinTests
             return Disposable.Empty;
         });
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-        screen.Router.Navigate.Execute(vm2);
-        screen.Router.Navigate.Execute(vm);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
+        await screen.Router.Navigate.Execute(vm2);
+        await screen.Router.Navigate.Execute(vm);
 
         await Assert.That(count).IsEqualTo(2);
     }
@@ -80,15 +76,11 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
 
         await Assert.That(count).IsEqualTo(0);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm2);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm2);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -108,15 +100,11 @@ public class RoutableViewModelMixinTests
 
         vm1.WhenNavigatedTo(() => Disposable.Create(() => count++));
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm1);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm1);
 
         await Assert.That(count).IsEqualTo(0);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.NavigateAndReset.Execute(vm2);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.NavigateAndReset.Execute(vm2);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -135,9 +123,7 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -157,11 +143,9 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-        screen.Router.Navigate.Execute(vm2);
-        screen.Router.Navigate.Execute(vm);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
+        await screen.Router.Navigate.Execute(vm2);
+        await screen.Router.Navigate.Execute(vm);
 
         await Assert.That(count).IsEqualTo(2);
     }
@@ -182,10 +166,8 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-        screen.Router.NavigateBack.Execute();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
+        await screen.Router.NavigateBack.Execute();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -207,10 +189,8 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm1);
-        screen.Router.NavigateAndReset.Execute(vm2);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm1);
+        await screen.Router.NavigateAndReset.Execute(vm2);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -229,10 +209,8 @@ public class RoutableViewModelMixinTests
 
         vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-        screen.Router.Navigate.Execute(vm2);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
+        await screen.Router.Navigate.Execute(vm2);
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -253,10 +231,8 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm);
-        screen.Router.NavigateBack.Execute();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm);
+        await screen.Router.NavigateBack.Execute();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -278,10 +254,8 @@ public class RoutableViewModelMixinTests
             _ => { },
             () => count++);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        screen.Router.Navigate.Execute(vm1);
-        screen.Router.NavigateAndReset.Execute(vm2);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await screen.Router.Navigate.Execute(vm1);
+        await screen.Router.NavigateAndReset.Execute(vm2);
 
         await Assert.That(count).IsEqualTo(1);
     }

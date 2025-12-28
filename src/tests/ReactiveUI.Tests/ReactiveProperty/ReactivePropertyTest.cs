@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if false
-
 using System.Collections;
 using Microsoft.Reactive.Testing;
 using ReactiveUI.Testing;
@@ -461,5 +459,51 @@ public class ReactivePropertyTest : ReactiveTest
         vm.StartupTime.Should().BeLessThan(2000);
         vm.SubscriberEvents.Should().Be(1000);
     }
+
+    [Test]
+    public async Task ObserveValidationErrors_ReturnsErrorMessages()
+    {
+        var target = new ReactivePropertyVM();
+        var errors = new List<string?>();
+        target.IsRequiredProperty
+            .ObserveValidationErrors()
+            .Subscribe(x => errors.Add(x));
+
+        await Assert.That(errors).Count().IsEqualTo(1);
+        await Assert.That(errors[0]).IsEqualTo("error!");
+
+        target.IsRequiredProperty.Value = "valid";
+        await Assert.That(errors).Count().IsEqualTo(2);
+        await Assert.That(errors[1]).IsNull();
+
+        target.IsRequiredProperty.Value = null;
+        await Assert.That(errors).Count().IsEqualTo(3);
+        await Assert.That(errors[2]).IsEqualTo("error!");
+    }
+
+    [Test]
+    public async Task ObserveValidationErrors_HandlesMultipleErrors()
+    {
+        var target = new ReactivePropertyVM();
+        var errors = new List<string?>();
+        target.LengthLessThanFiveProperty
+            .ObserveValidationErrors()
+            .Subscribe(x => errors.Add(x));
+
+        await Assert.That(errors).Count().IsEqualTo(1);
+        await Assert.That(errors[0]).IsEqualTo("required");
+
+        target.LengthLessThanFiveProperty.Value = "ok";
+        await Assert.That(errors.Last()).IsNull();
+
+        target.LengthLessThanFiveProperty.Value = "toolong";
+        await Assert.That(errors.Last()).IsEqualTo("5over");
+    }
+
+    [Test]
+    public void ObserveValidationErrors_ThrowsOnNull()
+    {
+        ReactiveProperty<string>? nullProperty = null;
+        Assert.Throws<ArgumentNullException>(() => nullProperty!.ObserveValidationErrors());
+    }
 }
-#endif

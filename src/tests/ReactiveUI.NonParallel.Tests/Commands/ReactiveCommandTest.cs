@@ -294,7 +294,6 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task CreateThrowsIfExecutionParameterIsNull()
     {
-#pragma warning disable CS4014 // Because this call is not awaited
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
         {
             ReactiveCommand.Create(null!);
@@ -335,7 +334,6 @@ public class ReactiveCommandTest : IDisposable
             ReactiveCommand.Create((Func<Unit, Task<Unit>>)null!);
             await Task.CompletedTask;
         });
-#pragma warning restore CS4014
     }
 
     /// <summary>
@@ -345,7 +343,6 @@ public class ReactiveCommandTest : IDisposable
     [Test]
     public async Task CreateRunInBackgroundThrowsIfExecutionParameterIsNull()
     {
-#pragma warning disable CS4014 // Because this call is not awaited
         await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
         {
             ReactiveCommand.CreateRunInBackground(null!);
@@ -386,7 +383,6 @@ public class ReactiveCommandTest : IDisposable
             ReactiveCommand.CreateRunInBackground((Func<Unit, Task<Unit>>)null!);
             await Task.CompletedTask;
         });
-#pragma warning restore CS4014
     }
 
     /// <summary>

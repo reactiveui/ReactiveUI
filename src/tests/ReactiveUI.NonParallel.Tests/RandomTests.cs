@@ -173,7 +173,7 @@ public class RandomTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying enum values remain constant for backwards compatibility")]
     public async Task TriggerUpdate_ShouldHaveCorrectValues()
     {
         using (Assert.Multiple())
@@ -189,7 +189,7 @@ public class RandomTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying enum values remain constant for backwards compatibility")]
     public async Task BindingDirection_ShouldHaveCorrectValues()
     {
         using (Assert.Multiple())
@@ -287,7 +287,7 @@ public class RandomTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying cache constants remain unchanged for backwards compatibility")]
     public async Task RxApp_ShouldHaveCacheConstants()
     {
         using (Assert.Multiple())
@@ -354,7 +354,7 @@ public class RandomTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Testing that the enum values don't change")]
+    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying enum values remain constant for backwards compatibility")]
     public async Task RegistrationNamespace_ShouldHaveAllExpectedValues()
     {
         var expectedValues = new[]
@@ -623,7 +623,9 @@ public class RandomTests : IDisposable
         subject.ToProperty(
                            testObject,
                            x => x.FirstName,
-                           out testObject._firstNameHelper);
+                           out var helper);
+
+        testObject.FirstNameHelper = helper;
 
         // Act
         subject.OnNext("John");
@@ -632,7 +634,7 @@ public class RandomTests : IDisposable
         {
             // Assert
             await Assert.That(testObject.FirstName).IsEqualTo("John");
-            await Assert.That(testObject._firstNameHelper.Value).IsEqualTo("John");
+            await Assert.That(testObject.FirstNameHelper!.Value).IsEqualTo("John");
         }
     }
 
@@ -828,11 +830,9 @@ public class RandomTests : IDisposable
     /// </summary>
     private class OaphTestFixture : ReactiveObject
     {
-#pragma warning disable SA1401 // Fields should be private
-        internal ObservableAsPropertyHelper<string?>? _firstNameHelper;
-#pragma warning restore SA1401 // Fields should be private
+        public ObservableAsPropertyHelper<string?>? FirstNameHelper { get; set; }
 
-        public string? FirstName => _firstNameHelper?.Value;
+        public string? FirstName => FirstNameHelper?.Value;
     }
 
     /// <summary>

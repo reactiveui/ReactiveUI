@@ -176,7 +176,6 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
     }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class TestClass
     {
         public string? Property { get; set; }
@@ -189,5 +188,4 @@ public class ExpressionRewriterTests
 
         public string? GetValue() => Property;
     }
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 }

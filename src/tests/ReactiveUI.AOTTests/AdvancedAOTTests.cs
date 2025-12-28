@@ -49,9 +49,7 @@ public class AdvancedAOTTests
         property.ObserveValidationErrors()
             .Subscribe(error => hasErrors = !string.IsNullOrEmpty(error));
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
         await Assert.That(hasErrors).IsTrue();

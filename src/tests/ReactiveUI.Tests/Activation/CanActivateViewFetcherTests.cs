@@ -138,7 +138,6 @@ public class CanActivateViewFetcherTests
         await Assert.That(results).IsEquivalentTo([false, false, false]);
     }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivate
     {
         private readonly Subject<Unit> _activated = new();
@@ -186,5 +185,4 @@ public class CanActivateViewFetcherTests
     private class TestViewModel : ReactiveObject
     {
     }
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 }
