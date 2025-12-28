@@ -7,7 +7,7 @@ using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests;
 
-public class BuilderMixinsWithInstanceTests
+public class BuilderInstanceMixinsTests
 {
     [Test]
     public async Task Builder_WithInstance_1_Type_invokes_action()
