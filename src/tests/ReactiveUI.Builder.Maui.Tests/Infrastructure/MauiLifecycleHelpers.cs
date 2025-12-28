@@ -138,6 +138,16 @@ internal static class MauiLifecycleHelpers
         TriggerEventHandlers(page, "Disappearing");
     }
 
+    /// <summary>
+    /// Searches for a method with the specified name in the type hierarchy.
+    /// </summary>
+    /// <param name="type">The type to search.</param>
+    /// <param name="methodName">The name of the method to find.</param>
+    /// <returns>The found method, or <see langword="null"/> if no matching method exists.</returns>
+    /// <remarks>
+    /// Searches the entire inheritance chain and prefers parameterless methods, then methods
+    /// accepting a single EventArgs parameter, then any other matching method.
+    /// </remarks>
     private static MethodInfo? FindMethod(Type type, string methodName)
     {
         var currentType = type;
@@ -162,6 +172,17 @@ internal static class MauiLifecycleHelpers
         return null;
     }
 
+    /// <summary>
+    /// Invokes a lifecycle method with appropriate parameters based on its signature.
+    /// </summary>
+    /// <param name="target">The object on which to invoke the method.</param>
+    /// <param name="method">The method to invoke.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the method has an unsupported signature.
+    /// </exception>
+    /// <remarks>
+    /// Supports parameterless methods and methods that accept a single EventArgs parameter.
+    /// </remarks>
     private static void InvokeMethod(object target, MethodInfo method)
     {
         var parameters = method.GetParameters();
@@ -175,6 +196,16 @@ internal static class MauiLifecycleHelpers
         method.Invoke(target, args);
     }
 
+    /// <summary>
+    /// Manually invokes all event handlers subscribed to an event by accessing its backing field.
+    /// </summary>
+    /// <param name="target">The object whose event handlers should be invoked.</param>
+    /// <param name="eventName">The name of the event to trigger.</param>
+    /// <remarks>
+    /// This is a fallback mechanism used when the lifecycle trigger methods cannot be found.
+    /// It searches for the event backing field using common naming patterns and invokes
+    /// all subscribed handlers directly.
+    /// </remarks>
     private static void TriggerEventHandlers(object target, string eventName)
     {
         // Try to find the event backing field using different naming patterns

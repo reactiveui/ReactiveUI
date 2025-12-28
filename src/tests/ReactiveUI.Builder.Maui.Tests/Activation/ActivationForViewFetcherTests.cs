@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Disposables;
-
-using ReactiveUI;
-using ReactiveUI.Builder.Maui.Tests;
 using ReactiveUI.Builder.Maui.Tests.Infrastructure;
 using ReactiveUI.Maui;
 
