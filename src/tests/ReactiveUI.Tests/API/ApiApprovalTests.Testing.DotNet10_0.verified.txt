@@ -9,20 +9,19 @@
     public interface IBuilder { }
     public static class IBuilderExtensions
     {
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField> values)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, TField value)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
-        public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
-            where TBuilder : ReactiveUI.Testing.IBuilder { }
         public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair)
             where TKey :  notnull { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
-            where TBuilder : ReactiveUI.Testing.IBuilder
-            where TKey :  notnull { }
-        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
-            where TBuilder : ReactiveUI.Testing.IBuilder
-            where TKey :  notnull { }
+        extension<TBuilder>(TBuilder builder)
+            where TBuilder :  notnull, ReactiveUI.Testing.IBuilder
+        {
+            public TBuilder With<TField>(out TField field, TField value) { }
+            public TBuilder With<TField>(ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField> values) { }
+            public TBuilder With<TField>(ref System.Collections.Generic.List<TField>? field, TField value) { }
+            public TBuilder With<TKey, TField>(ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
+                where TKey :  notnull { }
+            public TBuilder With<TKey, TField>(ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
+                where TKey :  notnull { }
+        }
     }
     public static class MessageBusExtensions
     {

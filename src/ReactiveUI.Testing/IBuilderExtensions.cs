@@ -8,6 +8,7 @@ namespace ReactiveUI.Testing;
 /// <summary>
 /// Default methods for the <see cref="IBuilder"/> abstraction.
 /// </summary>
+[SuppressMessage("Design", "RCS1263: Parameter not found", Justification = "False positive with extension class")]
 public static class IBuilderExtensions
 {
     /// <summary>Extension methods associated with the IBuilder.</summary>
