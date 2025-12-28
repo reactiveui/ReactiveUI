@@ -17,7 +17,6 @@ namespace ReactiveUI.Builder.Maui.Tests.Activation;
 /// <summary>
 /// Tests for the activation for view fetcher.
 /// </summary>
-[STAThreadExecutor]
 public sealed partial class ActivationForViewFetcherTests
 {
     /// <summary>
