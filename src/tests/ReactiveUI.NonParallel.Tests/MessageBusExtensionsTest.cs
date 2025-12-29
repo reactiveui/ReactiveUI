@@ -4,14 +4,30 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Tests for <see cref="MessageBusExtensions"/>.
 /// </summary>
+[NotInParallel]
 public class MessageBusExtensionsTest
 {
+    private MessageBusScope? _messageBusScope;
+
+    [Before(Test)]
+    public void SetUp()
+    {
+        _messageBusScope = new MessageBusScope();
+    }
+
+    [After(Test)]
+    public void TearDown()
+    {
+        _messageBusScope?.Dispose();
+    }
+
     /// <summary>
     /// Tests that WithMessageBus overrides the message bus.
     /// </summary>
