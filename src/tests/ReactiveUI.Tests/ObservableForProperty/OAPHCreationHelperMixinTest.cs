@@ -279,6 +279,155 @@ public class OAPHCreationHelperMixinTest
     }
 
     /// <summary>
+    /// Tests that internal ObservableToProperty with Expression and getInitialValue creates helper and raises notifications.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableToProperty_WithExpressionAndGetInitialValue_CreatesHelperAndRaisesNotifications()
+    {
+        var source = new TestReactiveObject();
+        var observable = Observable.Return("newValue").ObserveOn(ImmediateScheduler.Instance);
+        var changingFired = false;
+        var changedFired = false;
+
+        source.PropertyChanging += (s, e) =>
+        {
+            if (e.PropertyName == nameof(source.TestProperty))
+            {
+                changingFired = true;
+            }
+        };
+
+        source.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(source.TestProperty))
+            {
+                changedFired = true;
+            }
+        };
+
+        var result = source.ObservableToProperty(
+            observable,
+            x => x.TestProperty,
+            () => "initial",
+            scheduler: ImmediateScheduler.Instance);
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Value).IsEqualTo("newValue");
+        await Assert.That(changingFired).IsTrue();
+        await Assert.That(changedFired).IsTrue();
+
+        result.Dispose();
+    }
+
+    /// <summary>
+    /// Tests that internal ObservableToProperty with Expression without initialValue uses default.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableToProperty_WithExpressionNoInitialValue_UsesDefault()
+    {
+        var source = new TestReactiveObject();
+        var observable = Observable.Never<string>();
+
+        var result = source.ObservableToProperty(
+            observable,
+            x => x.TestProperty,
+            scheduler: ImmediateScheduler.Instance);
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Value).IsNull();
+
+        result.Dispose();
+    }
+
+    /// <summary>
+    /// Tests that internal ObservableToProperty with string name and getInitialValue creates helper.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableToProperty_WithStringNameAndGetInitialValue_CreatesHelper()
+    {
+        var source = new TestReactiveObject();
+        var observable = Observable.Return("newValue").ObserveOn(ImmediateScheduler.Instance);
+        var changingFired = false;
+        var changedFired = false;
+
+        source.PropertyChanging += (s, e) =>
+        {
+            if (e.PropertyName == nameof(source.TestProperty))
+            {
+                changingFired = true;
+            }
+        };
+
+        source.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(source.TestProperty))
+            {
+                changedFired = true;
+            }
+        };
+
+        var result = source.ObservableToProperty(
+            observable,
+            nameof(source.TestProperty),
+            () => "initial",
+            scheduler: ImmediateScheduler.Instance);
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Value).IsEqualTo("newValue");
+        await Assert.That(changingFired).IsTrue();
+        await Assert.That(changedFired).IsTrue();
+
+        result.Dispose();
+    }
+
+    /// <summary>
+    /// Tests that internal ObservableToProperty with string name without initialValue uses default.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableToProperty_WithStringNameNoInitialValue_UsesDefault()
+    {
+        var source = new TestReactiveObject();
+        var observable = Observable.Never<string>();
+
+        var result = source.ObservableToProperty(
+            observable,
+            nameof(source.TestProperty),
+            scheduler: ImmediateScheduler.Instance);
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Value).IsNull();
+
+        result.Dispose();
+    }
+
+    /// <summary>
+    /// Tests that internal ObservableToProperty with Expression extracts correct property name.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableToProperty_WithExpression_ExtractsCorrectPropertyName()
+    {
+        var source = new TestReactiveObject();
+        var observable = Observable.Return("test").ObserveOn(ImmediateScheduler.Instance);
+        string? capturedPropertyName = null;
+
+        source.PropertyChanged += (s, e) => capturedPropertyName = e.PropertyName;
+
+        var result = source.ObservableToProperty(
+            observable,
+            x => x.TestProperty,
+            scheduler: ImmediateScheduler.Instance);
+
+        await Assert.That(capturedPropertyName).IsEqualTo(nameof(source.TestProperty));
+
+        result.Dispose();
+    }
+
+    /// <summary>
     /// Test reactive object for testing.
     /// </summary>
     private class TestReactiveObject : ReactiveObject
