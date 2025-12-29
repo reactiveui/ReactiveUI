@@ -10,19 +10,40 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ReactiveUI;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 using Splat;
 
 namespace ReactiveUI.NonParallel.Tests
 {
+    /// <summary>
+    /// Tests for command binding.
+    /// </summary>
+    /// <remarks>
+    /// This test fixture is marked as NotInParallel because tests call
+    /// Locator.CurrentMutable to register ICreatesCommandBinding implementations,
+    /// which mutate global service locator state.
+    /// </remarks>
+    [NotInParallel]
     public class CommandBindingTests
     {
-        public CommandBindingTests()
+        private LocatorScope? _locatorScope;
+
+        [Before(Test)]
+        public void SetUp()
         {
+            _locatorScope = new LocatorScope();
+
             Locator.CurrentMutable.InitializeSplat();
             Locator.CurrentMutable.RegisterConstant(new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
 
             // Register a custom binder to test binder resolution
             Locator.CurrentMutable.RegisterConstant(new FakeCustomBinder(), typeof(ICreatesCommandBinding));
+        }
+
+        [After(Test)]
+        public void TearDown()
+        {
+            _locatorScope?.Dispose();
         }
 
         [Test]

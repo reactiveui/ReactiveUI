@@ -7,6 +7,14 @@ using DynamicData;
 
 namespace ReactiveUI.Tests;
 
+/// <summary>
+/// Tests for WhenAnyObservable functionality.
+/// This test class is marked as NotInParallel because WhenAnyObservable relies on
+/// the service locator (Locator.Current) to find ICreatesObservableForProperty implementations.
+/// When tests run in parallel, they can interfere with each other's service locator state,
+/// causing intermittent failures with "Could not find a ICreatesObservableForProperty" errors.
+/// </summary>
+[NotInParallel]
 public class WhenAnyObservableTests
 {
     /// <summary>
