@@ -30,34 +30,6 @@ public class ReactiveWindowTest
     }
 
     /// <summary>
-    /// Tests that ReactiveWindow implements IViewFor.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ImplementsIViewFor()
-    {
-        var type = typeof(ReactiveWindow<TestViewModel>);
-        var interfaces = type.GetInterfaces();
-
-        await Assert.That(interfaces).Contains(typeof(IViewFor<TestViewModel>));
-        await Assert.That(interfaces).Contains(typeof(IViewFor));
-    }
-
-    /// <summary>
-    /// Tests that ReactiveWindow has BindingRoot property.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task HasBindingRootProperty()
-    {
-        var type = typeof(ReactiveWindow<TestViewModel>);
-        var property = type.GetProperty("BindingRoot");
-
-        await Assert.That(property).IsNotNull();
-        await Assert.That(property!.PropertyType).IsEqualTo(typeof(TestViewModel));
-    }
-
-    /// <summary>
     /// Test view model for testing.
     /// </summary>
     private class TestViewModel

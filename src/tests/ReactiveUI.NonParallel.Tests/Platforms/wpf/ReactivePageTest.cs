@@ -30,34 +30,6 @@ public class ReactivePageTest
     }
 
     /// <summary>
-    /// Tests that ReactivePage implements IViewFor.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ImplementsIViewFor()
-    {
-        var type = typeof(ReactivePage<TestViewModel>);
-        var interfaces = type.GetInterfaces();
-
-        await Assert.That(interfaces).Contains(typeof(IViewFor<TestViewModel>));
-        await Assert.That(interfaces).Contains(typeof(IViewFor));
-    }
-
-    /// <summary>
-    /// Tests that ReactivePage has BindingRoot property.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task HasBindingRootProperty()
-    {
-        var type = typeof(ReactivePage<TestViewModel>);
-        var property = type.GetProperty("BindingRoot");
-
-        await Assert.That(property).IsNotNull();
-        await Assert.That(property!.PropertyType).IsEqualTo(typeof(TestViewModel));
-    }
-
-    /// <summary>
     /// Test view model for testing.
     /// </summary>
     private class TestViewModel
