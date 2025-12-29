@@ -137,4 +137,57 @@ public class BooleanToVisibilityTypeConverterTest
         await Assert.That(resultVisible).IsTypeOf<bool>();
         await Assert.That(resultCollapsed).IsTypeOf<bool>();
     }
+
+    /// <summary>
+    /// Tests that TryConvert with non-Visibility input defaults to Visible.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryConvert_NonVisibilityInput_DefaultsToVisible()
+    {
+        var converter = new BooleanToVisibilityTypeConverter();
+
+        var success = converter.TryConvert("some string", typeof(bool), null, out var result);
+
+        await Assert.That(success).IsTrue();
+        await Assert.That(result).IsEqualTo(Visibility.Visible);
+    }
+
+    /// <summary>
+    /// Tests that TryConvert with Inverse hint on Visibility to bool.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryConvert_VisibilityToBoolWithInverse_InvertsResult()
+    {
+        var converter = new BooleanToVisibilityTypeConverter();
+
+        var success = converter.TryConvert(Visibility.Visible, typeof(bool), BooleanToVisibilityHint.Inverse, out var result);
+
+        await Assert.That(success).IsTrue();
+
+        // With Inverse hint, Visible should become false
+        await Assert.That(result).IsEqualTo(true);
+    }
+
+#if !HAS_UNO && !HAS_WINUI && !IS_MAUI
+    /// <summary>
+    /// Tests that TryConvert with both Inverse and UseHidden hints (WPF only).
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryConvert_WithInverseAndUseHidden_WorksCorrectly()
+    {
+        var converter = new BooleanToVisibilityTypeConverter();
+
+        var success = converter.TryConvert(
+            true,
+            typeof(Visibility),
+            BooleanToVisibilityHint.Inverse | BooleanToVisibilityHint.UseHidden,
+            out var result);
+
+        await Assert.That(success).IsTrue();
+        await Assert.That(result).IsEqualTo(Visibility.Hidden);
+    }
+#endif
 }
