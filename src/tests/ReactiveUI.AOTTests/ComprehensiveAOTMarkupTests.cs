@@ -207,7 +207,7 @@ public class ComprehensiveAOTMarkupTests
 
         // Register concrete implementations (AOT-friendly)
         resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
-        resolver.RegisterConstant<string>("test service");
+        resolver.RegisterConstant("test service");
 
         // Create a simple factory
         resolver.Register<Func<string, ReactiveProperty<string>>>(static () => static value =>

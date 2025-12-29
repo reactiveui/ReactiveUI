@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Maui;
 
 /// <summary>
-/// Tests for <see cref="ReactiveUI.Maui.AutoSuspendHelper"/>.
+/// Tests for <see cref="AutoSuspendHelper"/>.
 /// </summary>
 public class AutoSuspendHelperTest
 {
@@ -17,7 +17,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task Constructor_CreatesInstance()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
 
         await Assert.That(helper).IsNotNull();
     }
@@ -29,7 +29,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task Constructor_WiresUpSuspensionHost()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
 
         await Assert.That(RxApp.SuspensionHost.IsLaunchingNew).IsNotNull();
         await Assert.That(RxApp.SuspensionHost.IsUnpausing).IsNotNull();
@@ -45,7 +45,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task OnCreate_TriggersIsLaunchingNew()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
         var triggered = false;
 
         RxApp.SuspensionHost.IsLaunchingNew.Subscribe(_ => triggered = true);
@@ -61,7 +61,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task OnStart_TriggersIsUnpausing()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
         var triggered = false;
 
         RxApp.SuspensionHost.IsUnpausing.Subscribe(_ => triggered = true);
@@ -77,7 +77,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task OnResume_TriggersIsResuming()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
         var triggered = false;
 
         RxApp.SuspensionHost.IsResuming.Subscribe(_ => triggered = true);
@@ -93,7 +93,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task OnSleep_TriggersShouldPersistState()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
         var triggered = false;
 
         RxApp.SuspensionHost.ShouldPersistState.Subscribe(_ => triggered = true);
@@ -109,7 +109,7 @@ public class AutoSuspendHelperTest
     [Test]
     public async Task Dispose_CleansUpResources()
     {
-        var helper = new ReactiveUI.Maui.AutoSuspendHelper();
+        var helper = new AutoSuspendHelper();
 
         helper.Dispose();
 

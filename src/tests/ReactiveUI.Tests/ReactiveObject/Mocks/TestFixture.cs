@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A test fixture.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 [DataContract]
 public class TestFixture : ReactiveObject
 {

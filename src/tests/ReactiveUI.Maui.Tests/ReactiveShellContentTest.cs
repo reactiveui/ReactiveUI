@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Maui;
 
 /// <summary>
-/// Tests for <see cref="ReactiveUI.Maui.ReactiveShellContent{TViewModel}"/>.
+/// Tests for <see cref="ReactiveShellContent{TViewModel}"/>.
 /// </summary>
 public class ReactiveShellContentTest
 {

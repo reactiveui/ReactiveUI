@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Maui;
 
 /// <summary>
-/// Tests for <see cref="ReactiveUI.Maui.RoutedViewHost"/>.
+/// Tests for <see cref="RoutedViewHost"/>.
 /// </summary>
 public class RoutedViewHostTest
 {

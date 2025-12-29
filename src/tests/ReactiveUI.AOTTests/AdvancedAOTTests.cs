@@ -115,7 +115,7 @@ public class AdvancedAOTTests
         var resolver = Locator.CurrentMutable;
 
         // Test basic registration and resolution
-        resolver.RegisterConstant<string>("test value");
+        resolver.RegisterConstant("test value");
         var resolved = Locator.Current.GetService<string>();
 
         await Assert.That(resolved).IsEqualTo("test value");

@@ -12,7 +12,7 @@ public class ReflectionTests
     [Test]
     public async Task ExpressionToPropertyNames_WithSimpleProperty_ReturnsPropertyName()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var result = Reflection.ExpressionToPropertyNames(expr.Body);
 
@@ -22,7 +22,7 @@ public class ReflectionTests
     [Test]
     public async Task ExpressionToPropertyNames_WithNestedProperty_ReturnsChainedNames()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
 
         var result = Reflection.ExpressionToPropertyNames(expr.Body);
 
@@ -138,7 +138,7 @@ public class ReflectionTests
         {
             Nested = new TestClass { Property = "nestedValue" }
         };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, chain);
@@ -151,7 +151,7 @@ public class ReflectionTests
     public async Task TryGetValueForPropertyChain_WithNullInChain_ReturnsFalse()
     {
         var obj = new TestClass { Nested = null };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, chain);
@@ -167,7 +167,7 @@ public class ReflectionTests
         {
             Nested = new TestClass()
         };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TrySetValueToPropertyChain(obj, chain, "setValue");
@@ -180,7 +180,7 @@ public class ReflectionTests
     public async Task TrySetValueToPropertyChain_WithNullTarget_ReturnsFalse()
     {
         var obj = new TestClass { Nested = null };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TrySetValueToPropertyChain(obj, chain, "setValue", shouldThrow: false);
@@ -313,7 +313,7 @@ public class ReflectionTests
     [Test]
     public async Task GetMemberInfo_WithConvertExpression_ReturnsUnderlyingMember()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, object>> expr = x => (object)x.Property!;
+        Expression<Func<TestClass, object>> expr = x => (object)x.Property!;
 
         var memberInfo = expr.Body.GetMemberInfo();
 
@@ -360,8 +360,8 @@ public class ReflectionTests
     [Test]
     public async Task GetParent_WithMemberExpression_ReturnsExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
-        var memberExpr = (System.Linq.Expressions.MemberExpression)expr.Body;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var memberExpr = (MemberExpression)expr.Body;
 
         var parent = memberExpr.GetParent();
 
@@ -411,7 +411,7 @@ public class ReflectionTests
     [Test]
     public async Task GetArgumentsArray_WithNonIndexExpression_ReturnsNull()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var args = expr.Body.GetArgumentsArray();
 

@@ -10,7 +10,7 @@ namespace ReactiveUI.Builder;
 /// <summary>
 /// IReactiveUIInstance.
 /// </summary>
-/// <seealso cref="Splat.Builder.IAppInstance" />
+/// <seealso cref="IAppInstance" />
 public interface IReactiveUIInstance : IAppInstance
 {
     /// <summary>

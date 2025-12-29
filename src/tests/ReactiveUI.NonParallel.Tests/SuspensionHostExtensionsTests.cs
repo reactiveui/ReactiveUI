@@ -59,7 +59,7 @@ public class SuspensionHostExtensionsTests
         {
             foreach (var driver in previousDrivers)
             {
-                Locator.CurrentMutable.RegisterConstant<ISuspensionDriver>(driver);
+                Locator.CurrentMutable.RegisterConstant(driver);
             }
         }
     }
@@ -479,7 +479,7 @@ public class SuspensionHostExtensionsTests
         {
             foreach (var previousDriver in previousDrivers)
             {
-                Locator.CurrentMutable.RegisterConstant<ISuspensionDriver>(previousDriver);
+                Locator.CurrentMutable.RegisterConstant(previousDriver);
             }
         }
     }
@@ -506,7 +506,7 @@ public class SuspensionHostExtensionsTests
                 return Observable.Throw<object>(new InvalidOperationException("Failed to load state"), ImmediateScheduler.Instance);
             }
 
-            return Observable.Return<object>(StateToLoad ?? new DummyAppState(), ImmediateScheduler.Instance);
+            return Observable.Return(StateToLoad ?? new DummyAppState(), ImmediateScheduler.Instance);
         }
 
         public IObservable<Unit> SaveState(object state)

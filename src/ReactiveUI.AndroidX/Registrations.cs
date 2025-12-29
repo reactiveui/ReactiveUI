@@ -10,7 +10,7 @@ namespace ReactiveUI.AndroidX;
 /// <summary>
 /// AndroidX platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

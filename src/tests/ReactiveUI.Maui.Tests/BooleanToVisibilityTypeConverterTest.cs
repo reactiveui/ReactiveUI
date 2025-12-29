@@ -8,7 +8,7 @@ using Microsoft.Maui;
 namespace ReactiveUI.Tests.Maui;
 
 /// <summary>
-/// Tests for <see cref="ReactiveUI.Maui.BooleanToVisibilityTypeConverter"/>.
+/// Tests for <see cref="BooleanToVisibilityTypeConverter"/>.
 /// </summary>
 public class BooleanToVisibilityTypeConverterTest
 {
@@ -19,7 +19,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinityForBoolToVisibility()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var affinity = converter.GetAffinityForObjects(typeof(bool), typeof(Visibility));
 
@@ -33,7 +33,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinityForVisibilityToBool()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var affinity = converter.GetAffinityForObjects(typeof(Visibility), typeof(bool));
 
@@ -47,7 +47,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task GetAffinityForObjects_ReturnsZeroForUnsupportedTypes()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var affinity = converter.GetAffinityForObjects(typeof(int), typeof(string));
 
@@ -61,7 +61,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task TryConvert_ConvertsTrueToVisible()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var success = converter.TryConvert(true, typeof(Visibility), null, out var result);
 
@@ -76,7 +76,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task TryConvert_ConvertsFalseToCollapsed()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var success = converter.TryConvert(false, typeof(Visibility), null, out var result);
 
@@ -91,7 +91,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task TryConvert_WithInverseHint_InvertsConversion()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var success = converter.TryConvert(true, typeof(Visibility), BooleanToVisibilityHint.Inverse, out var result);
 
@@ -106,7 +106,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task TryConvert_WithUseHiddenHint_UsesHidden()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var success = converter.TryConvert(false, typeof(Visibility), BooleanToVisibilityHint.UseHidden, out var result);
 
@@ -121,7 +121,7 @@ public class BooleanToVisibilityTypeConverterTest
     [Test]
     public async Task TryConvert_ConvertsVisibilityToBool()
     {
-        var converter = new ReactiveUI.Maui.BooleanToVisibilityTypeConverter();
+        var converter = new BooleanToVisibilityTypeConverter();
 
         var successVisible = converter.TryConvert(Visibility.Visible, typeof(bool), null, out var resultVisible);
         var successCollapsed = converter.TryConvert(Visibility.Collapsed, typeof(bool), null, out var resultCollapsed);

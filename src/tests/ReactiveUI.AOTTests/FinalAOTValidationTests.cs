@@ -177,7 +177,7 @@ public class FinalAOTValidationTests
 
         // Register services
         resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
-        resolver.RegisterConstant<string>("test service");
+        resolver.RegisterConstant("test service");
 
         // Create a factory that uses registered services
         resolver.Register<Func<ReactiveProperty<string>>>(static () => static () =>

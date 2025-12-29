@@ -57,7 +57,7 @@ public interface IReactiveCommand : IDisposable, IHandleObservableErrors
 /// into command execution, and the return values of command execution.
 /// </para>
 /// </remarks>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "SA1402: File may only contain a single type", Justification = "Same interface name")]
+[SuppressMessage("Design", "SA1402: File may only contain a single type", Justification = "Same interface name")]
 public interface IReactiveCommand<in TParam, out TResult> : IObservable<TResult>, IReactiveCommand
 {
     /// <summary>

@@ -71,7 +71,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -106,7 +106,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -133,7 +133,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -169,7 +169,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -195,7 +195,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -231,7 +231,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -259,7 +259,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -296,7 +296,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -700,7 +700,7 @@ public static class ReactiveCommand
     /// <returns>
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">execute.</exception>
+    /// <exception cref="ArgumentNullException">execute.</exception>
 #if NET6_0_OR_GREATER
     [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
     [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
@@ -799,7 +799,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <param name="execute">The Func to perform when the command is executed.</param>
     /// <param name="canExecute">A observable which has a value if the command can execute.</param>
     /// <param name="outputScheduler">The scheduler where to send output after the main execution.</param>
-    /// <exception cref="System.ArgumentNullException">
+    /// <exception cref="ArgumentNullException">
     /// execute.
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>
@@ -857,7 +857,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <param name="execute">The Func to perform when the command is executed.</param>
     /// <param name="canExecute">A observable which has a value if the command can execute.</param>
     /// <param name="outputScheduler">The scheduler where to send output after the main execution.</param>
-    /// <exception cref="System.ArgumentNullException">
+    /// <exception cref="ArgumentNullException">
     /// execute.
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown if any dependent parameters are null.</exception>

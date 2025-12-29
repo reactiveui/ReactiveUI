@@ -86,7 +86,7 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
             // NB: The DistinctUntilChanged is useful because most views in
             // WinRT will end up getting here twice - once for configuring
             // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-            d(vmAndContract.DistinctUntilChanged<(IRoutableViewModel? viewModel, string? contract)>().Subscribe(
+            d(vmAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
                 ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
         });

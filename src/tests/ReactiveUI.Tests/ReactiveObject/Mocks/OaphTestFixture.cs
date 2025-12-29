@@ -8,11 +8,11 @@ using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests;
 
-  /// <summary>
-  /// Initializes a new instance of the <see cref="OaphTestFixture"/> class.
-  /// </summary>
-  /// <seealso cref="ReactiveUI.Tests.TestFixture" />
-  public class OaphTestFixture : TestFixture
+/// <summary>
+/// Initializes a new instance of the <see cref="OaphTestFixture"/> class.
+/// </summary>
+/// <seealso cref="TestFixture" />
+public class OaphTestFixture : TestFixture
   {
       [IgnoreDataMember]
       [JsonIgnore]

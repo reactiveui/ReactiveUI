@@ -10,7 +10,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithParameterExpression_ReturnsParameterExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, TestClass>> expr = x => x;
+        Expression<Func<TestClass, TestClass>> expr = x => x;
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -20,7 +20,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithMemberAccess_ReturnsMemberExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -30,7 +30,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithNestedMemberAccess_ReturnsMemberExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -40,7 +40,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithConstant_ReturnsConstantExpression()
     {
-        System.Linq.Expressions.Expression<Func<string>> expr = () => "test";
+        Expression<Func<string>> expr = () => "test";
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -50,7 +50,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithConvert_ReturnsUnderlyingExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, object>> expr = x => x.Property!;
+        Expression<Func<TestClass, object>> expr = x => x.Property!;
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -61,7 +61,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithArrayIndex_ReturnsIndexExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.Array[0];
+        Expression<Func<TestClass, int>> expr = x => x.Array[0];
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -72,7 +72,7 @@ public class ExpressionRewriterTests
     public void Rewrite_WithArrayIndexNonConstant_Throws()
     {
         var index = 0;
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.Array[index];
+        Expression<Func<TestClass, int>> expr = x => x.Array[index];
 
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
@@ -80,7 +80,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithListIndexer_ReturnsIndexExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.List[0];
+        Expression<Func<TestClass, int>> expr = x => x.List[0];
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -91,7 +91,7 @@ public class ExpressionRewriterTests
     public void Rewrite_WithListIndexerNonConstant_Throws()
     {
         var index = 0;
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.List[index];
+        Expression<Func<TestClass, int>> expr = x => x.List[index];
 
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
@@ -99,7 +99,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithArrayLength_ReturnsMemberAccess()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.Array.Length;
+        Expression<Func<TestClass, int>> expr = x => x.Array.Length;
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -112,7 +112,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithUnsupportedExpression_Throws()
     {
-        System.Linq.Expressions.Expression<Func<int, int>> expr = x => x + 1;
+        Expression<Func<int, int>> expr = x => x + 1;
 
         var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
         await Assert.That(ex!.Message).Contains("Unsupported expression");
@@ -122,7 +122,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithUnsupportedBinaryExpression_ThrowsWithHelpfulMessage()
     {
-        System.Linq.Expressions.Expression<Func<int, bool>> expr = x => x > 5;
+        Expression<Func<int, bool>> expr = x => x > 5;
 
         var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
         await Assert.That(ex!.Message).Contains("Did you meant to use expressions");
@@ -137,7 +137,7 @@ public class ExpressionRewriterTests
     [Test]
     public async Task Rewrite_WithIndexExpression_ValidatesConstantArguments()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, int>> expr = x => x.List[1];
+        Expression<Func<TestClass, int>> expr = x => x.List[1];
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -147,7 +147,7 @@ public class ExpressionRewriterTests
     [Test]
     public void Rewrite_WithMethodCallNonSpecialName_Throws()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.GetValue();
+        Expression<Func<TestClass, string?>> expr = x => x.GetValue();
 
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }

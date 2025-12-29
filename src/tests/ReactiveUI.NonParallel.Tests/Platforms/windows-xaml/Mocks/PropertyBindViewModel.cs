@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A property bind view model.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class PropertyBindViewModel : ReactiveObject
 {
     private bool _justABoolean;

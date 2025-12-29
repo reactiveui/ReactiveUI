@@ -13,7 +13,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// MockBindListView.
 /// </summary>
-/// <seealso cref="System.Windows.Controls.UserControl" />
+/// <seealso cref="UserControl" />
 public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
 {
     public static readonly DependencyProperty ViewModelProperty =

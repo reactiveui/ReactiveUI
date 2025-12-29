@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Owner Class.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class OwnerClass : ReactiveObject
 {
     private string? _name;

@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Maui;
 
 /// <summary>
-/// Tests for <see cref="ReactiveUI.Maui.ViewModelViewHost"/>.
+/// Tests for <see cref="ViewModelViewHost"/>.
 /// </summary>
 public class ViewModelViewHostTest
 {

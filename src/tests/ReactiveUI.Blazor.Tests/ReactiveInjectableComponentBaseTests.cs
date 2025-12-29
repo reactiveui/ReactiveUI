@@ -110,7 +110,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task ActivatableViewModel_Works()
     {
         var viewModel = new TestActivatableViewModel();
-        Services.AddSingleton<TestActivatableViewModel>(viewModel);
+        Services.AddSingleton(viewModel);
 
         var cut = Render<TestActivatableInjectableComponent>();
 

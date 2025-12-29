@@ -70,7 +70,7 @@ public class ViewModelViewHost : ReactiveViewController
 
     /// <summary>
     /// Gets or sets the <see cref="IViewLocator"/> used to resolve views for the current <see cref="ViewModel"/>. Defaults
-    /// to <see cref="ReactiveUI.ViewLocator.Current"/> if not provided.
+    /// to <see cref="ViewLocator.Current"/> if not provided.
     /// </summary>
     public IViewLocator? ViewLocator
     {

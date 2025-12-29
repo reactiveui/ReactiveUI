@@ -295,7 +295,7 @@ public class ObservableLoggingMixinTests
         var logger = new TestEnableLogger(_loggingScope!.Logger);
         var subject = new Subject<int>();
 
-        var caught = subject.LoggedCatch<int, TestEnableLogger>(logger, null, "Error");
+        var caught = subject.LoggedCatch(logger, null, "Error");
 
         caught.ObserveOn(ImmediateScheduler.Instance).Subscribe(_ => { }, _ => { }, () => { });
 

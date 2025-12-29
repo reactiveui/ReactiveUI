@@ -10,7 +10,7 @@ namespace ReactiveUI.Drawing;
 /// <summary>
 /// Splat Drawing platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
