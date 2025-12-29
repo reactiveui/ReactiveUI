@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Subjects;
 using Microsoft.Maui.Controls;
@@ -93,7 +94,9 @@ public class ActivationForViewFetcherTest
     {
         var fetcher = new ActivationForViewFetcher();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         var affinity = fetcher.GetAffinityForView(typeof(ViewCell));
+#pragma warning restore CS0618 // Type or member is obsolete
 
         await Assert.That(affinity).IsEqualTo(10);
     }

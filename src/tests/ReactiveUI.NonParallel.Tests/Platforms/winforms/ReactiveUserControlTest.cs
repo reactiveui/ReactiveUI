@@ -77,6 +77,56 @@ public class ReactiveUserControlTest
     }
 
     /// <summary>
+    /// Tests that IViewFor.ViewModel returns null after being set to null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task IViewForViewModel_ReturnsNullAfterSettingToNull()
+    {
+        IViewFor control = new ReactiveUserControl<TestViewModel>();
+
+        control.ViewModel = null;
+
+        await Assert.That(control.ViewModel).IsNull();
+    }
+
+    /// <summary>
+    /// Tests that IViewFor.ViewModel can cast from object.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task IViewForViewModel_CanCastFromObject()
+    {
+        IViewFor control = new ReactiveUserControl<TestViewModel>();
+        object viewModel = new TestViewModel();
+
+        control.ViewModel = viewModel;
+
+        var typedViewModel = ((ReactiveUserControl<TestViewModel>)control).ViewModel!;
+
+        await Assert.That(typedViewModel).IsNotNull();
+        await Assert.That(control.ViewModel).IsEqualTo(viewModel);
+        await Assert.That(typedViewModel == control.ViewModel).IsTrue();
+    }
+
+    /// <summary>
+    /// Tests that control initializes components on construction.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<STAThreadExecutor>]
+    public async Task Constructor_InitializesComponents()
+    {
+        var control = new ReactiveUserControl<TestViewModel>();
+
+        // Verify the control was initialized (components should not be null after InitializeComponent)
+        await Assert.That(control).IsNotNull();
+        await Assert.That(control.BindingRoot).IsNull(); // Handle not created yet
+    }
+
+    /// <summary>
     /// Test view model for testing.
     /// </summary>
     private class TestViewModel
