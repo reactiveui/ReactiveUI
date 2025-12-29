@@ -17,10 +17,12 @@ namespace ReactiveUI.Tests.Core;
 public class MessageBusTest : IDisposable
 {
     private MessageBusScope? _messageBusScope;
+    private LocatorScope? _locatorScope;
 
     [Before(Test)]
     public void SetUp()
     {
+        _locatorScope = new LocatorScope();
         _messageBusScope = new MessageBusScope();
     }
 
@@ -28,6 +30,7 @@ public class MessageBusTest : IDisposable
     public void TearDown()
     {
         _messageBusScope?.Dispose();
+        _locatorScope?.Dispose();
     }
 
     /// <summary>

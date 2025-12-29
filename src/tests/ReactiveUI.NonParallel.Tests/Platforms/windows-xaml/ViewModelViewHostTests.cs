@@ -5,6 +5,7 @@
 
 using System.Windows;
 using DynamicData;
+using ReactiveUI.Tests.Infrastructure.StaticState;
 using ReactiveUI.Tests.Wpf;
 
 using TUnit.Core.Executors;
@@ -22,6 +23,20 @@ namespace ReactiveUI.Tests;
 [NotInParallel]
 public class ViewModelViewHostTests
 {
+    private LocatorScope? _locatorScope;
+
+    [Before(Test)]
+    public void SetUp()
+    {
+        _locatorScope = new LocatorScope();
+    }
+
+    [After(Test)]
+    public void TearDown()
+    {
+        _locatorScope?.Dispose();
+    }
+
     [Test]
     [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelViewHostDefaultContentNotNull()
