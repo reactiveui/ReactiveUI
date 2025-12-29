@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Winforms;
@@ -22,7 +21,7 @@ public class PlatformOperationsTest
     [TestExecutor<STAThreadExecutor>]
     public async Task GetOrientation_ReturnsNull()
     {
-        var platformOps = new PlatformOperations();
+        var platformOps = new ReactiveUI.Winforms.PlatformOperations();
 
         var orientation = platformOps.GetOrientation();
 

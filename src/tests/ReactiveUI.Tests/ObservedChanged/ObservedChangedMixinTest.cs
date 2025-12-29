@@ -182,4 +182,123 @@ public class ObservedChangedMixinTest
 
             source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
         });
+
+    /// <summary>
+    /// Tests that GetValueOrDefault returns value when property is not null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetValueOrDefault_WithValue_ReturnsValue()
+    {
+        var input = new HostTestFixture
+        {
+            Child = new TestFixture { IsNotNullString = "Foo" },
+        };
+
+        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
+
+        await Assert.That(fixture.GetValueOrDefault()).IsEqualTo("Foo");
+    }
+
+    /// <summary>
+    /// Tests that GetValueOrDefault returns default when property chain is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetValueOrDefault_WithNullInChain_ReturnsDefault()
+    {
+        var input = new HostTestFixture
+        {
+            Child = null,
+        };
+
+        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
+
+        await Assert.That(fixture.GetValueOrDefault()).IsNull();
+    }
+
+    /// <summary>
+    /// Tests that GetValueOrDefault throws for null item.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetValueOrDefault_NullItem_Throws()
+    {
+        IObservedChange<TestFixture, string?> item = null!;
+
+        await Assert.That(() => item.GetValueOrDefault())
+            .Throws<ArgumentNullException>();
+    }
+
+    /// <summary>
+    /// Tests that Value extension method converts changes to values.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Value_ConvertsChangesToValues()
+    {
+        var input = new[] { "Foo", "Bar", "Baz" };
+        var output = new List<string>();
+
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture();
+
+            fixture.ObservableForProperty(x => x.IsOnlyOneWord)
+                .Value()
+                .WhereNotNull()
+                .Subscribe(x => output.Add(x));
+
+            foreach (var v in input)
+            {
+                fixture.IsOnlyOneWord = v;
+            }
+
+            scheduler.AdvanceToMs(1000);
+
+            await input.AssertAreEqual(output);
+        });
+    }
+
+    /// <summary>
+    /// Tests that GetPropertyName returns the property name.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetPropertyName_ReturnsPropertyName()
+    {
+        var input = new TestFixture { IsOnlyOneWord = "Foo" };
+        Expression<Func<TestFixture, string>> expression = static x => x.IsOnlyOneWord!;
+        var fixture = new ObservedChange<TestFixture, string?>(input, expression.Body, null);
+
+        await Assert.That(fixture.GetPropertyName()).IsEqualTo("IsOnlyOneWord");
+    }
+
+    /// <summary>
+    /// Tests that GetPropertyName throws for null item.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetPropertyName_NullItem_Throws()
+    {
+        IObservedChange<TestFixture, string?> item = null!;
+
+        await Assert.That(() => item.GetPropertyName())
+            .Throws<ArgumentNullException>();
+    }
+
+    /// <summary>
+    /// Tests that GetValue throws for null item.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetValue_NullItem_Throws()
+    {
+        IObservedChange<TestFixture, string?> item = null!;
+
+        await Assert.That(() => item.GetValue())
+            .Throws<ArgumentNullException>();
+    }
 }

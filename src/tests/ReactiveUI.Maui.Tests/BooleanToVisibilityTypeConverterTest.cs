@@ -99,8 +99,9 @@ public class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
+#if !HAS_UNO && !HAS_WINUI && !IS_MAUI
     /// <summary>
-    /// Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed.
+    /// Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed (WPF only).
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -113,6 +114,7 @@ public class BooleanToVisibilityTypeConverterTest
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Hidden);
     }
+#endif
 
     /// <summary>
     /// Tests that TryConvert converts Visibility to bool.
