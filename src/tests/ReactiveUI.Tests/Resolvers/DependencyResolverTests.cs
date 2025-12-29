@@ -45,9 +45,7 @@ public sealed class DependencyResolverTests
             {
                 resolver.InitializeReactiveUI(namespaces);
 
-                var registeredService = GetServicesThatShouldBeRegistered(namespaces);
-
-                foreach (var shouldRegistered in registeredService)
+                foreach (var shouldRegistered in GetServicesThatShouldBeRegistered(namespaces))
                 {
                     var resolvedServices = resolver.GetServices(shouldRegistered.Key);
 

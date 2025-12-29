@@ -2035,6 +2035,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty1,
                 x => x.ObservableProperty2).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2052,6 +2053,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty2,
                 (v1, v2) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2071,6 +2073,8 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty2,
                 x => x.ObservableProperty3).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2091,6 +2095,8 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty3,
                 (v1, v2, v3) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2113,6 +2119,9 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty3,
                 x => x.ObservableProperty4).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2136,6 +2145,9 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty4,
                 (v1, v2, v3, v4) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2161,6 +2173,10 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty4,
                 x => x.ObservableProperty5).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2187,6 +2203,10 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty5,
                 (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2215,6 +2235,11 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty5,
                 x => x.ObservableProperty6).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2244,6 +2269,11 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty6,
                 (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2275,6 +2305,12 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty6,
                 x => x.ObservableProperty7).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2307,6 +2343,12 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty7,
                 (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2341,6 +2383,13 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty7,
                 x => x.ObservableProperty8).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2376,6 +2425,13 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty8,
                 (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2413,6 +2469,14 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty8,
                 x => x.ObservableProperty9).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2451,6 +2515,14 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty9,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2491,6 +2563,15 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty9,
                 x => x.ObservableProperty10).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2532,6 +2613,15 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty10,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2575,6 +2665,16 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty10,
                 x => x.ObservableProperty11).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
+        subj11.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2619,6 +2719,16 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty11,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
+        subj11.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2665,6 +2775,17 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty11,
                 x => x.ObservableProperty12).Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
+        subj11.OnNext("test");
+        subj12.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2712,6 +2833,17 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty12,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
         subj1.OnNext("test");
+        subj2.OnNext("test");
+        subj3.OnNext("test");
+        subj4.OnNext("test");
+        subj5.OnNext("test");
+        subj6.OnNext("test");
+        subj7.OnNext("test");
+        subj8.OnNext("test");
+        subj9.OnNext("test");
+        subj10.OnNext("test");
+        subj11.OnNext("test");
+        subj12.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 

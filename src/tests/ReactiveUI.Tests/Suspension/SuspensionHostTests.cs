@@ -16,8 +16,7 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        var observable = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
-        host.IsLaunchingNew = observable;
+        host.IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
 
         using var subscription = host.IsLaunchingNew.Subscribe(_ => wasTriggered = true);
 
@@ -30,8 +29,7 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        var observable = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
-        host.IsResuming = observable;
+        host.IsResuming = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
 
         using var subscription = host.IsResuming.Subscribe(_ => wasTriggered = true);
 
@@ -44,8 +42,7 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        var observable = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
-        host.IsUnpausing = observable;
+        host.IsUnpausing = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
 
         using var subscription = host.IsUnpausing.Subscribe(_ => wasTriggered = true);
 
@@ -59,8 +56,7 @@ public class SuspensionHostTests
         var wasTriggered = false;
         var disposable = Disposable.Empty;
 
-        var observable = Observable.Return(disposable, ImmediateScheduler.Instance);
-        host.ShouldPersistState = observable;
+        host.ShouldPersistState = Observable.Return(disposable, ImmediateScheduler.Instance);
 
         using var subscription = host.ShouldPersistState.Subscribe(_ => wasTriggered = true);
 
@@ -73,8 +69,7 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        var observable = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
-        host.ShouldInvalidateState = observable;
+        host.ShouldInvalidateState = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
 
         using var subscription = host.ShouldInvalidateState.Subscribe(_ => wasTriggered = true);
 
@@ -115,9 +110,7 @@ public class SuspensionHostTests
     public async Task CreateNewAppState_SetAndGet_ReturnsCorrectFunc()
     {
         using var host = new SuspensionHost();
-        Func<object> factory = () => new DummyAppState();
-
-        host.CreateNewAppState = factory;
+        host.CreateNewAppState = () => new DummyAppState();
 
         await Assert.That(host.CreateNewAppState).IsNotNull();
         await Assert.That(host.CreateNewAppState!()).IsTypeOf<DummyAppState>();
