@@ -171,7 +171,7 @@ public class ExpressionRewriterTests
         var listProperty = System.Linq.Expressions.Expression.Property(parameter, "List");
         var indexer = typeof(List<int>).GetProperty("Item")!;
         var nonConstantArg = System.Linq.Expressions.Expression.Parameter(typeof(int), "index");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, new[] { nonConstantArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, [nonConstantArg]);
 
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
     }

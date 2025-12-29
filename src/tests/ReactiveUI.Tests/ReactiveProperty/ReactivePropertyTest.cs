@@ -88,7 +88,7 @@ public class ReactivePropertyTest : ReactiveTest
             .Subscribe(errors.Add);
 
         await Assert.That(errors.Count).IsEqualTo(1);
-        await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo(new[] { "error!" });
+        await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo(["error!"]);
         await Assert.That(target.IsRequiredProperty.HasErrors).IsTrue();
 
         target.IsRequiredProperty.Value = "a";
@@ -97,7 +97,7 @@ public class ReactivePropertyTest : ReactiveTest
 
         target.IsRequiredProperty.Value = null;
         await Assert.That(errors.Count).IsEqualTo(2);
-        await Assert.That(errors[1]!.OfType<string>()).IsEquivalentTo(new[] { "error!" });
+        await Assert.That(errors[1]!.OfType<string>()).IsEquivalentTo(["error!"]);
         await Assert.That(target.IsRequiredProperty.HasErrors).IsTrue();
     }
 
@@ -111,7 +111,7 @@ public class ReactivePropertyTest : ReactiveTest
             .Where(x => x != null)
             .Subscribe(errors.Add);
         await Assert.That(errors.Count).IsEqualTo(1);
-        await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo(new[] { "required" });
+        await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo(["required"]);
 
         target.TaskValidationTestProperty.Value = "a";
         await Assert.That(target.TaskValidationTestProperty.HasErrors).IsFalse();
@@ -203,8 +203,8 @@ public class ReactivePropertyTest : ReactiveTest
 
         await Assert.That(rp.HasErrors).IsTrue();
         await Assert.That(error).IsNotNull();
-        await Assert.That(error!.OfType<string>()).IsEquivalentTo(new[] { errorMessage });
-        await Assert.That(rp.GetErrors("Value")!.OfType<string>()).IsEquivalentTo(new[] { errorMessage });
+        await Assert.That(error!.OfType<string>()).IsEquivalentTo([errorMessage]);
+        await Assert.That(rp.GetErrors("Value")!.OfType<string>()).IsEquivalentTo([errorMessage]);
     }
 
     [Test]
@@ -242,7 +242,7 @@ public class ReactivePropertyTest : ReactiveTest
         scheduler.AdvanceTo(TimeSpan.FromMilliseconds(2500).Ticks);
         await Assert.That(rp.HasErrors).IsTrue();
         await Assert.That(error).IsNotNull();
-        await Assert.That(error!.OfType<string>()).IsEquivalentTo(new[] { "required" });
+        await Assert.That(error!.OfType<string>()).IsEquivalentTo(["required"]);
     }
 
     [Test]
@@ -263,7 +263,7 @@ public class ReactivePropertyTest : ReactiveTest
 
         rprop.Value = null;
         await Assert.That(errors.Count).IsEqualTo(2);
-        await Assert.That(errors.Last()?.OfType<string>()).IsEquivalentTo(new[] { "error" });
+        await Assert.That(errors.Last()?.OfType<string>()).IsEquivalentTo(["error"]);
     }
 
     [Test]
@@ -310,7 +310,7 @@ public class ReactivePropertyTest : ReactiveTest
         rp.Value = "OK";
 
         await Assert.That(results.Count).IsEqualTo(2);
-        await Assert.That(results[0]?.OfType<string>()).IsEquivalentTo(new[] { "Error" });
+        await Assert.That(results[0]?.OfType<string>()).IsEquivalentTo(["Error"]);
         await Assert.That(results[1] == null).IsTrue();
     }
 
@@ -341,7 +341,7 @@ public class ReactivePropertyTest : ReactiveTest
         await Assert.That(rp.GetErrors("Value") == null).IsTrue();
 
         rp.CheckValidation();
-        await Assert.That(rp.GetErrors("Value")?.OfType<string>()).IsEquivalentTo(new[] { "Error" });
+        await Assert.That(rp.GetErrors("Value")?.OfType<string>()).IsEquivalentTo(["Error"]);
     }
 
     [Test]
@@ -352,19 +352,19 @@ public class ReactivePropertyTest : ReactiveTest
         rp.Subscribe(x => collector.Add(x));
 
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
+        await Assert.That(collector).IsEquivalentTo([0]);
 
         rp.Value = 1;
         await Assert.That(rp.Value).IsEqualTo(1);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1 });
+        await Assert.That(collector).IsEquivalentTo([0, 1]);
 
         rp.Value = 2;
         await Assert.That(rp.Value).IsEqualTo(2);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1, 2 });
+        await Assert.That(collector).IsEquivalentTo([0, 1, 2]);
 
         rp.Value = 3;
         await Assert.That(rp.Value).IsEqualTo(3);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 1, 2, 3 });
+        await Assert.That(collector).IsEquivalentTo([0, 1, 2, 3]);
     }
 
     [Test]
@@ -374,11 +374,11 @@ public class ReactivePropertyTest : ReactiveTest
         var collector = new List<int>();
         rp.Subscribe(x => collector.Add(x));
 
-        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
+        await Assert.That(collector).IsEquivalentTo([0]);
 
         // refresh should always produce a value even if it is the same and duplicates are not allowed
         rp.Refresh();
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0 });
+        await Assert.That(collector).IsEquivalentTo([0, 0]);
     }
 
     [Test]
@@ -389,19 +389,19 @@ public class ReactivePropertyTest : ReactiveTest
         rp.Subscribe(x => collector.Add(x));
 
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0 });
+        await Assert.That(collector).IsEquivalentTo([0]);
 
         rp.Value = 0;
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0 });
+        await Assert.That(collector).IsEquivalentTo([0, 0]);
 
         rp.Value = 0;
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0, 0 });
+        await Assert.That(collector).IsEquivalentTo([0, 0, 0]);
 
         rp.Value = 0;
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector).IsEquivalentTo(new[] { 0, 0, 0, 0 });
+        await Assert.That(collector).IsEquivalentTo([0, 0, 0, 0]);
     }
 
     [Test]
@@ -414,25 +414,25 @@ public class ReactivePropertyTest : ReactiveTest
         obs.Subscribe(x => collector1.Add(x));
 
         await Assert.That(rp.Value).IsEqualTo(0);
-        await Assert.That(collector1).IsEquivalentTo(new[] { 0 });
+        await Assert.That(collector1).IsEquivalentTo([0]);
 
         rp.Value = 1;
         await Assert.That(rp.Value).IsEqualTo(1);
-        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1 });
+        await Assert.That(collector1).IsEquivalentTo([0, 1]);
 
         rp.Value = 2;
         await Assert.That(rp.Value).IsEqualTo(2);
-        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1, 2 });
+        await Assert.That(collector1).IsEquivalentTo([0, 1, 2]);
 
         // second subscriber
         obs.Subscribe(x => collector2.Add(x));
         await Assert.That(rp.Value).IsEqualTo(2);
-        await Assert.That(collector2).IsEquivalentTo(new[] { 2 });
+        await Assert.That(collector2).IsEquivalentTo([2]);
 
         rp.Value = 3;
         await Assert.That(rp.Value).IsEqualTo(3);
-        await Assert.That(collector1).IsEquivalentTo(new[] { 0, 1, 2, 3 });
-        await Assert.That(collector2).IsEquivalentTo(new[] { 2, 3 });
+        await Assert.That(collector1).IsEquivalentTo([0, 1, 2, 3]);
+        await Assert.That(collector2).IsEquivalentTo([2, 3]);
     }
 
     [Test]

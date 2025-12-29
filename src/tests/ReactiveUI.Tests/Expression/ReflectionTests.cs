@@ -267,7 +267,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var chain = indexExpr.GetExpressionChain();
 
@@ -286,7 +286,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(nestedProperty, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var chain = indexExpr.GetExpressionChain();
 
@@ -302,7 +302,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var memberInfo = indexExpr.GetMemberInfo();
 
@@ -349,7 +349,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var parent = indexExpr.GetParent();
 
@@ -384,7 +384,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var args = indexExpr.GetArgumentsArray();
 
