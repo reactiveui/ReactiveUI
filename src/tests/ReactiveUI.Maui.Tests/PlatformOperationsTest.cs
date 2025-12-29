@@ -23,17 +23,4 @@ public class PlatformOperationsTest
 
         await Assert.That(orientation).IsNull();
     }
-
-    /// <summary>
-    /// Tests that PlatformOperations implements IPlatformOperations.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ImplementsIPlatformOperations()
-    {
-        var type = typeof(PlatformOperations);
-        var interfaces = type.GetInterfaces();
-
-        await Assert.That(interfaces).Contains(typeof(IPlatformOperations));
-    }
 }

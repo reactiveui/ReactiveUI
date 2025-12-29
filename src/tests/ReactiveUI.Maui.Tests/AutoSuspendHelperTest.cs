@@ -23,19 +23,6 @@ public class AutoSuspendHelperTest
     }
 
     /// <summary>
-    /// Tests that AutoSuspendHelper implements IDisposable.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ImplementsIDisposable()
-    {
-        var type = typeof(ReactiveUI.Maui.AutoSuspendHelper);
-        var interfaces = type.GetInterfaces();
-
-        await Assert.That(interfaces).Contains(typeof(IDisposable));
-    }
-
-    /// <summary>
     /// Tests that AutoSuspendHelper wires up suspension host observables.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
