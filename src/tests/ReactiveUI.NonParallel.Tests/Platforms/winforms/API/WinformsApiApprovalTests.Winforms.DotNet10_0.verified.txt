@@ -1,4 +1,5 @@
-﻿namespace ReactiveUI.Builder
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.NonParallel.Tests")]
+namespace ReactiveUI.Builder
 {
     public static class WinFormsReactiveUIBuilderExtensions
     {
