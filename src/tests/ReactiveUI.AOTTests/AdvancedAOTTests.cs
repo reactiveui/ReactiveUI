@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
@@ -43,7 +44,7 @@ public class AdvancedAOTTests
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public async Task PropertyValidation_WorksInAOT()
     {
-        var property = new ReactiveProperty<string>(string.Empty);
+        var property = new ReactiveProperty<string>(string.Empty, ImmediateScheduler.Instance, false, false);
         var hasErrors = false;
 
         property.ObserveValidationErrors()
