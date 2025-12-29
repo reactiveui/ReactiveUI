@@ -491,4 +491,28 @@ public class ReactivePropertyTest : ReactiveTest
         await Assert.That(() => nullProperty!.ObserveValidationErrors())
             .Throws<ArgumentNullException>();
     }
+
+    [Test]
+    public async Task Subscribe_WithNullObserver_ReturnsEmptyDisposable()
+    {
+        using var rp = new ReactiveProperty<string>("test");
+        var result = rp.Subscribe(null!);
+
+        await Assert.That(result).IsNotNull();
+    }
+
+    [Test]
+    public async Task ErrorsChanged_EventIsRaised()
+    {
+        using var rp = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false)
+            .AddValidationError(x => string.IsNullOrEmpty(x) ? "error" : null);
+
+        DataErrorsChangedEventArgs? eventArgs = null;
+        rp.ErrorsChanged += (sender, e) => eventArgs = e;
+
+        rp.Value = "valid";
+        await Task.Delay(10);
+
+        await Assert.That(eventArgs).IsNotNull();
+    }
 }
