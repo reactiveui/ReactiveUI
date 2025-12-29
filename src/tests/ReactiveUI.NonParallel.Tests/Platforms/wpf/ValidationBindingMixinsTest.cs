@@ -19,6 +19,7 @@ public class ValidationBindingMixinsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithValidation_ThrowsOnNullViewModelProperty()
     {
         var view = new TestView();
@@ -36,6 +37,7 @@ public class ValidationBindingMixinsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithValidation_ThrowsOnNullFrameworkElementSelector()
     {
         var view = new TestView();
@@ -53,6 +55,7 @@ public class ValidationBindingMixinsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithValidation_CreatesBinding()
     {
         var view = new TestView();
@@ -62,7 +65,7 @@ public class ValidationBindingMixinsTest
         // due to WPF infrastructure requirements, but it will execute line 44 of ValidationBindingMixins
         try
         {
-            var binding = view.BindWithValidation<TestViewModel, TestView, Control, string>(
+            var binding = view.BindWithValidation(
                 viewModel,
                 vm => vm.TestProperty,
                 v => v.TestControl);

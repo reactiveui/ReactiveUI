@@ -12,7 +12,7 @@ public class VariadicTemplatesTest
     {
         var vm = new TestViewModel();
         var list = new List<string?>();
-        vm.WhenAnyValue(x => x.Property1).Subscribe(list.Add);
+        vm.WhenAnyValue(x => x.Property1).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
@@ -23,7 +23,7 @@ public class VariadicTemplatesTest
     {
         var vm = new TestViewModel();
         var list = new List<string?>();
-        vm.WhenAnyValue<TestViewModel, string?>(nameof(TestViewModel.Property1)).Subscribe(list.Add);
+        vm.WhenAnyValue<TestViewModel, string?>(nameof(TestViewModel.Property1)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -32,7 +32,7 @@ public class VariadicTemplatesTest
     {
         var vm = new TestViewModel();
         var list = new List<string?>();
-        vm.WhenAnyValue(x => x.Property1, isDistinct: true).Subscribe(list.Add);
+        vm.WhenAnyValue(x => x.Property1, isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -41,7 +41,7 @@ public class VariadicTemplatesTest
     {
         var vm = new TestViewModel();
         var list = new List<string?>();
-        vm.WhenAnyValue<TestViewModel, string?>(nameof(TestViewModel.Property1), isDistinct: false).Subscribe(list.Add);
+        vm.WhenAnyValue<TestViewModel, string?>(nameof(TestViewModel.Property1), isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -51,7 +51,7 @@ public class VariadicTemplatesTest
         var vm = new TestViewModel();
         var list = new List<string>();
         Func<string?, string> selector = (v1) => "x";
-        vm.WhenAnyValue(x => x.Property1, selector).Subscribe(list.Add);
+        vm.WhenAnyValue(x => x.Property1, selector).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -62,7 +62,7 @@ public class VariadicTemplatesTest
         var list = new List<string>();
         vm.WhenAnyValue<TestViewModel, string, string?>(
                 nameof(TestViewModel.Property1),
-                (v1) => "x").Subscribe(list.Add);
+                (v1) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -72,7 +72,7 @@ public class VariadicTemplatesTest
         var vm = new TestViewModel();
         var list = new List<string>();
         Func<string?, string> selector = (v1) => "x";
-        vm.WhenAnyValue(x => x.Property1, selector, isDistinct: true).Subscribe(list.Add);
+        vm.WhenAnyValue(x => x.Property1, selector, isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -84,7 +84,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue<TestViewModel, string, string?>(
                 nameof(TestViewModel.Property1),
                 (v1) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -95,7 +95,7 @@ public class VariadicTemplatesTest
         var list = new List<string>();
         vm.WhenAny(
                 x => x.Property1,
-                (v1) => "x").Subscribe(list.Add);
+                (v1) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -106,7 +106,7 @@ public class VariadicTemplatesTest
         var list = new List<string>();
         vm.WhenAny<TestViewModel, string, string?>(
                 nameof(TestViewModel.Property1),
-                (v1) => "x").Subscribe(list.Add);
+                (v1) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -118,7 +118,7 @@ public class VariadicTemplatesTest
         vm.WhenAny(
                 x => x.Property1,
                 (v1) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -130,7 +130,7 @@ public class VariadicTemplatesTest
         vm.WhenAny<TestViewModel, string, string?>(
                 nameof(TestViewModel.Property1),
                 (v1) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -141,7 +141,7 @@ public class VariadicTemplatesTest
         var list = new List<(string?, string?)>();
         vm.WhenAnyValue(
                 x => x.Property1,
-                x => x.Property2).Subscribe(list.Add);
+                x => x.Property2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -152,7 +152,7 @@ public class VariadicTemplatesTest
         var list = new List<(string?, string?)>();
         vm.WhenAnyValue<TestViewModel, string?, string?>(
                 nameof(TestViewModel.Property1),
-                nameof(TestViewModel.Property2)).Subscribe(list.Add);
+                nameof(TestViewModel.Property2)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -164,7 +164,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue(
                 x => x.Property1,
                 x => x.Property2,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -176,7 +176,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue<TestViewModel, string?, string?>(
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -188,7 +188,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue(
                 x => x.Property1,
                 x => x.Property2,
-                (v1, v2) => "x").Subscribe(list.Add);
+                (v1, v2) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -200,7 +200,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue<TestViewModel, string, string?, string?>(
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
-                (v1, v2) => "x").Subscribe(list.Add);
+                (v1, v2) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -213,7 +213,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 (v1, v2) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -226,7 +226,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 (v1, v2) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -238,7 +238,7 @@ public class VariadicTemplatesTest
         vm.WhenAny(
                 x => x.Property1,
                 x => x.Property2,
-                (v1, v2) => "x").Subscribe(list.Add);
+                (v1, v2) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -250,7 +250,7 @@ public class VariadicTemplatesTest
         vm.WhenAny<TestViewModel, string, string?, string?>(
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
-                (v1, v2) => "x").Subscribe(list.Add);
+                (v1, v2) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -263,7 +263,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 (v1, v2) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -276,7 +276,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 (v1, v2) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -288,7 +288,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue(
                 x => x.Property1,
                 x => x.Property2,
-                x => x.Property3).Subscribe(list.Add);
+                x => x.Property3).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -300,7 +300,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyValue<TestViewModel, string?, string?, string?>(
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
-                nameof(TestViewModel.Property3)).Subscribe(list.Add);
+                nameof(TestViewModel.Property3)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -313,7 +313,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 x => x.Property3,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -326,7 +326,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -339,7 +339,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 x => x.Property3,
-                (v1, v2, v3) => "x").Subscribe(list.Add);
+                (v1, v2, v3) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -352,7 +352,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
-                (v1, v2, v3) => "x").Subscribe(list.Add);
+                (v1, v2, v3) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -366,7 +366,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 (v1, v2, v3) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -380,7 +380,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 (v1, v2, v3) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -393,7 +393,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 x => x.Property3,
-                (v1, v2, v3) => "x").Subscribe(list.Add);
+                (v1, v2, v3) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -406,7 +406,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
-                (v1, v2, v3) => "x").Subscribe(list.Add);
+                (v1, v2, v3) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -420,7 +420,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 (v1, v2, v3) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -434,7 +434,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 (v1, v2, v3) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -447,7 +447,7 @@ public class VariadicTemplatesTest
                 x => x.Property1,
                 x => x.Property2,
                 x => x.Property3,
-                x => x.Property4).Subscribe(list.Add);
+                x => x.Property4).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -460,7 +460,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property1),
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
-                nameof(TestViewModel.Property4)).Subscribe(list.Add);
+                nameof(TestViewModel.Property4)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -474,7 +474,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 x => x.Property4,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -488,7 +488,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -502,7 +502,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 x => x.Property4,
-                (v1, v2, v3, v4) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -516,7 +516,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
-                (v1, v2, v3, v4) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -531,7 +531,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 (v1, v2, v3, v4) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -546,7 +546,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 (v1, v2, v3, v4) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -560,7 +560,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 x => x.Property4,
-                (v1, v2, v3, v4) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -574,7 +574,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
-                (v1, v2, v3, v4) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -589,7 +589,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 (v1, v2, v3, v4) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -604,7 +604,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 (v1, v2, v3, v4) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -618,7 +618,7 @@ public class VariadicTemplatesTest
                 x => x.Property2,
                 x => x.Property3,
                 x => x.Property4,
-                x => x.Property5).Subscribe(list.Add);
+                x => x.Property5).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -632,7 +632,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property2),
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
-                nameof(TestViewModel.Property5)).Subscribe(list.Add);
+                nameof(TestViewModel.Property5)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -647,7 +647,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 x => x.Property5,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -662,7 +662,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -677,7 +677,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 x => x.Property5,
-                (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -692,7 +692,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
-                (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -708,7 +708,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 (v1, v2, v3, v4, v5) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -724,7 +724,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 (v1, v2, v3, v4, v5) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -739,7 +739,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 x => x.Property5,
-                (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -754,7 +754,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
-                (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -770,7 +770,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 (v1, v2, v3, v4, v5) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -786,7 +786,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 (v1, v2, v3, v4, v5) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -801,7 +801,7 @@ public class VariadicTemplatesTest
                 x => x.Property3,
                 x => x.Property4,
                 x => x.Property5,
-                x => x.Property6).Subscribe(list.Add);
+                x => x.Property6).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -816,7 +816,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property3),
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
-                nameof(TestViewModel.Property6)).Subscribe(list.Add);
+                nameof(TestViewModel.Property6)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -832,7 +832,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 x => x.Property6,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -848,7 +848,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -864,7 +864,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 x => x.Property6,
-                (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -880,7 +880,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
-                (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -897,7 +897,7 @@ public class VariadicTemplatesTest
                 x => x.Property5,
                 x => x.Property6,
                 (v1, v2, v3, v4, v5, v6) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -914,7 +914,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
                 (v1, v2, v3, v4, v5, v6) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -930,7 +930,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 x => x.Property6,
-                (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -946,7 +946,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
-                (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -963,7 +963,7 @@ public class VariadicTemplatesTest
                 x => x.Property5,
                 x => x.Property6,
                 (v1, v2, v3, v4, v5, v6) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -980,7 +980,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
                 (v1, v2, v3, v4, v5, v6) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -996,7 +996,7 @@ public class VariadicTemplatesTest
                 x => x.Property4,
                 x => x.Property5,
                 x => x.Property6,
-                x => x.Property7).Subscribe(list.Add);
+                x => x.Property7).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1012,7 +1012,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property4),
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
-                nameof(TestViewModel.Property7)).Subscribe(list.Add);
+                nameof(TestViewModel.Property7)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1029,7 +1029,7 @@ public class VariadicTemplatesTest
                 x => x.Property5,
                 x => x.Property6,
                 x => x.Property7,
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1046,7 +1046,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1063,7 +1063,7 @@ public class VariadicTemplatesTest
                 x => x.Property5,
                 x => x.Property6,
                 x => x.Property7,
-                (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1080,7 +1080,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
-                (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1098,7 +1098,7 @@ public class VariadicTemplatesTest
                 x => x.Property6,
                 x => x.Property7,
                 (v1, v2, v3, v4, v5, v6, v7) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1116,7 +1116,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
                 (v1, v2, v3, v4, v5, v6, v7) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1133,7 +1133,7 @@ public class VariadicTemplatesTest
                 x => x.Property5,
                 x => x.Property6,
                 x => x.Property7,
-                (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1150,7 +1150,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property5),
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
-                (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1168,7 +1168,7 @@ public class VariadicTemplatesTest
                 x => x.Property6,
                 x => x.Property7,
                 (v1, v2, v3, v4, v5, v6, v7) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1186,7 +1186,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
                 (v1, v2, v3, v4, v5, v6, v7) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1204,7 +1204,7 @@ public class VariadicTemplatesTest
                 x => x.Property6,
                 x => x.Property7,
                 x => x.Property8,
-                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1222,7 +1222,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
-                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1241,7 +1241,7 @@ public class VariadicTemplatesTest
                 x => x.Property7,
                 x => x.Property8,
                 (v1, v2, v3, v4, v5, v6, v7, v8) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1260,7 +1260,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
                 (v1, v2, v3, v4, v5, v6, v7, v8) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1278,7 +1278,7 @@ public class VariadicTemplatesTest
                 x => x.Property6,
                 x => x.Property7,
                 x => x.Property8,
-                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1296,7 +1296,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property6),
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
-                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1315,7 +1315,7 @@ public class VariadicTemplatesTest
                 x => x.Property7,
                 x => x.Property8,
                 (v1, v2, v3, v4, v5, v6, v7, v8) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1334,7 +1334,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
                 (v1, v2, v3, v4, v5, v6, v7, v8) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1353,7 +1353,7 @@ public class VariadicTemplatesTest
                 x => x.Property7,
                 x => x.Property8,
                 x => x.Property9,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1372,7 +1372,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1392,7 +1392,7 @@ public class VariadicTemplatesTest
                 x => x.Property8,
                 x => x.Property9,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1412,7 +1412,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1431,7 +1431,7 @@ public class VariadicTemplatesTest
                 x => x.Property7,
                 x => x.Property8,
                 x => x.Property9,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1450,7 +1450,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property7),
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1470,7 +1470,7 @@ public class VariadicTemplatesTest
                 x => x.Property8,
                 x => x.Property9,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1490,7 +1490,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1510,7 +1510,7 @@ public class VariadicTemplatesTest
                 x => x.Property8,
                 x => x.Property9,
                 x => x.Property10,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1530,7 +1530,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1551,7 +1551,7 @@ public class VariadicTemplatesTest
                 x => x.Property9,
                 x => x.Property10,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1572,7 +1572,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1592,7 +1592,7 @@ public class VariadicTemplatesTest
                 x => x.Property8,
                 x => x.Property9,
                 x => x.Property10,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1612,7 +1612,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property8),
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1633,7 +1633,7 @@ public class VariadicTemplatesTest
                 x => x.Property9,
                 x => x.Property10,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1654,7 +1654,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1675,7 +1675,7 @@ public class VariadicTemplatesTest
                 x => x.Property9,
                 x => x.Property10,
                 x => x.Property11,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1696,7 +1696,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1718,7 +1718,7 @@ public class VariadicTemplatesTest
                 x => x.Property10,
                 x => x.Property11,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1740,7 +1740,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1761,7 +1761,7 @@ public class VariadicTemplatesTest
                 x => x.Property9,
                 x => x.Property10,
                 x => x.Property11,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1782,7 +1782,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property9),
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1804,7 +1804,7 @@ public class VariadicTemplatesTest
                 x => x.Property10,
                 x => x.Property11,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1826,7 +1826,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1848,7 +1848,7 @@ public class VariadicTemplatesTest
                 x => x.Property10,
                 x => x.Property11,
                 x => x.Property12,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1870,7 +1870,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
                 nameof(TestViewModel.Property12),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1893,7 +1893,7 @@ public class VariadicTemplatesTest
                 x => x.Property11,
                 x => x.Property12,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1916,7 +1916,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property11),
                 nameof(TestViewModel.Property12),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1938,7 +1938,7 @@ public class VariadicTemplatesTest
                 x => x.Property10,
                 x => x.Property11,
                 x => x.Property12,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1960,7 +1960,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property10),
                 nameof(TestViewModel.Property11),
                 nameof(TestViewModel.Property12),
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -1983,7 +1983,7 @@ public class VariadicTemplatesTest
                 x => x.Property11,
                 x => x.Property12,
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x",
-                isDistinct: true).Subscribe(list.Add);
+                isDistinct: true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2006,7 +2006,7 @@ public class VariadicTemplatesTest
                 nameof(TestViewModel.Property11),
                 nameof(TestViewModel.Property12),
                 (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x",
-                isDistinct: false).Subscribe(list.Add);
+                isDistinct: false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
@@ -2017,7 +2017,7 @@ public class VariadicTemplatesTest
         var subj = new Subject<string>();
         vm.ObservableProperty1 = subj;
         var list = new List<string>();
-        vm.WhenAnyObservable(x => x.ObservableProperty1).Subscribe(list.Add);
+        vm.WhenAnyObservable(x => x.ObservableProperty1).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }
@@ -2033,7 +2033,7 @@ public class VariadicTemplatesTest
         var list = new List<string>();
         vm.WhenAnyObservable(
                 x => x.ObservableProperty1,
-                x => x.ObservableProperty2).Subscribe(list.Add);
+                x => x.ObservableProperty2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
@@ -2051,7 +2051,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyObservable(
                 x => x.ObservableProperty1,
                 x => x.ObservableProperty2,
-                (v1, v2) => "x").Subscribe(list.Add);
+                (v1, v2) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
@@ -2071,7 +2071,7 @@ public class VariadicTemplatesTest
         vm.WhenAnyObservable(
                 x => x.ObservableProperty1,
                 x => x.ObservableProperty2,
-                x => x.ObservableProperty3).Subscribe(list.Add);
+                x => x.ObservableProperty3).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2093,7 +2093,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty1,
                 x => x.ObservableProperty2,
                 x => x.ObservableProperty3,
-                (v1, v2, v3) => "x").Subscribe(list.Add);
+                (v1, v2, v3) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2117,7 +2117,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty1,
                 x => x.ObservableProperty2,
                 x => x.ObservableProperty3,
-                x => x.ObservableProperty4).Subscribe(list.Add);
+                x => x.ObservableProperty4).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2143,7 +2143,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty2,
                 x => x.ObservableProperty3,
                 x => x.ObservableProperty4,
-                (v1, v2, v3, v4) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2171,7 +2171,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty2,
                 x => x.ObservableProperty3,
                 x => x.ObservableProperty4,
-                x => x.ObservableProperty5).Subscribe(list.Add);
+                x => x.ObservableProperty5).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2201,7 +2201,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty3,
                 x => x.ObservableProperty4,
                 x => x.ObservableProperty5,
-                (v1, v2, v3, v4, v5) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2233,7 +2233,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty3,
                 x => x.ObservableProperty4,
                 x => x.ObservableProperty5,
-                x => x.ObservableProperty6).Subscribe(list.Add);
+                x => x.ObservableProperty6).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2267,7 +2267,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty4,
                 x => x.ObservableProperty5,
                 x => x.ObservableProperty6,
-                (v1, v2, v3, v4, v5, v6) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2303,7 +2303,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty4,
                 x => x.ObservableProperty5,
                 x => x.ObservableProperty6,
-                x => x.ObservableProperty7).Subscribe(list.Add);
+                x => x.ObservableProperty7).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2341,7 +2341,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty5,
                 x => x.ObservableProperty6,
                 x => x.ObservableProperty7,
-                (v1, v2, v3, v4, v5, v6, v7) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2381,7 +2381,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty5,
                 x => x.ObservableProperty6,
                 x => x.ObservableProperty7,
-                x => x.ObservableProperty8).Subscribe(list.Add);
+                x => x.ObservableProperty8).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2423,7 +2423,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty6,
                 x => x.ObservableProperty7,
                 x => x.ObservableProperty8,
-                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2467,7 +2467,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty6,
                 x => x.ObservableProperty7,
                 x => x.ObservableProperty8,
-                x => x.ObservableProperty9).Subscribe(list.Add);
+                x => x.ObservableProperty9).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2513,7 +2513,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty7,
                 x => x.ObservableProperty8,
                 x => x.ObservableProperty9,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2561,7 +2561,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty7,
                 x => x.ObservableProperty8,
                 x => x.ObservableProperty9,
-                x => x.ObservableProperty10).Subscribe(list.Add);
+                x => x.ObservableProperty10).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2611,7 +2611,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty8,
                 x => x.ObservableProperty9,
                 x => x.ObservableProperty10,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2663,7 +2663,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty8,
                 x => x.ObservableProperty9,
                 x => x.ObservableProperty10,
-                x => x.ObservableProperty11).Subscribe(list.Add);
+                x => x.ObservableProperty11).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2717,7 +2717,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty9,
                 x => x.ObservableProperty10,
                 x => x.ObservableProperty11,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2773,7 +2773,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty9,
                 x => x.ObservableProperty10,
                 x => x.ObservableProperty11,
-                x => x.ObservableProperty12).Subscribe(list.Add);
+                x => x.ObservableProperty12).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -2831,7 +2831,7 @@ public class VariadicTemplatesTest
                 x => x.ObservableProperty10,
                 x => x.ObservableProperty11,
                 x => x.ObservableProperty12,
-                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").Subscribe(list.Add);
+                (v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
