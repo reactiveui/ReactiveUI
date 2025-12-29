@@ -10,52 +10,44 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Tests for <see cref="AutoSuspendHelper"/>.
 /// </summary>
-/// <remarks>
-/// Note: AutoSuspendHelper requires a WPF Application instance which can only be created once per AppDomain.
-/// These tests use Application.Current which is initialized by the test framework.
-/// Coverage is provided through integration testing scenarios.
-/// </remarks>
 [NotInParallel]
 public class AutoSuspendHelperTest
 {
     /// <summary>
-    /// Tests that AutoSuspendHelper type is accessible and can be referenced.
+    /// Tests that AutoSuspendHelper can be created with Application.Current.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task TypeIsAccessible()
+    public async Task Constructor_CreatesInstanceWithApplication()
     {
-        var type = typeof(AutoSuspendHelper);
-        await Assert.That(type).IsNotNull();
-        await Assert.That(type.Name).IsEqualTo("AutoSuspendHelper");
+        if (Application.Current == null)
+        {
+            _ = new Application();
+        }
+
+        var helper = new AutoSuspendHelper(Application.Current!);
+
+        await Assert.That(helper).IsNotNull();
+        await Assert.That(helper.IdleTimeout).IsEqualTo(TimeSpan.FromSeconds(15.0));
     }
 
     /// <summary>
-    /// Tests that AutoSuspendHelper has IdleTimeout property.
+    /// Tests that IdleTimeout property can be set and retrieved.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task HasIdleTimeoutProperty()
+    public async Task IdleTimeout_CanBeSetAndRetrieved()
     {
-        var type = typeof(AutoSuspendHelper);
-        var property = type.GetProperty("IdleTimeout");
+        if (Application.Current == null)
+        {
+            _ = new Application();
+        }
 
-        await Assert.That(property).IsNotNull();
-        await Assert.That(property!.PropertyType).IsEqualTo(typeof(TimeSpan));
-        await Assert.That(property.CanRead).IsTrue();
-        await Assert.That(property.CanWrite).IsTrue();
-    }
+        var helper = new AutoSuspendHelper(Application.Current!)
+        {
+            IdleTimeout = TimeSpan.FromSeconds(30.0)
+        };
 
-    /// <summary>
-    /// Tests that AutoSuspendHelper has constructor taking Application parameter.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task HasApplicationConstructor()
-    {
-        var type = typeof(AutoSuspendHelper);
-        var constructor = type.GetConstructor([typeof(Application)]);
-
-        await Assert.That(constructor).IsNotNull();
+        await Assert.That(helper.IdleTimeout).IsEqualTo(TimeSpan.FromSeconds(30.0));
     }
 }

@@ -11,65 +11,58 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Tests for <see cref="ValidationBindingMixins"/>.
 /// </summary>
-/// <remarks>
-/// Note: ValidationBindingMixins creates WPF controls which require an Application to be running.
-/// These tests focus on method signatures and null argument validation.
-/// Full binding functionality is covered through integration testing scenarios.
-/// </remarks>
 [NotInParallel]
 public class ValidationBindingMixinsTest
 {
     /// <summary>
-    /// Tests that BindWithValidation method exists and has correct signature.
+    /// Tests that BindWithValidation throws ArgumentNullException when viewModelPropertySelector is null.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task BindWithValidation_MethodExists()
+    public async Task BindWithValidation_ThrowsOnNullViewModelProperty()
     {
-        var method = typeof(ValidationBindingMixins).GetMethod("BindWithValidation");
+        var view = new TestView();
+        var viewModel = new TestViewModel();
 
-        await Assert.That(method).IsNotNull();
-        await Assert.That(method!.IsStatic).IsTrue();
-        await Assert.That(method.IsPublic).IsTrue();
+        await Assert.That(() => view.BindWithValidation<TestViewModel, TestView, Control, string>(
+            viewModel,
+            null!,
+            v => v.TestControl))
+            .Throws<ArgumentNullException>();
     }
 
     /// <summary>
-    /// Tests that BindWithValidation has correct generic parameters.
+    /// Tests that BindWithValidation throws ArgumentNullException when frameworkElementSelector is null.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task BindWithValidation_HasCorrectGenericParameters()
+    public async Task BindWithValidation_ThrowsOnNullFrameworkElementSelector()
     {
-        var method = typeof(ValidationBindingMixins).GetMethod("BindWithValidation");
-        var genericArgs = method!.GetGenericArguments();
+        var view = new TestView();
+        var viewModel = new TestViewModel();
 
-        await Assert.That(genericArgs).Count().IsEqualTo(4);
+        await Assert.That(() => view.BindWithValidation<TestViewModel, TestView, Control, string>(
+            viewModel,
+            vm => vm.TestProperty,
+            null!))
+            .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that BindWithValidation has correct parameter count.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindWithValidation_HasCorrectParameterCount()
+    private class TestView : Control, IViewFor<TestViewModel>
     {
-        var method = typeof(ValidationBindingMixins).GetMethod("BindWithValidation");
-        var parameters = method!.GetParameters();
+        public TestViewModel? ViewModel { get; set; }
 
-        await Assert.That(parameters).Count().IsEqualTo(4);
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = value as TestViewModel;
+        }
+
+        public Control TestControl { get; } = new();
     }
 
-    /// <summary>
-    /// Tests that BindWithValidation returns IReactiveBinding.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindWithValidation_ReturnsIReactiveBinding()
+    private class TestViewModel
     {
-        var method = typeof(ValidationBindingMixins).GetMethod("BindWithValidation");
-        var returnType = method!.ReturnType;
-
-        await Assert.That(returnType.IsGenericType).IsTrue();
-        await Assert.That(returnType.GetGenericTypeDefinition()).IsEqualTo(typeof(IReactiveBinding<,>));
+        public string? TestProperty { get; set; }
     }
 }
