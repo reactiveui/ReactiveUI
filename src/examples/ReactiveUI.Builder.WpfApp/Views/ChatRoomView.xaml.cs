@@ -13,13 +13,13 @@ namespace ReactiveUI.Builder.WpfApp.Views;
 /// <summary>
 /// Chat room view.
 /// </summary>
-public partial class ChatRoomView : IViewFor<ViewModels.ChatRoomViewModel>
+public partial class ChatRoomView : IViewFor<ChatRoomViewModel>
 {
     /// <summary>
     /// The view model dependency property.
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
-        nameof(ViewModel), typeof(ViewModels.ChatRoomViewModel), typeof(ChatRoomView), new PropertyMetadata(null));
+        nameof(ViewModel), typeof(ChatRoomViewModel), typeof(ChatRoomView), new PropertyMetadata(null));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomView"/> class.
@@ -44,9 +44,9 @@ public partial class ChatRoomView : IViewFor<ViewModels.ChatRoomViewModel>
     /// <summary>
     /// Gets or sets the view model.
     /// </summary>
-    public ViewModels.ChatRoomViewModel? ViewModel
+    public ChatRoomViewModel? ViewModel
     {
-        get => (ViewModels.ChatRoomViewModel?)GetValue(ViewModelProperty);
+        get => (ChatRoomViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
     }
 
@@ -57,6 +57,6 @@ public partial class ChatRoomView : IViewFor<ViewModels.ChatRoomViewModel>
     object? IViewFor.ViewModel
     {
         get => ViewModel;
-        set => ViewModel = (ViewModels.ChatRoomViewModel?)value;
+        set => ViewModel = (ChatRoomViewModel?)value;
     }
 }

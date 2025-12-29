@@ -25,7 +25,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <param name="resolver">The dependency resolver to configure.</param>
     /// <param name="current">The configured services.</param>
-    /// <exception cref="System.ArgumentNullException">resolver.</exception>
+    /// <exception cref="ArgumentNullException">resolver.</exception>
     public ReactiveUIBuilder(IMutableDependencyResolver resolver, IReadonlyDependencyResolver? current)
         : base(resolver, current) => CurrentMutable.InitializeSplat();
 

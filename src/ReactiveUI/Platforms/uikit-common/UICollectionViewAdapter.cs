@@ -57,7 +57,7 @@ internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UI
     {
     }
 
-    public void PerformUpdates(Action updates, Action completion) => _view.PerformBatchUpdates(new NSAction(updates), (completed) => completion());
+    public void PerformUpdates(NSAction updates, NSAction completion) => _view.PerformBatchUpdates(new NSAction(updates), (completed) => completion());
 
     public void InsertSections(NSIndexSet indexes) => _view.InsertSections(indexes);
 

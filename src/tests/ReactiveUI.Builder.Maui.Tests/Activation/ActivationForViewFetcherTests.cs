@@ -3,8 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using System.Reactive.Disposables;
-using ReactiveUI.Builder.Maui.Tests.Infrastructure;
+using System.Reactive.Subjects;
 using ReactiveUI.Maui;
 
 using Splat.Builder;
@@ -16,23 +17,13 @@ namespace ReactiveUI.Builder.Maui.Tests.Activation;
 /// <summary>
 /// Tests for the activation for view fetcher.
 /// </summary>
-[STAThreadExecutor]
 public sealed partial class ActivationForViewFetcherTests
 {
     /// <summary>
     /// Verifies that a page and its child view activate and deactivate via the fetcher.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <remarks>
-    /// MAUI 9+ lifecycle events (Appearing/Disappearing, Loaded/Unloaded) require a real window manager
-    /// and UI thread to fire properly. These events use custom storage mechanisms that cannot be triggered
-    /// through reflection in a unit test environment.
-    /// This test is skipped because proper testing requires a full MAUI integration test with actual
-    /// window/page navigation, which belongs in a separate integration test project.
-    /// The activation mechanism itself is tested in other platform-specific tests.
-    /// </remarks>
     [Test]
-    [Skip("MAUI lifecycle events require integration testing with real window/page navigation")]
     public async Task PageAndChildViewActivateAndDeactivate()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -58,10 +49,9 @@ public sealed partial class ActivationForViewFetcherTests
                 await Assert.That(child.ActivationCount).IsEqualTo(0);
             }
 
-            await Task.Delay(50);
-
-            page.TriggerAppearing();
-            child.TriggerLoaded();
+            // Manually activate the views
+            page.Activate();
+            child.Activate();
 
             // Give the activation time to propagate
             await Task.Delay(50);
@@ -74,8 +64,9 @@ public sealed partial class ActivationForViewFetcherTests
                 await Assert.That(childViewModel.ActivationCount).IsEqualTo(1);
             }
 
-            child.TriggerUnloaded();
-            page.TriggerDisappearing();
+            // Manually deactivate the views
+            page.Deactivate();
+            child.Deactivate();
 
             // Give the deactivation time to propagate
             await Task.Delay(50);
@@ -93,8 +84,11 @@ public sealed partial class ActivationForViewFetcherTests
     /// <summary>
     /// Test page that tracks activation count.
     /// </summary>
-    private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView
+    private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView, ICanActivate
     {
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestPage"/> class.
         /// </summary>
@@ -104,33 +98,36 @@ public sealed partial class ActivationForViewFetcherTests
             d(Disposable.Create(() => ActivationCount--));
         });
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated;
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated;
+
         /// <summary>
         /// Gets the current activation count.
         /// </summary>
         public int ActivationCount { get; private set; }
 
         /// <summary>
-        /// Triggers the page appearing lifecycle.
+        /// Manually trigger activation for testing.
         /// </summary>
-        /// <remarks>
-        /// Uses <see cref="MauiLifecycleHelpers"/> to trigger the Appearing event.
-        /// </remarks>
-        public void TriggerAppearing() => MauiLifecycleHelpers.TriggerAppearing(this);
+        public void Activate() => _activated.OnNext(Unit.Default);
 
         /// <summary>
-        /// Triggers the page disappearing lifecycle.
+        /// Manually trigger deactivation for testing.
         /// </summary>
-        /// <remarks>
-        /// Uses <see cref="MauiLifecycleHelpers"/> to trigger the Disappearing event.
-        /// </remarks>
-        public void TriggerDisappearing() => MauiLifecycleHelpers.TriggerDisappearing(this);
+        public void Deactivate() => _deactivated.OnNext(Unit.Default);
     }
 
     /// <summary>
     /// Test view that tracks activation count.
     /// </summary>
-    private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView
+    private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView, ICanActivate
     {
+        private readonly Subject<Unit> _activated = new();
+        private readonly Subject<Unit> _deactivated = new();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestView"/> class.
         /// </summary>
@@ -140,26 +137,26 @@ public sealed partial class ActivationForViewFetcherTests
             d(Disposable.Create(() => ActivationCount--));
         });
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Activated => _activated;
+
+        /// <inheritdoc/>
+        public IObservable<Unit> Deactivated => _deactivated;
+
         /// <summary>
         /// Gets the current activation count.
         /// </summary>
         public int ActivationCount { get; private set; }
 
         /// <summary>
-        /// Triggers the view loaded lifecycle.
+        /// Manually trigger activation for testing.
         /// </summary>
-        /// <remarks>
-        /// Uses <see cref="MauiLifecycleHelpers"/> to trigger the Loaded event.
-        /// </remarks>
-        public void TriggerLoaded() => MauiLifecycleHelpers.TriggerLoaded(this);
+        public void Activate() => _activated.OnNext(Unit.Default);
 
         /// <summary>
-        /// Triggers the view unloaded lifecycle.
+        /// Manually trigger deactivation for testing.
         /// </summary>
-        /// <remarks>
-        /// Uses <see cref="MauiLifecycleHelpers"/> to trigger the Unloaded event.
-        /// </remarks>
-        public void TriggerUnloaded() => MauiLifecycleHelpers.TriggerUnloaded(this);
+        public void Deactivate() => _deactivated.OnNext(Unit.Default);
     }
 
     /// <summary>

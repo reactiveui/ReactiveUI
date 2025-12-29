@@ -64,7 +64,6 @@ public class AppBuilderTestBaseTests
     /// <summary>
     /// Test implementation that inherits from AppBuilderTestBase.
     /// </summary>
-    [SuppressMessage("Design", "CA1812:Avoid uninstantiated internal classes", Justification = "Class is used to access protected methods")]
     private sealed class TestAppBuilderTest : AppBuilderTestBase
     {
         /// <summary>

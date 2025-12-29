@@ -159,7 +159,6 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(target.CommandParameter).IsEqualTo("third");
     }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class CommandControl
     {
         public ICommand? Command { get; set; }
@@ -171,5 +170,4 @@ public class CreatesCommandBindingViaCommandParameterTests
     {
         public ICommand? Command { get; set; }
     }
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 }

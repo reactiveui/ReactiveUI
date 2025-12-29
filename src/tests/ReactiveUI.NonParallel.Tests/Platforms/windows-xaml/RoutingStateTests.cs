@@ -141,24 +141,22 @@ public class RoutingStateTests
 
         await Assert.That(output).Count().IsEqualTo(1);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" });
+        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
         await Assert.That(output).Count().IsEqualTo(2);
 
-        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" });
+        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
         using (Assert.Multiple())
         {
             await Assert.That(output).Count().IsEqualTo(3);
             await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("B");
         }
 
-        fixture.Router.NavigateBack.Execute();
+        fixture.Router.NavigateBack.Execute().Subscribe();
         using (Assert.Multiple())
         {
             await Assert.That(output).Count().IsEqualTo(4);
             await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("A");
         }
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
     /// <summary>

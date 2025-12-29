@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A ancestor view model.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class InteractionAncestorViewModel : ReactiveObject
 {
     private InteractionBindViewModel _interactionBindViewModel;

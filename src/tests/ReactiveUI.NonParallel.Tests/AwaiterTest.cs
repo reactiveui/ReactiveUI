@@ -29,7 +29,6 @@ public class AwaiterTest : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [SuppressMessage("Usage", "xUnit1031:Do not use blocking task operations in test method", Justification = "Intentional")]
     public async Task AwaiterSmokeTest()
     {
         var fixture = AwaitAnObservable();

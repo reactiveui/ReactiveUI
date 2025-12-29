@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIMauiTestTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <WindowsPackageType>None</WindowsPackageType>
+
+    <!-- Ensure MSIX tooling is not invoked for a test host -->
+    <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
+    <PublishAppxPackage>false</PublishAppxPackage>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+
+    <!-- Optional: if CI machines don't have the runtime installed -->
+     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Microsoft.Maui.Controls" />
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Maui" />
+  </ItemGroup>
+</Project>

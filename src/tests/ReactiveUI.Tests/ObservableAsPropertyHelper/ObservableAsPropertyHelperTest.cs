@@ -725,7 +725,9 @@ public class ObservableAsPropertyHelperTest
                    var (_, users) = tuple;
                    return users.Values.Count(static x => !string.IsNullOrWhiteSpace(x?.LastName));
                })
-               .ToProperty(fixture, static x => x.AccountsFound, out fixture._accountsFound);
+               .ToProperty(fixture, static x => x.AccountsFound, out var helper);
+
+        fixture.AccountsFoundHelper = helper;
 
         await Assert.That(fixture.AccountsFound).IsEqualTo(3);
     }

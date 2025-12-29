@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A bind view model.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class InteractionBindViewModel : ReactiveObject
 {
     private Interaction<string, bool> _interaction1;

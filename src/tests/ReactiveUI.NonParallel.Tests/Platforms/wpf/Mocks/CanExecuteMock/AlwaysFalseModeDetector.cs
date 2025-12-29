@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Always False Mode Detector.
 /// </summary>
-/// <seealso cref="Splat.IModeDetector" />
+/// <seealso cref="IModeDetector" />
 public class AlwaysFalseModeDetector : IModeDetector
 {
     /// <summary>

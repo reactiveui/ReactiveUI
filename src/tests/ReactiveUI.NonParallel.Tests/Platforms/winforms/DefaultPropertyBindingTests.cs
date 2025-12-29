@@ -22,8 +22,7 @@ namespace ReactiveUI.Tests.Winforms;
 /// This state must not be concurrently initialized by parallel tests.
 /// </remarks>
 [NotInParallel]
-[SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "In test dont care")]
-public class DefaultPropertyBindingTests
+public class DefaultPropertyBindingTests : IDisposable
 {
     private RxAppSchedulersScope? _schedulersScope;
 
@@ -37,6 +36,12 @@ public class DefaultPropertyBindingTests
 
     [After(Test)]
     public void TearDown() => _schedulersScope?.Dispose();
+
+    public void Dispose()
+    {
+        _schedulersScope?.Dispose();
+        _schedulersScope = null;
+    }
 
     /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.

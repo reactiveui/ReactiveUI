@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Project.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 [DataContract]
 public class Project : ReactiveObject
 {

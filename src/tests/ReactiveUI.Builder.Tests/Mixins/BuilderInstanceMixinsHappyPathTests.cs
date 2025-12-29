@@ -1137,9 +1137,9 @@ public class BuilderInstanceMixinsHappyPathTests
         public bool HasRegistration(Type? serviceType, string? contract = null) =>
             serviceType != null && _services.ContainsKey(serviceType);
 
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Required by IDisposable interface")]
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -34,7 +34,7 @@ public class SubcribeTestViewModel : IDisposable
         SubscriberEvents = _items.Count;
     }
 
-    public ReactiveProperty<int> Property { get; } = new(1);
+    public ReactiveProperty<int> Property { get; } = new(1, ImmediateScheduler.Instance, false, false);
 
     public int SubscriberCount { get; }
 

@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A fixture for demonstrating race conditions.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class RaceConditionFixture : ReactiveObject
 {
     private readonly ObservableAsPropertyHelper<bool> _A;

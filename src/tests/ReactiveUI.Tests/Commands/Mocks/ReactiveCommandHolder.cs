@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A ReactiveObject which hosts a ReactiveCommand.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class ReactiveCommandHolder : ReactiveObject
 {
     private ReactiveCommand<int, Unit>? _theCommand;

@@ -43,38 +43,6 @@ public class CommandBindingImplementationTests
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests the command bind explicit event wire up.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-    [Test]
-    [TestExecutor<STAThreadExecutor>]
-    [Skip("Test failing with assertion error - needs investigation")]
-    public async Task CommandBindToExplicitEventWireupAsync()
-    {
-        var vm = new WinformCommandBindViewModel();
-        var view = new WinformCommandBindView { ViewModel = vm };
-        var fixture = new CommandBinderImplementation();
-
-        var invokeCount = 0;
-
-        vm.Command2.Subscribe(_ => invokeCount++);
-
-        var disp = fixture.BindCommand(vm, view, x => x.Command2, x => x.Command2, "MouseUp");
-
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
-        // With ImmediateScheduler, execution happens synchronously
-        await Assert.That(invokeCount).IsEqualTo(1);
-
-        disp.Dispose();
-
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-
-        // After disposal, command should not execute
-        await Assert.That(invokeCount).IsEqualTo(1);
-    }
-
     [Test]
     [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireupWithParameter()

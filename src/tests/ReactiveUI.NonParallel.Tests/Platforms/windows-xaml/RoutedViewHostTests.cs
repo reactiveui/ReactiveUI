@@ -45,9 +45,7 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(controlActivated);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await new[] { true }.AssertAreEqual(controlActivated);
 
         await Assert.That(uc.Content).IsNotNull();
     }
@@ -78,17 +76,13 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(controlActivated);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await new[] { true }.AssertAreEqual(controlActivated);
 
         // Default Content
         await Assert.That(uc.Content).IsAssignableTo<System.Windows.Controls.Label>();
 
         // Test Navigation after activated
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
     }
 
@@ -112,9 +106,7 @@ public class RoutedViewHostTests
         activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
 
         // Test navigation before Activation.
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await uc.Router.Navigate.Execute(Locator.Current.GetService<TestViewModel>()!);
 
         // Activate by raising the Loaded event
         var loaded = new RoutedEventArgs
@@ -123,9 +115,7 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        new[] { true }.AssertAreEqual(controlActivated);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        await new[] { true }.AssertAreEqual(controlActivated);
 
         // Test Navigation before activated
         await Assert.That(uc.Content).IsAssignableTo<TestView>();

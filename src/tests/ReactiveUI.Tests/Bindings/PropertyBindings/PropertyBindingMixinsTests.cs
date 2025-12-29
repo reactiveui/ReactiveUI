@@ -248,7 +248,6 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo("100");
     }
 
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
     private class TestViewModel : ReactiveObject
     {
         private string? _name;
@@ -315,5 +314,4 @@ public class PropertyBindingMixinsTests
             return false;
         }
     }
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
 }

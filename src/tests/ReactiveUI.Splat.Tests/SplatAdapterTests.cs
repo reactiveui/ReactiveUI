@@ -31,7 +31,7 @@ public class SplatAdapterTests
     public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
-        var container = new DryIoc.Container();
+        var container = new Container();
         container.UseDryIocDependencyResolver();
         Locator.CurrentMutable.InitializeReactiveUI();
 
@@ -53,7 +53,7 @@ public class SplatAdapterTests
     public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
     {
         // Invoke RxApp which initializes the ReactiveUI platform.
-        var container = new DryIoc.Container();
+        var container = new Container();
         container.UseDryIocDependencyResolver();
         Locator.CurrentMutable.InitializeReactiveUI();
 

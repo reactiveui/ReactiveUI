@@ -46,8 +46,8 @@ public class TableSectionInformation<TSource> : ISectionInformation<UITableViewC
 }
 
 /// <summary>
-/// Class used to extract a common API between <see cref="UIKit.UICollectionView"/>
-/// and <see cref="UIKit.UICollectionViewCell"/>.
+/// Class used to extract a common API between <see cref="UICollectionView"/>
+/// and <see cref="UICollectionViewCell"/>.
 /// </summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
 /// <typeparam name="TCell">The type of the cell.</typeparam>

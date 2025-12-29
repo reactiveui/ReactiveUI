@@ -35,7 +35,7 @@ namespace ReactiveUI.Builder;
 /// ]]>
 /// </code>
 /// </example>
-/// <seealso cref="Splat.Builder.IAppBuilder" />
+/// <seealso cref="IAppBuilder" />
 public interface IReactiveUIBuilder : IAppBuilder
 {
     /// <summary>

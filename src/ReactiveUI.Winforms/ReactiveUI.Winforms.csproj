@@ -38,4 +38,8 @@
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
+  </ItemGroup>
 </Project>

@@ -1477,4 +1477,328 @@ public class ReactiveNotifyPropertyChangedMixinTest
         fixture.Owner.Name = "Betty";
         await Assert.That(fixture.OwnerName).IsEqualTo("Betty");
     }
+
+    /// <summary>
+    /// Tests ObservableForProperty with selector.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_WithSelector_TransformsValues() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture { IsOnlyOneWord = "Test" };
+            var results = new List<int>();
+
+            fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(results.Add);
+
+            fixture.IsOnlyOneWord = "Hello";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo(5);
+
+            fixture.IsOnlyOneWord = "Hi";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[1]).IsEqualTo(2);
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty with selector and beforeChange.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_WithSelectorAndBeforeChange_TransformsBeforeValues() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture { IsOnlyOneWord = "Initial" };
+            var results = new List<int>();
+
+            fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, beforeChange: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(results.Add);
+
+            fixture.IsOnlyOneWord = "Changed";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo(7); // Length of "Initial"
+
+            fixture.IsOnlyOneWord = "New";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[1]).IsEqualTo(7); // Length of "Changed"
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty with selector throws for null selector.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_NullSelector_Throws()
+    {
+        var fixture = new TestFixture();
+
+        await Assert.That(() => fixture.ObservableForProperty(x => x.IsOnlyOneWord, (Func<string?, int>)null!))
+            .Throws<ArgumentNullException>();
+    }
+
+    /// <summary>
+    /// Tests SubscribeToExpressionChain basic functionality.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SubscribeToExpressionChain_BasicUsage_NotifiesOnChange() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new HostTestFixture { Child = new TestFixture() };
+            Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
+            var results = new List<string?>();
+
+            fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.Child.IsOnlyOneWord = "First";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("First");
+
+            fixture.Child.IsOnlyOneWord = "Second";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[1]).IsEqualTo("Second");
+        });
+
+    /// <summary>
+    /// Tests SubscribeToExpressionChain with beforeChange parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SubscribeToExpressionChain_WithBeforeChange_NotifiesBeforeChange() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new HostTestFixture { Child = new TestFixture { IsOnlyOneWord = "Initial" } };
+            Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
+            var results = new List<string?>();
+
+            fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, beforeChange: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.Child.IsOnlyOneWord = "Changed";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Initial");
+        });
+
+    /// <summary>
+    /// Tests SubscribeToExpressionChain with beforeChange and skipInitial.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SubscribeToExpressionChain_WithBeforeChangeAndSkipInitial_SkipsFirst() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new HostTestFixture { Child = new TestFixture { IsOnlyOneWord = "Initial" } };
+            Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
+            var results = new List<string?>();
+
+            fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, beforeChange: true, skipInitial: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            scheduler.Start();
+            await Assert.That(results).IsEmpty();
+
+            fixture.Child.IsOnlyOneWord = "Changed";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Initial");
+        });
+
+    /// <summary>
+    /// Tests SubscribeToExpressionChain with suppressWarnings parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SubscribeToExpressionChain_WithSuppressWarnings_DoesNotWarn() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new HostTestFixture { Child = new TestFixture() };
+            Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
+            var results = new List<string?>();
+
+            fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
+                       expression.Body,
+                       beforeChange: false,
+                       skipInitial: true,
+                       suppressWarnings: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.Child.IsOnlyOneWord = "Test";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Test");
+        });
+
+    /// <summary>
+    /// Tests SubscribeToExpressionChain with isDistinct parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SubscribeToExpressionChain_WithIsDistinct_Works() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new HostTestFixture { Child = new TestFixture() };
+            Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
+            var results = new List<string?>();
+
+            fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
+                       expression.Body,
+                       beforeChange: false,
+                       skipInitial: true,
+                       suppressWarnings: false,
+                       isDistinct: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.Child.IsOnlyOneWord = "Value1";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+
+            fixture.Child.IsOnlyOneWord = "Value2";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload with property name.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyName_ObservesProperty() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture();
+            var results = new List<string?>();
+
+            fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord))
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.IsOnlyOneWord = "Value1";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Value1");
+
+            fixture.IsOnlyOneWord = "Value2";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[1]).IsEqualTo("Value2");
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload with beforeChange.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyNameBeforeChange_ObservesBeforeChange() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture { IsOnlyOneWord = "Initial" };
+            var results = new List<string?>();
+
+            fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord), beforeChange: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.IsOnlyOneWord = "Changed";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Initial");
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload without skipInitial.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyNameNoSkipInitial_EmitsInitialValue() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture { IsOnlyOneWord = "Initial" };
+            var results = new List<string?>();
+
+            fixture.ObservableForProperty<TestFixture, string?>(
+                       nameof(TestFixture.IsOnlyOneWord),
+                       beforeChange: false,
+                       skipInitial: false)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+            await Assert.That(results[0]).IsEqualTo("Initial");
+
+            fixture.IsOnlyOneWord = "Changed";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+            await Assert.That(results[1]).IsEqualTo("Changed");
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload with isDistinct parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyNameWithIsDistinct_Works() =>
+        await new TestScheduler().With(async scheduler =>
+        {
+            var fixture = new TestFixture();
+            var results = new List<string?>();
+
+            fixture.ObservableForProperty<TestFixture, string?>(
+                       nameof(TestFixture.IsOnlyOneWord),
+                       beforeChange: false,
+                       skipInitial: true,
+                       isDistinct: true)
+                   .ObserveOn(ImmediateScheduler.Instance)
+                   .Subscribe(x => results.Add(x.Value));
+
+            fixture.IsOnlyOneWord = "Value1";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(1);
+
+            fixture.IsOnlyOneWord = "Value2";
+            scheduler.Start();
+            await Assert.That(results).Count().IsEqualTo(2);
+        });
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload throws for null property name.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyNameNull_Throws()
+    {
+        var fixture = new TestFixture();
+
+        await Assert.That(() => fixture.ObservableForProperty<TestFixture, string?>((string)null!))
+            .Throws<ArgumentNullException>();
+    }
+
+    /// <summary>
+    /// Tests ObservableForProperty string overload throws for null item.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableForProperty_StringPropertyNameNullItem_Throws()
+    {
+        TestFixture? fixture = null;
+
+        await Assert.That(() => fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)))
+            .Throws<ArgumentNullException>();
+    }
 }

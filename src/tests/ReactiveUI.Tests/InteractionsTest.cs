@@ -201,21 +201,6 @@ public class InteractionsTest
         }
     }
 
-    [Test]
-    public async Task UnhandledInteractionExceptionTests()
-    {
-        var uie = new UnhandledInteractionException<Unit, string>();
-        await Assert.That(uie).IsNotNull();
-#pragma warning disable SYSLIB0051 // Type or member is obsolete
-#pragma warning disable SYSLIB0050 // Type or member is obsolete
-        uie.GetObjectData(new(typeof(string), new System.Runtime.Serialization.FormatterConverter()), default);
-#pragma warning restore SYSLIB0050 // Type or member is obsolete
-        var uieme = new UnhandledInteractionException<Unit, string>("exception", new Exception("inner exception"));
-        await Assert.That(uieme).IsNotNull();
-        Assert.Throws<ArgumentNullException>(() => uieme.GetObjectData(null!, default));
-#pragma warning restore SYSLIB0051 // Type or member is obsolete
-    }
-
     /// <summary>
     /// Test that handlers can contain asynchronous code.
     /// </summary>

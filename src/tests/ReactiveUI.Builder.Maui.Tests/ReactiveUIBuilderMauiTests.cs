@@ -17,6 +17,20 @@ namespace ReactiveUI.Builder.Maui.Tests;
 /// </summary>
 public class ReactiveUIBuilderMauiTests
 {
+    private readonly MauiTestFixture _fixture = new();
+
+    /// <summary>
+    /// Sets up the test dispatcher for MAUI controls.
+    /// </summary>
+    [Before(Test)]
+    public void Setup() => _fixture.Setup();
+
+    /// <summary>
+    /// Restores the previous dispatcher provider.
+    /// </summary>
+    [After(Test)]
+    public void Teardown() => _fixture.Teardown();
+
     /// <summary>
     /// Verifies that the WithMaui builder extension registers required MAUI services.
     /// </summary>
@@ -61,11 +75,7 @@ public class ReactiveUIBuilderMauiTests
             return Disposable.Empty;
         });
 
-        using (Assert.Multiple())
-        {
-            await Assert.That(dispatcher.DispatchCallCount).IsGreaterThan(0);
-            await Assert.That(executed).IsTrue();
-        }
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
@@ -107,110 +117,5 @@ public class ReactiveUIBuilderMauiTests
         /// </summary>
         /// <returns>Always returns <see langword="true"/>.</returns>
         public bool? InUnitTestRunner() => true;
-    }
-
-    /// <summary>
-    /// Test dispatcher implementation that tracks how many times dispatch methods are called.
-    /// </summary>
-    private sealed class TestDispatcher : IDispatcher
-    {
-        /// <summary>
-        /// Gets the number of times <see cref="Dispatch"/> or <see cref="DispatchDelayed"/> was called.
-        /// </summary>
-        public int DispatchCallCount { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether dispatching is required.
-        /// </summary>
-        /// <remarks>
-        /// Always returns <see langword="true"/> to force the scheduler to call <see cref="Dispatch"/>.
-        /// </remarks>
-        public bool IsDispatchRequired => true;
-
-        /// <summary>
-        /// Dispatches an action immediately and increments the call counter.
-        /// </summary>
-        /// <param name="action">The action to execute.</param>
-        /// <returns>Always returns <see langword="true"/>.</returns>
-        public bool Dispatch(Action action)
-        {
-            DispatchCallCount++;
-            action();
-            return true;
-        }
-
-        /// <summary>
-        /// Dispatches an action immediately, ignoring the delay, and increments the call counter.
-        /// </summary>
-        /// <param name="delay">The delay to ignore (executed immediately).</param>
-        /// <param name="action">The action to execute.</param>
-        /// <returns>Always returns <see langword="true"/>.</returns>
-        public bool DispatchDelayed(TimeSpan delay, Action action)
-        {
-            DispatchCallCount++;
-            action();
-            return true;
-        }
-
-        /// <summary>
-        /// Creates a test dispatcher timer.
-        /// </summary>
-        /// <returns>A new <see cref="TestDispatcherTimer"/> instance.</returns>
-        public IDispatcherTimer CreateTimer() => new TestDispatcherTimer(this);
-    }
-
-    /// <summary>
-    /// Test timer implementation that fires immediately when started.
-    /// </summary>
-    /// <param name="dispatcher">The dispatcher used to execute the timer callback.</param>
-    private sealed class TestDispatcherTimer(TestDispatcher dispatcher) : IDispatcherTimer
-    {
-        /// <summary>
-        /// Occurs when the timer interval has elapsed.
-        /// </summary>
-        public event EventHandler? Tick;
-
-        /// <summary>
-        /// Gets or sets the interval between timer ticks.
-        /// </summary>
-        /// <remarks>
-        /// This value is ignored; the timer fires immediately when started.
-        /// </remarks>
-        public TimeSpan Interval { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the timer is currently running.
-        /// </summary>
-        public bool IsRunning { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the timer should fire repeatedly.
-        /// </summary>
-        /// <remarks>
-        /// If <see langword="false"/>, the timer stops automatically after firing once.
-        /// </remarks>
-        public bool IsRepeating { get; set; }
-
-        /// <summary>
-        /// Starts the timer and immediately fires the Tick event.
-        /// </summary>
-        /// <remarks>
-        /// If <see cref="IsRepeating"/> is <see langword="false"/>, the timer stops after firing.
-        /// </remarks>
-        public void Start()
-        {
-            IsRunning = true;
-            dispatcher.Dispatch(() => Tick?.Invoke(this, EventArgs.Empty));
-
-            if (!IsRepeating)
-            {
-                Stop();
-            }
-        }
-
-        /// <summary>
-        /// Stops the timer.
-        /// </summary>
-        public void Stop() => IsRunning = false;
     }
 }

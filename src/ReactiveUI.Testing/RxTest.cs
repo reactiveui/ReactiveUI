@@ -19,7 +19,7 @@ public static class RxTest
     /// </summary>
     /// <param name="testBody">The test body.</param>
     /// <param name="maxWaitMs">The maximum wait in milliseconds for both acquiring the test gate and running the test body.</param>
-    /// <exception cref="System.ArgumentNullException">testBody.</exception>
+    /// <exception cref="ArgumentNullException">testBody.</exception>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task AppBuilderTestAsync(Func<Task> testBody, int maxWaitMs = 60000)
     {

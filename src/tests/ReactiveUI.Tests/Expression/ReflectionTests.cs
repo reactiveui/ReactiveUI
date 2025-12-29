@@ -12,7 +12,7 @@ public class ReflectionTests
     [Test]
     public async Task ExpressionToPropertyNames_WithSimpleProperty_ReturnsPropertyName()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var result = Reflection.ExpressionToPropertyNames(expr.Body);
 
@@ -22,7 +22,7 @@ public class ReflectionTests
     [Test]
     public async Task ExpressionToPropertyNames_WithNestedProperty_ReturnsChainedNames()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
 
         var result = Reflection.ExpressionToPropertyNames(expr.Body);
 
@@ -138,7 +138,7 @@ public class ReflectionTests
         {
             Nested = new TestClass { Property = "nestedValue" }
         };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, chain);
@@ -151,7 +151,7 @@ public class ReflectionTests
     public async Task TryGetValueForPropertyChain_WithNullInChain_ReturnsFalse()
     {
         var obj = new TestClass { Nested = null };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, chain);
@@ -167,7 +167,7 @@ public class ReflectionTests
         {
             Nested = new TestClass()
         };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TrySetValueToPropertyChain(obj, chain, "setValue");
@@ -180,7 +180,7 @@ public class ReflectionTests
     public async Task TrySetValueToPropertyChain_WithNullTarget_ReturnsFalse()
     {
         var obj = new TestClass { Nested = null };
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
         var chain = expr.Body.GetExpressionChain();
 
         var result = Reflection.TrySetValueToPropertyChain(obj, chain, "setValue", shouldThrow: false);
@@ -267,7 +267,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var chain = indexExpr.GetExpressionChain();
 
@@ -286,7 +286,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(nestedProperty, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var chain = indexExpr.GetExpressionChain();
 
@@ -302,7 +302,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var memberInfo = indexExpr.GetMemberInfo();
 
@@ -313,7 +313,7 @@ public class ReflectionTests
     [Test]
     public async Task GetMemberInfo_WithConvertExpression_ReturnsUnderlyingMember()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, object>> expr = x => (object)x.Property!;
+        Expression<Func<TestClass, object>> expr = x => (object)x.Property!;
 
         var memberInfo = expr.Body.GetMemberInfo();
 
@@ -349,7 +349,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var parent = indexExpr.GetParent();
 
@@ -360,8 +360,8 @@ public class ReflectionTests
     [Test]
     public async Task GetParent_WithMemberExpression_ReturnsExpression()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
-        var memberExpr = (System.Linq.Expressions.MemberExpression)expr.Body;
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var memberExpr = (MemberExpression)expr.Body;
 
         var parent = memberExpr.GetParent();
 
@@ -384,7 +384,7 @@ public class ReflectionTests
         var dictProperty = System.Linq.Expressions.Expression.Property(parameter, "Dictionary");
         var indexer = typeof(Dictionary<string, int>).GetProperty("Item")!;
         var keyArg = System.Linq.Expressions.Expression.Constant("key");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, new[] { keyArg });
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(dictProperty, indexer, [keyArg]);
 
         var args = indexExpr.GetArgumentsArray();
 
@@ -411,26 +411,23 @@ public class ReflectionTests
     [Test]
     public async Task GetArgumentsArray_WithNonIndexExpression_ReturnsNull()
     {
-        System.Linq.Expressions.Expression<Func<TestClass, string?>> expr = x => x.Property;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var args = expr.Body.GetArgumentsArray();
 
         await Assert.That(args).IsNull();
     }
 
-#pragma warning disable CA1050 // Declare types in namespaces
-#pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable CA1812 // Avoid uninstantiated internal classes
-#pragma warning disable SA1201 // Elements should appear in the correct order
-#pragma warning disable SA1401 // Fields should be private
     public class TestClass
     {
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private", Justification = "Public field required for reflection tests")]
+        public int PublicField;
+
+        public event EventHandler? TestEvent;
+
         public static string? StaticProperty { get; set; }
 
         public string? Property { get; set; }
-
-        public int PublicField;
 
         public TestClass? Nested { get; set; }
 
@@ -440,14 +437,6 @@ public class ReflectionTests
 
         public Dictionary<string, int> Dictionary { get; set; } = new Dictionary<string, int> { { "key", 42 } };
 
-        public event EventHandler? TestEvent;
-
         public void RaiseTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
-#pragma warning restore SA1401 // Fields should be private
-#pragma warning restore SA1201 // Elements should appear in the correct order
-#pragma warning restore CA1812 // Avoid uninstantiated internal classes
-#pragma warning restore CA1051 // Do not declare visible instance fields
-#pragma warning restore CA1822 // Mark members as static
-#pragma warning restore CA1050 // Declare types in namespaces
 }

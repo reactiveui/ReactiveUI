@@ -10,7 +10,7 @@ namespace ReactiveUI.Blazor;
 /// <summary>
 /// Blazor Framework platform registrations.
 /// </summary>
-/// <seealso cref="ReactiveUI.IWantsToRegisterStuff" />
+/// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>

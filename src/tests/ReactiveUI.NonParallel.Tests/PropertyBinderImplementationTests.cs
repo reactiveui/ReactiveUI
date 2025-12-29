@@ -79,7 +79,7 @@ public class PropertyBinderImplementationTests
             Locator.CurrentMutable.UnregisterAll<IPropertyBindingHook>();
             foreach (var previousHook in previousHooks)
             {
-                Locator.CurrentMutable.RegisterConstant<IPropertyBindingHook>(previousHook);
+                Locator.CurrentMutable.RegisterConstant(previousHook);
             }
         }
     }
@@ -112,7 +112,7 @@ public class PropertyBinderImplementationTests
             Locator.CurrentMutable.UnregisterAll<IPropertyBindingHook>();
             foreach (var previousHook in previousHooks)
             {
-                Locator.CurrentMutable.RegisterConstant<IPropertyBindingHook>(previousHook);
+                Locator.CurrentMutable.RegisterConstant(previousHook);
             }
         }
     }
@@ -143,7 +143,7 @@ public class PropertyBinderImplementationTests
             Locator.CurrentMutable.UnregisterAll<IPropertyBindingHook>();
             foreach (var previousHook in previousHooks)
             {
-                Locator.CurrentMutable.RegisterConstant<IPropertyBindingHook>(previousHook);
+                Locator.CurrentMutable.RegisterConstant(previousHook);
             }
         }
 
@@ -178,7 +178,7 @@ public class PropertyBinderImplementationTests
             Locator.CurrentMutable.UnregisterAll<IPropertyBindingHook>();
             foreach (var previousHook in previousHooks)
             {
-                Locator.CurrentMutable.RegisterConstant<IPropertyBindingHook>(previousHook);
+                Locator.CurrentMutable.RegisterConstant(previousHook);
             }
         }
     }
@@ -227,7 +227,7 @@ public class PropertyBinderImplementationTests
             Locator.CurrentMutable.UnregisterAll<IBindingTypeConverter>();
             foreach (var previousConverter in previousConverters)
             {
-                Locator.CurrentMutable.RegisterConstant<IBindingTypeConverter>(previousConverter);
+                Locator.CurrentMutable.RegisterConstant(previousConverter);
             }
         }
     }

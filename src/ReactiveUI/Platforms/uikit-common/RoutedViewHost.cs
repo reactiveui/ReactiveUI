@@ -185,7 +185,7 @@ public class RoutedViewHost : ReactiveNavigationController
 
     /// <summary>
     /// Gets or sets the <see cref="IViewLocator"/> used to translate <see cref="IRoutableViewModel"/> instances into
-    /// UIKit view controllers. Defaults to <see cref="ReactiveUI.ViewLocator.Current"/>.
+    /// UIKit view controllers. Defaults to <see cref="ViewLocator.Current"/>.
     /// </summary>
     public IViewLocator? ViewLocator { get; set; }
 

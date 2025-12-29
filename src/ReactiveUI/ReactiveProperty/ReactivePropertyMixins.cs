@@ -4,6 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+#if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
+using System.ComponentModel.DataAnnotations;
+#endif
 
 namespace ReactiveUI;
 
@@ -22,14 +25,14 @@ public static class ReactivePropertyMixins
     /// <returns>
     /// Self.
     /// </returns>
-    /// <exception cref="System.ArgumentNullException">
+    /// <exception cref="ArgumentNullException">
     /// selfSelector
     /// or
     /// self.
     /// </exception>
 #if NET6_0_OR_GREATER
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("The method uses DataAnnotations validation which requires dynamic code generation.")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("The method uses DataAnnotations validation which may require unreferenced code.")]
+    [RequiresDynamicCode("The method uses DataAnnotations validation which requires dynamic code generation.")]
+    [RequiresUnreferencedCode("The method uses DataAnnotations validation which may require unreferenced code.")]
 #endif
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
@@ -38,9 +41,9 @@ public static class ReactivePropertyMixins
 
         var memberExpression = (MemberExpression)selfSelector.Body;
         var propertyInfo = (PropertyInfo)memberExpression.Member;
-        var display = propertyInfo.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>();
-        var attrs = propertyInfo.GetCustomAttributes<System.ComponentModel.DataAnnotations.ValidationAttribute>().ToArray();
-        var context = new System.ComponentModel.DataAnnotations.ValidationContext(self)
+        var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+        var attrs = propertyInfo.GetCustomAttributes<ValidationAttribute>().ToArray();
+        var context = new ValidationContext(self)
         {
             DisplayName = display?.GetName() ?? propertyInfo.Name,
             MemberName = nameof(ReactiveProperty<T>.Value),
@@ -50,7 +53,7 @@ public static class ReactivePropertyMixins
         {
             self.AddValidationError(x =>
             {
-                var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+                var validationResults = new List<ValidationResult>();
                 if (System.ComponentModel.DataAnnotations.Validator.TryValidateValue(x!, context, validationResults, attrs))
                 {
                     return null;

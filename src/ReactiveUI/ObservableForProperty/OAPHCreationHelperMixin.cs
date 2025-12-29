@@ -595,7 +595,7 @@ public static class OAPHCreationHelperMixin
     [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
     [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
 #endif
-    private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+    internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
         Expression<Func<TObj, TRet>> property,
@@ -636,7 +636,7 @@ public static class OAPHCreationHelperMixin
     [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
     [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
 #endif
-    private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+    internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
         Expression<Func<TObj, TRet>> property,
@@ -676,7 +676,7 @@ public static class OAPHCreationHelperMixin
     [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
     [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
 #endif
-    private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+    internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
         string property,
@@ -702,7 +702,7 @@ public static class OAPHCreationHelperMixin
     [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
     [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
 #endif
-    private static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
+    internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
         string property,

@@ -3,14 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-global using global::System;
-global using global::System.Collections.Generic;
-global using global::System.ComponentModel;
-global using global::System.Diagnostics.CodeAnalysis;
-global using global::System.Linq;
-global using global::System.Reactive;
-global using global::System.Reactive.Concurrency;
-global using global::System.Reactive.Disposables;
-global using global::System.Reactive.Disposables.Fluent;
-global using global::System.Reactive.Linq;
-global using global::System.Reactive.Subjects;
+global using System;
+global using System.Collections.Generic;
+global using System.ComponentModel;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Linq;
+global using System.Reactive;
+global using System.Reactive.Concurrency;
+global using System.Reactive.Disposables;
+global using System.Reactive.Disposables.Fluent;
+global using System.Reactive.Linq;
+global using System.Reactive.Subjects;

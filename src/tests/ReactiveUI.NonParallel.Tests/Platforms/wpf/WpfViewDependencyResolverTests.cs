@@ -10,7 +10,7 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Tests for the WPF View Resolver.
 /// </summary>
-/// <seealso cref="System.IDisposable" />
+/// <seealso cref="IDisposable" />
 public sealed class WpfViewDependencyResolverTests : IDisposable
 {
     private readonly IDependencyResolver _resolver;

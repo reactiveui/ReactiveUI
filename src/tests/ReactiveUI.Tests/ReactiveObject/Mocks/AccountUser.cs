@@ -11,7 +11,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Account User.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 [DataContract]
 public class AccountUser : ReactiveObject
 {

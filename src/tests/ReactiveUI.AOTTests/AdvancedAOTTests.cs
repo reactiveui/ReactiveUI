@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
@@ -43,15 +44,13 @@ public class AdvancedAOTTests
     [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Testing ReactiveProperty constructor that uses RxApp")]
     public async Task PropertyValidation_WorksInAOT()
     {
-        var property = new ReactiveProperty<string>(string.Empty);
+        var property = new ReactiveProperty<string>(string.Empty, ImmediateScheduler.Instance, false, false);
         var hasErrors = false;
 
         property.ObserveValidationErrors()
             .Subscribe(error => hasErrors = !string.IsNullOrEmpty(error));
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
         await Assert.That(hasErrors).IsTrue();
@@ -116,7 +115,7 @@ public class AdvancedAOTTests
         var resolver = Locator.CurrentMutable;
 
         // Test basic registration and resolution
-        resolver.RegisterConstant<string>("test value");
+        resolver.RegisterConstant("test value");
         var resolved = Locator.Current.GetService<string>();
 
         await Assert.That(resolved).IsEqualTo("test value");

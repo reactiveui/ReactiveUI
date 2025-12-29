@@ -8,7 +8,7 @@ namespace ReactiveUI;
 /// <summary>
 /// Integer To String Type Converter.
 /// </summary>
-/// <seealso cref="ReactiveUI.IBindingTypeConverter" />
+/// <seealso cref="IBindingTypeConverter" />
 public class IntegerToStringTypeConverter : IBindingTypeConverter
 {
     /// <inheritdoc/>

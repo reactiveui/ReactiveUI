@@ -12,7 +12,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// A sample view model that implements a game.
 /// </summary>
-/// <seealso cref="ReactiveUI.ReactiveObject" />
+/// <seealso cref="ReactiveObject" />
 public class NewGameViewModel : ReactiveObject
 {
     private string? _newPlayerName;
