@@ -48,7 +48,11 @@ Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-ins
 
 ## 🛠️ Build & Test Commands
 
-**Critical**: `dotnet workload restore` is required to compile. Do this before any `dotnet build` commands. 
+This project uses **Microsoft Testing Platform (MTP)** with the **TUnit** testing framework. Test commands differ significantly from traditional VSTest.
+
+See: https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test?tabs=dotnet-test-with-mtp
+
+**CRITICAL:** `dotnet workload restore` is required to compile. Do this before any `dotnet build` commands.
 
 **Run these commands in Windows PowerShell or CMD from the repository root:**
 
@@ -67,10 +71,65 @@ dotnet restore src/ReactiveUI.sln
 
 # Build the solution (requires Windows for platform-specific targets)
 dotnet build src/ReactiveUI.sln -c Release -warnaserror
-
-# Run tests (includes AOT tests that require .NET 9.0)
-dotnet test src/ReactiveUI.sln -c Release --no-build
 ```
+
+### Test Commands (Microsoft Testing Platform)
+
+**CRITICAL:** This repository uses MTP configured in `src/global.json`. All TUnit-specific arguments must be passed after `--`.
+
+**Note:** Commands below assume repository root as working directory. Use `src/` prefix for paths.
+
+```powershell
+# Run all tests
+dotnet test src/ReactiveUI.sln -c Release --no-build
+
+# Run tests with code coverage (Microsoft Code Coverage)
+dotnet test src/ReactiveUI.sln -- --coverage --coverage-output-format cobertura
+
+# Run specific test project
+dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj
+
+# Run single test using treenode-filter (syntax: /{Assembly}/{Namespace}/{Class}/{Method})
+dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --treenode-filter "/*/*/*/MyTestMethod"
+
+# Run tests in a specific class
+dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --treenode-filter "/*/*/MyClassName/*"
+
+# Filter by test property (e.g., Category)
+dotnet test src/ReactiveUI.sln -- --treenode-filter "/*/*/*/*[Category=Integration]"
+
+# List all available tests
+dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --list-tests
+
+# Fail fast (stop on first failure)
+dotnet test src/ReactiveUI.sln -- --fail-fast
+
+# Generate TRX report with coverage
+dotnet test src/ReactiveUI.sln -- --coverage --coverage-output-format cobertura --report-trx --output Detailed
+```
+
+**TUnit Treenode-Filter Syntax:**
+
+Pattern: `/{AssemblyName}/{Namespace}/{ClassName}/{TestMethodName}`
+
+Examples:
+- Single test: `--treenode-filter "/*/*/*/MyTestMethod"`
+- All tests in class: `--treenode-filter "/*/*/MyClassName/*"`
+- All tests in namespace: `--treenode-filter "/*/MyNamespace/*/*"`
+- Filter by property: `--treenode-filter "/*/*/*/*[Category=Integration]"`
+
+**Key TUnit Command-Line Flags:**
+- `--treenode-filter` - Filter tests by path or properties
+- `--coverage` - Enable Microsoft Code Coverage
+- `--coverage-output-format` - Set format (cobertura, xml, coverage)
+- `--report-trx` - Generate TRX reports
+- `--output` - Verbosity (Normal or Detailed)
+- `--list-tests` - Display tests without running
+- `--fail-fast` - Stop after first failure
+- `--maximum-parallel-tests` - Limit concurrent execution
+- `--disable-logo` - Remove TUnit logo
+
+See https://tunit.dev/docs/reference/command-line-flags for complete reference.
 
 > **Note:** The repository contains Windows-specific target frameworks (`net8.0-windows`, `net9.0-windows`) and AOT tests that require .NET 9.0. Building on Linux/macOS will fail due to these platform dependencies.
 
