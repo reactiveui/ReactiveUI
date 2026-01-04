@@ -14,39 +14,33 @@ namespace ReactiveUI.Blazor;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
 #if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(registerFunction);
+        ArgumentNullException.ThrowIfNull(registrar);
 #else
-        if (registerFunction is null)
+        if (registrar is null)
         {
-            throw new ArgumentNullException(nameof(registerFunction));
+            throw new ArgumentNullException(nameof(registrar));
         }
 #endif
 
-        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new IntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableIntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new LongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableLongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableSingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDecimalToStringTypeConverter());
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
 
         if (Type.GetType("Mono.Runtime") is not null)
         {

@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using ReactiveUI.Builder;
+using Splat;
 using TUnit.Core;
 
 namespace ReactiveUI.AOTTests;
@@ -21,6 +23,10 @@ public static class AssemblyHooks
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
+
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .BuildApp();
     }
 
     /// <summary>

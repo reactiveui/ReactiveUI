@@ -12,28 +12,21 @@ namespace ReactiveUI.Winforms;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
-
-        registerFunction(static () => new CreatesWinformsCommandBinding(), typeof(ICreatesCommandBinding));
-        registerFunction(static () => new WinformsCreatesObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(static () => new PanelSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
-        registerFunction(static () => new TableContentSetMethodBindingConverter(), typeof(ISetMethodBindingConverter));
-        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new CreatesWinformsCommandBinding());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new WinformsCreatesObservableForProperty());
+        registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
+        registrar.RegisterConstant<ISetMethodBindingConverter>(static () => new PanelSetMethodBindingConverter());
+        registrar.RegisterConstant<ISetMethodBindingConverter>(static () => new TableContentSetMethodBindingConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
         if (!ModeDetector.InUnitTestRunner())
         {

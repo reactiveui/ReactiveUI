@@ -5,6 +5,7 @@
 
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Text.Json.Serialization.Metadata;
 
 using Splat.Builder;
 
@@ -36,8 +37,7 @@ public class BuilderMixinsTests
             () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
             () => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!),
             () => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
-            () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
-        ];
+            () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)];
     }
 
     [Before(HookType.Test)]
@@ -371,9 +371,9 @@ public class BuilderMixinsTests
 
     private sealed class TestRegistrationModule : IWantsToRegisterStuff
     {
-        public void Register(Action<Func<object>, Type> registerFunction)
+        public void Register(IRegistrar registrar)
         {
-            registerFunction(() => new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker));
+            registrar.RegisterConstant<PlatformRegistrationMarker>(() => new PlatformRegistrationMarker());
         }
     }
 
@@ -395,7 +395,11 @@ public class BuilderMixinsTests
     {
         public IObservable<object?> LoadState() => Observable.Return<object?>(null);
 
-        public IObservable<Unit> SaveState(object state) => Observable.Return(Unit.Default);
+        public IObservable<Unit> SaveState<T>(T state) => Observable.Return(Unit.Default);
+
+        public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => Observable.Return<T?>(default);
+
+        public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => Observable.Return(Unit.Default);
 
         public IObservable<Unit> InvalidateState() => Observable.Return(Unit.Default);
     }

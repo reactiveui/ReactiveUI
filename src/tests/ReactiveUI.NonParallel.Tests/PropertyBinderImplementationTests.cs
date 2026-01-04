@@ -333,9 +333,13 @@ public class PropertyBinderImplementationTests
 
     private class NullReturningConverter : IBindingTypeConverter
     {
-        public int GetAffinityForObjects(Type fromType, Type toType) => 100;
+        public Type FromType => typeof(object);
 
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+        public Type ToType => typeof(object);
+
+        public int GetAffinityForObjects() => 100;
+
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = null;
             return true; // Returns true but sets result to null
@@ -344,9 +348,13 @@ public class PropertyBinderImplementationTests
 
     private class FailingConverter : IBindingTypeConverter
     {
-        public int GetAffinityForObjects(Type fromType, Type toType) => 100;
+        public Type FromType => typeof(object);
 
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+        public Type ToType => typeof(object);
+
+        public int GetAffinityForObjects() => 100;
+
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = null;
             return false; // Always fails conversion

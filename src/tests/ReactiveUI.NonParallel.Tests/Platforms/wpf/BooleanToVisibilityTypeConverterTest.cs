@@ -13,45 +13,30 @@ namespace ReactiveUI.Tests.Wpf;
 public class BooleanToVisibilityTypeConverterTest
 {
     /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity for bool to Visibility.
+    /// Tests that FromType and ToType properties are correctly set.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task GetAffinityForObjects_ReturnsCorrectAffinityForBoolToVisibility()
+    public async Task TypeProperties_AreCorrectlySet()
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var affinity = converter.GetAffinityForObjects(typeof(bool), typeof(Visibility));
-
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(converter.FromType).IsEqualTo(typeof(object));
+        await Assert.That(converter.ToType).IsEqualTo(typeof(object));
     }
 
     /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity for Visibility to bool.
+    /// Tests that GetAffinityForObjects returns correct affinity.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task GetAffinityForObjects_ReturnsCorrectAffinityForVisibilityToBool()
+    public async Task GetAffinityForObjects_ReturnsCorrectAffinity()
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var affinity = converter.GetAffinityForObjects(typeof(Visibility), typeof(bool));
+        var affinity = converter.GetAffinityForObjects();
 
         await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    /// <summary>
-    /// Tests that GetAffinityForObjects returns zero for unsupported types.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task GetAffinityForObjects_ReturnsZeroForUnsupportedTypes()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var affinity = converter.GetAffinityForObjects(typeof(int), typeof(string));
-
-        await Assert.That(affinity).IsEqualTo(0);
     }
 
     /// <summary>
@@ -63,7 +48,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(true, typeof(Visibility), null, out var result);
+        var success = converter.TryConvertTyped(true, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Visible);
@@ -78,7 +63,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(false, typeof(Visibility), null, out var result);
+        var success = converter.TryConvertTyped(false, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
@@ -93,7 +78,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(true, typeof(Visibility), BooleanToVisibilityHint.Inverse, out var result);
+        var success = converter.TryConvertTyped(true, BooleanToVisibilityHint.Inverse, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
@@ -108,7 +93,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(false, typeof(Visibility), BooleanToVisibilityHint.UseHidden, out var result);
+        var success = converter.TryConvertTyped(false, BooleanToVisibilityHint.UseHidden, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Hidden);
@@ -123,9 +108,8 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(
+        var success = converter.TryConvertTyped(
             true,
-            typeof(Visibility),
             BooleanToVisibilityHint.Inverse | BooleanToVisibilityHint.UseHidden,
             out var result);
 
@@ -142,7 +126,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(Visibility.Visible, typeof(bool), null, out var result);
+        var success = converter.TryConvertTyped(Visibility.Visible, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(false);
@@ -157,7 +141,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(Visibility.Collapsed, typeof(bool), null, out var result);
+        var success = converter.TryConvertTyped(Visibility.Collapsed, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(true);
@@ -172,7 +156,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(Visibility.Hidden, typeof(bool), null, out var result);
+        var success = converter.TryConvertTyped(Visibility.Hidden, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(true);
@@ -187,8 +171,8 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var successVisible = converter.TryConvert(Visibility.Visible, typeof(bool), BooleanToVisibilityHint.Inverse, out var resultVisible);
-        var successCollapsed = converter.TryConvert(Visibility.Collapsed, typeof(bool), BooleanToVisibilityHint.Inverse, out var resultCollapsed);
+        var successVisible = converter.TryConvertTyped(Visibility.Visible, BooleanToVisibilityHint.Inverse, out var resultVisible);
+        var successCollapsed = converter.TryConvertTyped(Visibility.Collapsed, BooleanToVisibilityHint.Inverse, out var resultCollapsed);
 
         await Assert.That(successVisible).IsTrue();
         await Assert.That(successCollapsed).IsTrue();
@@ -205,7 +189,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert("some string", typeof(bool), null, out var result);
+        var success = converter.TryConvertTyped("some string", null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Visible);
@@ -220,7 +204,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(null, typeof(bool), null, out var result);
+        var success = converter.TryConvertTyped(null, null, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Visible);
@@ -235,7 +219,7 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        var success = converter.TryConvert(true, typeof(Visibility), BooleanToVisibilityHint.UseHidden, out var result);
+        var success = converter.TryConvertTyped(true, BooleanToVisibilityHint.UseHidden, out var result);
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Visible);

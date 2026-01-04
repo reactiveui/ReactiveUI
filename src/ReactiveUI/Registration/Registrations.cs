@@ -16,34 +16,132 @@ namespace ReactiveUI;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Does not use reflection")]
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new INPCObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new IROObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new POCOObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new EqualityTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new ByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableByteToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new ShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableShortToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new IntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableIntegerToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new LongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableLongToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableSingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableDoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new NullableDecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DefaultViewLocator(), typeof(IViewLocator));
-        registerFunction(static () => new CanActivateViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(static () => new CreatesCommandBindingViaEvent(), typeof(ICreatesCommandBinding));
-        registerFunction(static () => new CreatesCommandBindingViaCommandParameter(), typeof(ICreatesCommandBinding));
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new INPCObservableForProperty());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new IROObservableForProperty());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new POCOObservableForProperty());
+
+        // General converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new EqualityTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
+
+        // Numeric → String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableByteToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new ShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableShortToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new IntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableIntegerToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new LongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableLongToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableSingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDecimalToStringTypeConverter());
+
+        // String → Numeric converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToByteTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableByteTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToShortTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableShortTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToIntegerTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableIntegerTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToLongTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableLongTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToSingleTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableSingleTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToDoubleTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableDoubleTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToDecimalTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableDecimalTypeConverter());
+
+        // Boolean ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableBooleanToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToBooleanTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableBooleanTypeConverter());
+
+        // Guid ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new GuidToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableGuidToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToGuidTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableGuidTypeConverter());
+
+        // DateTime ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToDateTimeTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableDateTimeTypeConverter());
+
+        // DateTimeOffset ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeOffsetToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeOffsetToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToDateTimeOffsetTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableDateTimeOffsetTypeConverter());
+
+        // TimeSpan ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new TimeSpanToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableTimeSpanToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToTimeSpanTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableTimeSpanTypeConverter());
+
+#if NET6_0_OR_GREATER
+        // DateOnly ↔ String converters (.NET 6+)
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateOnlyToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateOnlyToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToDateOnlyTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableDateOnlyTypeConverter());
+
+        // TimeOnly ↔ String converters (.NET 6+)
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new TimeOnlyToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableTimeOnlyToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToTimeOnlyTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToNullableTimeOnlyTypeConverter());
+#endif
+
+        // Uri ↔ String converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new UriToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringToUriTypeConverter());
+
+        registrar.RegisterConstant<IViewLocator>(static () => new DefaultViewLocator());
+        registrar.RegisterConstant<IActivationForViewFetcher>(static () => new CanActivateViewFetcher());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new CreatesCommandBindingViaEvent());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new CreatesCommandBindingViaCommandParameter());
+    }
+
+    /// <summary>
+    /// Helper method to register a bidirectional type converter with explicit generic instantiations.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
+    /// <typeparam name="TConverter">The converter type that handles both TFrom→TTo and TTo→TFrom conversions.</typeparam>
+    /// <param name="registrar">The dependency resolver to register with.</param>
+    /// <remarks>
+    /// This method registers the converter three times:
+    /// <list type="bullet">
+    /// <item><description>As <see cref="IBindingTypeConverter{TFrom, TTo}"/> for TFrom→TTo conversion</description></item>
+    /// <item><description>As <see cref="IBindingTypeConverter{TTo, TFrom}"/> for TTo→TFrom conversion</description></item>
+    /// <item><description>As <see cref="IBindingTypeConverter"/> for affinity-based discovery</description></item>
+    /// </list>
+    /// </remarks>
+    private static void RegisterBidirectionalConverter<TFrom, TTo, TConverter>(
+        IRegistrar registrar)
+        where TConverter : IBindingTypeConverter<TFrom, TTo>, IBindingTypeConverter<TTo, TFrom>, new()
+    {
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
+
+        var instance = new TConverter();
+
+        // Register both generic directions
+        registrar.Register<IBindingTypeConverter<TFrom, TTo>>(() => instance);
+        registrar.Register<IBindingTypeConverter<TTo, TFrom>>(() => instance);
+
+        // Register base interface for affinity-based discovery
+        registrar.RegisterConstant<IBindingTypeConverter>(() => instance);
     }
 }

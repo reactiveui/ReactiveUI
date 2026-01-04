@@ -8,29 +8,11 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class NullableSingleToStringTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_SingleNullableToString_Returns10()
+    public async Task GetAffinityForObjects_Returns10()
     {
         var converter = new NullableSingleToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(float?), typeof(string));
+        var affinity = converter.GetAffinityForObjects();
         await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_StringToSingleNullable_Returns10()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(string), typeof(float?));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_WrongTypes_Returns0()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-
-        await Assert.That(converter.GetAffinityForObjects(typeof(int), typeof(string))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(string), typeof(int))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(float), typeof(string))).IsEqualTo(0);
     }
 
     [Test]
@@ -39,21 +21,10 @@ public class NullableSingleToStringTypeConverterTests
         var converter = new NullableSingleToStringTypeConverter();
         float? value = 123.456f;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_StringToSingleNullable_Succeeds()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-
-        var result = converter.TryConvert("123.456", typeof(float?), null, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That((float)output!).IsEqualTo(123.456f).Within(0.001f);
     }
 
     [Test]
@@ -61,29 +32,9 @@ public class NullableSingleToStringTypeConverterTests
     {
         var converter = new NullableSingleToStringTypeConverter();
 
-        var result = converter.TryConvert(null, typeof(string), null, out var output);
+        var result = converter.TryConvert(null, null, out string? output);
 
         await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task TryConvert_EmptyString_ReturnsTrue()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-
-        var result = converter.TryConvert(string.Empty, typeof(float?), null, out var output);
-
-        await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task TryConvert_InvalidString_ReturnsFalse()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-
-        var result = converter.TryConvert("invalid", typeof(float?), null, out var output);
-
-        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -92,7 +43,7 @@ public class NullableSingleToStringTypeConverterTests
         var converter = new NullableSingleToStringTypeConverter();
         float? value = 42.5f;
 
-        var result = converter.TryConvert(value, typeof(string), 2, out var output);
+        var result = converter.TryConvert(value, 2, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("42.50");
@@ -104,7 +55,7 @@ public class NullableSingleToStringTypeConverterTests
         var converter = new NullableSingleToStringTypeConverter();
         float? value = float.MinValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(float.MinValue.ToString());
@@ -116,7 +67,7 @@ public class NullableSingleToStringTypeConverterTests
         var converter = new NullableSingleToStringTypeConverter();
         float? value = float.MaxValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(float.MaxValue.ToString());
@@ -128,20 +79,9 @@ public class NullableSingleToStringTypeConverterTests
         var converter = new NullableSingleToStringTypeConverter();
         float? value = -123.456f;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_StringToSingleWithRounding_RoundsCorrectly()
-    {
-        var converter = new NullableSingleToStringTypeConverter();
-
-        var result = converter.TryConvert("123.456789", typeof(float?), 2, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That((float)output!).IsEqualTo(123.46f).Within(0.01f);
     }
 }

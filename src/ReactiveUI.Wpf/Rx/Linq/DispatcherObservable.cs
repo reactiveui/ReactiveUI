@@ -67,7 +67,6 @@ public static class DispatcherObservable
         return ObserveOn_(source, scheduler.Dispatcher, scheduler.Priority);
     }
 
-
     /// <summary>
     /// Wraps the source sequence in order to run its observer callbacks on the dispatcher associated with the specified object.
     /// </summary>
@@ -107,7 +106,6 @@ public static class DispatcherObservable
     {
         return Synchronization.ObserveOn(source, new DispatcherSynchronizationContext(dispatcher, priority));
     }
-
 
     private static IObservable<TSource> ObserveOn_<TSource>(IObservable<TSource> source, Dispatcher dispatcher)
     {
@@ -160,7 +158,6 @@ public static class DispatcherObservable
 
         return SubscribeOn_(source, dispatcher, priority);
     }
-
 
     /// <summary>
     /// Wraps the source sequence in order to run its subscription and unsubscription logic on the specified dispatcher scheduler.
@@ -230,7 +227,6 @@ public static class DispatcherObservable
     {
         return Synchronization.SubscribeOn(source, new DispatcherSynchronizationContext(dispatcher, priority));
     }
-
 
     private static IObservable<TSource> SubscribeOn_<TSource>(IObservable<TSource> source, Dispatcher dispatcher)
     {

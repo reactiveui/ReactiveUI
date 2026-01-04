@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using System.Windows;
 
@@ -14,10 +13,6 @@ namespace ReactiveUI.Blend;
 /// <summary>
 /// A blend based trigger which will be activated when a IObservable triggers.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ObservableTrigger uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ObservableTrigger uses methods that may require unreferenced code")]
-#endif
 public class ObservableTrigger : TriggerBase<FrameworkElement>
 {
     /// <summary>
@@ -53,10 +48,6 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("InternalOnObservableChangedForTesting uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("InternalOnObservableChangedForTesting uses methods that may require unreferenced code")]
-#endif
     internal static void InternalOnObservableChangedForTesting(DependencyObject sender, DependencyPropertyChangedEventArgs e) =>
         OnObservableChanged(sender, e);
 
@@ -65,10 +56,6 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("OnObservableChanged uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("OnObservableChanged uses methods that may require unreferenced code")]
-#endif
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
         ArgumentExceptionHelper.ThrowIfNotOfType<ObservableTrigger>(sender, nameof(sender));

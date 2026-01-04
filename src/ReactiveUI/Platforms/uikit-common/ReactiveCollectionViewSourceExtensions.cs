@@ -31,10 +31,8 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the view source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
         UICollectionView collectionView,
@@ -66,10 +64,8 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
@@ -102,10 +98,8 @@ public static class ReactiveCollectionViewSourceExtensions
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the source.</typeparam>
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindTo uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindTo uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,

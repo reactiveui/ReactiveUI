@@ -8,28 +8,11 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class DecimalToStringTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_DecimalToString_Returns10()
+    public async Task GetAffinityForObjects_Returns10()
     {
         var converter = new DecimalToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(decimal), typeof(string));
+        var affinity = converter.GetAffinityForObjects();
         await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_StringToDecimal_Returns10()
-    {
-        var converter = new DecimalToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(string), typeof(decimal));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_WrongTypes_Returns0()
-    {
-        var converter = new DecimalToStringTypeConverter();
-
-        await Assert.That(converter.GetAffinityForObjects(typeof(int), typeof(string))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(string), typeof(int))).IsEqualTo(0);
     }
 
     [Test]
@@ -38,31 +21,10 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = 123.456m;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123.456");
-    }
-
-    [Test]
-    public async Task TryConvert_StringToDecimal_Succeeds()
-    {
-        var converter = new DecimalToStringTypeConverter();
-
-        var result = converter.TryConvert("123.456", typeof(decimal), null, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456m);
-    }
-
-    [Test]
-    public async Task TryConvert_InvalidString_ReturnsFalse()
-    {
-        var converter = new DecimalToStringTypeConverter();
-
-        var result = converter.TryConvert("invalid", typeof(decimal), null, out var output);
-
-        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -71,7 +33,7 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = 42.5m;
 
-        var result = converter.TryConvert(value, typeof(string), 2, out var output);
+        var result = converter.TryConvert(value, 2, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("42.50");
@@ -83,7 +45,7 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = decimal.MinValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(decimal.MinValue.ToString());
@@ -95,7 +57,7 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = decimal.MaxValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(decimal.MaxValue.ToString());
@@ -107,7 +69,7 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = 0m;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("0");
@@ -119,30 +81,9 @@ public class DecimalToStringTypeConverterTests
         var converter = new DecimalToStringTypeConverter();
         decimal value = -123.456m;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("-123.456");
-    }
-
-    [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
-    {
-        var converter = new DecimalToStringTypeConverter();
-
-        var result = converter.TryConvert(string.Empty, typeof(decimal), null, out var output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_StringToDecimalWithRounding_RoundsCorrectly()
-    {
-        var converter = new DecimalToStringTypeConverter();
-
-        var result = converter.TryConvert("123.456789", typeof(decimal), 2, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.46m);
     }
 }

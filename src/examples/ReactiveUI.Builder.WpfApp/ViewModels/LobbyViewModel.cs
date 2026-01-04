@@ -71,7 +71,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             .Select(_ => Unit.Default);
 
         RoomsChanged = localRoomsChanged.Merge(remoteRoomsChanged)
-            .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler);
+            .Throttle(TimeSpan.FromMilliseconds(50), RxSchedulers.TaskpoolScheduler);
 
         this.WhenAnyObservable(x => x.RoomsChanged)
             .StartWith(Unit.Default)
@@ -138,7 +138,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// </summary>
     public ReactiveCommand<ChatRoom, Unit> JoinRoom { get; }
 
-    private static ChatState GetState() => RxApp.SuspensionHost.GetAppState<ChatState>();
+    private static ChatState GetState() => RxSuspension.SuspensionHost.GetAppState<ChatState>();
 
     private static void ApplyRoomEvent(Services.RoomEventMessage evt)
     {

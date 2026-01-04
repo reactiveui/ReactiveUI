@@ -3,19 +3,35 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace ReactiveUI.Tests.Winforms;
 
 internal class FakeViewLocator : IViewLocator
 {
     public Func<Type, IViewFor>? LocatorFunc { get; set; }
 
-    public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
+    public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+        where TViewModel : class
     {
-        if (viewModel is null)
+        return LocatorFunc?.Invoke(typeof(TViewModel)) as IViewFor<TViewModel>;
+    }
+
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    public IViewFor<object>? ResolveView(object? instance, string? contract = null)
+    {
+        if (instance is null)
         {
-            throw new ArgumentNullException(nameof(viewModel));
+            return null;
         }
 
-        return LocatorFunc?.Invoke(viewModel.GetType());
+        var view = LocatorFunc?.Invoke(instance.GetType());
+        if (view is IViewFor viewFor)
+        {
+            viewFor.ViewModel = instance;
+        }
+
+        return view as IViewFor<object>;
     }
 }

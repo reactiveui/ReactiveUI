@@ -73,7 +73,9 @@ public class MessageBusTest : IDisposable
     public async Task ExplicitSendMessageShouldWorkEvenAfterRegisteringSource()
     {
         Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
+            .WithCoreServices()
+            .BuildApp();
         var fixture = new MessageBus();
         fixture.RegisterMessageSource(Observable<int>.Never);
 
@@ -170,7 +172,9 @@ public class MessageBusTest : IDisposable
     public async Task MessageBusThreadingTest()
     {
         Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
+            .WithCoreServices()
+            .BuildApp();
         var messageBus = new MessageBus();
         messageBus.RegisterScheduler<int>(ImmediateScheduler.Instance);
         int? listenedThreadId = null;

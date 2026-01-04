@@ -83,7 +83,9 @@ public class WpfActiveContentTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {

@@ -13,12 +13,12 @@ namespace ReactiveUI.Tests.Mixins;
 [NotInParallel]
 public class MutableDependencyResolverExtensionsTests : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]

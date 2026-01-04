@@ -13,18 +13,28 @@ namespace ReactiveUI;
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
-    [RequiresDynamicCode("Uses reflection to create instances of types.")]
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new UIKitObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new UIKitCommandBinders(), typeof(ICreatesCommandBinding));
-        registerFunction(static () => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new UIKitObservableForProperty());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new UIKitCommandBinders());
+
+        // DateTime ↔ NSDate converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeConverter());
+
+        // DateTimeOffset ↔ NSDate converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeOffsetToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeOffsetToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeOffsetConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeOffsetConverter());
+
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new KVOObservableForProperty());
 
         if (!ModeDetector.InUnitTestRunner())
         {
@@ -32,6 +42,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
             RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
         }
 
-        registerFunction(static () => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+        registrar.RegisterConstant<ISuspensionDriver>(static () => new AppSupportJsonSuspensionDriver());
     }
 }

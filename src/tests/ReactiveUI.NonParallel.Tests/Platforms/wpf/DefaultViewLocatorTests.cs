@@ -23,7 +23,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         // Register for both the interface and the concrete type
         resolver.Register(static () => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
@@ -34,35 +36,36 @@ public partial class DefaultViewLocatorTests
             var fixture = new DefaultViewLocator();
             var vm = new RoutableFooViewModel();
 
-            var result = fixture.ResolveView<IRoutableViewModel>(vm);
+            var result = fixture.ResolveView(vm);
 
             await Assert.That(result).IsTypeOf<RoutableFooView>();
         }
     }
 
     /// <summary>
-    /// Tests that make sure this instance [can override name resolution function].
+    /// Tests that make sure this instance [can resolve custom view with Map].
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task CanOverrideNameResolutionFunc()
+    public async Task CanResolveCustomViewWithMap()
     {
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
-        resolver.Register(static () => new RoutableFooCustomView(), typeof(IViewFor<IRoutableFooViewModel>));
-        resolver.Register(static () => new RoutableFooCustomView(), typeof(IViewFor<RoutableFooViewModel>));
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
-            var fixture = new DefaultViewLocator
-            {
-                ViewModelToViewFunc = static x => x.Replace("ViewModel", "CustomView")
-            };
+            var fixture = new DefaultViewLocator();
+
+            // Use Map to register custom view
+            fixture.Map<RoutableFooViewModel, RoutableFooCustomView>(static () => new RoutableFooCustomView());
+
             var vm = new RoutableFooViewModel();
 
-            var result = fixture.ResolveView<IRoutableViewModel>(vm);
+            var result = fixture.ResolveView(vm);
             await Assert.That(result).IsTypeOf<RoutableFooCustomView>();
         }
     }

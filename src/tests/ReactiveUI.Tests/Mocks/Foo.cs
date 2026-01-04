@@ -13,7 +13,7 @@ public class Foo
 
     public async Task<Unit> SetValueAsync(int value)
     {
-        await RxApp.TaskpoolScheduler.Sleep(TimeSpan.FromMilliseconds(10));
+        await RxSchedulers.TaskpoolScheduler.Sleep(TimeSpan.FromMilliseconds(10));
         Value = value;
         return Unit.Default;
     }

@@ -38,10 +38,6 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
 
     public UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReloadData uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ReloadData uses methods that may require unreferenced code")]
-#endif
     public void ReloadData()
     {
         ++_inFlightReloads;

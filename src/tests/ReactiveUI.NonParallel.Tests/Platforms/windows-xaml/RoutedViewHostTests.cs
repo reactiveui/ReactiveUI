@@ -17,7 +17,7 @@ namespace ReactiveUI.Tests;
 /// </summary>
 /// <remarks>
 /// This test fixture is marked as NonParallelizable because tests call
-/// Locator.CurrentMutable.InitializeSplat() and Locator.CurrentMutable.InitializeReactiveUI(),
+/// Locator.CurrentMutable.InitializeSplat() and RxAppBuilder.CreateReactiveUIBuilder(),
 /// which mutate global service locator state. This state must not be mutated concurrently
 /// by parallel tests.
 /// </remarks>
@@ -43,7 +43,9 @@ public class RoutedViewHostTests
     public async Task RoutedViewHostDefaultContentNotNull()
     {
         Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
+            .WithCoreServices()
+            .BuildApp();
 
         var uc = new RoutedViewHost
         {
@@ -70,7 +72,9 @@ public class RoutedViewHostTests
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
         Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
+            .WithCoreServices()
+            .BuildApp();
         Locator.CurrentMutable.Register<RoutingState>(static () => new());
         Locator.CurrentMutable.Register<TestViewModel>(static () => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
@@ -106,7 +110,9 @@ public class RoutedViewHostTests
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
         Locator.CurrentMutable.InitializeSplat();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
+            .WithCoreServices()
+            .BuildApp();
         Locator.CurrentMutable.Register<RoutingState>(static () => new());
         Locator.CurrentMutable.Register<TestViewModel>(static () => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());

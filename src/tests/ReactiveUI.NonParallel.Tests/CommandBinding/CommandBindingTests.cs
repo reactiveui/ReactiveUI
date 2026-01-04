@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -139,16 +140,6 @@ namespace ReactiveUI.NonParallel.Tests
 
             public static bool BindCalled { get; set; }
 
-            public int GetAffinityForObject(Type type, bool hasEventTarget)
-            {
-                if (type == typeof(FakeCustomControl))
-                {
-                    return 100; // High affinity
-                }
-
-                return 0;
-            }
-
             public int GetAffinityForObject<T>(bool hasEventTarget)
             {
                 if (typeof(T) == typeof(FakeCustomControl))
@@ -159,13 +150,25 @@ namespace ReactiveUI.NonParallel.Tests
                 return 0;
             }
 
-            public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+            [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+            public IDisposable? BindCommandToObject<T>(ICommand? command, T? target, IObservable<object?> commandParameter)
+                where T : class
             {
                 BindCalled = true;
                 return Disposable.Empty;
             }
 
-            public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+            [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+            public IDisposable? BindCommandToObject<T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, string eventName)
+                where T : class
+            {
+                BindCalled = true;
+                return Disposable.Empty;
+            }
+
+            public IDisposable? BindCommandToObject<T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, Action<EventHandler<TEventArgs>> addHandler, Action<EventHandler<TEventArgs>> removeHandler)
+                where T : class
+                where TEventArgs : EventArgs
             {
                 BindCalled = true;
                 return Disposable.Empty;

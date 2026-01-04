@@ -6,19 +6,42 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Used by ReactiveUI when first starting up, it will seek out classes
-/// inside our own ReactiveUI projects. The implemented methods will
-/// register with Splat their dependencies.
+/// Represents a class that can register services with ReactiveUI's dependency resolver.
 /// </summary>
+/// <remarks>
+/// <para>
+/// This interface is used with the ReactiveUI builder pattern to provide custom registrations.
+/// The registration methods use generic types to avoid runtime reflection, making them compatible
+/// with AOT compilation and trimming.
+/// </para>
+/// <para>
+/// Usage with builder:
+/// <code>
+/// public class MyCustomRegistrations : IWantsToRegisterStuff
+/// {
+///     public void Register(IRegistrar registrar)
+///     {
+///         registrar.RegisterConstant&lt;IMyService&gt;(() => new MyService());
+///         registrar.RegisterLazySingleton&lt;IMyViewModel&gt;(() => new MyViewModel());
+///     }
+/// }
+///
+/// // In your app initialization:
+/// RxAppBuilder.CreateReactiveUIBuilder()
+///     .WithCoreServices()
+///     .WithPlatformServices()
+///     .WithRegistration(new MyCustomRegistrations())
+///     .BuildApp();
+/// </code>
+/// </para>
+/// </remarks>
 public interface IWantsToRegisterStuff
 {
     /// <summary>
-    /// Register platform dependencies inside Splat.
+    /// Register platform dependencies using the provided registrar.
+    /// This method uses generic registration to avoid runtime Type reflection,
+    /// making it compatible with AOT compilation and trimming.
     /// </summary>
-    /// <param name="registerFunction">A method the deriving class will class to register the type.</param>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
-    [RequiresDynamicCode("Uses reflection to create instances of types.")]
-#endif
-    void Register(Action<Func<object>, Type> registerFunction);
+    /// <param name="registrar">The AOT-friendly registrar to use for registering services.</param>
+    void Register(IRegistrar registrar);
 }

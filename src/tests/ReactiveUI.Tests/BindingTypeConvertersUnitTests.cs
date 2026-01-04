@@ -15,18 +15,11 @@ namespace ReactiveUI.Tests
         {
             var converter = new ByteToStringTypeConverter();
             byte val = 123;
-            object result;
 
             // Byte to String
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("123");
-
-            // String to Byte
-            await Assert.That(converter.TryConvert("123", typeof(byte), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((byte)123);
-
-            // Invalid String
-            await Assert.That(converter.TryConvert("invalid", typeof(byte), null, out result)).IsFalse();
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("123");
         }
 
         [Test]
@@ -34,15 +27,11 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableByteToStringTypeConverter();
             byte? val = 123;
-            object result;
 
             // Byte? to String
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("123");
-
-            // String to Byte?
-            await Assert.That(converter.TryConvert("123", typeof(byte?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((byte?)123);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("123");
         }
 
         [Test]
@@ -50,13 +39,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new ShortToStringTypeConverter();
             short val = 12345;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("12345");
-
-            await Assert.That(converter.TryConvert("12345", typeof(short), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((short)12345);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("12345");
         }
 
         [Test]
@@ -64,13 +50,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableShortToStringTypeConverter();
             short? val = 12345;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("12345");
-
-            await Assert.That(converter.TryConvert("12345", typeof(short?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((short?)12345);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("12345");
         }
 
         [Test]
@@ -78,13 +61,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new IntegerToStringTypeConverter();
             int val = 123456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("123456789");
-
-            await Assert.That(converter.TryConvert("123456789", typeof(int), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(123456789);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("123456789");
         }
 
         [Test]
@@ -92,13 +72,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableIntegerToStringTypeConverter();
             int? val = 123456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("123456789");
-
-            await Assert.That(converter.TryConvert("123456789", typeof(int?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((int?)123456789);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("123456789");
         }
 
         [Test]
@@ -106,13 +83,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new LongToStringTypeConverter();
             long val = 1234567890123456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("1234567890123456789");
-
-            await Assert.That(converter.TryConvert("1234567890123456789", typeof(long), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(1234567890123456789);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("1234567890123456789");
         }
 
         [Test]
@@ -120,13 +94,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableLongToStringTypeConverter();
             long? val = 1234567890123456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo("1234567890123456789");
-
-            await Assert.That(converter.TryConvert("1234567890123456789", typeof(long?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo((long?)1234567890123456789);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo("1234567890123456789");
         }
 
         [Test]
@@ -134,13 +105,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new SingleToStringTypeConverter();
             float val = 123.45f;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(float), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
 
         [Test]
@@ -148,13 +116,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableSingleToStringTypeConverter();
             float? val = 123.45f;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(float?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
 
         [Test]
@@ -162,13 +127,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new DoubleToStringTypeConverter();
             double val = 123.456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(double), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
 
         [Test]
@@ -176,13 +138,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableDoubleToStringTypeConverter();
             double? val = 123.456789;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(double?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
 
         [Test]
@@ -190,13 +149,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new DecimalToStringTypeConverter();
             decimal val = 123.456m;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(decimal), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
 
         [Test]
@@ -204,13 +160,10 @@ namespace ReactiveUI.Tests
         {
             var converter = new NullableDecimalToStringTypeConverter();
             decimal? val = 123.456m;
-            object result;
 
-            await Assert.That(converter.TryConvert(val, typeof(string), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val.ToString());
-
-            await Assert.That(converter.TryConvert(val.ToString(), typeof(decimal?), null, out result)).IsTrue();
-            await Assert.That(result).IsEqualTo(val);
+            var result = converter.TryConvert(val, null, out string? output);
+            await Assert.That(result).IsTrue();
+            await Assert.That(output).IsEqualTo(val.ToString());
         }
     }
 }

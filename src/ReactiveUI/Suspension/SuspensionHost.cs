@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Interfaces;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -11,12 +13,12 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="SuspensionHost"/> backs <see cref="RxApp.SuspensionHost"/> and provides concrete observables that are wired up
+/// <see cref="SuspensionHost"/> backs <see cref="RxSuspension.SuspensionHost"/> and provides concrete observables that are wired up
 /// by helpers such as <c>AutoSuspendHelper</c>. Platform hosts push their lifecycle notifications into the
 /// <see cref="ReplaySubject{T}"/> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
 /// </para>
 /// <para>
-/// Consumers rarely instantiate this type directly; instead call <see cref="RxApp.SuspensionHost"/> to access the singleton. The
+/// Consumers rarely instantiate this type directly; instead call <see cref="RxSuspension.SuspensionHost"/> to access the singleton. The
 /// object is intentionally thread-safe via <see cref="ReplaySubject{T}"/> so events raised prior to subscription are
 /// replayed to late subscribers.
 /// </para>
@@ -143,7 +145,7 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// </summary>
     /// <remarks>
     /// The value should be a serializable aggregate that represents the shell of your application. It is populated via
-    /// <see cref="ISuspensionDriver.LoadState"/> during resume and saved through <see cref="ISuspensionDriver.SaveState"/>
+    /// <see cref="ISuspensionDriver.LoadState"/> during resume and saved through the SuspensionDriver's SaveState
     /// when <see cref="ShouldPersistState"/> fires.
     /// </remarks>
     public object? AppState

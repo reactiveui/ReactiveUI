@@ -13,10 +13,6 @@ namespace ReactiveUI;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveActivity inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveActivity inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveActivity>, IHandleObservableErrors
 {
     private readonly Subject<Unit> _activated = new();

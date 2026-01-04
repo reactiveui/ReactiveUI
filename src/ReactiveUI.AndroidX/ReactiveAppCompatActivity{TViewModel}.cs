@@ -10,10 +10,6 @@ namespace ReactiveUI.AndroidX;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveAppCompatActivity uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveAppCompatActivity uses methods that may require unreferenced code")]
-#endif
 public class ReactiveAppCompatActivity<TViewModel> : ReactiveAppCompatActivity, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {

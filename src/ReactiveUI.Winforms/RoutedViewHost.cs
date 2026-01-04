@@ -9,10 +9,6 @@ namespace ReactiveUI.Winforms;
 /// A control host which will handling routing between different ViewModels and Views.
 /// </summary>
 [DefaultProperty("ViewModel")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("RoutedControlHost uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("RoutedControlHost uses methods that may require unreferenced code")]
-#endif
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
     private readonly CompositeDisposable _disposables = [];
@@ -25,10 +21,6 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedControlHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedControlHost uses methods that may require unreferenced code")]
-#endif
     public RoutedControlHost()
     {
         InitializeComponent();
@@ -89,7 +81,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
 
                                                      ResumeLayout();
                                                  },
-                                                 RxApp.DefaultExceptionHandler!.OnNext));
+                                                 RxState.DefaultExceptionHandler!.OnNext));
     }
 
     /// <inheritdoc/>

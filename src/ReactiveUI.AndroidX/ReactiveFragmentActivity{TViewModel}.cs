@@ -10,10 +10,6 @@ namespace ReactiveUI.AndroidX;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveFragmentActivity<T> inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveFragmentActivity<T> inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public class ReactiveFragmentActivity<TViewModel> : ReactiveFragmentActivity, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {

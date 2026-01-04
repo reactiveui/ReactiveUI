@@ -48,10 +48,9 @@ namespace ReactiveUI;
 /// </code>
 /// </example>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
+
+[RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 public class RoutedViewHost : ReactiveNavigationController
 {
     private readonly SerialDisposable _titleUpdater;
@@ -62,10 +61,6 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
     public RoutedViewHost()
     {
         ViewContractObservable = Observable.Return<string?>(null);
@@ -232,10 +227,6 @@ public class RoutedViewHost : ReactiveNavigationController
         base.Dispose(disposing);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
     private NSViewController? ResolveView(IRoutableViewModel? viewModel, string? contract)
     {
         if (viewModel is null)

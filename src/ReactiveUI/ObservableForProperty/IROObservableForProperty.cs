@@ -8,60 +8,79 @@ using System.Reflection;
 namespace ReactiveUI;
 
 /// <summary>
-/// Generates Observables based on observing Reactive objects.
+/// Generates observables for <see cref="IReactiveObject"/> instances by subscribing to their change notifications.
 /// </summary>
-public class IROObservableForProperty : ICreatesObservableForProperty
+/// <remarks>
+/// <para>
+/// This implementation filters the change stream for a specific property name and projects each matching notification to
+/// an <see cref="ObservedChange{TSender,TValue}"/>.
+/// </para>
+/// <para>
+/// Trimming/AOT: <see cref="ICreatesObservableForProperty"/> is annotated for trimming/AOT in this codebase. This type
+/// repeats the required annotations on its public members to satisfy the interface contract.
+/// </para>
+/// </remarks>
+public sealed class IROObservableForProperty : ICreatesObservableForProperty
 {
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
+    /// <inheritdoc />
+    /// <remarks>
+    /// This implementation returns a higher affinity than the INPC-based implementation because every
+    /// <see cref="IReactiveObject"/> also implements property change notification and should be preferred when available.
+    /// </remarks>
+    /// <param name="type">The runtime type to query.</param>
+    /// <param name="propertyName">The property name to query.</param>
+    /// <param name="beforeChanged">
+    /// If <see langword="true"/>, indicates the caller requests notifications before the property value changes.
+    /// If <see langword="false"/>, indicates after-change notifications.
+    /// </param>
+    /// <returns>
+    /// A positive integer if supported; zero otherwise.
+    /// </returns>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
-        // NB: Since every IReactiveObject is also an INPC, we need to bind more
-        // tightly than INPCObservableForProperty, so we return 10 here
-        // instead of one
-#pragma warning disable IDE0022 // Use expression body for methods
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
+
+        // NB: Since every IReactiveObject is also an INPC, we need to bind more tightly than INPCObservableForProperty.
         return typeof(IReactiveObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()) ? 10 : 0;
-#pragma warning restore IDE0022 // Use expression body for methods
     }
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
-    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+    /// <inheritdoc />
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="expression"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="sender"/> does not implement <see cref="IReactiveObject"/>.</exception>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged = false,
+        bool suppressWarnings = false)
     {
+        ArgumentExceptionHelper.ThrowIfNull(sender);
         ArgumentExceptionHelper.ThrowIfNull(expression);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (sender is not IReactiveObject iro)
         {
-            throw new ArgumentException("Sender doesn't implement IReactiveObject");
+            throw new ArgumentException("Sender doesn't implement IReactiveObject", nameof(sender));
         }
 
-        var obs = beforeChanged ? iro.GetChangingObservable() : iro.GetChangedObservable();
+        // For indexers, ReactiveObject reports "PropertyName[]".
+        var observedName =
+            expression.NodeType == ExpressionType.Index
+                ? string.Concat(propertyName, "[]")
+                : propertyName;
 
-        if (beforeChanged)
-        {
-            if (expression.NodeType == ExpressionType.Index)
-            {
-                return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                          .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
-            }
+        // Preserve the original comparison semantics.
+        const StringComparison comparison = StringComparison.InvariantCulture;
 
-            return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
-        }
+        var source = beforeChanged ? iro.GetChangingObservable() : iro.GetChangedObservable();
 
-        if (expression.NodeType == ExpressionType.Index)
-        {
-            return obs.Where(x => x.PropertyName?.Equals(propertyName + "[]", StringComparison.InvariantCulture) == true)
-                      .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
-        }
-
-        return obs.Where(x => x.PropertyName?.Equals(propertyName, StringComparison.InvariantCulture) == true)
-                  .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
+        // Keep the projection allocation-free; avoid repeating the same query shape.
+        return source
+            .Where(x => x.PropertyName is not null && x.PropertyName.Equals(observedName, comparison))
+            .Select(static _ => default(object))
+            .Select(_ => new ObservedChange<object, object?>(sender, expression, default));
     }
 }

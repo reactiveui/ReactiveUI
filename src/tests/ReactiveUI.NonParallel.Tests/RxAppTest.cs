@@ -12,12 +12,12 @@ namespace ReactiveUI.Tests.Core;
 [NotInParallel]
 public class RxAppTest : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]
@@ -33,7 +33,7 @@ public class RxAppTest : IDisposable
     [Test]
     public async Task SchedulerShouldBeCurrentThreadInTestRunner()
     {
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
     }
 
     public void Dispose()

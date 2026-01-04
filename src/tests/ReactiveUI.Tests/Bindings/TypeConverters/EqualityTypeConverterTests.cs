@@ -5,172 +5,164 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
+/// <summary>
+/// Tests for the EqualityTypeConverter which compares objects for equality.
+/// </summary>
 public class EqualityTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_AssignableTypes_Returns100()
+    public async Task GetAffinityForObjects_Returns5()
     {
         var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(string), typeof(object));
-        await Assert.That(affinity).IsEqualTo(100);
+        var affinity = converter.GetAffinityForObjects();
+        await Assert.That(affinity).IsEqualTo(5);
     }
 
     [Test]
-    public async Task GetAffinityForObjects_SameType_Returns100()
+    public async Task TryConvertTyped_EqualValues_ReturnsTrue()
     {
         var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(int), typeof(int));
-        await Assert.That(affinity).IsEqualTo(100);
-    }
+        var obj = "test";
 
-    [Test]
-    public async Task GetAffinityForObjects_ObjectType_Returns100()
-    {
-        var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(object), typeof(string));
-        await Assert.That(affinity).IsEqualTo(100);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_NullableTypes_ReturnsAffinity()
-    {
-        var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(int?), typeof(int));
-        await Assert.That(affinity).IsGreaterThan(0);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_ToNullableTypes_ReturnsAffinity()
-    {
-        var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(int), typeof(int?));
-        await Assert.That(affinity).IsGreaterThan(0);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_IncompatibleTypes_Returns0()
-    {
-        var converter = new EqualityTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(int), typeof(string));
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    [Test]
-    public async Task TryConvert_SameType_Succeeds()
-    {
-        var converter = new EqualityTypeConverter();
-        var value = "test";
-
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvertTyped(obj, "test", out object? output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(value);
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public async Task TryConvert_AssignableType_Succeeds()
+    public async Task TryConvertTyped_DifferentValues_ReturnsFalse()
     {
         var converter = new EqualityTypeConverter();
-        var value = "test";
+        var obj = "test";
 
-        var result = converter.TryConvert(value, typeof(object), null, out var output);
+        var result = converter.TryConvertTyped(obj, "other", out object? output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(value);
+        await Assert.That(output).IsEqualTo(false);
     }
 
     [Test]
-    public async Task TryConvert_NullToReferenceType_Succeeds()
+    public async Task TryConvertTyped_BothNull_ReturnsTrue()
     {
         var converter = new EqualityTypeConverter();
 
-        var result = converter.TryConvert(null, typeof(string), null, out var output);
+        var result = converter.TryConvertTyped(null, null, out object? output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsNull();
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public async Task TryConvert_NullToNullableValueType_Succeeds()
+    public async Task TryConvertTyped_OneNull_ReturnsFalse()
     {
         var converter = new EqualityTypeConverter();
 
-        var result = converter.TryConvert(null, typeof(int?), null, out var output);
+        var result1 = converter.TryConvertTyped("test", null, out object? output1);
+        var result2 = converter.TryConvertTyped(null, "test", out object? output2);
+
+        await Assert.That(result1).IsTrue();
+        await Assert.That(output1).IsEqualTo(false);
+        await Assert.That(result2).IsTrue();
+        await Assert.That(output2).IsEqualTo(false);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_EqualIntegers_ReturnsTrue()
+    {
+        var converter = new EqualityTypeConverter();
+        var obj = 42;
+
+        var result = converter.TryConvertTyped(obj, 42, out object? output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsNull();
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public async Task TryConvert_NullToValueType_Fails()
+    public async Task TryConvertTyped_DifferentIntegers_ReturnsFalse()
     {
         var converter = new EqualityTypeConverter();
+        var obj = 42;
 
-        var result = converter.TryConvert(null, typeof(int), null, out var output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_IncompatibleTypes_Fails()
-    {
-        var converter = new EqualityTypeConverter();
-        var value = "test";
-
-        var result = converter.TryConvert(value, typeof(int), null, out var output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_ValueToNullableType_Succeeds()
-    {
-        var converter = new EqualityTypeConverter();
-        int value = 42;
-
-        var result = converter.TryConvert(value, typeof(int?), null, out var output);
+        var result = converter.TryConvertTyped(obj, 43, out object? output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(42);
+        await Assert.That(output).IsEqualTo(false);
     }
 
     [Test]
-    public async Task DoReferenceCast_NullToReferenceType_ReturnsNull()
+    public async Task TryConvertTyped_EqualStrings_ReturnsTrue()
     {
-        var result = EqualityTypeConverter.DoReferenceCast(null, typeof(string));
-        await Assert.That(result).IsNull();
+        var converter = new EqualityTypeConverter();
+        var obj = "hello";
+
+        var result = converter.TryConvertTyped(obj, "hello", out object? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public void DoReferenceCast_NullToValueType_Throws()
+    public async Task TryConvertTyped_DifferentTypes_ReturnsFalse()
     {
-        Assert.Throws<InvalidCastException>(() => EqualityTypeConverter.DoReferenceCast(null, typeof(int)));
+        var converter = new EqualityTypeConverter();
+        var obj = "42";
+
+        var result = converter.TryConvertTyped(obj, 42, out object? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(false);
     }
 
     [Test]
-    public async Task DoReferenceCast_SameType_ReturnsValue()
+    public async Task TryConvertTyped_NoConversionHint_UseNullComparison()
     {
-        var value = "test";
-        var result = EqualityTypeConverter.DoReferenceCast(value, typeof(string));
-        await Assert.That(result).IsEqualTo(value);
+        var converter = new EqualityTypeConverter();
+        var obj = "test";
+
+        var result = converter.TryConvertTyped(obj, null, out object? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(false);
     }
 
     [Test]
-    public async Task DoReferenceCast_NullToNullableType_ReturnsNull()
+    public async Task TryConvertTyped_ReferenceEquality_ReturnsTrue()
     {
-        var result = EqualityTypeConverter.DoReferenceCast(null, typeof(int?));
-        await Assert.That(result).IsNull();
+        var converter = new EqualityTypeConverter();
+        var obj = new object();
+
+        var result = converter.TryConvertTyped(obj, obj, out object? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public void DoReferenceCast_IncompatibleTypes_Throws()
+    public async Task TryConvertTyped_ValueEquality_ReturnsTrue()
     {
-        Assert.Throws<InvalidCastException>(() => EqualityTypeConverter.DoReferenceCast("test", typeof(int)));
+        var converter = new EqualityTypeConverter();
+        var obj = new { Value = "test" };
+        var other = new { Value = "test" };
+
+        var result = converter.TryConvertTyped(obj, other, out object? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(true);
     }
 
     [Test]
-    public void DoReferenceCast_NullTargetType_Throws()
+    public async Task FromType_ReturnsObjectType()
     {
-        Assert.Throws<ArgumentNullException>(() => EqualityTypeConverter.DoReferenceCast("test", null!));
+        var converter = new EqualityTypeConverter();
+        await Assert.That(converter.FromType).IsEqualTo(typeof(object));
+    }
+
+    [Test]
+    public async Task ToType_ReturnsBoolType()
+    {
+        var converter = new EqualityTypeConverter();
+        await Assert.That(converter.ToType).IsEqualTo(typeof(bool));
     }
 }

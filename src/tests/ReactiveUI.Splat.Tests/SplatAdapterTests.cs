@@ -11,6 +11,8 @@ using DryIoc;
 
 using Ninject;
 
+using ReactiveUI.Builder;
+
 using Splat.Autofac;
 using Splat.DryIoc;
 using Splat.Ninject;
@@ -33,7 +35,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new Container();
         container.UseDryIocDependencyResolver();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        Locator.CurrentMutable.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
 
@@ -55,7 +59,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new Container();
         container.UseDryIocDependencyResolver();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        Locator.CurrentMutable.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
 
         var converters = container.Resolve<IEnumerable<ICreatesCommandBinding>>().ToList();
 
@@ -77,7 +83,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
         var locator = new AutofacDependencyResolver(builder);
-        locator.InitializeReactiveUI();
+        locator.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
         var container = builder.Build();
 
         var converters = container.Resolve<IEnumerable<IBindingTypeConverter>>().ToList();
@@ -100,7 +108,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
         var locator = new AutofacDependencyResolver(builder);
-        locator.InitializeReactiveUI();
+        locator.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
         Locator.SetLocator(locator);
         var container = builder.Build();
 
@@ -124,7 +134,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
         container.UseNinjectDependencyResolver();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        Locator.CurrentMutable.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
 
         var converters = container.GetAll<IBindingTypeConverter>().ToList();
 
@@ -146,7 +158,9 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
         container.UseNinjectDependencyResolver();
-        Locator.CurrentMutable.InitializeReactiveUI();
+        Locator.CurrentMutable.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .Build();
 
         var converters = container.GetAll<ICreatesCommandBinding>().ToList();
 

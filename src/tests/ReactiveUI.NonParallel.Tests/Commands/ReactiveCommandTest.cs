@@ -9,6 +9,7 @@ using DynamicData;
 
 using Microsoft.Reactive.Testing;
 
+using ReactiveUI.Builder;
 using ReactiveUI.Testing;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
@@ -17,17 +18,17 @@ namespace ReactiveUI.Tests.Core;
 [NotInParallel]
 public class ReactiveCommandTest : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     public ReactiveCommandTest()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
     }
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]

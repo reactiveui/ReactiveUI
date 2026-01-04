@@ -15,6 +15,88 @@ namespace ReactiveUI.Builder;
 public static class BuilderMixins
 {
     /// <summary>
+    /// Registers view-to-viewmodel mappings inline using a fluent builder.
+    /// This method is fully AOT-compatible when all view types are known at compile time.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder instance.</param>
+    /// <param name="configure">Configuration action for registering views.</param>
+    /// <returns>The builder for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when builder or configure is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when DefaultViewLocator is not registered in the service locator.</exception>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// new ReactiveUIBuilder()
+    ///     .WithPlatformModule<WpfRegistrations>()
+    ///     .RegisterViews(views => views
+    ///         .Map<LoginViewModel, LoginView>()
+    ///         .Map<MainViewModel, MainView>()
+    ///         .Map<SettingsViewModel, SettingsView>())
+    ///     .Build();
+    /// ]]>
+    /// </code>
+    /// </example>
+    public static IReactiveUIBuilder RegisterViews(
+        this IReactiveUIBuilder builder,
+        Action<ViewMappingBuilder> configure)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        ArgumentExceptionHelper.ThrowIfNull(configure);
+
+        var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
+            ?? throw new InvalidOperationException(
+                "DefaultViewLocator must be registered before calling RegisterViews. " +
+                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+
+        var mappingBuilder = new ViewMappingBuilder(viewLocator);
+        configure(mappingBuilder);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers views using a reusable view module.
+    /// This method is fully AOT-compatible when all view types are known at compile time.
+    /// </summary>
+    /// <typeparam name="TModule">The view module type to register.</typeparam>
+    /// <param name="builder">The ReactiveUI builder instance.</param>
+    /// <returns>The builder for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when DefaultViewLocator is not registered in the service locator.</exception>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// public class AuthenticationViewModule : IViewModule
+    /// {
+    ///     public void RegisterViews(DefaultViewLocator locator)
+    ///     {
+    ///         locator.Map<LoginViewModel, LoginView>(() => new LoginView())
+    ///                .Map<RegisterViewModel, RegisterView>(() => new RegisterView());
+    ///     }
+    /// }
+    ///
+    /// new ReactiveUIBuilder()
+    ///     .WithPlatformModule<WpfRegistrations>()
+    ///     .WithViewModule<AuthenticationViewModule>()
+    ///     .Build();
+    /// ]]>
+    /// </code>
+    /// </example>
+    public static IReactiveUIBuilder WithViewModule<TModule>(this IReactiveUIBuilder builder)
+        where TModule : IViewModule, new()
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+
+        var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
+            ?? throw new InvalidOperationException(
+                "DefaultViewLocator must be registered before calling WithViewModule. " +
+                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+
+        var module = new TModule();
+        module.RegisterViews(viewLocator);
+        return builder;
+    }
+
+    /// <summary>
     /// Configures the task pool scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -30,6 +112,26 @@ public static class BuilderMixins
 
         builder.WithTaskPoolScheduler(scheduler, setRxApp);
         return builder;
+    }
+
+    /// <summary>
+    /// Builds and configures the application using the ReactiveUI builder pattern.
+    /// </summary>
+    /// <remarks>Use this extension method to finalize application setup when working with ReactiveUI. This
+    /// method should be called after all necessary configuration has been applied to the builder.</remarks>
+    /// <param name="appBuilder">The application builder to configure. Must implement <see cref="IReactiveUIBuilder"/>.</param>
+    /// <returns>An <see cref="IReactiveUIBuilder"/> instance representing the configured application.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if <paramref name="appBuilder"/> does not implement <see cref="IReactiveUIBuilder"/>.</exception>
+    public static IReactiveUIBuilder BuildApp(this IAppBuilder appBuilder)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(appBuilder);
+        if (appBuilder is IReactiveUIBuilder reactiveUIBuilder)
+        {
+            reactiveUIBuilder.BuildApp();
+            return reactiveUIBuilder;
+        }
+
+        throw new InvalidOperationException("The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
     }
 
     /// <summary>
@@ -93,10 +195,7 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public static IReactiveUIBuilder WithViewsFromAssembly(this IReactiveUIBuilder builder, Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
@@ -114,10 +213,6 @@ public static class BuilderMixins
     /// The builder instance for method chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IReactiveUIBuilder WithPlatformModule<T>(this IReactiveUIBuilder builder)
         where T : IWantsToRegisterStuff, new()
     {

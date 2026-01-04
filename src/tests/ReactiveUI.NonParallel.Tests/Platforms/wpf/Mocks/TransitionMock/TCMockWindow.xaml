@@ -6,10 +6,10 @@
     xmlns:local="clr-namespace:ReactiveUI.Tests.Wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="http://reactiveui.net"
+    x:TypeArguments="local:TCMockWindowViewModel"
     Title="DPITest"
     Width="600"
     Height="600"
-    x:TypeArguments="local:TCMockWindowViewModel"
     mc:Ignorable="d">
     <Grid>
         <rxui:TransitioningContentControl

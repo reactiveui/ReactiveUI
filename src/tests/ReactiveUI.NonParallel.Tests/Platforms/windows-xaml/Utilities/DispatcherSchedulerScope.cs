@@ -8,17 +8,17 @@ using System.Windows.Threading;
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
-/// A disposable scope that configures RxApp.MainThreadScheduler to use the current thread's
+/// A disposable scope that configures RxSchedulers.MainThreadScheduler to use the current thread's
 /// WPF Dispatcher for the duration of the scope.
 /// </summary>
 /// <remarks>
 /// This scope is necessary for tests that create WPF bindings which monitor control properties.
 /// Without this, observable disposal may attempt to access WPF controls on background threads,
-/// causing InvalidOperationException. By setting RxApp.MainThreadScheduler to a DispatcherScheduler
+/// causing InvalidOperationException. By setting RxSchedulers.MainThreadScheduler to a DispatcherScheduler
 /// for the current thread, all Rx operations (including disposal) execute on the correct UI thread.
 /// <para>
 /// The scope uses the current thread's Dispatcher (creating one if it doesn't exist) and
-/// configures RxApp.MainThreadScheduler to use it.
+/// configures RxSchedulers.MainThreadScheduler to use it.
 /// </para>
 /// </remarks>
 /// <example>
@@ -51,24 +51,24 @@ public sealed class DispatcherSchedulerScope : IDisposable
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DispatcherSchedulerScope"/> class.
-    /// Uses the current thread's Dispatcher and configures RxApp.MainThreadScheduler.
+    /// Uses the current thread's Dispatcher and configures RxSchedulers.MainThreadScheduler.
     /// </summary>
     public DispatcherSchedulerScope()
     {
         // Capture current scheduler state
-        _originalMainThreadScheduler = RxApp.MainThreadScheduler;
-        _originalTaskpoolScheduler = RxApp.TaskpoolScheduler;
+        _originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
+        _originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
         // Get or create a Dispatcher for the current thread
         // This works because [TestExecutor<STAThreadExecutor>] ensures we're on an STA thread
         _dispatcher = Dispatcher.CurrentDispatcher;
 
-        // Configure RxApp to use the current thread's Dispatcher
-        RxApp.MainThreadScheduler = new DispatcherScheduler(_dispatcher);
+        // Configure RxSchedulers to use the current thread's Dispatcher
+        RxSchedulers.MainThreadScheduler = new DispatcherScheduler(_dispatcher);
     }
 
     /// <summary>
-    /// Disposes the scope, restoring the original RxApp scheduler state.
+    /// Disposes the scope, restoring the original RxSchedulers scheduler state.
     /// </summary>
     public void Dispose()
     {
@@ -78,8 +78,8 @@ public sealed class DispatcherSchedulerScope : IDisposable
         }
 
         // Restore original schedulers
-        RxApp.MainThreadScheduler = _originalMainThreadScheduler;
-        RxApp.TaskpoolScheduler = _originalTaskpoolScheduler;
+        RxSchedulers.MainThreadScheduler = _originalMainThreadScheduler;
+        RxSchedulers.TaskpoolScheduler = _originalTaskpoolScheduler;
 
         _disposed = true;
     }

@@ -12,6 +12,8 @@ namespace ReactiveUI;
 /// the ViewModel property and display it. This control is very useful
 /// inside a DataTemplate to display the View associated with a ViewModel.
 /// </summary>
+[RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+[RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
 public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, IEnableLogger
 {
     /// <summary>
@@ -38,15 +40,12 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     public static readonly DependencyProperty ContractFallbackByPassProperty =
         DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost), new PropertyMetadata(false));
 
+    private readonly CompositeDisposable _subscriptions = [];
     private string? _viewContract;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
-#endif
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
@@ -78,19 +77,28 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
               .StartWith(platformGetter())
               .DistinctUntilChanged();
 
-        var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
-        var viewModelChanged = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).StartWith(ViewModel);
-        var vmAndContract = contractChanged
+        // Observe ViewModel property changes without expression trees (AOT-friendly)
+        var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(ViewModel),
+            ViewModelProperty,
+            () => ViewModel);
+
+        // Combine contract observable with ViewModel changes
+        var vmAndContract = ViewContractObservable
+            .Do(x => _viewContract = x)
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
 
-        this.WhenActivated(d =>
-        {
-            d(contractChanged
+        // Subscribe directly without WhenActivated
+        ViewContractObservable
             .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Subscribe(x => _viewContract = x ?? string.Empty));
+            .Subscribe(x => _viewContract = x ?? string.Empty)
+            .DisposeWith(_subscriptions);
 
-            d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
-        });
+        vmAndContract
+            .DistinctUntilChanged()
+            .Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract))
+            .DisposeWith(_subscriptions);
     }
 
     /// <summary>
@@ -148,10 +156,8 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)

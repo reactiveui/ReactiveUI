@@ -7,6 +7,7 @@
 using Microsoft.UI.Xaml;
 
 using ReactiveUI;
+using ReactiveUI.Maui.Internal;
 
 namespace ReactiveUI;
 
@@ -15,6 +16,8 @@ namespace ReactiveUI;
 /// the View and wire up the ViewModel whenever a new ViewModel is
 /// navigated to. Put this control as the only control in your Window.
 /// </summary>
+[RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+[RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
 public partial class RoutedViewHost : TransitioningContentControl, IActivatableView, IEnableLogger
 {
     /// <summary>
@@ -35,15 +38,12 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     public static readonly DependencyProperty ViewContractObservableProperty =
         DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost), new PropertyMetadata(Observable<string>.Default));
 
+    private readonly CompositeDisposable _subscriptions = [];
     private string? _viewContract;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
     public RoutedViewHost()
     {
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -76,20 +76,46 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
            .StartWith(platformGetter())
            .DistinctUntilChanged();
 
-        IRoutableViewModel? currentViewModel = null;
-        var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x).StartWith(currentViewModel).CombineLatest(
-            this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract),
+        // Observe Router property changes using DependencyProperty (AOT-friendly)
+        var routerChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(Router),
+            RouterProperty,
+            () => Router);
+
+        // Observe ViewContractObservable property changes using DependencyProperty (AOT-friendly)
+        var viewContractObservableChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(ViewContractObservable),
+            ViewContractObservableProperty,
+            () => ViewContractObservable);
+
+        // Observe current view model from router
+        var currentViewModel = routerChanged
+            .Where(router => router is not null)
+            .SelectMany(router => router!.CurrentViewModel)
+            .StartWith((IRoutableViewModel?)null);
+
+        // Flatten the ViewContractObservable observable-of-observable
+        var viewContract = viewContractObservableChanged
+            .SelectMany(x => x ?? Observable.Return<string?>(null))
+            .Do(x => _viewContract = x)
+            .StartWith(ViewContract);
+
+        var vmAndContract = currentViewModel.CombineLatest(
+            viewContract,
             (viewModel, contract) => (viewModel, contract));
 
-        this.WhenActivated(d =>
-        {
-            // NB: The DistinctUntilChanged is useful because most views in
-            // WinRT will end up getting here twice - once for configuring
-            // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-            d(vmAndContract.DistinctUntilChanged().Subscribe(
+        // Subscribe directly without WhenActivated
+        // NB: The DistinctUntilChanged is useful because most views in
+        // WinRT will end up getting here twice - once for configuring
+        // the RoutedViewHost's ViewModel, and once on load via SizeChanged
+        vmAndContract
+            .DistinctUntilChanged()
+            .Subscribe(
                 ResolveViewForViewModel,
-                ex => RxApp.DefaultExceptionHandler.OnNext(ex)));
-        });
+                ex => RxState.DefaultExceptionHandler.OnNext(ex))
+            .DisposeWith(_subscriptions);
     }
 
     /// <summary>
@@ -140,10 +166,8 @@ public partial class RoutedViewHost : TransitioningContentControl, IActivatableV
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ResolveViewForViewModel uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ResolveViewForViewModel uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
     {
         if (x.viewModel is null)

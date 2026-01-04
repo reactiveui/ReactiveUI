@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 #if HAS_MAUI
 using Microsoft.Maui;
 
@@ -22,56 +24,44 @@ namespace ReactiveUI;
 #endif
 
 /// <summary>
-/// This type convert converts between Boolean and XAML Visibility - the
-/// conversionHint is a BooleanToVisibilityHint.
+/// Converts <see cref="bool"/> to <see cref="Visibility"/>.
 /// </summary>
-public class BooleanToVisibilityTypeConverter : IBindingTypeConverter
+/// <remarks>
+/// <para>
+/// The conversion supports a <see cref="BooleanToVisibilityHint"/> as the conversion hint parameter:
+/// </para>
+/// <list type="bullet">
+/// <item><description><see cref="BooleanToVisibilityHint.None"/> - True maps to Visible, False maps to Collapsed.</description></item>
+/// <item><description><see cref="BooleanToVisibilityHint.Inverse"/> - Inverts the boolean before conversion (True → Collapsed, False → Visible).</description></item>
+/// <item><description><see cref="BooleanToVisibilityHint.UseHidden"/> - Use Hidden instead of Collapsed for false values (WPF only, ignored on UNO/WinUI).</description></item>
+/// </list>
+/// <para>
+/// Hints can be combined using bitwise OR (e.g., <c>BooleanToVisibilityHint.Inverse | BooleanToVisibilityHint.UseHidden</c>).
+/// </para>
+/// </remarks>
+public sealed class BooleanToVisibilityTypeConverter : BindingTypeConverter<bool, Visibility>
 {
     /// <inheritdoc/>
-    public int GetAffinityForObjects(Type fromType, Type toType)
-    {
-        if (fromType == typeof(bool) && toType == typeof(Visibility))
-        {
-            return 10;
-        }
-
-        if (fromType == typeof(Visibility) && toType == typeof(bool))
-        {
-            return 10;
-        }
-
-        return 0;
-    }
+    public override int GetAffinityForObjects() => 10;
 
     /// <inheritdoc/>
-    public bool TryConvert(object? from, Type toType, object? conversionHint, out object result)
+    public override bool TryConvert(bool from, object? conversionHint, [NotNullWhen(true)] out Visibility result)
     {
-        var hint = conversionHint is BooleanToVisibilityHint visibilityHint ?
-            visibilityHint :
-            BooleanToVisibilityHint.None;
+        var hint = conversionHint is BooleanToVisibilityHint visibilityHint
+            ? visibilityHint
+            : BooleanToVisibilityHint.None;
 
-        if (toType == typeof(Visibility) && from is bool fromBool)
-        {
-            var fromAsBool = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !fromBool : fromBool;
+        var value = (hint & BooleanToVisibilityHint.Inverse) != 0 ? !from : from;
 
 #if !HAS_UNO && !HAS_WINUI
-            var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0 ? Visibility.Hidden : Visibility.Collapsed;
+        var notVisible = (hint & BooleanToVisibilityHint.UseHidden) != 0
+            ? Visibility.Hidden
+            : Visibility.Collapsed;
 #else
-            var notVisible = Visibility.Collapsed;
+        var notVisible = Visibility.Collapsed;
 #endif
-            result = fromAsBool ? Visibility.Visible : notVisible;
-            return true;
-        }
 
-        if (from is Visibility fromAsVis)
-        {
-            result = fromAsVis == Visibility.Visible ^ (hint & BooleanToVisibilityHint.Inverse) == 0;
-        }
-        else
-        {
-            result = Visibility.Visible;
-        }
-
+        result = value ? Visibility.Visible : notVisible;
         return true;
     }
 }

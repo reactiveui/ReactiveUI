@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI.AOTTests;
 
 /// <summary>
@@ -10,14 +12,6 @@ namespace ReactiveUI.AOTTests;
 /// </summary>
 public class ViewLocatorAOTMappingTests
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewLocatorAOTMappingTests"/> class.
-    /// </summary>
-    public ViewLocatorAOTMappingTests()
-    {
-        RxApp.EnsureInitialized();
-    }
-
     /// <summary>
     /// Map/Resolve with contract and default fallback works.
     /// </summary>

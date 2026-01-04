@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests.Core;
@@ -10,12 +11,12 @@ namespace ReactiveUI.Tests.Core;
 [NotInParallel]
 public class PocoObservableForPropertyTests : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]
@@ -27,7 +28,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task CheckGetAffinityForObjectValues()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
 
         using (Assert.Multiple())
@@ -46,7 +47,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyReturnsObservable()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         var poco = new PocoType { Property1 = "Test" };
         Expression<Func<PocoType, string?>> expr = x => x.Property1;
@@ -59,7 +60,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyReturnsSingleValue()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         var poco = new PocoType { Property1 = "Test" };
         Expression<Func<PocoType, string?>> expr = x => x.Property1;
@@ -77,7 +78,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyWithBeforeChangedParameter()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         var poco = new PocoType { Property1 = "Test" };
         Expression<Func<PocoType, string?>> expr = x => x.Property1;
@@ -91,7 +92,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public void GetNotificationForPropertyThrowsOnNullSender()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         Expression<Func<PocoType, string?>> expr = x => x.Property1;
 
@@ -102,7 +103,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyOnlyWarnsOnce()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         var poco1 = new PocoType { Property1 = "Test1" };
         var poco2 = new PocoType { Property1 = "Test2" };
@@ -126,7 +127,7 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyWithDifferentProperties()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var instance = new POCOObservableForProperty();
         var poco = new PocoType { Property1 = "Test1", Property2 = "Test2" };
         Expression<Func<PocoType, string?>> expr1 = x => x.Property1;
@@ -150,13 +151,13 @@ public class PocoObservableForPropertyTests : IDisposable
     [Test]
     public async Task GetNotificationForPropertyNeverCompletes()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var testScheduler = new Microsoft.Reactive.Testing.TestScheduler();
-        var originalScheduler = RxApp.MainThreadScheduler;
+        var originalScheduler = RxSchedulers.MainThreadScheduler;
 
         try
         {
-            RxApp.MainThreadScheduler = testScheduler;
+            RxSchedulers.MainThreadScheduler = testScheduler;
 
             var instance = new POCOObservableForProperty();
             var poco = new PocoType { Property1 = "Test" };
@@ -186,7 +187,7 @@ public class PocoObservableForPropertyTests : IDisposable
         }
         finally
         {
-            RxApp.MainThreadScheduler = originalScheduler;
+            RxSchedulers.MainThreadScheduler = originalScheduler;
         }
     }
 

@@ -6,6 +6,7 @@
 using System.Globalization;
 using System.Windows.Forms;
 using DynamicData;
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 using ReactiveUI.Winforms;
 using TUnit.Core;
@@ -17,22 +18,22 @@ namespace ReactiveUI.Tests.Winforms;
 /// Tests default propery binding.
 /// </summary>
 /// <remarks>
-/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
+/// This test fixture is marked as NonParallelizable because it calls RxAppBuilder.EnsureInitialized()
 /// in the constructor, which initializes global static state including the service locator.
 /// This state must not be concurrently initialized by parallel tests.
 /// </remarks>
 [NotInParallel]
 public class DefaultPropertyBindingTests : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
     /// </summary>
-    public DefaultPropertyBindingTests() => RxApp.EnsureInitialized();
+    public DefaultPropertyBindingTests() => RxAppBuilder.EnsureInitialized();
 
     [Before(Test)]
-    public void SetUp() => _schedulersScope = new RxAppSchedulersScope();
+    public void SetUp() => _schedulersScope = new RxSchedulersSchedulersScope();
 
     [After(Test)]
     public void TearDown() => _schedulersScope?.Dispose();
@@ -185,8 +186,7 @@ public class DefaultPropertyBindingTests : IDisposable
             view.Bind(vm, static x => x.Property2, static x => x.Property2.Text),
             view.Bind(vm, static x => x.Property3, static x => x.Property3.Text),
             view.Bind(vm, static x => x.Property4, static x => x.Property4.Text),
-            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked),
-        ]);
+            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked)]);
 
         vm.Property1 = "FOOO";
         await Assert.That(view.Property1.Text).IsEqualTo(vm.Property1);

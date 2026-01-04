@@ -10,12 +10,12 @@ namespace ReactiveUI.Tests.Core;
 [NotInParallel]
 public class AwaiterTest : IDisposable
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]
@@ -51,7 +51,7 @@ public class AwaiterTest : IDisposable
                 Thread.Sleep(1000);
                 return 42;
             },
-            RxApp.TaskpoolScheduler);
+            RxSchedulers.TaskpoolScheduler);
 
         return await o;
     }

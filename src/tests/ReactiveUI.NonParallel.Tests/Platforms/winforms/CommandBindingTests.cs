@@ -39,8 +39,8 @@ public class CommandBindingTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), true)).IsGreaterThan(0);
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<Button>(true)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
         }
 
         using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
@@ -69,8 +69,8 @@ public class CommandBindingTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), true)).IsGreaterThan(0);
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(true)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(false)).IsGreaterThan(0);
         }
 
         var commandExecuted = false;
@@ -107,8 +107,8 @@ public class CommandBindingTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), true)).IsGreaterThan(0);
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(true)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(false)).IsGreaterThan(0);
         }
 
         var commandExecuted = false;

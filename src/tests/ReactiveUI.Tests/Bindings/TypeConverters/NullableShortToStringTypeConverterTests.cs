@@ -8,29 +8,11 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class NullableShortToStringTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_ShortNullableToString_Returns10()
+    public async Task GetAffinityForObjects_Returns10()
     {
         var converter = new NullableShortToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(short?), typeof(string));
+        var affinity = converter.GetAffinityForObjects();
         await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_StringToShortNullable_Returns10()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(string), typeof(short?));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_WrongTypes_Returns0()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        await Assert.That(converter.GetAffinityForObjects(typeof(int), typeof(string))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(string), typeof(int))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(short), typeof(string))).IsEqualTo(0);
     }
 
     [Test]
@@ -39,21 +21,10 @@ public class NullableShortToStringTypeConverterTests
         var converter = new NullableShortToStringTypeConverter();
         short? value = 12345;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("12345");
-    }
-
-    [Test]
-    public async Task TryConvert_StringToShortNullable_Succeeds()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        var result = converter.TryConvert("12345", typeof(short?), null, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo((short)12345);
     }
 
     [Test]
@@ -61,39 +32,9 @@ public class NullableShortToStringTypeConverterTests
     {
         var converter = new NullableShortToStringTypeConverter();
 
-        var result = converter.TryConvert(null, typeof(string), null, out var output);
+        var result = converter.TryConvert(null, null, out string? output);
 
         await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task TryConvert_EmptyString_ReturnsTrue()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        var result = converter.TryConvert(string.Empty, typeof(short?), null, out var output);
-
-        await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task TryConvert_InvalidString_ReturnsFalse()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        var result = converter.TryConvert("invalid", typeof(short?), null, out var output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_OutOfRangeValue_ReturnsFalse()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        var result = converter.TryConvert("99999", typeof(short?), null, out var output);
-
-        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -102,7 +43,7 @@ public class NullableShortToStringTypeConverterTests
         var converter = new NullableShortToStringTypeConverter();
         short? value = 42;
 
-        var result = converter.TryConvert(value, typeof(string), 5, out var output);
+        var result = converter.TryConvert(value, 5, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("00042");
@@ -114,7 +55,7 @@ public class NullableShortToStringTypeConverterTests
         var converter = new NullableShortToStringTypeConverter();
         short? value = short.MinValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(short.MinValue.ToString());
@@ -126,7 +67,7 @@ public class NullableShortToStringTypeConverterTests
         var converter = new NullableShortToStringTypeConverter();
         short? value = short.MaxValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out string? output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(short.MaxValue.ToString());

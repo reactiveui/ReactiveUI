@@ -299,10 +299,13 @@ public class PropertyBindingMixinsTests
             _converter = converter;
         }
 
-        public int GetAffinityForObjects(Type fromType, Type toType) =>
-            fromType == typeof(TFrom) && toType == typeof(TTo) ? 100 : 0;
+        public Type FromType => typeof(TFrom);
 
-        public bool TryConvert(object? from, Type toType, object? conversionHint, out object? result)
+        public Type ToType => typeof(TTo);
+
+        public int GetAffinityForObjects() => 100;
+
+        public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             if (from is TFrom typedFrom)
             {

@@ -25,7 +25,7 @@ namespace ReactiveUI;
 /// <para>
 /// These observables abstract platform terms such as "Launching", "Activated", and "Closing" into a
 /// consistent API so shared code can persist state without branching on specific UI stacks. Most
-/// applications call <c>RxApp.SuspensionHost.SetupDefaultSuspendResume()</c> during startup to wire
+/// applications call <c>RxSuspension.SuspensionHost.SetupDefaultSuspendResume()</c> during startup to wire
 /// default handlers, but the properties are public so advanced hosts can plug in their own monitoring.
 /// </para>
 /// <para>
@@ -37,7 +37,7 @@ namespace ReactiveUI;
 /// <example>
 /// <code language="csharp">
 /// <![CDATA[
-/// var suspensionHost = RxApp.SuspensionHost;
+/// var suspensionHost = RxSuspension.SuspensionHost;
 /// suspensionHost.CreateNewAppState = () => new ShellState();
 ///
 /// suspensionHost.IsLaunchingNew.Subscribe(_ =>

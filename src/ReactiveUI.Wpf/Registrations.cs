@@ -11,27 +11,21 @@ namespace ReactiveUI.Wpf;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Register uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
-
-        registerFunction(static () => new ActivationForViewFetcher(), typeof(IActivationForViewFetcher));
-        registerFunction(static () => new DependencyObjectObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new StringConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new SingleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DoubleToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new DecimalToStringTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new BooleanToVisibilityTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new AutoDataTemplateBindingHook(), typeof(IPropertyBindingHook));
-        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new DependencyObjectObservableForProperty());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToVisibilityTypeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new VisibilityToBooleanTypeConverter());
+        registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
+        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
         if (!ModeDetector.InUnitTestRunner())
         {
@@ -40,6 +34,6 @@ public class Registrations : IWantsToRegisterStuff
             RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
         }
 
-        RxApp.SuppressViewCommandBindingMessage = true;
+        RxSchedulers.SuppressViewCommandBindingMessage = true;
     }
 }

@@ -50,13 +50,13 @@ public sealed class ChatNetworkService : IDisposable
         // Outgoing chat messages (default contract) - only send messages originating from this instance
         MessageBus.Current.Listen<ChatNetworkMessage>()
             .Where(static m => m.InstanceId == AppInstance.Id)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(RxSchedulers.TaskpoolScheduler)
             .Subscribe(Send);
 
         // Outgoing room events - only send messages originating from this instance
         MessageBus.Current.Listen<RoomEventMessage>(contract: RoomsContract)
             .Where(static m => m.InstanceId == AppInstance.Id)
-            .ObserveOn(RxApp.TaskpoolScheduler)
+            .ObserveOn(RxSchedulers.TaskpoolScheduler)
             .Subscribe(Send);
 
         Trace.WriteLine("[Net] ChatNetworkService initialized.");

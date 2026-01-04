@@ -21,10 +21,6 @@ namespace ReactiveUI;
 /// This is a UIControl that is both and UIControl and has a ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveControl inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveControl inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     private readonly Subject<Unit> _deactivated = new();
@@ -160,10 +156,6 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveControl<TViewModel> inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveControl<TViewModel> inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
     where TViewModel : class
 {

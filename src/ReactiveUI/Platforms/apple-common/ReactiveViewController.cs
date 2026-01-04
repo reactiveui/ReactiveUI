@@ -17,10 +17,6 @@ namespace ReactiveUI;
 /// This is a View that is both a NSViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveViewController uses ReactiveUI extension methods which require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveViewController uses ReactiveUI extension methods which may require unreferenced code")]
-#endif
 public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     private readonly Subject<Unit> _activated = new();
@@ -159,10 +155,6 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveViewController<TViewModel> uses ReactiveUI extension methods which require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveViewController<TViewModel> uses ReactiveUI extension methods which may require unreferenced code")]
-#endif
 public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
     where TViewModel : class
 {

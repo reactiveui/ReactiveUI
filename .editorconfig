@@ -800,6 +800,138 @@ dotnet_diagnostic.NUnit3004.severity = error # Field should be disposed in TearD
 dotnet_diagnostic.NUnit4001.severity = error # Simplify the Values attribute
 dotnet_diagnostic.NUnit4002.severity = error # Use Specific constraint
 
+###################
+# Trimming Analyzer Warnings (IL2001 - IL2123)
+# See: https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trim-warnings/
+###################
+dotnet_diagnostic.IL2001.severity = error # Type in UnreferencedCode attribute doesn't have matching RequiresUnreferencedCode
+dotnet_diagnostic.IL2002.severity = error # Method with RequiresUnreferencedCode called from code without that attribute
+dotnet_diagnostic.IL2003.severity = error # RequiresUnreferencedCode attribute is only supported on methods
+dotnet_diagnostic.IL2004.severity = error # Incorrect RequiresUnreferencedCode signature
+dotnet_diagnostic.IL2005.severity = error # Could not resolve dependency assembly
+dotnet_diagnostic.IL2007.severity = error # Could not process embedded resource
+dotnet_diagnostic.IL2008.severity = error # Could not find type in assembly
+dotnet_diagnostic.IL2009.severity = error # Could not find method in type
+dotnet_diagnostic.IL2010.severity = error # Invalid value for PreserveDependencyAttribute
+dotnet_diagnostic.IL2011.severity = error # Unknown body modification
+dotnet_diagnostic.IL2012.severity = error # Could not find field in type
+dotnet_diagnostic.IL2013.severity = error # Substitution file contains invalid XML
+dotnet_diagnostic.IL2014.severity = error # Missing substitution file
+dotnet_diagnostic.IL2015.severity = error # Invalid XML encountered in substitution file
+dotnet_diagnostic.IL2016.severity = error # Could not find type from substitution XML
+dotnet_diagnostic.IL2017.severity = error # Could not find method in type specified in substitution XML
+dotnet_diagnostic.IL2018.severity = error # Could not find field in type specified in substitution XML
+dotnet_diagnostic.IL2019.severity = error # Could not find interface implementation in type
+dotnet_diagnostic.IL2022.severity = error # Type in DynamicallyAccessedMembers attribute doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2023.severity = error # Method returning DynamicallyAccessedMembers annotated type requires the same annotation
+dotnet_diagnostic.IL2024.severity = error # Multiple DynamicallyAccessedMembers annotations on a member are not supported
+dotnet_diagnostic.IL2025.severity = error # Duplicate preserve attribute
+dotnet_diagnostic.IL2026.severity = error # Using member annotated with RequiresUnreferencedCode
+dotnet_diagnostic.IL2027.severity = error # RequiresUnreferencedCodeAttribute is only supported on methods and constructors
+dotnet_diagnostic.IL2028.severity = error # Invalid RequiresUnreferencedCode attribute usage
+dotnet_diagnostic.IL2029.severity = error # RequiresUnreferencedCode attribute on type is not supported
+dotnet_diagnostic.IL2030.severity = error # Dynamic invocation of method requiring unreferenced code is not safe
+dotnet_diagnostic.IL2031.severity = error # Could not resolve dependency assembly from embedded resource
+dotnet_diagnostic.IL2032.severity = error # Error reading debug symbols
+dotnet_diagnostic.IL2033.severity = error # Trying to modify a sealed type
+dotnet_diagnostic.IL2034.severity = error # Value passed to the implicit 'this' parameter does not satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2035.severity = error # Unrecognized value passed to the parameter of method with 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2036.severity = error # Interface implementation has different DynamicallyAccessedMembers annotations than interface
+dotnet_diagnostic.IL2037.severity = error # BaseType annotation doesn't match
+dotnet_diagnostic.IL2038.severity = error # Derived type doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2039.severity = error # Implementation method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2040.severity = error # Interface member doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2041.severity = error # GetType call on DynamicallyAccessedMembers annotated generic parameter
+dotnet_diagnostic.IL2042.severity = error # The DynamicallyAccessedMembersAttribute value used in a custom attribute is not compatible
+dotnet_diagnostic.IL2043.severity = error # DynamicallyAccessedMembersAttribute on property conflicts with base property
+dotnet_diagnostic.IL2044.severity = error # DynamicallyAccessedMembersAttribute on event conflicts with base event
+dotnet_diagnostic.IL2045.severity = error # Field type doesn't satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2046.severity = error # Trimmer couldn't find PreserveBaseOverridesAttribute on a method
+dotnet_diagnostic.IL2048.severity = error # Internal attribute couldn't be removed
+dotnet_diagnostic.IL2049.severity = error # Could not process data format message
+dotnet_diagnostic.IL2050.severity = error # Correctness of COM interop cannot be guaranteed after trimming
+dotnet_diagnostic.IL2051.severity = error # COM related type is trimmed
+dotnet_diagnostic.IL2052.severity = error # Resolving member reference for P/Invoke into type that is trimmed
+dotnet_diagnostic.IL2053.severity = error # Target method is trimmed
+dotnet_diagnostic.IL2054.severity = error # Generic constraint type is annotated with DynamicallyAccessedMembersAttribute which requires unreferenced code
+dotnet_diagnostic.IL2055.severity = error # Type implements COM visible type but has no GUID
+dotnet_diagnostic.IL2056.severity = error # Generic parameter with DynamicallyAccessedMembers annotation is not publicly visible
+dotnet_diagnostic.IL2057.severity = error # Unrecognized value passed to the parameter of method with DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2058.severity = error # Parameter types of method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2059.severity = error # Unrecognized reflection pattern
+dotnet_diagnostic.IL2060.severity = error # Unrecognized value passed to parameter with DynamicallyAccessedMembersAttribute
+dotnet_diagnostic.IL2061.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2062.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2063.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2064.severity = error # Value assigned to field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2065.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2066.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2067.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2068.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2069.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2070.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2071.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2072.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2073.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2074.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2075.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2076.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2077.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2078.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2079.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2080.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2081.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2082.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2083.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2084.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2085.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2087.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2088.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2089.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2090.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2091.severity = error # Target generic argument doesn't satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2092.severity = error # Value passed to generic parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2093.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2094.severity = error # DynamicallyAccessedMembers on 'this' parameter doesn't match overridden member
+dotnet_diagnostic.IL2095.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2096.severity = error # Calling method on statically typed generic instance requires unreferenced code
+dotnet_diagnostic.IL2097.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2098.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2099.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2100.severity = error # XML stream doesn't conform to the schema
+dotnet_diagnostic.IL2101.severity = error # Embedded XML in assembly couldn't be loaded
+dotnet_diagnostic.IL2102.severity = error # Invalid warning number passed to UnconditionalSuppressMessage
+dotnet_diagnostic.IL2103.severity = error # Value passed to the 'propertyAccessExpression' parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2104.severity = error # Assembly that was specified through a custom step
+dotnet_diagnostic.IL2105.severity = error # Type from a custom step that couldn't be loaded
+dotnet_diagnostic.IL2106.severity = error # Method from a custom step that couldn't be loaded
+dotnet_diagnostic.IL2107.severity = error # Methods in types that derive from RemotingClientProxy cannot be statically determined
+dotnet_diagnostic.IL2108.severity = error # Invalid scope for UnconditionalSuppressMessage
+dotnet_diagnostic.IL2109.severity = error # Method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2110.severity = error # Invalid member name in UnconditionalSuppressMessage
+dotnet_diagnostic.IL2111.severity = error # Method with parameters or return value with DynamicallyAccessedMembersAttribute is not supported
+dotnet_diagnostic.IL2112.severity = error # Reflection call to method with DynamicallyAccessedMembersAttribute requirements cannot be statically analyzed
+dotnet_diagnostic.IL2113.severity = error # DynamicallyAccessedMembers on type references Type.MakeGenericType with different requirements
+dotnet_diagnostic.IL2114.severity = error # DynamicallyAccessedMembers mismatch on signature types
+dotnet_diagnostic.IL2115.severity = error # DynamicallyAccessedMembers on type or base types references member which requires unreferenced code
+dotnet_diagnostic.IL2116.severity = error # DynamicallyAccessedMembers on parameter types doesn't match overridden parameter
+dotnet_diagnostic.IL2117.severity = error # Methods with DynamicallyAccessedMembersAttribute annotations cannot be replaced
+dotnet_diagnostic.IL2122.severity = error # Reflection call to method with UnreferencedCode attribute cannot be statically analyzed
+dotnet_diagnostic.IL2123.severity = error # DynamicallyAccessedMembers on method or parameter doesn't match overridden member
+
+###################
+# AOT Analyzer Warnings (IL3xxx)
+# See: https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/warnings/
+###################
+dotnet_diagnostic.IL3050.severity = error # Using member annotated with RequiresDynamicCode
+dotnet_diagnostic.IL3051.severity = error # RequiresDynamicCode attribute is only supported on methods and constructors
+dotnet_diagnostic.IL3052.severity = error # RequiresDynamicCode attribute on type is not supported
+dotnet_diagnostic.IL3053.severity = error # Assembly has RequiresDynamicCode attribute
+dotnet_diagnostic.IL3054.severity = error # Generic expansion in type requires dynamic code
+dotnet_diagnostic.IL3055.severity = error # MakeGenericType on non-supported type requires dynamic code
+dotnet_diagnostic.IL3056.severity = error # MakeGenericMethod on non-supported method requires dynamic code
+dotnet_diagnostic.IL3057.severity = error # Reflection access to generic parameter requires dynamic code
+
 #############################################
 # C++ Files
 #############################################

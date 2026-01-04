@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -12,6 +14,11 @@ namespace ReactiveUI;
 public static class MutableDependencyResolverExtensions
 {
     /// <summary>
+    /// Initializes static members of the <see cref="MutableDependencyResolverExtensions"/> class.
+    /// </summary>
+    static MutableDependencyResolverExtensions() => RxAppBuilder.EnsureInitialized();
+
+    /// <summary>
     /// Registers a view for a view model via generics without reflection.
     /// </summary>
     /// <typeparam name="TView">The view type.</typeparam>
@@ -19,16 +26,20 @@ public static class MutableDependencyResolverExtensions
     /// <param name="resolver">Resolver to register into.</param>
     /// <param name="contract">Optional contract.</param>
     /// <returns>The resolver, for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Generic registration does not use reflection")]
-    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Generic registration does not use dynamic code")]
-#endif
     public static IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
-        resolver.Register(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        if (contract is null)
+        {
+            resolver.Register<IViewFor<TViewModel>>(static () => new TView());
+        }
+        else
+        {
+            resolver.Register<IViewFor<TViewModel>>(static () => new TView(), contract);
+        }
+
         return resolver;
     }
 
@@ -40,16 +51,20 @@ public static class MutableDependencyResolverExtensions
     /// <param name="resolver">Resolver to register into.</param>
     /// <param name="contract">Optional contract.</param>
     /// <returns>The resolver, for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Generic registration does not use reflection")]
-    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "Generic registration does not use dynamic code")]
-#endif
     public static IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
-        resolver.RegisterLazySingleton(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        if (contract is null)
+        {
+            resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView());
+        }
+        else
+        {
+            resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView(), contract);
+        }
+
         return resolver;
     }
 }

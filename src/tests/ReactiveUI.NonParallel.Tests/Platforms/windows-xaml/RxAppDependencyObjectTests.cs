@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
 using TUnit.Core.Executors;
@@ -13,19 +14,19 @@ namespace ReactiveUI.Tests.Xaml;
 /// Checks RxApp dependency objects.
 /// </summary>
 /// <remarks>
-/// This test fixture is marked as NonParallelizable because it calls RxApp.EnsureInitialized()
+/// This test fixture is marked as NonParallelizable because it calls RxAppBuilder.EnsureInitialized()
 /// and accesses Locator.Current, which interact with global static state. This state must not be
 /// concurrently accessed by parallel tests.
 /// </remarks>
 [NotInParallel]
 public class RxAppDependencyObjectTests
 {
-    private RxAppSchedulersScope? _schedulersScope;
+    private RxSchedulersSchedulersScope? _schedulersScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _schedulersScope = new RxAppSchedulersScope();
+        _schedulersScope = new RxSchedulersSchedulersScope();
     }
 
     [After(Test)]
@@ -42,7 +43,7 @@ public class RxAppDependencyObjectTests
     [TestExecutor<STAThreadExecutor>]
     public async Task DepPropNotifierShouldBeFound()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
 
         await Assert.That(Locator.Current.GetServices<ICreatesObservableForProperty>()
                            .Any(static x => x is DependencyObjectObservableForProperty)).IsTrue();

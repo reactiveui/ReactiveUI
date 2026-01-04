@@ -13,7 +13,7 @@ public class CreatesCommandBindingViaEventTests
     public async Task GetAffinityForObject_WithEventTarget_Returns5()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject(typeof(ClickableControl), hasEventTarget: true);
+        var affinity = binder.GetAffinityForObject<ClickableControl>(hasEventTarget: true);
         await Assert.That(affinity).IsEqualTo(5);
     }
 
@@ -21,7 +21,7 @@ public class CreatesCommandBindingViaEventTests
     public async Task GetAffinityForObject_WithClickEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject(typeof(ClickableControl), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<ClickableControl>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(3);
     }
 
@@ -29,7 +29,7 @@ public class CreatesCommandBindingViaEventTests
     public async Task GetAffinityForObject_WithMouseUpEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject(typeof(MouseUpControl), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<MouseUpControl>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(3);
     }
 
@@ -37,7 +37,7 @@ public class CreatesCommandBindingViaEventTests
     public async Task GetAffinityForObject_WithNoEvents_Returns0()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var affinity = binder.GetAffinityForObject(typeof(string), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<string>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(0);
     }
 
@@ -126,7 +126,7 @@ public class CreatesCommandBindingViaEventTests
         var command = ReactiveCommand.Create(() => { });
 
         Assert.Throws<ArgumentNullException>(() =>
-            binder.BindCommandToObject(command, null, Observable.Return<object?>(null)));
+            binder.BindCommandToObject<ClickableControl>(command, null, Observable.Return<object?>(null)));
     }
 
     [Test]
@@ -148,7 +148,7 @@ public class CreatesCommandBindingViaEventTests
         var wasCalled = false;
         var command = ReactiveCommand.Create(() => wasCalled = true);
 
-        using var binding = binder.BindCommandToObject<EventArgs>(
+        using var binding = binder.BindCommandToObject<ClickableControl, EventArgs>(
             command,
             target,
             Observable.Return<object?>(null),

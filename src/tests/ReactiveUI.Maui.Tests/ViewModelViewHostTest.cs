@@ -142,6 +142,9 @@ public class ViewModelViewHostTest
     /// </summary>
     private class TestViewLocator : IViewLocator
     {
-        public IViewFor? ResolveView<T>(T? viewModel, string? contract = null) => null;
+        public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+            where TViewModel : class => null;
+
+        public IViewFor<object>? ResolveView(object? instance, string? contract = null) => null;
     }
 }

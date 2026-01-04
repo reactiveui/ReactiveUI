@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 using TUnit.Assertions;
 using TUnit.Assertions.Extensions;
 using TUnit.Core;
@@ -50,7 +52,9 @@ public class ViewLocatorTest
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -89,6 +93,18 @@ public class ViewLocatorTest
     private class CustomViewLocator : IViewLocator
     {
         /// <inheritdoc/>
-        public IViewFor? ResolveView<T>(T? viewModel, string? contract = null) => null;
+        public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+            where TViewModel : class
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor<object>? ResolveView(object? instance, string? contract = null)
+        {
+            return null;
+        }
     }
 }

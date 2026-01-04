@@ -129,7 +129,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
 
         timer.Tick += (s, e) =>
         {
-            var t = Interlocked.Exchange(ref timer, null);
+            var t = System.Threading.Interlocked.Exchange(ref timer, null);
             if (t != null)
             {
                 try
@@ -149,7 +149,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
 
         d.Disposable = Disposable.Create(() =>
         {
-            var t = Interlocked.Exchange(ref timer, null);
+            var t = System.Threading.Interlocked.Exchange(ref timer, null);
             if (t != null)
             {
                 t.Stop();
@@ -196,7 +196,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
 
         return Disposable.Create(() =>
         {
-            var t = Interlocked.Exchange(ref timer, null);
+            var t = System.Threading.Interlocked.Exchange(ref timer, null);
             if (t != null)
             {
                 t.Stop();

@@ -59,10 +59,6 @@ public
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
     public RoutedViewHost()
     {
         HorizontalContentAlignment = HorizontalAlignment.Stretch;
@@ -106,7 +102,7 @@ public
         this.WhenActivated(d =>
             d(vmAndContract.DistinctUntilChanged().Subscribe(
                 ResolveViewForViewModel,
-                ex => RxApp.DefaultExceptionHandler.OnNext(ex))));
+                ex => RxState.DefaultExceptionHandler.OnNext(ex))));
     }
 
     /// <summary>
@@ -157,10 +153,6 @@ public
     /// </value>
     public IViewLocator? ViewLocator { get; set; }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("RoutedViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("RoutedViewHost uses methods that may require unreferenced code")]
-#endif
     private void ResolveViewForViewModel((IRoutableViewModel? viewModel, string? contract) x)
     {
         if (x.viewModel is null)

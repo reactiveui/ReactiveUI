@@ -8,6 +8,27 @@ This project uses **Microsoft Testing Platform (MTP)** with the **TUnit** testin
 
 See: https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-test?tabs=dotnet-test-with-mtp
 
+### Solution Format: SLNX
+
+**Note**: This repository uses **SLNX** (XML-based solution format) instead of the legacy SLN format.
+
+**What is SLNX?**
+- Modern XML-based solution file format introduced in Visual Studio 2022 17.10+
+- Replaces the legacy text-based `.sln` format
+- More structured and easier to parse programmatically
+- Better support for complex multi-platform projects
+- Full compatibility with `dotnet` CLI commands
+
+**Key Differences from .sln:**
+- **Format:** Structured XML vs. legacy text format
+- **Readability:** Human-readable XML schema vs. proprietary text format
+- **Tooling:** Requires VS 2022 17.10+ or Rider 2024.1+ for IDE support
+- **CLI:** Works identically with all `dotnet build/test` commands
+
+**File Location:** `src/reactiveui.slnx`
+
+All build and test commands in this document reference `reactiveui.slnx`. The file works identically to traditional `.sln` files with dotnet CLI tools.
+
 ### Prerequisites
 
 ```powershell
@@ -21,7 +42,7 @@ dotnet workload restore
 cd ..
 
 # Restore NuGet packages
-dotnet restore ReactiveUI.sln
+dotnet restore reactiveui.slnx
 ```
 
 ### Build Commands
@@ -30,27 +51,55 @@ dotnet restore ReactiveUI.sln
 
 ```powershell
 # Build the solution (requires Windows for platform-specific targets)
-dotnet build ReactiveUI.sln -c Release
+dotnet build reactiveui.slnx -c Release
 
 # Build with warnings as errors (includes StyleCop violations)
-dotnet build ReactiveUI.sln -c Release -warnaserror
+dotnet build reactiveui.slnx -c Release -warnaserror
 
 # Clean the solution
-dotnet clean ReactiveUI.sln
+dotnet clean reactiveui.slnx
 ```
 
 ### Test Commands (Microsoft Testing Platform)
 
 **CRITICAL:** This repository uses MTP configured in `global.json`. All TUnit-specific arguments must be passed after `--`:
 
+**What is Microsoft Testing Platform (MTP)?**
+
+MTP is the modern test execution platform for .NET, replacing the legacy VSTest platform. It provides:
+- **Native integration** with `dotnet test` command
+- **Better performance** through optimized test discovery and execution
+- **Modern architecture** designed for current .NET versions (6.0+)
+- **Enhanced control** over test execution with detailed filtering and reporting
+
+**Why ReactiveUI uses MTP:**
+- Required for TUnit testing framework (modern alternative to xUnit/NUnit)
+- Better integration with build systems and CI/CD pipelines
+- Improved test isolation and parallel execution control
+- Native support for modern .NET features
+
+**Key Difference from VSTest:**
+- MTP arguments are passed AFTER `--` separator: `dotnet test -- --mtp-args`
+- VSTest used different command syntax: `dotnet test --vstest-args`
+- MTP is configured via `global.json` (see "Key Configuration Files" section)
+
+**Configuration:**
+- `global.json`: Specifies MTP as the test runner (`"Microsoft.Testing.Platform"`)
+- `testconfig.json`: Test execution settings (parallel: false, coverage format)
+- `Directory.Build.props`: Enables `TestingPlatformDotnetTestSupport` for test projects
+
+**IMPORTANT Testing Best Practices:**
+- **Do NOT use `--no-build` flag** when running tests. Always build before testing to ensure all code changes (including test changes) are compiled. Using `--no-build` can cause tests to run against stale binaries and produce misleading results.
+- Use `--output Detailed` to see Console.WriteLine output from tests. This must be placed BEFORE the `--` separator
+- TUnit runs tests non-parallel by default in this repository (`"parallel": false` in testconfig.json) to avoid test interference
+
+**Working Directory:** All test commands must be run from the `./src` folder.
+
 The working folder must be `./src` folder. These commands won't function properly without the correct working folder.
 
 ```powershell
 # Run all tests in the solution
-dotnet test --solution ReactiveUI.sln -c Release
-
-# Run all tests without building first (faster when code hasn't changed)
-dotnet test --solution ReactiveUI.sln -c Release --no-build
+dotnet test --solution reactiveui.slnx -c Release
 
 # Run all tests in a specific project
 dotnet test --project tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj
@@ -66,31 +115,31 @@ dotnet test --project tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --treeno
 dotnet test --project tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --treenode-filter "/*/MyNamespace/*/*"
 
 # Filter by test property (e.g., Category)
-dotnet test --solution ReactiveUI.sln -- --treenode-filter "/*/*/*/*[Category=Integration]"
+dotnet test --solution reactiveui.slnx -- --treenode-filter "/*/*/*/*[Category=Integration]"
 
 # Run tests with code coverage (Microsoft Code Coverage)
-dotnet test --solution ReactiveUI.sln -- --coverage --coverage-output-format cobertura
+dotnet test --solution reactiveui.slnx --coverage --coverage-output-format cobertura
 
 # Run tests with detailed output
-dotnet test --solution ReactiveUI.sln -- --output Detailed
+dotnet test --solution reactiveui.slnx -- --output Detailed
 
 # List all available tests without running them
 dotnet test --project tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --list-tests
 
 # Fail fast (stop on first failure)
-dotnet test --solution ReactiveUI.sln -- --fail-fast
+dotnet test --solution reactiveui.slnx -- --fail-fast
 
 # Control parallel test execution
-dotnet test --solution ReactiveUI.sln -- --maximum-parallel-tests 4
+dotnet test --solution reactiveui.slnx -- --maximum-parallel-tests 4
 
 # Generate TRX report
-dotnet test --solution ReactiveUI.sln -- --report-trx
+dotnet test --solution reactiveui.slnx -- --report-trx
 
 # Disable logo for cleaner output
 dotnet test --project tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --disable-logo
 
 # Combine options: coverage + TRX report + detailed output
-dotnet test --solution ReactiveUI.sln -- --coverage --coverage-output-format cobertura --report-trx --output Detailed
+dotnet test --solution reactiveui.slnx --coverage --coverage-output-format cobertura -- --report-trx --output Detailed
 ```
 
 **Alternative: Using `dotnet run` for single project**
@@ -115,14 +164,17 @@ The `--treenode-filter` follows the pattern: `/{AssemblyName}/{Namespace}/{Class
 
 **Note:** Use single asterisks (`*`) to match segments. Double asterisks (`/**`) are not supported in treenode-filter.
 
-### Key TUnit Command-Line Flags
+### Key Command-Line Flags
 
+**dotnet test flags (BEFORE `--`):**
+- `--coverage` - Enable Microsoft Code Coverage
+- `--coverage-output-format` - Set coverage format (cobertura, xml, coverage)
+
+**TUnit flags (AFTER `--`):**
 - `--treenode-filter` - Filter tests by path pattern or properties (syntax: `/{Assembly}/{Namespace}/{Class}/{Method}`)
 - `--list-tests` - Display available tests without running
 - `--fail-fast` - Stop after first failure
 - `--maximum-parallel-tests` - Limit concurrent execution (default: processor count)
-- `--coverage` - Enable Microsoft Code Coverage
-- `--coverage-output-format` - Set coverage format (cobertura, xml, coverage)
 - `--report-trx` - Generate TRX format reports
 - `--output` - Control verbosity (Normal or Detailed)
 - `--no-progress` - Suppress progress reporting
@@ -383,7 +435,7 @@ _total = this.WhenAnyValue(
 ## Important Notes
 
 - **Repository Location:** Working directory is `C:\source\reactiveui\src`
-- **Main Solution:** `ReactiveUI.sln`
+- **Main Solution:** `reactiveui.slnx`
 - **Benchmarks:** Separate solution at `Benchmarks/ReactiveUI.Benchmarks.sln`
 - **Integration Tests:** Platform-specific solutions in `integrationtests/` (not required for most development)
 - **No shallow clones:** Repository requires full recursive clone for git version information used by build system

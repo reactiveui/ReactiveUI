@@ -31,5 +31,5 @@ public class ApiApprovalTests
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
     [Test]
-    public Task ReactiveUI() => typeof(RxApp).Assembly.CheckApproval(["ReactiveUI"]);
+    public Task ReactiveUI() => typeof(RxState).Assembly.CheckApproval(["ReactiveUI"]);
 }

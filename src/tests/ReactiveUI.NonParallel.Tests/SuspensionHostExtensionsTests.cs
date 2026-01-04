@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization.Metadata;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -498,18 +501,46 @@ public class SuspensionHostExtensionsTests
 
         public bool ShouldThrowOnLoad { get; set; }
 
-        public IObservable<object> LoadState()
+        [RequiresUnreferencedCode("Implementations commonly use reflection-based serialization. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        [RequiresDynamicCode("Implementations commonly use reflection-based serialization. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        public IObservable<object?> LoadState()
         {
             LoadStateCallCount++;
             if (ShouldThrowOnLoad)
             {
-                return Observable.Throw<object>(new InvalidOperationException("Failed to load state"), ImmediateScheduler.Instance);
+                return Observable.Throw<object?>(new InvalidOperationException("Failed to load state"), ImmediateScheduler.Instance);
             }
 
             return Observable.Return(StateToLoad ?? new DummyAppState(), ImmediateScheduler.Instance);
         }
 
-        public IObservable<Unit> SaveState(object state)
+        [RequiresUnreferencedCode("Implementations commonly use reflection-based serialization. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        [RequiresDynamicCode("Implementations commonly use reflection-based serialization. Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+        public IObservable<Unit> SaveState<T>(T state)
+        {
+            SaveStateCallCount++;
+            LastSavedState = state;
+            return Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        }
+
+        public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
+        {
+            LoadStateCallCount++;
+            if (ShouldThrowOnLoad)
+            {
+                return Observable.Throw<T?>(new InvalidOperationException("Failed to load state"), ImmediateScheduler.Instance);
+            }
+
+            // For test purposes, try to cast StateToLoad to T
+            if (StateToLoad is T typedState)
+            {
+                return Observable.Return<T?>(typedState, ImmediateScheduler.Instance);
+            }
+
+            return Observable.Return<T?>(default, ImmediateScheduler.Instance);
+        }
+
+        public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
         {
             SaveStateCallCount++;
             LastSavedState = state;

@@ -7,7 +7,9 @@
       "Bash(dotnet test:*)",
       "Bash(ls:*)",
       "Bash(grep:*)",
-      "Bash(dotnet clean:*)"
+      "Bash(dotnet clean:*)",
+      "WebFetch(domain:tunit.dev)",
+      "Bash(find:*)"
     ]
   }
 }

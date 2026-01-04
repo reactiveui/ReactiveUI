@@ -38,9 +38,5 @@ public interface IReactiveProperty<T> : IObservable<T?>, ICancelable, INotifyDat
     /// <summary>
     /// Refreshes this instance.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Refresh uses RaisePropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Refresh uses RaisePropertyChanged which may require unreferenced code")]
-#endif
     void Refresh();
 }

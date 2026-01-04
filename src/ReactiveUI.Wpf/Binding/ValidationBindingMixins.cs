@@ -29,10 +29,6 @@ public static class ValidationBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindWithValidation uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindWithValidation uses methods that may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, Expression<Func<TViewModel, TType?>> viewModelPropertySelector, Expression<Func<TView, TVProp>> frameworkElementSelector)
         where TView : class, IViewFor
         where TViewModel : class

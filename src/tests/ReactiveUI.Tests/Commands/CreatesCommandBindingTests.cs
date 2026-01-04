@@ -21,11 +21,11 @@ public class CreatesCommandBindingTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), true)).IsGreaterThan(0);
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsLessThanOrEqualTo(0);
+            await Assert.That(fixture.GetAffinityForObject<TestFixture>(hasEventTarget: true)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<TestFixture>(hasEventTarget: false)).IsLessThanOrEqualTo(0);
         }
 
-        var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
+        var disposable = fixture.BindCommandToObject<TestFixture, PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
         input.IsNotNullString = "Foo";
         await Assert.That(wasCalled).IsTrue();
 

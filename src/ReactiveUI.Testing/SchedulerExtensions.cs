@@ -22,22 +22,18 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <returns>An object that when disposed, restores the previous default
     /// schedulers.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithScheduler uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithScheduler uses methods that may require unreferenced code")]
-#endif
     public static IDisposable WithScheduler(IScheduler scheduler)
     {
-        var prevDef = RxApp.MainThreadScheduler;
-        var prevTask = RxApp.TaskpoolScheduler;
+        var prevDef = RxSchedulers.MainThreadScheduler;
+        var prevTask = RxSchedulers.TaskpoolScheduler;
 
-        RxApp.MainThreadScheduler = scheduler;
-        RxApp.TaskpoolScheduler = scheduler;
+        RxSchedulers.MainThreadScheduler = scheduler;
+        RxSchedulers.TaskpoolScheduler = scheduler;
 
         return Disposable.Create(() =>
         {
-            RxApp.MainThreadScheduler = prevDef;
-            RxApp.TaskpoolScheduler = prevTask;
+            RxSchedulers.MainThreadScheduler = prevDef;
+            RxSchedulers.TaskpoolScheduler = prevTask;
         });
     }
 
@@ -52,10 +48,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The function to execute.</param>
     /// <returns>The return value of the function.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("With uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
-#endif
     public static TRet With<T, TRet>(this T scheduler, Func<T, TRet> block)
         where T : IScheduler
     {
@@ -81,10 +73,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The function to execute.</param>
     /// <returns>The return value of the function.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
-#endif
     public static async Task<TRet> WithAsync<T, TRet>(this T scheduler, Func<T, Task<TRet>> block)
         where T : IScheduler
     {
@@ -106,10 +94,6 @@ public static class SchedulerExtensions
     /// <typeparam name="T">The type.</typeparam>
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The action to execute.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("With uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
-#endif
     public static void With<T>(this T scheduler, Action<T> block)
         where T : IScheduler =>
         scheduler.With(x =>
@@ -126,10 +110,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The action to execute.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
-#endif
     public static Task WithAsync<T>(this T scheduler, Func<T, Task> block)
         where T : IScheduler =>
         scheduler.WithAsync(async x =>
@@ -223,5 +203,3 @@ public static class SchedulerExtensions
     /// <returns>Timespan for virtual scheduler to use.</returns>
     public static long FromTimeSpan(this TestScheduler scheduler, TimeSpan span) => span.Ticks;
 }
-
-// vim: tw=120 ts=4 sw=4 et :

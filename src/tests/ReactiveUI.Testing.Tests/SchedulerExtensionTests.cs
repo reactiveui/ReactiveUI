@@ -21,8 +21,8 @@ public sealed class SchedulerExtensionTests
     public async Task WithScheduler_ShouldSetBothRxAppAndRxSchedulersSchedulers()
     {
         var testScheduler = new TestScheduler();
-        var originalMainThread = RxApp.MainThreadScheduler;
-        var originalTaskpool = RxApp.TaskpoolScheduler;
+        var originalMainThread = RxSchedulers.MainThreadScheduler;
+        var originalTaskpool = RxSchedulers.TaskpoolScheduler;
 
         using (SchedulerExtensions.WithScheduler(testScheduler))
         {
@@ -30,16 +30,16 @@ public sealed class SchedulerExtensionTests
             using (Assert.Multiple())
             {
                 // Verify RxApp schedulers are set
-                await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(testScheduler);
-                await Assert.That(RxApp.TaskpoolScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(testScheduler);
             }
         }
 
         // Verify schedulers are restored after disposal
         using (Assert.Multiple())
         {
-            await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalMainThread);
-            await Assert.That(RxApp.TaskpoolScheduler).IsEqualTo(originalTaskpool);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalMainThread);
+            await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(originalTaskpool);
         }
     }
 
@@ -52,23 +52,23 @@ public sealed class SchedulerExtensionTests
     {
         var scheduler1 = new TestScheduler();
         var scheduler2 = new TestScheduler();
-        var originalMainThread = RxApp.MainThreadScheduler;
+        var originalMainThread = RxSchedulers.MainThreadScheduler;
 
         using (SchedulerExtensions.WithScheduler(scheduler1))
         {
-            await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(scheduler1);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler1);
 
             using (SchedulerExtensions.WithScheduler(scheduler2))
             {
-                await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(scheduler2);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler2);
             }
 
             // After inner scope, should restore to scheduler1
-            await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(scheduler1);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler1);
         }
 
         // After outer scope, should restore to original
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalMainThread);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalMainThread);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public sealed class SchedulerExtensionTests
         // Second call should succeed (gate was released despite exception)
         using (SchedulerExtensions.WithScheduler(scheduler2))
         {
-            await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(scheduler2);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler2);
         }
     }
 
@@ -134,7 +134,7 @@ public sealed class SchedulerExtensionTests
                             using (SchedulerExtensions.WithScheduler(scheduler))
                             {
                                 // Verify scheduler is set
-                                if (RxApp.MainThreadScheduler != scheduler)
+                                if (RxSchedulers.MainThreadScheduler != scheduler)
                                 {
                                     throw new InvalidOperationException($"Thread {threadId}: Scheduler mismatch!");
                                 }
@@ -176,12 +176,12 @@ public sealed class SchedulerExtensionTests
     public async Task With_Function_ShouldExecuteAndReturnValue()
     {
         var scheduler = new TestScheduler();
-        var originalScheduler = RxApp.MainThreadScheduler;
+        var originalScheduler = RxSchedulers.MainThreadScheduler;
 
         var result = scheduler.With(s =>
         {
             // Inside the block, scheduler should be active
-            if (RxApp.MainThreadScheduler != s)
+            if (RxSchedulers.MainThreadScheduler != s)
             {
                 throw new InvalidOperationException("Scheduler not set correctly");
             }
@@ -192,7 +192,7 @@ public sealed class SchedulerExtensionTests
         await Assert.That(result).IsEqualTo(42);
 
         // After the block, original scheduler should be restored
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public sealed class SchedulerExtensionTests
     public async Task With_Action_ShouldExecute()
     {
         var scheduler = new TestScheduler();
-        var originalScheduler = RxApp.MainThreadScheduler;
+        var originalScheduler = RxSchedulers.MainThreadScheduler;
         var executed = false;
 
         scheduler.With(s =>
@@ -211,14 +211,14 @@ public sealed class SchedulerExtensionTests
             executed = true;
 
             // Inside the block, scheduler should be active
-            if (RxApp.MainThreadScheduler != s)
+            if (RxSchedulers.MainThreadScheduler != s)
             {
                 throw new InvalidOperationException("Scheduler not set correctly");
             }
         });
 
         await Assert.That(executed).IsTrue();
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
     }
 
     /// <summary>
@@ -229,12 +229,12 @@ public sealed class SchedulerExtensionTests
     public async Task WithAsync_Function_ShouldExecuteAndReturnValue()
     {
         var scheduler = new TestScheduler();
-        var originalScheduler = RxApp.MainThreadScheduler;
+        var originalScheduler = RxSchedulers.MainThreadScheduler;
 
         var result = await scheduler.WithAsync(s =>
         {
             // Inside the block, scheduler should be active
-            if (RxApp.MainThreadScheduler != s)
+            if (RxSchedulers.MainThreadScheduler != s)
             {
                 throw new InvalidOperationException("Scheduler not set correctly");
             }
@@ -243,7 +243,7 @@ public sealed class SchedulerExtensionTests
         });
 
         await Assert.That(result).IsEqualTo(42);
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
     }
 
     /// <summary>
@@ -254,7 +254,7 @@ public sealed class SchedulerExtensionTests
     public async Task WithAsync_Action_ShouldExecute()
     {
         var scheduler = new TestScheduler();
-        var originalScheduler = RxApp.MainThreadScheduler;
+        var originalScheduler = RxSchedulers.MainThreadScheduler;
         var executed = false;
 
         await scheduler.WithAsync(s =>
@@ -262,7 +262,7 @@ public sealed class SchedulerExtensionTests
             executed = true;
 
             // Inside the block, scheduler should be active
-            if (RxApp.MainThreadScheduler != s)
+            if (RxSchedulers.MainThreadScheduler != s)
             {
                 throw new InvalidOperationException("Scheduler not set correctly");
             }
@@ -271,7 +271,7 @@ public sealed class SchedulerExtensionTests
         });
 
         await Assert.That(executed).IsTrue();
-        await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ public sealed class SchedulerExtensionTests
             var scheduler = new TestScheduler();
             using (SchedulerExtensions.WithScheduler(scheduler))
             {
-                await Assert.That(RxApp.MainThreadScheduler).IsEqualTo(scheduler);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler);
             }
         }
 

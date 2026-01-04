@@ -4,42 +4,96 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
 /// <summary>
-/// This class is the final fallback for WhenAny, and will simply immediately
-/// return the value of the type at the time it was created. It will also
-/// warn the user that this is probably not what they want to do.
+/// Final fallback implementation for <c>WhenAny</c>-style observation when no observable mechanism is available.
 /// </summary>
-public class POCOObservableForProperty : ICreatesObservableForProperty
+/// <remarks>
+/// <para>
+/// This implementation emits exactly one value (the current value at subscription time) and then never emits again.
+/// </para>
+/// <para>
+/// If warnings are enabled, it logs a warning once per (runtime type, property name) pair to help callers detect
+/// accidental POCO usage in observation chains.
+/// </para>
+/// <para>
+/// Trimming/AOT: <see cref="ICreatesObservableForProperty"/> is annotated for trimming/AOT in this codebase; this type
+/// repeats the required annotations on its public members to satisfy the interface contract.
+/// </para>
+/// </remarks>
+public sealed class POCOObservableForProperty : ICreatesObservableForProperty
 {
-    private static readonly ConcurrentDictionary<(Type, string), bool> _hasWarned = new();
+    /// <summary>
+    /// Tracks whether a warning has been logged for a given (runtime type, property name) pair.
+    /// </summary>
+    /// <remarks>
+    /// This is a process-wide cache intended to avoid repeated warnings. It can grow with unique observed pairs.
+    /// </remarks>
+    private static readonly ConcurrentDictionary<(Type Type, string PropertyName), byte> HasWarned = new();
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses reflection and type analysis")]
-    [RequiresUnreferencedCode("GetAffinityForObject may reference members that could be trimmed")]
-#endif
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false) => 1;
+    /// <inheritdoc />
+    /// <remarks>
+    /// This fallback returns a very low affinity to ensure it is only used when no more specific implementation applies.
+    /// </remarks>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses reflection and type analysis")]
-    [RequiresUnreferencedCode("GetNotificationForProperty may reference members that could be trimmed")]
-#endif
-    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+        return 1;
+    }
+
+    /// <inheritdoc />
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="sender"/> is <see langword="null"/>.</exception>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged = false,
+        bool suppressWarnings = false)
     {
         ArgumentExceptionHelper.ThrowIfNull(sender);
+        ArgumentExceptionHelper.ThrowIfNull(expression);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
-        var type = sender.GetType();
-        if (!_hasWarned.ContainsKey((type, propertyName)) && !suppressWarnings)
+        if (!suppressWarnings)
         {
-            this.Log().Warn($"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
-            _hasWarned[(type, propertyName)] = true;
+            WarnOnce(sender, propertyName);
         }
 
-        return Observable.Return(new ObservedChange<object, object?>(sender, expression, default), RxApp.MainThreadScheduler)
-                         .Concat(Observable<IObservedChange<object, object?>>.Never);
+        // Emit one value, then never complete to preserve legacy WhenAny semantics.
+        return Observable
+            .Return(new ObservedChange<object, object?>(sender, expression, default), RxSchedulers.MainThreadScheduler)
+            .Concat(Observable<IObservedChange<object, object?>>.Never);
+    }
+
+    /// <summary>
+    /// Logs a POCO observation warning at most once per (runtime type, property name) pair.
+    /// </summary>
+    /// <param name="sender">The observed object.</param>
+    /// <param name="propertyName">The observed property name.</param>
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+    private void WarnOnce(object sender, string propertyName)
+    {
+        // Hot path considerations:
+        // - Avoid ContainsKey + indexer (two lookups).
+        // - Use TryAdd as the single atomic gate.
+        var type = sender.GetType();
+        if (!HasWarned.TryAdd((type, propertyName), 0))
+        {
+            return;
+        }
+
+        this.Log().Warn(
+            $"The class {type.FullName} property {propertyName} is a POCO type and won't send change notifications, WhenAny will only return a single value!");
     }
 }

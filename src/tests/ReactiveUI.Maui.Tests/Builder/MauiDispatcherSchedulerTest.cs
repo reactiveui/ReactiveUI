@@ -46,7 +46,7 @@ public class MauiDispatcherSchedulerTest
         builder.BuildApp();
 
         var executed = false;
-        RxApp.MainThreadScheduler.Schedule(() => executed = true);
+        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -64,7 +64,7 @@ public class MauiDispatcherSchedulerTest
         builder.BuildApp();
 
         var executed = false;
-        RxApp.MainThreadScheduler.Schedule(() => executed = true);
+        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -82,7 +82,7 @@ public class MauiDispatcherSchedulerTest
         builder.BuildApp();
 
         var executed = false;
-        RxApp.MainThreadScheduler.Schedule(() => executed = true);
+        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -153,8 +153,8 @@ public class MauiDispatcherSchedulerTest
         /// </summary>
         public RxAppSchedulersScope()
         {
-            _mainThreadScheduler = RxApp.MainThreadScheduler;
-            _taskpoolScheduler = RxApp.TaskpoolScheduler;
+            _mainThreadScheduler = RxSchedulers.MainThreadScheduler;
+            _taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
         }
 
         /// <summary>
@@ -167,8 +167,8 @@ public class MauiDispatcherSchedulerTest
                 return;
             }
 
-            RxApp.MainThreadScheduler = _mainThreadScheduler;
-            RxApp.TaskpoolScheduler = _taskpoolScheduler;
+            RxSchedulers.MainThreadScheduler = _mainThreadScheduler;
+            RxSchedulers.TaskpoolScheduler = _taskpoolScheduler;
             _disposed = true;
         }
     }

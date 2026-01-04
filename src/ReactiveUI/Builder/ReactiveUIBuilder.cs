@@ -19,6 +19,10 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     private bool _coreRegistered;
     private bool _setRxAppMainScheduler;
     private bool _setRxAppTaskPoolScheduler;
+    private IObserver<Exception>? _exceptionHandler;
+    private ISuspensionHost? _suspensionHost;
+    private int? _smallCacheLimit;
+    private int? _bigCacheLimit;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -102,15 +106,26 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     }
 
     /// <summary>
+    /// Registers services using an IWantsToRegisterStuff implementation.
+    /// This method provides a migration path for users with existing IWantsToRegisterStuff implementations.
+    /// </summary>
+    /// <param name="registration">The registration implementation.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if registration is null.</exception>
+    public IReactiveUIBuilder WithRegistration(IWantsToRegisterStuff registration)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(registration);
+
+        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        registration.Register(registrar);
+
+        return this;
+    }
+
+    /// <summary>
     /// Registers the platform-specific ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
-    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
-    [RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-#endif
     public IReactiveUIBuilder WithPlatformServices()
     {
         if (_platformRegistered)
@@ -129,12 +144,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the core ReactiveUI services in an AOT-compatible manner.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
-#endif
     public override IAppBuilder WithCoreServices()
     {
         if (!_coreRegistered)
@@ -155,10 +164,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <param name="assembly">The assembly to scan for views.</param>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(assembly);
@@ -173,15 +179,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
         var registration = new T();
-        registration.Register((f, t) => CurrentMutable.RegisterConstant(f(), t));
+        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        registration.Register(registrar);
         return this;
     }
 
@@ -289,6 +292,63 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         });
 
     /// <summary>
+    /// Configures a custom exception handler for unhandled errors in ReactiveUI observables.
+    /// </summary>
+    /// <param name="exceptionHandler">The custom exception handler to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if exceptionHandler is null.</exception>
+    public IReactiveUIBuilder WithExceptionHandler(IObserver<Exception> exceptionHandler)
+    {
+        _exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the non-generic suspension host for application lifecycle management.
+    /// </summary>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithSuspensionHost()
+    {
+        _suspensionHost = new SuspensionHost();
+        return this;
+    }
+
+    /// <summary>
+    /// Configures a typed suspension host for application lifecycle management.
+    /// </summary>
+    /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithSuspensionHost<TAppState>()
+    {
+        _suspensionHost = new SuspensionHost<TAppState>();
+        return this;
+    }
+
+    /// <summary>
+    /// Configures custom cache size limits for ReactiveUI's internal memoizing caches.
+    /// </summary>
+    /// <param name="smallCacheLimit">The small cache limit to use (must be greater than 0).</param>
+    /// <param name="bigCacheLimit">The big cache limit to use (must be greater than 0).</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if either cache limit is less than or equal to 0.</exception>
+    public IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit)
+    {
+        if (smallCacheLimit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(smallCacheLimit), "Small cache limit must be greater than 0.");
+        }
+
+        if (bigCacheLimit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(bigCacheLimit), "Big cache limit must be greater than 0.");
+        }
+
+        _smallCacheLimit = smallCacheLimit;
+        _bigCacheLimit = bigCacheLimit;
+        return this;
+    }
+
+    /// <summary>
     /// Registers a custom view model with the dependency resolver.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
@@ -343,6 +403,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
         }
+
+        // Initialize static state (cache sizes, exception handler, suspension host)
+        InitializeStaticState();
+
+        // Mark ReactiveUI as initialized via builder pattern
+        RxAppBuilder.MarkAsInitialized();
 
         return appInstance;
     }
@@ -933,6 +999,56 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         }
 
         return this;
+    }
+
+    /// <summary>
+    /// Gets the platform-specific default small cache limit.
+    /// </summary>
+    /// <returns>The default small cache limit for the current platform.</returns>
+    private static int GetPlatformDefaultSmallCacheLimit()
+    {
+#if ANDROID || IOS
+        return 32;
+#else
+        return 64;
+#endif
+    }
+
+    /// <summary>
+    /// Gets the platform-specific default big cache limit.
+    /// </summary>
+    /// <returns>The default big cache limit for the current platform.</returns>
+    private static int GetPlatformDefaultBigCacheLimit()
+    {
+#if ANDROID || IOS
+        return 64;
+#else
+        return 256;
+#endif
+    }
+
+    /// <summary>
+    /// Initializes the static state for ReactiveUI based on builder configuration.
+    /// This includes cache sizes, exception handler, and suspension host.
+    /// </summary>
+    private void InitializeStaticState()
+    {
+        // Initialize cache sizes - use configured values or platform defaults
+        var smallCache = _smallCacheLimit ?? GetPlatformDefaultSmallCacheLimit();
+        var bigCache = _bigCacheLimit ?? GetPlatformDefaultBigCacheLimit();
+        RxCacheSize.Initialize(smallCache, bigCache);
+
+        // Initialize exception handler if configured
+        if (_exceptionHandler is not null)
+        {
+            RxState.InitializeExceptionHandler(_exceptionHandler);
+        }
+
+        // Initialize suspension host if configured
+        if (_suspensionHost is not null)
+        {
+            RxSuspension.InitializeSuspensionHost(_suspensionHost);
+        }
     }
 
     private void ConfigureSchedulers() =>

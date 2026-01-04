@@ -5,6 +5,7 @@
 
 using System.Reflection;
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 
 namespace ReactiveUI.Tests.Core;
@@ -30,14 +31,8 @@ public class RandomTests : IDisposable
     public async Task StringConverterAffinityTest()
     {
         var fixture = new StringConverter();
-        var result = fixture.GetAffinityForObjects(
-                                                   typeof(object),
-                                                   typeof(string));
+        var result = fixture.GetAffinityForObjects();
         await Assert.That(result).IsEqualTo(2);
-        result = fixture.GetAffinityForObjects(
-                                               typeof(object),
-                                               typeof(int));
-        await Assert.That(result).IsEqualTo(0);
     }
 
     [Test]
@@ -45,9 +40,8 @@ public class RandomTests : IDisposable
     {
         var fixture = new StringConverter();
         var expected = fixture.GetType().FullName;
-        var result = fixture.TryConvert(
+        var result = fixture.TryConvertTyped(
                                         fixture,
-                                        typeof(string),
                                         null,
                                         out var actualResult);
         using (Assert.Multiple())
@@ -115,7 +109,7 @@ public class RandomTests : IDisposable
     public async Task ViewLocatorCurrentUsesAppLocatorTest()
     {
         // Ensure RxApp is initialized so IViewLocator is registered
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
 
         // Verify that ViewLocator.Current retrieves from AppLocator
         var fromViewLocator = ViewLocator.Current;
@@ -132,7 +126,7 @@ public class RandomTests : IDisposable
     [Test]
     public async Task ViewLocatorCurrentTest()
     {
-        RxApp.EnsureInitialized();
+        RxAppBuilder.EnsureInitialized();
         var fixture = ViewLocator.Current;
         await Assert.That(fixture).IsNotNull();
     }
@@ -264,12 +258,9 @@ public class RandomTests : IDisposable
         const string testValue = "test";
 
         // Act
-        var affinity = converter.GetAffinityForObjects(
-                                                       typeof(string),
-                                                       typeof(string));
-        var result = converter.TryConvert(
+        var affinity = converter.GetAffinityForObjects();
+        var result = converter.TryConvertTyped(
                                           testValue,
-                                          typeof(string),
                                           null,
                                           out var converted);
 
@@ -280,27 +271,6 @@ public class RandomTests : IDisposable
             await Assert.That(result).IsTrue();
             await Assert.That(converted).IsEqualTo(testValue);
         }
-    }
-
-    /// <summary>
-    /// Tests RxApp cache constants.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying cache constants remain unchanged for backwards compatibility")]
-    public async Task RxApp_ShouldHaveCacheConstants()
-    {
-        using (Assert.Multiple())
-        {
-            // Assert
-#if ANDROID || IOS
-        Assert.That(RxApp.SmallCacheLimit, Is.EqualTo(32));
-        Assert.That(RxApp.BigCacheLimit, Is.EqualTo(64));
-#else
-            await Assert.That(RxApp.SmallCacheLimit).IsEqualTo(64);
-            await Assert.That(RxApp.BigCacheLimit).IsEqualTo(256);
-        }
-#endif
     }
 
     /// <summary>
@@ -317,15 +287,8 @@ public class RandomTests : IDisposable
         using (Assert.Multiple())
         {
             // Assert - These converters return 10 for their type conversions
-            await Assert.That(intConverter.GetAffinityForObjects(
-                                                           typeof(int),
-                                                           typeof(string))).IsEqualTo(10);
-            await Assert.That(doubleConverter.GetAffinityForObjects(
-                                                              typeof(double),
-                                                              typeof(string))).IsEqualTo(10);
-            await Assert.That(intConverter.GetAffinityForObjects(
-                                                           typeof(string),
-                                                           typeof(int))).IsEqualTo(10);
+            await Assert.That(intConverter.GetAffinityForObjects()).IsEqualTo(10);
+            await Assert.That(doubleConverter.GetAffinityForObjects()).IsEqualTo(10);
         }
     }
 
@@ -350,41 +313,6 @@ public class RandomTests : IDisposable
     }
 
     /// <summary>
-    /// Tests RegistrationNamespace enum values.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    [SuppressMessage("Usage", "TUnitAssertions0005:Assert.That(...) should not be used with a constant value", Justification = "Verifying enum values remain constant for backwards compatibility")]
-    public async Task RegistrationNamespace_ShouldHaveAllExpectedValues()
-    {
-        var expectedValues = new[]
-        {
-            RegistrationNamespace.None, RegistrationNamespace.Winforms, RegistrationNamespace.Wpf,
-            RegistrationNamespace.Uno, RegistrationNamespace.UnoWinUI, RegistrationNamespace.Blazor,
-            RegistrationNamespace.Drawing, RegistrationNamespace.Avalonia, RegistrationNamespace.Maui,
-            RegistrationNamespace.Uwp, RegistrationNamespace.WinUI,
-        };
-
-        var actualValues = Enum.GetValues<RegistrationNamespace>();
-        await Assert.That(actualValues).IsEquivalentTo(expectedValues);
-
-        using (Assert.Multiple())
-        {
-            await Assert.That((int)RegistrationNamespace.None).IsEqualTo(0);
-            await Assert.That((int)RegistrationNamespace.Winforms).IsEqualTo(1);
-            await Assert.That((int)RegistrationNamespace.Wpf).IsEqualTo(2);
-            await Assert.That((int)RegistrationNamespace.Uno).IsEqualTo(3);
-            await Assert.That((int)RegistrationNamespace.UnoWinUI).IsEqualTo(4);
-            await Assert.That((int)RegistrationNamespace.Blazor).IsEqualTo(5);
-            await Assert.That((int)RegistrationNamespace.Drawing).IsEqualTo(6);
-            await Assert.That((int)RegistrationNamespace.Avalonia).IsEqualTo(7);
-            await Assert.That((int)RegistrationNamespace.Maui).IsEqualTo(8);
-            await Assert.That((int)RegistrationNamespace.Uwp).IsEqualTo(9);
-            await Assert.That((int)RegistrationNamespace.WinUI).IsEqualTo(10);
-        }
-    }
-
-    /// <summary>
     /// Tests type converter conversions with actual values.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -398,23 +326,20 @@ public class RandomTests : IDisposable
         using (Assert.Multiple())
         {
             // Act & Assert
-            await Assert.That(intConverter.TryConvert(
+            await Assert.That(intConverter.TryConvertTyped(
                                                 42,
-                                                typeof(string),
                                                 null,
                                                 out var intResult)).IsTrue();
             await Assert.That(intResult).IsEqualTo("42");
 
-            await Assert.That(intConverter.TryConvert(
+            await Assert.That(intConverter.TryConvertTyped(
                                                 "42",
-                                                typeof(int),
                                                 null,
                                                 out var intBackResult)).IsTrue();
             await Assert.That(intBackResult).IsEqualTo(42);
 
-            await Assert.That(doubleConverter.TryConvert(
+            await Assert.That(doubleConverter.TryConvertTyped(
                                                    42.5,
-                                                   typeof(string),
                                                    null,
                                                    out var doubleResult)).IsTrue();
             await Assert.That(doubleResult).IsEqualTo("42.5");
@@ -796,9 +721,7 @@ public class RandomTests : IDisposable
         // Test that they all have reasonable affinities
         foreach (var converter in converters)
         {
-            var affinity = converter.GetAffinityForObjects(
-                                                           typeof(object),
-                                                           typeof(string));
+            var affinity = converter.GetAffinityForObjects();
             await Assert.That(affinity).IsGreaterThanOrEqualTo(0);
         }
     }

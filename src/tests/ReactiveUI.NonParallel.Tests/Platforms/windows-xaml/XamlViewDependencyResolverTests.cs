@@ -21,7 +21,9 @@ public sealed class XamlViewDependencyResolverTests : IDisposable
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.RegisterViewsForViewModels(GetType().Assembly);
 
         _resolver = resolver;

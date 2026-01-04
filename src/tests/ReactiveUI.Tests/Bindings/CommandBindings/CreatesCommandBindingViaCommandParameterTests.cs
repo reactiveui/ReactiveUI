@@ -13,7 +13,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     public async Task GetAffinityForObject_WithCommandAndCommandParameter_Returns5()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject(typeof(CommandControl), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<CommandControl>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(5);
     }
 
@@ -21,7 +21,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     public async Task GetAffinityForObject_WithEventTarget_Returns0()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject(typeof(CommandControl), hasEventTarget: true);
+        var affinity = binder.GetAffinityForObject<CommandControl>(hasEventTarget: true);
         await Assert.That(affinity).IsEqualTo(0);
     }
 
@@ -29,7 +29,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     public async Task GetAffinityForObject_WithoutCommandProperty_Returns0()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject(typeof(string), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<string>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(0);
     }
 
@@ -37,7 +37,7 @@ public class CreatesCommandBindingViaCommandParameterTests
     public async Task GetAffinityForObject_WithOnlyCommandProperty_Returns0()
     {
         var binder = new CreatesCommandBindingViaCommandParameter();
-        var affinity = binder.GetAffinityForObject(typeof(OnlyCommandControl), hasEventTarget: false);
+        var affinity = binder.GetAffinityForObject<OnlyCommandControl>(hasEventTarget: false);
         await Assert.That(affinity).IsEqualTo(0);
     }
 
@@ -114,7 +114,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var command = ReactiveCommand.Create(() => { });
 
         Assert.Throws<ArgumentNullException>(() =>
-            binder.BindCommandToObject(command, null, Observable.Return<object?>(null)));
+            binder.BindCommandToObject<CommandControl>(command, null, Observable.Return<object?>(null)));
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var target = new CommandControl();
         var command = ReactiveCommand.Create(() => { });
 
-        var binding = binder.BindCommandToObject<EventArgs>(command, target, Observable.Return<object?>(null), "SomeEvent");
+        var binding = binder.BindCommandToObject<CommandControl, EventArgs>(command, target, Observable.Return<object?>(null), "SomeEvent");
 
         await Assert.That(binding).IsEqualTo(Disposable.Empty);
     }

@@ -1124,6 +1124,8 @@ public class BuilderInstanceMixinsHappyPathTests
             return _services.TryGetValue(serviceType, out var service) ? service : null;
         }
 
+        public object? GetService(Type? serviceType) => GetService(serviceType, null);
+
         public IEnumerable<object> GetServices(Type? serviceType, string? contract = null)
         {
             if (serviceType == null)
@@ -1133,6 +1135,16 @@ public class BuilderInstanceMixinsHappyPathTests
 
             return _services.TryGetValue(serviceType, out var service) ? [service] : [];
         }
+
+        public IEnumerable<object> GetServices(Type? serviceType) => GetServices(serviceType, null);
+
+        public T? GetService<T>(string? contract = null) => (T?)GetService(typeof(T), contract);
+
+        public T? GetService<T>() => (T?)GetService(typeof(T));
+
+        public IEnumerable<T> GetServices<T>(string? contract = null) => GetServices(typeof(T), contract).Cast<T>();
+
+        public IEnumerable<T> GetServices<T>() => GetServices(typeof(T)).Cast<T>();
 
         public bool HasRegistration(Type? serviceType, string? contract = null) =>
             serviceType != null && _services.ContainsKey(serviceType);

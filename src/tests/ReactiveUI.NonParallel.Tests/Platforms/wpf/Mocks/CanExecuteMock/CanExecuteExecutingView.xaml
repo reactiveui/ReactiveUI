@@ -6,9 +6,9 @@
     xmlns:local="clr-namespace:ReactiveUI.Tests.Wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="http://reactiveui.net"
+    x:TypeArguments="local:CommandBindingViewModel"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    x:TypeArguments="local:CommandBindingViewModel"
     mc:Ignorable="d">
     <Grid>
         <TextBlock Margin="0,30,0,0" Text="Test User Control" />

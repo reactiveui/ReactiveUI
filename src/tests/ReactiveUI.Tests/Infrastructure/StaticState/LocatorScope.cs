@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 using Splat;
 
 namespace ReactiveUI.Tests.Infrastructure.StaticState;
@@ -54,10 +56,10 @@ public sealed class LocatorScope : IDisposable
         _previousLocator = Locator.Current;
 
         // Replace with a new locator that tests can modify
-        var newLocator = new ModernDependencyResolver();
-        newLocator.InitializeSplat();
-        newLocator.InitializeReactiveUI();
-        Locator.SetLocator(newLocator);
+        // Use the builder pattern to initialize ReactiveUI services
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .BuildApp();
     }
 
     /// <summary>

@@ -29,7 +29,9 @@ public sealed partial class ActivationForViewFetcherTests
         AppBuilder.ResetBuilderStateForTests();
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        resolver.CreateReactiveUIBuilder()
+            .WithPlatformServices()
+            .BuildApp();
         resolver.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher());
 
         using (resolver.WithResolver())

@@ -26,7 +26,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         // Register
         resolver.Register(() => new FooView(), typeof(IViewFor<FooViewModel>));
@@ -67,7 +69,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IViewFor<FooViewModel>));
 
         using (resolver.WithResolver())
@@ -90,7 +94,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
@@ -113,16 +119,16 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooWithWeirdConvention(), typeof(FooWithWeirdConvention));
 
         using (resolver.WithResolver())
         {
-            var fixture = new DefaultViewLocator
-            {
-                ViewModelToViewFunc =
-                static viewModelName => viewModelName.Replace("ViewModel", "WithWeirdConvention")
-            };
+            var fixture = new DefaultViewLocator();
+
+            // FooWithWeirdConvention implements IFooView, use service registration instead
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
@@ -140,7 +146,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
@@ -163,7 +171,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IFooView));
 
         using (resolver.WithResolver())
@@ -186,7 +196,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IViewFor<FooViewModel>));
 
         using (resolver.WithResolver())
@@ -209,7 +221,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(FooView));
 
         using (resolver.WithResolver())
@@ -232,7 +246,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IFooView));
 
         using (resolver.WithResolver())
@@ -255,7 +271,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IViewFor<IFooViewModel>));
 
         using (resolver.WithResolver())
@@ -278,7 +296,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => new FooView(), typeof(IViewFor<IFooViewModel>), "first");
         resolver.Register(static () => new FooWithWeirdConvention(), typeof(IViewFor<IFooViewModel>), "second");
 
@@ -308,15 +328,15 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
-            var fixture = new DefaultViewLocator
-            {
-                ViewModelToViewFunc = static viewModelName =>
-                "DoesNotExist, " + typeof(DefaultViewLocatorTests).Assembly.FullName
-            };
+            var fixture = new DefaultViewLocator();
+
+            // Don't register any views - this will cause resolution to fail
             var vm = new FooViewModel();
 
             var result = fixture.ResolveView(vm);
@@ -334,7 +354,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -356,7 +378,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(static () => "this string does not implement IViewFor", typeof(IViewFor<IFooViewModel>));
 
         using (resolver.WithResolver())
@@ -379,7 +403,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
         resolver.Register(() => new FooThatThrowsView(), typeof(IViewFor<IFooViewModel>));
 
         using (resolver.WithResolver())
@@ -406,7 +432,9 @@ public partial class DefaultViewLocatorTests
         var resolver = new ModernDependencyResolver();
 
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -427,7 +455,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -451,7 +481,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -478,7 +510,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -502,7 +536,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {
@@ -528,7 +564,9 @@ public partial class DefaultViewLocatorTests
     {
         var resolver = new ModernDependencyResolver();
         resolver.InitializeSplat();
-        resolver.InitializeReactiveUI();
+        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithCoreServices()
+            .BuildApp();
 
         using (resolver.WithResolver())
         {

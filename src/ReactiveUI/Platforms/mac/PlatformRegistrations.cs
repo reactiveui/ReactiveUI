@@ -12,22 +12,28 @@ namespace ReactiveUI;
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Platform registration uses ComponentModelTypeConverter and RxApp which require dynamic code generation")]
-    [RequiresUnreferencedCode("Platform registration uses ComponentModelTypeConverter and RxApp which may require unreferenced code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Not all paths use reflection")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new AppKitObservableForProperty(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new TargetActionCommandBinder(), typeof(ICreatesCommandBinding));
-        registerFunction(static () => new DateTimeNSDateConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new KVOObservableForProperty(), typeof(ICreatesObservableForProperty));
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new AppKitObservableForProperty());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new TargetActionCommandBinder());
+
+        // DateTime ↔ NSDate converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeConverter());
+
+        // DateTimeOffset ↔ NSDate converters
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DateTimeOffsetToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDateTimeOffsetToNSDateConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToDateTimeOffsetConverter());
+        registrar.RegisterConstant<IBindingTypeConverter>(static () => new NSDateToNullableDateTimeOffsetConverter());
+
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new KVOObservableForProperty());
 
         if (!ModeDetector.InUnitTestRunner())
         {
@@ -35,6 +41,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
             RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
         }
 
-        registerFunction(static () => new AppSupportJsonSuspensionDriver(), typeof(ISuspensionDriver));
+        registrar.RegisterConstant<ISuspensionDriver>(static () => new AppSupportJsonSuspensionDriver());
     }
 }
