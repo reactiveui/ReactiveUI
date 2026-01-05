@@ -13,37 +13,33 @@ namespace ReactiveUI.Winforms
     public class ActivationForViewFetcher : ReactiveUI.IActivationForViewFetcher, Splat.IEnableLogger
     {
         public ActivationForViewFetcher() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
         public System.IObservable<bool> GetActivationForView(ReactiveUI.IActivatableView view) { }
         public int GetAffinityForView(System.Type view) { }
     }
     public class ContentControlBindingHook : ReactiveUI.IPropertyBindingHook
     {
         public ContentControlBindingHook() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ExecuteHook uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ExecuteHook uses methods that may require unreferenced code")]
         public bool ExecuteHook(object? source, object target, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object, object>[]> getCurrentViewProperties, ReactiveUI.BindingDirection direction) { }
     }
-    public class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
+    public sealed class CreatesWinformsCommandBinding : ReactiveUI.ICreatesCommandBinding
     {
         public CreatesWinformsCommandBinding() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-        public System.IDisposable? BindCommandToObject(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-        public System.IDisposable BindCommandToObject<TEventArgs>(System.Windows.Input.ICommand? command, object? target, System.IObservable<object?> commandParameter, string eventName) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-        public int GetAffinityForObject(System.Type type, bool hasEventTarget) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.NonPublicEvents)]  T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter)
+            where T :  class { }
+        public System.IDisposable? BindCommandToObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.NonPublicEvents)]  T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler> addHandler, System.Action<System.EventHandler> removeHandler)
+            where T :  class { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public System.IDisposable? BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, string eventName)
+            where T :  class { }
+        public System.IDisposable? BindCommandToObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.NonPublicEvents)]  T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?> commandParameter, System.Action<System.EventHandler<TEventArgs>> addHandler, System.Action<System.EventHandler<TEventArgs>> removeHandler)
+            where T :  class
+            where TEventArgs : System.EventArgs { }
         public int GetAffinityForObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents)]  T>(bool hasEventTarget) { }
     }
     public class PanelSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public PanelSetMethodBindingConverter() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObjects uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObjects uses methods that may require unreferenced code")]
         public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
@@ -57,10 +53,6 @@ namespace ReactiveUI.Winforms
         public ReactiveUserControlNonGeneric() { }
         protected override void Dispose(bool disposing) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ReactiveUserControl<TViewModel> provides base functionality for ReactiveUI which " +
-        "may require dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ReactiveUserControl<TViewModel> provides base functionality for ReactiveUI which " +
-        "may require unreferenced code")]
     public class ReactiveUserControl<TViewModel> : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IViewFor, ReactiveUI.IViewFor<TViewModel>
         where TViewModel :  class
     {
@@ -75,17 +67,11 @@ namespace ReactiveUI.Winforms
     public class Registrations : ReactiveUI.IWantsToRegisterStuff
     {
         public Registrations() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("Register uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Register uses methods that may require unreferenced code")]
-        public void Register(System.Action<System.Func<object>, System.Type> registerFunction) { }
+        public void Register(ReactiveUI.IRegistrar registrar) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedControlHost uses methods that require dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("RoutedControlHost uses methods that may require unreferenced code")]
     public class RoutedControlHost : System.Windows.Forms.UserControl, ReactiveUI.IReactiveObject, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("RoutedControlHost uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("RoutedControlHost uses methods that may require unreferenced code")]
         public RoutedControlHost() { }
         [System.ComponentModel.Category("ReactiveUI")]
         [System.ComponentModel.Description("The default control when no viewmodel is specified")]
@@ -108,18 +94,16 @@ namespace ReactiveUI.Winforms
     public class TableContentSetMethodBindingConverter : ReactiveUI.ISetMethodBindingConverter, Splat.IEnableLogger
     {
         public TableContentSetMethodBindingConverter() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObjects uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObjects uses methods that may require unreferenced code")]
         public int GetAffinityForObjects(System.Type? fromType, System.Type? toType) { }
         public object PerformSet(object? toTarget, object? newValue, object?[]? arguments) { }
     }
     [System.ComponentModel.DefaultProperty("ViewModel")]
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelControlHost uses methods that require dynamic code generation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ViewModelControlHost uses methods that may require unreferenced code")]
+    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilatio" +
+        "n.")]
+    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewL" +
+        "ocator, which may be incompatible with trimming.")]
     public class ViewModelControlHost : System.Windows.Forms.UserControl, ReactiveUI.IActivatableView, ReactiveUI.IReactiveObject, ReactiveUI.IViewFor, Splat.IEnableLogger, System.ComponentModel.INotifyPropertyChanged, System.ComponentModel.INotifyPropertyChanging
     {
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("ViewModelControlHost uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("ViewModelControlHost uses methods that may require unreferenced code")]
         public ViewModelControlHost() { }
         [System.ComponentModel.Bindable(true)]
         [System.ComponentModel.Category("ReactiveUI")]
@@ -153,18 +137,12 @@ namespace ReactiveUI.Winforms
         public event System.ComponentModel.PropertyChangingEventHandler? PropertyChanging;
         protected override void Dispose(bool disposing) { }
     }
-    [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("WinformsCreatesObservableForProperty uses methods that require dynamic code gener" +
-        "ation")]
-    [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("WinformsCreatesObservableForProperty uses methods that may require unreferenced c" +
-        "ode")]
     public class WinformsCreatesObservableForProperty : ReactiveUI.ICreatesObservableForProperty, Splat.IEnableLogger
     {
         public WinformsCreatesObservableForProperty() { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
         public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
-        [System.Diagnostics.CodeAnalysis.RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
         public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
     }
 }
