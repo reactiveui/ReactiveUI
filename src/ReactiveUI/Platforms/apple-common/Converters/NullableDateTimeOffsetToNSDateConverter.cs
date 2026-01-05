@@ -15,7 +15,7 @@ namespace ReactiveUI;
 public sealed class NullableDateTimeOffsetToNSDateConverter : BindingTypeConverter<DateTimeOffset?, NSDate>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 100;
+    public override int GetAffinityForObjects() => 8;
 
     /// <inheritdoc/>
     public override bool TryConvert(DateTimeOffset? from, object? conversionHint, [NotNullWhen(true)] out NSDate? result)

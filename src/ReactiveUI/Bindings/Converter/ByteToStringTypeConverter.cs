@@ -13,7 +13,7 @@ namespace ReactiveUI;
 public sealed class ByteToStringTypeConverter : BindingTypeConverter<byte, string>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 10;
+    public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public override bool TryConvert(byte from, object? conversionHint, [NotNullWhen(true)] out string? result)

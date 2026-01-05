@@ -23,7 +23,7 @@ public sealed class StringConverter : IBindingTypeConverter
     public Type ToType => typeof(string);
 
     /// <inheritdoc/>
-    public int GetAffinityForObjects() => 10;
+    public int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public bool TryConvertTyped(object? from, object? conversionHint, [NotNullWhen(true)] out object? result)

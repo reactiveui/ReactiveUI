@@ -15,7 +15,7 @@ namespace ReactiveUI;
 public sealed class NSDateToDateTimeOffsetConverter : BindingTypeConverter<NSDate, DateTimeOffset>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 100;
+    public override int GetAffinityForObjects() => 8;
 
     /// <inheritdoc/>
     public override bool TryConvert(NSDate? from, object? conversionHint, [NotNullWhen(true)] out DateTimeOffset result)

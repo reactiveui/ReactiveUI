@@ -16,20 +16,19 @@ namespace ReactiveUI.Tests;
 /// Tests for RoutedViewHost.
 /// </summary>
 /// <remarks>
-/// This test fixture is marked as NonParallelizable because tests call
-/// Locator.CurrentMutable.InitializeSplat() and RxAppBuilder.CreateReactiveUIBuilder(),
-/// which mutate global service locator state. This state must not be mutated concurrently
+/// This test fixture is marked as NonParallelizable because tests modify
+/// global service locator state. This state must not be mutated concurrently
 /// by parallel tests.
 /// </remarks>
 [NotInParallel]
 public class RoutedViewHostTests
 {
-    private LocatorScope? _locatorScope;
+    private WpfLocatorScope? _locatorScope;
 
     [Before(Test)]
     public void SetUp()
     {
-        _locatorScope = new LocatorScope();
+        _locatorScope = new WpfLocatorScope();
     }
 
     [After(Test)]
@@ -42,11 +41,6 @@ public class RoutedViewHostTests
     [TestExecutor<STAThreadExecutor>]
     public async Task RoutedViewHostDefaultContentNotNull()
     {
-        Locator.CurrentMutable.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
-            .WithCoreServices()
-            .BuildApp();
-
         var uc = new RoutedViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
@@ -71,10 +65,6 @@ public class RoutedViewHostTests
     [TestExecutor<STAThreadExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
-        Locator.CurrentMutable.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
-            .WithCoreServices()
-            .BuildApp();
         Locator.CurrentMutable.Register<RoutingState>(static () => new());
         Locator.CurrentMutable.Register<TestViewModel>(static () => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
@@ -109,10 +99,6 @@ public class RoutedViewHostTests
     [TestExecutor<STAThreadExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
-        Locator.CurrentMutable.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(Locator.CurrentMutable)
-            .WithCoreServices()
-            .BuildApp();
         Locator.CurrentMutable.Register<RoutingState>(static () => new());
         Locator.CurrentMutable.Register<TestViewModel>(static () => new());
         Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());

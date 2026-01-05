@@ -567,6 +567,61 @@ dotnet build src/reactiveui.slnx -c Release -warnaserror
 
 **Important:** Style violations will cause build failures. Use an IDE with EditorConfig support (Visual Studio, VS Code, Rider) to automatically format code according to project standards.
 
+### Zero Pragma Policy for Warning Suppression
+
+**CRITICAL: This project enforces a strict zero pragma policy.**
+
+* **NO `#pragma warning disable` statements are allowed** in any code files
+* **All StyleCop analyzer warnings (SA****) MUST be fixed**, never suppressed
+* **Code analyzer warnings (CA****) may ONLY be suppressed as an absolute last resort** using `[SuppressMessage]` attribute with these requirements:
+  1. You have attempted to fix the warning first
+  2. Fixing it would make the code worse or is not technically feasible
+  3. You use `[SuppressMessage]` attribute (NOT pragma)
+  4. You provide a clear, valid justification in the `Justification` parameter
+
+#### Examples
+
+```csharp
+// ❌ WRONG - Never use pragma directives
+#pragma warning disable CA1062
+public void ProcessData(object data)
+{
+    data.ToString();  // CA1062: Validate parameter is non-null
+}
+#pragma warning restore CA1062
+
+// ✅ CORRECT - Fix the issue
+public void ProcessData(object data)
+{
+    ArgumentNullException.ThrowIfNull(data);
+    data.ToString();
+}
+
+// ⚠️ ACCEPTABLE - SuppressMessage with justification (last resort only)
+[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
+    Justification = "TUnit framework guarantees non-null parameters from test data sources")]
+public async Task ValidateConverter(IBindingTypeConverter converter, int expectedAffinity)
+{
+    var affinity = converter.GetAffinityForObjects();  // converter is never null
+    await Assert.That(affinity).IsEqualTo(expectedAffinity);
+}
+```
+
+#### Common StyleCop Fixes (Must Be Fixed, Never Suppressed)
+
+* **SA1202** (Static members before instance members): Reorder class members
+* **SA1204** (Static members before non-static): Move static members to top
+* **SA1402** (One type per file): Convert file-scoped types to nested private classes
+* **SA1611** (Parameter documentation missing): Add `<param>` XML tags
+* **SA1615** (Return value documentation missing): Add `<returns>` XML tags
+* **SA1600** (Elements should be documented): Add XML documentation to public members
+
+#### Enforcement
+
+* Builds fail with `-warnaserror` if any analyzer warnings exist
+* Any pragma directives will be flagged and rejected during code review
+* `SuppressMessage` usage requires clear justification and approval
+
 ---
 
 ## 📋 Testing Guidelines

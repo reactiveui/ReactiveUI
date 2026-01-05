@@ -8,11 +8,11 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class DecimalToStringTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_Returns10()
+    public async Task GetAffinityForObjects_Returns2()
     {
         var converter = new DecimalToStringTypeConverter();
         var affinity = converter.GetAffinityForObjects();
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(2);
     }
 
     [Test]

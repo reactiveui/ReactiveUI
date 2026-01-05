@@ -1111,4 +1111,196 @@ public static class BuilderMixins
 
         return reactiveUIInstance;
     }
+
+    /// <summary>
+    /// Registers a typed binding converter using the concrete type.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    public static IReactiveUIBuilder WithConverter<TFrom, TTo>(
+        this IReactiveUIBuilder builder,
+        BindingTypeConverter<TFrom, TTo> converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter using the interface.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    public static IReactiveUIBuilder WithConverter(
+        this IReactiveUIBuilder builder,
+        IBindingTypeConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithConverter<TFrom, TTo>(
+        this IReactiveUIBuilder builder,
+        Func<BindingTypeConverter<TFrom, TTo>> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (interface, lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithConverter(
+        this IReactiveUIBuilder builder,
+        Func<IBindingTypeConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers multiple typed converters at once.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converters">The converters to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converters is null.</exception>
+    public static IReactiveUIBuilder WithConverters(
+        this IReactiveUIBuilder builder,
+        params IBindingTypeConverter[] converters)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        ArgumentExceptionHelper.ThrowIfNull(converters);
+
+        foreach (var converter in converters)
+        {
+            builder.WithConverter(converter);
+        }
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The fallback converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    /// <remarks>
+    /// Fallback converters are used when no exact type-pair converter is found.
+    /// They perform runtime type checking via <see cref="IBindingFallbackConverter.GetAffinityForObjects(Type, Type)"/>.
+    /// </remarks>
+    public static IReactiveUIBuilder WithFallbackConverter(
+        this IReactiveUIBuilder builder,
+        IBindingFallbackConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithFallbackConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the fallback converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithFallbackConverter(
+        this IReactiveUIBuilder builder,
+        Func<IBindingFallbackConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithFallbackConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The set-method converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    /// <remarks>
+    /// Set-method converters are used for special binding scenarios where the target
+    /// uses a method (e.g., TableLayoutPanel.SetColumn) instead of a property setter.
+    /// </remarks>
+    public static IReactiveUIBuilder WithSetMethodConverter(
+        this IReactiveUIBuilder builder,
+        ISetMethodBindingConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithSetMethodConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the set-method converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithSetMethodConverter(
+        this IReactiveUIBuilder builder,
+        Func<ISetMethodBindingConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithSetMethodConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Imports all converters from a Splat dependency resolver into the builder.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="resolver">The Splat resolver to import converters from.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or resolver is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This is a migration helper to ease transition from Splat-based registration
+    /// to the new ConverterService-based registration.
+    /// </para>
+    /// <para>
+    /// This method imports all three converter types:
+    /// <list type="bullet">
+    /// <item><description>Typed converters (<see cref="IBindingTypeConverter"/>)</description></item>
+    /// <item><description>Fallback converters (<see cref="IBindingFallbackConverter"/>)</description></item>
+    /// <item><description>Set-method converters (<see cref="ISetMethodBindingConverter"/>)</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    public static IReactiveUIBuilder WithConvertersFrom(
+        this IReactiveUIBuilder builder,
+        IReadonlyDependencyResolver resolver)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConvertersFrom(resolver);
+        return builder;
+    }
 }

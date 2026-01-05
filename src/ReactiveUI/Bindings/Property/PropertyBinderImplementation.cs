@@ -28,20 +28,6 @@ namespace ReactiveUI;
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
     /// <summary>
-    /// Caches the best converter for a given (<c>fromType</c>, <c>toType</c>) pair.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The cached value is either an <see cref="IBindingTypeConverter"/> (preferred) or an <see cref="IBindingFallbackConverter"/>.
-    /// </para>
-    /// <para>
-    /// A <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey,TValue}"/> is used to avoid MRU eviction churn
-    /// and to keep lookup fast and allocation-free on the hot path.
-    /// </para>
-    /// </remarks>
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<(Type fromType, Type toType), object?> _typeConverterCache = new();
-
-    /// <summary>
     /// Caches the best set-method converter for a given (<c>fromType</c>, <c>toType</c>) pair.
     /// </summary>
     /// <remarks>
@@ -281,21 +267,56 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     /// if one is registered for the specified types; otherwise, <see langword="null"/>.
     /// </returns>
     /// <remarks>
-    /// This method caches results per type-pair. Typed converters (exact pair match) are preferred over fallback converters.
+    /// <para>
+    /// Typed converters (exact pair match) are preferred over fallback converters.
+    /// </para>
+    /// <para>
+    /// This method uses <see cref="RxConverters.Current"/> which provides lock-free converter lookup
+    /// with built-in affinity-based selection. No external caching is needed.
+    /// </para>
     /// </remarks>
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
-        _typeConverterCache.GetOrAdd((lhs, rhs), static key => ResolveBestConverter(key.fromType, key.toType));
+        ResolveBestConverter(lhs, rhs);
 
     /// <summary>
-    /// Resolves the best converter for a given type pair.
+    /// Resolves the best converter for a given type pair using the ConverterService.
     /// </summary>
     /// <param name="fromType">The source type.</param>
     /// <param name="toType">The target type.</param>
     /// <returns>
     /// The selected converter (typed preferred), or <see langword="null"/> if none matches.
     /// </returns>
+    /// <remarks>
+    /// <para>
+    /// This method first attempts to use <see cref="RxConverters.Current"/> for lock-free converter resolution.
+    /// If no ConverterService is available (legacy initialization), it falls back to Splat-based resolution.
+    /// </para>
+    /// <para>
+    /// The ConverterService provides:
+    /// <list type="bullet">
+    /// <item><description>Lock-free reads via snapshot pattern</description></item>
+    /// <item><description>Built-in affinity-based selection (highest wins)</description></item>
+    /// <item><description>Two-phase resolution: typed converters first, then fallback converters</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
     private static object? ResolveBestConverter(Type fromType, Type toType)
     {
+        // Try to use the new ConverterService first (lock-free, optimized)
+        try
+        {
+            var converter = RxConverters.Current.ResolveConverter(fromType, toType);
+            if (converter is not null)
+            {
+                return converter;
+            }
+        }
+        catch
+        {
+            // ConverterService not available, fall back to Splat
+        }
+
+        // Fallback to Splat-based resolution for backward compatibility
         // Phase 1: exact-pair typed converters by affinity.
         var typed = AppLocator.Current.GetServices<IBindingTypeConverter>();
         var bestTypedScore = -1;

@@ -13,7 +13,7 @@ namespace ReactiveUI;
 public sealed class LongToStringTypeConverter : BindingTypeConverter<long, string>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 10;
+    public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public override bool TryConvert(long from, object? conversionHint, [NotNullWhen(true)] out string? result)

@@ -36,7 +36,7 @@ namespace ReactiveUI;
 public sealed class BooleanToVisibilityTypeConverter : BindingTypeConverter<bool, Visibility>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 10;
+    public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public override bool TryConvert(bool from, object? conversionHint, [NotNullWhen(true)] out Visibility result)

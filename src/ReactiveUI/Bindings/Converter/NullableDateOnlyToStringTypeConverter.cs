@@ -14,7 +14,7 @@ namespace ReactiveUI;
 public sealed class NullableDateOnlyToStringTypeConverter : BindingTypeConverter<DateOnly?, string>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 10;
+    public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public override bool TryConvert(DateOnly? from, object? conversionHint, [NotNullWhen(true)] out string? result)

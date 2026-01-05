@@ -15,7 +15,7 @@ namespace ReactiveUI;
 public sealed class NullableDateTimeToNSDateConverter : BindingTypeConverter<DateTime?, NSDate>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 100;
+    public override int GetAffinityForObjects() => 8;
 
     /// <inheritdoc/>
     public override bool TryConvert(DateTime? from, object? conversionHint, [NotNullWhen(true)] out NSDate? result)

@@ -24,6 +24,7 @@ public partial class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithWpf()
             .WithCoreServices()
             .BuildApp();
 
@@ -53,6 +54,7 @@ public partial class DefaultViewLocatorTests
 
         resolver.InitializeSplat();
         RxAppBuilder.CreateReactiveUIBuilder(resolver)
+            .WithWpf()
             .WithCoreServices()
             .BuildApp();
 

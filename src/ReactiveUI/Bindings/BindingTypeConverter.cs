@@ -23,12 +23,28 @@ public abstract class BindingTypeConverter<TFrom, TTo> : IBindingTypeConverter<T
     /// <inheritdoc/>
     public Type ToType => typeof(TTo);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns the affinity score for this converter.
+    /// </summary>
+    /// <returns>
+    /// A positive integer indicating converter priority. Higher values win when multiple converters match.
+    /// Return 0 if the converter cannot handle the type pair.
+    /// </returns>
     /// <remarks>
-    /// The default implementation returns a constant affinity for an exact type-pair converter.
-    /// Override if you need different selection semantics within a pair-based registry.
+    /// <para><strong>Affinity Guidelines:</strong></para>
+    /// <list type="bullet">
+    /// <item><description><strong>0</strong> - Cannot convert (no conversion possible)</description></item>
+    /// <item><description><strong>1</strong> - Last resort converters (e.g., EqualityTypeConverter)</description></item>
+    /// <item><description><strong>2</strong> - Standard ReactiveUI core converters (string, numeric, datetime)</description></item>
+    /// <item><description><strong>8</strong> - Platform-specific standard converters (NSDate, WinForms controls)</description></item>
+    /// <item><description><strong>100+</strong> - Third-party override range (use to override ReactiveUI defaults)</description></item>
+    /// </list>
+    /// <para>
+    /// When multiple converters match the same type pair, the converter with the highest affinity is selected.
+    /// Third-party converters should return 100 or higher to override ReactiveUI defaults.
+    /// </para>
     /// </remarks>
-    public virtual int GetAffinityForObjects() => 10;
+    public abstract int GetAffinityForObjects();
 
     /// <inheritdoc/>
     public abstract bool TryConvert(TFrom? from, object? conversionHint, [NotNullWhen(true)] out TTo? result);

@@ -11,11 +11,11 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class EqualityTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_Returns5()
+    public async Task GetAffinityForObjects_Returns1()
     {
         var converter = new EqualityTypeConverter();
         var affinity = converter.GetAffinityForObjects();
-        await Assert.That(affinity).IsEqualTo(5);
+        await Assert.That(affinity).IsEqualTo(1);
     }
 
     [Test]

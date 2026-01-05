@@ -425,6 +425,64 @@ _total = this.WhenAnyValue(
 3. Verify AOT compatibility
 4. Ensure no regression in existing tests
 
+## Code Quality and Warning Suppression Policy
+
+### Zero Pragma Policy
+
+**CRITICAL: This project enforces a zero pragma policy for warning suppression.**
+
+- **NO `#pragma warning disable` statements allowed** in any code files
+- **All StyleCop analyzer warnings (SA****) MUST be fixed**, not suppressed
+- **Code analyzer warnings (CA****) may be suppressed ONLY as a last resort** with the following conditions:
+  1. You have attempted to fix the warning first
+  2. The fix would make the code worse or is not feasible
+  3. You use `[SuppressMessage]` attribute instead of pragma
+  4. You provide a clear, valid justification in the `Justification` parameter
+
+### When Suppression Is Acceptable
+
+```csharp
+// WRONG - Never use pragma
+#pragma warning disable CA1062
+public void MyMethod(object parameter)
+{
+    parameter.ToString();  // CA1062: Validate parameter is non-null
+}
+#pragma warning restore CA1062
+
+// CORRECT - Fix the issue
+public void MyMethod(object parameter)
+{
+    ArgumentNullException.ThrowIfNull(parameter);
+    parameter.ToString();
+}
+
+// ACCEPTABLE - SuppressMessage with valid justification (last resort only)
+[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
+    Justification = "TUnit framework guarantees non-null parameters from data sources")]
+public async Task MyTest(IConverter converter, int expectedValue)
+{
+    var result = converter.GetValue();  // converter is never null from test framework
+    await Assert.That(result).IsEqualTo(expectedValue);
+}
+```
+
+### Fixing StyleCop Violations
+
+**StyleCop warnings MUST always be fixed, never suppressed.** Common fixes:
+
+- **SA1202** (Static members before instance): Reorder members
+- **SA1204** (Static before non-static): Move static members to top of class
+- **SA1402** (One type per file): Move nested types inside parent class or split files
+- **SA1611/SA1615** (Missing documentation): Add XML documentation tags
+- **SA1600** (Elements should be documented): Add XML documentation to public members
+
+### Enforcement
+
+- Build will fail with `-warnaserror` flag if any analyzer warnings exist
+- All pragma directives will be flagged during code review
+- Use of `SuppressMessage` requires justification and review approval
+
 ## What to Avoid
 
 - **Reflection-heavy patterns** without proper AOT suppression

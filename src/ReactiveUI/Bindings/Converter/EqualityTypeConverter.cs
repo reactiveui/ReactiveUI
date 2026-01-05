@@ -29,7 +29,7 @@ public sealed class EqualityTypeConverter : IBindingTypeConverter
     public Type ToType => typeof(bool);
 
     /// <inheritdoc/>
-    public int GetAffinityForObjects() => 5;
+    public int GetAffinityForObjects() => 1;
 
     /// <inheritdoc/>
     public bool TryConvertTyped(object? from, object? conversionHint, [NotNullWhen(true)] out object? result)

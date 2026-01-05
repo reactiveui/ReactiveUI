@@ -13,7 +13,7 @@ namespace ReactiveUI;
 public sealed class StringToNullableTimeSpanTypeConverter : BindingTypeConverter<string, TimeSpan?>
 {
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 10;
+    public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
     public override bool TryConvert(string? from, object? conversionHint, [NotNullWhen(true)] out TimeSpan? result)
