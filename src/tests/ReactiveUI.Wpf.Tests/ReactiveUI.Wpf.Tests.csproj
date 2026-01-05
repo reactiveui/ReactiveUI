@@ -9,30 +9,42 @@
     <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <UseWpf>true</UseWpf>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
     <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="System.ValueTuple" />
-  </ItemGroup>
-
-  <!-- Include shared mocks and infrastructure from NonParallel.Tests -->
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
-             Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
-             Link="Shared\Mocks\%(Filename)%(Extension)" />
-    <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+    <Compile Remove="**\*.cs" />
+    <None Include="**\*.cs" />
+    <!-- Include cross-platform sanity tests for all platforms -->
+    <Compile Include="SanityTests.cs" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+        <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+        <Compile Include="Wpf\**\*.cs" />
+        <Compile Include="Xaml\**\*.cs" />
+        <Compile Include="AssemblyHooks.cs" />
+        <Compile Include="AssemblyInfo.Parallel.cs" />
+        <Page Update="Wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+      </ItemGroup>
+    </When>
+  </Choose>
 
   <!-- Global usings -->
   <ItemGroup>

@@ -8,6 +8,7 @@ using DynamicData;
 using ReactiveUI.Tests.Infrastructure.StaticState;
 using ReactiveUI.Tests.Wpf;
 
+using TUnit.Core;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
@@ -17,15 +18,15 @@ namespace ReactiveUI.Tests;
 /// </summary>
 /// <remarks>
 /// This test fixture is marked as NonParallelizable because tests modify
-/// global service locator state. This state must not be mutated concurrently by parallel tests.
+/// global service locator state.
 /// </remarks>
 [NotInParallel]
 public class ViewModelViewHostTests
 {
     private WpfLocatorScope? _locatorScope;
 
-    [Before(Test)]
-    public void SetUp()
+    [Before(HookType.Test)]
+    public void Setup()
     {
         _locatorScope = new WpfLocatorScope();
     }
@@ -40,6 +41,11 @@ public class ViewModelViewHostTests
     [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelViewHostDefaultContentNotNull()
     {
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            .WithCoreServices()
+            .BuildApp();
+
         var uc = new ViewModelViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
@@ -66,13 +72,18 @@ public class ViewModelViewHostTests
     [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelViewHostContentNotNullWithViewModelAndActivated()
     {
-        Locator.CurrentMutable.Register<TestViewModel>(static () => new());
-        Locator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            .RegisterView<TestView, TestViewModel>()
+            .WithCoreServices()
+            .BuildApp();
+
+        var viewModel = new TestViewModel();
 
         var uc = new ViewModelViewHost
         {
             DefaultContent = new System.Windows.Controls.Label(),
-            ViewModel = Locator.Current.GetService<TestViewModel>()
+            ViewModel = viewModel
         };
 
         var activation = new ActivationForViewFetcher();

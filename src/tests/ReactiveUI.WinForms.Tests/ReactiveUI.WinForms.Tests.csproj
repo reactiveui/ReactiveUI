@@ -9,7 +9,6 @@
     <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,17 +19,43 @@
     <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="System.ValueTuple" />
+  <ItemGroup>
+    <Compile Remove="**\*.cs" />
+    <None Include="**\*.cs" />
   </ItemGroup>
 
-  <!-- Include shared mocks and infrastructure from NonParallel.Tests -->
-  <ItemGroup>
-    <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
-             Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
-             Link="Shared\Mocks\%(Filename)%(Extension)" />
-    <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <Compile Include="winforms\**\*.cs" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
+                 Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
+                 Link="Shared\Mocks\%(Filename)%(Extension)" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+      </ItemGroup>
+    </When>
+    <When Condition=" $(TargetFramework.StartsWith('net4'))">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <PackageReference Include="System.ValueTuple" />
+        <Compile Include="winforms\**\*.cs" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
+                 Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
+                 Link="Shared\Mocks\%(Filename)%(Extension)" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
 
   <!-- Global usings -->
   <ItemGroup>

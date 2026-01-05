@@ -16,7 +16,7 @@ namespace ReactiveUI;
 /// </para>
 /// <list type="bullet">
 /// <item><description>
-/// <strong>Reads:</strong> Lock-free via <see cref="Volatile.Read{T}(ref T)"/> of the snapshot reference.
+/// <strong>Reads:</strong> Lock-free via a volatile read of the snapshot reference.
 /// Multiple readers can access the registry concurrently without contention.
 /// </description></item>
 /// <item><description>
@@ -59,7 +59,7 @@ public sealed class BindingTypeConverterRegistry
     /// <remarks>
     /// This is a copy-on-write snapshot to allow lock-free reads:
     /// writers publish a new <see cref="Snapshot"/> instance via assignment under <see cref="_gate"/>;
-    /// readers use <see cref="Volatile.Read{T}(ref T)"/> without locking.
+    /// readers use a volatile read without locking.
     /// </remarks>
     private Snapshot? _snapshot;
 

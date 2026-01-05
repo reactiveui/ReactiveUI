@@ -3,12 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using ReactiveUI.Builder;
-using Splat.Builder;
-using TUnit.Core;
-
-namespace ReactiveUI.Wpf.Tests;
+namespace ReactiveUI.Tests;
 
 /// <summary>
 /// Assembly-level hooks for WPF test initialization and cleanup.

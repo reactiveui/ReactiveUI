@@ -5,7 +5,6 @@
 
 using System.Collections;
 using System.Globalization;
-using System.Reactive.Disposables.Fluent;
 
 using DynamicData.Binding;
 

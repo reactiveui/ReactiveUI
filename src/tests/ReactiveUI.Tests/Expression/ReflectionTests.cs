@@ -415,7 +415,7 @@ public class ReflectionTests
 
         var args = expr.Body.GetArgumentsArray();
 
-        await Assert.That(args).IsNull();
+        await Assert.That(args is null).IsTrue();
     }
 
     public class TestClass

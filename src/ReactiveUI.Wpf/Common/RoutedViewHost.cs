@@ -75,7 +75,7 @@ public
         }
         else
         {
-            platformGetter = () => platform.GetOrientation();
+            platformGetter = platform.GetOrientation;
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()

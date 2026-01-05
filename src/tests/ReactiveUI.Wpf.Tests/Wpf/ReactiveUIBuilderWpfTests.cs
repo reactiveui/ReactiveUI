@@ -3,17 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Wpf;
-using Splat.Builder;
-
-namespace ReactiveUI.Builder.Tests.Platforms.Wpf;
+namespace ReactiveUI.Tests.Wpf;
 
 public class ReactiveUIBuilderWpfTests
 {
     [Test]
     public async Task WithWpf_Should_Register_Wpf_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
 
@@ -29,7 +25,6 @@ public class ReactiveUIBuilderWpfTests
     [Test]
     public async Task WithCoreServices_AndWpf_Should_Register_All_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
 

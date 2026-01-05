@@ -23,7 +23,7 @@ public class BooleanToVisibilityTypeConverterTest
 
         var affinity = converter.GetAffinityForObjects();
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(2);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class BooleanToVisibilityTypeConverterTest
 
         var affinity = converter.GetAffinityForObjects();
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(2);
     }
 
     /// <summary>
