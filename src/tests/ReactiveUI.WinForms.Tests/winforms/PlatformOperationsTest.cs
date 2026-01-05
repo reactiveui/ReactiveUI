@@ -8,7 +8,7 @@ using TUnit.Core.Executors;
 namespace ReactiveUI.Tests.Winforms;
 
 /// <summary>
-/// Tests for <see cref="PlatformOperations"/>.
+/// Tests for PlatformOperations.
 /// </summary>
 [NotInParallel]
 public class PlatformOperationsTest

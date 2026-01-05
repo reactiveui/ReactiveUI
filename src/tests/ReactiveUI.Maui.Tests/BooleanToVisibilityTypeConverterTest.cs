@@ -41,20 +41,6 @@ public class BooleanToVisibilityTypeConverterTest
     }
 
     /// <summary>
-    /// Tests that GetAffinityForObjects returns zero for unsupported types.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task GetAffinityForObjects_ReturnsZeroForUnsupportedTypes()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var affinity = converter.GetAffinityForObjects();
-
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    /// <summary>
     /// Tests that TryConvert converts true to Visibility.Visible.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>

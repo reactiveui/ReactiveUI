@@ -24,6 +24,18 @@ public sealed class NullableSingleToStringTypeConverter : BindingTypeConverter<f
             return false;
         }
 
+        if (conversionHint is int decimalPlaces)
+        {
+            result = from.Value.ToString($"F{decimalPlaces}");
+            return true;
+        }
+
+        if (conversionHint is string format)
+        {
+            result = from.Value.ToString(format);
+            return true;
+        }
+
         result = from.Value.ToString();
         return true;
     }

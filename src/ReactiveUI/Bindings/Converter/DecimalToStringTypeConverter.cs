@@ -18,6 +18,18 @@ public sealed class DecimalToStringTypeConverter : BindingTypeConverter<decimal,
     /// <inheritdoc/>
     public override bool TryConvert(decimal from, object? conversionHint, [NotNullWhen(true)] out string? result)
     {
+        if (conversionHint is int decimalPlaces)
+        {
+            result = from.ToString($"F{decimalPlaces}");
+            return true;
+        }
+
+        if (conversionHint is string format)
+        {
+            result = from.ToString(format);
+            return true;
+        }
+
         result = from.ToString();
         return true;
     }

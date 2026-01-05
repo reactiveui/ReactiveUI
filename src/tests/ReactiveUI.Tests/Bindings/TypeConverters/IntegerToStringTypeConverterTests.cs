@@ -77,4 +77,52 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("-123456");
     }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_HexFormat()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        int value = 255;
+
+        var result = converter.TryConvert(value, "X", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("FF");
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_HexFormatLowercase()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        int value = 255;
+
+        var result = converter.TryConvert(value, "x8", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("000000ff");
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_NumberFormat()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        int value = 1234567;
+
+        var result = converter.TryConvert(value, "N0", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("N0"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_CustomFormat()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        int value = 42;
+
+        var result = converter.TryConvert(value, "000", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("042");
+    }
 }

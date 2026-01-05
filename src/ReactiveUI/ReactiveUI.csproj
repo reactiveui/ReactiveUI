@@ -99,7 +99,10 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.TestGuiMocks" />
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
     <InternalsVisibleTo Include="ReactiveUI.Blazor" />
     <InternalsVisibleTo Include="ReactiveUI.Blend" />
     <InternalsVisibleTo Include="ReactiveUI.Builder.WpfApp" />
@@ -114,6 +117,7 @@
     <InternalsVisibleTo Include="ReactiveUI.AndroidX" />
     <InternalsVisibleTo Include="ReactiveUI.Builder.Tests" />
     <InternalsVisibleTo Include="ReactiveUI.AOT.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests" />
     <InternalsVisibleTo Include="ReactiveUI.Avalonia" />
   </ItemGroup>
 </Project>

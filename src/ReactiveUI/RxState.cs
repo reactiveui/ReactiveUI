@@ -45,6 +45,19 @@ public static class RxState
     }
 
     /// <summary>
+    /// Resets the exception handler state for testing purposes.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        Interlocked.Exchange(ref _exceptionHandlerInitialized, 0);
+        _defaultExceptionHandler = null;
+    }
+
+    /// <summary>
     /// Initializes the default exception handler if not already configured.
     /// Creates an observer that breaks debugger and throws UnhandledErrorException.
     /// </summary>

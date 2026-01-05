@@ -70,6 +70,19 @@ public static class RxAppBuilder
     }
 
     /// <summary>
+    /// Resets the initialization state of ReactiveUI.
+    /// This method is intended for testing purposes only.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        Interlocked.Exchange(ref _hasBeenInitialized, 0);
+    }
+
+    /// <summary>
     /// Marks ReactiveUI as initialized. Called by ReactiveUIBuilder.BuildApp().
     /// </summary>
     internal static void MarkAsInitialized()

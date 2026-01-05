@@ -7,34 +7,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
-    <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <IsPackable>false</IsPackable>
+    <PackageDescription>Shared GUI test mocks for ReactiveUI tests</PackageDescription>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
+
   <!-- Global usings -->
   <ItemGroup>
     <Using Include="ReactiveUI" />
-    <Using Include="ReactiveUI.Builder" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
     <Using Include="System.ComponentModel" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Linq" />
-    <Using Include="System.Linq.Expressions" />
     <Using Include="System.Reactive" />
     <Using Include="System.Reactive.Concurrency" />
     <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
     <Using Include="System.Reactive.Linq" />
     <Using Include="System.Reactive.Subjects" />
-    <Using Include="System.Reactive.Threading.Tasks" />
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
   </ItemGroup>

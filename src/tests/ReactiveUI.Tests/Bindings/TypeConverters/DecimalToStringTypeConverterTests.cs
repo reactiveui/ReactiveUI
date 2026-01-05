@@ -86,4 +86,52 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("-123.456");
     }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_FormatsCorrectly()
+    {
+        var converter = new DecimalToStringTypeConverter();
+        decimal value = 1234.5678m;
+
+        var result = converter.TryConvert(value, "N2", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("N2"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_CurrencyFormat()
+    {
+        var converter = new DecimalToStringTypeConverter();
+        decimal value = 1234.56m;
+
+        var result = converter.TryConvert(value, "C", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("C"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_PercentFormat()
+    {
+        var converter = new DecimalToStringTypeConverter();
+        decimal value = 0.1234m;
+
+        var result = converter.TryConvert(value, "P2", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("P2"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_ExponentialFormat()
+    {
+        var converter = new DecimalToStringTypeConverter();
+        decimal value = 1234.5678m;
+
+        var result = converter.TryConvert(value, "E2", out string? output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("E2"));
+    }
 }

@@ -24,8 +24,11 @@
     <Project Path="tests/ReactiveUI.Maui.Tests/ReactiveUI.Maui.Tests.csproj" />
     <Project Path="tests/ReactiveUI.NonParallel.Tests/ReactiveUI.NonParallel.Tests.csproj" />
     <Project Path="tests/ReactiveUI.Splat.Tests/ReactiveUI.Splat.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.TestGuiMocks/ReactiveUI.TestGuiMocks.csproj" />
     <Project Path="tests/ReactiveUI.Testing.Tests/ReactiveUI.Testing.Tests.csproj" />
     <Project Path="tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.WinForms.Tests/ReactiveUI.WinForms.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Wpf.Tests/ReactiveUI.Wpf.Tests.csproj" />
   </Folder>
   <Project Path="ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj" />
   <Project Path="ReactiveUI.Blazor/ReactiveUI.Blazor.csproj">

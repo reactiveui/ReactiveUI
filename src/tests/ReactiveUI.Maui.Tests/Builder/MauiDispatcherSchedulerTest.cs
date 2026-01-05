@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+
 using ReactiveUI.Builder;
 
 namespace ReactiveUI.Tests.Maui.Builder;
@@ -13,25 +14,6 @@ namespace ReactiveUI.Tests.Maui.Builder;
 /// </summary>
 public class MauiDispatcherSchedulerTest
 {
-    private RxAppSchedulersScope? _schedulersScope;
-
-    /// <summary>
-    /// Sets up the test by creating a scheduler scope.
-    /// </summary>
-    [Before(Test)]
-    public void SetUp()
-    {
-        _schedulersScope = new RxAppSchedulersScope();
-    }
-
-    /// <summary>
-    /// Tears down the test by disposing the scheduler scope.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _schedulersScope?.Dispose();
-    }
 
     /// <summary>
     /// Tests that dispatcher scheduler executes immediate work.
@@ -40,9 +22,11 @@ public class MauiDispatcherSchedulerTest
     [Test]
     public async Task Dispatcher_ImmediateSchedule_ExecutesWork()
     {
+        RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher();
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         builder.WithMauiScheduler(dispatcher);
+        builder.WithCoreServices();
         builder.BuildApp();
 
         var executed = false;
@@ -58,9 +42,11 @@ public class MauiDispatcherSchedulerTest
     [Test]
     public async Task Dispatcher_NoDispatchRequired_ExecutesImmediately()
     {
+        RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher { IsDispatchRequired = false };
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         builder.WithMauiScheduler(dispatcher);
+        builder.WithCoreServices();
         builder.BuildApp();
 
         var executed = false;
@@ -76,9 +62,11 @@ public class MauiDispatcherSchedulerTest
     [Test]
     public async Task Dispatcher_DispatchRequired_ExecutesWork()
     {
+        RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher { IsDispatchRequired = true };
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
         builder.WithMauiScheduler(dispatcher);
+        builder.WithCoreServices();
         builder.BuildApp();
 
         var executed = false;
@@ -136,40 +124,6 @@ public class MauiDispatcherSchedulerTest
             {
                 IsRunning = false;
             }
-        }
-    }
-
-    /// <summary>
-    /// A disposable scope that snapshots and restores RxApp scheduler state.
-    /// </summary>
-    private sealed class RxAppSchedulersScope : IDisposable
-    {
-        private readonly IScheduler _mainThreadScheduler;
-        private readonly IScheduler _taskpoolScheduler;
-        private bool _disposed;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RxAppSchedulersScope"/> class.
-        /// </summary>
-        public RxAppSchedulersScope()
-        {
-            _mainThreadScheduler = RxSchedulers.MainThreadScheduler;
-            _taskpoolScheduler = RxSchedulers.TaskpoolScheduler;
-        }
-
-        /// <summary>
-        /// Restores the RxApp scheduler state.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            RxSchedulers.MainThreadScheduler = _mainThreadScheduler;
-            RxSchedulers.TaskpoolScheduler = _taskpoolScheduler;
-            _disposed = true;
         }
     }
 }

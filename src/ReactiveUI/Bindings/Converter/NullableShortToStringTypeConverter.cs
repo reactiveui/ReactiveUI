@@ -24,6 +24,18 @@ public sealed class NullableShortToStringTypeConverter : BindingTypeConverter<sh
             return false;
         }
 
+        if (conversionHint is int width)
+        {
+            result = from.Value.ToString($"D{width}");
+            return true;
+        }
+
+        if (conversionHint is string format)
+        {
+            result = from.Value.ToString(format);
+            return true;
+        }
+
         result = from.Value.ToString();
         return true;
     }

@@ -14,6 +14,18 @@ namespace ReactiveUI.Builder.Tests;
 [NotInParallel]
 public class ReactiveUIBuilderRxAppMigrationTests
 {
+    /// <summary>
+    /// Resets ReactiveUI static state before each test.
+    /// </summary>
+    [Before(Test)]
+    public void SetUp()
+    {
+        RxAppBuilder.ResetForTesting();
+        RxCacheSize.ResetForTesting();
+        RxState.ResetForTesting();
+        RxSuspension.ResetForTesting();
+    }
+
     [Test]
     public async Task WithExceptionHandler_Should_Set_Custom_Exception_Handler()
     {

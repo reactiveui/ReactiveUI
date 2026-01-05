@@ -5,12 +5,13 @@
 
 using System;
 using ReactiveUI.Builder;
+using Splat.Builder;
 using TUnit.Core;
 
-namespace ReactiveUI.Tests.Core;
+namespace ReactiveUI.WinForms.Tests;
 
 /// <summary>
-/// Assembly-level hooks for test initialization and cleanup.
+/// Assembly-level hooks for WinForms test initialization and cleanup.
 /// </summary>
 public static class AssemblyHooks
 {
@@ -23,9 +24,9 @@ public static class AssemblyHooks
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .BuildApp();
+        // Initialize ReactiveUI with WinForms services
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
+        builder.WithWinForms().WithCoreServices().BuildApp();
     }
 
     /// <summary>

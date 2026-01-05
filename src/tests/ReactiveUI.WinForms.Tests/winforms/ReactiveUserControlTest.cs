@@ -123,7 +123,7 @@ public class ReactiveUserControlTest
 
         // Verify the control was initialized (components should not be null after InitializeComponent)
         await Assert.That(control).IsNotNull();
-        await Assert.That(control.BindingRoot).IsNull(); // Handle not created yet
+        await Assert.That(control.ViewModel).IsNull(); // Handle not created yet
     }
 
     /// <summary>

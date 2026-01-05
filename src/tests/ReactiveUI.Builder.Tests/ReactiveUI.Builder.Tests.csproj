@@ -9,10 +9,6 @@
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);SA1600;CA1812;</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.StartsWith('net4')) ">
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
@@ -29,36 +25,6 @@
   <ItemGroup>
     <Compile Include="Platforms\Drawing\**\*.cs" />
   </ItemGroup>
-  <Choose>
-    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.17763.0')) ">
-      <PropertyGroup>
-        <UseWpf>true</UseWpf>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-        <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-        <Compile Include="Platforms\Wpf\**\*.cs" />
-        <Compile Include="Platforms\WinForms\**\*.cs" />
-      </ItemGroup>
-    </When>
-    <When Condition=" $(TargetFramework.StartsWith('net4'))">
-      <PropertyGroup>
-        <UseWpf>true</UseWpf>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-        <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
-        <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-        <PackageReference Include="System.ValueTuple" />
-        <Compile Include="Platforms\common-gui\**\*.cs" />
-        <Compile Include="Platforms\wpf\**\*.cs" />
-        <Compile Include="Platforms\Winforms\**\*.cs" />
-        <Compile Include="Platforms\windows-xaml\**\*.cs" />
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Using Include="Splat" />
     <Using Include="System" />

@@ -37,7 +37,7 @@
 
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <IsTestProject>$(MSBuildProjectName.Contains('.Test'))</IsTestProject>
+    <IsTestProject>$(MSBuildProjectName.Contains('.Tests'))</IsTestProject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsTestProject)' == 'true'">

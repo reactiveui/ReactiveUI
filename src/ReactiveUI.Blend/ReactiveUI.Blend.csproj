@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="System" />

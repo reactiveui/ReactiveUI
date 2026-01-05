@@ -18,6 +18,18 @@ public sealed class ByteToStringTypeConverter : BindingTypeConverter<byte, strin
     /// <inheritdoc/>
     public override bool TryConvert(byte from, object? conversionHint, [NotNullWhen(true)] out string? result)
     {
+        if (conversionHint is int width)
+        {
+            result = from.ToString($"D{width}");
+            return true;
+        }
+
+        if (conversionHint is string format)
+        {
+            result = from.ToString(format);
+            return true;
+        }
+
         result = from.ToString();
         return true;
     }

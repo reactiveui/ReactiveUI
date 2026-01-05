@@ -49,6 +49,19 @@ public static class RxSuspension
     }
 
     /// <summary>
+    /// Resets the suspension host state for testing purposes.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        Interlocked.Exchange(ref _suspensionHostInitialized, 0);
+        _suspensionHost = null;
+    }
+
+    /// <summary>
     /// Initializes the default suspension host if not already configured.
     /// Creates a new SuspensionHost instance.
     /// </summary>

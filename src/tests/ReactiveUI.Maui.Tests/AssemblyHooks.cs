@@ -23,10 +23,8 @@ public static class AssemblyHooks
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-        // Initialize ReactiveUI with core services
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .BuildApp();
+        // Note: Individual tests will initialize ReactiveUI with their own schedulers
+        // via RxAppBuilder.WithMauiScheduler().BuildApp()
     }
 
     /// <summary>

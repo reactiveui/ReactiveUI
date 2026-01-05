@@ -8,7 +8,7 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Detects if we are in production mode or not.
 /// </summary>
-internal class ProductionMode : IModeDetector, IPlatformModeDetector
+public class ProductionMode : IModeDetector, IPlatformModeDetector
 {
     private static readonly ProductionMode Instance = new();
 

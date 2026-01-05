@@ -44,5 +44,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
   </ItemGroup>
 </Project>

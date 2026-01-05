@@ -64,6 +64,20 @@ public static class RxCacheSize
     }
 
     /// <summary>
+    /// Resets the cache size state for testing purposes.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        Interlocked.Exchange(ref _initialized, 0);
+        _smallCacheLimit = 0;
+        _bigCacheLimit = 0;
+    }
+
+    /// <summary>
     /// Ensures cache sizes are initialized with platform defaults if not already configured.
     /// </summary>
     private static void EnsureInitialized()

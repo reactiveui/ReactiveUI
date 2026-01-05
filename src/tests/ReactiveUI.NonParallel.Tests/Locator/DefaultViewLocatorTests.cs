@@ -18,6 +18,15 @@ namespace ReactiveUI.Tests.Core;
 public partial class DefaultViewLocatorTests
 {
     /// <summary>
+    /// Resets ReactiveUI state before each test.
+    /// </summary>
+    [Before(Test)]
+    public void SetUp()
+    {
+        ReactiveUI.Builder.RxAppBuilder.ResetForTesting();
+    }
+
+    /// <summary>
     /// Diagnostic test to verify registration and resolution.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
