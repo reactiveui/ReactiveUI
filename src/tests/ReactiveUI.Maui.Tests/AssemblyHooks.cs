@@ -7,7 +7,7 @@ using System;
 using ReactiveUI.Builder;
 using TUnit.Core;
 
-namespace ReactiveUI.Tests.Core;
+namespace ReactiveUI.Maui.Tests;
 
 /// <summary>
 /// Assembly-level hooks for test initialization and cleanup.
@@ -17,7 +17,7 @@ public static class AssemblyHooks
     /// <summary>
     /// Called before any tests in this assembly start.
     /// </summary>
-    [Before(Assembly)]
+    [Before(HookType.Assembly)]
     public static void AssemblySetup()
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
@@ -32,7 +32,7 @@ public static class AssemblyHooks
     /// <summary>
     /// Called after all tests in this assembly complete.
     /// </summary>
-    [After(Assembly)]
+    [After(HookType.Assembly)]
     public static void AssemblyTeardown()
     {
         // Clean up resources
