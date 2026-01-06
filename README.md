@@ -29,28 +29,29 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Platform          | ReactiveUI Package                  | NuGet                  |
 | ----------------- | ----------------------------------- | ---------------------- |
 | .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
-|                   | [ReactiveUI.Fody][FodyDoc]          | [![FodyBadge]][Fody]   |
+| Any               | [ReactiveUI.SourceGenerators][SGDoc]| [![SGBadge]][SG]       |
 | Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
 | UWP               | [ReactiveUI.Uwp][UwpDoc]            | [![UwpBadge]][Uwp]     |
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
-| MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui] |
+| MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui]   |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
 | AndroidX          | [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
 | Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
 | Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
 | Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]     |
 | Platform Uno      | [ReactiveUI.Uno.WinUI][UnoWinUiDoc] | [![UnoWinUiBadge]][UnoWinUi] |
-| Avalonia          | [Avalonia.ReactiveUI][AvaDoc]       | [![AvaBadge]][Ava]     |
+| Avalonia          | [ReactiveUI.Avalonia][AvaDoc]       | [![AvaBadge]][Ava]     |
 | Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
+| Any               | [ReactiveUI.Extensions][ExtDocs]    | [![ExtBadge]][Ext]     |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
-[Fody]: https://www.nuget.org/packages/ReactiveUI.Fody/
-[FodyDoc]: https://reactiveui.net/docs/handbook/view-models/boilerplate-code
-[FodyBadge]: https://img.shields.io/nuget/v/ReactiveUI.Fody.svg
+[SG]: https://www.nuget.org/packages/ReactiveUI.SourceGenerators/
+[SGDoc]: https://reactiveui.net/docs/handbook/view-models/boilerplate-code
+[SGBadge]: https://img.shields.io/nuget/v/ReactiveUI.SourceGenerators.svg
 
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
 [TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
@@ -77,8 +78,6 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
-
-
 [DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
 [DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/
@@ -94,14 +93,18 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
 [BlazDoc]: https://www.reactiveui.net/docs/getting-started/installation/blazor
 
-[Ava]: https://www.nuget.org/packages/Avalonia.ReactiveUI/
-[AvaBadge]: https://img.shields.io/nuget/v/Avalonia.ReactiveUI.svg
+[Ava]: https://www.nuget.org/packages/ReactiveUI.Avalonia/
+[AvaBadge]: https://img.shields.io/nuget/v/ReactiveUI.Avalonia.svg
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
 [ValCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
 [ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
 [ValDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
+
+[Ext]: https://www.nuget.org/packages/ReactiveUI.Extensions/
+[ExtBadge]: https://img.shields.io/nuget/v/ReactiveUI.Extensions.svg
+[ExtDocs]: https://reactiveui.net/
 
 ## Sponsorship
 
