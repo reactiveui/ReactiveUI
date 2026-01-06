@@ -8,6 +8,8 @@ using System.Globalization;
 
 using DynamicData.Binding;
 
+using ReactiveUI.Tests.Wpf;
+
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -15,13 +17,16 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests property bindings.
 /// </summary>
+[NotInParallel]
 public class PropertyBindingTest
 {
     private DispatcherSchedulerScope? _dispatcherScope;
+    private WpfAppBuilderScope? _appBuilderScope;
 
     [Before(Test)]
     public void SetUp()
     {
+        _appBuilderScope = new WpfAppBuilderScope();
         _dispatcherScope = new DispatcherSchedulerScope();
     }
 
@@ -29,6 +34,7 @@ public class PropertyBindingTest
     public void TearDown()
     {
         _dispatcherScope?.Dispose();
+        _appBuilderScope?.Dispose();
     }
 
     /// <summary>

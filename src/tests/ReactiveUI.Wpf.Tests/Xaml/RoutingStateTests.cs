@@ -8,11 +8,33 @@ using DynamicData;
 using Microsoft.Reactive.Testing;
 
 using ReactiveUI.Testing;
+using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests;
 
+[NotInParallel]
 public class RoutingStateTests
 {
+    private WpfAppBuilderScope? _appBuilderScope;
+
+    /// <summary>
+    /// Sets up the WPF app builder scope for each test.
+    /// </summary>
+    [Before(Test)]
+    public void Setup()
+    {
+        _appBuilderScope = new WpfAppBuilderScope();
+    }
+
+    /// <summary>
+    /// Tears down the WPF app builder scope after each test.
+    /// </summary>
+    [After(Test)]
+    public void TearDown()
+    {
+        _appBuilderScope?.Dispose();
+    }
+
     /// <summary>
     /// Navigations the push pop test.
     /// </summary>
@@ -174,7 +196,7 @@ public class RoutingStateTests
 
         await Assert.That(fixture.Router.NavigationStack).Count().IsLessThanOrEqualTo(0);
 
-        await fixture.Router.NavigateAndReset.Execute(viewModel);
+        fixture.Router.NavigateAndReset.Execute(viewModel).Subscribe();
 
         using (Assert.Multiple())
         {

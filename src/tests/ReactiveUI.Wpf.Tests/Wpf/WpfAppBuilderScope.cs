@@ -3,47 +3,43 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Reactive.Concurrency;
 using System.Windows.Threading;
-
-using ReactiveUI.Builder;
-
-using Splat;
 
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>
-/// A disposable scope that snapshots and restores Splat's Locator.Current static state
-/// with WPF-specific service registrations and scheduler configuration.
-/// Use this in WPF test fixtures that read or modify Locator.CurrentMutable to ensure
-/// static state is properly restored after tests complete.
+/// A disposable scope that initializes and tears down the ReactiveUI app builder with WPF services for each test.
+/// Captures the current app state and sets up a fresh WPF-configured app builder instance.
+/// Use this in test setup/teardown to ensure each test has isolated, properly configured WPF services.
 /// </summary>
 /// <remarks>
-/// This is the WPF-specific version of LocatorScope that includes:
+/// This scope provides:
 /// - WPF platform services (view locator, activation fetcher, platform operations)
 /// - WPF scheduler configuration for test execution
+/// - Automatic cleanup and state restoration after test completion
 /// Tests using this scope should be marked with [NotInParallel] and [TestExecutor&lt;STAThreadExecutor&gt;]
 /// to prevent concurrent modifications to shared state and ensure proper STA thread context.
 /// </remarks>
-public sealed class WpfLocatorScope : IDisposable
+public sealed class WpfAppBuilderScope : IDisposable
 {
     private readonly IReadonlyDependencyResolver _previousLocator;
     private readonly IScheduler _originalMainThreadScheduler;
     private readonly IScheduler _originalTaskpoolScheduler;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WpfLocatorScope"/> class.
-    /// Captures the current Locator state and sets up a fresh locator for WPF testing.
+    /// Initializes a new instance of the <see cref="WpfAppBuilderScope"/> class.
+    /// Captures the current app state and sets up a fresh app builder for WPF testing.
     /// </summary>
-    public WpfLocatorScope()
+    public WpfAppBuilderScope()
     {
         // Save the current locator so we can restore it later
-        _previousLocator = Locator.Current;
+        _previousLocator = AppLocator.Current;
 
         // Capture current scheduler state before WPF initialization
         _originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
         _originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
+
+        RxAppBuilder.ResetForTesting();
 
         // Replace with a new locator that tests can modify
         // Include WPF platform services to ensure view locator, activation, etc. work
@@ -67,9 +63,10 @@ public sealed class WpfLocatorScope : IDisposable
     {
         RxAppBuilder.ResetForTesting();
 
-        // Restore the previous locator
-        // Cast is safe because we saved it from Locator.Current
-        Locator.SetLocator((IDependencyResolver)_previousLocator);
+        // Replace with a new locator that tests can modify
+        // Include WPF platform services to ensure view locator, activation, etc. work
+        RxAppBuilder.CreateReactiveUIBuilder((IDependencyResolver)_previousLocator)
+            .BuildApp();
 
         // Restore original schedulers
         RxSchedulers.MainThreadScheduler = _originalMainThreadScheduler;

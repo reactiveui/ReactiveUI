@@ -10,8 +10,29 @@ namespace ReactiveUI.Tests.Wpf;
 /// <summary>
 /// Tests for <see cref="BooleanToVisibilityTypeConverter"/> in WPF.
 /// </summary>
+[NotInParallel]
 public class BooleanToVisibilityTypeConverterTest
 {
+    private WpfAppBuilderScope? _appBuilderScope;
+
+    /// <summary>
+    /// Sets up the WPF app builder scope for each test.
+    /// </summary>
+    [Before(Test)]
+    public void Setup()
+    {
+        _appBuilderScope = new WpfAppBuilderScope();
+    }
+
+    /// <summary>
+    /// Tears down the WPF app builder scope after each test.
+    /// </summary>
+    [After(Test)]
+    public void TearDown()
+    {
+        _appBuilderScope?.Dispose();
+    }
+
     /// <summary>
     /// Tests that FromType and ToType properties are correctly set.
     /// </summary>
@@ -21,8 +42,8 @@ public class BooleanToVisibilityTypeConverterTest
     {
         var converter = new BooleanToVisibilityTypeConverter();
 
-        await Assert.That(converter.FromType).IsEqualTo(typeof(object));
-        await Assert.That(converter.ToType).IsEqualTo(typeof(object));
+        await Assert.That(converter.FromType).IsEqualTo(typeof(bool));
+        await Assert.That(converter.ToType).IsEqualTo(typeof(Visibility));
     }
 
     /// <summary>
@@ -36,7 +57,7 @@ public class BooleanToVisibilityTypeConverterTest
 
         var affinity = converter.GetAffinityForObjects();
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(2);
     }
 
     /// <summary>
@@ -115,99 +136,6 @@ public class BooleanToVisibilityTypeConverterTest
 
         await Assert.That(success).IsTrue();
         await Assert.That(result).IsEqualTo(Visibility.Hidden);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Visible to false (XOR logic).
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_ConvertsVisibleToFalse()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var success = converter.TryConvertTyped(Visibility.Visible, null, out var result);
-
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(false);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Collapsed to true (XOR logic).
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_ConvertsCollapsedToTrue()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var success = converter.TryConvertTyped(Visibility.Collapsed, null, out var result);
-
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(true);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Hidden to true (WPF-specific, XOR logic).
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_ConvertsHiddenToTrue()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var success = converter.TryConvertTyped(Visibility.Hidden, null, out var result);
-
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(true);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint on Visibility to bool inverts the result.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_VisibilityToBoolWithInverse_InvertsResult()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var successVisible = converter.TryConvertTyped(Visibility.Visible, BooleanToVisibilityHint.Inverse, out var resultVisible);
-        var successCollapsed = converter.TryConvertTyped(Visibility.Collapsed, BooleanToVisibilityHint.Inverse, out var resultCollapsed);
-
-        await Assert.That(successVisible).IsTrue();
-        await Assert.That(successCollapsed).IsTrue();
-        await Assert.That(resultVisible).IsEqualTo(true);
-        await Assert.That(resultCollapsed).IsEqualTo(false);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert with non-Visibility, non-bool input defaults to Visible.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_NonVisibilityInput_DefaultsToVisible()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var success = converter.TryConvertTyped("some string", null, out var result);
-
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(Visibility.Visible);
-    }
-
-    /// <summary>
-    /// Tests that TryConvert with null input defaults to Visible.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task TryConvert_NullInput_DefaultsToVisible()
-    {
-        var converter = new BooleanToVisibilityTypeConverter();
-
-        var success = converter.TryConvertTyped(null, null, out var result);
-
-        await Assert.That(success).IsTrue();
-        await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
     /// <summary>

@@ -8,6 +8,10 @@ namespace ReactiveUI.Tests;
 /// <summary>
 /// Assembly-level hooks for WPF test initialization and cleanup.
 /// </summary>
+/// <remarks>
+/// Note: App builder initialization is handled per-test via WpfAppBuilderScope,
+/// not at the assembly level, to ensure proper isolation between tests.
+/// </remarks>
 public static class AssemblyHooks
 {
     /// <summary>
@@ -18,10 +22,6 @@ public static class AssemblyHooks
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-
-        // Initialize ReactiveUI with WPF services
-        var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithWpf().WithCoreServices().BuildApp();
     }
 
     /// <summary>

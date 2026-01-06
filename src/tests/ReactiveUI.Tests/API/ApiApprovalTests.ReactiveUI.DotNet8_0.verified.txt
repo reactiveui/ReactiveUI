@@ -9,13 +9,16 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.NonParallel.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestGuiMocks")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Testing")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinForms.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.WinUI")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Winforms")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Wpf.Tests")]
 namespace ReactiveUI
 {
     public static class AutoPersistHelper
@@ -99,12 +102,26 @@ namespace ReactiveUI
         TwoWay = 1,
         AsyncOneWay = 2,
     }
+    public sealed class BindingFallbackConverterRegistry
+    {
+        public BindingFallbackConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.IBindingFallbackConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.IBindingFallbackConverter converter) { }
+        public ReactiveUI.IBindingFallbackConverter? TryGetConverter([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType) { }
+    }
+    public sealed class BindingTypeConverterRegistry
+    {
+        public BindingTypeConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.IBindingTypeConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.IBindingTypeConverter converter) { }
+        public ReactiveUI.IBindingTypeConverter? TryGetConverter(System.Type fromType, System.Type toType) { }
+    }
     public abstract class BindingTypeConverter<TFrom, TTo> : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<TFrom, TTo>, Splat.IEnableLogger
     {
         protected BindingTypeConverter() { }
         public System.Type FromType { get; }
         public System.Type ToType { get; }
-        public virtual int GetAffinityForObjects() { }
+        public abstract int GetAffinityForObjects();
         public abstract bool TryConvert(TFrom? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out TTo? result);
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
     }
@@ -195,6 +212,24 @@ namespace ReactiveUI
             " the type is not Nullable<T>.")]
         public int GetAffinityForObjects([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType) { }
         public bool TryConvert([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, object from, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
+    }
+    public static class ConverterMigrationHelper
+    {
+        [return: System.Runtime.CompilerServices.TupleElementNames(new string[] {
+                "TypedConverters",
+                "FallbackConverters",
+                "SetMethodConverters"})]
+        public static System.ValueTuple<System.Collections.Generic.IList<ReactiveUI.IBindingTypeConverter>, System.Collections.Generic.IList<ReactiveUI.IBindingFallbackConverter>, System.Collections.Generic.IList<ReactiveUI.ISetMethodBindingConverter>> ExtractConverters(Splat.IReadonlyDependencyResolver resolver) { }
+        public static void ImportFrom(this ReactiveUI.ConverterService converterService, Splat.IReadonlyDependencyResolver resolver) { }
+    }
+    public sealed class ConverterService
+    {
+        public ConverterService() { }
+        public ReactiveUI.BindingFallbackConverterRegistry FallbackConverters { get; }
+        public ReactiveUI.SetMethodBindingConverterRegistry SetMethodConverters { get; }
+        public ReactiveUI.BindingTypeConverterRegistry TypedConverters { get; }
+        public object? ResolveConverter([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType) { }
+        public ReactiveUI.ISetMethodBindingConverter? ResolveSetMethodConverter([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? toType) { }
     }
     public sealed class CreatesCommandBindingViaCommandParameter : ReactiveUI.ICreatesCommandBinding
     {
@@ -1193,6 +1228,10 @@ namespace ReactiveUI
         public static int BigCacheLimit { get; }
         public static int SmallCacheLimit { get; }
     }
+    public static class RxConverters
+    {
+        public static ReactiveUI.ConverterService Current { get; }
+    }
     public static class RxSchedulers
     {
         public static System.Reactive.Concurrency.IScheduler MainThreadScheduler { get; set; }
@@ -1216,6 +1255,13 @@ namespace ReactiveUI
         public void OnError(System.Exception error) { }
         public void OnNext(T value) { }
         public System.IDisposable Subscribe(System.IObserver<T> observer) { }
+    }
+    public sealed class SetMethodBindingConverterRegistry
+    {
+        public SetMethodBindingConverterRegistry() { }
+        public System.Collections.Generic.IEnumerable<ReactiveUI.ISetMethodBindingConverter> GetAllConverters() { }
+        public void Register(ReactiveUI.ISetMethodBindingConverter converter) { }
+        public ReactiveUI.ISetMethodBindingConverter? TryGetConverter([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? toType) { }
     }
     public sealed class ShortToStringTypeConverter : ReactiveUI.BindingTypeConverter<short, string>
     {
@@ -1784,6 +1830,14 @@ namespace ReactiveUI.Builder
         public static ReactiveUI.Builder.IReactiveUIBuilder UsingSplatBuilder(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<Splat.Builder.IAppBuilder>? appBuilder) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(this ReactiveUI.Builder.IReactiveUIBuilder builder, T registrationModule)
             where T : Splat.Builder.IModule { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, ReactiveUI.IBindingTypeConverter converter) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Func<ReactiveUI.IBindingTypeConverter> factory) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(this ReactiveUI.Builder.IReactiveUIBuilder builder, ReactiveUI.BindingTypeConverter<TFrom, TTo> converter) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Func<ReactiveUI.BindingTypeConverter<TFrom, TTo>> factory) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConverters(this ReactiveUI.Builder.IReactiveUIBuilder builder, params ReactiveUI.IBindingTypeConverter[] converters) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithConvertersFrom(this ReactiveUI.Builder.IReactiveUIBuilder builder, Splat.IReadonlyDependencyResolver resolver) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, ReactiveUI.IBindingFallbackConverter converter) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Func<ReactiveUI.IBindingFallbackConverter> factory) { }
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T?> action) { }
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?> action) { }
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?> action) { }
@@ -1805,6 +1859,8 @@ namespace ReactiveUI.Builder
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, ReactiveUI.ISetMethodBindingConverter converter) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Func<ReactiveUI.ISetMethodBindingConverter> factory) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithViewModule<TModule>(this ReactiveUI.Builder.IReactiveUIBuilder builder)
             where TModule : ReactiveUI.IViewModule, new () { }
@@ -1871,6 +1927,7 @@ namespace ReactiveUI.Builder
     public sealed class ReactiveUIBuilder : Splat.Builder.AppBuilder, ReactiveUI.Builder.IReactiveUIBuilder, ReactiveUI.Builder.IReactiveUIInstance, Splat.Builder.IAppBuilder, Splat.Builder.IAppInstance
     {
         public ReactiveUIBuilder(Splat.IMutableDependencyResolver resolver, Splat.IReadonlyDependencyResolver? current) { }
+        public ReactiveUI.ConverterService ConverterService { get; }
         public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
         public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
         public ReactiveUI.Builder.IReactiveUIInstance BuildApp() { }
@@ -1893,8 +1950,15 @@ namespace ReactiveUI.Builder
         public ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithConverter(ReactiveUI.IBindingTypeConverter converter) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithConverter(System.Func<ReactiveUI.IBindingTypeConverter> factory) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(ReactiveUI.BindingTypeConverter<TFrom, TTo> converter) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(System.Func<ReactiveUI.BindingTypeConverter<TFrom, TTo>> factory) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithConvertersFrom(Splat.IReadonlyDependencyResolver resolver) { }
         public override Splat.Builder.IAppBuilder WithCoreServices() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithExceptionHandler(System.IObserver<System.Exception> exceptionHandler) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(ReactiveUI.IBindingFallbackConverter converter) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(System.Func<ReactiveUI.IBindingFallbackConverter> factory) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(System.Action<T?> action) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(System.Action<T1?, T2?> action) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(System.Action<T1?, T2?, T3?> action) { }
@@ -1918,6 +1982,8 @@ namespace ReactiveUI.Builder
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(ReactiveUI.IWantsToRegisterStuff registration) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(ReactiveUI.ISetMethodBindingConverter converter) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(System.Func<ReactiveUI.ISetMethodBindingConverter> factory) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithSuspensionHost() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithSuspensionHost<TAppState>() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }

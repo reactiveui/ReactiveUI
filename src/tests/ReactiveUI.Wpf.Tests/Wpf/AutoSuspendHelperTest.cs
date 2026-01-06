@@ -3,13 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Threading.Tasks;
 using System.Windows;
-
-using TUnit.Assertions;
-using TUnit.Assertions.Extensions;
-using TUnit.Core;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -19,6 +13,26 @@ namespace ReactiveUI.Tests.Wpf;
 [NotInParallel]
 public class AutoSuspendHelperTest
 {
+    private WpfAppBuilderScope? _appBuilderScope;
+
+    /// <summary>
+    /// Sets up the WPF app builder scope for each test.
+    /// </summary>
+    [Before(Test)]
+    public void Setup()
+    {
+        _appBuilderScope = new WpfAppBuilderScope();
+    }
+
+    /// <summary>
+    /// Tears down the WPF app builder scope after each test.
+    /// </summary>
+    [After(Test)]
+    public void TearDown()
+    {
+        _appBuilderScope?.Dispose();
+    }
+
     /// <summary>
     /// Tests that AutoSuspendHelper can be created with Application.Current.
     /// </summary>

@@ -21,10 +21,29 @@ namespace ReactiveUI.Tests.Wpf;
 /// Locator.CurrentMutable.RegisterConstant() to register test loggers, which mutates
 /// global service locator state. This state must not be mutated concurrently by parallel tests.
 /// </remarks>
-// TEMPORARILY REMOVED for diagnostic: [NotInParallel]
-// [Skip("Testing if NotInParallel causes session hang")]
+[NotInParallel]
 public class WpfCommandBindingImplementationTests
 {
+    private WpfAppBuilderScope? _appBuilderScope;
+
+    /// <summary>
+    /// Sets up the WPF app builder scope for each test.
+    /// </summary>
+    [Before(Test)]
+    public void Setup()
+    {
+        _appBuilderScope = new WpfAppBuilderScope();
+    }
+
+    /// <summary>
+    /// Tears down the WPF app builder scope after each test.
+    /// </summary>
+    [After(Test)]
+    public void TearDown()
+    {
+        _appBuilderScope?.Dispose();
+    }
+
     /// <summary>
     /// Commands the bind to explicit event wireup.
     /// </summary>

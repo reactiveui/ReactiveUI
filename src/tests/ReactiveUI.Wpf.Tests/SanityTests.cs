@@ -14,7 +14,7 @@ public class SanityTests
     /// <summary>
     /// Verifies that basic ReactiveUI functionality works.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns> 
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactiveObject_RaisesPropertyChanged()
     {
@@ -34,7 +34,7 @@ public class SanityTests
     /// <summary>
     /// Verifies that WhenAnyValue works correctly.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns> 
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_ObservesPropertyChanges()
     {

@@ -3,15 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Threading.Tasks;
-
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Core;
-
-using Splat;
-
-using TUnit.Assertions;
-using TUnit.Core;
 
 namespace ReactiveUI.Tests;
 
@@ -21,6 +13,12 @@ namespace ReactiveUI.Tests;
 [NotInParallel]
 public partial class DefaultViewLocatorTests
 {
+    [Before(Test)]
+    public void Setup()
+    {
+        RxAppBuilder.ResetForTesting();
+    }
+
     /// <summary>
     /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
     /// </summary>
@@ -28,10 +26,8 @@ public partial class DefaultViewLocatorTests
     [Test]
     public async Task CanResolveViewFromViewModelWithIRoutableViewModelType()
     {
-        var resolver = new ModernDependencyResolver();
-
-        resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+        var resolver = new InstanceGenericFirstDependencyResolver();
+        resolver.CreateReactiveUIBuilder()
             .WithWpf()
             .WithCoreServices()
             .BuildApp();
@@ -59,9 +55,7 @@ public partial class DefaultViewLocatorTests
     public async Task CanResolveCustomViewWithMap()
     {
         var resolver = new ModernDependencyResolver();
-
-        resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(resolver)
+        resolver.CreateReactiveUIBuilder()
             .WithWpf()
             .WithCoreServices()
             .BuildApp();

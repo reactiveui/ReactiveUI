@@ -6,6 +6,8 @@
 using System.Windows.Controls;
 using DynamicData;
 
+using ReactiveUI.Tests.Wpf;
+
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -13,8 +15,29 @@ namespace ReactiveUI.Tests.Xaml;
 /// <summary>
 /// Tests for the dependency object property binding.
 /// </summary>
+[NotInParallel]
 public class DependencyObjectObservableForPropertyTest
 {
+    private WpfAppBuilderScope? _appBuilderScope;
+
+    /// <summary>
+    /// Sets up the WPF app builder scope for each test.
+    /// </summary>
+    [Before(Test)]
+    public void Setup()
+    {
+        _appBuilderScope = new WpfAppBuilderScope();
+    }
+
+    /// <summary>
+    /// Tears down the WPF app builder scope after each test.
+    /// </summary>
+    [After(Test)]
+    public void TearDown()
+    {
+        _appBuilderScope?.Dispose();
+    }
+
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>

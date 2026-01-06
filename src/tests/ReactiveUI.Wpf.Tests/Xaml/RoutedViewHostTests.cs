@@ -7,7 +7,6 @@ using System.Windows;
 
 using DynamicData;
 
-using TUnit.Core;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;

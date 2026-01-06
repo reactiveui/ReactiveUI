@@ -4,11 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using DynamicData;
-using ReactiveUI.Tests.Infrastructure.StaticState;
-using ReactiveUI.Tests.Wpf;
 
-using TUnit.Core;
+using DynamicData;
+
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
@@ -23,29 +21,21 @@ namespace ReactiveUI.Tests;
 [NotInParallel]
 public class ViewModelViewHostTests
 {
-    private WpfLocatorScope? _locatorScope;
-
     [Before(HookType.Test)]
     public void Setup()
     {
-        _locatorScope = new WpfLocatorScope();
+        RxAppBuilder.ResetForTesting();
     }
 
     [After(Test)]
     public void TearDown()
     {
-        _locatorScope?.Dispose();
     }
 
     [Test]
     [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelViewHostDefaultContentNotNull()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithCoreServices()
-            .BuildApp();
-
         var uc = new ViewModelViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
