@@ -31,12 +31,13 @@ public class CanActivateViewFetcherTests
     /// <summary>
     /// Tests return positive for ICanActivate.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]
-    public void CanGetActivationForViewForCanActivateableFormActivated()
+    public async Task CanGetActivationForViewForCanActivateableFormActivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync().AssertEqual(Observable.Return(true));
+        await canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync().AssertEqual(Observable.Return(true));
     }
 
     /// <summary>

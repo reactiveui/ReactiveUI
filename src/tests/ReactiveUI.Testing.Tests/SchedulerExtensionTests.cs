@@ -5,6 +5,7 @@
 
 using System.Threading;
 using Microsoft.Reactive.Testing;
+using ReactiveUI.Testing.Reactive;
 
 namespace ReactiveUI.Testing.Tests;
 

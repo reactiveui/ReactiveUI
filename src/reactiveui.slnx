@@ -39,6 +39,7 @@
   <Project Path="ReactiveUI.Blend/ReactiveUI.Blend.csproj" />
   <Project Path="ReactiveUI.Drawing/ReactiveUI.Drawing.csproj" />
   <Project Path="ReactiveUI.Maui/ReactiveUI.Maui.csproj" />
+  <Project Path="ReactiveUI.Testing.Reactive/ReactiveUI.Testing.Reactive.csproj" />
   <Project Path="ReactiveUI.Testing/ReactiveUI.Testing.csproj" />
   <Project Path="ReactiveUI.Winforms/ReactiveUI.Winforms.csproj" />
   <Project Path="ReactiveUI.WinUI/ReactiveUI.WinUI.csproj" />

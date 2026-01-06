@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Testing.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Testing.Reactive</RootNamespace>
+    <IsTestProject>false</IsTestProject>
+    <PackageDescription>Provides TestScheduler extensions for testing ReactiveUI applications with Microsoft.Reactive.Testing</PackageDescription>
+    <PackageId>ReactiveUI.Testing.Reactive</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;testscheduler;</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="ReactiveUI.Helpers" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Reactive.Testing" />
+    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+  </ItemGroup>
+</Project>

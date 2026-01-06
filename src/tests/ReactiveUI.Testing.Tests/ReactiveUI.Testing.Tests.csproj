@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Testing.Reactive\ReactiveUI.Testing.Reactive.csproj" />
   </ItemGroup>
 
   <ItemGroup>

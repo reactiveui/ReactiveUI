@@ -110,6 +110,7 @@
     <InternalsVisibleTo Include="ReactiveUI.Wpf" />
     <InternalsVisibleTo Include="ReactiveUI.Maui" />
     <InternalsVisibleTo Include="ReactiveUI.Testing" />
+    <InternalsVisibleTo Include="ReactiveUI.Testing.Reactive" />
     <InternalsVisibleTo Include="ReactiveUI.Uno" />
     <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI" />
     <InternalsVisibleTo Include="ReactiveUI.Drawing" />
