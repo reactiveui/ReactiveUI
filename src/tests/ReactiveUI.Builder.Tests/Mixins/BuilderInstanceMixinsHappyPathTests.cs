@@ -1114,7 +1114,7 @@ public class BuilderInstanceMixinsHappyPathTests
             }
         }
 
-        public object? GetService(Type? serviceType, string? contract = null)
+        public object? GetService(Type? serviceType)
         {
             if (serviceType == null)
             {
@@ -1124,9 +1124,21 @@ public class BuilderInstanceMixinsHappyPathTests
             return _services.TryGetValue(serviceType, out var service) ? service : null;
         }
 
-        public object? GetService(Type? serviceType) => GetService(serviceType, null);
+        public object? GetService(Type? serviceType, string? contract)
+        {
+            if (serviceType == null)
+            {
+                return null;
+            }
 
-        public IEnumerable<object> GetServices(Type? serviceType, string? contract = null)
+            return _services.TryGetValue(serviceType, out var service) ? service : null;
+        }
+
+        public T? GetService<T>() => (T?)GetService(typeof(T));
+
+        public T? GetService<T>(string? contract) => (T?)GetService(typeof(T), contract);
+
+        public IEnumerable<object> GetServices(Type? serviceType)
         {
             if (serviceType == null)
             {
@@ -1136,18 +1148,26 @@ public class BuilderInstanceMixinsHappyPathTests
             return _services.TryGetValue(serviceType, out var service) ? [service] : [];
         }
 
-        public IEnumerable<object> GetServices(Type? serviceType) => GetServices(serviceType, null);
+        public IEnumerable<object> GetServices(Type? serviceType, string? contract)
+        {
+            if (serviceType == null)
+            {
+                return [];
+            }
 
-        public T? GetService<T>(string? contract = null) => (T?)GetService(typeof(T), contract);
+            return _services.TryGetValue(serviceType, out var service) ? [service] : [];
+        }
 
-        public T? GetService<T>() => (T?)GetService(typeof(T));
+        public IEnumerable<T> GetServices<T>() => GetServices(typeof(T)).OfType<T>();
 
-        public IEnumerable<T> GetServices<T>(string? contract = null) => GetServices(typeof(T), contract).Cast<T>();
+        public IEnumerable<T> GetServices<T>(string? contract) => GetServices(typeof(T), contract).OfType<T>();
 
-        public IEnumerable<T> GetServices<T>() => GetServices(typeof(T)).Cast<T>();
-
-        public bool HasRegistration(Type? serviceType, string? contract = null) =>
+        public bool HasRegistration(Type? serviceType, string? contract) =>
             serviceType != null && _services.ContainsKey(serviceType);
+
+        public bool HasRegistration<T>() => HasRegistration(typeof(T), null);
+
+        public bool HasRegistration<T>(string? contract) => HasRegistration(typeof(T), contract);
 
         public void Dispose()
         {
