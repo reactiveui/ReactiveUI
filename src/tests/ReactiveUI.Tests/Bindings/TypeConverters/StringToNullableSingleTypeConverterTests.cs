@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable floats (single-precision).
+///     Tests for converting strings to nullable floats (single-precision).
 /// </summary>
 public class StringToNullableSingleTypeConverterTests
 {
@@ -19,23 +19,11 @@ public class StringToNullableSingleTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToSingleNullable_Succeeds()
-    {
-        var converter = new StringToNullableSingleTypeConverter();
-
-        var result = converter.TryConvert("123.456", null, out float? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsNotNull();
-        await Assert.That(output!.Value).IsEqualTo(123.456f).Within(0.001f);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableSingleTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out float? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -45,8 +33,20 @@ public class StringToNullableSingleTypeConverterTests
     {
         var converter = new StringToNullableSingleTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out float? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToSingleNullable_Succeeds()
+    {
+        var converter = new StringToNullableSingleTypeConverter();
+
+        var result = converter.TryConvert("123.456", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsNotNull();
+        await Assert.That(output!.Value).IsEqualTo(123.456f).Within(0.001f);
     }
 }

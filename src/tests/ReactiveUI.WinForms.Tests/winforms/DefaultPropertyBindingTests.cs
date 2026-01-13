@@ -6,13 +6,11 @@
 using System.Globalization;
 using System.Windows.Forms;
 using DynamicData;
-using ReactiveUI.Builder;
-using ReactiveUI.Tests.Infrastructure.StaticState;
 using ReactiveUI.Winforms;
-using TUnit.Core;
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests default propery binding.
@@ -23,33 +21,15 @@ namespace ReactiveUI.Tests.Winforms;
 /// This state must not be concurrently initialized by parallel tests.
 /// </remarks>
 [NotInParallel]
-public class DefaultPropertyBindingTests : IDisposable
+[TestExecutor<WinFormsViewsTestExecutor>]
+
+public class DefaultPropertyBindingTests
 {
-    private RxSchedulersSchedulersScope? _schedulersScope;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DefaultPropertyBindingTests"/> class.
-    /// </summary>
-    public DefaultPropertyBindingTests() => RxAppBuilder.EnsureInitialized();
-
-    [Before(Test)]
-    public void SetUp() => _schedulersScope = new RxSchedulersSchedulersScope();
-
-    [After(Test)]
-    public void TearDown() => _schedulersScope?.Dispose();
-
-    public void Dispose()
-    {
-        _schedulersScope?.Dispose();
-        _schedulersScope = null;
-    }
-
     /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForTextboxes()
     {
         var input = new TextBox();
@@ -82,7 +62,6 @@ public class DefaultPropertyBindingTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForComponents()
     {
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
@@ -115,15 +94,14 @@ public class DefaultPropertyBindingTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
     {
-        var input = new AThirdPartyNamespace.ThirdPartyControl();
+        var input = new ThirdPartyControl();
         var fixture = new WinformsCreatesObservableForProperty();
 
-        await Assert.That(fixture.GetAffinityForObject(typeof(AThirdPartyNamespace.ThirdPartyControl), "Value")).IsNotEqualTo(0);
+        await Assert.That(fixture.GetAffinityForObject(typeof(ThirdPartyControl), "Value")).IsNotEqualTo(0);
 
-        Expression<Func<AThirdPartyNamespace.ThirdPartyControl, string?>> expression = static x => x.Value;
+        Expression<Func<ThirdPartyControl, string?>> expression = static x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
         var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
         await Assert.That(output).IsEmpty();
@@ -147,7 +125,6 @@ public class DefaultPropertyBindingTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CanBindViewModelToWinformControls()
     {
         var vm = new FakeWinformViewModel();
@@ -174,7 +151,6 @@ public class DefaultPropertyBindingTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SmokeTestWinformControls()
     {
         var vm = new FakeWinformViewModel();
@@ -209,7 +185,6 @@ public class DefaultPropertyBindingTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task PanelSetMethodBindingConverter_GetAffinityForObjects()
     {
         var fixture = new PanelSetMethodBindingConverter();
@@ -228,7 +203,6 @@ public class DefaultPropertyBindingTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_BeforeChanged()
     {
         var fixture = new WinformsCreatesObservableForProperty();
@@ -238,7 +212,6 @@ public class DefaultPropertyBindingTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonComponent()
     {
         var fixture = new WinformsCreatesObservableForProperty();
@@ -248,7 +221,6 @@ public class DefaultPropertyBindingTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonExistent_Event()
     {
         var fixture = new WinformsCreatesObservableForProperty();
@@ -258,7 +230,6 @@ public class DefaultPropertyBindingTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinformsCreatesObservableForProperty_GetNotificationForProperty_Throws_For_NonExistent_Event()
     {
         var input = new TextBox();

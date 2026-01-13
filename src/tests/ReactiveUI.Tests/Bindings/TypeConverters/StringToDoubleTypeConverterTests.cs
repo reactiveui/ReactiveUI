@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to doubles.
+///     Tests for converting strings to doubles.
 /// </summary>
 public class StringToDoubleTypeConverterTests
 {
@@ -19,14 +19,13 @@ public class StringToDoubleTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToDouble_Succeeds()
+    public async Task TryConvert_EmptyString_ReturnsFalse()
     {
         var converter = new StringToDoubleTypeConverter();
 
-        var result = converter.TryConvert("123.456", null, out double output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class StringToDoubleTypeConverterTests
     {
         var converter = new StringToDoubleTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out double output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -44,19 +43,20 @@ public class StringToDoubleTypeConverterTests
     {
         var converter = new StringToDoubleTypeConverter();
 
-        var result = converter.TryConvert("1.23E+10", null, out double output);
+        var result = converter.TryConvert("1.23E+10", null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(1.23E+10);
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_StringToDouble_Succeeds()
     {
         var converter = new StringToDoubleTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out double output);
+        var result = converter.TryConvert("123.456", null, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123.456);
     }
 }

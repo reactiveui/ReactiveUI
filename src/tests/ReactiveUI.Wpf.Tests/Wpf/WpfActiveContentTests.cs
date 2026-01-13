@@ -7,8 +7,8 @@ using System.Windows;
 
 using DynamicData;
 
-using ReactiveUI.Testing;
-
+using ReactiveUI.Tests.Wpf.Mocks.ViewModelViewHosts;
+using ReactiveUI.Tests.Xaml.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;

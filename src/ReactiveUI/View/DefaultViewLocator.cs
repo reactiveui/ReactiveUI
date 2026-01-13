@@ -37,8 +37,21 @@ namespace ReactiveUI;
 /// </example>
 public sealed class DefaultViewLocator : IViewLocator
 {
+    // Lock object for synchronizing writes to _mappings.
+#if NET9_0_OR_GREATER
+    private readonly System.Threading.Lock _gate = new();
+#else
+    private readonly object _gate = new();
+#endif
+
+    // Cache for MakeGenericType calls in ResolveView(object).
+    // Key: ViewModelType, Value: IViewFor<ViewModelType> interface type.
+    private readonly ConcurrentDictionary<Type, Type> _viewForTypeCache = new();
+
+    // Snapshot pattern: Readers access this volatile reference without locking.
+    // Writers lock, clone, mutate, and swap the reference.
     // Keyed by (ViewModelType, Contract). Empty string represents default contract.
-    private readonly ConcurrentDictionary<(Type vmType, string contract), Func<IViewFor>> _aotMappings = new();
+    private Dictionary<(Type ViewModelType, string Contract), Func<IViewFor>> _mappings = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
@@ -69,7 +82,21 @@ public sealed class DefaultViewLocator : IViewLocator
         where TView : class, IViewFor<TViewModel>
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);
-        _aotMappings[(typeof(TViewModel), contract ?? string.Empty)] = () => factory();
+
+        var key = (typeof(TViewModel), contract ?? string.Empty);
+
+        lock (_gate)
+        {
+            var current = Volatile.Read(ref _mappings);
+            var newMappings = new Dictionary<(Type, string), Func<IViewFor>>(current)
+            {
+                // Covariance of delegates allows Func<TView> to be assigned to Func<IViewFor>
+                [key] = factory
+            };
+
+            Interlocked.Exchange(ref _mappings, newMappings);
+        }
+
         return this;
     }
 
@@ -82,7 +109,19 @@ public sealed class DefaultViewLocator : IViewLocator
     public DefaultViewLocator Unmap<TViewModel>(string? contract = null)
         where TViewModel : class
     {
-        _ = _aotMappings.TryRemove((typeof(TViewModel), contract ?? string.Empty), out _);
+        var key = (typeof(TViewModel), contract ?? string.Empty);
+
+        lock (_gate)
+        {
+            var current = Volatile.Read(ref _mappings);
+            if (current.ContainsKey(key))
+            {
+                var newMappings = new Dictionary<(Type, string), Func<IViewFor>>(current);
+                newMappings.Remove(key);
+                Interlocked.Exchange(ref _mappings, newMappings);
+            }
+        }
+
         return this;
     }
 
@@ -105,14 +144,21 @@ public sealed class DefaultViewLocator : IViewLocator
     public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
         where TViewModel : class
     {
-        // Check explicit AOT mappings first
-        if (_aotMappings.TryGetValue((typeof(TViewModel), contract ?? string.Empty), out var factory))
+        // Snapshot read - lock-free
+        // Volatile.Read ensures we get the latest published dictionary reference.
+        // The dictionary itself is immutable (copy-on-write), so no further locking is needed.
+        var mappings = Volatile.Read(ref _mappings);
+        var vmType = typeof(TViewModel);
+        var contractKey = contract ?? string.Empty;
+
+        // 1. Check explicit AOT mappings
+        if (mappings.TryGetValue((vmType, contractKey), out var factory))
         {
             this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> from explicit mapping", typeof(TViewModel).Name);
             return (IViewFor<TViewModel>)factory();
         }
 
-        // Fallback to service locator (still AOT-compatible as it uses generics)
+        // 2. Fallback to service locator
         var view = AppLocator.Current?.GetService<IViewFor<TViewModel>>(contract);
         if (view is not null)
         {
@@ -120,10 +166,10 @@ public sealed class DefaultViewLocator : IViewLocator
             return view;
         }
 
-        // If specific contract requested, try default contract
+        // 3. Fallback to default contract if specific contract was requested
         if (!string.IsNullOrEmpty(contract))
         {
-            if (_aotMappings.TryGetValue((typeof(TViewModel), string.Empty), out var defaultFactory))
+            if (mappings.TryGetValue((vmType, string.Empty), out var defaultFactory))
             {
                 this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> from default mapping as fallback", typeof(TViewModel).Name);
                 return (IViewFor<TViewModel>)defaultFactory();
@@ -144,7 +190,7 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <inheritdoc/>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    public IViewFor<object>? ResolveView(object? instance, string? contract = null)
+    public IViewFor? ResolveView(object? instance, string? contract = null)
     {
         if (instance is null)
         {
@@ -152,59 +198,56 @@ public sealed class DefaultViewLocator : IViewLocator
         }
 
         var vmType = instance.GetType();
-        var key = (vmType, contract ?? string.Empty);
+        var contractKey = contract ?? string.Empty;
 
-        // 1) Explicit AOT mappings first (no reflection beyond GetType()).
-        if (_aotMappings.TryGetValue(key, out var factory))
+        // Snapshot read - lock-free
+        var mappings = Volatile.Read(ref _mappings);
+
+        // 1) Explicit AOT mappings first (fastest, no reflection beyond GetType and Dictionary lookup)
+        if (mappings.TryGetValue((vmType, contractKey), out var factory))
         {
             var view = factory();
-            if (view is IViewFor viewFor)
+            if (view is { } viewFor)
             {
                 viewFor.ViewModel = instance;
+                return viewFor;
             }
 
-            return view as IViewFor<object>;
+            return null;
         }
 
         // 2) Fallback to service locator via runtime-constructed service type.
-        // Note: this uses MakeGenericType and is the reason for the RUC attribute.
-        var serviceType = typeof(IViewFor<>).MakeGenericType(vmType);
-        var resolved = AppLocator.Current?.GetService(serviceType, contract);
+        // We cache the MakeGenericType result to avoid reflection overhead on subsequent calls.
+        var serviceType = _viewForTypeCache.GetOrAdd(vmType, static t => typeof(IViewFor<>).MakeGenericType(t));
 
+        var resolved = AppLocator.Current.GetService(serviceType, contract);
         if (resolved is IViewFor resolvedViewFor)
         {
             resolvedViewFor.ViewModel = instance;
-        }
-
-        if (resolved is IViewFor<object> typedResolved)
-        {
-            return typedResolved;
+            return resolvedViewFor;
         }
 
         // 3) If a specific contract was requested, try default contract as fallback.
         if (!string.IsNullOrEmpty(contract))
         {
-            var defaultKey = (vmType, string.Empty);
-
-            if (_aotMappings.TryGetValue(defaultKey, out var defaultFactory))
+            if (mappings.TryGetValue((vmType, string.Empty), out var defaultFactory))
             {
                 var view = defaultFactory();
-                if (view is IViewFor viewFor)
+                if (view is { } v)
                 {
-                    viewFor.ViewModel = instance;
+                    v.ViewModel = instance;
+                    return v;
                 }
 
-                return view as IViewFor<object>;
+                return null;
             }
 
             var defaultResolved = AppLocator.Current?.GetService(serviceType);
-
             if (defaultResolved is IViewFor defaultResolvedViewFor)
             {
                 defaultResolvedViewFor.ViewModel = instance;
+                return defaultResolvedViewFor;
             }
-
-            return defaultResolved as IViewFor<object>;
         }
 
         return null;

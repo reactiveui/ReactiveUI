@@ -6,7 +6,8 @@
 using System.Windows;
 
 using DynamicData;
-
+using ReactiveUI.Tests.Utilities;
+using ReactiveUI.Tests.Wpf.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;

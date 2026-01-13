@@ -8,6 +8,13 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class StringConverterTests
 {
     [Test]
+    public async Task FromType_ReturnsStringType()
+    {
+        var converter = new StringConverter();
+        await Assert.That(converter.FromType).IsEqualTo(typeof(string));
+    }
+
+    [Test]
     public async Task GetAffinityForObjects_Returns2()
     {
         var converter = new StringConverter();
@@ -16,37 +23,10 @@ public class StringConverterTests
     }
 
     [Test]
-    public async Task TryConvertTyped_StringToString_Succeeds()
+    public async Task ToType_ReturnsStringType()
     {
         var converter = new StringConverter();
-        var value = "test";
-
-        var result = converter.TryConvertTyped(value, null, out object? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("test");
-    }
-
-    [Test]
-    public async Task TryConvertTyped_NullValue_ReturnsFalse()
-    {
-        var converter = new StringConverter();
-
-        var result = converter.TryConvertTyped(null, null, out object? output);
-
-        await Assert.That(result).IsFalse();
-        await Assert.That(output).IsNull();
-    }
-
-    [Test]
-    public async Task TryConvertTyped_NonStringValue_ReturnsFalse()
-    {
-        var converter = new StringConverter();
-        var value = 123;
-
-        var result = converter.TryConvertTyped(value, null, out object? output);
-
-        await Assert.That(result).IsFalse();
+        await Assert.That(converter.ToType).IsEqualTo(typeof(string));
     }
 
     [Test]
@@ -55,7 +35,7 @@ public class StringConverterTests
         var converter = new StringConverter();
         var value = string.Empty;
 
-        var result = converter.TryConvertTyped(value, null, out object? output);
+        var result = converter.TryConvertTyped(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(string.Empty);
@@ -67,29 +47,49 @@ public class StringConverterTests
         var converter = new StringConverter();
         var value = "test";
 
-        var result = converter.TryConvertTyped(value, "some hint", out object? output);
+        var result = converter.TryConvertTyped(value, "some hint", out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("test");
     }
 
     [Test]
-    public async Task FromType_ReturnsStringType()
+    public async Task TryConvertTyped_NonStringValue_ReturnsFalse()
     {
         var converter = new StringConverter();
-        await Assert.That(converter.FromType).IsEqualTo(typeof(string));
+        var value = 123;
+
+        var result = converter.TryConvertTyped(value, null, out var output);
+
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public async Task ToType_ReturnsStringType()
+    public async Task TryConvertTyped_NullValue_ReturnsFalse()
     {
         var converter = new StringConverter();
-        await Assert.That(converter.ToType).IsEqualTo(typeof(string));
+
+        var result = converter.TryConvertTyped(null, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_StringToString_Succeeds()
+    {
+        var converter = new StringConverter();
+        var value = "test";
+
+        var result = converter.TryConvertTyped(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("test");
     }
 
     private class TestObject
     {
-        public string Value { get; set; } = string.Empty;
+        public string Value { get; } = string.Empty;
 
         public override string ToString() => $"TestObject: {Value}";
     }

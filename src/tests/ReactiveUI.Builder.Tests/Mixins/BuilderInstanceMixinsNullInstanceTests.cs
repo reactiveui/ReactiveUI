@@ -3,9 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat.Builder;
-
-namespace ReactiveUI.Builder.Tests;
+namespace ReactiveUI.Builder.Tests.Mixins;
 
 public class BuilderInstanceMixinsNullInstanceTests
 {

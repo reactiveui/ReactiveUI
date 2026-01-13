@@ -6,8 +6,6 @@
 using System.Reflection;
 using System.Text;
 
-using ReactiveUI.Builder;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -15,11 +13,6 @@ namespace ReactiveUI;
 /// </summary>
 public static class ExpressionMixins
 {
-    /// <summary>
-    /// Initializes static members of the <see cref="ExpressionMixins"/> class.
-    /// </summary>
-    static ExpressionMixins() => RxAppBuilder.EnsureInitialized();
-
     /// <summary>
     /// Gets all the chain of child expressions within a Expression.
     /// Handles property member accesses, objects and indexes.

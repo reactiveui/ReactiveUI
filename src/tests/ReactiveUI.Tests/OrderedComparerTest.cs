@@ -6,14 +6,54 @@
 namespace ReactiveUI.Tests;
 
 /// <summary>
-/// Tests for <see cref="OrderedComparer"/> and <see cref="OrderedComparer{T}"/>.
+///     Tests for <see cref="OrderedComparer" /> and <see cref="OrderedComparer{T}" />.
 /// </summary>
 public class OrderedComparerTest
 {
     /// <summary>
-    /// Tests that For with enumerable returns a builder.
+    ///     Tests that builder OrderBy creates a comparer.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Builder_OrderBy_CreatesComparer()
+    {
+        var builder = OrderedComparer.For<TestClass>();
+
+        var comparer = builder.OrderBy(x => x.Value);
+
+        await Assert.That(comparer).IsNotNull();
+    }
+
+    /// <summary>
+    ///     Tests that builder OrderByDescending creates a comparer.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Builder_OrderByDescending_CreatesComparer()
+    {
+        var builder = OrderedComparer.For<TestClass>();
+
+        var comparer = builder.OrderByDescending(x => x.Value);
+
+        await Assert.That(comparer).IsNotNull();
+    }
+
+    /// <summary>
+    ///     Tests that For without argument returns a builder.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task For_Generic_ReturnsBuilder()
+    {
+        var builder = OrderedComparer.For<TestClass>();
+
+        await Assert.That(builder).IsNotNull();
+    }
+
+    /// <summary>
+    ///     Tests that For with enumerable returns a builder.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task For_WithEnumerable_ReturnsBuilder()
     {
@@ -25,21 +65,9 @@ public class OrderedComparerTest
     }
 
     /// <summary>
-    /// Tests that For without argument returns a builder.
+    ///     Tests that OrderBy creates a comparer that sorts ascending.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task For_Generic_ReturnsBuilder()
-    {
-        var builder = OrderedComparer.For<TestClass>();
-
-        await Assert.That(builder).IsNotNull();
-    }
-
-    /// <summary>
-    /// Tests that OrderBy creates a comparer that sorts ascending.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OrderBy_SortsAscending()
     {
@@ -53,9 +81,9 @@ public class OrderedComparerTest
     }
 
     /// <summary>
-    /// Tests that OrderBy with custom comparer works correctly.
+    ///     Tests that OrderBy with custom comparer works correctly.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OrderBy_WithCustomComparer_UsesCustomComparer()
     {
@@ -70,9 +98,9 @@ public class OrderedComparerTest
     }
 
     /// <summary>
-    /// Tests that OrderByDescending creates a comparer that sorts descending.
+    ///     Tests that OrderByDescending creates a comparer that sorts descending.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OrderByDescending_SortsDescending()
     {
@@ -86,9 +114,9 @@ public class OrderedComparerTest
     }
 
     /// <summary>
-    /// Tests that OrderByDescending with custom comparer works correctly.
+    ///     Tests that OrderByDescending with custom comparer works correctly.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OrderByDescending_WithCustomComparer_UsesCustomComparer()
     {
@@ -103,35 +131,7 @@ public class OrderedComparerTest
     }
 
     /// <summary>
-    /// Tests that builder OrderBy creates a comparer.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Builder_OrderBy_CreatesComparer()
-    {
-        var builder = OrderedComparer.For<TestClass>();
-
-        var comparer = builder.OrderBy(x => x.Value);
-
-        await Assert.That(comparer).IsNotNull();
-    }
-
-    /// <summary>
-    /// Tests that builder OrderByDescending creates a comparer.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Builder_OrderByDescending_CreatesComparer()
-    {
-        var builder = OrderedComparer.For<TestClass>();
-
-        var comparer = builder.OrderByDescending(x => x.Value);
-
-        await Assert.That(comparer).IsNotNull();
-    }
-
-    /// <summary>
-    /// Test class for comparison testing.
+    ///     Test class for comparison testing.
     /// </summary>
     private class TestClass
     {

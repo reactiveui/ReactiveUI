@@ -5,14 +5,77 @@
 
 using System.Diagnostics;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Comparers;
 
 public class OrderedComparerTests
 {
     /// <summary>
-    /// A general smoke test.
+    ///     Test for checking that chaining the onto regular IComparable works.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ChainOntoRegularIComparables()
+    {
+        var items = new List<string> { "aaa", "AAA", "abb", "aaaa" };
+        var comparer = StringComparer.OrdinalIgnoreCase;
+
+        items.Sort(comparer);
+        await Assert.That(
+            items.SequenceEqual(
+                ["AAA", "aaa", "aaaa", "abb"],
+                StringComparer.OrdinalIgnoreCase)).IsTrue();
+
+        items.Sort(
+            comparer.ThenByDescending(
+                static x => x,
+                StringComparer.Ordinal));
+        await Assert.That(
+            items.SequenceEqual(
+                ["aaa", "AAA", "aaaa", "abb"],
+                StringComparer.Ordinal)).IsTrue();
+    }
+
+    /// <summary>
+    ///     A test which determines if customer comparers work.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CustomComparerTest()
+    {
+        List<string> items = ["aaa", "AAA", "abb", "aaaa"];
+
+        items.Sort(
+            OrderedComparer<string>.OrderBy(
+                static x => x,
+                StringComparer.Ordinal));
+        await Assert.That(items.SequenceEqual(["AAA", "aaa", "aaaa", "abb"])).IsTrue();
+
+        items.Sort(
+            OrderedComparer<string>.OrderByDescending(static x => x.Length).ThenBy(
+                static x => x,
+                StringComparer.Ordinal));
+        await Assert.That(items.SequenceEqual(["aaaa", "AAA", "aaa", "abb"])).IsTrue();
+
+        items.Sort(
+            OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
+                static x => x,
+                StringComparer.Ordinal));
+        await Assert.That(items.SequenceEqual(["AAA", "aaa", "abb", "aaaa"])).IsTrue();
+
+        items.Sort(
+            OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
+                static x => x,
+                StringComparer.OrdinalIgnoreCase));
+        await Assert.That(
+            items.SequenceEqual(
+                ["AAA", "AAA", "abb", "aaaa"],
+                StringComparer.OrdinalIgnoreCase)).IsTrue();
+    }
+
+    /// <summary>
+    ///     A general smoke test.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SmokeTest()
     {
@@ -35,91 +98,31 @@ public class OrderedComparerTests
         await Assert.That(employees.SequenceEqual([adam, alice, bob, carol, xavier])).IsTrue();
 
         employees.Sort(
-                       OrderedComparer<Employee>
-                           .OrderByDescending(static x => x.Age)
-                           .ThenBy(static x => x.Name));
+            OrderedComparer<Employee>
+                .OrderByDescending(static x => x.Age)
+                .ThenBy(static x => x.Name));
         await Assert.That(employees.SequenceEqual([adam, carol, xavier, bob, alice])).IsTrue();
 
         employees.Sort(
-                       OrderedComparer<Employee>
-                           .OrderByDescending(static x => x.Salary)
-                           .ThenBy(
-                                   static x => x.Name,
-                                   StringComparer.OrdinalIgnoreCase));
+            OrderedComparer<Employee>
+                .OrderByDescending(static x => x.Salary)
+                .ThenBy(
+                    static x => x.Name,
+                    StringComparer.OrdinalIgnoreCase));
         await Assert.That(employees.SequenceEqual([adam, alice, carol, xavier, bob])).IsTrue();
 
         employees.Sort(
-                       OrderedComparer<Employee>
-                           .OrderByDescending(static x => x.Age)
-                           .ThenByDescending(static x => x.Salary)
-                           .ThenBy(static x => x.Name));
+            OrderedComparer<Employee>
+                .OrderByDescending(static x => x.Age)
+                .ThenByDescending(static x => x.Salary)
+                .ThenBy(static x => x.Name));
         await Assert.That(employees.SequenceEqual([adam, carol, xavier, bob, alice])).IsTrue();
     }
 
     /// <summary>
-    /// A test which determines if customer comparers work.
+    ///     Test that checks it works with anonymous types.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task CustomComparerTest()
-    {
-        List<string> items = ["aaa", "AAA", "abb", "aaaa"];
-
-        items.Sort(
-                   OrderedComparer<string>.OrderBy(
-                                                   static x => x,
-                                                   StringComparer.Ordinal));
-        await Assert.That(items.SequenceEqual(["AAA", "aaa", "aaaa", "abb"])).IsTrue();
-
-        items.Sort(
-                   OrderedComparer<string>.OrderByDescending(static x => x.Length).ThenBy(
-                    static x => x,
-                    StringComparer.Ordinal));
-        await Assert.That(items.SequenceEqual(["aaaa", "AAA", "aaa", "abb"])).IsTrue();
-
-        items.Sort(
-                   OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
-                                                                         static x => x,
-                                                                         StringComparer.Ordinal));
-        await Assert.That(items.SequenceEqual(["AAA", "aaa", "abb", "aaaa"])).IsTrue();
-
-        items.Sort(
-                   OrderedComparer<string>.OrderBy(static x => x.Length).ThenBy(
-                                                                         static x => x,
-                                                                         StringComparer.OrdinalIgnoreCase));
-        await Assert.That(items.SequenceEqual(
-                                        ["AAA", "AAA", "abb", "aaaa"],
-                                        StringComparer.OrdinalIgnoreCase)).IsTrue();
-    }
-
-    /// <summary>
-    /// Test for checking that chaining the onto regular IComparable works.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task ChainOntoRegularIComparables()
-    {
-        var items = new List<string> { "aaa", "AAA", "abb", "aaaa" };
-        var comparer = StringComparer.OrdinalIgnoreCase;
-
-        items.Sort(comparer);
-        await Assert.That(items.SequenceEqual(
-                                        ["AAA", "aaa", "aaaa", "abb"],
-                                        StringComparer.OrdinalIgnoreCase)).IsTrue();
-
-        items.Sort(
-                   comparer.ThenByDescending(
-                                             static x => x,
-                                             StringComparer.Ordinal));
-        await Assert.That(items.SequenceEqual(
-                                        ["aaa", "AAA", "aaaa", "abb"],
-                                        StringComparer.Ordinal)).IsTrue();
-    }
-
-    /// <summary>
-    /// Test that checks it works with anonymous types.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WorksWithAnonymousTypes()
     {
@@ -133,9 +136,9 @@ public class OrderedComparerTests
     [DebuggerDisplay("{Name}")]
     private class Employee
     {
-        public string? Name { get; init; }
-
         public int Age { get; init; }
+
+        public string? Name { get; init; }
 
         public int Salary { get; init; }
     }

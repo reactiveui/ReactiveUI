@@ -5,7 +5,7 @@
 
 using Splat.Builder;
 
-namespace ReactiveUI.Builder.Tests;
+namespace ReactiveUI.Builder.Tests.Mixins;
 
 public class BuilderInstanceMixinsNullActionTests
 {

@@ -4,14 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Checks the command bindings.
 /// </summary>
+[TestExecutor<WinFormsTestExecutor>]
 public class CommandBindingImplementationTests
 {
     /// <summary>
@@ -19,7 +20,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireup()
     {
         var vm = new WinformCommandBindViewModel();
@@ -44,7 +44,6 @@ public class CommandBindingImplementationTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireupWithParameter()
     {
         var vm = new WinformCommandBindViewModel();
@@ -87,7 +86,6 @@ public class CommandBindingImplementationTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindToExplicitEventWireupWithParameter()
     {
         var vm = new WinformCommandBindViewModel();

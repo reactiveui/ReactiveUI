@@ -4,11 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Controls;
-using ReactiveUI.Tests.Xaml;
+using ReactiveUI.Tests.Xaml.Mocks;
 
-namespace ReactiveUI.Tests.Wpf;
+namespace ReactiveUI.Tests.Wpf.Mocks;
 
-public class CommandBindingView : ReactiveObject, IViewFor<CommandBindingViewModel>
+public class CommandBindingView : ReactiveUI.ReactiveObject, IViewFor<CommandBindingViewModel>
 {
     private CommandBindingViewModel? _viewModel;
 

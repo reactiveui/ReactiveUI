@@ -3,32 +3,35 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Utilities;
 
 public class CountingTestScheduler(IScheduler innerScheduler) : IScheduler
 {
     public IScheduler InnerScheduler { get; } = innerScheduler;
 
-    public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; } = [];
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public DateTimeOffset Now => InnerScheduler.Now;
 
-    /// <inheritdoc/>
-    public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+    public List<(Action action, TimeSpan? dueTime)> ScheduledItems { get; } = [];
+
+    /// <inheritdoc />
+    public IDisposable Schedule<TState>(
+        TState state,
+        DateTimeOffset dueTime,
+        Func<IScheduler, TState, IDisposable> action)
     {
         ScheduledItems.Add((() => action(this, state), null));
         return InnerScheduler.Schedule(state, dueTime, action);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
     {
         ScheduledItems.Add((() => action(this, state), dueTime));
         return InnerScheduler.Schedule(state, dueTime, action);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
     {
         ScheduledItems.Add((() => action(this, state), null));

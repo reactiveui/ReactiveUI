@@ -3,11 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Mocks;
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using Splat.Builder;
-
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
@@ -31,7 +32,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task RegisterViewsForViewModelShouldRegisterAllViews()
     {
         using (_resolver.WithResolver())
@@ -45,7 +45,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task NonContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -58,7 +57,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     public void Dispose() => _resolver?.Dispose();
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -68,7 +66,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
     {
         using (_resolver.WithResolver())
@@ -89,7 +86,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SingleInstanceViewsWithContractShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
@@ -110,7 +106,6 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
     {
         using (_resolver.WithResolver())

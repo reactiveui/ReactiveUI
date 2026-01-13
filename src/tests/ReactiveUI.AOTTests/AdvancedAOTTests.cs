@@ -7,7 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-namespace ReactiveUI.AOTTests;
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Provides a suite of advanced tests to verify that key ReactiveUI features function correctly under Ahead-of-Time

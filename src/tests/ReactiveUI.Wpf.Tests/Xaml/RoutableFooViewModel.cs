@@ -3,14 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Tests.Core;
+using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
+using ReactiveUI.Tests.Xaml.Mocks;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// A routable view model.
 /// </summary>
-public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
+public class RoutableFooViewModel : ReactiveUI.ReactiveObject, IRoutableFooViewModel
 {
     /// <inheritdoc/>
     public IScreen HostScreen { get; set; } = new TestScreen();

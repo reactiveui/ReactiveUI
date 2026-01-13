@@ -21,10 +21,34 @@ public class NullableLongToStringTypeConverterTests
         var converter = new NullableLongToStringTypeConverter();
         long? value = 123456789012;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123456789012");
+    }
+
+    [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new NullableLongToStringTypeConverter();
+        long? value = long.MaxValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(long.MaxValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new NullableLongToStringTypeConverter();
+        long? value = long.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(long.MinValue.ToString());
     }
 
     [Test]
@@ -32,7 +56,7 @@ public class NullableLongToStringTypeConverterTests
     {
         var converter = new NullableLongToStringTypeConverter();
 
-        var result = converter.TryConvert(null, null, out string? output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -43,33 +67,9 @@ public class NullableLongToStringTypeConverterTests
         var converter = new NullableLongToStringTypeConverter();
         long? value = 42;
 
-        var result = converter.TryConvert(value, 10, out string? output);
+        var result = converter.TryConvert(value, 10, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("0000000042");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new NullableLongToStringTypeConverter();
-        long? value = long.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(long.MinValue.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
-    {
-        var converter = new NullableLongToStringTypeConverter();
-        long? value = long.MaxValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(long.MaxValue.ToString());
     }
 }

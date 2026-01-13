@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

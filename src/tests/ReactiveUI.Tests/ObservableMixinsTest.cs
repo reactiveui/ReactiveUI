@@ -6,14 +6,36 @@
 namespace ReactiveUI.Tests;
 
 /// <summary>
-/// Tests for <see cref="ObservableMixins"/>.
+///     Tests for <see cref="ObservableMixins" />.
 /// </summary>
 public class ObservableMixinsTest
 {
     /// <summary>
-    /// Tests that WhereNotNull filters out null values.
+    ///     Tests that WhereNotNull emits all non-null values.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task WhereNotNull_EmitsAllNonNullValues()
+    {
+        var subject = new Subject<int?>();
+        var results = new List<int?>();
+
+        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+
+        subject.OnNext(1);
+        subject.OnNext(2);
+        subject.OnNext(3);
+
+        await Assert.That(results).Count().IsEqualTo(3);
+        await Assert.That(results[0]).IsEqualTo(1);
+        await Assert.That(results[1]).IsEqualTo(2);
+        await Assert.That(results[2]).IsEqualTo(3);
+    }
+
+    /// <summary>
+    ///     Tests that WhereNotNull filters out null values.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_FiltersNullValues()
     {
@@ -35,31 +57,9 @@ public class ObservableMixinsTest
     }
 
     /// <summary>
-    /// Tests that WhereNotNull emits all non-null values.
+    ///     Tests that WhereNotNull emits nothing when only nulls are sent.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhereNotNull_EmitsAllNonNullValues()
-    {
-        var subject = new Subject<int?>();
-        var results = new List<int?>();
-
-        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
-
-        subject.OnNext(1);
-        subject.OnNext(2);
-        subject.OnNext(3);
-
-        await Assert.That(results).Count().IsEqualTo(3);
-        await Assert.That(results[0]).IsEqualTo(1);
-        await Assert.That(results[1]).IsEqualTo(2);
-        await Assert.That(results[2]).IsEqualTo(3);
-    }
-
-    /// <summary>
-    /// Tests that WhereNotNull emits nothing when only nulls are sent.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_WithOnlyNulls_EmitsNothing()
     {
@@ -76,9 +76,9 @@ public class ObservableMixinsTest
     }
 
     /// <summary>
-    /// Tests that WhereNotNull works with reference types.
+    ///     Tests that WhereNotNull works with reference types.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_WorksWithReferenceTypes()
     {
@@ -99,7 +99,7 @@ public class ObservableMixinsTest
     }
 
     /// <summary>
-    /// Test class for reference type testing.
+    ///     Test class for reference type testing.
     /// </summary>
     private class TestClass
     {

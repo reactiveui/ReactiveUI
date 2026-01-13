@@ -5,7 +5,7 @@
 
 using Microsoft.Maui;
 
-namespace ReactiveUI.Tests.Maui;
+namespace ReactiveUI.Maui.Tests;
 
 /// <summary>
 /// Tests for <see cref="BooleanToVisibilityTypeConverter"/>.

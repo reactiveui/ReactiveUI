@@ -4,10 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
-
 using ReactiveUI.Builder;
 
-namespace ReactiveUI.Tests.Maui.Builder;
+namespace ReactiveUI.Maui.Tests.Builder;
 
 /// <summary>
 /// Tests for MauiDispatcherScheduler behavior.

@@ -52,12 +52,12 @@ public interface IViewLocator : IEnableLogger
         where TViewModel : class;
 
     /// <summary>
-    /// Resolves a view for a view model type known at compile time. Fully AOT-compatible.
+    /// Resolves a view for a view model instance using runtime type information.
     /// </summary>
     /// <param name="instance">The view model instance to resolve a view for.</param>
     /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
     /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
     [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    IViewFor<object>? ResolveView(object? instance, string? contract = null);
+    IViewFor? ResolveView(object? instance, string? contract = null);
 }

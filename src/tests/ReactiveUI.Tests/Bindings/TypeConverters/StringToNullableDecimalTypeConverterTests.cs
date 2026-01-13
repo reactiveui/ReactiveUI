@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable decimals.
+///     Tests for converting strings to nullable decimals.
 /// </summary>
 public class StringToNullableDecimalTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableDecimalTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToDecimalNullable_Succeeds()
-    {
-        var converter = new StringToNullableDecimalTypeConverter();
-
-        var result = converter.TryConvert("123.456", null, out decimal? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456m);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableDecimalTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out decimal? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,8 +33,19 @@ public class StringToNullableDecimalTypeConverterTests
     {
         var converter = new StringToNullableDecimalTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out decimal? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToDecimalNullable_Succeeds()
+    {
+        var converter = new StringToNullableDecimalTypeConverter();
+
+        var result = converter.TryConvert("123.456", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123.456m);
     }
 }

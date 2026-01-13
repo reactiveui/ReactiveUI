@@ -5,7 +5,7 @@
 
 using System.Windows.Threading;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Utilities;
 
 /// <summary>
 /// A disposable scope that configures RxSchedulers.MainThreadScheduler to use the current thread's

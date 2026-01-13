@@ -3,22 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Linq.Expressions;
 using System.Windows.Forms;
-
 using ReactiveUI.Winforms;
-
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for ContentControlBindingHook.
 /// </summary>
+[TestExecutor<WinFormsTestExecutor>]
+[NotInParallel]
 public class ContentControlBindingHookTests
 {
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void ExecuteHook_Throws_When_GetCurrentViewProperties_Is_Null()
     {
         var hook = new ContentControlBindingHook();
@@ -27,7 +25,6 @@ public class ContentControlBindingHookTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExecuteHook_Returns_True_When_Sender_Is_Not_Panel()
     {
         var hook = new ContentControlBindingHook();
@@ -49,7 +46,6 @@ public class ContentControlBindingHookTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExecuteHook_Returns_True_When_Sender_Is_Panel()
     {
         var hook = new ContentControlBindingHook();
@@ -71,7 +67,6 @@ public class ContentControlBindingHookTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExecuteHook_Returns_True_When_Property_Is_Not_Controls()
     {
         var hook = new ContentControlBindingHook();
@@ -93,7 +88,6 @@ public class ContentControlBindingHookTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExecuteHook_Returns_True_When_ViewProperties_Is_Empty()
     {
         var hook = new ContentControlBindingHook();
@@ -109,7 +103,6 @@ public class ContentControlBindingHookTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExecuteHook_Returns_True_When_Sender_Is_Panel_And_Property_Is_Controls()
     {
         var hook = new ContentControlBindingHook();

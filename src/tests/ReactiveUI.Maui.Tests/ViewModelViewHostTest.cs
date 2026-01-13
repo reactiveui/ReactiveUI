@@ -3,9 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.Maui.Controls;
+using System.Diagnostics.CodeAnalysis;
 
-namespace ReactiveUI.Tests.Maui;
+namespace ReactiveUI.Maui.Tests;
 
 /// <summary>
 /// Tests for <see cref="ViewModelViewHost"/>.
@@ -145,6 +145,8 @@ public class ViewModelViewHostTest
         public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
             where TViewModel : class => null;
 
-        public IViewFor<object>? ResolveView(object? instance, string? contract = null) => null;
+        [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? instance, string? contract = null) => null;
     }
 }

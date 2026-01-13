@@ -4,16 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-using System.ComponentModel;
 using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for <see cref="ObservableCollectionChangedToListChangedTransformer"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
+
 public class ObservableCollectionChangedToListChangedTransformerTest
 {
     /// <summary>
@@ -21,7 +22,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_Reset_ProducesResetEvent()
     {
         var eventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
@@ -38,7 +38,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_Replace_ProducesItemChangedEvent()
     {
         var eventArgs = new NotifyCollectionChangedEventArgs(
@@ -59,7 +58,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_Remove_ProducesItemDeletedEvents()
     {
         var removedItems = new[] { "item1", "item2", "item3" };
@@ -82,7 +80,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_Add_ProducesItemAddedEvents()
     {
         var addedItems = new[] { "item1", "item2" };
@@ -104,7 +101,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_Move_ProducesItemMovedEvent()
     {
         var movedItems = new[] { "item" };
@@ -127,7 +123,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_RemoveWithEmptyList_ProducesNoEvents()
     {
         // Create a NotifyCollectionChangedEventArgs with Remove action but empty list
@@ -143,7 +138,6 @@ public class ObservableCollectionChangedToListChangedTransformerTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AsListChangedEventArgs_AddWithEmptyList_ProducesNoEvents()
     {
         // Create a NotifyCollectionChangedEventArgs with Add action but empty list

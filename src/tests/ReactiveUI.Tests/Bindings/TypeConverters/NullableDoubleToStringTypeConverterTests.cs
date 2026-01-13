@@ -21,7 +21,43 @@ public class NullableDoubleToStringTypeConverterTests
         var converter = new NullableDoubleToStringTypeConverter();
         double? value = 123.456;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new NullableDoubleToStringTypeConverter();
+        double? value = double.MaxValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(double.MaxValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new NullableDoubleToStringTypeConverter();
+        double? value = double.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(double.MinValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_NegativeValue_Succeeds()
+    {
+        var converter = new NullableDoubleToStringTypeConverter();
+        double? value = -123.456;
+
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
@@ -32,7 +68,7 @@ public class NullableDoubleToStringTypeConverterTests
     {
         var converter = new NullableDoubleToStringTypeConverter();
 
-        var result = converter.TryConvert(null, null, out string? output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -43,45 +79,9 @@ public class NullableDoubleToStringTypeConverterTests
         var converter = new NullableDoubleToStringTypeConverter();
         double? value = 42.5;
 
-        var result = converter.TryConvert(value, 2, out string? output);
+        var result = converter.TryConvert(value, 2, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("42.50");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new NullableDoubleToStringTypeConverter();
-        double? value = double.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(double.MinValue.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
-    {
-        var converter = new NullableDoubleToStringTypeConverter();
-        double? value = double.MaxValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(double.MaxValue.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_NegativeValue_Succeeds()
-    {
-        var converter = new NullableDoubleToStringTypeConverter();
-        double? value = -123.456;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(value.ToString());
     }
 }

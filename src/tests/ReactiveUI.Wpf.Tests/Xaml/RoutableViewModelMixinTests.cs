@@ -5,7 +5,7 @@
 
 using ReactiveUI.Tests.Wpf;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// Routable ViewModel MixinTests.
@@ -288,7 +288,7 @@ public class RoutableViewModelMixinTests
         public RoutingState Router { get; } = new(ImmediateScheduler.Instance);
     }
 
-    private class RoutableViewModel(IScreen screen) : ReactiveObject, IRoutableViewModel
+    private class RoutableViewModel(IScreen screen) : ReactiveUI.ReactiveObject, IRoutableViewModel
     {
         public string UrlPathSegment => "Test";
 

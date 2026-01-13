@@ -5,9 +5,9 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Reactive.Testing;
 using Microsoft.Xaml.Behaviors;
 using ReactiveUI.Blend;
+using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
@@ -197,7 +197,7 @@ public class ObservableTriggerTests
     public async Task AutoResubscribeOnError_WhenTrue_ResubscribesAfterError()
     {
         var button = new Button();
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var trigger = new ObservableTrigger
         {
             AutoResubscribeOnError = true,
@@ -237,7 +237,7 @@ public class ObservableTriggerTests
     public async Task AutoResubscribeOnError_WhenFalse_DoesNotResubscribe()
     {
         var button = new Button();
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var trigger = new ObservableTrigger
         {
             AutoResubscribeOnError = false,

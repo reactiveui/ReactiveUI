@@ -5,7 +5,7 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Wpf;
+namespace ReactiveUI.Tests.Wpf.Mocks.TransitionMock;
 
 /// <summary>
 /// Interaction logic for SecondView.xaml.

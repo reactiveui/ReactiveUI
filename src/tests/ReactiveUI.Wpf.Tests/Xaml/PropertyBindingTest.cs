@@ -9,7 +9,8 @@ using System.Globalization;
 using DynamicData.Binding;
 
 using ReactiveUI.Tests.Wpf;
-
+using ReactiveUI.Tests.Xaml.Mocks;
+using ReactiveUI.Tests.Xaml.Utilities;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;

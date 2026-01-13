@@ -3,14 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Activation;
 
 public class ActivatingViewModelTests
 {
     /// <summary>
-    /// Tests for the activation to make sure it activates the appropriate number of times.
+    ///     Tests for the activation to make sure it activates the appropriate number of times.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ActivationsGetRefCounted()
     {
@@ -32,9 +32,9 @@ public class ActivatingViewModelTests
     }
 
     /// <summary>
-    /// Tests to make sure the activations of derived classes don't get stomped.
+    ///     Tests to make sure the activations of derived classes don't get stomped.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DerivedActivationsDontGetStomped()
     {

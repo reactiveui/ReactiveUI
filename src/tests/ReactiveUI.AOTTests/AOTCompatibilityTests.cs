@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.AOTTests;
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Provides a suite of tests to verify compatibility of ReactiveUI features with ahead-of-time (AOT) compilation

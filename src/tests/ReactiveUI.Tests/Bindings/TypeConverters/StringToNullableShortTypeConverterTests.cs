@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable short integers.
+///     Tests for converting strings to nullable short integers.
 /// </summary>
 public class StringToNullableShortTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableShortTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToShortNullable_Succeeds()
-    {
-        var converter = new StringToNullableShortTypeConverter();
-
-        var result = converter.TryConvert("12345", null, out short? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo((short)12345);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableShortTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out short? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,7 +33,7 @@ public class StringToNullableShortTypeConverterTests
     {
         var converter = new StringToNullableShortTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out short? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -54,8 +43,19 @@ public class StringToNullableShortTypeConverterTests
     {
         var converter = new StringToNullableShortTypeConverter();
 
-        var result = converter.TryConvert("99999", null, out short? output);
+        var result = converter.TryConvert("99999", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToShortNullable_Succeeds()
+    {
+        var converter = new StringToNullableShortTypeConverter();
+
+        var result = converter.TryConvert("12345", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((short)12345);
     }
 }

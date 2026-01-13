@@ -3,13 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 
-namespace ReactiveUI.AOTTests;
+using TUnit.Core.Executors;
+
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Tests for ViewLocator AOT mappings.
 /// </summary>
+[TestExecutor<AppBuilderTestExecutor>]
 public class ViewLocatorAOTMappingTests
 {
     /// <summary>
@@ -25,16 +28,14 @@ public class ViewLocatorAOTMappingTests
         locator.Map<VmA, ViewA>(static () => new ViewA(), contract: "mobile")
             .Map<VmA, ViewADefault>(static () => new ViewADefault()); // default
 
-        var vm = new VmA();
-
-        var viewMobile = locator.ResolveView(vm, "mobile");
+        var viewMobile = locator.ResolveView<VmA>("mobile");
         await Assert.That(viewMobile).IsTypeOf<ViewA>();
 
-        var viewDefaultFromExplicit = locator.ResolveView(vm, string.Empty);
+        var viewDefaultFromExplicit = locator.ResolveView<VmA>(string.Empty);
         await Assert.That(viewDefaultFromExplicit).IsTypeOf<ViewADefault>();
 
         // Unknown contract falls back to default mapping
-        var viewFallback = locator.ResolveView(vm, "unknown");
+        var viewFallback = locator.ResolveView<VmA>("unknown");
         await Assert.That(viewFallback).IsTypeOf<ViewADefault>();
     }
 
@@ -48,11 +49,10 @@ public class ViewLocatorAOTMappingTests
         var locator = new DefaultViewLocator();
         locator.Map<VmB, ViewB>(static () => new ViewB(), contract: "c1");
 
-        var vm = new VmB();
-        await Assert.That(locator.ResolveView(vm, "c1")).IsTypeOf<ViewB>();
+        await Assert.That(locator.ResolveView<VmB>("c1")).IsTypeOf<ViewB>();
 
         locator.Unmap<VmB>("c1");
-        await Assert.That(locator.ResolveView(vm, "c1")).IsNull();
+        await Assert.That(locator.ResolveView<VmB>("c1")).IsNull();
     }
 
     /// <summary>
@@ -65,8 +65,7 @@ public class ViewLocatorAOTMappingTests
         var locator = new DefaultViewLocator();
         locator.Map<VmA, ViewA>(static () => new ViewA());
 
-        var vm = new VmA();
-        var view = locator.ResolveView(vm);
+        var view = locator.ResolveView<VmA>();
 
         await Assert.That(view).IsNotNull();
         await Assert.That(view).IsTypeOf<ViewA>();

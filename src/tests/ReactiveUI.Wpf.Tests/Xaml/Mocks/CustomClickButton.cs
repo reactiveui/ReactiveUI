@@ -5,7 +5,7 @@
 
 using System.Windows.Controls;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A button for custom clicking.

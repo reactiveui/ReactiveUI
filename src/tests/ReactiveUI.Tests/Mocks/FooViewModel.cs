@@ -19,7 +19,11 @@ public class FooViewModel : ReactiveObject
             .Subscribe();
     }
 
-    public int Setpoint { get => _setpoint; set => this.RaiseAndSetIfChanged(ref _setpoint, value); }
-
     public Foo Foo { get; }
+
+    public int Setpoint
+    {
+        get => _setpoint;
+        set => this.RaiseAndSetIfChanged(ref _setpoint, value);
+    }
 }

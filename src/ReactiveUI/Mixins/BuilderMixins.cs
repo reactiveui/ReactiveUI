@@ -125,13 +125,14 @@ public static class BuilderMixins
     public static IReactiveUIBuilder BuildApp(this IAppBuilder appBuilder)
     {
         ArgumentExceptionHelper.ThrowIfNull(appBuilder);
-        if (appBuilder is IReactiveUIBuilder reactiveUIBuilder)
+        if (appBuilder is not IReactiveUIBuilder reactiveUiBuilder)
         {
-            reactiveUIBuilder.BuildApp();
-            return reactiveUIBuilder;
+            throw new InvalidOperationException(
+                "The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
         }
 
-        throw new InvalidOperationException("The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
+        reactiveUiBuilder.BuildApp();
+        return reactiveUiBuilder;
     }
 
     /// <summary>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
+    <IsTestProject>false</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>ReactiveUI.Tests.Utilities</RootNamespace>
+    <PackageDescription>Shared test utilities for ReactiveUI test projects</PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TUnit"/>
+    <PackageReference Include="PublicApiGenerator"/>
+    <PackageReference Include="Verify.TUnit"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Builder"/>
+    <Using Include="System"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="System.Reactive.Concurrency"/>
+    <Using Include="System.Threading"/>
+    <Using Include="System.Threading.Tasks"/>
+    <Using Include="TUnit.Core"/>
+    <Using Include="TUnit.Core.Interfaces"/>
+  </ItemGroup>
+</Project>

@@ -16,37 +16,15 @@ public class NullableShortToStringTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_ShortNullableToString_Succeeds()
+    public async Task TryConvert_MaxValue_Succeeds()
     {
         var converter = new NullableShortToStringTypeConverter();
-        short? value = 12345;
+        short? value = short.MaxValue;
 
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("12345");
-    }
-
-    [Test]
-    public async Task TryConvert_NullValue_ReturnsTrue()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-
-        var result = converter.TryConvert(null, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
-    {
-        var converter = new NullableShortToStringTypeConverter();
-        short? value = 42;
-
-        var result = converter.TryConvert(value, 5, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("00042");
+        await Assert.That(output).IsEqualTo(short.MaxValue.ToString());
     }
 
     [Test]
@@ -55,21 +33,43 @@ public class NullableShortToStringTypeConverterTests
         var converter = new NullableShortToStringTypeConverter();
         short? value = short.MinValue;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(short.MinValue.ToString());
     }
 
     [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
+    public async Task TryConvert_NullValue_ReturnsTrue()
     {
         var converter = new NullableShortToStringTypeConverter();
-        short? value = short.MaxValue;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(short.MaxValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_ShortNullableToString_Succeeds()
+    {
+        var converter = new NullableShortToStringTypeConverter();
+        short? value = 12345;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("12345");
+    }
+
+    [Test]
+    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
+    {
+        var converter = new NullableShortToStringTypeConverter();
+        short? value = 42;
+
+        var result = converter.TryConvert(value, 5, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("00042");
     }
 }

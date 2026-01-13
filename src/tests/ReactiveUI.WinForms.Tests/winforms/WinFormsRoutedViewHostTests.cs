@@ -4,11 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using WinFormsRoutedViewHost = ReactiveUI.Winforms.RoutedControlHost;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
+[NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
 public class WinFormsRoutedViewHostTests
 {
     [Test]

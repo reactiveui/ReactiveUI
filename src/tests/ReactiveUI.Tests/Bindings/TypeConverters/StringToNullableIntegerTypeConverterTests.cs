@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable integers.
+///     Tests for converting strings to nullable integers.
 /// </summary>
 public class StringToNullableIntegerTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableIntegerTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToIntNullable_Succeeds()
-    {
-        var converter = new StringToNullableIntegerTypeConverter();
-
-        var result = converter.TryConvert("123456", null, out int? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123456);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableIntegerTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out int? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,7 +33,7 @@ public class StringToNullableIntegerTypeConverterTests
     {
         var converter = new StringToNullableIntegerTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out int? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -54,8 +43,19 @@ public class StringToNullableIntegerTypeConverterTests
     {
         var converter = new StringToNullableIntegerTypeConverter();
 
-        var result = converter.TryConvert("9999999999", null, out int? output);
+        var result = converter.TryConvert("9999999999", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToIntNullable_Succeeds()
+    {
+        var converter = new StringToNullableIntegerTypeConverter();
+
+        var result = converter.TryConvert("123456", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123456);
     }
 }

@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Core;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A routable view.

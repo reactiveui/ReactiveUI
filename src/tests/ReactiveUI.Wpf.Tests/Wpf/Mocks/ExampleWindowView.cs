@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Wpf;
+using ReactiveUI.Tests.Mocks;
+
+namespace ReactiveUI.Tests.Wpf.Mocks;
 
 public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>;

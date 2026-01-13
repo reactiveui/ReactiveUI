@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
     <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
     <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
   </ItemGroup>
@@ -20,8 +21,6 @@
   <ItemGroup>
     <Compile Remove="**\*.cs" />
     <None Include="**\*.cs" />
-    <!-- Include cross-platform sanity tests for all platforms -->
-    <Compile Include="SanityTests.cs" />
   </ItemGroup>
 
   <Choose>
@@ -33,8 +32,7 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)" />
-        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+        <Compile Include="API\**\*.cs" />
         <Compile Include="Wpf\**\*.cs" />
         <Compile Include="Xaml\**\*.cs" />
         <Compile Include="AssemblyHooks.cs" />
@@ -50,6 +48,7 @@
   <ItemGroup>
     <Using Include="ReactiveUI" />
     <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Tests.Utilities" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
@@ -66,5 +65,7 @@
     <Using Include="System.Reactive.Threading.Tasks" />
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
   </ItemGroup>
 </Project>

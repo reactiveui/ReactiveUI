@@ -3,9 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Tests.Infrastructure.StaticState;
-
-using TUnit.Core.Executors;
+using ReactiveUI.Tests.Wpf;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -18,33 +16,19 @@ namespace ReactiveUI.Tests.Xaml;
 /// concurrently accessed by parallel tests.
 /// </remarks>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class RxAppDependencyObjectTests
 {
-    private RxSchedulersSchedulersScope? _schedulersScope;
-
-    [Before(Test)]
-    public void SetUp()
-    {
-        _schedulersScope = new RxSchedulersSchedulersScope();
-    }
-
-    [After(Test)]
-    public void TearDown()
-    {
-        _schedulersScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that Dependency Property notifiers should be found.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task DepPropNotifierShouldBeFound()
     {
         RxAppBuilder.EnsureInitialized();
 
-        await Assert.That(Locator.Current.GetServices<ICreatesObservableForProperty>()
+        await Assert.That(AppLocator.Current.GetServices<ICreatesObservableForProperty>()
                            .Any(static x => x is DependencyObjectObservableForProperty)).IsTrue();
     }
 }

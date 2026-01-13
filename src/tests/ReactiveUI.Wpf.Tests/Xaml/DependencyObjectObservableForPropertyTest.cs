@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using DynamicData;
 
 using ReactiveUI.Tests.Wpf;
-
+using ReactiveUI.Tests.Xaml.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;

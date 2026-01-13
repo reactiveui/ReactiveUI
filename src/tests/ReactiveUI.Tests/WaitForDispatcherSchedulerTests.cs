@@ -8,19 +8,18 @@ namespace ReactiveUI.Tests;
 public class WaitForDispatcherSchedulerTests
 {
     /// <summary>
-    /// Tests call scheduler factory on creation.
+    ///     Tests call scheduler factory on creation.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CallSchedulerFactoryOnCreation()
     {
         var schedulerFactoryCalls = 0;
-        var schedulerFactory = new Func<IScheduler>(
-                                                    () =>
-                                                    {
-                                                        schedulerFactoryCalls++;
-                                                        return null!;
-                                                    });
+        var schedulerFactory = new Func<IScheduler>(() =>
+        {
+            schedulerFactoryCalls++;
+            return null!;
+        });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
 
@@ -28,9 +27,9 @@ public class WaitForDispatcherSchedulerTests
     }
 
     /// <summary>
-    /// Calls that factories throws argument null exception falls back to current thread.
+    ///     Calls that factories throws argument null exception falls back to current thread.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
     {
@@ -38,30 +37,29 @@ public class WaitForDispatcherSchedulerTests
         var schedulerFactory = new Func<IScheduler>(() => throw new ArgumentNullException());
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule<object>(
-                             null!,
-                             (scheduler, state) =>
-                             {
-                                 schedulerExecutedOn = scheduler;
-                                 return Disposable.Empty;
-                             });
+            null!,
+            (scheduler, state) =>
+            {
+                schedulerExecutedOn = scheduler;
+                return Disposable.Empty;
+            });
 
         await Assert.That(schedulerExecutedOn).IsEqualTo(CurrentThreadScheduler.Instance);
     }
 
     /// <summary>
-    /// Tests that factories throws exception re calls on schedule.
+    ///     Tests that factories throws exception re calls on schedule.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task FactoryThrowsException_ReCallsOnSchedule()
     {
         var schedulerFactoryCalls = 0;
-        var schedulerFactory = new Func<IScheduler>(
-                                                    () =>
-                                                    {
-                                                        schedulerFactoryCalls++;
-                                                        throw new InvalidOperationException();
-                                                    });
+        var schedulerFactory = new Func<IScheduler>(() =>
+        {
+            schedulerFactoryCalls++;
+            throw new InvalidOperationException();
+        });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule(() => { });
@@ -70,9 +68,9 @@ public class WaitForDispatcherSchedulerTests
     }
 
     /// <summary>
-    /// Tests that factories throws invalid operation exception falls back to current thread.
+    ///     Tests that factories throws invalid operation exception falls back to current thread.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
     {
@@ -81,30 +79,29 @@ public class WaitForDispatcherSchedulerTests
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule<object>(
-                             null!,
-                             (scheduler, state) =>
-                             {
-                                 schedulerExecutedOn = scheduler;
-                                 return Disposable.Empty;
-                             });
+            null!,
+            (scheduler, state) =>
+            {
+                schedulerExecutedOn = scheduler;
+                return Disposable.Empty;
+            });
 
         await Assert.That(schedulerExecutedOn).IsEqualTo(CurrentThreadScheduler.Instance);
     }
 
     /// <summary>
-    /// Tests that factory uses cached scheduler.
+    ///     Tests that factory uses cached scheduler.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SuccessfulFactory_UsesCachedScheduler()
     {
         var schedulerFactoryCalls = 0;
-        var schedulerFactory = new Func<IScheduler>(
-                                                    () =>
-                                                    {
-                                                        schedulerFactoryCalls++;
-                                                        return CurrentThreadScheduler.Instance;
-                                                    });
+        var schedulerFactory = new Func<IScheduler>(() =>
+        {
+            schedulerFactoryCalls++;
+            return CurrentThreadScheduler.Instance;
+        });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule(() => { });

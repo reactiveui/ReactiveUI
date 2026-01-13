@@ -21,10 +21,34 @@ public class ByteToStringTypeConverterTests
         var converter = new ByteToStringTypeConverter();
         byte value = 123;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123");
+    }
+
+    [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new ByteToStringTypeConverter();
+        var value = byte.MaxValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("255");
+    }
+
+    [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new ByteToStringTypeConverter();
+        var value = byte.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("0");
     }
 
     [Test]
@@ -33,33 +57,9 @@ public class ByteToStringTypeConverterTests
         var converter = new ByteToStringTypeConverter();
         byte value = 5;
 
-        var result = converter.TryConvert(value, 3, out string? output);
+        var result = converter.TryConvert(value, 3, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("005");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new ByteToStringTypeConverter();
-        byte value = byte.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("0");
-    }
-
-    [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
-    {
-        var converter = new ByteToStringTypeConverter();
-        byte value = byte.MaxValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("255");
     }
 }

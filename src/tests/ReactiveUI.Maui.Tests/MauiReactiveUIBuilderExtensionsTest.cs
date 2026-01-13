@@ -3,10 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.Maui.Dispatching;
 using ReactiveUI.Builder;
 
-namespace ReactiveUI.Tests.Maui;
+namespace ReactiveUI.Maui.Tests;
 
 /// <summary>
 /// Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.

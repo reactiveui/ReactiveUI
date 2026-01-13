@@ -5,12 +5,9 @@
 
 using System.Windows;
 using System.Windows.Controls;
-
-using Microsoft.Reactive.Testing;
 using Microsoft.Xaml.Behaviors;
-
 using ReactiveUI.Blend;
-
+using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
@@ -172,7 +169,7 @@ public class FollowObservableStateBehaviorTests
     public async Task AutoResubscribeOnError_WhenTrue_ResubscribesAfterError()
     {
         var button = new Button();
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var behavior = new FollowObservableStateBehavior
         {
             AutoResubscribeOnError = true,
@@ -212,7 +209,7 @@ public class FollowObservableStateBehaviorTests
     public async Task AutoResubscribeOnError_WhenFalse_DoesNotResubscribe()
     {
         var button = new Button();
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var behavior = new FollowObservableStateBehavior
         {
             AutoResubscribeOnError = false,

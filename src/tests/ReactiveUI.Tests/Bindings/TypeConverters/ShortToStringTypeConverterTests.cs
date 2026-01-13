@@ -16,12 +16,36 @@ public class ShortToStringTypeConverterTests
     }
 
     [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new ShortToStringTypeConverter();
+        var value = short.MaxValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(short.MaxValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new ShortToStringTypeConverter();
+        var value = short.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(short.MinValue.ToString());
+    }
+
+    [Test]
     public async Task TryConvert_ShortToString_Succeeds()
     {
         var converter = new ShortToStringTypeConverter();
         short value = 12345;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("12345");
@@ -33,33 +57,9 @@ public class ShortToStringTypeConverterTests
         var converter = new ShortToStringTypeConverter();
         short value = 42;
 
-        var result = converter.TryConvert(value, 5, out string? output);
+        var result = converter.TryConvert(value, 5, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("00042");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new ShortToStringTypeConverter();
-        short value = short.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(short.MinValue.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
-    {
-        var converter = new ShortToStringTypeConverter();
-        short value = short.MaxValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(short.MaxValue.ToString());
     }
 }

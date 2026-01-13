@@ -3,9 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Tests.Core;
+using ReactiveUI.Tests.Xaml;
+using ReactiveUI.Tests.Xaml.Mocks;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>
 /// Contains unit tests for the <see cref="DefaultViewLocator"/> class, verifying view resolution behavior in WPF scenarios.
@@ -13,12 +14,6 @@ namespace ReactiveUI.Tests;
 [NotInParallel]
 public partial class DefaultViewLocatorTests
 {
-    [Before(Test)]
-    public void Setup()
-    {
-        RxAppBuilder.ResetForTesting();
-    }
-
     /// <summary>
     /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
     /// </summary>
@@ -26,25 +21,20 @@ public partial class DefaultViewLocatorTests
     [Test]
     public async Task CanResolveViewFromViewModelWithIRoutableViewModelType()
     {
-        var resolver = new InstanceGenericFirstDependencyResolver();
-        resolver.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithCoreServices()
-            .BuildApp();
+        // Get the resolver set up by the executor scope
+        var resolver = AppLocator.Current as IDependencyResolver;
+        ArgumentNullException.ThrowIfNull(resolver);
 
         // Register for both the interface and the concrete type
         resolver.Register(static () => new RoutableFooView(), typeof(IViewFor<IRoutableFooViewModel>));
         resolver.Register(static () => new RoutableFooView(), typeof(IViewFor<RoutableFooViewModel>));
 
-        using (resolver.WithResolver())
-        {
-            var fixture = new DefaultViewLocator();
-            var vm = new RoutableFooViewModel();
+        var fixture = new DefaultViewLocator();
+        var vm = new RoutableFooViewModel();
 
-            var result = fixture.ResolveView(vm);
+        var result = fixture.ResolveView(vm);
 
-            await Assert.That(result).IsTypeOf<RoutableFooView>();
-        }
+        await Assert.That(result).IsTypeOf<RoutableFooView>();
     }
 
     /// <summary>
@@ -52,25 +42,49 @@ public partial class DefaultViewLocatorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [TestExecutor<Executor<RoutableFooCustomView, RoutableFooViewModel>>]
     public async Task CanResolveCustomViewWithMap()
     {
-        var resolver = new ModernDependencyResolver();
-        resolver.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithCoreServices()
-            .BuildApp();
+        // Get the resolver set up by the executor scope
+        var resolver = AppLocator.Current as IDependencyResolver;
+        ArgumentNullException.ThrowIfNull(resolver);
 
-        using (resolver.WithResolver())
+        var fixture = new DefaultViewLocator();
+
+        // Use Map to register custom view
+        fixture.Map<RoutableFooViewModel, RoutableFooCustomView>(static () => new RoutableFooCustomView());
+
+        var vm = new RoutableFooViewModel();
+
+        var result = fixture.ResolveView(vm);
+        await Assert.That(result).IsTypeOf<RoutableFooCustomView>();
+    }
+
+    public class Executor<TView, TViewModel> : STAThreadExecutor
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class, IReactiveObject
+    {
+        /// <inheritdoc />
+        protected override void Initialize()
         {
-            var fixture = new DefaultViewLocator();
+            base.Initialize();
 
-            // Use Map to register custom view
-            fixture.Map<RoutableFooViewModel, RoutableFooCustomView>(static () => new RoutableFooCustomView());
+            RxAppBuilder.ResetForTesting();
 
-            var vm = new RoutableFooViewModel();
+            // Replace with a new locator that tests can modify
+            // Include WPF platform services to ensure view locator, activation, etc. work
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .RegisterView<TView, TViewModel>()
+                .WithCoreServices()
+                .BuildApp();
+        }
 
-            var result = fixture.ResolveView(vm);
-            await Assert.That(result).IsTypeOf<RoutableFooCustomView>();
+        /// <inheritdoc />
+        protected override void CleanUp()
+        {
+            RxAppBuilder.ResetForTesting();
+            base.CleanUp();
         }
     }
 }

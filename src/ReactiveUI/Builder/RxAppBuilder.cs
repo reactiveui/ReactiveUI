@@ -10,6 +10,12 @@ namespace ReactiveUI.Builder;
 /// </summary>
 public static class RxAppBuilder
 {
+#if NET9_0_OR_GREATER
+    private static readonly System.Threading.Lock _resetLock = new();
+#else
+    private static readonly object _resetLock = new();
+#endif
+
     private static int _hasBeenInitialized; // 0 = false, 1 = true
 
     /// <summary>
@@ -56,16 +62,19 @@ public static class RxAppBuilder
     /// </remarks>
     public static void EnsureInitialized()
     {
-        if (Volatile.Read(ref _hasBeenInitialized) == 0)
+        lock (_resetLock)
         {
-            throw new InvalidOperationException(
-                "ReactiveUI has not been initialized. You must initialize ReactiveUI using the builder pattern. " +
-                "See https://www.reactiveui.net/docs/handbook/rxappbuilder.html for migration guidance.\n\n" +
-                "Example:\n" +
-                "RxAppBuilder.CreateReactiveUIBuilder()\n" +
-                "    .WithCoreServices()\n" +
-                "    .WithPlatformServices()\n" +
-                "    .BuildApp();");
+            if (_hasBeenInitialized == 0)
+            {
+                throw new InvalidOperationException(
+                    "ReactiveUI has not been initialized. You must initialize ReactiveUI using the builder pattern. " +
+                    "See https://www.reactiveui.net/docs/handbook/rxappbuilder.html for migration guidance.\n\n" +
+                    "Example:\n" +
+                    "RxAppBuilder.CreateReactiveUIBuilder()\n" +
+                    "    .WithCoreServices()\n" +
+                    "    .WithPlatformServices()\n" +
+                    "    .BuildApp();");
+            }
         }
     }
 
@@ -76,10 +85,24 @@ public static class RxAppBuilder
     /// <remarks>
     /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
     /// Never call this in production code as it can lead to inconsistent application state.
+    /// This method is thread-safe and performs all reset operations atomically.
     /// </remarks>
     internal static void ResetForTesting()
     {
-        Interlocked.Exchange(ref _hasBeenInitialized, 0);
+        lock (_resetLock)
+        {
+            // Reset schedulers back to defaults
+            RxSchedulers.ResetForTesting();
+
+            // Reset Splat builder state first
+            Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+
+            // Reset the locator to a clean InstanceGenericFirstDependencyResolver
+            AppLocator.SetLocator(new InstanceGenericFirstDependencyResolver());
+
+            // Finally, reset the initialization flag
+            _hasBeenInitialized = 0;
+        }
     }
 
     /// <summary>
@@ -87,6 +110,9 @@ public static class RxAppBuilder
     /// </summary>
     internal static void MarkAsInitialized()
     {
-        Interlocked.Exchange(ref _hasBeenInitialized, 1);
+        lock (_resetLock)
+        {
+            _hasBeenInitialized = 1;
+        }
     }
 }

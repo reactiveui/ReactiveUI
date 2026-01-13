@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting integers to strings.
+///     Tests for converting integers to strings.
 /// </summary>
 public class IntegerToStringTypeConverterTests
 {
@@ -22,69 +22,81 @@ public class IntegerToStringTypeConverterTests
     public async Task TryConvert_IntToString_Succeeds()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = 123456;
+        var value = 123456;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123456");
     }
 
     [Test]
-    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
-    {
-        var converter = new IntegerToStringTypeConverter();
-        int value = 42;
-
-        var result = converter.TryConvert(value, 8, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("00000042");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new IntegerToStringTypeConverter();
-        int value = int.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(int.MinValue.ToString());
-    }
-
-    [Test]
     public async Task TryConvert_MaxValue_Succeeds()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = int.MaxValue;
+        var value = int.MaxValue;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(int.MaxValue.ToString());
     }
 
     [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        var value = int.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(int.MinValue.ToString());
+    }
+
+    [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = -123456;
+        var value = -123456;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("-123456");
     }
 
     [Test]
+    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        var value = 42;
+
+        var result = converter.TryConvert(value, 8, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("00000042");
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_CustomFormat()
+    {
+        var converter = new IntegerToStringTypeConverter();
+        var value = 42;
+
+        var result = converter.TryConvert(value, "000", out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("042");
+    }
+
+    [Test]
     public async Task TryConvert_WithStringFormatHint_HexFormat()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = 255;
+        var value = 255;
 
-        var result = converter.TryConvert(value, "X", out string? output);
+        var result = converter.TryConvert(value, "X", out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("FF");
@@ -94,9 +106,9 @@ public class IntegerToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_HexFormatLowercase()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = 255;
+        var value = 255;
 
-        var result = converter.TryConvert(value, "x8", out string? output);
+        var result = converter.TryConvert(value, "x8", out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("000000ff");
@@ -106,23 +118,11 @@ public class IntegerToStringTypeConverterTests
     public async Task TryConvert_WithStringFormatHint_NumberFormat()
     {
         var converter = new IntegerToStringTypeConverter();
-        int value = 1234567;
+        var value = 1234567;
 
-        var result = converter.TryConvert(value, "N0", out string? output);
+        var result = converter.TryConvert(value, "N0", out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString("N0"));
-    }
-
-    [Test]
-    public async Task TryConvert_WithStringFormatHint_CustomFormat()
-    {
-        var converter = new IntegerToStringTypeConverter();
-        int value = 42;
-
-        var result = converter.TryConvert(value, "000", out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("042");
     }
 }

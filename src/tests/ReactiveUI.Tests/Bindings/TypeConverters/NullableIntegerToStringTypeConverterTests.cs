@@ -21,10 +21,34 @@ public class NullableIntegerToStringTypeConverterTests
         var converter = new NullableIntegerToStringTypeConverter();
         int? value = 123456;
 
-        var result = converter.TryConvert(value, null, out string? output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("123456");
+    }
+
+    [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new NullableIntegerToStringTypeConverter();
+        int? value = int.MaxValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(int.MaxValue.ToString());
+    }
+
+    [Test]
+    public async Task TryConvert_MinValue_Succeeds()
+    {
+        var converter = new NullableIntegerToStringTypeConverter();
+        int? value = int.MinValue;
+
+        var result = converter.TryConvert(value, null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(int.MinValue.ToString());
     }
 
     [Test]
@@ -32,7 +56,7 @@ public class NullableIntegerToStringTypeConverterTests
     {
         var converter = new NullableIntegerToStringTypeConverter();
 
-        var result = converter.TryConvert(null, null, out string? output);
+        var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -43,33 +67,9 @@ public class NullableIntegerToStringTypeConverterTests
         var converter = new NullableIntegerToStringTypeConverter();
         int? value = 42;
 
-        var result = converter.TryConvert(value, 8, out string? output);
+        var result = converter.TryConvert(value, 8, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo("00000042");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new NullableIntegerToStringTypeConverter();
-        int? value = int.MinValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(int.MinValue.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_MaxValue_Succeeds()
-    {
-        var converter = new NullableIntegerToStringTypeConverter();
-        int? value = int.MaxValue;
-
-        var result = converter.TryConvert(value, null, out string? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(int.MaxValue.ToString());
     }
 }

@@ -5,9 +5,10 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using ReactiveUI.Tests.WhenAny.Mockups;
 using PropertyMetadata = System.Windows.PropertyMetadata;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A host test view.

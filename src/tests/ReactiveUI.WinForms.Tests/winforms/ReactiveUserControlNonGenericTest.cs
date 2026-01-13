@@ -6,12 +6,14 @@
 using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for <see cref="ReactiveUserControlNonGeneric"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
+
 public class ReactiveUserControlNonGenericTest
 {
     /// <summary>
@@ -19,7 +21,6 @@ public class ReactiveUserControlNonGenericTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_CreatesInstance()
     {
         var control = new ReactiveUserControlNonGeneric();
@@ -33,7 +34,6 @@ public class ReactiveUserControlNonGenericTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModel_CanBeSetAndRetrieved()
     {
         var control = new ReactiveUserControlNonGeneric();
@@ -51,7 +51,6 @@ public class ReactiveUserControlNonGenericTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModel_CanBeSetToNull()
     {
         var control = new ReactiveUserControlNonGeneric();
@@ -69,7 +68,6 @@ public class ReactiveUserControlNonGenericTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Dispose_CleansUpResources()
     {
         var control = new ReactiveUserControlNonGeneric();
@@ -85,7 +83,6 @@ public class ReactiveUserControlNonGenericTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Dispose_CanBeCalledMultipleTimes()
     {
         var control = new ReactiveUserControlNonGeneric();

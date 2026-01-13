@@ -6,10 +6,9 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text.Json.Serialization.Metadata;
-
 using Splat.Builder;
 
-namespace ReactiveUI.Builder.Tests;
+namespace ReactiveUI.Builder.Tests.Mixins;
 
 [NotInParallel]
 public class BuilderMixinsTests

@@ -5,13 +5,14 @@
 
 using System.Windows.Forms;
 
-using TUnit.Core.Executors;
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests to make sure the activation works correctly.
 /// </summary>
+[TestExecutor<WinFormsTestExecutor>]
 public class ActivationTests
 {
     /// <summary>
@@ -19,7 +20,6 @@ public class ActivationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ActivationForViewFetcherSupportsDefaultWinformsComponents()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
@@ -34,7 +34,6 @@ public class ActivationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CanFetchActivatorForForm()
     {
         var form = new TestForm();
@@ -49,7 +48,6 @@ public class ActivationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CanFetchActivatorForControl()
     {
         var control = new TestControl();
@@ -64,7 +62,6 @@ public class ActivationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SmokeTestWindowsForm()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
@@ -114,7 +111,6 @@ public class ActivationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SmokeTestUserControl()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();

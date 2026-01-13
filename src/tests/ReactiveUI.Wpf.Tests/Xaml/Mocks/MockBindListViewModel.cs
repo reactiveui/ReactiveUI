@@ -4,19 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
-
 using DynamicData;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
-public class MockBindListViewModel : ReactiveObject
+public class MockBindListViewModel : ReactiveUI.ReactiveObject
 {
     private readonly ObservableAsPropertyHelper<MockBindListItemViewModel?> _activeItem;
     private readonly ReadOnlyObservableCollection<MockBindListItemViewModel> _listItems;
 
     static MockBindListViewModel()
     {
-        Locator.CurrentMutable.Register(static () => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
+        AppLocator.CurrentMutable.Register(static () => new MockBindListView(), typeof(IViewFor<MockBindListViewModel>));
     }
 
     /// <summary>

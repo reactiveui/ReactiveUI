@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable long integers.
+///     Tests for converting strings to nullable long integers.
 /// </summary>
 public class StringToNullableLongTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableLongTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToLongNullable_Succeeds()
-    {
-        var converter = new StringToNullableLongTypeConverter();
-
-        var result = converter.TryConvert("123456789012", null, out long? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123456789012L);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableLongTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out long? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,7 +33,7 @@ public class StringToNullableLongTypeConverterTests
     {
         var converter = new StringToNullableLongTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out long? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -54,8 +43,19 @@ public class StringToNullableLongTypeConverterTests
     {
         var converter = new StringToNullableLongTypeConverter();
 
-        var result = converter.TryConvert("99999999999999999999", null, out long? output);
+        var result = converter.TryConvert("99999999999999999999", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToLongNullable_Succeeds()
+    {
+        var converter = new StringToNullableLongTypeConverter();
+
+        var result = converter.TryConvert("123456789012", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123456789012L);
     }
 }

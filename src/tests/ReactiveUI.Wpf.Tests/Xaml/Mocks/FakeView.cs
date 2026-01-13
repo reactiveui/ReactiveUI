@@ -4,8 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Controls;
+using ReactiveUI.Tests.Mocks;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A fake view.

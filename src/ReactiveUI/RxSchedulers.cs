@@ -106,6 +106,30 @@ public static class RxSchedulers
     public static bool SuppressViewCommandBindingMessage { get; set; }
 
     /// <summary>
+    /// Resets the schedulers back to their default values.
+    /// This method is intended for testing purposes only.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// Resets:
+    /// - MainThreadScheduler to DefaultScheduler.Instance.
+    /// - TaskpoolScheduler to TaskPoolScheduler.Default.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        lock (_lock)
+        {
+            _mainThreadScheduler = DefaultScheduler.Instance;
+#if !PORTABLE
+            _taskpoolScheduler = TaskPoolScheduler.Default;
+#else
+            _taskpoolScheduler = DefaultScheduler.Instance;
+#endif
+        }
+    }
+
+    /// <summary>
     /// Set up default initializations for static constructor.
     /// </summary>
     [MethodImpl(MethodImplOptions.NoOptimization)]

@@ -8,20 +8,20 @@ using ReactiveUI.Builder;
 namespace ReactiveUI.Tests.Infrastructure;
 
 /// <summary>
-/// Extension methods for testing ReactiveUI initialization and reset.
+///     Extension methods for testing ReactiveUI initialization and reset.
 /// </summary>
 internal static class RxAppTestExtensions
 {
     /// <summary>
-    /// Resets ReactiveUI state and reinitializes with core services using a fresh locator.
+    ///     Resets ReactiveUI state and reinitializes with core services using a fresh locator.
     /// </summary>
     /// <remarks>
-    /// This method:
-    /// 1. Resets the ReactiveUI initialization state.
-    /// 2. Creates a new ModernDependencyResolver.
-    /// 3. Initializes Splat with it.
-    /// 4. Sets it as the current locator.
-    /// 5. Initializes ReactiveUI with core services.
+    ///     This method:
+    ///     1. Resets the ReactiveUI initialization state.
+    ///     2. Creates a new ModernDependencyResolver.
+    ///     3. Initializes Splat with it.
+    ///     4. Sets it as the current locator.
+    ///     5. Initializes ReactiveUI with core services.
     /// </remarks>
     public static void ResetAndReinitialize()
     {
@@ -42,14 +42,11 @@ internal static class RxAppTestExtensions
     }
 
     /// <summary>
-    /// Resets ReactiveUI state only (does not reinitialize).
+    ///     Resets ReactiveUI state only (does not reinitialize).
     /// </summary>
     /// <remarks>
-    /// Use this when you want to manually control the initialization afterward,
-    /// such as when creating a custom resolver for a specific test.
+    ///     Use this when you want to manually control the initialization afterward,
+    ///     such as when creating a custom resolver for a specific test.
     /// </remarks>
-    public static void ResetState()
-    {
-        RxAppBuilder.ResetForTesting();
-    }
+    public static void ResetState() => RxAppBuilder.ResetForTesting();
 }

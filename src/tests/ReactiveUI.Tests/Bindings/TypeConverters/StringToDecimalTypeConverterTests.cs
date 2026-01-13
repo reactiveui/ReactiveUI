@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to decimals.
+///     Tests for converting strings to decimals.
 /// </summary>
 public class StringToDecimalTypeConverterTests
 {
@@ -19,14 +19,13 @@ public class StringToDecimalTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToDecimal_Succeeds()
+    public async Task TryConvert_EmptyString_ReturnsFalse()
     {
         var converter = new StringToDecimalTypeConverter();
 
-        var result = converter.TryConvert("123.456", null, out decimal output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456m);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -34,18 +33,19 @@ public class StringToDecimalTypeConverterTests
     {
         var converter = new StringToDecimalTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out decimal output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_StringToDecimal_Succeeds()
     {
         var converter = new StringToDecimalTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out decimal output);
+        var result = converter.TryConvert("123.456", null, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123.456m);
     }
 }

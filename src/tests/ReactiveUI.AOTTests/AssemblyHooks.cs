@@ -3,12 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using ReactiveUI.Builder;
-using Splat;
-using TUnit.Core;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 
-namespace ReactiveUI.AOTTests;
+using TUnit.Core.Executors;
+
+[assembly: TestExecutor<AppBuilderTestExecutor>]
+
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Assembly-level hooks for test initialization and cleanup.

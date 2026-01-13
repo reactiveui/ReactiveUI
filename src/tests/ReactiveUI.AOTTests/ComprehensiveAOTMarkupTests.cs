@@ -7,7 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
-namespace ReactiveUI.AOTTests;
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Tests for testing the AOT and making sure trimming is correct.

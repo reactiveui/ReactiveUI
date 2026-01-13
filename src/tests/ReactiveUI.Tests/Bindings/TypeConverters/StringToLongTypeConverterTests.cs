@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to long integers.
+///     Tests for converting strings to long integers.
 /// </summary>
 public class StringToLongTypeConverterTests
 {
@@ -19,14 +19,13 @@ public class StringToLongTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToLong_Succeeds()
+    public async Task TryConvert_EmptyString_ReturnsFalse()
     {
         var converter = new StringToLongTypeConverter();
 
-        var result = converter.TryConvert("123456789012", null, out long output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123456789012L);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class StringToLongTypeConverterTests
     {
         var converter = new StringToLongTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out long output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -44,18 +43,19 @@ public class StringToLongTypeConverterTests
     {
         var converter = new StringToLongTypeConverter();
 
-        var result = converter.TryConvert("99999999999999999999", null, out long output);
+        var result = converter.TryConvert("99999999999999999999", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_StringToLong_Succeeds()
     {
         var converter = new StringToLongTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out long output);
+        var result = converter.TryConvert("123456789012", null, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123456789012L);
     }
 }

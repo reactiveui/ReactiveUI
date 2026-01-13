@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to short integers.
+///     Tests for converting strings to short integers.
 /// </summary>
 public class StringToShortTypeConverterTests
 {
@@ -19,14 +19,13 @@ public class StringToShortTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToShort_Succeeds()
+    public async Task TryConvert_EmptyString_ReturnsFalse()
     {
         var converter = new StringToShortTypeConverter();
 
-        var result = converter.TryConvert("12345", null, out short output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo((short)12345);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class StringToShortTypeConverterTests
     {
         var converter = new StringToShortTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out short output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -44,18 +43,19 @@ public class StringToShortTypeConverterTests
     {
         var converter = new StringToShortTypeConverter();
 
-        var result = converter.TryConvert("99999", null, out short output);
+        var result = converter.TryConvert("99999", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_StringToShort_Succeeds()
     {
         var converter = new StringToShortTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out short output);
+        var result = converter.TryConvert("12345", null, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((short)12345);
     }
 }

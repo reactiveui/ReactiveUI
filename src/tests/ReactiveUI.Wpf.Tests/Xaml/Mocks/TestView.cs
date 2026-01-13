@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 public class TestView : ReactiveUserControl<TestViewModel>, IScreen
 {
@@ -14,7 +14,7 @@ public class TestView : ReactiveUserControl<TestViewModel>, IScreen
 
     public TestView(IScreen? screen)
     {
-        Router = screen?.Router ?? Locator.Current.GetService<RoutingState>()!;
+        Router = screen?.Router ?? AppLocator.Current.GetService<RoutingState>()!;
     }
 
     public RoutingState Router { get; }

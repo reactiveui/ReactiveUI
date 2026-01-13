@@ -4,14 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Forms;
-
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelControlHost;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
+[NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
 public class WinFormsViewModelViewHostTests
 {
-    public WinFormsViewModelViewHostTests() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
+    [Before(Test)]
+    public void SetUp() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
     [Test]
     public async Task SettingViewModelShouldAddTheViewtoItsControls()

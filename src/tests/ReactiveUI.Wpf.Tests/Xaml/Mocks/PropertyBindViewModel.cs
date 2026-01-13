@@ -5,14 +5,15 @@
 
 using System.Windows;
 using DynamicData.Binding;
+using ReactiveUI.Tests.Mocks;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A property bind view model.
 /// </summary>
 /// <seealso cref="ReactiveObject" />
-public class PropertyBindViewModel : ReactiveObject
+public class PropertyBindViewModel : ReactiveUI.ReactiveObject
 {
     private bool _justABoolean;
     private byte _justAByte;

@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to integers.
+///     Tests for converting strings to integers.
 /// </summary>
 public class StringToIntegerTypeConverterTests
 {
@@ -19,14 +19,13 @@ public class StringToIntegerTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToInt_Succeeds()
+    public async Task TryConvert_EmptyString_ReturnsFalse()
     {
         var converter = new StringToIntegerTypeConverter();
 
-        var result = converter.TryConvert("123456", null, out int output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123456);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class StringToIntegerTypeConverterTests
     {
         var converter = new StringToIntegerTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out int output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -44,18 +43,19 @@ public class StringToIntegerTypeConverterTests
     {
         var converter = new StringToIntegerTypeConverter();
 
-        var result = converter.TryConvert("9999999999", null, out int output);
+        var result = converter.TryConvert("9999999999", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_StringToInt_Succeeds()
     {
         var converter = new StringToIntegerTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out int output);
+        var result = converter.TryConvert("123456", null, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123456);
     }
 }

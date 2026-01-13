@@ -5,7 +5,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Resolvers;
 
 public class INPCObservableForPropertyTests
 {
@@ -16,12 +16,15 @@ public class INPCObservableForPropertyTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false)).IsEqualTo(5);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false))
+                .IsEqualTo(5);
             await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true)).IsEqualTo(0);
             await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
 
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true)).IsEqualTo(5);
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false)).IsEqualTo(0);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true))
+                .IsEqualTo(5);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false))
+                .IsEqualTo(0);
         }
 
         await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
@@ -39,7 +42,8 @@ public class INPCObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException("propertyName should not be null");
         instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
 
         testClass.Property1 = "test1";
@@ -66,8 +70,10 @@ public class INPCObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException("propertyName should not be null");
+        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull()
+            .Subscribe(c => changes.Add(c));
 
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
@@ -93,8 +99,9 @@ public class INPCObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName, false).WhereNotNull().Subscribe(c => changes.Add(c));
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException("propertyName should not be null");
+        instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
 
         testClass.OnPropertyChanged(null);
         testClass.OnPropertyChanged(string.Empty);
@@ -120,8 +127,10 @@ public class INPCObservableForPropertyTests
 
         var changes = new List<IObservedChange<object?, object?>>();
 
-        var propertyName = exp.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(c => changes.Add(c));
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException("propertyName should not be null");
+        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull()
+            .Subscribe(c => changes.Add(c));
 
         testClass.OnPropertyChanging(null);
         testClass.OnPropertyChanging(string.Empty);
@@ -163,7 +172,8 @@ public class INPCObservableForPropertyTests
             }
         }
 
-        public void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     private class TestClassChanging : INotifyPropertyChanging

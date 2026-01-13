@@ -5,17 +5,15 @@
 
 namespace ReactiveUI.Tests;
 
-using Expression = System.Linq.Expressions.Expression;
-
 /// <summary>
-/// Tests for <see cref="IROObservableForProperty"/>.
+///     Tests for <see cref="IROObservableForProperty" />.
 /// </summary>
 public class IROObservableForPropertyTest
 {
     /// <summary>
-    /// Tests that GetAffinityForObject returns 10 for IReactiveObject types.
+    ///     Tests that GetAffinityForObject returns 10 for IReactiveObject types.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObject_IReactiveObjectType_Returns10()
     {
@@ -27,9 +25,9 @@ public class IROObservableForPropertyTest
     }
 
     /// <summary>
-    /// Tests that GetAffinityForObject returns 0 for non-IReactiveObject types.
+    ///     Tests that GetAffinityForObject returns 0 for non-IReactiveObject types.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObject_NonReactiveObjectType_Returns0()
     {
@@ -41,23 +39,23 @@ public class IROObservableForPropertyTest
     }
 
     /// <summary>
-    /// Tests that GetAffinityForObject returns 10 regardless of beforeChanged parameter.
+    ///     Tests that GetAffinityForObject returns 10 regardless of beforeChanged parameter.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObject_WithBeforeChanged_Returns10()
     {
         var oaph = new IROObservableForProperty();
 
-        var affinity = oaph.GetAffinityForObject(typeof(TestReactiveObject), "TestProperty", beforeChanged: true);
+        var affinity = oaph.GetAffinityForObject(typeof(TestReactiveObject), "TestProperty", true);
 
         await Assert.That(affinity).IsEqualTo(10);
     }
 
     /// <summary>
-    /// Tests that GetNotificationForProperty throws for non-IReactiveObject sender.
+    ///     Tests that GetNotificationForProperty throws for non-IReactiveObject sender.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetNotificationForProperty_NonReactiveObjectSender_Throws()
     {
@@ -70,9 +68,9 @@ public class IROObservableForPropertyTest
     }
 
     /// <summary>
-    /// Tests that GetNotificationForProperty throws for null expression.
+    ///     Tests that GetNotificationForProperty throws for null expression.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetNotificationForProperty_NullExpression_Throws()
     {
@@ -84,26 +82,9 @@ public class IROObservableForPropertyTest
     }
 
     /// <summary>
-    /// Tests that GetNotificationForProperty returns observable for property changes.
+    ///     Tests that GetNotificationForProperty emits when property changes.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task GetNotificationForProperty_ValidSender_ReturnsObservable()
-    {
-        var oaph = new IROObservableForProperty();
-        var sender = new TestReactiveObject();
-        var param = System.Linq.Expressions.Expression.Parameter(typeof(TestReactiveObject), "x");
-        var expression = System.Linq.Expressions.Expression.Property(param, nameof(TestReactiveObject.TestProperty));
-
-        var observable = oaph.GetNotificationForProperty(sender, expression, nameof(TestReactiveObject.TestProperty));
-
-        await Assert.That(observable).IsNotNull();
-    }
-
-    /// <summary>
-    /// Tests that GetNotificationForProperty emits when property changes.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetNotificationForProperty_PropertyChanges_EmitsNotification()
     {
@@ -124,7 +105,24 @@ public class IROObservableForPropertyTest
     }
 
     /// <summary>
-    /// Test reactive object for testing.
+    ///     Tests that GetNotificationForProperty returns observable for property changes.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetNotificationForProperty_ValidSender_ReturnsObservable()
+    {
+        var oaph = new IROObservableForProperty();
+        var sender = new TestReactiveObject();
+        var param = System.Linq.Expressions.Expression.Parameter(typeof(TestReactiveObject), "x");
+        var expression = System.Linq.Expressions.Expression.Property(param, nameof(TestReactiveObject.TestProperty));
+
+        var observable = oaph.GetNotificationForProperty(sender, expression, nameof(TestReactiveObject.TestProperty));
+
+        await Assert.That(observable).IsNotNull();
+    }
+
+    /// <summary>
+    ///     Test reactive object for testing.
     /// </summary>
     private class TestReactiveObject : ReactiveObject
     {

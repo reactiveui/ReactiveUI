@@ -5,8 +5,6 @@
 
 using System.Reflection;
 
-using ReactiveUI.Builder;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -15,11 +13,6 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public static class DependencyResolverMixins
 {
-    /// <summary>
-    /// Initializes static members of the <see cref="DependencyResolverMixins"/> class.
-    /// </summary>
-    static DependencyResolverMixins() => RxAppBuilder.EnsureInitialized();
-
     /// <summary>
     /// Registers inside the Splat dependency container all the classes that derive off
     /// IViewFor using Reflection. This is a easy way to register all the Views

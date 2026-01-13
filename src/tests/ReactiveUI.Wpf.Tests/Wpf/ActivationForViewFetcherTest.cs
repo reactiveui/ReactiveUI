@@ -6,8 +6,6 @@
 using System.Windows;
 using System.Windows.Controls;
 
-using TUnit.Core.Executors;
-
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>
@@ -16,32 +14,12 @@ namespace ReactiveUI.Tests.Wpf;
 [NotInParallel]
 public class ActivationForViewFetcherTest
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that GetAffinityForView returns 10 for FrameworkElement types.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task GetAffinityForView_FrameworkElementType_Returns10()
     {
         var fetcher = new ActivationForViewFetcher();
@@ -56,7 +34,7 @@ public class ActivationForViewFetcherTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task GetAffinityForView_DerivedFrameworkElementType_Returns10()
     {
         var fetcher = new ActivationForViewFetcher();
@@ -71,7 +49,7 @@ public class ActivationForViewFetcherTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task GetAffinityForView_WindowType_Returns10()
     {
         var fetcher = new ActivationForViewFetcher();
@@ -86,7 +64,7 @@ public class ActivationForViewFetcherTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task GetAffinityForView_NonFrameworkElementType_Returns0()
     {
         var fetcher = new ActivationForViewFetcher();
@@ -101,7 +79,7 @@ public class ActivationForViewFetcherTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task GetActivationForView_NonFrameworkElementView_ReturnsEmpty()
     {
         var fetcher = new ActivationForViewFetcher();

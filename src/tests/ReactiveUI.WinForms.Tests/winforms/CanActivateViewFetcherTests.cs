@@ -3,29 +3,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Microsoft.Reactive.Testing;
+using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-using ReactiveUI.Tests.Winforms;
-
-using TUnit.Core.Executors;
-
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests to make sure the can activate view fetcher works correctly.
 /// </summary>
+[TestExecutor<WinFormsTestExecutor>]
 public class CanActivateViewFetcherTests
 {
     /// <summary>
     /// Tests return negative for ICanActivate.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    public void CanNotFetchActivatorForNonCanActivateableForm()
+    public async Task CanNotFetchActivatorForNonCanActivateableForm()
     {
         var form = new TestFormNotCanActivate();
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        canActivateViewFetcher.GetActivationForView(form).AssertEqual(Observable.Return(false));
+        var result = await canActivateViewFetcher.GetActivationForView(form).FirstAsync();
+        await Assert.That(result).IsFalse();
     }
 
     /// <summary>
@@ -33,22 +31,23 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CanGetActivationForViewForCanActivateableFormActivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        await canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync().AssertEqual(Observable.Return(true));
+        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync();
+        await Assert.That(result).IsTrue();
     }
 
     /// <summary>
     /// Tests return negative for ICanActivate.
     /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    public void CanGetActivationForViewForCanActivateableFormDeactivated()
+    public async Task CanGetActivationForViewForCanActivateableFormDeactivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        canActivateViewFetcher.GetActivationForView(new TestForm(2)).FirstAsync().AssertEqual(Observable.Return(false));
+        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(2)).FirstAsync();
+        await Assert.That(result).IsFalse();
     }
 
     /// <summary>
@@ -56,7 +55,6 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnPositiveForICanActivate()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -69,7 +67,6 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnPositiveForICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
@@ -82,7 +79,6 @@ public class CanActivateViewFetcherTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ReturnZeroForNonICanActivateDerivatives()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();

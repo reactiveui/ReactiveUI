@@ -6,12 +6,14 @@
 using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for <see cref="ReactiveUserControl{TViewModel}"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
+
 public class ReactiveUserControlTest
 {
     /// <summary>
@@ -19,7 +21,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_CreatesInstance()
     {
         var control = new ReactiveUserControl<TestViewModel>();
@@ -32,7 +33,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModel_CanBeSetAndRetrieved()
     {
         var control = new ReactiveUserControl<TestViewModel>();
@@ -48,7 +48,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task IViewForViewModel_CanBeSetAndRetrieved()
     {
         IViewFor control = new ReactiveUserControl<TestViewModel>();
@@ -64,7 +63,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModel_CanBeSetToNull()
     {
         var control = new ReactiveUserControl<TestViewModel>();
@@ -81,7 +79,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task IViewForViewModel_ReturnsNullAfterSettingToNull()
     {
         IViewFor control = new ReactiveUserControl<TestViewModel>();
@@ -96,7 +93,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task IViewForViewModel_CanCastFromObject()
     {
         IViewFor control = new ReactiveUserControl<TestViewModel>();
@@ -116,7 +112,6 @@ public class ReactiveUserControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_InitializesComponents()
     {
         var control = new ReactiveUserControl<TestViewModel>();

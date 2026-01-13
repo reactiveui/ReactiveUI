@@ -5,7 +5,7 @@
 
 using System.Windows.Threading;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Utilities;
 
 /// <summary>
 /// Helper utility to handle dispatcher in tests.

@@ -3,9 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
-public class TestViewModel : ReactiveObject, IRoutableViewModel
+namespace ReactiveUI.Tests.Xaml.Mocks;
+
+public class TestViewModel : ReactiveUI.ReactiveObject, IRoutableViewModel
 {
     private string? _someProp;
 

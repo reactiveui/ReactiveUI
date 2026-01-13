@@ -4,13 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Controls;
+using ReactiveUI.Tests.Mocks;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A view for the reactive object and commands.
 /// </summary>
-public class ReactiveObjectCommandBindView : ReactiveObject, IViewFor<CommandBindViewModel>
+public class ReactiveObjectCommandBindView : ReactiveUI.ReactiveObject, IViewFor<CommandBindViewModel>
 {
     private CommandBindViewModel? _vm;
 

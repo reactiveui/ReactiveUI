@@ -5,17 +5,16 @@
 
 using System.Windows;
 using System.Windows.Controls;
-
 using PropertyMetadata = System.Windows.PropertyMetadata;
 
-namespace ReactiveUI.Tests.Wpf;
+namespace ReactiveUI.Tests.Wpf.Mocks.ViewModelViewHosts;
 
 public static class FakeViewWithContract
 {
     internal const string ContractA = "ContractA";
     internal const string ContractB = "ContractB";
 
-    public class MyViewModel : ReactiveObject;
+    public class MyViewModel : ReactiveUI.ReactiveObject;
 
     /// <summary>
     /// Used as the default view with no contracted.

@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable doubles.
+///     Tests for converting strings to nullable doubles.
 /// </summary>
 public class StringToNullableDoubleTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableDoubleTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToDoubleNullable_Succeeds()
-    {
-        var converter = new StringToNullableDoubleTypeConverter();
-
-        var result = converter.TryConvert("123.456", null, out double? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableDoubleTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out double? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,7 +33,7 @@ public class StringToNullableDoubleTypeConverterTests
     {
         var converter = new StringToNullableDoubleTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out double? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -54,9 +43,20 @@ public class StringToNullableDoubleTypeConverterTests
     {
         var converter = new StringToNullableDoubleTypeConverter();
 
-        var result = converter.TryConvert("1.23E+10", null, out double? output);
+        var result = converter.TryConvert("1.23E+10", null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(1.23E+10);
+    }
+
+    [Test]
+    public async Task TryConvert_StringToDoubleNullable_Succeeds()
+    {
+        var converter = new StringToNullableDoubleTypeConverter();
+
+        var result = converter.TryConvert("123.456", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(123.456);
     }
 }

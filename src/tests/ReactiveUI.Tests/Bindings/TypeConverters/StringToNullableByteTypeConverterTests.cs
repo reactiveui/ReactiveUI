@@ -6,7 +6,7 @@
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
 /// <summary>
-/// Tests for converting strings to nullable bytes.
+///     Tests for converting strings to nullable bytes.
 /// </summary>
 public class StringToNullableByteTypeConverterTests
 {
@@ -19,22 +19,11 @@ public class StringToNullableByteTypeConverterTests
     }
 
     [Test]
-    public async Task TryConvert_StringToByteNullable_Succeeds()
-    {
-        var converter = new StringToNullableByteTypeConverter();
-
-        var result = converter.TryConvert("123", null, out byte? output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo((byte)123);
-    }
-
-    [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
     {
         var converter = new StringToNullableByteTypeConverter();
 
-        var result = converter.TryConvert(string.Empty, null, out byte? output);
+        var result = converter.TryConvert(string.Empty, null, out var output);
 
         await Assert.That(result).IsTrue();
     }
@@ -44,17 +33,7 @@ public class StringToNullableByteTypeConverterTests
     {
         var converter = new StringToNullableByteTypeConverter();
 
-        var result = converter.TryConvert("invalid", null, out byte? output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_OutOfRangeValue_ReturnsFalse()
-    {
-        var converter = new StringToNullableByteTypeConverter();
-
-        var result = converter.TryConvert("999", null, out byte? output);
+        var result = converter.TryConvert("invalid", null, out var output);
 
         await Assert.That(result).IsFalse();
     }
@@ -64,8 +43,29 @@ public class StringToNullableByteTypeConverterTests
     {
         var converter = new StringToNullableByteTypeConverter();
 
-        var result = converter.TryConvert("-1", null, out byte? output);
+        var result = converter.TryConvert("-1", null, out var output);
 
         await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_OutOfRangeValue_ReturnsFalse()
+    {
+        var converter = new StringToNullableByteTypeConverter();
+
+        var result = converter.TryConvert("999", null, out var output);
+
+        await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task TryConvert_StringToByteNullable_Succeeds()
+    {
+        var converter = new StringToNullableByteTypeConverter();
+
+        var result = converter.TryConvert("123", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((byte)123);
     }
 }

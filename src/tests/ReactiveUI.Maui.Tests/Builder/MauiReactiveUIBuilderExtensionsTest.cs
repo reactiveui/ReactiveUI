@@ -6,7 +6,7 @@
 using Microsoft.Maui.Hosting;
 using ReactiveUI.Builder;
 
-namespace ReactiveUI.Tests.Maui.Builder;
+namespace ReactiveUI.Maui.Tests.Builder;
 
 /// <summary>
 /// Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.

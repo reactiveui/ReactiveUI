@@ -6,7 +6,7 @@
 using System.Windows;
 using PropertyMetadata = System.Windows.PropertyMetadata;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A derived dependency object.

@@ -3,47 +3,33 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using TUnit.Core.Executors;
+using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.Tests.Xaml;
 
 /// <summary>
 /// Tests associated with UI and the <see cref="IDependencyResolver"/>.
 /// </summary>
-public sealed class XamlViewDependencyResolverTests : IDisposable
+[TestExecutor<WpfViewResolverTestExecutor>]
+public sealed class XamlViewDependencyResolverTests
 {
-    private readonly IDependencyResolver _resolver;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="XamlViewDependencyResolverTests"/> class.
-    /// </summary>
-    public XamlViewDependencyResolverTests()
-    {
-        var resolver = new ModernDependencyResolver();
-        resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(resolver)
-            .WithCoreServices()
-            .BuildApp();
-        resolver.RegisterViewsForViewModels(GetType().Assembly);
-
-        _resolver = resolver;
-    }
-
     /// <summary>
     /// Test that register views for view model should register all views.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task RegisterViewsForViewModelShouldRegisterAllViews()
     {
-        using (_resolver.WithResolver())
+        var resolver = AppLocator.Current as IDependencyResolver;
+        await Assert.That(resolver).IsNotNull();
+
+        using (resolver.WithResolver())
         using (Assert.Multiple())
         {
-            await Assert.That(_resolver.GetServices<IViewFor<ExampleViewModel>>()).Count().IsEqualTo(1);
-            await Assert.That(_resolver.GetServices<IViewFor<AnotherViewModel>>()).Count().IsEqualTo(1);
-            await Assert.That(_resolver.GetServices<IViewFor<ExampleWindowViewModel>>()).Count().IsEqualTo(1);
-            await Assert.That(_resolver.GetServices<IViewFor<ViewModelWithWeirdName>>()).Count().IsEqualTo(1);
+            await Assert.That(resolver.GetServices<IViewFor<ExampleViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(resolver.GetServices<IViewFor<AnotherViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(resolver.GetServices<IViewFor<ExampleWindowViewModel>>()).Count().IsEqualTo(1);
+            await Assert.That(resolver.GetServices<IViewFor<ViewModelWithWeirdName>>()).Count().IsEqualTo(1);
         }
     }
 
@@ -52,15 +38,13 @@ public sealed class XamlViewDependencyResolverTests : IDisposable
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task RegisterViewsForViewModelShouldIncludeContracts()
     {
-        using (_resolver.WithResolver())
+        var resolver = AppLocator.Current as IDependencyResolver;
+        await Assert.That(resolver).IsNotNull();
+        using (resolver.WithResolver())
         {
-            await Assert.That(_resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract")).Count().IsEqualTo(1);
+            await Assert.That(resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract")).Count().IsEqualTo(1);
         }
     }
-
-    /// <inheritdoc/>
-    public void Dispose() => _resolver.Dispose();
 }

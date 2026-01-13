@@ -14,8 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
     <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
   </ItemGroup>
 
@@ -32,11 +32,8 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <Compile Include="API\**\*.cs" />
         <Compile Include="winforms\**\*.cs" />
-        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
-                 Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
-                 Link="Shared\Mocks\%(Filename)%(Extension)" />
-        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
       </ItemGroup>
     </When>
     <When Condition=" $(TargetFramework.StartsWith('net4'))">
@@ -47,10 +44,9 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <PackageReference Include="System.ValueTuple" />
+        <Compile Include="API\**\*.cs" />
         <Compile Include="winforms\**\*.cs" />
-        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs"
-                 Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs"
-                 Link="Shared\Mocks\%(Filename)%(Extension)" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)" />
         <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
       </ItemGroup>
     </When>
@@ -61,6 +57,8 @@
   <ItemGroup>
     <Using Include="ReactiveUI" />
     <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Tests.Utilities" />
+    <Using Include="ReactiveUI.Tests.Utilities.Schedulers" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
@@ -77,5 +75,7 @@
     <Using Include="System.Reactive.Threading.Tasks" />
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
   </ItemGroup>
 </Project>

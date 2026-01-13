@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Test.Utilities" />
     <InternalsVisibleTo Include="ReactiveUI.TestGuiMocks" />
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
     <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests" />

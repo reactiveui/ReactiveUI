@@ -37,21 +37,15 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class BindingFallbackConverterRegistry
 {
-#if NET9_0_OR_GREATER
     /// <summary>
     /// Synchronization primitive guarding mutations to the registry's internal state.
     /// </summary>
     /// <remarks>
     /// Protects updates to <see cref="_snapshot"/>. Reads resolve from the snapshot without locking.
     /// </remarks>
+#if NET9_0_OR_GREATER
     private readonly Lock _gate = new();
 #else
-    /// <summary>
-    /// Synchronization primitive guarding mutations to the registry's internal state.
-    /// </summary>
-    /// <remarks>
-    /// Protects updates to <see cref="_snapshot"/>. Reads resolve from the snapshot without locking.
-    /// </remarks>
     private readonly object _gate = new();
 #endif
 

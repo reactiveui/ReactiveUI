@@ -4,12 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-
 using System.Windows.Controls;
-
 using PropertyMetadata = System.Windows.PropertyMetadata;
 
-namespace ReactiveUI.Tests.Xaml;
+namespace ReactiveUI.Tests.Xaml.Mocks;
 
 /// <summary>
 /// A fake view for property binding.

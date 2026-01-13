@@ -6,13 +6,13 @@
 namespace ReactiveUI.Tests.Bindings.Converters;
 
 /// <summary>
-/// Tests for verifying converter affinity values are correctly set.
-/// Uses TUnit's MethodDataSource for theory-style testing with compile-time safety.
+///     Tests for verifying converter affinity values are correctly set.
+///     Uses TUnit's MethodDataSource for theory-style testing with compile-time safety.
 /// </summary>
 public class ConverterAffinityTests
 {
     /// <summary>
-    /// Data source for standard converters (affinity = 2).
+    ///     Data source for standard converters (affinity = 2).
     /// </summary>
     /// <returns>A sequence of converter test data with expected affinity values.</returns>
     public static IEnumerable<Func<(IBindingTypeConverter converter, int expectedAffinity)>> GetStandardConverters()
@@ -83,6 +83,7 @@ public class ConverterAffinityTests
         yield return () => (new StringToNullableTimeSpanTypeConverter(), 2);
 
 #if NET6_0_OR_GREATER
+
         // DateOnly ↔ String converters (.NET 6+)
         yield return () => (new DateOnlyToStringTypeConverter(), 2);
         yield return () => (new NullableDateOnlyToStringTypeConverter(), 2);
@@ -102,8 +103,25 @@ public class ConverterAffinityTests
     }
 
     /// <summary>
-    /// Verifies that all standard converters have affinity 2.
-    /// Standard converters are the core ReactiveUI converters (numeric, string, datetime, etc.).
+    ///     Verifies that the EqualityTypeConverter has affinity 1 (last resort).
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task EqualityConverter_ShouldHaveAffinity1()
+    {
+        // Arrange
+        var converter = new EqualityTypeConverter();
+
+        // Act
+        var affinity = converter.GetAffinityForObjects();
+
+        // Assert
+        await Assert.That(affinity).IsEqualTo(1);
+    }
+
+    /// <summary>
+    ///     Verifies that all standard converters have affinity 2.
+    ///     Standard converters are the core ReactiveUI converters (numeric, string, datetime, etc.).
     /// </summary>
     /// <param name="converter">The converter to test.</param>
     /// <param name="expectedAffinity">The expected affinity value.</param>
@@ -119,22 +137,5 @@ public class ConverterAffinityTests
 
         // Assert
         await Assert.That(actualAffinity).IsEqualTo(expectedAffinity);
-    }
-
-    /// <summary>
-    /// Verifies that the EqualityTypeConverter has affinity 1 (last resort).
-    /// </summary>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    [Test]
-    public async Task EqualityConverter_ShouldHaveAffinity1()
-    {
-        // Arrange
-        var converter = new EqualityTypeConverter();
-
-        // Act
-        var affinity = converter.GetAffinityForObjects();
-
-        // Assert
-        await Assert.That(affinity).IsEqualTo(1);
     }
 }

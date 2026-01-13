@@ -3,17 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Activation;
 
 /// <summary>
-/// A view which simulates a activation.
+///     A view which simulates a activation.
 /// </summary>
 public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, ICanActivate, IDisposable
 {
     private ActivatingViewModel? _viewModel;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ActivatingView"/> class.
+    ///     Initializes a new instance of the <see cref="ActivatingView" /> class.
     /// </summary>
     public ActivatingView() =>
         this.WhenActivated(d =>
@@ -23,27 +23,32 @@ public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewMode
         });
 
     /// <summary>
-    /// Gets the loaded.
-    /// </summary>
-    public Subject<Unit> Loaded { get; } = new();
-
-    /// <summary>
-    /// Gets the unloaded.
-    /// </summary>
-    public Subject<Unit> Unloaded { get; } = new();
-
-    /// <summary>
-    /// Gets an observable that signals when the view is activated.
+    ///     Gets an observable that signals when the view is activated.
     /// </summary>
     public IObservable<Unit> Activated => Loaded;
 
     /// <summary>
-    /// Gets an observable that signals when the view is deactivated.
+    ///     Gets an observable that signals when the view is deactivated.
     /// </summary>
     public IObservable<Unit> Deactivated => Unloaded;
 
     /// <summary>
-    /// Gets or sets the view model.
+    ///     Gets the loaded.
+    /// </summary>
+    public Subject<Unit> Loaded { get; } = new();
+
+    /// <summary>
+    ///     Gets the unloaded.
+    /// </summary>
+    public Subject<Unit> Unloaded { get; } = new();
+
+    /// <summary>
+    ///     Gets or sets the active count.
+    /// </summary>
+    public int IsActiveCount { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the view model.
     /// </summary>
     public ActivatingViewModel? ViewModel
     {
@@ -52,7 +57,7 @@ public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewMode
     }
 
     /// <summary>
-    /// Gets or sets the view model.
+    ///     Gets or sets the view model.
     /// </summary>
     object? IViewFor.ViewModel
     {
@@ -61,12 +66,7 @@ public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewMode
     }
 
     /// <summary>
-    /// Gets or sets the active count.
-    /// </summary>
-    public int IsActiveCount { get; set; }
-
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
+    ///     Releases unmanaged and - optionally - managed resources.
     /// </summary>
     public void Dispose()
     {

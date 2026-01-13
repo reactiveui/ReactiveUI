@@ -528,7 +528,7 @@ public static class AutoPersistHelper
     public static IDisposable AutoPersistCollection<TItem>(
         this ObservableCollection<TItem> @this,
         Func<TItem, IObservable<Unit>> doPersist,
-        TimeSpan? interval = null) // TODO: Create Test
+        TimeSpan? interval = null)
             where TItem : IReactiveObject
         => AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
 
@@ -602,7 +602,7 @@ public static class AutoPersistHelper
         this ReadOnlyObservableCollection<TItem> @this,
         Func<TItem, IObservable<Unit>> doPersist,
         IObservable<TDontCare> manualSaveSignal,
-        TimeSpan? interval = null) // TODO: Create Test
+        TimeSpan? interval = null)
             where TItem : IReactiveObject
         => AutoPersistCollection<TItem, ReadOnlyObservableCollection<TItem>, TDontCare>(@this, doPersist, manualSaveSignal, interval);
 
@@ -635,7 +635,7 @@ public static class AutoPersistHelper
         this TCollection @this,
         Func<TItem, IObservable<Unit>> doPersist,
         IObservable<TDontCare> manualSaveSignal,
-        TimeSpan? interval = null) // TODO: Create Test
+        TimeSpan? interval = null)
             where TItem : IReactiveObject
             where TCollection : INotifyCollectionChanged, IEnumerable<TItem>
     {
@@ -693,7 +693,7 @@ public static class AutoPersistHelper
     public static IDisposable ActOnEveryObject<TItem>(
         this ObservableCollection<TItem> @this,
         Action<TItem> onAdd,
-        Action<TItem> onRemove) // TODO: Create Test
+        Action<TItem> onRemove)
             where TItem : IReactiveObject
         => ActOnEveryObject<TItem, ObservableCollection<TItem>>(@this, onAdd, onRemove);
 
@@ -710,7 +710,7 @@ public static class AutoPersistHelper
     public static IDisposable ActOnEveryObject<TItem>(
         this ReadOnlyObservableCollection<TItem> @this,
         Action<TItem> onAdd,
-        Action<TItem> onRemove) // TODO: Create Test
+        Action<TItem> onRemove)
             where TItem : IReactiveObject
         => ActOnEveryObject<TItem, ReadOnlyObservableCollection<TItem>>(@this, onAdd, onRemove);
 
@@ -736,11 +736,7 @@ public static class AutoPersistHelper
         ArgumentExceptionHelper.ThrowIfNull(onRemove);
         ArgumentExceptionHelper.ThrowIfNull(collection);
 
-        foreach (var v in collection)
-        {
-            onAdd(v);
-        }
-
+        // ToObservableChangeSet will emit existing items when first subscribed, so we don't need to manually iterate them
         var changedDisposable = ActOnEveryObject(collection.ToObservableChangeSet<TCollection, TItem>(), onAdd, onRemove);
 
         return Disposable.Create(() =>

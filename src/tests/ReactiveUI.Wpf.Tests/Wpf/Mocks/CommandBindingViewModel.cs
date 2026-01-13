@@ -3,9 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Wpf;
+using ReactiveUI.Tests.Mocks;
 
-public class CommandBindingViewModel : ReactiveObject
+namespace ReactiveUI.Tests.Wpf.Mocks;
+
+public class CommandBindingViewModel : ReactiveUI.ReactiveObject
 {
     private readonly ObservableAsPropertyHelper<int?> _result;
     private ReactiveCommand<int, int> _Command1;

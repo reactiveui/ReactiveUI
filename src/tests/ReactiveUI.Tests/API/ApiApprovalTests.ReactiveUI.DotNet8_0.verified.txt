@@ -9,8 +9,10 @@
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Maui.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.NonParallel.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Test.Utilities")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.TestGuiMocks")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Testing")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Testing.Reactive")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Tests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReactiveUI.Uno.WinUI")]
@@ -295,7 +297,7 @@ namespace ReactiveUI
             "ements of those annotations are met.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which ma" +
             "y be incompatible with trimming.")]
-        public ReactiveUI.IViewFor<object>? ResolveView(object? instance, string? contract = null) { }
+        public ReactiveUI.IViewFor? ResolveView(object? instance, string? contract = null) { }
         public ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
             where TViewModel :  class { }
         public ReactiveUI.DefaultViewLocator Unmap<TViewModel>(string? contract = null)
@@ -628,7 +630,7 @@ namespace ReactiveUI
             "ements of those annotations are met.")]
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which ma" +
             "y be incompatible with trimming.")]
-        ReactiveUI.IViewFor<object>? ResolveView(object? instance, string? contract = null);
+        ReactiveUI.IViewFor? ResolveView(object? instance, string? contract = null);
         ReactiveUI.IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
             where TViewModel :  class;
     }

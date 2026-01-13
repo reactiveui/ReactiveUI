@@ -14,12 +14,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
   </ItemGroup>
 
   <!-- Global usings -->
   <ItemGroup>
+    <Using Include="ReactiveUI.Tests.Utilities.Schedulers" />
     <Using Include="ReactiveUI" />
     <Using Include="Splat" />
     <Using Include="System" />

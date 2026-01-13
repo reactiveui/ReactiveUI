@@ -3,13 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+using ReactiveUI.Tests.ReactiveObjects.Mocks;
+
+namespace ReactiveUI.Tests.WhenAny.Mockups;
 
 public class NonReactiveINPCObject : INotifyPropertyChanged
 {
     private TestFixture _inpcProperty = new();
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public TestFixture InpcProperty

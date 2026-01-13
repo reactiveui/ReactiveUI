@@ -3,17 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.ComponentModel;
-using System.Linq.Expressions;
 using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for WinformsCreatesObservableForProperty.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
+
 public class WinformsCreatesObservableForPropertyTests
 {
 
@@ -22,7 +22,6 @@ public class WinformsCreatesObservableForPropertyTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObject_ComponentType_ReturnsCorrectAffinity()
     {
         var creator = new WinformsCreatesObservableForProperty();
@@ -37,7 +36,6 @@ public class WinformsCreatesObservableForPropertyTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetAffinityForObject_NonComponentType_ReturnsZero()
     {
         var creator = new WinformsCreatesObservableForProperty();
@@ -51,7 +49,6 @@ public class WinformsCreatesObservableForPropertyTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetNotificationForProperty_PropertyChanged_SendsNotification()
     {
         var creator = new WinformsCreatesObservableForProperty();
@@ -79,7 +76,6 @@ public class WinformsCreatesObservableForPropertyTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetNotificationForProperty_NoEvent_ThrowsInvalidOperationException()
     {
         var creator = new WinformsCreatesObservableForProperty();

@@ -3,16 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
-using Splat.Builder;
 using TUnit.Core.Executors;
 
-namespace ReactiveUI.Tests.Winforms;
+namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>
 /// Tests for <see cref="WinFormsReactiveUIBuilderExtensions"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WinFormsTestExecutor>]
+
 public class WinFormsReactiveUIBuilderExtensionsTest
 {
     /// <summary>
@@ -20,7 +20,6 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WinFormsMainThreadScheduler_IsNotNull()
     {
         await Assert.That(WinFormsReactiveUIBuilderExtensions.WinFormsMainThreadScheduler).IsNotNull();
@@ -30,7 +29,6 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// Tests that WithWinForms throws when builder is null.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void WithWinForms_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
         Assert.Throws<ArgumentNullException>(() =>
@@ -42,7 +40,6 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WithWinForms_ConfiguresBuilder()
     {
         var resolver = new ModernDependencyResolver();
@@ -63,7 +60,6 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// Tests that WithWinFormsScheduler throws when builder is null.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void WithWinFormsScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
         Assert.Throws<ArgumentNullException>(() =>
@@ -75,7 +71,6 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WithWinFormsScheduler_ConfiguresScheduler()
     {
         var resolver = new ModernDependencyResolver();
