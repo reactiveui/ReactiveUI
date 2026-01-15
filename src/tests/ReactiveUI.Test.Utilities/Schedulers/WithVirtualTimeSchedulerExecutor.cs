@@ -17,12 +17,17 @@ public class WithVirtualTimeSchedulerExecutor : ITestExecutor
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(testAction);
 
+        IScheduler? originalMainThreadScheduler = null;
+        IScheduler? originalTaskpoolScheduler = null;
+
         try
         {
             // Ensure TestContext.Current is set in case of async flow issues
             context.RestoreExecutionContext();
 
             var scheduler = new VirtualTimeScheduler();
+            originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
+            originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
 
             // Store both in StateBag for retrieval by tests
             context.StateBag.Items["VirtualTimeScheduler"] = scheduler;
@@ -34,10 +39,23 @@ public class WithVirtualTimeSchedulerExecutor : ITestExecutor
                 .WithCoreServices()
                 .BuildApp();
 
+            RxSchedulers.MainThreadScheduler = scheduler;
+            RxSchedulers.TaskpoolScheduler = scheduler;
+
             await testAction();
         }
         finally
         {
+            if (originalMainThreadScheduler is not null)
+            {
+                RxSchedulers.MainThreadScheduler = originalMainThreadScheduler;
+            }
+
+            if (originalTaskpoolScheduler is not null)
+            {
+                RxSchedulers.TaskpoolScheduler = originalTaskpoolScheduler;
+            }
+
             RxAppBuilder.ResetForTesting();
         }
     }

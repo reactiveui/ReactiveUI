@@ -15,7 +15,7 @@ public class CustomClickableControl : Control
     /// <summary>
     /// Performs the click.
     /// </summary>
-    public void PerformClick() => InvokeOnClick(this, EventArgs.Empty);
+    public void PerformClick() => OnClick(EventArgs.Empty);
 
     /// <summary>
     /// Raises the mouse click event.

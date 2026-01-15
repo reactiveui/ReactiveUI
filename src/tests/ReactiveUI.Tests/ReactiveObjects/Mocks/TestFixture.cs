@@ -89,7 +89,7 @@ public class TestFixture : ReactiveObject
     ///     Gets or sets the poco property.
     /// </summary>
     [field: IgnoreDataMember]
-    [JsonRequired]
+    [JsonIgnore]
     public string? PocoProperty { get; set; }
 
     /// <summary>

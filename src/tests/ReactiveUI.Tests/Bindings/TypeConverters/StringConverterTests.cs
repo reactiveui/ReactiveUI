@@ -65,7 +65,7 @@ public class StringConverterTests
     }
 
     [Test]
-    public async Task TryConvertTyped_NullValue_ReturnsFalse()
+    public async Task TryConvertTyped_NullValue_ReturnsFalseAndNull()
     {
         var converter = new StringConverter();
 

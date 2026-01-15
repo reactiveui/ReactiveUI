@@ -63,7 +63,17 @@ public class CommandBindingTests
     public async Task CommandBinderBindsToCustomControl()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create<int>(_ => { });
+        var commandExecuted = false;
+        object? ea = null;
+
+        var cmd = ReactiveCommand.Create<int>(
+            x =>
+            {
+                ea = x;
+                commandExecuted = true;
+            },
+            outputScheduler: ImmediateScheduler.Instance);
+
         var input = new CustomClickableControl();
 
         using (Assert.Multiple())
@@ -71,14 +81,6 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(true)).IsGreaterThan(0);
             await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(false)).IsGreaterThan(0);
         }
-
-        var commandExecuted = false;
-        object? ea = null;
-        cmd.Subscribe(o =>
-        {
-            ea = o;
-            commandExecuted = true;
-        });
 
         using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
         {
@@ -100,7 +102,17 @@ public class CommandBindingTests
     public async Task CommandBinderBindsToCustomComponent()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var cmd = ReactiveCommand.Create<int>(_ => { });
+        var commandExecuted = false;
+        object? ea = null;
+
+        var cmd = ReactiveCommand.Create<int>(
+            x =>
+            {
+                ea = x;
+                commandExecuted = true;
+            },
+            outputScheduler: ImmediateScheduler.Instance);
+
         var input = new CustomClickableComponent();
 
         using (Assert.Multiple())
@@ -108,14 +120,6 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(true)).IsGreaterThan(0);
             await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(false)).IsGreaterThan(0);
         }
-
-        var commandExecuted = false;
-        object? ea = null;
-        cmd.Subscribe(o =>
-        {
-            ea = o;
-            commandExecuted = true;
-        });
 
         using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
         {

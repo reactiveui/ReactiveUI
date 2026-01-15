@@ -16,12 +16,12 @@ public sealed class NullableGuidToStringTypeConverter : BindingTypeConverter<Gui
     public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
-    public override bool TryConvert(Guid? from, object? conversionHint, [NotNullWhen(true)] out string? result)
+    public override bool TryConvert(Guid? from, object? conversionHint, [MaybeNullWhen(true)] out string? result)
     {
         if (!from.HasValue)
         {
             result = null;
-            return false;
+            return true;
         }
 
         result = from.Value.ToString("D");

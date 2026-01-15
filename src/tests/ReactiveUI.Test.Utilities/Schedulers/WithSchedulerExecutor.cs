@@ -18,24 +18,43 @@ public class WithSchedulerExecutor : ITestExecutor
         ArgumentNullException.ThrowIfNull(testAction);
 
         var scheduler = ImmediateScheduler.Instance;
-
-        // Store scheduler in StateBag for retrieval by tests
-        context.StateBag.Items["Scheduler"] = scheduler;
-
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithMainThreadScheduler(scheduler)
-            .WithTaskPoolScheduler(scheduler)
-            .WithCoreServices()
-            .BuildApp();
+        IScheduler? originalMainThreadScheduler = null;
+        IScheduler? originalTaskpoolScheduler = null;
 
         try
         {
             // Ensure TestContext.Current is set in case of async flow issues
             context.RestoreExecutionContext();
+
+            originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
+            originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
+
+            // Store scheduler in StateBag for retrieval by tests
+            context.StateBag.Items["Scheduler"] = scheduler;
+
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithMainThreadScheduler(scheduler)
+                .WithTaskPoolScheduler(scheduler)
+                .WithCoreServices()
+                .BuildApp();
+
+            RxSchedulers.MainThreadScheduler = scheduler;
+            RxSchedulers.TaskpoolScheduler = scheduler;
+
             await testAction();
         }
         finally
         {
+            if (originalMainThreadScheduler is not null)
+            {
+                RxSchedulers.MainThreadScheduler = originalMainThreadScheduler;
+            }
+
+            if (originalTaskpoolScheduler is not null)
+            {
+                RxSchedulers.TaskpoolScheduler = originalTaskpoolScheduler;
+            }
+
             RxAppBuilder.ResetForTesting();
         }
     }

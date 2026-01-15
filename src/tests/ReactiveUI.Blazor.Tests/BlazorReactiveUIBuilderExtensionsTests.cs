@@ -167,6 +167,8 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         public IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure) => throw new NotImplementedException();
 
+        public IReactiveUIBuilder WithMessageBus(IMessageBus messageBus) => throw new NotImplementedException();
+
         public IReactiveUIBuilder ConfigureSuspensionDriver(Action<ISuspensionDriver> configure) => throw new NotImplementedException();
 
         public IReactiveUIBuilder ConfigureViewLocator(Action<DefaultViewLocator> configure) => throw new NotImplementedException();

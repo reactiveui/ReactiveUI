@@ -3,12 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
+
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Contains unit tests that verify the behavior of string-based property observation and change notification mechanisms
 /// in reactive objects.
 /// </summary>
+[TestExecutor<AppBuilderTestExecutor>]
 public class StringBasedSemanticsTests
 {
     /// <summary>

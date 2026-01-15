@@ -216,6 +216,20 @@ public static class ViewForMixins
                                },
                                view);
 
+    /// <summary>
+    /// Clears the activation fetcher cache. This method is intended for use by unit tests
+    /// to ensure the cache is invalidated when the service locator is reset.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset cache state between test runs.
+    /// Never call this in production code as it will force re-querying of activation fetchers
+    /// from the service locator on the next access.
+    /// </remarks>
+    internal static void ResetActivationFetcherCacheForTesting()
+    {
+        _activationFetcherCache.InvalidateAll();
+    }
+
     private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
         var viewDisposable = new SerialDisposable();

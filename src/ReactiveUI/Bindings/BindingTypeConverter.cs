@@ -47,19 +47,36 @@ public abstract class BindingTypeConverter<TFrom, TTo> : IBindingTypeConverter<T
     public abstract int GetAffinityForObjects();
 
     /// <inheritdoc/>
-    public abstract bool TryConvert(TFrom? from, object? conversionHint, [NotNullWhen(true)] out TTo? result);
+    public abstract bool TryConvert(TFrom? from, object? conversionHint, [MaybeNullWhen(true)] out TTo? result);
 
     /// <inheritdoc/>
     public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
     {
-        // Enforce the modern nullability contract:
-        // - Successful conversion must yield a non-null result.
-        // - Null input (common in UI clearing scenarios) is treated as "not converted" here,
-        //   so the binding pipeline can decide whether to flow null directly.
+        // Allow null inputs for converters whose source type can represent null, and
+        // permit null outputs when the target type is nullable/reference.
+        TTo? typedResult;
         if (from is null)
         {
-            result = null;
-            return false;
+            if (default(TFrom) is not null)
+            {
+                result = null;
+                return false;
+            }
+
+            if (!TryConvert(default, conversionHint, out typedResult))
+            {
+                result = null;
+                return false;
+            }
+
+            if (typedResult is null && default(TTo) is not null)
+            {
+                result = null;
+                return false;
+            }
+
+            result = typedResult;
+            return true;
         }
 
         if (from is not TFrom castFrom)
@@ -68,14 +85,13 @@ public abstract class BindingTypeConverter<TFrom, TTo> : IBindingTypeConverter<T
             return false;
         }
 
-        if (!TryConvert(castFrom, conversionHint, out var typedResult))
+        if (!TryConvert(castFrom, conversionHint, out typedResult))
         {
             result = null;
             return false;
         }
 
-        // Defensive: even though the typed method is annotated, ensure we never report success with null.
-        if (typedResult is null)
+        if (typedResult is null && default(TTo) is not null)
         {
             result = null;
             return false;

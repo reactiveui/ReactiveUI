@@ -238,10 +238,11 @@ public class ReactiveObjectTests
         using (Assert.Multiple())
         {
             // Should look something like:
-            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"PocoProperty":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
-            await Assert.That(json.Count(static x => x == ',')).IsEqualTo(6);
-            await Assert.That(json.Count(static x => x == ':')).IsEqualTo(7);
-            await Assert.That(json.Count(static x => x == '"')).IsEqualTo(18);
+            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
+            // PocoProperty is excluded because it lacks [DataMember] attribute
+            await Assert.That(json.Count(static x => x == ',')).IsEqualTo(5);
+            await Assert.That(json.Count(static x => x == ':')).IsEqualTo(6);
+            await Assert.That(json.Count(static x => x == '"')).IsEqualTo(16);
         }
     }
 

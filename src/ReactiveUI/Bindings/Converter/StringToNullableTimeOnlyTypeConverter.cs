@@ -17,12 +17,12 @@ public sealed class StringToNullableTimeOnlyTypeConverter : BindingTypeConverter
     public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, [NotNullWhen(true)] out TimeOnly? result)
+    public override bool TryConvert(string? from, object? conversionHint, [MaybeNullWhen(true)] out TimeOnly? result)
     {
-        if (from is null)
+        if (string.IsNullOrEmpty(from))
         {
             result = null;
-            return false;
+            return true;
         }
 
         if (TimeOnly.TryParse(from, out var value))

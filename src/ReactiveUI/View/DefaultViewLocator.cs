@@ -137,7 +137,6 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <list type="number">
     /// <item>Check for explicit mapping registered via <see cref="Map{TViewModel, TView}"/> with the specified contract.</item>
     /// <item>Query the service locator for <c>IViewFor&lt;TViewModel&gt;</c> with the specified contract.</item>
-    /// <item>If a specific contract was requested and not found, fall back to the default contract (null).</item>
     /// </list>
     /// </para>
     /// </remarks>
@@ -164,23 +163,6 @@ public sealed class DefaultViewLocator : IViewLocator
         {
             this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> via service locator", typeof(TViewModel).Name);
             return view;
-        }
-
-        // 3. Fallback to default contract if specific contract was requested
-        if (!string.IsNullOrEmpty(contract))
-        {
-            if (mappings.TryGetValue((vmType, string.Empty), out var defaultFactory))
-            {
-                this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> from default mapping as fallback", typeof(TViewModel).Name);
-                return (IViewFor<TViewModel>)defaultFactory();
-            }
-
-            var defaultView = AppLocator.Current?.GetService<IViewFor<TViewModel>>();
-            if (defaultView is not null)
-            {
-                this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> via service locator (default) as fallback", typeof(TViewModel).Name);
-                return defaultView;
-            }
         }
 
         this.Log().Warn(CultureInfo.InvariantCulture, "Failed to resolve view for {0}. Use Map<TViewModel, TView>() or register IViewFor<TViewModel> in the service locator.", typeof(TViewModel).Name);
@@ -225,29 +207,6 @@ public sealed class DefaultViewLocator : IViewLocator
         {
             resolvedViewFor.ViewModel = instance;
             return resolvedViewFor;
-        }
-
-        // 3) If a specific contract was requested, try default contract as fallback.
-        if (!string.IsNullOrEmpty(contract))
-        {
-            if (mappings.TryGetValue((vmType, string.Empty), out var defaultFactory))
-            {
-                var view = defaultFactory();
-                if (view is { } v)
-                {
-                    v.ViewModel = instance;
-                    return v;
-                }
-
-                return null;
-            }
-
-            var defaultResolved = AppLocator.Current?.GetService(serviceType);
-            if (defaultResolved is IViewFor defaultResolvedViewFor)
-            {
-                defaultResolvedViewFor.ViewModel = instance;
-                return defaultResolvedViewFor;
-            }
         }
 
         return null;

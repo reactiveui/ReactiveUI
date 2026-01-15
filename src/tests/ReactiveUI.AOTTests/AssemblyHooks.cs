@@ -9,6 +9,7 @@ using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
 
 [assembly: TestExecutor<AppBuilderTestExecutor>]
+[assembly: NotInParallel]
 
 namespace ReactiveUI.AOT.Tests;
 

@@ -21,6 +21,12 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
         DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
 
     /// <summary>
+    /// The fake control property.
+    /// </summary>
+    public static readonly DependencyProperty FakeControlProperty =
+        DependencyProperty.Register("FakeControl", typeof(PropertyBindFakeControl), typeof(PropertyBindView), new PropertyMetadata(null));
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PropertyBindView"/> class.
     /// </summary>
     public PropertyBindView()
@@ -44,7 +50,11 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     /// <summary>
     /// Gets or sets the fake control.
     /// </summary>
-    public PropertyBindFakeControl FakeControl { get; set; }
+    public PropertyBindFakeControl FakeControl
+    {
+        get => (PropertyBindFakeControl)GetValue(FakeControlProperty);
+        set => SetValue(FakeControlProperty, value);
+    }
 
     /// <summary>
     /// Gets or sets the fake items control.

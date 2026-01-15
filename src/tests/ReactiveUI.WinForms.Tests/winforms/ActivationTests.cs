@@ -12,6 +12,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>
 /// Tests to make sure the activation works correctly.
 /// </summary>
+[NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class ActivationTests
 {

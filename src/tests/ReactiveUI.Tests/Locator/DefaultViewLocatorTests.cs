@@ -236,52 +236,6 @@ public class DefaultViewLocatorTests
     }
 
     /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView{TViewModel}" /> with a contract
-    ///     falls back to the default mapping when the specific contract is not found.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task ResolveView_Generic_WithContract_FallsBackToDefaultMappingWhenContractNotFound()
-    {
-        var locator = new DefaultViewLocator();
-
-        locator.Map<TestViewModel, TestView>(() => new TestView());
-
-        var view = locator.ResolveView<TestViewModel>("unknown");
-
-        await Assert.That(view).IsNotNull();
-        await Assert.That(view).IsTypeOf<TestView>();
-    }
-
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView{TViewModel}" /> with a contract
-    ///     falls back to the default service locator registration when the specific contract is not found.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task ResolveView_Generic_WithContract_FallsBackToDefaultServiceLocatorWhenContractNotFound()
-    {
-        var resolver = AppLocator.Current as IDependencyResolver;
-        ArgumentNullException.ThrowIfNull(resolver);
-
-        resolver.Register(() => new TestView(), typeof(IViewFor<TestViewModel>));
-
-        try
-        {
-            var locator = new DefaultViewLocator();
-            var view = locator.ResolveView<TestViewModel>("unknown");
-
-            await Assert.That(view).IsNotNull();
-            await Assert.That(view).IsTypeOf<TestView>();
-        }
-        finally
-        {
-            // Clean up registration
-            resolver.UnregisterCurrent(typeof(IViewFor<TestViewModel>));
-        }
-    }
-
-    /// <summary>
     ///     Verifies that <see cref="DefaultViewLocator.ResolveView{TViewModel}" /> with contract
     ///     uses the explicit mapping registered for that contract.
     /// </summary>
@@ -396,26 +350,6 @@ public class DefaultViewLocatorTests
 
         await Assert.That(view).IsNotNull();
         await Assert.That(view).IsTypeOf<TestView>();
-    }
-
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> with a contract
-    ///     falls back to the default mapping when the specific contract is not found.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
-    [Test]
-    public async Task ResolveView_Instance_WithContract_FallsBackToDefaultMapping()
-    {
-        var locator = new DefaultViewLocator();
-        var vm = new TestViewModel();
-
-        locator.Map<TestViewModel, TestView>(() => new TestView());
-
-        var view = locator.ResolveView(vm, "unknown");
-
-        await Assert.That(view).IsNotNull();
-        await Assert.That(view).IsTypeOf<TestView>();
-        await Assert.That(view!.ViewModel).IsEqualTo(vm);
     }
 
     /// <summary>

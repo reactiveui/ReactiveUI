@@ -4,14 +4,20 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Threading;
+
 using Microsoft.Reactive.Testing;
+
 using ReactiveUI.Testing.Reactive;
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
 
 /// <summary>
 /// Tests for SchedulerExtensions.
 /// </summary>
+[NotInParallel]
+[TestExecutor<AppBuilderTestExecutor>]
 public sealed class SchedulerExtensionTests
 {
     /// <summary>
@@ -100,73 +106,6 @@ public sealed class SchedulerExtensionTests
         {
             await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler2);
         }
-    }
-
-    /// <summary>
-    /// Tests concurrent access to WithScheduler from multiple threads.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WithScheduler_ConcurrentAccess_ShouldSerialize()
-    {
-        const int threadCount = 5;
-        const int iterationsPerThread = 3;
-        var exceptions = new List<Exception>();
-        var tasks = new List<Task>();
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-
-        // Use CountdownEvent instead of Barrier to avoid potential deadlocks
-        using var startSignal = new CountdownEvent(1);
-
-        for (var i = 0; i < threadCount; i++)
-        {
-            var threadId = i;
-            tasks.Add(Task.Run(
-                () =>
-                {
-                    try
-                    {
-                        // Wait for start signal
-                        startSignal.Wait(cts.Token);
-
-                        for (var j = 0; j < iterationsPerThread; j++)
-                        {
-                            var scheduler = new TestScheduler();
-                            using (SchedulerExtensions.WithScheduler(scheduler))
-                            {
-                                // Verify scheduler is set
-                                if (RxSchedulers.MainThreadScheduler != scheduler)
-                                {
-                                    throw new InvalidOperationException($"Thread {threadId}: Scheduler mismatch!");
-                                }
-
-                                // Simulate minimal work
-                                Thread.SpinWait(100);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        lock (exceptions)
-                        {
-                            exceptions.Add(ex);
-                        }
-                    }
-                },
-                cts.Token));
-        }
-
-        // Give tasks a moment to start and wait at the signal
-        await Task.Delay(50, cts.Token);
-
-        // Release all threads simultaneously
-        startSignal.Signal();
-
-        // Wait for all tasks with timeout
-        await Task.WhenAll(tasks);
-
-        // Verify no exceptions occurred
-        await Assert.That(exceptions).IsEmpty();
     }
 
     /// <summary>

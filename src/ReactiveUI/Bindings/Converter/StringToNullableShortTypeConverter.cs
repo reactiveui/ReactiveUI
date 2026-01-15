@@ -16,12 +16,12 @@ public sealed class StringToNullableShortTypeConverter : BindingTypeConverter<st
     public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, [NotNullWhen(true)] out short? result)
+    public override bool TryConvert(string? from, object? conversionHint, [MaybeNullWhen(true)] out short? result)
     {
-        if (from is null)
+        if (string.IsNullOrEmpty(from))
         {
             result = null;
-            return false;
+            return true;
         }
 
         if (short.TryParse(from, out var value))

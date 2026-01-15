@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="ReactiveUI.Tests.Utilities.AppBuilder" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />

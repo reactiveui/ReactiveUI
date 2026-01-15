@@ -12,6 +12,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>
 /// Checks the command bindings.
 /// </summary>
+[NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class CommandBindingImplementationTests
 {

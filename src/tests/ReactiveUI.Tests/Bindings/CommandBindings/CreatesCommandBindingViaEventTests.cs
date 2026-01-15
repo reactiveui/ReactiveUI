@@ -49,7 +49,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         var executionCount = 0;
-        var command = ReactiveCommand.Create(() => executionCount++);
+        var command = ReactiveCommand.Create(() => executionCount++, outputScheduler: ImmediateScheduler.Instance);
 
         using var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null));
 

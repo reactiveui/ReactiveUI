@@ -443,7 +443,7 @@ public class AutoPersistHelperTest
 
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
         fixture.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
@@ -472,14 +472,14 @@ public class AutoPersistHelperTest
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
 
         fixture.IsNotNullString = "First";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
         await Assert.That(saveCount).IsEqualTo(0);
 
         fixture.IsNotNullString = "Second";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
         await Assert.That(saveCount).IsEqualTo(0);
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
@@ -508,7 +508,7 @@ public class AutoPersistHelperTest
 
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
         fixture.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }

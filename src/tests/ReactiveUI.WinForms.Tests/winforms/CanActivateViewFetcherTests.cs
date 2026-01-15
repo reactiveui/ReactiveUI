@@ -10,6 +10,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>
 /// Tests to make sure the can activate view fetcher works correctly.
 /// </summary>
+[NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class CanActivateViewFetcherTests
 {

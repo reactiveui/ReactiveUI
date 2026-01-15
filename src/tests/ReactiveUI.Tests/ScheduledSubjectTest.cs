@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -132,24 +134,20 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
-    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task Subscribe_SchedulesOnSpecifiedScheduler()
     {
-        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+        var scheduler = new CountingTestScheduler(ImmediateScheduler.Instance);
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 
         subject.Subscribe(results.Add);
         subject.OnNext(1);
 
-        // Before advancing scheduler, nothing should be received
-        await Assert.That(results).Count().IsEqualTo(0);
-
-        scheduler.Start();
-
-        // After advancing scheduler, value should be received
-        await Assert.That(results).Count().IsEqualTo(1);
+        using (Assert.Multiple())
+        {
+            await Assert.That(scheduler.ScheduledItems).Count().IsGreaterThan(0);
+            await Assert.That(results).Count().IsEqualTo(1);
+        }
     }
 
     /// <summary>

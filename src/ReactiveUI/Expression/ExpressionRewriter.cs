@@ -76,6 +76,11 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
         var instance = Visit(node.Left);
         var index = (ConstantExpression)Visit(node.Right);
 
+        if (instance.Type.IsArray)
+        {
+            return Expression.ArrayAccess(instance, index);
+        }
+
         // Translate arrayindex into a normal index expression using the indexer property.
         return Expression.MakeIndex(instance, GetItemProperty(instance.Type), [index]);
     }

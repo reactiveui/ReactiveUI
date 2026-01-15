@@ -56,9 +56,11 @@ public class MessageBus : IMessageBus
     /// message bus.</returns>
     public IObservable<T> Listen<T>(string? contract = null)
     {
-        this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
-
-        return SetupSubjectIfNecessary<T>(contract).Skip(1);
+        return Observable.Defer(() =>
+        {
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
+            return SetupSubjectIfNecessary<T>(contract).Skip(1);
+        });
     }
 
     /// <summary>
@@ -73,9 +75,11 @@ public class MessageBus : IMessageBus
     /// message bus.</returns>
     public IObservable<T> ListenIncludeLatest<T>(string? contract = null)
     {
-        this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
-
-        return SetupSubjectIfNecessary<T>(contract);
+        return Observable.Defer(() =>
+        {
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
+            return SetupSubjectIfNecessary<T>(contract);
+        });
     }
 
     /// <summary>
@@ -112,7 +116,12 @@ public class MessageBus : IMessageBus
     {
         ArgumentExceptionHelper.ThrowIfNull(source);
 
-        return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+        var subject = SetupSubjectIfNecessary<T>(contract);
+
+        return source.Subscribe(
+            subject.OnNext,
+            ex => this.Log().Warn(ex, "MessageBus source for {0}:{1} terminated with an error.", typeof(T), contract),
+            () => this.Log().Info(CultureInfo.InvariantCulture, "MessageBus source for {0}:{1} completed.", typeof(T), contract));
     }
 
     /// <summary>

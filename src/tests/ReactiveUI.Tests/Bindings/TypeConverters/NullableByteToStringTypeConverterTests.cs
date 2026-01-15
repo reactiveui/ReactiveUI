@@ -59,6 +59,7 @@ public class NullableByteToStringTypeConverterTests
         var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsTrue();
+        await Assert.That(output).IsNull();
     }
 
     [Test]

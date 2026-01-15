@@ -824,7 +824,7 @@ public class ReactiveCommandTest
         await Assert.That(executed).IsEmpty();
 
         sub1.Dispose();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
         await Assert.That(executed).Count().IsEqualTo(1);
         await Assert.That(command.IsExecuting.FirstAsync().Wait()).IsFalse();

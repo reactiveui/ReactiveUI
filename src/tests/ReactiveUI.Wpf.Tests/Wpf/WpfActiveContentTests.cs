@@ -25,7 +25,7 @@ public class WpfActiveContentTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
+    [TestExecutor<WpfTestExecutor>]
     public async Task BindListFunctionalTest()
     {
         var view = new MockBindListView();
@@ -75,93 +75,73 @@ public class WpfActiveContentTests
     }
 
     /// <summary>
-    /// Ensures view resolution respects contracts and fallback behavior.
+    /// Verifies that ViewB is resolved when registered with the correct contract.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    public async Task ViewModelHostViewTestFallback()
+    [TestExecutor<ViewBRegisteredExecutor>]
+    public async Task ResolveViewBIfViewBIsRegistered()
     {
-        var resolver = new ModernDependencyResolver();
-        resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(resolver)
-            .WithCoreServices()
-            .BuildApp();
-
-        using (resolver.WithResolver())
+        var vm = new FakeViewWithContract.MyViewModel();
+        var host = new ViewModelViewHost
         {
-            await ResolveViewBIfViewBIsRegistered(resolver);
-            await ResolveView0WithFallback(resolver);
-            await ResolveNoneWithFallbackBypass(resolver);
-        }
+            ViewModel = vm,
+            ViewContract = FakeViewWithContract.ContractB,
+        };
 
-        async Task ResolveViewBIfViewBIsRegistered(ModernDependencyResolver r)
+        // Simulate activation by raising the Loaded event
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
+        host.RaiseEvent(loaded);
+
+        await Assert.That(host.Content).IsNotNull();
+        await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.ViewB>();
+    }
+
+    /// <summary>
+    /// Verifies that View0 is used as fallback when ViewB is not registered.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<View0FallbackExecutor>]
+    public async Task ResolveView0WithFallback()
+    {
+        var vm = new FakeViewWithContract.MyViewModel();
+        var host = new ViewModelViewHost
         {
-            r.Register(
-                       () => new FakeViewWithContract.View0(),
-                       typeof(IViewFor<FakeViewWithContract.MyViewModel>));
-            r.Register(
-                       () => new FakeViewWithContract.ViewA(),
-                       typeof(IViewFor<FakeViewWithContract.MyViewModel>),
-                       FakeViewWithContract.ContractA);
-            r.Register(
-                       () => new FakeViewWithContract.ViewB(),
-                       typeof(IViewFor<FakeViewWithContract.MyViewModel>),
-                       FakeViewWithContract.ContractB);
+            ViewModel = vm,
+            ViewContract = FakeViewWithContract.ContractB,
+            ContractFallbackByPass = false,
+        };
 
-            var vm = new FakeViewWithContract.MyViewModel();
-            var host = new ViewModelViewHost { ViewModel = vm, ViewContract = FakeViewWithContract.ContractB, };
+        // Simulate activation by raising the Loaded event
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
+        host.RaiseEvent(loaded);
 
-            // Simulate activation by raising the Loaded event
-            var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
-            host.RaiseEvent(loaded);
+        await Assert.That(host.Content).IsNotNull();
+        await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.View0>();
+    }
 
-            await Assert.That(host.Content).IsNotNull();
-            await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.ViewB>();
-        }
-
-        async Task ResolveView0WithFallback(ModernDependencyResolver r)
+    /// <summary>
+    /// Verifies that no view is resolved when fallback bypass is enabled and ViewB is not registered.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<NoneWithBypassExecutor>]
+    public async Task ResolveNoneWithFallbackBypass()
+    {
+        var vm = new FakeViewWithContract.MyViewModel();
+        var host = new ViewModelViewHost
         {
-            r.UnregisterCurrent(
-                                typeof(IViewFor<FakeViewWithContract.MyViewModel>),
-                                FakeViewWithContract.ContractB);
+            ContractFallbackByPass = true,
+            ViewContract = FakeViewWithContract.ContractB,
+            ViewModel = vm,
+        };
 
-            var vm = new FakeViewWithContract.MyViewModel();
-            var host = new ViewModelViewHost
-            {
-                ViewModel = vm,
-                ViewContract = FakeViewWithContract.ContractB,
-                ContractFallbackByPass = false,
-            };
+        // Simulate activation by raising the Loaded event
+        var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
+        host.RaiseEvent(loaded);
 
-            // Simulate activation by raising the Loaded event
-            var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
-            host.RaiseEvent(loaded);
-
-            await Assert.That(host.Content).IsNotNull();
-            await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.View0>();
-        }
-
-        async Task ResolveNoneWithFallbackBypass(ModernDependencyResolver r)
-        {
-            r.UnregisterCurrent(
-                                typeof(IViewFor<FakeViewWithContract.MyViewModel>),
-                                FakeViewWithContract.ContractB);
-
-            var vm = new FakeViewWithContract.MyViewModel();
-            var host = new ViewModelViewHost
-            {
-                ViewModel = vm,
-                ViewContract = FakeViewWithContract.ContractB,
-                ContractFallbackByPass = true,
-            };
-
-            // Simulate activation by raising the Loaded event
-            var loaded = new RoutedEventArgs { RoutedEvent = FrameworkElement.LoadedEvent };
-            host.RaiseEvent(loaded);
-
-            await Assert.That(host.Content).IsNull();
-        }
+        await Assert.That(host.Content).IsNull();
     }
 
     /// <summary>
@@ -175,5 +155,107 @@ public class WpfActiveContentTests
         dsd.LoadState().Select(static _ => 1).Subscribe(async static v => await Assert.That(v).IsEqualTo(1));
         dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(async static v => await Assert.That(v).IsEqualTo(2));
         dsd.InvalidateState().Select(static _ => 3).Subscribe(async static v => await Assert.That(v).IsEqualTo(3));
+    }
+
+    public class ViewBRegisteredExecutor : STAThreadExecutor
+    {
+        protected override void Initialize()
+        {
+            RxAppBuilder.ResetForTesting();
+
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                .WithCoreServices()
+                .BuildApp();
+
+            base.Initialize();
+        }
+
+        protected override void CleanUp()
+        {
+            RxAppBuilder.ResetForTesting();
+            base.CleanUp();
+        }
+    }
+
+    public class View0FallbackExecutor : STAThreadExecutor
+    {
+        protected override void Initialize()
+        {
+            RxAppBuilder.ResetForTesting();
+
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                .WithCoreServices()
+                .BuildApp();
+
+            base.Initialize();
+        }
+
+        protected override void CleanUp()
+        {
+            RxAppBuilder.ResetForTesting();
+            base.CleanUp();
+        }
+    }
+
+    public class NoneWithBypassExecutor : STAThreadExecutor
+    {
+        protected override void Initialize()
+        {
+            RxAppBuilder.ResetForTesting();
+
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                .WithCoreServices()
+                .BuildApp();
+
+            base.Initialize();
+        }
+
+        protected override void CleanUp()
+        {
+            RxAppBuilder.ResetForTesting();
+            base.CleanUp();
+        }
+    }
+
+    public class ExecutorBIfViewBIsRegistered : STAThreadExecutor
+    {
+        protected override void Initialize()
+        {
+            RxAppBuilder.ResetForTesting();
+
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                .WithCoreServices()
+                .BuildApp();
+
+            base.Initialize();
+        }
+
+        protected override void CleanUp()
+        {
+            RxAppBuilder.ResetForTesting();
+            base.CleanUp();
+        }
     }
 }

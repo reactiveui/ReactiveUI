@@ -31,7 +31,7 @@ public interface IBindingTypeConverter<TFrom, TTo> : IBindingTypeConverter
     /// </summary>
     /// <param name="from">The value to convert.</param>
     /// <param name="conversionHint">Implementation-defined hint for conversion (e.g., format string, locale).</param>
-    /// <param name="result">The converted value. Guaranteed non-null when this method returns <see langword="true"/>.</param>
+    /// <param name="result">The converted value. May be <see langword="null"/> when conversion succeeds for nullable targets.</param>
     /// <returns><see langword="true"/> if conversion succeeded; otherwise, <see langword="false"/>.</returns>
     /// <remarks>
     /// <para>
@@ -40,9 +40,9 @@ public interface IBindingTypeConverter<TFrom, TTo> : IBindingTypeConverter
     /// </para>
     /// <para>
     /// When this method returns <see langword="true"/>, the <paramref name="result"/> parameter
-    /// is guaranteed to be non-null. Use <see cref="NotNullWhenAttribute"/> to enable
-    /// nullable reference type checks.
+    /// may still be <see langword="null"/> for converters that map null inputs or empty values
+    /// to nullable targets.
     /// </para>
     /// </remarks>
-    bool TryConvert(TFrom? from, object? conversionHint, out TTo? result);
+    bool TryConvert(TFrom? from, object? conversionHint, [MaybeNullWhen(true)] out TTo? result);
 }

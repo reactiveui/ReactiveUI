@@ -479,7 +479,7 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var scheduler1 = TestContext.Current.GetVirtualTimeScheduler();
-        var scheduler2 = TestContext.Current.GetVirtualTimeScheduler();
+        var scheduler2 = new ReactiveUI.Tests.Utilities.Schedulers.VirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler1);
         messageBus.RegisterScheduler<string>(scheduler2);

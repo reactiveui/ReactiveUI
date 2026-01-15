@@ -108,6 +108,22 @@ public class Registrations : IWantsToRegisterStuff
         RegisterConverter(registrar, new UriToStringTypeConverter());
         RegisterConverter(registrar, new StringToUriTypeConverter());
 
+        // Nullable ↔ Non-Nullable converters
+        RegisterUnidirectionalConverter<byte, byte?, ByteToNullableByteTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<byte?, byte, NullableByteToByteTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<short, short?, ShortToNullableShortTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<short?, short, NullableShortToShortTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<int, int?, IntegerToNullableIntegerTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<int?, int, NullableIntegerToIntegerTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<long, long?, LongToNullableLongTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<long?, long, NullableLongToLongTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<float, float?, SingleToNullableSingleTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<float?, float, NullableSingleToSingleTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<double, double?, DoubleToNullableDoubleTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<double?, double, NullableDoubleToDoubleTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<decimal, decimal?, DecimalToNullableDecimalTypeConverter>(registrar);
+        RegisterUnidirectionalConverter<decimal?, decimal, NullableDecimalToDecimalTypeConverter>(registrar);
+
         registrar.RegisterConstant<IViewLocator>(static () => new DefaultViewLocator());
         registrar.RegisterConstant<IActivationForViewFetcher>(static () => new CanActivateViewFetcher());
         registrar.RegisterConstant<ICreatesCommandBinding>(static () => new CreatesCommandBindingViaEvent());
@@ -133,6 +149,35 @@ public class Registrations : IWantsToRegisterStuff
 
         // Register to Splat for backward compatibility
         registrar.RegisterConstant<IBindingTypeConverter>(() => converter);
+    }
+
+    /// <summary>
+    /// Helper method to register a unidirectional type converter with explicit generic instantiation.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
+    /// <typeparam name="TConverter">The converter type that handles TFrom→TTo conversion.</typeparam>
+    /// <param name="registrar">The dependency resolver to register with.</param>
+    /// <remarks>
+    /// This method registers the converter twice:
+    /// <list type="bullet">
+    /// <item><description>As <see cref="IBindingTypeConverter{TFrom, TTo}"/> for typed lookup</description></item>
+    /// <item><description>As <see cref="IBindingTypeConverter"/> for affinity-based discovery</description></item>
+    /// </list>
+    /// </remarks>
+    private static void RegisterUnidirectionalConverter<TFrom, TTo, TConverter>(
+        IRegistrar registrar)
+        where TConverter : IBindingTypeConverter<TFrom, TTo>, new()
+    {
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
+
+        var instance = new TConverter();
+
+        // Register typed interface for direct type lookup
+        registrar.RegisterConstant<IBindingTypeConverter<TFrom, TTo>>(() => instance);
+
+        // Register base interface for affinity-based discovery
+        registrar.RegisterConstant<IBindingTypeConverter>(() => instance);
     }
 
     /// <summary>

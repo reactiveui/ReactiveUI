@@ -75,16 +75,23 @@ public class CommandBindingTests
             ArgumentNullException.ThrowIfNull(context);
             ArgumentNullException.ThrowIfNull(action);
 
-            RxAppBuilder.ResetForTesting();
-            RxAppBuilder
-                .CreateReactiveUIBuilder()
-                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
-                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
-                .WithCoreServices()
-                .BuildApp();
-
             try
             {
+                var scheduler = ImmediateScheduler.Instance;
+
+                RxAppBuilder.ResetForTesting();
+                RxAppBuilder
+                    .CreateReactiveUIBuilder()
+                    .WithMainThreadScheduler(scheduler)
+                    .WithTaskPoolScheduler(scheduler)
+                    .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
+                    .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
+                    .WithCoreServices()
+                    .BuildApp();
+
+                RxSchedulers.MainThreadScheduler = scheduler;
+                RxSchedulers.TaskpoolScheduler = scheduler;
+
                 await action();
             }
             finally

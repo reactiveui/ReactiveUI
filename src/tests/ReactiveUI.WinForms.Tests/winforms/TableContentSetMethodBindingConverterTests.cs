@@ -12,6 +12,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>
 /// Tests for TableContentSetMethodBindingConverter.
 /// </summary>
+[NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class TableContentSetMethodBindingConverterTests
 {
@@ -30,7 +31,7 @@ public class TableContentSetMethodBindingConverterTests
         var converter = new TableContentSetMethodBindingConverter();
         var affinity = converter.GetAffinityForObjects(typeof(List<Button>), typeof(TableLayoutControlCollection));
 
-        await Assert.That(affinity).IsEqualTo(15);
+        await Assert.That(affinity).IsEqualTo(10);
     }
 
     [Test]

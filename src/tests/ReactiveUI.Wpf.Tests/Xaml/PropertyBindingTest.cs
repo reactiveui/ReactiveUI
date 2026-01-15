@@ -19,31 +19,14 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests property bindings.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class PropertyBindingTest
 {
-    private DispatcherSchedulerScope? _dispatcherScope;
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    [Before(Test)]
-    public void SetUp()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-        _dispatcherScope = new DispatcherSchedulerScope();
-    }
-
-    [After(Test)]
-    public void TearDown()
-    {
-        _dispatcherScope?.Dispose();
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Performs a smoke test with two way binding with func converter.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TwoWayBindWithFuncConvertersSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -79,7 +62,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TwoWayBindSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -115,7 +97,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TypeConvertedTwoWayBindSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -194,7 +175,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindingIntoModelObjects()
     {
         var vm = new PropertyBindViewModel();
@@ -209,7 +189,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelNullableToViewNonNullable()
     {
         var vm = new PropertyBindViewModel();
@@ -233,7 +212,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelNonNullableToViewNullable()
     {
         var vm = new PropertyBindViewModel();
@@ -257,7 +235,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelNullableToViewNullable()
     {
         var vm = new PropertyBindViewModel();
@@ -281,7 +258,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelIndexerToView()
     {
         var vm = new PropertyBindViewModel();
@@ -296,7 +272,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelIndexerToViewChanges()
     {
         var vm = new PropertyBindViewModel();
@@ -315,7 +290,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelIndexerPropertyToView()
     {
         var vm = new PropertyBindViewModel();
@@ -330,7 +304,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindShouldntInitiallySetToNull()
     {
         var vm = new PropertyBindViewModel();
@@ -348,7 +321,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindToTypeConversionSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -367,7 +339,6 @@ public class PropertyBindingTest
     /// Tests that BindTo null should throw a helpful error.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void BindToNullShouldThrowHelpfulError()
     {
         var view = new PropertyBindView { ViewModel = null };
@@ -382,7 +353,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TwoWayBindToSelectedItemOfItemsControl()
     {
         var vm = new PropertyBindViewModel();
@@ -409,7 +379,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ItemsControlShouldGetADataTemplate()
     {
         var vm = new PropertyBindViewModel();
@@ -426,7 +395,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
     {
         var vm = new PropertyBindViewModel();
@@ -444,7 +412,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ItemsControlShouldGetADataTemplateInBindTo()
     {
         var vm = new PropertyBindViewModel();
@@ -465,7 +432,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindingToItemsControl()
     {
         var vm = new PropertyBindViewModel();
@@ -482,7 +448,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindConverter()
     {
         var vm = new PropertyBindViewModel();
@@ -497,7 +462,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindWithNullStartingValueToNonNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -515,7 +479,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindWithNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -535,7 +498,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -553,7 +515,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()
@@ -580,7 +541,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindToWithNullStartingValueToNonNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -599,7 +559,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindToWithNonNullStartingValueToNullValue()
     {
         var vm = new PropertyBindViewModel();
@@ -619,7 +578,6 @@ public class PropertyBindingTest
     /// Tests BindTo with a converter is not null.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void BindExpectsConverterFuncsToNotBeNull()
     {
         var vm = new PropertyBindViewModel();
@@ -637,7 +595,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
     {
         var vm = new PropertyBindViewModel();
@@ -665,7 +622,6 @@ public class PropertyBindingTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable?, WeakReference) GetWeakReference()
@@ -688,7 +644,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OneWayBindWithHintTest()
     {
         var dis = new CompositeDisposable();
@@ -707,7 +662,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OneWayBindWithHintTestDisposeWithFailure()
     {
         CompositeDisposable? dis = null;
@@ -719,7 +673,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindToWithHintTest()
     {
         var dis = new CompositeDisposable();
@@ -737,7 +690,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToView()
     {
         var dis = new CompositeDisposable();
@@ -784,7 +736,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithDecimalConverter()
     {
         var dis = new CompositeDisposable();
@@ -833,7 +784,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDecimalConverter()
     {
         var dis = new CompositeDisposable();
@@ -886,7 +836,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewToViewModel()
     {
         var dis = new CompositeDisposable();
@@ -933,7 +882,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithDoubleConverter()
     {
         var dis = new CompositeDisposable();
@@ -982,7 +930,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableDoubleConverter()
     {
         var dis = new CompositeDisposable();
@@ -1035,7 +982,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithDoubleConverterNoRound()
     {
         var dis = new CompositeDisposable();
@@ -1082,7 +1028,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverter()
     {
         var dis = new CompositeDisposable();
@@ -1131,7 +1076,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableSingleConverter()
     {
         var dis = new CompositeDisposable();
@@ -1184,7 +1128,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithSingleConverterNoRound()
     {
         var dis = new CompositeDisposable();
@@ -1231,7 +1174,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithByteConverter()
     {
         var dis = new CompositeDisposable();
@@ -1280,7 +1222,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableByteConverter()
     {
         var dis = new CompositeDisposable();
@@ -1333,7 +1274,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithByteConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1380,7 +1320,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverter()
     {
         var dis = new CompositeDisposable();
@@ -1429,7 +1368,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableShortConverter()
     {
         var dis = new CompositeDisposable();
@@ -1482,7 +1420,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithShortConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1529,7 +1466,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithIntegerConverter()
     {
         var dis = new CompositeDisposable();
@@ -1578,7 +1514,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithNullableIntegerConverter()
     {
         var dis = new CompositeDisposable();
@@ -1631,7 +1566,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithIntegerConverterNoHint()
     {
         var dis = new CompositeDisposable();
@@ -1678,7 +1612,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithLongConverter()
     {
         var dis = new CompositeDisposable();
@@ -1727,7 +1660,6 @@ public class PropertyBindingTest
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindWithFuncToTriggerUpdateTestViewModelToViewWithLongConverterNoHint()
     {
         var dis = new CompositeDisposable();

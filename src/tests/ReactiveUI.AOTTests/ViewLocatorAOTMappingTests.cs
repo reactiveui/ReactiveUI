@@ -34,9 +34,9 @@ public class ViewLocatorAOTMappingTests
         var viewDefaultFromExplicit = locator.ResolveView<VmA>(string.Empty);
         await Assert.That(viewDefaultFromExplicit).IsTypeOf<ViewADefault>();
 
-        // Unknown contract falls back to default mapping
-        var viewFallback = locator.ResolveView<VmA>("unknown");
-        await Assert.That(viewFallback).IsTypeOf<ViewADefault>();
+        // Unknown contract returns null (no fallback in ViewLocator)
+        var viewUnknown = locator.ResolveView<VmA>("unknown");
+        await Assert.That(viewUnknown).IsNull();
     }
 
     /// <summary>

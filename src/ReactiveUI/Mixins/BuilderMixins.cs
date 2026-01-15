@@ -316,6 +316,23 @@ public static class BuilderMixins
     }
 
     /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder, IMessageBus messageBus)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+
+        reactiveUIBuilder.WithMessageBus(messageBus);
+        return reactiveUIBuilder;
+    }
+
+    /// <summary>
     /// Configures the ReactiveUI view locator.
     /// </summary>
     /// <param name="reactiveUIBuilder">The reactive UI builder.</param>

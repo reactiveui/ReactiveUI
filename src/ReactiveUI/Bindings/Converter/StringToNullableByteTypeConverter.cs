@@ -16,12 +16,12 @@ public sealed class StringToNullableByteTypeConverter : BindingTypeConverter<str
     public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, [NotNullWhen(true)] out byte? result)
+    public override bool TryConvert(string? from, object? conversionHint, [MaybeNullWhen(true)] out byte? result)
     {
-        if (from is null)
+        if (string.IsNullOrEmpty(from))
         {
             result = null;
-            return false;
+            return true;
         }
 
         if (byte.TryParse(from, out var value))

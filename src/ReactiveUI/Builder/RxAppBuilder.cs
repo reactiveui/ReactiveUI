@@ -100,6 +100,9 @@ public static class RxAppBuilder
             // Reset the locator to a clean InstanceGenericFirstDependencyResolver
             AppLocator.SetLocator(new InstanceGenericFirstDependencyResolver());
 
+            // Clear activation fetcher cache since it queries the AppLocator
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
             // Finally, reset the initialization flag
             _hasBeenInitialized = 0;
         }

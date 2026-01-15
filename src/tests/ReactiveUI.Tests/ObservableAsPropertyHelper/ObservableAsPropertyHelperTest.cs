@@ -27,22 +27,11 @@ public class ObservableAsPropertyHelperTest
         await Assert.That(fixture.Value).IsEqualTo(-5);
         new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
 
-        input.OnError(new Exception("Die!"));
-
-        var failed = true;
-        try
-        {
-            // With ImmediateScheduler, the error is thrown immediately
-            // No scheduler.Start() needed
-        }
-        catch (Exception ex)
-        {
-            failed = ex.InnerException?.Message != "Die!";
-        }
+        var exception = Assert.Throws<UnhandledErrorException>(() => input.OnError(new Exception("Die!")));
 
         using (Assert.Multiple())
         {
-            await Assert.That(failed).IsFalse();
+            await Assert.That(exception.InnerException?.Message).IsEqualTo("Die!");
             await Assert.That(fixture.Value).IsEqualTo(4);
         }
     }

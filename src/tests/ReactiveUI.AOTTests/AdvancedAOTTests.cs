@@ -7,6 +7,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
+
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
@@ -14,6 +18,7 @@ namespace ReactiveUI.AOT.Tests;
 /// (AOT) compilation scenarios.
 /// </summary>
 [NotInParallel] // These tests modify global state (e.g., Locator.Current)
+[TestExecutor<AppBuilderTestExecutor>]
 public class AdvancedAOTTests
 {
     /// <summary>

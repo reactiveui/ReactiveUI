@@ -32,8 +32,7 @@ public sealed class VirtualTimeScheduler : IScheduler
     public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
     {
         ArgumentNullException.ThrowIfNull(action);
-        action(this, state);
-        return Disposable.Empty;
+        return Schedule(state, TimeSpan.Zero, action);
     }
 
     /// <summary>

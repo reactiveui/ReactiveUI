@@ -12,6 +12,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// <summary>
 /// Tests for PanelSetMethodBindingConverter.
 /// </summary>
+[NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class PanelSetMethodBindingConverterTests
 {

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.Schedulers;
+
 namespace ReactiveUI.Tests.Utilities.MessageBus;
 
 /// <summary>
@@ -16,43 +18,34 @@ public class WithMessageBusExecutor : ITestExecutor
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(testAction);
 
+        var scheduler = ImmediateScheduler.Instance;
+        var virtualTimeScheduler = new VirtualTimeScheduler();
         var testBus = new ReactiveUI.MessageBus();
+        var previousBus = ReactiveUI.MessageBus.Current;
+
+        context.StateBag.Items["Scheduler"] = scheduler;
+        context.StateBag.Items["VirtualTimeScheduler"] = virtualTimeScheduler;
         context.StateBag.Items["MessageBus"] = testBus;
 
         // Force-reset any previous builder state to avoid waiting deadlocks.
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
         RxAppBuilder.ResetForTesting();
 
-        // Re-initialize ReactiveUI with core services after reset
-        // This ensures tests have a clean, properly initialized environment
         _ = RxAppBuilder.CreateReactiveUIBuilder()
+            .WithMainThreadScheduler(scheduler)
+            .WithTaskPoolScheduler(scheduler)
+            .WithMessageBus(testBus)
             .WithCoreServices()
             .BuildApp();
 
         try
         {
-            // Execute actual test with timeout so it doesn't hang forever on CI.
+            context.RestoreExecutionContext();
             await testAction();
         }
         finally
         {
-            // Final reset after test
-            Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+            ReactiveUI.MessageBus.Current = previousBus;
             RxAppBuilder.ResetForTesting();
-        }
-
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(testAction);
-
-        var prevBus = ReactiveUI.MessageBus.Current;
-        try
-        {
-            ReactiveUI.MessageBus.Current = testBus;
-            await testAction();
-        }
-        finally
-        {
-            ReactiveUI.MessageBus.Current = prevBus;
         }
     }
 }

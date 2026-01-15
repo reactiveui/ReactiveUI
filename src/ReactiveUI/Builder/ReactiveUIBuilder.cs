@@ -23,6 +23,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     private ISuspensionHost? _suspensionHost;
     private int? _smallCacheLimit;
     private int? _bigCacheLimit;
+    private IMessageBus? _messageBus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -284,6 +285,19 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
                 configure(messageBus);
                 return messageBus;
             }));
+
+    /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithMessageBus(IMessageBus messageBus)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(messageBus);
+
+        _messageBus = messageBus;
+        return WithRegistrationOnBuild(resolver => resolver.RegisterConstant<IMessageBus>(messageBus));
+    }
 
     /// <summary>
     /// Configures the ReactiveUI view locator.
@@ -670,6 +684,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
 
         // Set the global converter service
         RxConverters.SetService(ConverterService);
+
+        if (_messageBus is not null)
+        {
+            MessageBus.Current = _messageBus;
+        }
 
         // Mark ReactiveUI as initialized via builder pattern
         RxAppBuilder.MarkAsInitialized();
@@ -1380,6 +1399,22 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         // Uri ↔ String converters
         ConverterService.TypedConverters.Register(new UriToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToUriTypeConverter());
+
+        // Nullable ↔ Non-Nullable converters
+        ConverterService.TypedConverters.Register(new ByteToNullableByteTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableByteToByteTypeConverter());
+        ConverterService.TypedConverters.Register(new ShortToNullableShortTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableShortToShortTypeConverter());
+        ConverterService.TypedConverters.Register(new IntegerToNullableIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableIntegerToIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new LongToNullableLongTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableLongToLongTypeConverter());
+        ConverterService.TypedConverters.Register(new SingleToNullableSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableSingleToSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new DoubleToNullableDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDoubleToDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new DecimalToNullableDecimalTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDecimalToDecimalTypeConverter());
     }
 
     /// <summary>

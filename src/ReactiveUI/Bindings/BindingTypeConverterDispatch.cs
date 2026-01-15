@@ -30,16 +30,31 @@ internal static class BindingTypeConverterDispatch
         ArgumentExceptionHelper.ThrowIfNull(converter);
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
-        // With the modern contract (success => non-null), null input is not considered a conversion here.
-        // The binding pipeline should decide whether to flow null through directly.
-        if (from is null)
+        if (converter.ToType != toType)
         {
             result = null;
             return false;
         }
 
-        // Exact pair match keeps dispatch predictable and avoids assignability ambiguity.
-        if (converter.ToType != toType || converter.FromType != from.GetType())
+        if (from is null)
+        {
+            var fromType = converter.FromType;
+            if (fromType.IsValueType && Nullable.GetUnderlyingType(fromType) is null)
+            {
+                result = null;
+                return false;
+            }
+
+            return converter.TryConvertTyped(null, conversionHint, out result);
+        }
+
+        var runtimeType = from.GetType();
+        var converterFromType = converter.FromType;
+
+        // Exact pair match keeps dispatch predictable and avoids assignability ambiguity,
+        // but allow nullable<T> converters to accept boxed T values.
+        if (converterFromType != runtimeType &&
+            Nullable.GetUnderlyingType(converterFromType) != runtimeType)
         {
             result = null;
             return false;
@@ -77,7 +92,7 @@ internal static class BindingTypeConverterDispatch
             return false;
         }
 
-        // Enforce modern contract: success implies non-null result
+        // Fallback converters must still guarantee a non-null result on success.
         if (result is null)
         {
             result = null;

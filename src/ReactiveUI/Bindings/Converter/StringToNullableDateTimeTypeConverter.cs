@@ -16,12 +16,12 @@ public sealed class StringToNullableDateTimeTypeConverter : BindingTypeConverter
     public override int GetAffinityForObjects() => 2;
 
     /// <inheritdoc/>
-    public override bool TryConvert(string? from, object? conversionHint, [NotNullWhen(true)] out DateTime? result)
+    public override bool TryConvert(string? from, object? conversionHint, [MaybeNullWhen(true)] out DateTime? result)
     {
-        if (from is null)
+        if (string.IsNullOrEmpty(from))
         {
             result = null;
-            return false;
+            return true;
         }
 
         if (DateTime.TryParse(from, out var value))

@@ -124,7 +124,7 @@ namespace ReactiveUI
         public System.Type FromType { get; }
         public System.Type ToType { get; }
         public abstract int GetAffinityForObjects();
-        public abstract bool TryConvert(TFrom? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out TTo? result);
+        public abstract bool TryConvert(TFrom? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out TTo? result);
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result) { }
     }
     public sealed class BooleanToStringTypeConverter : ReactiveUI.BindingTypeConverter<bool, string>
@@ -132,6 +132,15 @@ namespace ReactiveUI
         public BooleanToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
         public override bool TryConvert(bool from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+    }
+    public sealed class ByteToNullableByteTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<byte, byte?>, Splat.IEnableLogger
+    {
+        public ByteToNullableByteTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(byte from, object? conversionHint, out byte? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class ByteToStringTypeConverter : ReactiveUI.BindingTypeConverter<byte, string>
     {
@@ -281,6 +290,15 @@ namespace ReactiveUI
         public override int GetAffinityForObjects() { }
         public override bool TryConvert(System.DateTime from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
     }
+    public sealed class DecimalToNullableDecimalTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<decimal, decimal?>, Splat.IEnableLogger
+    {
+        public DecimalToNullableDecimalTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(decimal from, object? conversionHint, out decimal? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
+    }
     public sealed class DecimalToStringTypeConverter : ReactiveUI.BindingTypeConverter<decimal, string>
     {
         public DecimalToStringTypeConverter() { }
@@ -308,6 +326,15 @@ namespace ReactiveUI
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibili" +
             "ty, use the ReactiveUIBuilder pattern to register views explicitly.")]
         public static void RegisterViewsForViewModels(this Splat.IMutableDependencyResolver resolver, System.Reflection.Assembly assembly) { }
+    }
+    public sealed class DoubleToNullableDoubleTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<double, double?>, Splat.IEnableLogger
+    {
+        public DoubleToNullableDoubleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(double from, object? conversionHint, out double? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class DoubleToStringTypeConverter : ReactiveUI.BindingTypeConverter<double, string>
     {
@@ -382,7 +409,7 @@ namespace ReactiveUI
     }
     public interface IBindingTypeConverter<TFrom, TTo> : ReactiveUI.IBindingTypeConverter, Splat.IEnableLogger
     {
-        bool TryConvert(TFrom? from, object? conversionHint, out TTo? result);
+        bool TryConvert(TFrom? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out TTo? result);
     }
     public interface ICanActivate
     {
@@ -642,6 +669,15 @@ namespace ReactiveUI
     {
         void Register(ReactiveUI.IRegistrar registrar);
     }
+    public sealed class IntegerToNullableIntegerTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<int, int?>, Splat.IEnableLogger
+    {
+        public IntegerToNullableIntegerTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(int from, object? conversionHint, out int? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
+    }
     public sealed class IntegerToStringTypeConverter : ReactiveUI.BindingTypeConverter<int, string>
     {
         public IntegerToStringTypeConverter() { }
@@ -688,6 +724,15 @@ namespace ReactiveUI
         public System.IDisposable RegisterHandler(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.Threading.Tasks.Task> handler) { }
         public System.IDisposable RegisterHandler<TDontCare>(System.Func<ReactiveUI.IInteractionContext<TInput, TOutput>, System.IObservable<TDontCare>> handler) { }
     }
+    public sealed class LongToNullableLongTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<long, long?>, Splat.IEnableLogger
+    {
+        public LongToNullableLongTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(long from, object? conversionHint, out long? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
+    }
     public sealed class LongToStringTypeConverter : ReactiveUI.BindingTypeConverter<long, string>
     {
         public LongToStringTypeConverter() { }
@@ -718,85 +763,148 @@ namespace ReactiveUI
     {
         public NullableBooleanToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(bool? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(bool? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableByteToByteTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<byte?, byte>, Splat.IEnableLogger
+    {
+        public NullableByteToByteTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(byte? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out byte result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableByteToStringTypeConverter : ReactiveUI.BindingTypeConverter<byte?, string>
     {
         public NullableByteToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(byte? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(byte? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableDateOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateOnly?, string>
     {
         public NullableDateOnlyToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.DateOnly? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.DateOnly? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableDateTimeOffsetToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTimeOffset?, string>
     {
         public NullableDateTimeOffsetToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.DateTimeOffset? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.DateTimeOffset? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableDateTimeToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.DateTime?, string>
     {
         public NullableDateTimeToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.DateTime? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.DateTime? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableDecimalToDecimalTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<decimal?, decimal>, Splat.IEnableLogger
+    {
+        public NullableDecimalToDecimalTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(decimal? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out decimal result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableDecimalToStringTypeConverter : ReactiveUI.BindingTypeConverter<decimal?, string>
     {
         public NullableDecimalToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(decimal? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(decimal? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableDoubleToDoubleTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<double?, double>, Splat.IEnableLogger
+    {
+        public NullableDoubleToDoubleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(double? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out double result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableDoubleToStringTypeConverter : ReactiveUI.BindingTypeConverter<double?, string>
     {
         public NullableDoubleToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(double? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(double? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableGuidToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.Guid?, string>
     {
         public NullableGuidToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.Guid? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.Guid? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableIntegerToIntegerTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<int?, int>, Splat.IEnableLogger
+    {
+        public NullableIntegerToIntegerTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(int? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out int result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableIntegerToStringTypeConverter : ReactiveUI.BindingTypeConverter<int?, string>
     {
         public NullableIntegerToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(int? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(int? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableLongToLongTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<long?, long>, Splat.IEnableLogger
+    {
+        public NullableLongToLongTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(long? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out long result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableLongToStringTypeConverter : ReactiveUI.BindingTypeConverter<long?, string>
     {
         public NullableLongToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(long? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(long? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableShortToShortTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<short?, short>, Splat.IEnableLogger
+    {
+        public NullableShortToShortTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(short? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out short result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableShortToStringTypeConverter : ReactiveUI.BindingTypeConverter<short?, string>
     {
         public NullableShortToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(short? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(short? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
+    }
+    public sealed class NullableSingleToSingleTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<float?, float>, Splat.IEnableLogger
+    {
+        public NullableSingleToSingleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(float? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out float result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class NullableSingleToStringTypeConverter : ReactiveUI.BindingTypeConverter<float?, string>
     {
         public NullableSingleToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(float? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(float? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableTimeOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeOnly?, string>
     {
         public NullableTimeOnlyToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.TimeOnly? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.TimeOnly? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public sealed class NullableTimeSpanToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeSpan?, string>
     {
         public NullableTimeSpanToStringTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(System.TimeSpan? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? result) { }
+        public override bool TryConvert(System.TimeSpan? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out string? result) { }
     }
     public static class OAPHCreationHelperMixin
     {
@@ -1265,6 +1373,15 @@ namespace ReactiveUI
         public void Register(ReactiveUI.ISetMethodBindingConverter converter) { }
         public ReactiveUI.ISetMethodBindingConverter? TryGetConverter([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type? toType) { }
     }
+    public sealed class ShortToNullableShortTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<short, short?>, Splat.IEnableLogger
+    {
+        public ShortToNullableShortTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(short from, object? conversionHint, out short? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
+    }
     public sealed class ShortToStringTypeConverter : ReactiveUI.BindingTypeConverter<short, string>
     {
         public ShortToStringTypeConverter() { }
@@ -1275,6 +1392,15 @@ namespace ReactiveUI
     public sealed class SingleInstanceViewAttribute : System.Attribute
     {
         public SingleInstanceViewAttribute() { }
+    }
+    public sealed class SingleToNullableSingleTypeConverter : ReactiveUI.IBindingTypeConverter, ReactiveUI.IBindingTypeConverter<float, float?>, Splat.IEnableLogger
+    {
+        public SingleToNullableSingleTypeConverter() { }
+        public System.Type FromType { get; }
+        public System.Type ToType { get; }
+        public int GetAffinityForObjects() { }
+        public bool TryConvert(float from, object? conversionHint, out float? result) { }
+        public bool TryConvertTyped(object? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
     public sealed class SingleToStringTypeConverter : ReactiveUI.BindingTypeConverter<float, string>
     {
@@ -1354,85 +1480,85 @@ namespace ReactiveUI
     {
         public StringToNullableBooleanTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out bool? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out bool? result) { }
     }
     public sealed class StringToNullableByteTypeConverter : ReactiveUI.BindingTypeConverter<string, byte?>
     {
         public StringToNullableByteTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out byte? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out byte? result) { }
     }
     public sealed class StringToNullableDateOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateOnly?>
     {
         public StringToNullableDateOnlyTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.DateOnly? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.DateOnly? result) { }
     }
     public sealed class StringToNullableDateTimeOffsetTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTimeOffset?>
     {
         public StringToNullableDateTimeOffsetTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.DateTimeOffset? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.DateTimeOffset? result) { }
     }
     public sealed class StringToNullableDateTimeTypeConverter : ReactiveUI.BindingTypeConverter<string, System.DateTime?>
     {
         public StringToNullableDateTimeTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.DateTime? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.DateTime? result) { }
     }
     public sealed class StringToNullableDecimalTypeConverter : ReactiveUI.BindingTypeConverter<string, decimal?>
     {
         public StringToNullableDecimalTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out decimal? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out decimal? result) { }
     }
     public sealed class StringToNullableDoubleTypeConverter : ReactiveUI.BindingTypeConverter<string, double?>
     {
         public StringToNullableDoubleTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out double? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out double? result) { }
     }
     public sealed class StringToNullableGuidTypeConverter : ReactiveUI.BindingTypeConverter<string, System.Guid?>
     {
         public StringToNullableGuidTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.Guid? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.Guid? result) { }
     }
     public sealed class StringToNullableIntegerTypeConverter : ReactiveUI.BindingTypeConverter<string, int?>
     {
         public StringToNullableIntegerTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out int? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out int? result) { }
     }
     public sealed class StringToNullableLongTypeConverter : ReactiveUI.BindingTypeConverter<string, long?>
     {
         public StringToNullableLongTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out long? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out long? result) { }
     }
     public sealed class StringToNullableShortTypeConverter : ReactiveUI.BindingTypeConverter<string, short?>
     {
         public StringToNullableShortTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out short? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out short? result) { }
     }
     public sealed class StringToNullableSingleTypeConverter : ReactiveUI.BindingTypeConverter<string, float?>
     {
         public StringToNullableSingleTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out float? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out float? result) { }
     }
     public sealed class StringToNullableTimeOnlyTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeOnly?>
     {
         public StringToNullableTimeOnlyTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.TimeOnly? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.TimeOnly? result) { }
     }
     public sealed class StringToNullableTimeSpanTypeConverter : ReactiveUI.BindingTypeConverter<string, System.TimeSpan?>
     {
         public StringToNullableTimeSpanTypeConverter() { }
         public override int GetAffinityForObjects() { }
-        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out System.TimeSpan? result) { }
+        public override bool TryConvert(string? from, object? conversionHint, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(true)] out System.TimeSpan? result) { }
     }
     public sealed class StringToShortTypeConverter : ReactiveUI.BindingTypeConverter<string, short>
     {
@@ -1857,6 +1983,7 @@ namespace ReactiveUI.Builder
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, ReactiveUI.IMessageBus messageBus) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>(this ReactiveUI.Builder.IReactiveUIBuilder builder)
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
@@ -1909,6 +2036,7 @@ namespace ReactiveUI.Builder
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action);
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action);
         ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(ReactiveUI.IMessageBus messageBus);
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new ();
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
@@ -1978,6 +2106,7 @@ namespace ReactiveUI.Builder
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(ReactiveUI.IMessageBus messageBus) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }

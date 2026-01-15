@@ -67,11 +67,17 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         ArgumentExceptionHelper.ThrowIfNull(vmProperty);
         ArgumentExceptionHelper.ThrowIfNull(viewProperty);
 
-        // Converter selection is a hot-path concern across many binds; keep it cached and loop-based.
+        // First, try to find registered converters (prioritize user-registered converters)
+        // If an override is provided, use it; otherwise fall back to service locator
         var vmToViewConverterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
+
         var viewToVMConverterObj = viewToVMConverterOverride ?? GetConverterForTypes(typeof(TVProp), typeof(TVMProp));
 
-        if (vmToViewConverterObj is null || viewToVMConverterObj is null)
+        // Check if we have converters or if types are assignable
+        var hasConverters = vmToViewConverterObj is not null && viewToVMConverterObj is not null;
+        var typesAreAssignable = typeof(TVProp).IsAssignableFrom(typeof(TVMProp)) && typeof(TVMProp).IsAssignableFrom(typeof(TVProp));
+
+        if (!hasConverters && !typesAreAssignable)
         {
             throw new ArgumentException(
                 $"Can't two-way convert between {typeof(TVMProp)} and {typeof(TVProp)}. To fix this, register a IBindingTypeConverter or call the version with the converter Func.");
@@ -79,30 +85,44 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         bool VmToViewFunc(TVMProp? vmValue, out TVProp vValue)
         {
-            var result = BindingTypeConverterDispatch.TryConvertAny(
-                vmToViewConverterObj,
-                typeof(TVMProp),
-                vmValue,
-                typeof(TVProp),
-                conversionHint,
-                out var tmp);
+            if (vmToViewConverterObj is not null)
+            {
+                var result = BindingTypeConverterDispatch.TryConvertAny(
+                    vmToViewConverterObj,
+                    typeof(TVMProp),
+                    vmValue,
+                    typeof(TVProp),
+                    conversionHint,
+                    out var tmp);
 
-            vValue = result && tmp is not null ? (TVProp)tmp : default!;
-            return result;
+                vValue = result ? (TVProp)tmp! : default!;
+                return result;
+            }
+
+            // No converter - direct assignment
+            vValue = vmValue is TVProp typedValue ? typedValue : default!;
+            return true;
         }
 
         bool ViewToVmFunc(TVProp vValue, out TVMProp? vmValue)
         {
-            var result = BindingTypeConverterDispatch.TryConvertAny(
-                viewToVMConverterObj,
-                typeof(TVProp),
-                vValue,
-                typeof(TVMProp?),
-                conversionHint,
-                out var tmp);
+            if (viewToVMConverterObj is not null)
+            {
+                var result = BindingTypeConverterDispatch.TryConvertAny(
+                    viewToVMConverterObj,
+                    typeof(TVProp),
+                    vValue,
+                    typeof(TVMProp?),
+                    conversionHint,
+                    out var tmp);
 
-            vmValue = result && tmp is not null ? (TVMProp?)tmp : default;
-            return result;
+                vmValue = result ? (TVMProp?)tmp : default;
+                return result;
+            }
+
+            // No converter - direct assignment
+            vmValue = vValue is TVMProp typedValue ? typedValue : default;
+            return true;
         }
 
         return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc, triggerUpdate);
@@ -159,32 +179,46 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         var viewExpression = Reflection.Rewrite(viewProperty.Body);
         var viewType = viewExpression.Type;
 
-        var converterObj =
-            (vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp?), viewType)) ??
-            throw new ArgumentException($"Can't convert {typeof(TVMProp)} to {viewType}. To fix this, register a IBindingTypeConverter");
-
         var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
         if (!ret)
         {
             return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
         }
 
-        var source =
-            Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
-                .SelectMany(x =>
-                    !BindingTypeConverterDispatch.TryConvertAny(
-                        converterObj,
-                        x?.GetType() ?? typeof(object),
-                        x,
-                        viewType,
-                        conversionHint,
-                        out var tmp)
-                        ? Observable<object>.Empty
-                        : Observable.Return(tmp));
+        // First, try to find a registered converter (prioritize user-registered converters)
+        var converterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp?), viewType);
 
-        var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
+        if (converterObj is not null)
+        {
+            // Use the converter
+            var source =
+                Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
+                    .SelectMany(x =>
+                        !BindingTypeConverterDispatch.TryConvertAny(
+                            converterObj,
+                            x?.GetType() ?? typeof(object),
+                            x,
+                            viewType,
+                            conversionHint,
+                            out var tmp)
+                            ? Observable<object>.Empty
+                            : Observable.Return(tmp));
 
-        return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
+            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+        }
+
+        // No converter found - check if types are directly assignable
+        if (viewType.IsAssignableFrom(typeof(TVMProp)))
+        {
+            // No conversion needed - direct assignment
+            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (object?)x);
+            var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
+            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+        }
+
+        // No converter and types not assignable - throw exception
+        throw new ArgumentException($"Can't convert {typeof(TVMProp)} to {viewType}. To fix this, register a IBindingTypeConverter");
     }
 
     /// <inheritdoc />
@@ -236,25 +270,39 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             return Disposable.Empty;
         }
 
-        var converterObj =
-            (vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?))) ??
-            throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
+        // First, try to find a registered converter (prioritize user-registered converters)
+        var converterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?));
 
-        var source =
-            observedChange.SelectMany(x =>
-                !BindingTypeConverterDispatch.TryConvertAny(
-                    converterObj,
-                    typeof(TValue),
-                    x,
-                    typeof(TTValue?),
-                    conversionHint,
-                    out var tmp)
-                    ? Observable<object>.Empty
-                    : Observable.Return(tmp));
+        if (converterObj is not null)
+        {
+            // Use the converter
+            var source =
+                observedChange.SelectMany(x =>
+                    !BindingTypeConverterDispatch.TryConvertAny(
+                        converterObj,
+                        typeof(TValue),
+                        x,
+                        typeof(TTValue?),
+                        conversionHint,
+                        out var tmp)
+                        ? Observable<object>.Empty
+                        : Observable.Return(tmp));
 
-        var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
+            var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
+            return disposable;
+        }
 
-        return disposable;
+        // No converter found - check if types are directly assignable (includes same type and compatible reference types)
+        if (typeof(TTValue).IsAssignableFrom(typeof(TValue)))
+        {
+            // No conversion needed - direct assignment
+            var source = observedChange.Select(x => (object?)x);
+            var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
+            return disposable;
+        }
+
+        // No converter and types not assignable - throw exception
+        throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
     }
 
     /// <summary>

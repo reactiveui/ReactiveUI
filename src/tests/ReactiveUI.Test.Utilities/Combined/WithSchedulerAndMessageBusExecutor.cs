@@ -18,26 +18,29 @@ public class WithSchedulerAndMessageBusExecutor : ITestExecutor
 
         var scheduler = ImmediateScheduler.Instance;
         var messageBus = new ReactiveUI.MessageBus();
+        var previousBus = ReactiveUI.MessageBus.Current;
 
         context.StateBag.Items["Scheduler"] = scheduler;
         context.StateBag.Items["MessageBus"] = messageBus;
 
-        var prevMain = RxSchedulers.MainThreadScheduler;
-        var prevTask = RxSchedulers.TaskpoolScheduler;
-        var prevBus = ReactiveUI.MessageBus.Current;
+        RxAppBuilder.ResetForTesting();
+
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
+            .WithMainThreadScheduler(scheduler)
+            .WithTaskPoolScheduler(scheduler)
+            .WithMessageBus(messageBus)
+            .WithCoreServices()
+            .BuildApp();
 
         try
         {
-            RxSchedulers.MainThreadScheduler = scheduler;
-            RxSchedulers.TaskpoolScheduler = scheduler;
-            ReactiveUI.MessageBus.Current = messageBus;
+            context.RestoreExecutionContext();
             await testAction();
         }
         finally
         {
-            RxSchedulers.MainThreadScheduler = prevMain;
-            RxSchedulers.TaskpoolScheduler = prevTask;
-            ReactiveUI.MessageBus.Current = prevBus;
+            ReactiveUI.MessageBus.Current = previousBus;
+            RxAppBuilder.ResetForTesting();
         }
     }
 }

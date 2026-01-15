@@ -46,6 +46,13 @@ public interface IReactiveUIBuilder : IAppBuilder
     IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure);
 
     /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithMessageBus(IMessageBus messageBus);
+
+    /// <summary>
     /// Configures the suspension driver.
     /// </summary>
     /// <param name="configure">A delegate to configure the suspension driver.</param>

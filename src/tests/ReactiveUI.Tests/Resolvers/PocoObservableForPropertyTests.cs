@@ -21,11 +21,11 @@ public class PocoObservableForPropertyTests
             await Assert.That(
                 instance.GetAffinityForObject(
                     typeof(PocoType),
-                    null!)).IsEqualTo(1);
+                    nameof(PocoType.Property1))).IsEqualTo(1);
             await Assert.That(
                 instance.GetAffinityForObject(
                     typeof(INPCClass),
-                    null!)).IsEqualTo(1);
+                    "SomeProperty")).IsEqualTo(1);
         }
     }
 

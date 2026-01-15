@@ -18,12 +18,11 @@ public class Registrations : IWantsToRegisterStuff
         registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
         registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
         registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new DependencyObjectObservableForProperty());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new SingleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DoubleToStringTypeConverter());
-        registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
+
+        // WPF-specific converters
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToVisibilityTypeConverter());
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new VisibilityToBooleanTypeConverter());
+
         registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
         registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
