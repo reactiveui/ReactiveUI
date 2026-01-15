@@ -27,6 +27,24 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
         DependencyProperty.Register("FakeControl", typeof(PropertyBindFakeControl), typeof(PropertyBindView), new PropertyMetadata(null));
 
     /// <summary>
+    /// The some text box property.
+    /// </summary>
+    public static readonly DependencyProperty SomeTextBoxProperty =
+        DependencyProperty.Register("SomeTextBox", typeof(TextBox), typeof(PropertyBindView), new PropertyMetadata(null));
+
+    /// <summary>
+    /// The property2 property.
+    /// </summary>
+    public static readonly DependencyProperty Property2Property =
+        DependencyProperty.Register("Property2", typeof(TextBox), typeof(PropertyBindView), new PropertyMetadata(null));
+
+    /// <summary>
+    /// The fake items control property.
+    /// </summary>
+    public static readonly DependencyProperty FakeItemsControlProperty =
+        DependencyProperty.Register("FakeItemsControl", typeof(ListBox), typeof(PropertyBindView), new PropertyMetadata(null));
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PropertyBindView"/> class.
     /// </summary>
     public PropertyBindView()
@@ -40,12 +58,20 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     /// <summary>
     /// Gets or sets some text box.
     /// </summary>
-    public TextBox SomeTextBox { get; set; }
+    public TextBox SomeTextBox
+    {
+        get => (TextBox)GetValue(SomeTextBoxProperty);
+        set => SetValue(SomeTextBoxProperty, value);
+    }
 
     /// <summary>
     /// Gets or sets the property2.
     /// </summary>
-    public TextBox Property2 { get; set; }
+    public TextBox Property2
+    {
+        get => (TextBox)GetValue(Property2Property);
+        set => SetValue(Property2Property, value);
+    }
 
     /// <summary>
     /// Gets or sets the fake control.
@@ -59,7 +85,11 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     /// <summary>
     /// Gets or sets the fake items control.
     /// </summary>
-    public ListBox FakeItemsControl { get; set; }
+    public ListBox FakeItemsControl
+    {
+        get => (ListBox)GetValue(FakeItemsControlProperty);
+        set => SetValue(FakeItemsControlProperty, value);
+    }
 
     /// <inheritdoc/>
     public PropertyBindViewModel? ViewModel

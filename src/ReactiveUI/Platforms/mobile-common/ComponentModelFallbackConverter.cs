@@ -85,7 +85,7 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
             var converter = GetConverter(fromType, toType);
             if (converter is null)
             {
-                this.Log().Debug("Component model cannot convert {FromType} to {ToType}", fromType, toType);
+                this.Log().Debug("Component model cannot convert {0} to {1}", fromType, toType);
                 result = null;
                 return false;
             }
@@ -109,21 +109,21 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
         catch (FormatException ex)
         {
             // Format exception = conversion failed (expected for invalid input)
-            this.Log().Debug(ex, "Component model conversion failed (FormatException) for {FromType} -> {ToType}", fromType, toType);
+            this.Log().Debug(ex, "Component model conversion failed (FormatException) for {0} -> {1}", fromType, toType);
             result = null;
             return false;
         }
         catch (Exception ex) when (ex.InnerException is FormatException or IndexOutOfRangeException)
         {
             // Component model often wraps format exceptions
-            this.Log().Debug(ex, "Component model conversion failed (wrapped exception) for {FromType} -> {ToType}", fromType, toType);
+            this.Log().Debug(ex, "Component model conversion failed (wrapped exception) for {0} -> {1}", fromType, toType);
             result = null;
             return false;
         }
         catch (Exception ex)
         {
             // Unexpected exception - log as warning and treat as failure
-            this.Log().Warn(ex, "Component model conversion threw unexpected exception for {FromType} -> {ToType}", fromType, toType);
+            this.Log().Warn(ex, "Component model conversion threw unexpected exception for {0} -> {1}", fromType, toType);
             result = null;
             return false;
         }
