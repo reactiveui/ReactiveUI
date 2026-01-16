@@ -11,7 +11,7 @@ namespace ReactiveUI;
 /// Converts <see cref="Nullable{Int64}"/> to <see cref="long"/>.
 /// </summary>
 /// <remarks>
-/// When the nullable value is null, returns the default value (0).
+/// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>
 public sealed class NullableLongToLongTypeConverter : IBindingTypeConverter<long?, long>
 {
@@ -27,7 +27,13 @@ public sealed class NullableLongToLongTypeConverter : IBindingTypeConverter<long
     /// <inheritdoc/>
     public bool TryConvert(long? from, object? conversionHint, [NotNullWhen(true)] out long result)
     {
-        result = from ?? 0;
+        if (from is null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = from.Value;
         return true;
     }
 
@@ -36,14 +42,15 @@ public sealed class NullableLongToLongTypeConverter : IBindingTypeConverter<long
     {
         if (from is null)
         {
-            result = 0L;
-            return true;
+            result = null;
+            return TryConvert(null, conversionHint, out _);
         }
 
         if (from is long value)
         {
-            result = value;
-            return true;
+            return TryConvert(value, conversionHint, out var typedResult)
+                ? (result = typedResult) is not null
+                : (result = default) is null && false;
         }
 
         result = null;

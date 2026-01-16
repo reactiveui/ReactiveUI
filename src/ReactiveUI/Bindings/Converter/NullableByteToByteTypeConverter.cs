@@ -11,7 +11,7 @@ namespace ReactiveUI;
 /// Converts <see cref="Nullable{Byte}"/> to <see cref="byte"/>.
 /// </summary>
 /// <remarks>
-/// When the nullable value is null, returns the default value (0).
+/// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>
 public sealed class NullableByteToByteTypeConverter : IBindingTypeConverter<byte?, byte>
 {
@@ -27,7 +27,13 @@ public sealed class NullableByteToByteTypeConverter : IBindingTypeConverter<byte
     /// <inheritdoc/>
     public bool TryConvert(byte? from, object? conversionHint, [NotNullWhen(true)] out byte result)
     {
-        result = from ?? 0;
+        if (from is null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = from.Value;
         return true;
     }
 
@@ -36,14 +42,15 @@ public sealed class NullableByteToByteTypeConverter : IBindingTypeConverter<byte
     {
         if (from is null)
         {
-            result = (byte)0;
-            return true;
+            result = null;
+            return TryConvert(null, conversionHint, out _);
         }
 
         if (from is byte value)
         {
-            result = value;
-            return true;
+            return TryConvert(value, conversionHint, out var typedResult)
+                ? (result = typedResult) is not null
+                : (result = default) is null && false;
         }
 
         result = null;

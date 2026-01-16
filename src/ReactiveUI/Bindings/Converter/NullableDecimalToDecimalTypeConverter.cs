@@ -11,7 +11,7 @@ namespace ReactiveUI;
 /// Converts <see cref="Nullable{Decimal}"/> to <see cref="decimal"/>.
 /// </summary>
 /// <remarks>
-/// When the nullable value is null, returns the default value (0.0M).
+/// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>
 public sealed class NullableDecimalToDecimalTypeConverter : IBindingTypeConverter<decimal?, decimal>
 {
@@ -27,7 +27,13 @@ public sealed class NullableDecimalToDecimalTypeConverter : IBindingTypeConverte
     /// <inheritdoc/>
     public bool TryConvert(decimal? from, object? conversionHint, [NotNullWhen(true)] out decimal result)
     {
-        result = from ?? 0.0M;
+        if (from is null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = from.Value;
         return true;
     }
 
@@ -36,14 +42,15 @@ public sealed class NullableDecimalToDecimalTypeConverter : IBindingTypeConverte
     {
         if (from is null)
         {
-            result = 0.0M;
-            return true;
+            result = null;
+            return TryConvert(null, conversionHint, out _);
         }
 
         if (from is decimal value)
         {
-            result = value;
-            return true;
+            return TryConvert(value, conversionHint, out var typedResult)
+                ? (result = typedResult) is not null
+                : (result = default) is null && false;
         }
 
         result = null;

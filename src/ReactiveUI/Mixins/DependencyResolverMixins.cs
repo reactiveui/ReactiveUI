@@ -44,7 +44,7 @@ public static class DependencyResolverMixins
             {
                 // my kingdom for c# 6!
                 var contractSource = ti.GetCustomAttribute<ViewContractAttribute>();
-                var contract = contractSource is not null ? contractSource.Contract : string.Empty;
+                var contract = contractSource?.Contract;
 
                 RegisterType(resolver, ti, ivf, contract);
             }
@@ -57,16 +57,26 @@ public static class DependencyResolverMixins
         TypeInfo ti,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
         Type serviceType,
-        string contract)
+        string? contract)
     {
         var factory = TypeFactory(ti);
-        if (ti.GetCustomAttribute<SingleInstanceViewAttribute>() is not null)
+        var isSingleton = ti.GetCustomAttribute<SingleInstanceViewAttribute>() is not null;
+
+        if (isSingleton && contract is not null)
         {
             resolver.RegisterLazySingleton(factory, serviceType, contract);
         }
-        else
+        else if (isSingleton)
+        {
+            resolver.RegisterLazySingleton(factory, serviceType);
+        }
+        else if (contract is not null)
         {
             resolver.Register(factory, serviceType, contract);
+        }
+        else
+        {
+            resolver.Register(factory, serviceType);
         }
     }
 

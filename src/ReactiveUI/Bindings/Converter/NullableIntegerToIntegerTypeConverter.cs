@@ -11,7 +11,7 @@ namespace ReactiveUI;
 /// Converts <see cref="Nullable{Int32}"/> to <see cref="int"/>.
 /// </summary>
 /// <remarks>
-/// When the nullable value is null, returns the default value (0).
+/// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>
 public sealed class NullableIntegerToIntegerTypeConverter : IBindingTypeConverter<int?, int>
 {
@@ -27,7 +27,13 @@ public sealed class NullableIntegerToIntegerTypeConverter : IBindingTypeConverte
     /// <inheritdoc/>
     public bool TryConvert(int? from, object? conversionHint, [NotNullWhen(true)] out int result)
     {
-        result = from ?? 0;
+        if (from is null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = from.Value;
         return true;
     }
 
@@ -36,14 +42,15 @@ public sealed class NullableIntegerToIntegerTypeConverter : IBindingTypeConverte
     {
         if (from is null)
         {
-            result = 0;
-            return true;
+            result = null;
+            return TryConvert(null, conversionHint, out _);
         }
 
         if (from is int value)
         {
-            result = value;
-            return true;
+            return TryConvert(value, conversionHint, out var typedResult)
+                ? (result = typedResult) is not null
+                : (result = default) is null && false;
         }
 
         result = null;

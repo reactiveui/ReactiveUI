@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
     <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
-    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +34,9 @@
         <Compile Include="API\**\*.cs" />
         <Compile Include="Wpf\**\*.cs" />
         <Compile Include="Xaml\**\*.cs" />
+        <Compile Include="WhenAny\**\*.cs" />
+        <Compile Include="ReactiveObjects\**\*.cs" />
+        <Compile Include="Utilities\**\*.cs" />
         <Compile Include="AssemblyHooks.cs" />
         <Compile Include="AssemblyInfo.Parallel.cs" />
         <Page Update="Wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">

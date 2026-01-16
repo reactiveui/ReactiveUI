@@ -23,7 +23,6 @@ public sealed class XamlViewDependencyResolverTests
         var resolver = AppLocator.Current as IDependencyResolver;
         await Assert.That(resolver).IsNotNull();
 
-        using (resolver.WithResolver())
         using (Assert.Multiple())
         {
             await Assert.That(resolver.GetServices<IViewFor<ExampleViewModel>>()).Count().IsEqualTo(1);
@@ -42,9 +41,6 @@ public sealed class XamlViewDependencyResolverTests
     {
         var resolver = AppLocator.Current as IDependencyResolver;
         await Assert.That(resolver).IsNotNull();
-        using (resolver.WithResolver())
-        {
-            await Assert.That(resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract")).Count().IsEqualTo(1);
-        }
+        await Assert.That(resolver.GetServices(typeof(IViewFor<ExampleViewModel>), "contract")).Count().IsEqualTo(1);
     }
 }
