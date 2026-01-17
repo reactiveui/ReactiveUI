@@ -7,8 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-using TUnit.Core.Executors;
-
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>

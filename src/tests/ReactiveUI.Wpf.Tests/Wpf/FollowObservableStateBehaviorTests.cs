@@ -5,10 +5,11 @@
 
 using System.Windows;
 using System.Windows.Controls;
+
 using Microsoft.Xaml.Behaviors;
+
 using ReactiveUI.Blend;
 using ReactiveUI.Tests.Utilities.Schedulers;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 

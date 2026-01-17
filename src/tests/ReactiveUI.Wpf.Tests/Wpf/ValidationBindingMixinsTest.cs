@@ -5,8 +5,6 @@
 
 using System.Windows.Controls;
 
-using TUnit.Core.Executors;
-
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>

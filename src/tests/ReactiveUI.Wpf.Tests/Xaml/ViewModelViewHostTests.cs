@@ -3,13 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Runtime.Serialization;
 using System.Windows;
+using System.Windows.Threading;
+
 using DynamicData;
-using ReactiveUI.Tests.Utilities;
+
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -21,10 +21,10 @@ namespace ReactiveUI.Tests.Xaml;
 /// global service locator state.
 /// </remarks>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class ViewModelViewHostTests
 {
     [Test]
-    [TestExecutor<WpfTestExecutor>]
     public async Task ViewModelViewHostDefaultContentNotNull()
     {
         var uc = new ViewModelViewHost
@@ -50,16 +50,9 @@ public class ViewModelViewHostTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    [Skip("Flaky test - needs investigation")]
+    [TestExecutor<WpfWithViewExecutor>]
     public async Task ViewModelViewHostContentNotNullWithViewModelAndActivated()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .RegisterView<TestView, TestViewModel>()
-            .WithCoreServices()
-            .BuildApp();
-
         var viewModel = new TestViewModel();
 
         var uc = new ViewModelViewHost
@@ -82,5 +75,58 @@ public class ViewModelViewHostTests
 
         // Test IViewFor<ViewModel> after activated
         await Assert.That(uc.Content).IsTypeOf<TestView>();
+    }
+
+    public class WpfWithViewExecutor : STAThreadExecutor
+    {
+        private IScheduler? _originalMainThreadScheduler;
+        private IScheduler? _originalTaskpoolScheduler;
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            // Save the current schedulers so we can restore them later
+            _originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
+            _originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
+
+            RxAppBuilder.ResetForTesting();
+
+            // Replace with a new locator that tests can modify
+            // Include WPF platform services to ensure view locator, activation, etc. work
+            RxAppBuilder.CreateReactiveUIBuilder()
+                .WithWpf()
+                .RegisterView<TestView, TestViewModel>()
+                .WithCoreServices()
+                .BuildApp();
+
+            // Configure WPF scheduler for test execution
+            // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
+            // so we must manually configure it for tests that need WPF controls
+            var dispatcher = Dispatcher.CurrentDispatcher;
+            RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            // Restore original schedulers before resetting
+            if (_originalMainThreadScheduler != null)
+            {
+                RxSchedulers.MainThreadScheduler = _originalMainThreadScheduler;
+            }
+
+            if (_originalTaskpoolScheduler != null)
+            {
+                RxSchedulers.TaskpoolScheduler = _originalTaskpoolScheduler;
+            }
+
+            // Reset AppBuilder state to clean up test-specific registrations
+            RxAppBuilder.ResetForTesting();
+
+            base.CleanUp();
+        }
     }
 }

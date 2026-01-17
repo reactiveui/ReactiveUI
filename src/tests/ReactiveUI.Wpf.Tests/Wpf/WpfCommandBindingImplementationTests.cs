@@ -6,9 +6,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using ReactiveUI.Tests.Utilities.Logging;
 using ReactiveUI.Tests.Wpf.Mocks;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 

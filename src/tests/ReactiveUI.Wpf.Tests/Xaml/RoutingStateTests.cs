@@ -9,7 +9,6 @@ using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 

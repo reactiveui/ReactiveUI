@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 using ReactiveUI.Tests.Xaml.Utilities;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 

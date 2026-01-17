@@ -6,8 +6,6 @@
 using System.Runtime.Versioning;
 using System.Windows.Threading;
 
-using TUnit.Core;
-
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>

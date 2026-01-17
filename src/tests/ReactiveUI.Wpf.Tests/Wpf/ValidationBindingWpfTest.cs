@@ -8,8 +8,6 @@ using System.Windows.Controls;
 
 using ReactiveUI.Wpf.Binding;
 
-using TUnit.Core.Executors;
-
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>

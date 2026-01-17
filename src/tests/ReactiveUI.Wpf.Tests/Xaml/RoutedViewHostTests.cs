@@ -4,10 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
+
 using DynamicData;
-using ReactiveUI.Tests.Utilities;
+
 using ReactiveUI.Tests.Xaml.Mocks;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
