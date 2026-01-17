@@ -1637,6 +1637,19 @@ namespace ReactiveUI
         public void Dispose() { }
         protected virtual void Dispose(bool disposing) { }
     }
+    public static class SwitchSubscribeMixin
+    {
+        public static System.IObservable<TResult> SwitchSelect<TSource, TResult>(this System.IObservable<TSource?> source, System.Func<TSource, System.IObservable<TResult>> selector) { }
+        public static System.IObservable<TValue> SwitchSelect<TParam, TResult, TValue>(this System.IObservable<ReactiveUI.IReactiveCommand<TParam, TResult>?> source, System.Func<ReactiveUI.IReactiveCommand<TParam, TResult>, System.IObservable<TValue>> selector) { }
+        public static System.IDisposable SwitchSubscribe<T>(this System.IObservable<System.IObservable<T>?> source, System.Action<T> onNext) { }
+        public static System.IDisposable SwitchSubscribe<T>(this System.IObservable<System.IObservable<T>?> source, System.Action<T> onNext, System.Action<System.Exception> onError, System.Action onCompleted) { }
+        public static System.IDisposable SwitchSubscribe<TParam, TResult>(this System.IObservable<ReactiveUI.IReactiveCommand<TParam, TResult>?> source, System.Action<TResult> onNext) { }
+        public static System.IDisposable SwitchSubscribe<TSource, TResult>(this System.IObservable<TSource?> source, System.Func<TSource, System.IObservable<TResult>> selector, System.Action<TResult> onNext) { }
+        public static System.IDisposable SwitchSubscribe<TParam, TResult>(this System.IObservable<ReactiveUI.IReactiveCommand<TParam, TResult>?> source, System.Action<TResult> onNext, System.Action<System.Exception> onError, System.Action onCompleted) { }
+        public static System.IDisposable SwitchSubscribe<TSource, TResult>(this System.IObservable<TSource?> source, System.Func<TSource, System.IObservable<TResult>> selector, System.Action<TResult> onNext, System.Action<System.Exception> onError, System.Action onCompleted) { }
+        public static System.IDisposable SwitchSubscribe<TParam, TResult, TValue>(this System.IObservable<ReactiveUI.IReactiveCommand<TParam, TResult>?> source, System.Func<ReactiveUI.IReactiveCommand<TParam, TResult>, System.IObservable<TValue>> selector, System.Action<TValue> onNext) { }
+        public static System.IDisposable SwitchSubscribe<TParam, TResult, TValue>(this System.IObservable<ReactiveUI.IReactiveCommand<TParam, TResult>?> source, System.Func<ReactiveUI.IReactiveCommand<TParam, TResult>, System.IObservable<TValue>> selector, System.Action<TValue> onNext, System.Action<System.Exception> onError, System.Action onCompleted) { }
+    }
     public sealed class TimeOnlyToStringTypeConverter : ReactiveUI.BindingTypeConverter<System.TimeOnly, string>
     {
         public TimeOnlyToStringTypeConverter() { }
