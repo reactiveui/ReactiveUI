@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Winforms;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 

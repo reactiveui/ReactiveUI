@@ -436,6 +436,11 @@ namespace ReactiveUI
             where TEventArgs : System.EventArgs;
         int GetAffinityForObject<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.None | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicEvents)]  T>(bool hasEventTarget);
     }
+    public interface ICreatesCustomizedCommandRebinding
+    {
+        bool TryUpdateCommand<TControl>(TControl? control, System.Windows.Input.ICommand? command)
+            where TControl :  class;
+    }
     public interface ICreatesObservableForProperty : Splat.IEnableLogger
     {
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]

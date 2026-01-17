@@ -187,6 +187,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         var currentControl = default(TControl);
         var isInitialBind = true;
 
+        // Check for optional platform-specific command rebinding customization
+        var rebindingCustomizer = AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>();
+
         // Cache boxing of parameter values once to avoid rebuilding the Select pipeline on every rebind.
         var boxedParameter = withParameter.Select(static p => (object?)p);
 
@@ -217,21 +220,19 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             // Match original semantics: allow null if the cast fails.
             var control = host as TControl;
 
-            // Check if this is a rebind to the same control (command changed but control didn't)
+            // Try platform-specific optimization: if only the command changed (not the control),
+            // attempt to update the command directly without full rebind
             var isSameControl = !isInitialBind && ReferenceEquals(control, currentControl);
-
-            if (isSameControl && control is not null)
+            if (isSameControl && control is not null && rebindingCustomizer is not null)
             {
-                // Direct command update without dispose/rebind to avoid restoring to null
-                var commandProp = control.GetType().GetProperty("Command");
-                if (commandProp is not null && commandProp.CanWrite)
+                if (rebindingCustomizer.TryUpdateCommand(control, command))
                 {
-                    commandProp.SetValue(control, command);
+                    // Successfully updated command without rebinding
                     return;
                 }
             }
 
-            // Full rebind (first bind or control changed)
+            // Full rebind (first bind, control changed, or customizer not available/failed)
             isInitialBind = false;
             currentControl = control;
 

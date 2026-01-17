@@ -5,8 +5,6 @@
 
 using System.Runtime.Versioning;
 
-using TUnit.Core;
-
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
 /// <summary>

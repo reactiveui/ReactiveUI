@@ -19,6 +19,9 @@ public class Registrations : IWantsToRegisterStuff
         registrar.RegisterConstant<IActivationForViewFetcher>(static () => new ActivationForViewFetcher());
         registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new DependencyObjectObservableForProperty());
 
+        // WPF-specific command rebinding optimization
+        registrar.RegisterConstant<ICreatesCustomizedCommandRebinding>(static () => new WpfCommandRebindingCustomizer());
+
         // WPF-specific converters
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new BooleanToVisibilityTypeConverter());
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new VisibilityToBooleanTypeConverter());
