@@ -184,6 +184,8 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     {
         // SerialDisposable safely replaces and disposes the previous binding when a new one is assigned.
         var currentBinding = new SerialDisposable();
+        var currentControl = default(TControl);
+        var isInitialBind = true;
 
         // Cache boxing of parameter values once to avoid rebuilding the Select pipeline on every rebind.
         var boxedParameter = withParameter.Select(static p => (object?)p);
@@ -214,6 +216,24 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 
             // Match original semantics: allow null if the cast fails.
             var control = host as TControl;
+
+            // Check if this is a rebind to the same control (command changed but control didn't)
+            var isSameControl = !isInitialBind && ReferenceEquals(control, currentControl);
+
+            if (isSameControl && control is not null)
+            {
+                // Direct command update without dispose/rebind to avoid restoring to null
+                var commandProp = control.GetType().GetProperty("Command");
+                if (commandProp is not null && commandProp.CanWrite)
+                {
+                    commandProp.SetValue(control, command);
+                    return;
+                }
+            }
+
+            // Full rebind (first bind or control changed)
+            isInitialBind = false;
+            currentControl = control;
 
             // Assigning to SerialDisposable disposes the previous binding deterministically.
             currentBinding.Disposable =

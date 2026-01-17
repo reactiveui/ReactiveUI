@@ -71,7 +71,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         // If an override is provided, use it; otherwise fall back to service locator
         var vmToViewConverterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
 
-        var viewToVMConverterObj = viewToVMConverterOverride ?? GetConverterForTypes(typeof(TVProp), typeof(TVMProp));
+        var viewToVMConverterObj = viewToVMConverterOverride ?? GetConverterForTypes(typeof(TVProp), typeof(TVMProp?));
 
         // Check if we have converters or if types are assignable
         var hasConverters = vmToViewConverterObj is not null && viewToVMConverterObj is not null;
@@ -87,13 +87,77 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             if (vmToViewConverterObj is not null)
             {
-                var result = BindingTypeConverterDispatch.TryConvertAny(
-                    vmToViewConverterObj,
-                    typeof(TVMProp),
-                    vmValue,
-                    typeof(TVProp),
-                    conversionHint,
-                    out var tmp);
+                bool result;
+                object? tmp;
+
+                // If an explicit override was provided, call it directly (bypassing type checks)
+                // Otherwise use the dispatch which validates types for auto-discovered converters
+                if (vmToViewConverterOverride is not null)
+                {
+                    // Trust the user's explicit converter choice
+                    if (vmToViewConverterObj is IBindingTypeConverter typedConverter)
+                    {
+                        result = typedConverter.TryConvertTyped(vmValue, conversionHint, out tmp);
+                    }
+                    else if (vmToViewConverterObj is IBindingFallbackConverter fallbackConverter)
+                    {
+                        // Fallback converters require non-null input
+                        if (vmValue is null)
+                        {
+                            tmp = null;
+                            result = false;
+                        }
+                        else
+                        {
+                            result = fallbackConverter.TryConvert(typeof(TVMProp), vmValue, typeof(TVProp), conversionHint, out tmp);
+                        }
+                    }
+                    else
+                    {
+                        tmp = null;
+                        result = false;
+                    }
+
+                    // If explicit override failed, try to find a better converter from registry
+                    if (!result)
+                    {
+                        var fallbackConverter = GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
+                        if (fallbackConverter is not null && fallbackConverter != vmToViewConverterObj)
+                        {
+                            result = BindingTypeConverterDispatch.TryConvertAny(
+                                fallbackConverter,
+                                typeof(TVMProp),
+                                vmValue,
+                                typeof(TVProp),
+                                conversionHint,
+                                out tmp);
+
+                            if (result)
+                            {
+                                vValue = (TVProp)tmp!;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // No override - use type-checked dispatch for auto-discovered converter
+                    result = BindingTypeConverterDispatch.TryConvertAny(
+                        vmToViewConverterObj,
+                        typeof(TVMProp),
+                        vmValue,
+                        typeof(TVProp),
+                        conversionHint,
+                        out tmp);
+
+                    // If auto-discovered converter failed, try direct assignment
+                    if (!result && typeof(TVProp).IsAssignableFrom(typeof(TVMProp)))
+                    {
+                        vValue = vmValue is TVProp fallbackValue ? fallbackValue : default!;
+                        return true;
+                    }
+                }
 
                 vValue = result ? (TVProp)tmp! : default!;
                 return result;
@@ -108,13 +172,77 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             if (viewToVMConverterObj is not null)
             {
-                var result = BindingTypeConverterDispatch.TryConvertAny(
-                    viewToVMConverterObj,
-                    typeof(TVProp),
-                    vValue,
-                    typeof(TVMProp?),
-                    conversionHint,
-                    out var tmp);
+                bool result;
+                object? tmp;
+
+                // If an explicit override was provided, call it directly (bypassing type checks)
+                // Otherwise use the dispatch which validates types for auto-discovered converters
+                if (viewToVMConverterOverride is not null)
+                {
+                    // Trust the user's explicit converter choice
+                    if (viewToVMConverterObj is IBindingTypeConverter typedConverter)
+                    {
+                        result = typedConverter.TryConvertTyped(vValue, conversionHint, out tmp);
+                    }
+                    else if (viewToVMConverterObj is IBindingFallbackConverter fallbackConverter)
+                    {
+                        // Fallback converters require non-null input
+                        if (vValue is null)
+                        {
+                            tmp = null;
+                            result = false;
+                        }
+                        else
+                        {
+                            result = fallbackConverter.TryConvert(typeof(TVProp), vValue, typeof(TVMProp?), conversionHint, out tmp);
+                        }
+                    }
+                    else
+                    {
+                        tmp = null;
+                        result = false;
+                    }
+
+                    // If explicit override failed, try to find a better converter from registry
+                    if (!result)
+                    {
+                        var fallbackConverter = GetConverterForTypes(typeof(TVProp), typeof(TVMProp?));
+                        if (fallbackConverter is not null && fallbackConverter != viewToVMConverterObj)
+                        {
+                            result = BindingTypeConverterDispatch.TryConvertAny(
+                                fallbackConverter,
+                                typeof(TVProp),
+                                vValue,
+                                typeof(TVMProp?),
+                                conversionHint,
+                                out tmp);
+
+                            if (result)
+                            {
+                                vmValue = (TVMProp?)tmp;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // No override - use type-checked dispatch for auto-discovered converter
+                    result = BindingTypeConverterDispatch.TryConvertAny(
+                        viewToVMConverterObj,
+                        typeof(TVProp),
+                        vValue,
+                        typeof(TVMProp?),
+                        conversionHint,
+                        out tmp);
+
+                    // If auto-discovered converter failed, try direct assignment
+                    if (!result && typeof(TVMProp).IsAssignableFrom(typeof(TVProp)))
+                    {
+                        vmValue = vValue is TVMProp fallbackValue ? fallbackValue : default;
+                        return true;
+                    }
+                }
 
                 vmValue = result ? (TVMProp?)tmp : default;
                 return result;
@@ -194,15 +322,37 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             var source =
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
                     .SelectMany(x =>
-                        !BindingTypeConverterDispatch.TryConvertAny(
+                    {
+                        var runtimeType = x?.GetType() ?? typeof(TVMProp);
+
+                        // Try converter first
+                        var convertResult = BindingTypeConverterDispatch.TryConvertAny(
                             converterObj,
-                            x?.GetType() ?? typeof(object),
+                            runtimeType,
                             x,
                             viewType,
                             conversionHint,
-                            out var tmp)
-                            ? Observable<object>.Empty
-                            : Observable.Return(tmp));
+                            out var tmp);
+
+                        if (convertResult)
+                        {
+                            return Observable.Return(tmp);
+                        }
+
+                        // Converter failed
+                        // If no override was provided (auto-discovered converter), try direct assignment
+                        if (vmToViewConverterOverride is null)
+                        {
+                            // For null values, use the actual TVMProp type for assignability check
+                            if (viewType.IsAssignableFrom(typeof(TVMProp)))
+                            {
+                                return Observable.Return((object?)x);
+                            }
+                        }
+
+                        // Cannot convert - skip this update
+                        return Observable<object>.Empty;
+                    });
 
             var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
             return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
@@ -278,15 +428,31 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             // Use the converter
             var source =
                 observedChange.SelectMany(x =>
-                    !BindingTypeConverterDispatch.TryConvertAny(
+                {
+                    // Try converter first
+                    var convertResult = BindingTypeConverterDispatch.TryConvertAny(
                         converterObj,
                         typeof(TValue),
                         x,
                         typeof(TTValue?),
                         conversionHint,
-                        out var tmp)
-                        ? Observable<object>.Empty
-                        : Observable.Return(tmp));
+                        out var tmp);
+
+                    if (convertResult)
+                    {
+                        return Observable.Return(tmp);
+                    }
+
+                    // Converter failed
+                    // If no override was provided (auto-discovered converter), try direct assignment
+                    if (vmToViewConverterOverride is null && typeof(TTValue).IsAssignableFrom(typeof(TValue)))
+                    {
+                        return Observable.Return((object?)x);
+                    }
+
+                    // Cannot convert - skip this update
+                    return Observable<object>.Empty;
+                });
 
             var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
             return disposable;
