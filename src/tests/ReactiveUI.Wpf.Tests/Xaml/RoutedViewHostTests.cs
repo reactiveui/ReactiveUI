@@ -85,7 +85,7 @@ public class RoutedViewHostTests
     [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
-        var router = new RoutingState();
+        var router = new RoutingState(ImmediateScheduler.Instance);
         var viewModel = new TestViewModel();
 
         var uc = new RoutedViewHost

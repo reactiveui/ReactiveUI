@@ -17,7 +17,7 @@ public class WinFormsRoutedViewHostTests
     public async Task ShouldDisposePreviousView()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
-        var router = new RoutingState();
+        var router = new RoutingState(ImmediateScheduler.Instance);
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         router?.Navigate?.Execute(new FakeWinformViewModel());
 
@@ -36,7 +36,7 @@ public class WinFormsRoutedViewHostTests
     {
         var defaultContent = new Control();
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
-        var router = new RoutingState();
+        var router = new RoutingState(ImmediateScheduler.Instance);
         var target = new WinFormsRoutedViewHost
         {
             Router = router,
@@ -51,7 +51,7 @@ public class WinFormsRoutedViewHostTests
     public async Task WhenRoutedToViewModelItShouldAddViewToControls()
     {
         var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
-        var router = new RoutingState();
+        var router = new RoutingState(ImmediateScheduler.Instance);
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         router?.Navigate?.Execute(new FakeWinformViewModel());
 
