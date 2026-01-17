@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Maui.Tests\ReactiveUI.Maui.Tests.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
@@ -30,5 +31,9 @@
     <Using Include="System.Reactive.Linq" />
     <Using Include="System.Threading" />
     <Using Include="System.Threading.Tasks" />
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Maui" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
   </ItemGroup>
 </Project>

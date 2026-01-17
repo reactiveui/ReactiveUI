@@ -28,7 +28,7 @@ public class AdvancedAOTTests
     [Test]
     public async Task RoutingState_Navigation_WorksInAOT()
     {
-        var routingState = new RoutingState();
+        var routingState = new RoutingState(ImmediateScheduler.Instance);
         var viewModel = new TestRoutableViewModel();
 
         // Test navigation

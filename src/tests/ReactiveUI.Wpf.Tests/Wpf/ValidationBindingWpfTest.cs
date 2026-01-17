@@ -14,28 +14,9 @@ namespace ReactiveUI.Tests.Wpf;
 /// Tests for <see cref="ValidationBindingWpf{TView, TViewModel, TVProp, TVMProp}"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class ValidationBindingWpfTest
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that ExtractPropertyPath correctly extracts simple property path.
     /// </summary>
@@ -100,7 +81,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ExtractControlName_ThrowsForInvalidExpressionChain()
     {
         // Create an invalid expression chain
@@ -120,7 +100,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task EnumerateDependencyProperties_ReturnsEmptyForNullElement()
     {
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.EnumerateDependencyProperties(null);
@@ -133,7 +112,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task EnumerateDependencyProperties_ReturnsPropertiesForValidElement()
     {
         var textBox = new TextBox();
@@ -149,7 +127,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task EnumerateAttachedProperties_ReturnsEmptyForNullElement()
     {
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.EnumerateAttachedProperties(null);
@@ -162,7 +139,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDependencyProperty_ReturnsNullForNullElement()
     {
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.GetDependencyProperty(null, "Text");
@@ -175,7 +151,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDependencyProperty_ReturnsNullForNullName()
     {
         var textBox = new TextBox();
@@ -190,7 +165,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDependencyProperty_ReturnsNullForEmptyName()
     {
         var textBox = new TextBox();
@@ -205,7 +179,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDependencyProperty_FindsPropertyByName()
     {
         var textBox = new TextBox();
@@ -221,7 +194,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDependencyProperty_ReturnsNullForNonExistentProperty()
     {
         var textBox = new TextBox();
@@ -236,7 +208,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsNullForNullParent()
     {
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(null, "TestControl");
@@ -249,7 +220,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsNullForNullName()
     {
         var panel = new StackPanel();
@@ -264,7 +234,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsNullForEmptyName()
     {
         var panel = new StackPanel();
@@ -279,7 +248,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsNullForWhitespaceName()
     {
         var panel = new StackPanel();
@@ -294,7 +262,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_FindsDirectChild()
     {
         var panel = new StackPanel();
@@ -312,7 +279,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_FindsNestedControl()
     {
         var outerPanel = new StackPanel();
@@ -333,7 +299,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsNullWhenNotFound()
     {
         var panel = new StackPanel();
@@ -350,7 +315,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_ReturnsFirstMatchWhenMultipleExist()
     {
         var panel = new StackPanel();
@@ -370,7 +334,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_ThrowsWhenControlNotFound()
     {
         var view = new TestView();
@@ -389,7 +352,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_ThrowsWhenDependencyPropertyNotFound()
     {
         var view = new TestViewWithControl();
@@ -418,7 +380,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Dispose_ClearsBinding()
     {
         var view = new TestViewWithControl();
@@ -449,7 +410,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Changed_IsNotNull()
     {
         var view = new TestViewWithControl();
@@ -479,7 +439,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Direction_IsTwoWay()
     {
         var view = new TestViewWithControl();
@@ -509,7 +468,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Changed_EmitsWhenViewModelPropertyChanges()
     {
         var view = new TestViewWithControl();
@@ -548,7 +506,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Changed_EmitsWhenViewPropertyChanges()
     {
         var view = new TestViewWithControl();
@@ -604,7 +561,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task FindControlByName_HandlesDeeplyNestedControls()
     {
         var level1 = new StackPanel();
@@ -627,7 +583,6 @@ public class ValidationBindingWpfTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Bind_CreatesValidBinding()
     {
         var view = new TestViewWithControl();

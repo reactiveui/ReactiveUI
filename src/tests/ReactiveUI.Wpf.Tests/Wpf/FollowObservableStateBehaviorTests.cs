@@ -17,34 +17,14 @@ namespace ReactiveUI.Tests.Wpf;
 /// Tests for FollowObservableStateBehavior.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class FollowObservableStateBehaviorTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that the behavior subscribes to state changes and transitions visual states.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task StateObservable_WhenChanged_TransitionsVisualState()
     {
         var button = new Button();
@@ -75,7 +55,6 @@ public class FollowObservableStateBehaviorTests
     /// Tests that OnStateObservableChanged throws ArgumentException for invalid sender.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnStateObservableChanged_InvalidSender_ThrowsArgumentException()
     {
         var button = new Button();
@@ -93,7 +72,6 @@ public class FollowObservableStateBehaviorTests
     /// Tests that OnStateObservableChanged throws ArgumentNullException for default event args.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnStateObservableChanged_DefaultEventArgs_ThrowsArgumentNullException()
     {
         var behavior = new FollowObservableStateBehavior();
@@ -109,7 +87,6 @@ public class FollowObservableStateBehaviorTests
     /// Tests that OnStateObservableChanged throws ArgumentNullException for null NewValue.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnStateObservableChanged_NullNewValue_ThrowsArgumentNullException()
     {
         var behavior = new FollowObservableStateBehavior();
@@ -131,7 +108,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task StateObservable_WhenChangedMultipleTimes_DisposesOldSubscription()
     {
         var button = new Button();
@@ -166,7 +142,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AutoResubscribeOnError_WhenTrue_ResubscribesAfterError()
     {
         var button = new Button();
@@ -206,7 +181,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AutoResubscribeOnError_WhenFalse_DoesNotResubscribe()
     {
         var button = new Button();
@@ -238,7 +212,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OnDetaching_DisposesWatcher()
     {
         var button = new Button();
@@ -265,7 +238,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TargetObject_WhenSet_UsedInsteadOfAssociatedObject()
     {
         var button = new Button();
@@ -293,7 +265,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task StateObservable_Getter_ReturnsSetValue()
     {
         var button = new Button();
@@ -318,7 +289,6 @@ public class FollowObservableStateBehaviorTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TargetObject_Getter_ReturnsSetValue()
     {
         var button = new Button();

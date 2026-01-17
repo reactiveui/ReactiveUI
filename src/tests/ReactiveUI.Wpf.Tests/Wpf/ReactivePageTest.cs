@@ -14,28 +14,9 @@ namespace ReactiveUI.Tests.Wpf;
 /// Coverage is provided through integration testing scenarios.
 /// </remarks>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class ReactivePageTest
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that ViewModelProperty dependency property is registered.
     /// </summary>

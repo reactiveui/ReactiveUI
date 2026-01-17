@@ -13,34 +13,14 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests with the command binding implementation.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class CommandBindingImplementationTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests the command bind by name wireup.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindByNameWireup()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -63,7 +43,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindNestedCommandWireup()
     {
         var vm = new CommandBindViewModel
@@ -83,7 +62,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindSetsInitialEnabledState_True()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -101,7 +79,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindSetsDisablesCommandWhenCanExecuteChanged()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -123,7 +100,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindSetsInitialEnabledState_False()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -141,7 +117,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindRaisesCanExecuteChangedOnBind()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -165,7 +140,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindWithParameterExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -189,7 +163,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindWithDelaySetVMParameterExpression()
     {
         var view = new ReactiveObjectCommandBindView
@@ -216,7 +189,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindWithDelaySetVMParameterNoINPCExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
@@ -244,7 +216,6 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindWithParameterObservable()
     {
         var view = new CommandBindView { ViewModel = new() };

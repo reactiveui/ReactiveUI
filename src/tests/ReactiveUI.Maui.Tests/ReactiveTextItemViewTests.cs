@@ -8,22 +8,9 @@ namespace ReactiveUI.Maui.Tests;
 /// <summary>
 /// Tests for ReactiveTextItemView.
 /// </summary>
+[TestExecutor<MauiTestExecutor>]
 public class ReactiveTextItemViewTests
 {
-    private readonly MauiTestFixture _fixture = new();
-
-    /// <summary>
-    /// Sets up the test dispatcher for MAUI controls.
-    /// </summary>
-    [Before(Test)]
-    public void Setup() => _fixture.Setup();
-
-    /// <summary>
-    /// Restores the previous dispatcher provider.
-    /// </summary>
-    [After(Test)]
-    public void Teardown() => _fixture.Teardown();
-
     /// <summary>
     /// Tests that ViewModel property can be set and retrieved.
     /// </summary>

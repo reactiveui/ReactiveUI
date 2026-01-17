@@ -14,34 +14,14 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests that WhenAny dependency objects.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class WhenAnyThroughDependencyObjectTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that WhenAny through a view shouldn't give null values.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WhenAnyThroughAViewShouldntGiveNullValues()
     {
         var vm = new HostTestFixture()
