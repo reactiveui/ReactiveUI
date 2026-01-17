@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Maui;
+namespace ReactiveUI.Maui.Tests;
 
 /// <summary>
 /// Tests for <see cref="AutoSuspendHelper"/>.
@@ -31,11 +31,11 @@ public class AutoSuspendHelperTest
     {
         var helper = new AutoSuspendHelper();
 
-        await Assert.That(RxApp.SuspensionHost.IsLaunchingNew).IsNotNull();
-        await Assert.That(RxApp.SuspensionHost.IsUnpausing).IsNotNull();
-        await Assert.That(RxApp.SuspensionHost.IsResuming).IsNotNull();
-        await Assert.That(RxApp.SuspensionHost.ShouldPersistState).IsNotNull();
-        await Assert.That(RxApp.SuspensionHost.ShouldInvalidateState).IsNotNull();
+        await Assert.That(RxSuspension.SuspensionHost.IsLaunchingNew).IsNotNull();
+        await Assert.That(RxSuspension.SuspensionHost.IsUnpausing).IsNotNull();
+        await Assert.That(RxSuspension.SuspensionHost.IsResuming).IsNotNull();
+        await Assert.That(RxSuspension.SuspensionHost.ShouldPersistState).IsNotNull();
+        await Assert.That(RxSuspension.SuspensionHost.ShouldInvalidateState).IsNotNull();
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxApp.SuspensionHost.IsLaunchingNew.Subscribe(_ => triggered = true);
+        RxSuspension.SuspensionHost.IsLaunchingNew.Subscribe(_ => triggered = true);
         helper.OnCreate();
 
         await Assert.That(triggered).IsTrue();
@@ -64,7 +64,7 @@ public class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxApp.SuspensionHost.IsUnpausing.Subscribe(_ => triggered = true);
+        RxSuspension.SuspensionHost.IsUnpausing.Subscribe(_ => triggered = true);
         helper.OnStart();
 
         await Assert.That(triggered).IsTrue();
@@ -80,7 +80,7 @@ public class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxApp.SuspensionHost.IsResuming.Subscribe(_ => triggered = true);
+        RxSuspension.SuspensionHost.IsResuming.Subscribe(_ => triggered = true);
         helper.OnResume();
 
         await Assert.That(triggered).IsTrue();
@@ -96,7 +96,7 @@ public class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxApp.SuspensionHost.ShouldPersistState.Subscribe(_ => triggered = true);
+        RxSuspension.SuspensionHost.ShouldPersistState.Subscribe(_ => triggered = true);
         helper.OnSleep();
 
         await Assert.That(triggered).IsTrue();

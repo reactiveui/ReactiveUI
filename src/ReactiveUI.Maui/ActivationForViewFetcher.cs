@@ -8,6 +8,8 @@ using System.Reflection;
 #if WINUI_TARGET
 using Microsoft.UI.Xaml;
 
+using ReactiveUI.Maui.Internal;
+
 using Windows.Foundation;
 #endif
 
@@ -39,10 +41,6 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             ? 10 : 0;
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
-#endif
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
         var activation =
@@ -153,10 +151,6 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         return appearing.Merge(disappearing);
     }
 #else
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetActivationFor uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetActivationFor uses methods that may require unreferenced code")]
-#endif
     private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)
@@ -186,9 +180,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
                                                                           x => view.Unloaded += x,
                                                                           x => view.Unloaded -= x);
 
+        // Observe IsHitTestVisible property changes using DependencyProperty (AOT-safe)
+        var isHitTestVisible = MauiReactiveHelpers.CreatePropertyValueObservable(
+            view,
+            nameof(view.IsHitTestVisible),
+            FrameworkElement.IsHitTestVisibleProperty,
+            () => view.IsHitTestVisible);
+
         return viewLoaded
                .Merge(viewUnloaded)
-               .Select(b => b ? view.WhenAnyValue<FrameworkElement, bool>(nameof(view.IsHitTestVisible)).SkipWhile(x => !x) : Observables.False)
+               .Select(b => b ? isHitTestVisible.SkipWhile(x => !x) : Observables.False)
                .Switch()
                .DistinctUntilChanged();
     }

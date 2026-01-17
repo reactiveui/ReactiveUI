@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat.Builder;
+
 namespace ReactiveUI.Builder;
 
 /// <summary>
@@ -32,6 +34,13 @@ public static class WpfReactiveUIBuilderExtensions
             .WithPlatformServices()
             .WithWpfScheduler();
     }
+
+    /// <summary>
+    /// Configures ReactiveUI for WPF platform with appropriate schedulers.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithWpf(this IAppBuilder builder) => ((IReactiveUIBuilder)builder).WithWpf();
 
     /// <summary>
     /// Withes the WPF scheduler.

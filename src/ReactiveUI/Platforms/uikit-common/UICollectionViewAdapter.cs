@@ -13,10 +13,6 @@ using NSAction = System.Action;
 
 namespace ReactiveUI;
 
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-[RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
 internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UICollectionViewCell>, IDisposable
 {
     private readonly UICollectionView _view;

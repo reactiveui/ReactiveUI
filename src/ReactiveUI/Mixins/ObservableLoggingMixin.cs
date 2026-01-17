@@ -5,6 +5,8 @@
 
 using System.Globalization;
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -12,6 +14,11 @@ namespace ReactiveUI;
 /// </summary>
 public static class ObservableLoggingMixin
 {
+    /// <summary>
+    /// Initializes static members of the <see cref="ObservableLoggingMixin"/> class.
+    /// </summary>
+    static ObservableLoggingMixin() => RxAppBuilder.EnsureInitialized();
+
     /// <summary>
     /// Logs an Observable to Splat's Logger.
     /// </summary>

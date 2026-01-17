@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -10,21 +12,28 @@ namespace ReactiveUI;
 /// Reactive Notify Property Changed based events.
 /// </summary>
 [Preserve(AllMembers = true)]
+[RequiresUnreferencedCode(
+    "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
 public static class ReactiveNotifyPropertyChangedMixin
 {
-    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Marked as Preserve")]
-    [SuppressMessage("Trimming", "IL2026:Calling members annotated with 'RequiresUnreferencedCodeAttribute' may break functionality when trimming application code.", Justification = "Marked as Preserve")]
-    private static readonly MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?> _notifyFactoryCache =
-        new(
-            (t, _) => AppLocator.Current.GetServices<ICreatesObservableForProperty>()
-                             .Aggregate((score: 0, binding: (ICreatesObservableForProperty?)null), (acc, x) =>
-                             {
-                                 var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
-                                 return score > acc.score ? (score, x) : acc;
-                             }).binding,
-            RxApp.BigCacheLimit);
+    private static readonly
+        MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
+        _notifyFactoryCache =
+            new(
+                (t, _) => AppLocator.Current.GetServices<ICreatesObservableForProperty>()
+                    .Aggregate(
+                        (score: 0, binding: (ICreatesObservableForProperty?)null),
+                        (acc, x) =>
+                        {
+                            var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
+                            return score > acc.score ? (score, x) : acc;
+                        }).binding,
+                RxCacheSize.BigCacheLimit);
 
-    static ReactiveNotifyPropertyChangedMixin() => RxApp.EnsureInitialized();
+    /// <summary>
+    /// Initializes static members of the <see cref="ReactiveNotifyPropertyChangedMixin"/> class.
+    /// </summary>
+    static ReactiveNotifyPropertyChangedMixin() => RxAppBuilder.EnsureInitialized();
 
     /// <summary>
     /// ObservableForProperty returns an Observable representing the
@@ -41,10 +50,8 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="skipInitial">If true, the Observable will not notify with the initial value.</param>
     /// <param name="isDistinct">If set to <c>true</c>, values are filtered with DistinctUntilChanged.</param>
     /// <returns>An Observable representing the property change notifications for the given property name.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode(
+        "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
@@ -69,16 +76,20 @@ public static class ReactiveNotifyPropertyChangedMixin
         }
 
         var factory = _notifyFactoryCache.Get((item!.GetType(), propertyName, beforeChange))
-                      ?? throw new Exception($"Could not find a ICreatesObservableForProperty for {item!.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+                      ?? throw new Exception(
+                          $"Could not find a ICreatesObservableForProperty for {item!.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
 
         // Helper to get current property value without expression analysis.
         static TValue GetCurrentValue(object sender, string name)
         {
             var t = sender.GetType();
 #if NETSTANDARD || NETFRAMEWORK
-            var prop = t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+            var prop =
+ t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
 #else
-            var prop = t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+            var prop = t.GetProperty(
+                name,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
 #endif
             if (prop is null)
             {
@@ -147,14 +158,17 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="item">The source object to observe properties of.</param>
     /// <param name="propertyName">The property name to observe.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode(
+        "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName)
-        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: false, skipInitial: true, isDistinct: true);
+        => ObservableForProperty<TSender, TValue>(
+            item,
+            propertyName,
+            beforeChange: false,
+            skipInitial: true,
+            isDistinct: true);
 
     /// <summary>
     /// ObservableForProperty overload that avoids expression trees by using a property name and beforeChange option.
@@ -165,15 +179,18 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="propertyName">The property name to observe.</param>
     /// <param name="beforeChange">If true, the observable will notify immediately before a property is going to change.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode(
+        "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
         bool beforeChange)
-        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: beforeChange, skipInitial: true, isDistinct: true);
+        => ObservableForProperty<TSender, TValue>(
+            item,
+            propertyName,
+            beforeChange: beforeChange,
+            skipInitial: true,
+            isDistinct: true);
 
     /// <summary>
     /// ObservableForProperty overload that avoids expression trees by using a property name with options to control initial emission and beforeChange.
@@ -185,16 +202,19 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <param name="beforeChange">If true, the observable will notify immediately before a property is going to change.</param>
     /// <param name="skipInitial">If true, the observable will not notify with the initial value.</param>
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode(
+        "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
         bool beforeChange,
         bool skipInitial)
-        => ObservableForProperty<TSender, TValue>(item, propertyName, beforeChange: beforeChange, skipInitial: skipInitial, isDistinct: true);
+        => ObservableForProperty<TSender, TValue>(
+            item,
+            propertyName,
+            beforeChange: beforeChange,
+            skipInitial: skipInitial,
+            isDistinct: true);
 
     /// <summary>
     /// ObservableForProperty returns an Observable representing the
@@ -212,10 +232,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property) => ObservableForProperty(item, property, false, true, true);
@@ -238,10 +255,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -267,10 +281,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -298,10 +309,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// An Observable representing the property change
     /// notifications for the given property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -327,11 +335,11 @@ public static class ReactiveNotifyPropertyChangedMixin
          */
 
         return SubscribeToExpressionChain<TSender, TValue>(
-                                                           item,
-                                                           property.Body,
-                                                           beforeChange,
-                                                           skipInitial,
-                                                           isDistinct);
+            item,
+            property.Body,
+            beforeChange,
+            skipInitial,
+            isDistinct);
     }
 
     /// <summary>
@@ -350,10 +358,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// item.</param>
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -384,10 +389,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// immediately before a property is going to change.</param>
     /// <returns>An Observable representing the property change
     /// notifications for the given property.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -414,14 +416,11 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression) // TODO: Create Test
-            => SubscribeToExpressionChain<TSender, TValue>(source, expression, false, true, false, true);
+        => SubscribeToExpressionChain<TSender, TValue>(source, expression, false, true, false, true);
 
     /// <summary>
     /// Creates a observable which will subscribe to the each property and sub property
@@ -437,15 +436,12 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange) // TODO: Create Test
-            => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, true, false, true);
+        => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, true, false, true);
 
     /// <summary>
     /// Creates a observable which will subscribe to the each property and sub property
@@ -462,16 +458,13 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange,
         bool skipInitial) // TODO: Create Test
-            => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, skipInitial, false, true);
+        => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, skipInitial, false, true);
 
     /// <summary>
     /// Creates a observable which will subscribe to the each property and sub property
@@ -489,17 +482,20 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange,
         bool skipInitial,
         bool suppressWarnings) // TODO: Create Test
-            => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, skipInitial, suppressWarnings, true);
+        => SubscribeToExpressionChain<TSender, TValue>(
+            source,
+            expression,
+            beforeChange,
+            skipInitial,
+            suppressWarnings,
+            true);
 
     /// <summary>
     /// Creates a observable which will subscribe to the each property and sub property
@@ -518,10 +514,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// A observable which notifies about observed changes.
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
@@ -534,9 +527,11 @@ public static class ReactiveNotifyPropertyChangedMixin
             Observable.Return(new ObservedChange<object?, object?>(null, null, source));
 
         var chain = Reflection.Rewrite(expression).GetExpressionChain();
-        notifier = chain.Aggregate(notifier, (n, expr) => n
-                                                          .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
-                                                          .Switch());
+        notifier = chain.Aggregate(
+            notifier,
+            (n, expr) => n
+                .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
+                .Switch());
 
         if (skipInitial)
         {
@@ -557,19 +552,15 @@ public static class ReactiveNotifyPropertyChangedMixin
             return new ObservedChange<TSender, TValue>(source!, expression, (TValue)val!);
         });
 
-        if (isDistinct)
-        {
-            return r.DistinctUntilChanged(x => x.Value);
-        }
-
-        return r;
+        return isDistinct ? r.DistinctUntilChanged(x => x.Value) : r;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
-    private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(Expression expression, IObservedChange<object?, object?> sourceChange, bool beforeChange, bool suppressWarnings)
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(
+        Expression expression,
+        IObservedChange<object?, object?> sourceChange,
+        bool beforeChange,
+        bool suppressWarnings)
     {
         // Make sure a change at a root node propagates events down
         var kicker = new ObservedChange<object?, object?>(sourceChange.Value, expression, default);
@@ -582,25 +573,29 @@ public static class ReactiveNotifyPropertyChangedMixin
 
         // Handle non null values in the chain
         return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
-               .StartWith(kicker)
-               .Select(static x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
+            .StartWith(kicker)
+            .Select(static x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
-    private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(object sender, Expression expression, bool beforeChange, bool suppressWarnings)
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(
+        object sender,
+        Expression expression,
+        bool beforeChange,
+        bool suppressWarnings)
     {
         ArgumentExceptionHelper.ThrowIfNull(expression);
 
-        var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The expression does not have valid member info", nameof(expression));
+        var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException(
+            "The expression does not have valid member info",
+            nameof(expression));
         var propertyName = memberInfo.Name;
         var result = _notifyFactoryCache.Get((sender.GetType(), propertyName, beforeChange));
 
         return result switch
         {
-            null => throw new Exception($"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
+            null => throw new InvalidOperationException(
+                $"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
             _ => result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings)
         };
     }

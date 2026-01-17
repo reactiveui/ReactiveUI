@@ -3,46 +3,95 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System;
+
 using UIKit;
 
 namespace ReactiveUI;
 
 /// <summary>
-/// UIKitObservableForProperty is an object that knows how to
-/// create notifications for a given type of object. Implement this if you
-/// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
-/// for another type of object that can be observed in a unique way.
+/// Provides UIKit-specific observable factories used by ReactiveUI to generate change notifications for
+/// UIKit controls in <c>WhenAny*</c> and related operators.
 /// </summary>
+/// <remarks>
+/// This implementation registers observable factories for common UIKit properties that change via control
+/// events or notifications.
+/// </remarks>
 [Preserve]
-public class UIKitObservableForProperty : ObservableForPropertyBase
+public sealed class UIKitObservableForProperty : ObservableForPropertyBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("UIKitObservableForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("UIKitObservableForProperty uses methods that may require unreferenced code")]
-#endif
     public UIKitObservableForProperty()
     {
-        Register(typeof(UIControl), "Value", 20, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-        Register(typeof(UITextField), "Text", 30, static (s, p) => ObservableFromNotification(s, p, UITextField.TextFieldTextDidChangeNotification));
-        Register(typeof(UITextView), "Text", 30, static (s, p) => ObservableFromNotification(s, p, UITextView.TextDidChangeNotification));
-        Register(typeof(UISegmentedControl), "SelectedSegment", 30, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
-        Register(typeof(UISegmentedControl), "SelectedSegment", 30, static (s, p) => ObservableFromUIControlEvent(s, p, UIControlEvent.ValueChanged));
+        // UIControl "Value" changes via ValueChanged.
+        Register(
+            typeof(UIControl),
+            "Value",
+            affinity: 20,
+            static (sender, expression) => ObservableFromUIControlEvent(sender, expression, UIControlEvent.ValueChanged));
 
-        // Warning: This will stomp the Control's delegate
-        Register(typeof(UITabBar), "SelectedItem", 30, static (s, p) => ObservableFromEvent(s, p, "ItemSelected"));
+        // UITextField "Text" changes via notification.
+        Register(
+            typeof(UITextField),
+            "Text",
+            affinity: 30,
+            static (sender, expression) => ObservableFromNotification(sender, expression, UITextField.TextFieldTextDidChangeNotification));
 
-        // Warning: This will stomp the Control's delegate
-        Register(typeof(UISearchBar), "Text", 30, static (s, p) => ObservableFromEvent(s, p, "TextChanged"));
+        // UITextView "Text" changes via notification.
+        Register(
+            typeof(UITextView),
+            "Text",
+            affinity: 30,
+            static (sender, expression) => ObservableFromNotification(sender, expression, UITextView.TextDidChangeNotification));
+
+        // UISegmentedControl "SelectedSegment" changes via ValueChanged.
+        Register(
+            typeof(UISegmentedControl),
+            "SelectedSegment",
+            affinity: 30,
+            static (sender, expression) => ObservableFromUIControlEvent(sender, expression, UIControlEvent.ValueChanged));
+
+        // Warning: Event-based observation can impact control behavior depending on external delegate usage.
+        // Prefer explicit add/remove handler overloads (non-reflection) to improve performance and trimming/AOT compatibility.
+        Register(
+            typeof(UITabBar),
+            "SelectedItem",
+            affinity: 30,
+            static (sender, expression) =>
+            {
+                var tabBar = (UITabBar)sender;
+                return ObservableFromEvent<UITabBar, UITabBarItemEventArgs>(
+                    tabBar,
+                    expression,
+                    addHandler: h => tabBar.ItemSelected += h,
+                    removeHandler: h => tabBar.ItemSelected -= h);
+            });
+
+        // Warning: Event-based observation can impact control behavior depending on external delegate usage.
+        // Prefer explicit add/remove handler overloads (non-reflection) to improve performance and trimming/AOT compatibility.
+        Register(
+            typeof(UISearchBar),
+            "Text",
+            affinity: 30,
+            static (sender, expression) =>
+            {
+                var searchBar = (UISearchBar)sender;
+                return ObservableFromEvent<UISearchBar, UISearchBarTextChangedEventArgs>(
+                    searchBar,
+                    expression,
+                    addHandler: h => searchBar.TextChanged += h,
+                    removeHandler: h => searchBar.TextChanged -= h);
+            });
     }
 
     /// <summary>
-    /// Gets the UI Kit ObservableForProperty instance.
+    /// Gets the shared <see cref="UIKitObservableForProperty"/> instance.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Deliberate")]
-#endif
+    /// <remarks>
+    /// The instance is created lazily. Consumers typically register it with the service locator once during
+    /// application initialization.
+    /// </remarks>
     public static Lazy<UIKitObservableForProperty> Instance { get; } = new();
 }

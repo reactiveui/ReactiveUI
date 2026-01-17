@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.WhenAny.Mockups;
 
 /// <summary>
-/// Owner Class.
+///     Owner Class.
 /// </summary>
 /// <seealso cref="ReactiveObject" />
 public class OwnerClass : ReactiveObject
@@ -14,10 +14,10 @@ public class OwnerClass : ReactiveObject
     private string? _name;
 
     /// <summary>
-    /// Gets or sets the name.
+    ///     Gets or sets the name.
     /// </summary>
     /// <value>
-    /// The name.
+    ///     The name.
     /// </value>
     public string? Name
     {

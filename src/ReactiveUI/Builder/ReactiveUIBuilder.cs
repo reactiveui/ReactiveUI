@@ -19,6 +19,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     private bool _coreRegistered;
     private bool _setRxAppMainScheduler;
     private bool _setRxAppTaskPoolScheduler;
+    private IObserver<Exception>? _exceptionHandler;
+    private ISuspensionHost? _suspensionHost;
+    private int? _smallCacheLimit;
+    private int? _bigCacheLimit;
+    private IMessageBus? _messageBus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -27,7 +32,13 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <param name="current">The configured services.</param>
     /// <exception cref="ArgumentNullException">resolver.</exception>
     public ReactiveUIBuilder(IMutableDependencyResolver resolver, IReadonlyDependencyResolver? current)
-        : base(resolver, current) => CurrentMutable.InitializeSplat();
+        : base(resolver, current)
+    {
+        CurrentMutable.InitializeSplat();
+
+        // Register the ConverterService instance so it's accessible to registrations
+        CurrentMutable.RegisterConstant(() => ConverterService);
+    }
 
     /// <summary>
     /// Gets a scheduler used to schedule work items that
@@ -43,6 +54,20 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Task Pool.
     /// </summary>
     public IScheduler? TaskpoolScheduler { get; private set; }
+
+    /// <summary>
+    /// Gets the converter service used for binding type conversions.
+    /// </summary>
+    /// <remarks>
+    /// This service provides access to three specialized registries:
+    /// <list type="bullet">
+    /// <item><description><see cref="ConverterService.TypedConverters"/> - For exact type-pair converters</description></item>
+    /// <item><description><see cref="ConverterService.FallbackConverters"/> - For fallback converters with runtime type checking</description></item>
+    /// <item><description><see cref="ConverterService.SetMethodConverters"/> - For set-method converters</description></item>
+    /// </list>
+    /// Use the <c>WithConverter*</c> methods to register converters during application initialization.
+    /// </remarks>
+    public ConverterService ConverterService { get; } = new();
 
     /// <summary>
     /// Configures the main thread scheduler for ReactiveUI.
@@ -102,15 +127,26 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     }
 
     /// <summary>
+    /// Registers services using an IWantsToRegisterStuff implementation.
+    /// This method provides a migration path for users with existing IWantsToRegisterStuff implementations.
+    /// </summary>
+    /// <param name="registration">The registration implementation.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if registration is null.</exception>
+    public IReactiveUIBuilder WithRegistration(IWantsToRegisterStuff registration)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(registration);
+
+        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        registration.Register(registrar);
+
+        return this;
+    }
+
+    /// <summary>
     /// Registers the platform-specific ReactiveUI services.
     /// </summary>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
-    [SuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
-    [RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-#endif
     public IReactiveUIBuilder WithPlatformServices()
     {
         if (_platformRegistered)
@@ -129,17 +165,14 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Registers the core ReactiveUI services in an AOT-compatible manner.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [RequiresUnreferencedCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "In Splat")]
-#endif
     public override IAppBuilder WithCoreServices()
     {
         if (!_coreRegistered)
         {
-            // Immediately register the core ReactiveUI services into the provided resolver.
+            // Register all standard converters to the ConverterService
+            RegisterStandardConverters();
+
+            // Immediately register the core ReactiveUI services into the provided resolver (Splat).
             WithPlatformModule<Registrations>();
             _coreRegistered = true;
         }
@@ -155,10 +188,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <param name="assembly">The assembly to scan for views.</param>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(assembly);
@@ -173,15 +203,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
         var registration = new T();
-        registration.Register((f, t) => CurrentMutable.RegisterConstant(f(), t));
+        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        registration.Register(registrar);
         return this;
     }
 
@@ -260,6 +287,19 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             }));
 
     /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithMessageBus(IMessageBus messageBus)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(messageBus);
+
+        _messageBus = messageBus;
+        return WithRegistrationOnBuild(resolver => resolver.RegisterConstant<IMessageBus>(messageBus));
+    }
+
+    /// <summary>
     /// Configures the ReactiveUI view locator.
     /// </summary>
     /// <param name="configure">The configuration action.</param>
@@ -287,6 +327,301 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
                 configure(currentDriver);
             }
         });
+
+    /// <summary>
+    /// Registers a typed binding converter using the concrete type.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if converter is null.</exception>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithConverter(new MyCustomConverter&lt;int, string&gt;())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(converter);
+        ConverterService.TypedConverters.Register(converter);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter using the interface.
+    /// </summary>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if converter is null.</exception>
+    /// <example>
+    /// <code>
+    /// IBindingTypeConverter converter = new MyCustomConverter();
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithConverter(converter)
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithConverter(IBindingTypeConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(converter);
+        ConverterService.TypedConverters.Register(converter);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if factory is null.</exception>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithConverter(() => new MyCustomConverter&lt;int, string&gt;())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(factory);
+        ConverterService.TypedConverters.Register(factory());
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (interface, lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if factory is null.</exception>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithConverter(() => (IBindingTypeConverter)new MyCustomConverter())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithConverter(Func<IBindingTypeConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(factory);
+        ConverterService.TypedConverters.Register(factory());
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter.
+    /// </summary>
+    /// <param name="converter">The fallback converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if converter is null.</exception>
+    /// <remarks>
+    /// Fallback converters are used when no exact type-pair converter is found.
+    /// They perform runtime type checking via <see cref="IBindingFallbackConverter.GetAffinityForObjects(Type, Type)"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithFallbackConverter(new MyFallbackConverter())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithFallbackConverter(IBindingFallbackConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(converter);
+        ConverterService.FallbackConverters.Register(converter);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the fallback converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if factory is null.</exception>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithFallbackConverter(() => new MyFallbackConverter())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithFallbackConverter(Func<IBindingFallbackConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(factory);
+        ConverterService.FallbackConverters.Register(factory());
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter.
+    /// </summary>
+    /// <param name="converter">The set-method converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if converter is null.</exception>
+    /// <remarks>
+    /// Set-method converters are used for special binding scenarios where the target
+    /// uses a method (e.g., TableLayoutPanel.SetColumn) instead of a property setter.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithSetMethodConverter(new MySetMethodConverter())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithSetMethodConverter(ISetMethodBindingConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(converter);
+        ConverterService.SetMethodConverters.Register(converter);
+        return this;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the set-method converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if factory is null.</exception>
+    /// <example>
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithSetMethodConverter(() => new MySetMethodConverter())
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithSetMethodConverter(Func<ISetMethodBindingConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(factory);
+        ConverterService.SetMethodConverters.Register(factory());
+        return this;
+    }
+
+    /// <summary>
+    /// Imports all converters from a Splat dependency resolver into the builder.
+    /// </summary>
+    /// <param name="resolver">The Splat resolver to import converters from.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if resolver is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This is a migration helper to ease transition from Splat-based registration
+    /// to the new ConverterService-based registration.
+    /// </para>
+    /// <para>
+    /// This method imports all three converter types:
+    /// <list type="bullet">
+    /// <item><description>Typed converters (<see cref="IBindingTypeConverter"/>)</description></item>
+    /// <item><description>Fallback converters (<see cref="IBindingFallbackConverter"/>)</description></item>
+    /// <item><description>Set-method converters (<see cref="ISetMethodBindingConverter"/>)</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Import all converters from current Splat locator
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithConvertersFrom(AppLocator.Current)
+    ///     .BuildApp();
+    /// </code>
+    /// </example>
+    public IReactiveUIBuilder WithConvertersFrom(IReadonlyDependencyResolver resolver)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(resolver);
+
+        // Import typed converters
+        var typedConverters = resolver.GetServices<IBindingTypeConverter>();
+        foreach (var converter in typedConverters)
+        {
+            if (converter is not null)
+            {
+                ConverterService.TypedConverters.Register(converter);
+            }
+        }
+
+        // Import fallback converters
+        var fallbackConverters = resolver.GetServices<IBindingFallbackConverter>();
+        foreach (var converter in fallbackConverters)
+        {
+            if (converter is not null)
+            {
+                ConverterService.FallbackConverters.Register(converter);
+            }
+        }
+
+        // Import set-method converters
+        var setMethodConverters = resolver.GetServices<ISetMethodBindingConverter>();
+        foreach (var converter in setMethodConverters)
+        {
+            if (converter is not null)
+            {
+                ConverterService.SetMethodConverters.Register(converter);
+            }
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Configures a custom exception handler for unhandled errors in ReactiveUI observables.
+    /// </summary>
+    /// <param name="exceptionHandler">The custom exception handler to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if exceptionHandler is null.</exception>
+    public IReactiveUIBuilder WithExceptionHandler(IObserver<Exception> exceptionHandler)
+    {
+        _exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the non-generic suspension host for application lifecycle management.
+    /// </summary>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithSuspensionHost()
+    {
+        _suspensionHost = new SuspensionHost();
+        return this;
+    }
+
+    /// <summary>
+    /// Configures a typed suspension host for application lifecycle management.
+    /// </summary>
+    /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithSuspensionHost<TAppState>()
+    {
+        _suspensionHost = new SuspensionHost<TAppState>();
+        return this;
+    }
+
+    /// <summary>
+    /// Configures custom cache size limits for ReactiveUI's internal memoizing caches.
+    /// </summary>
+    /// <param name="smallCacheLimit">The small cache limit to use (must be greater than 0).</param>
+    /// <param name="bigCacheLimit">The big cache limit to use (must be greater than 0).</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if either cache limit is less than or equal to 0.</exception>
+    public IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit)
+    {
+        if (smallCacheLimit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(smallCacheLimit), "Small cache limit must be greater than 0.");
+        }
+
+        if (bigCacheLimit <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(bigCacheLimit), "Big cache limit must be greater than 0.");
+        }
+
+        _smallCacheLimit = smallCacheLimit;
+        _bigCacheLimit = bigCacheLimit;
+        return this;
+    }
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.
@@ -343,6 +678,20 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
         }
+
+        // Initialize static state (cache sizes, exception handler, suspension host)
+        InitializeStaticState();
+
+        // Set the global converter service
+        RxConverters.SetService(ConverterService);
+
+        if (_messageBus is not null)
+        {
+            MessageBus.Current = _messageBus;
+        }
+
+        // Mark ReactiveUI as initialized via builder pattern
+        RxAppBuilder.MarkAsInitialized();
 
         return appInstance;
     }
@@ -933,6 +1282,163 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         }
 
         return this;
+    }
+
+    /// <summary>
+    /// Gets the platform-specific default small cache limit.
+    /// </summary>
+    /// <returns>The default small cache limit for the current platform.</returns>
+    private static int GetPlatformDefaultSmallCacheLimit()
+    {
+#if ANDROID || IOS
+        return 32;
+#else
+        return 64;
+#endif
+    }
+
+    /// <summary>
+    /// Gets the platform-specific default big cache limit.
+    /// </summary>
+    /// <returns>The default big cache limit for the current platform.</returns>
+    private static int GetPlatformDefaultBigCacheLimit()
+    {
+#if ANDROID || IOS
+        return 64;
+#else
+        return 256;
+#endif
+    }
+
+    /// <summary>
+    /// Registers all standard ReactiveUI converters to the ConverterService.
+    /// This mirrors the converters registered in Registrations.cs but targets the new ConverterService.
+    /// </summary>
+    private void RegisterStandardConverters()
+    {
+        // General converters
+        ConverterService.TypedConverters.Register(new EqualityTypeConverter());
+        ConverterService.TypedConverters.Register(new StringConverter());
+
+        // Numeric → String converters
+        ConverterService.TypedConverters.Register(new ByteToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableByteToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new ShortToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableShortToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new IntegerToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableIntegerToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new LongToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableLongToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new SingleToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableSingleToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new DoubleToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDoubleToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new DecimalToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDecimalToStringTypeConverter());
+
+        // String → Numeric converters
+        ConverterService.TypedConverters.Register(new StringToByteTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableByteTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToShortTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableShortTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToLongTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableLongTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToDecimalTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableDecimalTypeConverter());
+
+        // Boolean ↔ String converters
+        ConverterService.TypedConverters.Register(new BooleanToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableBooleanToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToBooleanTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableBooleanTypeConverter());
+
+        // Guid ↔ String converters
+        ConverterService.TypedConverters.Register(new GuidToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableGuidToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToGuidTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableGuidTypeConverter());
+
+        // DateTime ↔ String converters
+        ConverterService.TypedConverters.Register(new DateTimeToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDateTimeToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToDateTimeTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableDateTimeTypeConverter());
+
+        // DateTimeOffset ↔ String converters
+        ConverterService.TypedConverters.Register(new DateTimeOffsetToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDateTimeOffsetToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToDateTimeOffsetTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableDateTimeOffsetTypeConverter());
+
+        // TimeSpan ↔ String converters
+        ConverterService.TypedConverters.Register(new TimeSpanToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableTimeSpanToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToTimeSpanTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableTimeSpanTypeConverter());
+
+#if NET6_0_OR_GREATER
+        // DateOnly ↔ String converters (.NET 6+)
+        ConverterService.TypedConverters.Register(new DateOnlyToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDateOnlyToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToDateOnlyTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableDateOnlyTypeConverter());
+
+        // TimeOnly ↔ String converters (.NET 6+)
+        ConverterService.TypedConverters.Register(new TimeOnlyToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableTimeOnlyToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToTimeOnlyTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToNullableTimeOnlyTypeConverter());
+#endif
+
+        // Uri ↔ String converters
+        ConverterService.TypedConverters.Register(new UriToStringTypeConverter());
+        ConverterService.TypedConverters.Register(new StringToUriTypeConverter());
+
+        // Nullable ↔ Non-Nullable converters
+        ConverterService.TypedConverters.Register(new ByteToNullableByteTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableByteToByteTypeConverter());
+        ConverterService.TypedConverters.Register(new ShortToNullableShortTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableShortToShortTypeConverter());
+        ConverterService.TypedConverters.Register(new IntegerToNullableIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableIntegerToIntegerTypeConverter());
+        ConverterService.TypedConverters.Register(new LongToNullableLongTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableLongToLongTypeConverter());
+        ConverterService.TypedConverters.Register(new SingleToNullableSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableSingleToSingleTypeConverter());
+        ConverterService.TypedConverters.Register(new DoubleToNullableDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDoubleToDoubleTypeConverter());
+        ConverterService.TypedConverters.Register(new DecimalToNullableDecimalTypeConverter());
+        ConverterService.TypedConverters.Register(new NullableDecimalToDecimalTypeConverter());
+    }
+
+    /// <summary>
+    /// Initializes the static state for ReactiveUI based on builder configuration.
+    /// This includes cache sizes, exception handler, and suspension host.
+    /// </summary>
+    private void InitializeStaticState()
+    {
+        // Initialize cache sizes - use configured values or platform defaults
+        var smallCache = _smallCacheLimit ?? GetPlatformDefaultSmallCacheLimit();
+        var bigCache = _bigCacheLimit ?? GetPlatformDefaultBigCacheLimit();
+        RxCacheSize.Initialize(smallCache, bigCache);
+
+        // Initialize exception handler if configured
+        if (_exceptionHandler is not null)
+        {
+            RxState.InitializeExceptionHandler(_exceptionHandler);
+        }
+
+        // Initialize suspension host if configured
+        if (_suspensionHost is not null)
+        {
+            RxSuspension.InitializeSuspensionHost(_suspensionHost);
+        }
     }
 
     private void ConfigureSchedulers() =>

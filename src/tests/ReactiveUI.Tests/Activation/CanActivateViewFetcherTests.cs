@@ -8,81 +8,6 @@ namespace ReactiveUI.Tests.Activation;
 public class CanActivateViewFetcherTests
 {
     [Test]
-    public async Task GetAffinityForView_WithICanActivate_Returns10()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var affinity = fetcher.GetAffinityForView(typeof(ICanActivate));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForView_WithICanActivateDerivative_Returns10()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var affinity = fetcher.GetAffinityForView(typeof(TestCanActivateView));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForView_WithNonICanActivate_Returns0()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var affinity = fetcher.GetAffinityForView(typeof(string));
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    [Test]
-    public async Task GetAffinityForView_WithNonActivatableView_Returns0()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var affinity = fetcher.GetAffinityForView(typeof(TestNonActivatableView));
-        await Assert.That(affinity).IsEqualTo(0);
-    }
-
-    [Test]
-    public async Task GetActivationForView_WithActivatedView_ReturnsTrue()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var view = new TestCanActivateView();
-        bool? result = null;
-
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
-        using var subscription = activation.Subscribe(x => result = x);
-
-        view.Activate();
-
-        await Assert.That(result).IsTrue();
-    }
-
-    [Test]
-    public async Task GetActivationForView_WithDeactivatedView_ReturnsFalse()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var view = new TestCanActivateView();
-        bool? result = null;
-
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
-        using var subscription = activation.Subscribe(x => result = x);
-
-        view.Deactivate();
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task GetActivationForView_WithNonICanActivate_ReturnsFalse()
-    {
-        var fetcher = new CanActivateViewFetcher();
-        var view = new TestNonActivatableView();
-        bool? result = null;
-
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
-        using var subscription = activation.Subscribe(x => result = x);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
     public async Task GetActivationForView_ActivateDeactivateCycle_EmitsCorrectSequence()
     {
         var fetcher = new CanActivateViewFetcher();
@@ -136,6 +61,81 @@ public class CanActivateViewFetcherTests
 
         await Assert.That(results.Count).IsEqualTo(3);
         await Assert.That(results).IsEquivalentTo([false, false, false]);
+    }
+
+    [Test]
+    public async Task GetActivationForView_WithActivatedView_ReturnsTrue()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var view = new TestCanActivateView();
+        bool? result = null;
+
+        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        using var subscription = activation.Subscribe(x => result = x);
+
+        view.Activate();
+
+        await Assert.That(result).IsTrue();
+    }
+
+    [Test]
+    public async Task GetActivationForView_WithDeactivatedView_ReturnsFalse()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var view = new TestCanActivateView();
+        bool? result = null;
+
+        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        using var subscription = activation.Subscribe(x => result = x);
+
+        view.Deactivate();
+
+        await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task GetActivationForView_WithNonICanActivate_ReturnsFalse()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var view = new TestNonActivatableView();
+        bool? result = null;
+
+        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        using var subscription = activation.Subscribe(x => result = x);
+
+        await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    public async Task GetAffinityForView_WithICanActivate_Returns10()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var affinity = fetcher.GetAffinityForView(typeof(ICanActivate));
+        await Assert.That(affinity).IsEqualTo(10);
+    }
+
+    [Test]
+    public async Task GetAffinityForView_WithICanActivateDerivative_Returns10()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var affinity = fetcher.GetAffinityForView(typeof(TestCanActivateView));
+        await Assert.That(affinity).IsEqualTo(10);
+    }
+
+    [Test]
+    public async Task GetAffinityForView_WithNonActivatableView_Returns0()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var affinity = fetcher.GetAffinityForView(typeof(TestNonActivatableView));
+        await Assert.That(affinity).IsEqualTo(0);
+    }
+
+    [Test]
+    public async Task GetAffinityForView_WithNonICanActivate_Returns0()
+    {
+        var fetcher = new CanActivateViewFetcher();
+        var affinity = fetcher.GetAffinityForView(typeof(string));
+        await Assert.That(affinity).IsEqualTo(0);
     }
 
     private class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivate

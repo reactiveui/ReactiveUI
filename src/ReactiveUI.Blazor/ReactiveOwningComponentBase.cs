@@ -2,24 +2,45 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 using Microsoft.AspNetCore.Components;
 
+using ReactiveUI.Blazor.Internal;
+
 namespace ReactiveUI.Blazor;
 
 /// <summary>
-/// A base component for handling property changes and updating the blazer view appropriately.
+/// A base component for handling property changes and updating the Blazor view appropriately.
 /// </summary>
-/// <typeparam name="T">The type of view model. Must support INotifyPropertyChanged.</typeparam>
+/// <typeparam name="T">The type of view model. Must support <see cref="INotifyPropertyChanged"/>.</typeparam>
+/// <remarks>
+/// <para>
+/// This component triggers <see cref="ComponentBase.StateHasChanged"/> when either the view model instance changes or
+/// the current view model raises <see cref="INotifyPropertyChanged.PropertyChanged"/>.
+/// </para>
+/// <para>
+/// Trimming/AOT: this type avoids expression-tree-based ReactiveUI helpers (e.g. WhenAnyValue) and uses event-based
+/// observables instead.
+/// </para>
+/// <para>
+/// This type derives from <see cref="OwningComponentBase{TService}"/> so the DI scope and owned service lifetime are
+/// managed by the base class.
+/// </para>
+/// </remarks>
 public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
     where T : class, INotifyPropertyChanged
 {
-    private readonly Subject<Unit> _initSubject = new();
-    [SuppressMessage("Design", "CA2213: Dispose object", Justification = "Used for deactivation.")]
-    private readonly Subject<Unit> _deactivateSubject = new();
-    private readonly CompositeDisposable _compositeDisposable = [];
+    /// <summary>
+    /// Encapsulates reactive state and lifecycle management for this component.
+    /// </summary>
+    private readonly ReactiveComponentState<T> _state = new();
 
+    /// <summary>
+    /// Backing field for <see cref="ViewModel"/>.
+    /// </summary>
     private T? _viewModel;
 
     /// <inheritdoc />
@@ -52,28 +73,22 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> Activated => _initSubject.AsObservable();
+    public IObservable<Unit> Activated => _state.Activated;
 
     /// <inheritdoc />
-    public IObservable<Unit> Deactivated => _deactivateSubject.AsObservable();
+    public IObservable<Unit> Deactivated => _state.Deactivated;
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        if (ViewModel is IActivatableViewModel avm)
-        {
-            Activated.Subscribe(_ => avm.Activator.Activate()).DisposeWith(_compositeDisposable);
-            Deactivated.Subscribe(_ => avm.Activator.Deactivate());
-        }
-
-        _initSubject.OnNext(Unit.Default);
+        ReactiveComponentHelpers.WireActivationIfSupported(ViewModel, _state);
+        _state.NotifyActivated();
         base.OnInitialized();
     }
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresDynamicCode("OnAfterRender uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("OnAfterRender uses methods that may require unreferenced code")]
+    [RequiresUnreferencedCode("OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
     [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
     [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
 #endif
@@ -81,32 +96,13 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     {
         if (firstRender)
         {
-            // The following subscriptions are here because if they are done in OnInitialized, they conflict with certain JavaScript frameworks.
-            var viewModelChanged =
-                this.WhenAnyValue<ReactiveOwningComponentBase<T>, T?>(nameof(ViewModel))
-                    .WhereNotNull()
-                    .Publish()
-                    .RefCount(2);
-
-            viewModelChanged
-                .Skip(1) // Skip the initial value to avoid unnecessary re-render when ViewModel changes
-                .Subscribe(_ => InvokeAsync(StateHasChanged))
-                .DisposeWith(_compositeDisposable);
-
-            viewModelChanged
-                .Select(x =>
-                    Observable
-                        .FromEvent<PropertyChangedEventHandler, Unit>(
-                            eventHandler =>
-                            {
-                                void Handler(object? sender, PropertyChangedEventArgs e) => eventHandler(Unit.Default);
-                                return Handler;
-                            },
-                            eh => x.PropertyChanged += eh,
-                            eh => x.PropertyChanged -= eh))
-                .Switch()
-                .Subscribe(_ => InvokeAsync(StateHasChanged))
-                .DisposeWith(_compositeDisposable);
+            // These subscriptions are intentionally created here (not OnInitialized) due to framework interop constraints.
+            _state.FirstRenderSubscriptions = ReactiveComponentHelpers.WireViewModelChangeReactivity(
+                () => ViewModel,
+                h => PropertyChanged += h,
+                h => PropertyChanged -= h,
+                nameof(ViewModel),
+                () => InvokeAsync(StateHasChanged));
         }
 
         base.OnAfterRender(firstRender);
@@ -124,9 +120,11 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     {
         if (disposing)
         {
-            _initSubject.Dispose();
-            _compositeDisposable.Dispose();
-            _deactivateSubject.OnNext(Unit.Default);
+            // Notify deactivation first so observers can perform cleanup while subscriptions are still active.
+            _state.NotifyDeactivated();
+            _state.Dispose();
         }
+
+        base.Dispose(disposing);
     }
 }

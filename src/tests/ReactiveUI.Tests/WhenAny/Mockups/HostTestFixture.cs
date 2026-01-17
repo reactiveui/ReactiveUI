@@ -3,10 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+using ReactiveUI.Tests.ReactiveObjects.Mocks;
+
+namespace ReactiveUI.Tests.WhenAny.Mockups;
 
 /// <summary>
-/// A host test fixture.
+///     A host test fixture.
 /// </summary>
 public class HostTestFixture : ReactiveObject
 {
@@ -16,37 +18,23 @@ public class HostTestFixture : ReactiveObject
     private NonObservableTestFixture? _PocoChild;
     private int _SomeOtherParam;
 
-    public HostTestFixture()
-    {
+    public HostTestFixture() =>
         _ownerName = this.WhenAnyValue(static x => x.Owner)
-          .WhereNotNull()
-          .Select(static owner => owner.WhenAnyValue(static x => x.Name))
-          .Switch()
-          .ToProperty(this, static x => x.OwnerName);
-    }
+            .WhereNotNull()
+            .Select(static owner => owner.WhenAnyValue(static x => x.Name))
+            .Switch()
+            .ToProperty(this, static x => x.OwnerName);
 
     /// <summary>
-    /// Gets the name of the owner.
+    ///     Gets the name of the owner.
     /// </summary>
     /// <value>
-    /// The name of the owner.
+    ///     The name of the owner.
     /// </value>
     public string? OwnerName => _ownerName.Value;
 
     /// <summary>
-    /// Gets or sets the owner.
-    /// </summary>
-    /// <value>
-    /// The owner.
-    /// </value>
-    public OwnerClass? Owner
-    {
-        get => _owner;
-        set => this.RaiseAndSetIfChanged(ref _owner, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the child.
+    ///     Gets or sets the child.
     /// </summary>
     public TestFixture? Child
     {
@@ -55,7 +43,19 @@ public class HostTestFixture : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets the poco child.
+    ///     Gets or sets the owner.
+    /// </summary>
+    /// <value>
+    ///     The owner.
+    /// </value>
+    public OwnerClass? Owner
+    {
+        get => _owner;
+        set => this.RaiseAndSetIfChanged(ref _owner, value);
+    }
+
+    /// <summary>
+    ///     Gets or sets the poco child.
     /// </summary>
     public NonObservableTestFixture? PocoChild
     {
@@ -64,7 +64,7 @@ public class HostTestFixture : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets some other parameter.
+    ///     Gets or sets some other parameter.
     /// </summary>
     public int SomeOtherParam
     {

@@ -8,57 +8,50 @@ using System.Windows.Input;
 
 namespace ReactiveUI;
 
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("CreatesCommandBinding uses reflection and generic method instantiation")]
-[RequiresUnreferencedCode("CreatesCommandBinding may reference members that could be trimmed")]
-#endif
+/// <summary>
+/// AOT-compatible command binding helper that uses generic type parameters instead of reflection.
+/// </summary>
 internal static class CreatesCommandBinding
 {
-    private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandCache =
-        new(
-            (t, _) => AppLocator.Current.GetServices<ICreatesCommandBinding>()
-                             .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
-                             {
-                                 var score = x.GetAffinityForObject(t, false);
-                                 return (score > acc.score) ? (score, x) : acc;
-                             }).binding,
-            RxApp.SmallCacheLimit);
-
-    private static readonly MemoizingMRUCache<Type, ICreatesCommandBinding?> _bindCommandEventCache =
-        new(
-            (t, _) => AppLocator.Current.GetServices<ICreatesCommandBinding>()
-                             .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
-                             {
-                                 var score = x.GetAffinityForObject(t, true);
-                                 return (score > acc.score) ? (score, x) : acc;
-                             }).binding,
-            RxApp.SmallCacheLimit);
-
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses reflection and generic method instantiation")]
-    [RequiresUnreferencedCode("BindCommandToObject may reference members that could be trimmed")]
-#endif
-    public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+    /// <summary>
+    /// Binds a command to a control using default event discovery. Fully AOT-compatible.
+    /// </summary>
+    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    public static IDisposable BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl>(ICommand? command, TControl? target, IObservable<object?> commandParameter)
+        where TControl : class
     {
-        var type = target!.GetType();
-        var binder = _bindCommandCache.Get(type) ?? throw new Exception($"Couldn't find a Command Binder for {type.FullName}");
-        var ret = binder.BindCommandToObject(command, target, commandParameter) ?? throw new Exception($"Couldn't bind Command Binder for {type.FullName}");
+        var binder = GetBinder<TControl>(hasEventTarget: false);
+        var ret = binder.BindCommandToObject(command, target, commandParameter)
+            ?? throw new Exception($"Couldn't bind Command Binder for {typeof(TControl).FullName}");
         return ret;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses reflection and generic method instantiation")]
-    [RequiresUnreferencedCode("BindCommandToObject may reference members that could be trimmed")]
-#endif
-    public static IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter, string? eventName)
+    /// <summary>
+    /// Binds a command to a control using a specific event. Fully AOT-compatible.
+    /// </summary>
+    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    public static IDisposable BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TEventArgs>(
+        ICommand? command,
+        TControl? target,
+        IObservable<object?> commandParameter,
+        string eventName)
+        where TControl : class
     {
-        var type = target!.GetType();
-        var binder = _bindCommandEventCache.Get(type) ?? throw new Exception($"Couldn't find an Event Binder for {type.FullName} and event {eventName}");
-        var eventArgsType = Reflection.GetEventArgsTypeForEvent(type, eventName);
-        var mi = binder.GetType().GetTypeInfo().DeclaredMethods.First(static x => x.Name == "BindCommandToObject" && x.IsGenericMethod);
-        mi = mi.MakeGenericMethod(eventArgsType);
-
-        var ret = (IDisposable)mi.Invoke(binder, [command, target, commandParameter, eventName])! ?? throw new Exception($"Couldn't bind Command Binder for {type.FullName} and event {eventName}");
+        var binder = GetBinder<TControl>(hasEventTarget: true);
+        var ret = binder.BindCommandToObject<TControl, TEventArgs>(command, target, commandParameter, eventName)
+            ?? throw new Exception($"Couldn't bind Command Binder for {typeof(TControl).FullName} and event {eventName}");
         return ret;
+    }
+
+    private static ICreatesCommandBinding GetBinder<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
+    {
+        var binder = AppLocator.Current.GetServices<ICreatesCommandBinding>()
+            .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
+            {
+                var score = x.GetAffinityForObject<T>(hasEventTarget);
+                return (score > acc.score) ? (score, x) : acc;
+            }).binding;
+
+        return binder ?? throw new Exception($"Couldn't find a Command Binder for {typeof(T).FullName}");
     }
 }

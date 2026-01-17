@@ -9,6 +9,9 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
     <NoWarn>$(NoWarn);IDE1006;</NoWarn>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="System" />
@@ -41,5 +44,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
   </ItemGroup>
 </Project>

@@ -25,10 +25,8 @@ public static class ControlFetcherMixin
     /// <param name="fragment">The fragment.</param>
     /// <param name="inflatedView">The inflated view.</param>
     /// <param name="resolveMembers">The resolve members.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WireUpControls uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WireUpControls uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
     public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
     {
         ArgumentExceptionHelper.ThrowIfNull(fragment);

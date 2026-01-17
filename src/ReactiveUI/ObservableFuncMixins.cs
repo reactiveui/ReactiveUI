@@ -22,10 +22,7 @@ public static class ObservableFuncMixins
     /// <returns>
     /// An observable Result.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public static IObservable<TResult?> ToObservable<TSource, TResult>(
         this Expression<Func<TSource, TResult?>> expression,
         TSource? source,
@@ -35,7 +32,7 @@ public static class ObservableFuncMixins
         ArgumentExceptionHelper.ThrowIfNull(expression);
 
         var sParam = Reflection.Rewrite(expression.Body);
-        return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxApp.SuppressViewCommandBindingMessage)
+        return source.SubscribeToExpressionChain<TSource, TResult?>(sParam, beforeChange, skipInitial, RxSchedulers.SuppressViewCommandBindingMessage)
                      .Select(static x => x.GetValue())
                      .Retry();
     }

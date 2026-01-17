@@ -15,6 +15,88 @@ namespace ReactiveUI.Builder;
 public static class BuilderMixins
 {
     /// <summary>
+    /// Registers view-to-viewmodel mappings inline using a fluent builder.
+    /// This method is fully AOT-compatible when all view types are known at compile time.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder instance.</param>
+    /// <param name="configure">Configuration action for registering views.</param>
+    /// <returns>The builder for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when builder or configure is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when DefaultViewLocator is not registered in the service locator.</exception>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// new ReactiveUIBuilder()
+    ///     .WithPlatformModule<WpfRegistrations>()
+    ///     .RegisterViews(views => views
+    ///         .Map<LoginViewModel, LoginView>()
+    ///         .Map<MainViewModel, MainView>()
+    ///         .Map<SettingsViewModel, SettingsView>())
+    ///     .Build();
+    /// ]]>
+    /// </code>
+    /// </example>
+    public static IReactiveUIBuilder RegisterViews(
+        this IReactiveUIBuilder builder,
+        Action<ViewMappingBuilder> configure)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        ArgumentExceptionHelper.ThrowIfNull(configure);
+
+        var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
+            ?? throw new InvalidOperationException(
+                "DefaultViewLocator must be registered before calling RegisterViews. " +
+                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+
+        var mappingBuilder = new ViewMappingBuilder(viewLocator);
+        configure(mappingBuilder);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers views using a reusable view module.
+    /// This method is fully AOT-compatible when all view types are known at compile time.
+    /// </summary>
+    /// <typeparam name="TModule">The view module type to register.</typeparam>
+    /// <param name="builder">The ReactiveUI builder instance.</param>
+    /// <returns>The builder for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when DefaultViewLocator is not registered in the service locator.</exception>
+    /// <example>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// public class AuthenticationViewModule : IViewModule
+    /// {
+    ///     public void RegisterViews(DefaultViewLocator locator)
+    ///     {
+    ///         locator.Map<LoginViewModel, LoginView>(() => new LoginView())
+    ///                .Map<RegisterViewModel, RegisterView>(() => new RegisterView());
+    ///     }
+    /// }
+    ///
+    /// new ReactiveUIBuilder()
+    ///     .WithPlatformModule<WpfRegistrations>()
+    ///     .WithViewModule<AuthenticationViewModule>()
+    ///     .Build();
+    /// ]]>
+    /// </code>
+    /// </example>
+    public static IReactiveUIBuilder WithViewModule<TModule>(this IReactiveUIBuilder builder)
+        where TModule : IViewModule, new()
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+
+        var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
+            ?? throw new InvalidOperationException(
+                "DefaultViewLocator must be registered before calling WithViewModule. " +
+                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+
+        var module = new TModule();
+        module.RegisterViews(viewLocator);
+        return builder;
+    }
+
+    /// <summary>
     /// Configures the task pool scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -30,6 +112,27 @@ public static class BuilderMixins
 
         builder.WithTaskPoolScheduler(scheduler, setRxApp);
         return builder;
+    }
+
+    /// <summary>
+    /// Builds and configures the application using the ReactiveUI builder pattern.
+    /// </summary>
+    /// <remarks>Use this extension method to finalize application setup when working with ReactiveUI. This
+    /// method should be called after all necessary configuration has been applied to the builder.</remarks>
+    /// <param name="appBuilder">The application builder to configure. Must implement <see cref="IReactiveUIBuilder"/>.</param>
+    /// <returns>An <see cref="IReactiveUIBuilder"/> instance representing the configured application.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if <paramref name="appBuilder"/> does not implement <see cref="IReactiveUIBuilder"/>.</exception>
+    public static IReactiveUIBuilder BuildApp(this IAppBuilder appBuilder)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(appBuilder);
+        if (appBuilder is not IReactiveUIBuilder reactiveUiBuilder)
+        {
+            throw new InvalidOperationException(
+                "The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
+        }
+
+        reactiveUiBuilder.BuildApp();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
@@ -93,10 +196,7 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public static IReactiveUIBuilder WithViewsFromAssembly(this IReactiveUIBuilder builder, Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
@@ -114,10 +214,6 @@ public static class BuilderMixins
     /// The builder instance for method chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IReactiveUIBuilder WithPlatformModule<T>(this IReactiveUIBuilder builder)
         where T : IWantsToRegisterStuff, new()
     {
@@ -216,6 +312,23 @@ public static class BuilderMixins
         ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.ConfigureMessageBus(configure);
+        return reactiveUIBuilder;
+    }
+
+    /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder, IMessageBus messageBus)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+
+        reactiveUIBuilder.WithMessageBus(messageBus);
         return reactiveUIBuilder;
     }
 
@@ -1015,5 +1128,197 @@ public static class BuilderMixins
         }
 
         return reactiveUIInstance;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter using the concrete type.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    public static IReactiveUIBuilder WithConverter<TFrom, TTo>(
+        this IReactiveUIBuilder builder,
+        BindingTypeConverter<TFrom, TTo> converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter using the interface.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    public static IReactiveUIBuilder WithConverter(
+        this IReactiveUIBuilder builder,
+        IBindingTypeConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithConverter<TFrom, TTo>(
+        this IReactiveUIBuilder builder,
+        Func<BindingTypeConverter<TFrom, TTo>> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (interface, lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithConverter(
+        this IReactiveUIBuilder builder,
+        Func<IBindingTypeConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers multiple typed converters at once.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converters">The converters to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converters is null.</exception>
+    public static IReactiveUIBuilder WithConverters(
+        this IReactiveUIBuilder builder,
+        params IBindingTypeConverter[] converters)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        ArgumentExceptionHelper.ThrowIfNull(converters);
+
+        foreach (var converter in converters)
+        {
+            builder.WithConverter(converter);
+        }
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The fallback converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    /// <remarks>
+    /// Fallback converters are used when no exact type-pair converter is found.
+    /// They perform runtime type checking via <see cref="IBindingFallbackConverter.GetAffinityForObjects(Type, Type)"/>.
+    /// </remarks>
+    public static IReactiveUIBuilder WithFallbackConverter(
+        this IReactiveUIBuilder builder,
+        IBindingFallbackConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithFallbackConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a fallback binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the fallback converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithFallbackConverter(
+        this IReactiveUIBuilder builder,
+        Func<IBindingFallbackConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithFallbackConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="converter">The set-method converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or converter is null.</exception>
+    /// <remarks>
+    /// Set-method converters are used for special binding scenarios where the target
+    /// uses a method (e.g., TableLayoutPanel.SetColumn) instead of a property setter.
+    /// </remarks>
+    public static IReactiveUIBuilder WithSetMethodConverter(
+        this IReactiveUIBuilder builder,
+        ISetMethodBindingConverter converter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithSetMethodConverter(converter);
+        return builder;
+    }
+
+    /// <summary>
+    /// Registers a set-method binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="factory">The factory function that creates the set-method converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or factory is null.</exception>
+    public static IReactiveUIBuilder WithSetMethodConverter(
+        this IReactiveUIBuilder builder,
+        Func<ISetMethodBindingConverter> factory)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithSetMethodConverter(factory);
+        return builder;
+    }
+
+    /// <summary>
+    /// Imports all converters from a Splat dependency resolver into the builder.
+    /// </summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    /// <param name="resolver">The Splat resolver to import converters from.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if builder or resolver is null.</exception>
+    /// <remarks>
+    /// <para>
+    /// This is a migration helper to ease transition from Splat-based registration
+    /// to the new ConverterService-based registration.
+    /// </para>
+    /// <para>
+    /// This method imports all three converter types:
+    /// <list type="bullet">
+    /// <item><description>Typed converters (<see cref="IBindingTypeConverter"/>)</description></item>
+    /// <item><description>Fallback converters (<see cref="IBindingFallbackConverter"/>)</description></item>
+    /// <item><description>Set-method converters (<see cref="ISetMethodBindingConverter"/>)</description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    public static IReactiveUIBuilder WithConvertersFrom(
+        this IReactiveUIBuilder builder,
+        IReadonlyDependencyResolver resolver)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+        builder.WithConvertersFrom(resolver);
+        return builder;
     }
 }

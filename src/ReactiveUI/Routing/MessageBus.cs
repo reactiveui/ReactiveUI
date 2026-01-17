@@ -29,7 +29,7 @@ public class MessageBus : IMessageBus
     /// <summary>
     /// Gets or sets the Current MessageBus.
     /// </summary>
-    public static IMessageBus Current { get; set; } = new MessageBus(); // TODO: Create Test
+    public static IMessageBus Current { get; set; } = new MessageBus();
 
     /// <summary>
     /// Registers a scheduler for the type, which may be specified at runtime, and the contract.
@@ -41,7 +41,7 @@ public class MessageBus : IMessageBus
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
-    public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null) => // TODO: Create Test
+    public void RegisterScheduler<T>(IScheduler scheduler, string? contract = null) =>
         _schedulerMappings[(typeof(T), contract)] = scheduler;
 
     /// <summary>
@@ -56,9 +56,11 @@ public class MessageBus : IMessageBus
     /// message bus.</returns>
     public IObservable<T> Listen<T>(string? contract = null)
     {
-        this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
-
-        return SetupSubjectIfNecessary<T>(contract).Skip(1);
+        return Observable.Defer(() =>
+        {
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
+            return SetupSubjectIfNecessary<T>(contract).Skip(1);
+        });
     }
 
     /// <summary>
@@ -71,11 +73,13 @@ public class MessageBus : IMessageBus
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
-    public IObservable<T> ListenIncludeLatest<T>(string? contract = null) // TODO: Create Test
+    public IObservable<T> ListenIncludeLatest<T>(string? contract = null)
     {
-        this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
-
-        return SetupSubjectIfNecessary<T>(contract);
+        return Observable.Defer(() =>
+        {
+            this.Log().Info(CultureInfo.InvariantCulture, "Listening to {0}:{1}", typeof(T), contract);
+            return SetupSubjectIfNecessary<T>(contract);
+        });
     }
 
     /// <summary>
@@ -112,7 +116,12 @@ public class MessageBus : IMessageBus
     {
         ArgumentExceptionHelper.ThrowIfNull(source);
 
-        return source.Subscribe(SetupSubjectIfNecessary<T>(contract));
+        var subject = SetupSubjectIfNecessary<T>(contract);
+
+        return source.Subscribe(
+            subject.OnNext,
+            ex => this.Log().Warn(ex, "MessageBus source for {0}:{1} terminated with an error.", typeof(T), contract),
+            () => this.Log().Info(CultureInfo.InvariantCulture, "MessageBus source for {0}:{1} completed.", typeof(T), contract));
     }
 
     /// <summary>

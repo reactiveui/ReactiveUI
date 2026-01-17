@@ -45,10 +45,6 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <param name="outputScheduler">The scheduler where to dispatch the output from the command.</param>
     /// <exception cref="ArgumentNullException">Fires when required arguments are null.</exception>
     /// <exception cref="ArgumentException">Fires if the child commands container is empty.</exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("CombinedReactiveCommand uses RxApp and ReactiveCommand which require dynamic code generation.")]
-    [RequiresUnreferencedCode("CombinedReactiveCommand uses RxApp and ReactiveCommand which may require unreferenced code.")]
-#endif
     protected internal CombinedReactiveCommand(
         IEnumerable<ReactiveCommandBase<TParam, TResult>> childCommands,
         IObservable<bool>? canExecute,
@@ -56,7 +52,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     {
         ArgumentExceptionHelper.ThrowIfNull(childCommands);
 
-        _outputScheduler = outputScheduler ?? RxApp.MainThreadScheduler;
+        _outputScheduler = outputScheduler ?? RxSchedulers.MainThreadScheduler;
 
         var childCommandsArray = childCommands.ToArray();
 
@@ -65,7 +61,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             throw new ArgumentException("No child commands provided.", nameof(childCommands));
         }
 
-        _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxApp.DefaultExceptionHandler);
+        _exceptions = new ScheduledSubject<Exception>(_outputScheduler, RxState.DefaultExceptionHandler);
 
         var canChildrenExecute = childCommandsArray.Select(x => x.CanExecute)
                                                    .CombineLatest()

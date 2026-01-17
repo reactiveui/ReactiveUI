@@ -11,10 +11,7 @@ namespace ReactiveUI;
 public class InteractionBinderImplementation : IInteractionBinderImplementation
 {
     /// <inheritdoc />
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
-    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
         TView view,
@@ -44,10 +41,7 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
     }
 
     /// <inheritdoc />
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The handler may use serialization which requires dynamic code generation")]
-    [RequiresUnreferencedCode("The handler may use serialization which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,
         TView view,

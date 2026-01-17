@@ -30,13 +30,14 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
+[RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+[RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
 public static class PropertyBindingMixins
 {
     private static readonly PropertyBinderImplementation _binderImplementation;
 
     static PropertyBindingMixins()
     {
-        RxApp.EnsureInitialized();
         _binderImplementation = new PropertyBinderImplementation();
     }
 
@@ -75,10 +76,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
         this TView view,
         TViewModel? viewModel,
@@ -131,10 +128,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         this TView view,
         TViewModel? viewModel,
@@ -180,10 +173,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
         this TView view,
         TViewModel? viewModel,
@@ -223,10 +212,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
         this TView view,
         TViewModel? viewModel,
@@ -276,10 +261,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
         this TView view,
         TViewModel? viewModel,
@@ -327,10 +308,6 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         this TView view,
         TViewModel? viewModel,
@@ -365,10 +342,6 @@ public static class PropertyBindingMixins
     /// viewModel to view property.
     /// </param>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("PropertyBindingMixins uses RxApp initialization and expression binding which require dynamic code generation")]
-    [RequiresUnreferencedCode("PropertyBindingMixins uses RxApp initialization and expression binding which may require unreferenced code")]
-#endif
     public static IDisposable BindTo<TValue, TTarget, TTValue>(
         this IObservable<TValue> @this,
         TTarget? target,

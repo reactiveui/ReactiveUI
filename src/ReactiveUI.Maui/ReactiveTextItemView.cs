@@ -15,11 +15,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ReactiveContentView{TViewModel}" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveTextItemView uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveTextItemView uses methods that may require unreferenced code")]
-#endif
-public partial class ReactiveTextItemView<TViewModel> : ReactiveContentView<TViewModel>
+public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : ReactiveContentView<TViewModel>
     where TViewModel : class
 {
     /// <summary>
@@ -58,6 +54,7 @@ public partial class ReactiveTextItemView<TViewModel> : ReactiveContentView<TVie
         typeof(ReactiveTextItemView<TViewModel>),
         default(Color));
 
+    private readonly CompositeDisposable _propertyBindings = [];
     private readonly Label _textLabel;
     private readonly Label _detailLabel;
 
@@ -69,14 +66,16 @@ public partial class ReactiveTextItemView<TViewModel> : ReactiveContentView<TVie
         _textLabel = new Label
         {
             FontSize = 16,
-            VerticalOptions = LayoutOptions.Center
+            VerticalOptions = LayoutOptions.Center,
+            Text = Text // Set initial value
         };
 
         _detailLabel = new Label
         {
             FontSize = 12,
             VerticalOptions = LayoutOptions.Center,
-            Opacity = 0.7
+            Opacity = 0.7,
+            Text = Detail // Set initial value
         };
 
         var stackLayout = new StackLayout
@@ -89,11 +88,22 @@ public partial class ReactiveTextItemView<TViewModel> : ReactiveContentView<TVie
 
         Content = stackLayout;
 
-        // Bind the label properties to the bindable properties
-        _textLabel.SetBinding(Label.TextProperty, new Binding(nameof(Text), source: this));
-        _textLabel.SetBinding(Label.TextColorProperty, new Binding(nameof(TextColor), source: this));
-        _detailLabel.SetBinding(Label.TextProperty, new Binding(nameof(Detail), source: this));
-        _detailLabel.SetBinding(Label.TextColorProperty, new Binding(nameof(DetailColor), source: this));
+        // Use expression-based property observation instead of string-based bindings (AOT-safe)
+        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Text), () => Text)
+            .Subscribe(value => _textLabel.Text = value)
+            .DisposeWith(_propertyBindings);
+
+        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(TextColor), () => TextColor)
+            .Subscribe(value => _textLabel.TextColor = value)
+            .DisposeWith(_propertyBindings);
+
+        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Detail), () => Detail)
+            .Subscribe(value => _detailLabel.Text = value)
+            .DisposeWith(_propertyBindings);
+
+        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(DetailColor), () => DetailColor)
+            .Subscribe(value => _detailLabel.TextColor = value)
+            .DisposeWith(_propertyBindings);
     }
 
     /// <summary>

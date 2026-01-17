@@ -27,20 +27,18 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <typeparam name="TControl">The type of control on the view.</typeparam>
     /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
     /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
-    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TParam>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> vmProperty,
         Expression<Func<TView, TControl>> controlProperty,
         Expression<Func<TViewModel, TParam?>> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor
-        where TViewModel : class
-        where TProp : ICommand;
+            where TView : class, IViewFor
+            where TViewModel : class
+            where TProp : ICommand
+            where TControl : class;
 
     /// <summary>
     /// Binds the command on a ViewModel to a control on the View.
@@ -57,18 +55,16 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <typeparam name="TControl">The type of control on the view.</typeparam>
     /// <typeparam name="TParam">The type of the parameter to pass to the ICommand.</typeparam>
     /// <returns>A reactive binding. Often only used for disposing the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
-    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, TControl, TParam>(
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TParam>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> vmProperty,
         Expression<Func<TView, TControl>> controlProperty,
         IObservable<TParam?> withParameter,
         string? toEvent = null)
-        where TView : class, IViewFor
-        where TViewModel : class
-        where TProp : ICommand;
+            where TView : class, IViewFor
+            where TViewModel : class
+            where TProp : ICommand
+            where TControl : class;
 }

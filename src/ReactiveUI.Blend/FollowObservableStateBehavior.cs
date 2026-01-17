@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#if NET6_0_OR_GREATER
-using System.Diagnostics.CodeAnalysis;
-#endif
-
 using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,10 +13,6 @@ namespace ReactiveUI.Blend;
 /// <summary>
 /// Behavior that tracks the state of an observable.
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("OnStateObservableChanged uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("OnStateObservableChanged uses methods that may require unreferenced code")]
-#endif
 public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 {
     /// <summary>
@@ -71,10 +63,6 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("InternalOnStateObservableChangedForTesting uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("InternalOnStateObservableChangedForTesting uses methods that may require unreferenced code")]
-#endif
     internal static void InternalOnStateObservableChangedForTesting(DependencyObject? sender, DependencyPropertyChangedEventArgs e) =>
         OnStateObservableChanged(sender, e);
 
@@ -83,10 +71,6 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("OnStateObservableChanged uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("OnStateObservableChanged uses methods that may require unreferenced code")]
-#endif
     protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
     {
         ArgumentExceptionHelper.ThrowIfNotOfType<FollowObservableStateBehavior>(sender);

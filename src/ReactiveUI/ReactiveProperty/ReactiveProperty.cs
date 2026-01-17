@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
 
@@ -14,36 +15,93 @@ namespace ReactiveUI;
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IReactiveProperty&lt;T&gt;" />
 [DataContract]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveProperty initialization uses ReactiveObject and RxApp which require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveProperty initialization uses ReactiveObject and RxApp which may require unreferenced code")]
-#endif
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
+    /// <summary>
+    /// The scheduler used to marshal validation and error notifications.
+    /// </summary>
     private readonly IScheduler _scheduler;
+
+    /// <summary>
+    /// Holds disposables associated with the instance lifetime.
+    /// </summary>
     private readonly CompositeDisposable _disposables = [];
+
+    /// <summary>
+    /// The equality comparer used to compare incoming values to the current value.
+    /// </summary>
     private readonly EqualityComparer<T?> _checkIf = EqualityComparer<T?>.Default;
+
+    /// <summary>
+    /// Publishes value changes to the validation pipeline.
+    /// </summary>
     private readonly Subject<T?> _checkValidation = new();
+
+    /// <summary>
+    /// Publishes "refresh" signals for the current value (used to force emission even when the value is unchanged).
+    /// </summary>
     private readonly Subject<T?> _valueRefereshed = new();
+
+    /// <summary>
+    /// Publishes <see cref="Value"/> changes without relying on reflection-based property observation.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This subject replaces the prior <c>WhenAnyValue(nameof(Value))</c> path and provides the source stream used by
+    /// <see cref="GetSubscription"/>.
+    /// </para>
+    /// <para>
+    /// The subject is disposed with the instance; emission sites guard against disposal using <see cref="IsDisposed"/>.
+    /// </para>
+    /// </remarks>
+    private readonly BehaviorSubject<T?> _valueChanged;
+
+    /// <summary>
+    /// Holds the active validation subscription, if any.
+    /// </summary>
     private readonly SerialDisposable _validationDisposable = new();
+
+    /// <summary>
+    /// Lazily created subject that publishes the current error sequence.
+    /// </summary>
     private readonly Lazy<BehaviorSubject<IEnumerable?>> _errorChanged;
+
+    /// <summary>
+    /// Stores validators registered via <see cref="AddValidationError(Func{IObservable{T}, IObservable{IEnumerable}}, bool)"/>.
+    /// </summary>
     private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>> _validatorStore = new(static () => []);
+
+    /// <summary>
+    /// The number of initial values to skip for subscriptions created by <see cref="GetSubscription"/>.
+    /// </summary>
     private readonly int _skipCurrentValue;
+
+    /// <summary>
+    /// Indicates whether <see cref="GetSubscription"/> applies <c>DistinctUntilChanged</c>.
+    /// </summary>
     private readonly bool _isDistinctUntilChanged;
+
+    /// <summary>
+    /// The shared observable backing <see cref="Subscribe(IObserver{T})"/>.
+    /// </summary>
     private IObservable<T?>? _observable;
+
+    /// <summary>
+    /// The current value backing <see cref="Value"/>.
+    /// </summary>
     private T? _value;
+
+    /// <summary>
+    /// The current validation errors, if any.
+    /// </summary>
     private IEnumerable? _currentErrors;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
     /// The Value will be default(T). DistinctUntilChanged is true. Current Value is published on subscribe.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
-#endif
     public ReactiveProperty()
-        : this(default, RxApp.TaskpoolScheduler, false, false)
+        : this(default, RxSchedulers.TaskpoolScheduler, false, false)
     {
     }
 
@@ -52,12 +110,8 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// The Value will be initialValue. DistinctUntilChanged is true. Current Value is published on subscribe.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
-#endif
     public ReactiveProperty(T? initialValue)
-        : this(initialValue, RxApp.TaskpoolScheduler, false, false)
+        : this(initialValue, RxSchedulers.TaskpoolScheduler, false, false)
     {
     }
 
@@ -67,12 +121,8 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="initialValue">The initial value.</param>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReactiveProperty initialization uses RxApp which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ReactiveProperty initialization uses RxApp which may require unreferenced code")]
-#endif
     public ReactiveProperty(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
-        : this(initialValue, RxApp.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues)
+        : this(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues)
     {
     }
 
@@ -83,17 +133,17 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="scheduler">The scheduler.</param>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ReactiveProperty initialization uses ReactiveObject and RxApp which require dynamic code generation")]
-    [RequiresUnreferencedCode("ReactiveProperty initialization uses ReactiveObject and RxApp which may require unreferenced code")]
-#endif
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="scheduler"/> is <see langword="null"/>.</exception>
     public ReactiveProperty(T? initialValue, IScheduler? scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
     {
         _skipCurrentValue = skipCurrentValueOnSubscribe ? 1 : 0;
         _isDistinctUntilChanged = !allowDuplicateValues;
         _value = initialValue;
-        _scheduler = scheduler ?? RxApp.TaskpoolScheduler;
+        _scheduler = scheduler ?? RxSchedulers.TaskpoolScheduler;
+
+        _valueChanged = new BehaviorSubject<T?>(initialValue);
         _errorChanged = new Lazy<BehaviorSubject<IEnumerable?>>(() => new BehaviorSubject<IEnumerable?>(GetErrors(null)));
+
         GetSubscription();
     }
 
@@ -122,6 +172,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             {
                 if (!_isDistinctUntilChanged)
                 {
+                    // Preserve existing semantics: identical assignment produces a "refresh" emission when duplicates are allowed.
                     _valueRefereshed.OnNext(_value);
                 }
 
@@ -159,31 +210,31 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty without requiring RequiresUnreferencedCode attributes.
-    /// Uses RxApp.TaskpoolScheduler as the default scheduler.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
     /// </summary>
     /// <returns>A new ReactiveProperty instance.</returns>
     public static ReactiveProperty<T> Create()
-        => new(default, RxApp.TaskpoolScheduler, false, false);
+        => new(default, RxSchedulers.TaskpoolScheduler, false, false);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with an initial value without requiring RequiresUnreferencedCode attributes.
-    /// Uses RxApp.TaskpoolScheduler as the default scheduler.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
     /// <returns>A new ReactiveProperty instance.</returns>
     public static ReactiveProperty<T> Create(T? initialValue)
-        => new(initialValue, RxApp.TaskpoolScheduler, false, false);
+        => new(initialValue, RxSchedulers.TaskpoolScheduler, false, false);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with configuration options without requiring RequiresUnreferencedCode attributes.
-    /// Uses RxApp.TaskpoolScheduler as the default scheduler.
+    /// Uses RxSchedulers.TaskpoolScheduler as the default scheduler.
     /// </summary>
     /// <param name="initialValue">The initial value.</param>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
     /// <returns>A new ReactiveProperty instance.</returns>
     public static ReactiveProperty<T> Create(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
-        => new(initialValue, RxApp.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+        => new(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with a custom scheduler without requiring RequiresUnreferencedCode attributes.
@@ -193,6 +244,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
     /// <returns>A new ReactiveProperty instance.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="scheduler"/> is <see langword="null"/>.</exception>
     public static ReactiveProperty<T> Create(T? initialValue, IScheduler scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
         => new(initialValue, scheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
 
@@ -204,10 +256,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<IEnumerable?>> validator, bool ignoreInitialError = false)
     {
         _validatorStore.Value.Add(validator);
@@ -263,10 +311,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => validator(xs).Select(x => (IEnumerable?)x), ignoreInitialError);
 
@@ -278,10 +322,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<IEnumerable?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
@@ -293,10 +333,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
@@ -308,10 +344,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
@@ -323,16 +355,17 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <returns>
     /// Self.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("AddValidationError uses code which require dynamic code generation")]
-    [RequiresUnreferencedCode("AddValidationError uses code which may require unreferenced code")]
-#endif
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public void Dispose()
     {
         Dispose(true);
@@ -342,15 +375,16 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>
     /// Check validation.
     /// </summary>
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     public void CheckValidation() => _checkValidation.OnNext(_value);
 
     /// <summary>
     /// Invoke OnNext.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Refresh uses RaisePropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("Refresh uses RaisePropertyChanged which may require unreferenced code")]
-#endif
     public void Refresh()
     {
         SetValue(_value);
@@ -405,9 +439,14 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         if (_disposables?.IsDisposed == false && disposing)
         {
             _disposables?.Dispose();
+
             _checkValidation.Dispose();
             _valueRefereshed.Dispose();
             _validationDisposable.Dispose();
+
+            _valueChanged.OnCompleted();
+            _valueChanged.Dispose();
+
             if (_errorChanged.IsValueCreated)
             {
                 _errorChanged.Value.OnCompleted();
@@ -416,26 +455,50 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         }
     }
 
+    /// <summary>
+    /// Sets the backing value, publishes to the validation stream, and publishes to the value-change stream.
+    /// </summary>
+    /// <param name="value">The new value.</param>
+#if NET8_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
     private void SetValue(T? value)
     {
         _value = value;
+
         if (!IsDisposed)
         {
             _checkValidation.OnNext(value);
+            _valueChanged.OnNext(value);
         }
     }
 
+    /// <summary>
+    /// Initializes the shared subscription backing <see cref="Subscribe(IObserver{T})"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The stream is built from a value source that does not require reflection-based property observation.
+    /// </para>
+    /// <para>
+    /// Duplicate suppression (when enabled) applies only to value-change emissions, while explicit refresh emissions
+    /// always flow through to subscribers.
+    /// </para>
+    /// </remarks>
     private void GetSubscription()
     {
-        _observable = this.WhenAnyValue<ReactiveProperty<T>, T>(nameof(Value))
-            .Skip(_skipCurrentValue);
+        IObservable<T?> source = _valueChanged;
+
+        source = source.Skip(_skipCurrentValue);
 
         if (_isDistinctUntilChanged)
         {
-            _observable = _observable.DistinctUntilChanged();
+            source = source.DistinctUntilChanged();
         }
 
-        _observable = _observable
+        _observable = source
             .Merge(_valueRefereshed)
             .Replay(1)
             .RefCount()

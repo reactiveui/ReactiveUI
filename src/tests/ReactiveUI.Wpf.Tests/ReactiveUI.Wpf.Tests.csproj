@@ -1,0 +1,73 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
+    <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*.cs" />
+    <None Include="**\*.cs" />
+    <Compile Include="API\**\*.cs" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
+        <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
+        <Compile Include="Wpf\**\*.cs" />
+        <Compile Include="Xaml\**\*.cs" />
+        <Compile Include="WhenAny\**\*.cs" />
+        <Compile Include="ReactiveObjects\**\*.cs" />
+        <Compile Include="Utilities\**\*.cs" />
+        <Compile Include="AssemblyHooks.cs" />
+        <Compile Include="AssemblyInfo.Parallel.cs" />
+        <Page Update="Wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!-- Global usings -->
+  <ItemGroup>
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Tests.Utilities" />
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
+  </ItemGroup>
+</Project>

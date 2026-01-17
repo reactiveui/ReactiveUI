@@ -6,9 +6,10 @@
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+
 #if IS_MAUI
-using System.Linq.Expressions;
 #endif
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Microsoft.UI.Xaml;
@@ -21,10 +22,7 @@ namespace ReactiveUI;
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
@@ -41,10 +39,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         ArgumentNullException.ThrowIfNull(sender);
@@ -92,10 +87,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         });
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ActuallyGetProperty uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("ActuallyGetProperty uses methods that may require unreferenced code")]
-#endif
     private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
@@ -113,10 +105,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ActuallyGetField uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("ActuallyGetField uses methods that may require unreferenced code")]
-#endif
     private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
     {
         var current = typeInfo;
@@ -134,10 +123,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetDependencyPropertyFetcher uses methods that require dynamic code generation")]
     [RequiresUnreferencedCode("GetDependencyPropertyFetcher uses methods that may require unreferenced code")]
-#endif
     private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
     {
         var typeInfo = type.GetTypeInfo();

@@ -1,0 +1,78 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Tests\ReactiveUI.Tests.csproj" />
+    <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*.cs" />
+    <None Include="**\*.cs" />
+    <Compile Include="API\**\*.cs" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <Compile Include="winforms\**\*.cs" />
+      </ItemGroup>
+    </When>
+    <When Condition=" $(TargetFramework.StartsWith('net4'))">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
+        <PackageReference Include="System.ValueTuple" />
+        <Compile Include="winforms\**\*.cs" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)" />
+        <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
+
+
+  <!-- Global usings -->
+  <ItemGroup>
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Tests.Utilities" />
+    <Using Include="ReactiveUI.Tests.Utilities.Schedulers" />
+    <Using Include="Splat" />
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Reactive.Threading.Tasks" />
+    <Using Include="System.Threading" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
+  </ItemGroup>
+</Project>

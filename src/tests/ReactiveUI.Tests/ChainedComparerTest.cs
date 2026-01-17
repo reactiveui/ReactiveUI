@@ -6,14 +6,14 @@
 namespace ReactiveUI.Tests;
 
 /// <summary>
-/// Tests for <see cref="ChainedComparer{T}"/>.
+///     Tests for <see cref="ChainedComparer{T}" />.
 /// </summary>
 public class ChainedComparerTest
 {
     /// <summary>
-    /// Tests that Compare returns 0 when both values are null.
+    ///     Tests that Compare returns 0 when both values are null.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_BothNull_ReturnsZero()
     {
@@ -25,53 +25,9 @@ public class ChainedComparerTest
     }
 
     /// <summary>
-    /// Tests that Compare uses comparison when parent is null.
+    ///     Tests that Compare chains multiple comparers correctly.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Compare_NoParent_UsesComparison()
-    {
-        var comparer = new ChainedComparer<int>(null, (x, y) => x.CompareTo(y));
-
-        var result = comparer.Compare(1, 2);
-
-        await Assert.That(result).IsLessThan(0);
-    }
-
-    /// <summary>
-    /// Tests that Compare uses parent result when non-zero.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Compare_ParentReturnsNonZero_UsesParentResult()
-    {
-        var parent = Comparer<int>.Create((x, y) => x.CompareTo(y));
-        var comparer = new ChainedComparer<int>(parent, (x, y) => 0);
-
-        var result = comparer.Compare(1, 2);
-
-        await Assert.That(result).IsLessThan(0);
-    }
-
-    /// <summary>
-    /// Tests that Compare uses comparison when parent returns zero.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Compare_ParentReturnsZero_UsesComparison()
-    {
-        var parent = Comparer<TestClass>.Create((x, y) => 0);
-        var comparer = new ChainedComparer<TestClass>(parent, (x, y) => x.Value.CompareTo(y.Value));
-
-        var result = comparer.Compare(new TestClass { Value = 1 }, new TestClass { Value = 2 });
-
-        await Assert.That(result).IsLessThan(0);
-    }
-
-    /// <summary>
-    /// Tests that Compare chains multiple comparers correctly.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_ChainedComparers_WorksCorrectly()
     {
@@ -90,7 +46,51 @@ public class ChainedComparerTest
     }
 
     /// <summary>
-    /// Test class for comparison testing.
+    ///     Tests that Compare uses comparison when parent is null.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Compare_NoParent_UsesComparison()
+    {
+        var comparer = new ChainedComparer<int>(null, (x, y) => x.CompareTo(y));
+
+        var result = comparer.Compare(1, 2);
+
+        await Assert.That(result).IsLessThan(0);
+    }
+
+    /// <summary>
+    ///     Tests that Compare uses parent result when non-zero.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Compare_ParentReturnsNonZero_UsesParentResult()
+    {
+        var parent = Comparer<int>.Create((x, y) => x.CompareTo(y));
+        var comparer = new ChainedComparer<int>(parent, (x, y) => 0);
+
+        var result = comparer.Compare(1, 2);
+
+        await Assert.That(result).IsLessThan(0);
+    }
+
+    /// <summary>
+    ///     Tests that Compare uses comparison when parent returns zero.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Compare_ParentReturnsZero_UsesComparison()
+    {
+        var parent = Comparer<TestClass>.Create((x, y) => 0);
+        var comparer = new ChainedComparer<TestClass>(parent, (x, y) => x.Value.CompareTo(y.Value));
+
+        var result = comparer.Compare(new TestClass { Value = 1 }, new TestClass { Value = 2 });
+
+        await Assert.That(result).IsLessThan(0);
+    }
+
+    /// <summary>
+    ///     Test class for comparison testing.
     /// </summary>
     private class TestClass
     {

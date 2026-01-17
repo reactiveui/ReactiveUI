@@ -19,10 +19,6 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
-#endif
     public IObservable<bool> GetActivationForView(IActivatableView view)
     {
         if (view is not FrameworkElement fe)

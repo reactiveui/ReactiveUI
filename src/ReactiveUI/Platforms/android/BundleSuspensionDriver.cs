@@ -5,58 +5,75 @@
 
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace ReactiveUI;
 
 /// <summary>
-/// Loads and saves state to persistent storage.
+/// Loads and saves application state using the platform bundle.
 /// </summary>
-public class BundleSuspensionDriver : ISuspensionDriver
+/// <remarks>
+/// <para>
+/// This driver supports both legacy reflection-based System.Text.Json serialization
+/// and trimming/AOT-safe serialization via source-generated <see cref="JsonTypeInfo{T}"/>.
+/// </para>
+/// </remarks>
+public sealed class BundleSuspensionDriver : ISuspensionDriver
 {
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("LoadState uses JsonSerializer.Deserialize which requires dynamic code generation")]
-    [RequiresUnreferencedCode("LoadState uses JsonSerializer.Deserialize which may require unreferenced code")]
-#endif
-    public IObservable<object?> LoadState() // TODO: Create Test
+    private const string StateKey = "__state";
+
+    /// <inheritdoc />
+    [RequiresUnreferencedCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    [RequiresDynamicCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    public IObservable<object?> LoadState()
     {
         try
         {
-            // NB: Sometimes OnCreate gives us a null bundle
+            // NB: Sometimes OnCreate gives us a null bundle.
             if (AutoSuspendHelper.LatestBundle is null)
             {
-                return Observable.Throw<object>(new Exception("New bundle, start from scratch"));
+                return Observable.Throw<object?>(
+                    new InvalidOperationException("New bundle detected; no persisted state is available."));
             }
 
-            var buffer = AutoSuspendHelper.LatestBundle.GetByteArray("__state");
-
+            var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
             if (buffer is null)
             {
-                return Observable.Throw<object>(new InvalidOperationException("The buffer __state could not be found."));
+                return Observable.Throw<object?>(
+                    new InvalidOperationException("The persisted state buffer could not be found."));
             }
 
-            var st = new MemoryStream(buffer);
-
-            return Observable.FromAsync(async () => await JsonSerializer.DeserializeAsync<object>(st));
+            return Observable.FromAsync(async () =>
+            {
+                await using var stream = new MemoryStream(buffer, writable: false);
+                return await JsonSerializer.DeserializeAsync<object>(stream).ConfigureAwait(false);
+            });
         }
         catch (Exception ex)
         {
-            return Observable.Throw<object>(ex);
+            return Observable.Throw<object?>(ex);
         }
     }
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("SaveState uses JsonSerializer.Serialize which requires dynamic code generation")]
-    [RequiresUnreferencedCode("SaveState uses JsonSerializer.Serialize which may require unreferenced code")]
-#endif
-    public IObservable<Unit> SaveState(object state) // TODO: Create Test
+    /// <inheritdoc />
+    [RequiresUnreferencedCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    [RequiresDynamicCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    public IObservable<Unit> SaveState<T>(T state)
     {
         try
         {
-            var st = new MemoryStream();
-            JsonSerializer.Serialize(st, state);
-            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", st.ToArray());
+            using var stream = new MemoryStream();
+            JsonSerializer.Serialize(stream, state);
+
+            AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
             return Observables.Unit;
         }
         catch (Exception ex)
@@ -65,16 +82,63 @@ public class BundleSuspensionDriver : ISuspensionDriver
         }
     }
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("InvalidateState uses JsonSerializer which requires dynamic code generation")]
-    [RequiresUnreferencedCode("InvalidateState uses JsonSerializer which may require unreferenced code")]
-#endif
-    public IObservable<Unit> InvalidateState() // TODO: Create Test
+    /// <inheritdoc />
+    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
+    {
+        ArgumentNullException.ThrowIfNull(typeInfo);
+
+        try
+        {
+            if (AutoSuspendHelper.LatestBundle is null)
+            {
+                return Observable.Throw<T?>(
+                    new InvalidOperationException("New bundle detected; no persisted state is available."));
+            }
+
+            var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
+            if (buffer is null)
+            {
+                return Observable.Throw<T?>(
+                    new InvalidOperationException("The persisted state buffer could not be found."));
+            }
+
+            return Observable.FromAsync(async () =>
+            {
+                await using var stream = new MemoryStream(buffer, writable: false);
+                return await JsonSerializer.DeserializeAsync(stream, typeInfo).ConfigureAwait(false);
+            });
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<T?>(ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+    {
+        ArgumentNullException.ThrowIfNull(typeInfo);
+
+        try
+        {
+            using var stream = new MemoryStream();
+            JsonSerializer.Serialize(stream, state, typeInfo);
+
+            AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
+            return Observables.Unit;
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<Unit>(ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public IObservable<Unit> InvalidateState()
     {
         try
         {
-            AutoSuspendHelper.LatestBundle?.PutByteArray("__state", []);
+            AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, []);
             return Observables.Unit;
         }
         catch (Exception ex)

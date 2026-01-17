@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.AOTTests;
+namespace ReactiveUI.AOT.Tests;
 
 /// <summary>
 /// Test ReactiveObject for AOT compatibility testing.
@@ -16,8 +16,6 @@ public class TestReactiveObject : ReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="TestReactiveObject"/> class.
     /// </summary>
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "AOT compatibility tests deliberately use AOT-incompatible methods to test suppression scenarios")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "AOT compatibility tests deliberately use AOT-incompatible methods to test suppression scenarios")]
     public TestReactiveObject()
     {
         _computedProperty = this.WhenAnyValue(static x => x.TestProperty)
@@ -31,8 +29,6 @@ public class TestReactiveObject : ReactiveObject
     public string? TestProperty
     {
         get => _testProperty;
-        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "AOT compatibility tests deliberately use AOT-incompatible methods to test suppression scenarios")]
-        [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "AOT compatibility tests deliberately use AOT-incompatible methods to test suppression scenarios")]
         set => this.RaiseAndSetIfChanged(ref _testProperty, value);
     }
 

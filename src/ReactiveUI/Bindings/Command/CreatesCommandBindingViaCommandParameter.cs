@@ -4,110 +4,226 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace ReactiveUI;
-
-/// <summary>
-/// Class that registers Command Binding and Command Parameter Binding.
-/// </summary>
-public class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
+namespace ReactiveUI
 {
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("Property access requires dynamic code generation")]
-    [RequiresUnreferencedCode("Property access may reference members that could be trimmed")]
-#endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
+    /// <summary>
+    /// Creates command bindings for objects that expose <c>Command</c> and <c>CommandParameter</c>
+    /// as public instance properties.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This binder targets command-source style controls (for example, WPF-style controls) where command execution
+    /// is driven by setting properties rather than subscribing to an event.
+    /// </para>
+    /// <para>
+    /// Trimming/AOT note: This type uses name-based reflection to locate public properties. Consumers running under
+    /// trimming must ensure the relevant public properties are preserved on the target control types. This
+    /// requirement is expressed via <see cref="DynamicallyAccessedMembersAttribute"/> on the public generic entry points.
+    /// </para>
+    /// <para>
+    /// Performance note: This implementation uses a per-closed-generic static cache (“holder”) rather than a global MRU.
+    /// Steady-state access is lock-free and reduces lookup overhead to static field reads.
+    /// </para>
+    /// </remarks>
+    public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
     {
-        if (hasEventTarget)
+        /// <summary>
+        /// The expected name of the command property.
+        /// </summary>
+        private const string CommandPropertyName = "Command";
+
+        /// <summary>
+        /// The expected name of the command parameter property.
+        /// </summary>
+        private const string CommandParameterPropertyName = "CommandParameter";
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// If an explicit event target exists, this binder is not applicable and returns 0.
+        /// Otherwise, it returns 5 if the target type exposes the required public instance properties; otherwise it returns 0.
+        /// </remarks>
+        public int GetAffinityForObject<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
         {
-            return 0;
+            if (hasEventTarget)
+            {
+                return 0;
+            }
+
+            return Holder<T>.HasRequiredProperties ? 5 : 0;
         }
 
-        var propsToFind = new[]
+        /// <inheritdoc />
+        /// <remarks>
+        /// <para>
+        /// This implementation is intentionally “best effort.” If required properties cannot be resolved for
+        /// <typeparamref name="T"/>, it returns <see cref="Disposable.Empty"/> to preserve legacy behavior where binder
+        /// selection is expected to be affinity-driven rather than exception-driven.
+        /// </para>
+        /// <para>
+        /// Disposal ordering minimizes observable races: the parameter subscription is disposed before restoring
+        /// the original parameter value.
+        /// </para>
+        /// <para>
+        /// The command property is set after establishing the parameter subscription, preserving historical ordering
+        /// semantics (“set Command last”).
+        /// </para>
+        /// </remarks>
+        [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public IDisposable? BindCommandToObject<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+            ICommand? command,
+            T? target,
+            IObservable<object?> commandParameter)
+            where T : class
         {
-            new { Name = "Command", TargetType = typeof(ICommand) },
-            new { Name = "CommandParameter", TargetType = typeof(object) },
-        };
+            ArgumentExceptionHelper.ThrowIfNull(target);
+            ArgumentExceptionHelper.ThrowIfNull(commandParameter);
 
-        return propsToFind.All(x =>
-        {
-            var pi = type.GetRuntimeProperty(x.Name);
-            return pi is not null;
-        }) ? 5 : 0;
-    }
+            var commandProperty = Holder<T>.CommandProperty;
+            var commandParameterProperty = Holder<T>.CommandParameterProperty;
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
-        bool hasEventTarget)
-#else
-    public int GetAffinityForObject<T>(
-        bool hasEventTarget)
-#endif
-    {
-        if (hasEventTarget)
-        {
-            return 0;
+            // Preserve historical behavior: silently no-op if properties are missing.
+            if (commandProperty is null || commandParameterProperty is null)
+            {
+                return Disposable.Empty;
+            }
+
+            // Snapshot original values once. Restoration occurs on disposal.
+            var originalCommand = commandProperty.GetValue(target);
+            var originalParameter = commandParameterProperty.GetValue(target);
+
+            // Subscribe first so dispose can stop updates before restoration.
+            // This delegate intentionally remains simple and allocation-minimal (no LINQ).
+            var subscription = commandParameter.Subscribe(
+                value => commandParameterProperty.SetValue(target, value));
+
+            // Set command last to preserve ordering semantics.
+            commandProperty.SetValue(target, command);
+
+            // Use Rx disposable to unbind and restore original values. AnonymousDisposable is idempotent and thread-safe.
+            return Disposable.Create(() =>
+            {
+                // Stop parameter updates first.
+                subscription.Dispose();
+
+                // Restore original values in a predictable order.
+                commandParameterProperty.SetValue(target, originalParameter);
+                commandProperty.SetValue(target, originalCommand);
+            });
         }
 
-        var propsToFind = new[]
+        /// <inheritdoc />
+        /// <remarks>
+        /// This binder is for command-property based binding. If an event name is specified, event-based binders
+        /// should be used. This method therefore returns <see cref="Disposable.Empty"/>.
+        /// </remarks>
+        [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+        public IDisposable? BindCommandToObject<T, TEventArgs>(
+            ICommand? command,
+            T? target,
+            IObservable<object?> commandParameter,
+            string eventName)
+            where T : class => Disposable.Empty;
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// This binder is for command-property based binding. If an event name is specified, event-based binders
+        /// should be used. This method therefore returns <see cref="Disposable.Empty"/>.
+        /// </remarks>
+        public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, Action<EventHandler<TEventArgs>> addHandler, Action<EventHandler<TEventArgs>> removeHandler)
+            where T : class
+            where TEventArgs : EventArgs => Disposable.Empty;
+
+        /// <summary>
+        /// Per-closed-generic cache of resolved command properties for a target type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The target type. Public properties must be preserved in trimmed applications.
+        /// </typeparam>
+        /// <remarks>
+        /// <para>
+        /// This pattern avoids a global type-keyed cache that performs reflection in a cache factory delegate,
+        /// which is a frequent source of trimming warnings and hard-to-annotate member requirements.
+        /// </para>
+        /// <para>
+        /// Static initialization is thread-safe by the CLR. After initialization, access is lock-free.
+        /// </para>
+        /// </remarks>
+        private static class Holder<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
         {
-            new { Name = "Command", TargetType = typeof(ICommand) },
-            new { Name = "CommandParameter", TargetType = typeof(object) },
-        };
+            /// <summary>
+            /// Gets a value indicating whether the target type exposes both required properties.
+            /// </summary>
+            internal static readonly bool HasRequiredProperties;
 
-        return propsToFind.All(static x =>
-        {
-            var pi = typeof(T).GetRuntimeProperty(x.Name);
-            return pi is not null;
-        }) ? 5 : 0;
-    }
+            /// <summary>
+            /// Gets the resolved public instance property named <c>Command</c>, or <see langword="null"/> if missing.
+            /// </summary>
+            internal static readonly PropertyInfo? CommandProperty;
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
-#endif
-    public IDisposable? BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(target);
+            /// <summary>
+            /// Gets the resolved public instance property named <c>CommandParameter</c>, or <see langword="null"/> if missing.
+            /// </summary>
+            internal static readonly PropertyInfo? CommandParameterProperty;
 
-        var type = target!.GetType();
-        var cmdPi = type.GetRuntimeProperty("Command");
-        var cmdParamPi = type.GetRuntimeProperty("CommandParameter");
-        var ret = new CompositeDisposable();
+            /// <summary>
+            /// Initializes static members of the <see cref="Holder{T}"/> class.
+            /// </summary>
+            static Holder()
+            {
+                ResolveProperties(typeof(T), out CommandProperty, out CommandParameterProperty);
+                HasRequiredProperties = CommandProperty is not null && CommandParameterProperty is not null;
+            }
 
-        var originalCmd = cmdPi?.GetValue(target, null);
-        var originalCmdParam = cmdParamPi?.GetValue(target, null);
+            /// <summary>
+            /// Resolves required properties via a single pass over public instance properties.
+            /// </summary>
+            /// <param name="type">The target type to inspect.</param>
+            /// <param name="command">Receives the resolved <c>Command</c> property, if present.</param>
+            /// <param name="commandParameter">Receives the resolved <c>CommandParameter</c> property, if present.</param>
+            /// <remarks>
+            /// The method avoids LINQ and repeated reflection calls to reduce overhead.
+            /// </remarks>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static void ResolveProperties(
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type,
+                out PropertyInfo? command,
+                out PropertyInfo? commandParameter)
+            {
+                command = null;
+                commandParameter = null;
 
-        ret.Add(Disposable.Create(() =>
-        {
-            cmdPi?.SetValue(target, originalCmd, null);
-            cmdParamPi?.SetValue(target, originalCmdParam, null);
-        }));
+                var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-        ret.Add(commandParameter.Subscribe(x => cmdParamPi?.SetValue(target, x, null)));
-        cmdPi?.SetValue(target, command, null);
+                for (var i = 0; i < properties.Length; i++)
+                {
+                    var p = properties[i];
+                    var name = p.Name;
 
-        return ret;
-    }
+                    if (command is null &&
+                        string.Equals(name, CommandPropertyName, StringComparison.Ordinal))
+                    {
+                        command = p;
+                        continue;
+                    }
 
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommandToObject uses methods that may require unreferenced code")]
-#endif
-    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
-#if MONO
-        where TEventArgs : EventArgs
-#endif
-    {
-        // NB: We should fall back to the generic Event-based handler if
-        // an event target is specified
-#pragma warning disable IDE0022 // Use expression body for methods
-        return Disposable.Empty;
-#pragma warning restore IDE0022 // Use expression body for methods
+                    if (commandParameter is null &&
+                        string.Equals(name, CommandParameterPropertyName, StringComparison.Ordinal))
+                    {
+                        commandParameter = p;
+                    }
+
+                    if (command is not null && commandParameter is not null)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

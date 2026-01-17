@@ -100,10 +100,6 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
         PropertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This method uses reflection to access properties by name.")]
-    [RequiresDynamicCode("This method uses reflection to access properties by name.")]
-#endif
     public IDisposable SuppressChangeNotifications() => // TODO: Create Test
         IReactiveObjectExtensions.SuppressChangeNotifications(this);
 

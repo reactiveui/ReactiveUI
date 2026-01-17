@@ -14,17 +14,13 @@ namespace ReactiveUI.AndroidX;
 public class Registrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("Uses reflection to create instances of types.")]
-    [RequiresDynamicCode("Uses reflection to create instances of types.")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction)
+    public void Register(IRegistrar registrar)
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
         // Leverage core Android platform registrations already present in ReactiveUI.Platforms android.
         // This ensures IPlatformOperations, binding converters, and schedulers are configured.
-        new PlatformRegistrations().Register(registerFunction);
+        new PlatformRegistrations().Register(registrar);
 
         // AndroidX specific registrations could be added here if needed in the future.
 

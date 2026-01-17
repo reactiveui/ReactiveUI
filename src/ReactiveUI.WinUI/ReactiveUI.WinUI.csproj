@@ -27,10 +27,30 @@
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+    <Compile Include="..\ReactiveUI.Maui\Internal\**\*.cs" LinkBase="internal" />
     <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common" />
     <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs" />
     <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs" />
     <Compile Include="..\ReactiveUI.Maui\Registrations.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Splat" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+    <Using Include="ReactiveUI.Maui.Internal" />
   </ItemGroup>
 
   <!-- Strip all sources off Windows so the fallback TFM builds an empty assembly -->

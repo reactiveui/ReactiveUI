@@ -55,9 +55,5 @@ public interface IActivationForViewFetcher
     /// </summary>
     /// <param name="view">The view to get the activation observable for.</param>
     /// <returns>A Observable which will returns if Activation was successful.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetActivationForView uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetActivationForView uses methods that may require unreferenced code")]
-#endif
     IObservable<bool> GetActivationForView(IActivatableView view);
 }

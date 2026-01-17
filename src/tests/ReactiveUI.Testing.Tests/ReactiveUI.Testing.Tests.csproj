@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Testing.Reactive\ReactiveUI.Testing.Reactive.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,12 +17,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="ReactiveUI.Tests.Utilities.AppBuilder" />
     <Using Include="Splat" />
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Reactive" />
     <Using Include="System.Reactive.Linq" />
     <Using Include="System.Reactive.Subjects" />
     <Using Include="System.Threading.Tasks" />
+    <Using Include="TUnit.Core" />
   </ItemGroup>
 </Project>

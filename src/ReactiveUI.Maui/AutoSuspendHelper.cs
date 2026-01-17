@@ -10,7 +10,7 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Instantiate this class to wire <see cref="RxApp.SuspensionHost"/> to MAUI's <see cref="Microsoft.Maui.Controls.Application"/>
+/// Instantiate this class to wire <see cref="RxSuspension.SuspensionHost"/> to MAUI's <see cref="Microsoft.Maui.Controls.Application"/>
 /// callbacks. The helper propagates <c>OnStart</c>, <c>OnResume</c>, and <c>OnSleep</c> to the suspension host so state
 /// drivers created via <c>SetupDefaultSuspendResume</c> can serialize view models consistently across Android, iOS, and
 /// desktop targets.
@@ -26,8 +26,8 @@ namespace ReactiveUI.Maui;
 ///   public App()
 ///   {
 ///     _autoSuspendHelper = new AutoSuspendHelper();
-///     RxApp.SuspensionHost.CreateNewAppState = () => new MainState();
-///     RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FileSystem.AppDataDirectory));
+///     RxSuspension.SuspensionHost.CreateNewAppState = () => new MainState();
+///     RxSuspension.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FileSystem.AppDataDirectory));
 ///     _autoSuspendHelper.OnCreate();
 ///
 ///     InitializeComponent();
@@ -44,10 +44,6 @@ namespace ReactiveUI.Maui;
 /// </code>
 /// </para>
 /// </remarks>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
-[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
-#endif
 public partial class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<IDisposable> _onSleep = new();
@@ -66,11 +62,11 @@ public partial class AutoSuspendHelper : IEnableLogger, IDisposable
     /// </summary>
     public AutoSuspendHelper()
     {
-        RxApp.SuspensionHost.IsLaunchingNew = _onLaunchingNew;
-        RxApp.SuspensionHost.IsResuming = _onResume;
-        RxApp.SuspensionHost.IsUnpausing = _onStart;
-        RxApp.SuspensionHost.ShouldPersistState = _onSleep;
-        RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
+        RxSuspension.SuspensionHost.IsLaunchingNew = _onLaunchingNew;
+        RxSuspension.SuspensionHost.IsResuming = _onResume;
+        RxSuspension.SuspensionHost.IsUnpausing = _onStart;
+        RxSuspension.SuspensionHost.ShouldPersistState = _onSleep;
+        RxSuspension.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
     }
 
     /// <summary>

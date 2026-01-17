@@ -1,0 +1,58 @@
+﻿namespace ReactiveUI.Testing
+{
+    public abstract class AppBuilderTestBase
+    {
+        protected AppBuilderTestBase() { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Action testBody) { }
+        protected static System.Threading.Tasks.Task RunAppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody) { }
+    }
+    public interface IBuilder { }
+    public static class IBuilderExtensions
+    {
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField> values)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.IDictionary<TKey, TField> keyValuePair)
+            where TKey :  notnull { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair)
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
+        public static TBuilder With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField> dictionary, TKey key, TField value)
+            where TBuilder : ReactiveUI.Testing.IBuilder
+            where TKey :  notnull { }
+    }
+    public static class MessageBusExtensions
+    {
+        public static void With(this ReactiveUI.IMessageBus messageBus, System.Action block) { }
+        public static TRet With<TRet>(this ReactiveUI.IMessageBus messageBus, System.Func<TRet> block) { }
+        public static System.IDisposable WithMessageBus(this ReactiveUI.IMessageBus messageBus) { }
+    }
+    public static class RxTest
+    {
+        public static System.Threading.Tasks.Task AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task> testBody, int maxWaitMs = 60000) { }
+    }
+    public static class SchedulerExtensions
+    {
+        public static void With<T>(this T scheduler, System.Action<T> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static TRet With<T, TRet>(this T scheduler, System.Func<T, TRet> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.Threading.Tasks.Task WithAsync<T>(this T scheduler, System.Func<T, System.Threading.Tasks.Task> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.Threading.Tasks.Task<TRet> WithAsync<T, TRet>(this T scheduler, System.Func<T, System.Threading.Tasks.Task<TRet>> block)
+            where T : System.Reactive.Concurrency.IScheduler { }
+        public static System.IDisposable WithScheduler(System.Reactive.Concurrency.IScheduler scheduler) { }
+    }
+    public class TestSequencer : System.IDisposable
+    {
+        public TestSequencer() { }
+        public long CompletedPhases { get; }
+        public long CurrentPhase { get; }
+        public System.Threading.Tasks.Task AdvancePhaseAsync(string comment = "") { }
+        public void Dispose() { }
+        protected virtual void Dispose(bool disposing) { }
+    }
+}

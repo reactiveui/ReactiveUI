@@ -22,9 +22,7 @@ public static class ViewForMixins
                            var score = x?.GetAffinityForView(t) ?? 0;
                            return score > acc.count ? (score, x) : acc;
                        }).viewFetcher,
-            RxApp.SmallCacheLimit);
-
-    static ViewForMixins() => RxApp.EnsureInitialized();
+            RxCacheSize.SmallCacheLimit);
 
     /// <summary>
     /// WhenActivated allows you to register a Func to be called when a
@@ -99,10 +97,7 @@ public static class ViewForMixins
     /// cleaned up when the View is deactivated.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
-    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
@@ -126,10 +121,7 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
-    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
@@ -165,10 +157,7 @@ public static class ViewForMixins
     /// deactivated (i.e. "d(someObservable.Subscribe());").
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
-    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block) =>
         item.WhenActivated(block, null!);
 
@@ -189,10 +178,7 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
-    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
         item.WhenActivated(
                            () =>
@@ -219,10 +205,7 @@ public static class ViewForMixins
     /// can be supplied here.
     /// </param>
     /// <returns>A Disposable that deactivates this registration.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("WhenActivated may reference types that could be trimmed")]
-    [RequiresDynamicCode("WhenActivated uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
             item.WhenActivated(
                                () =>
@@ -232,6 +215,20 @@ public static class ViewForMixins
                                    return [d];
                                },
                                view);
+
+    /// <summary>
+    /// Clears the activation fetcher cache. This method is intended for use by unit tests
+    /// to ensure the cache is invalidated when the service locator is reset.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset cache state between test runs.
+    /// Never call this in production code as it will force re-querying of activation fetchers
+    /// from the service locator on the next access.
+    /// </remarks>
+    internal static void ResetActivationFetcherCacheForTesting()
+    {
+        _activationFetcherCache.InvalidateAll();
+    }
 
     private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
@@ -251,10 +248,7 @@ public static class ViewForMixins
                                        viewDisposable);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("ViewModel activation may reference types that could be trimmed")]
-    [RequiresDynamicCode("ViewModel activation uses reflection which requires dynamic code generation")]
-#endif
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static CompositeDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
     {
         var vmDisposable = new SerialDisposable();

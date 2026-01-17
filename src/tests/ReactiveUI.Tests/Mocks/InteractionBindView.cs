@@ -3,26 +3,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Mocks;
 
 /// <summary>
-/// A bind view.
+///     A bind view.
 /// </summary>
 public class InteractionBindView : ReactiveObject, IViewFor<InteractionBindViewModel>
 {
     private InteractionBindViewModel? _viewModel;
 
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (InteractionBindViewModel?)value;
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public InteractionBindViewModel? ViewModel
     {
         get => _viewModel;
         set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+    }
+
+    /// <inheritdoc />
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (InteractionBindViewModel?)value;
     }
 }

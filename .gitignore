@@ -450,3 +450,6 @@ src/Tools/
 **/*.GeneratedMSBuildEditorConfig.editorconfig
 /app
 .dotnet/
+
+# Claude Settings
+.claude/

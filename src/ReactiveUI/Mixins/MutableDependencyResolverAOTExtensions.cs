@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -11,29 +13,42 @@ namespace ReactiveUI;
 /// </summary>
 internal static class MutableDependencyResolverAOTExtensions
 {
-#if NET6_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Generic registration does not use reflection")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Generic registration does not use dynamic code")]
-#endif
+    /// <summary>
+    /// Initializes static members of the <see cref="MutableDependencyResolverAOTExtensions"/> class.
+    /// </summary>
+    static MutableDependencyResolverAOTExtensions() => RxAppBuilder.EnsureInitialized();
+
     internal static IMutableDependencyResolver RegisterViewForViewModelAOT<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
-        resolver.Register(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        if (contract is null)
+        {
+            resolver.Register<IViewFor<TViewModel>>(static () => new TView());
+        }
+        else
+        {
+            resolver.Register<IViewFor<TViewModel>>(static () => new TView(), contract);
+        }
+
         return resolver;
     }
 
-#if NET6_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Generic registration does not use reflection")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:Members annotated with 'RequiresDynamicCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Generic registration does not use dynamic code")]
-#endif
     internal static IMutableDependencyResolver RegisterSingletonViewForViewModelAOT<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
-        resolver.RegisterLazySingleton(static () => new TView(), typeof(IViewFor<TViewModel>), contract ?? string.Empty);
+        if (contract is null)
+        {
+            resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView());
+        }
+        else
+        {
+            resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView(), contract);
+        }
+
         return resolver;
     }
 }

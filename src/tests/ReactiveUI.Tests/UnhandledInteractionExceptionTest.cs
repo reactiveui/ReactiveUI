@@ -6,14 +6,14 @@
 namespace ReactiveUI.Tests;
 
 /// <summary>
-/// Tests for <see cref="UnhandledInteractionException{TInput, TOutput}"/>.
+///     Tests for <see cref="UnhandledInteractionException{TInput, TOutput}" />.
 /// </summary>
 public class UnhandledInteractionExceptionTest
 {
     /// <summary>
-    /// Tests that parameterless constructor creates exception.
+    ///     Tests that parameterless constructor creates exception.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_Parameterless_CreatesException()
     {
@@ -25,39 +25,9 @@ public class UnhandledInteractionExceptionTest
     }
 
     /// <summary>
-    /// Tests that constructor with message creates exception.
+    ///     Tests that constructor with interaction and input sets properties.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Constructor_WithMessage_SetsMessage()
-    {
-        var message = "Test error message";
-
-        var exception = new UnhandledInteractionException<string, int>(message);
-
-        await Assert.That(exception.Message).IsEqualTo(message);
-    }
-
-    /// <summary>
-    /// Tests that constructor with message and inner exception creates exception.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task Constructor_WithMessageAndInnerException_SetsProperties()
-    {
-        var message = "Test error message";
-        var innerException = new InvalidOperationException("Inner");
-
-        var exception = new UnhandledInteractionException<string, int>(message, innerException);
-
-        await Assert.That(exception.Message).IsEqualTo(message);
-        await Assert.That(exception.InnerException).IsEqualTo(innerException);
-    }
-
-    /// <summary>
-    /// Tests that constructor with interaction and input sets properties.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WithInteractionAndInput_SetsProperties()
     {
@@ -72,9 +42,39 @@ public class UnhandledInteractionExceptionTest
     }
 
     /// <summary>
-    /// Tests that exception can be thrown and caught.
+    ///     Tests that constructor with message creates exception.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Constructor_WithMessage_SetsMessage()
+    {
+        var message = "Test error message";
+
+        var exception = new UnhandledInteractionException<string, int>(message);
+
+        await Assert.That(exception.Message).IsEqualTo(message);
+    }
+
+    /// <summary>
+    ///     Tests that constructor with message and inner exception creates exception.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Constructor_WithMessageAndInnerException_SetsProperties()
+    {
+        var message = "Test error message";
+        var innerException = new InvalidOperationException("Inner");
+
+        var exception = new UnhandledInteractionException<string, int>(message, innerException);
+
+        await Assert.That(exception.Message).IsEqualTo(message);
+        await Assert.That(exception.InnerException).IsEqualTo(innerException);
+    }
+
+    /// <summary>
+    ///     Tests that exception can be thrown and caught.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Exception_CanBeThrownAndCaught()
     {
@@ -86,9 +86,9 @@ public class UnhandledInteractionExceptionTest
     }
 
     /// <summary>
-    /// Tests that Input property returns the input value.
+    ///     Tests that Input property returns the input value.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Input_ReturnsInputValue()
     {
@@ -101,9 +101,9 @@ public class UnhandledInteractionExceptionTest
     }
 
     /// <summary>
-    /// Tests that Interaction property returns the interaction.
+    ///     Tests that Interaction property returns the interaction.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Interaction_ReturnsInteraction()
     {

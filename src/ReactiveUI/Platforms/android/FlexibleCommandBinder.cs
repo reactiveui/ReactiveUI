@@ -6,8 +6,6 @@
 using System.Reflection;
 using System.Windows.Input;
 
-using ReactiveUI.Helpers;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -21,39 +19,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
-#endif
-    public int GetAffinityForObject(Type type, bool hasEventTarget)
-    {
-        if (hasEventTarget)
-        {
-            return 0;
-        }
-
-        var match = _config.Keys
-                           .Where(x => x.IsAssignableFrom(type))
-                           .OrderByDescending(x => _config[x].Affinity)
-                           .FirstOrDefault();
-
-        if (match is null)
-        {
-            return 0;
-        }
-
-        var typeProperties = _config[match];
-        return typeProperties.Affinity;
-    }
-
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(
-        bool hasEventTarget)
-#else
-    public int GetAffinityForObject<T>(
-        bool hasEventTarget)
-#endif
+    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
         {
@@ -75,11 +41,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
-#endif
-    public IDisposable BindCommandToObject(ICommand? command, object? target, IObservable<object?> commandParameter)
+    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(ICommand? command, T? target, IObservable<object?> commandParameter)
+        where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
 
@@ -95,13 +59,100 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindCommandToObject uses Reflection.GetValueSetterForProperty which may require unreferenced code")]
-#endif
-    public IDisposable BindCommandToObject<TEventArgs>(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName)
+    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    public IDisposable? BindCommandToObject<T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, string eventName)
+        where T : class
+        => Disposable.Empty;
+
+    /// <inheritdoc/>
+    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+        ICommand? command,
+        T? target,
+        IObservable<object?> commandParameter,
+        Action<EventHandler<TEventArgs>> addHandler,
+        Action<EventHandler<TEventArgs>> removeHandler)
+        where T : class
         where TEventArgs : EventArgs
-        => throw new NotImplementedException();
+    {
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(addHandler);
+        ArgumentNullException.ThrowIfNull(removeHandler);
+
+        // Match existing binder behavior: if there is no command, create a no-op binding.
+        if (command is null)
+        {
+            return Disposable.Empty;
+        }
+
+        // Keep the existing "null means use target" idiom used by ForEvent.
+        commandParameter ??= Observable.Return((object?)target);
+
+        // The latest parameter may be updated from a different thread than the event thread.
+        object? latestParam = null;
+
+        // Stable handler for deterministic unsubscription.
+        void Handler(object? sender, TEventArgs e)
+        {
+            var param = Volatile.Read(ref latestParam);
+            if (command.CanExecute(param))
+            {
+                command.Execute(param);
+            }
+        }
+
+        // Subscribe to parameter updates first, then attach the event handler.
+        var parameterSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        addHandler(Handler);
+
+        // If we can locate a conventional enabled property on the runtime target, keep it in sync with CanExecute.
+        // This is intentionally best-effort and does not throw if the property is absent or cannot be set.
+        Action<object?, object?, object?[]?>? enabledSetter = null;
+        try
+        {
+            // Common Android idiom: "Enabled" boolean property.
+            // Use runtime type so derived types are supported.
+            var enabledProp = typeof(T).GetRuntimeProperty("Enabled");
+            if (enabledProp is not null)
+            {
+                enabledSetter = Reflection.GetValueSetterForProperty(enabledProp);
+            }
+        }
+        catch
+        {
+            // Best-effort only; ignore reflection failures.
+            enabledSetter = null;
+        }
+
+        IDisposable? canExecuteSub = null;
+        if (enabledSetter is not null)
+        {
+            // Initial enabled state (default parameter is null until the first commandParameter emission).
+            enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
+
+            // Keep Enabled in sync with CanExecuteChanged.
+            canExecuteSub = Observable.FromEvent<EventHandler, bool>(
+                    eventHandler =>
+                    {
+                        void CanExecuteHandler(object? s, EventArgs e) =>
+                            eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
+                        return CanExecuteHandler;
+                    },
+                    h => command.CanExecuteChanged += h,
+                    h => command.CanExecuteChanged -= h)
+                .Subscribe(x => enabledSetter(target, x, null));
+        }
+
+        // Dispose ordering: detach event handler and CanExecute subscription after stopping parameter updates.
+        // The handler instance is stable, so Remove is correct.
+        return canExecuteSub is null
+            ? new CompositeDisposable(
+                parameterSub,
+                Disposable.Create(() => removeHandler(Handler)))
+            : new CompositeDisposable(
+                parameterSub,
+                canExecuteSub,
+                Disposable.Create(() => removeHandler(Handler)));
+    }
 
     /// <summary>
     /// Creates a commands binding from event and a property.
@@ -112,9 +163,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="commandParameter">Command parameter.</param>
     /// <param name="eventName">Event name.</param>
     /// <param name="enabledProperty">Enabled property name.</param>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("This member uses reflection to discover event members and associated delegate types.")]
-#endif
+    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     protected static IDisposable ForEvent(ICommand? command, object? target, IObservable<object?> commandParameter, string eventName, PropertyInfo enabledProperty)
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
@@ -153,6 +202,168 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                                                                                 x => command.CanExecuteChanged += x,
                                                                                 x => command.CanExecuteChanged -= x)
                                                  .Subscribe(x => enabledSetter(target, x, null)));
+    }
+
+    /// <summary>
+    /// Creates a command binding from an event using explicit add/remove handler delegates and optionally
+    /// synchronizes an enabled property with <see cref="ICommand.CanExecute(object?)"/>.
+    /// </summary>
+    /// <typeparam name="TEventArgs">The event arguments type.</typeparam>
+    /// <param name="command">The command to bind.</param>
+    /// <param name="target">The event source object.</param>
+    /// <param name="commandParameter">Observable producing command parameter values. If <see langword="null"/>, <paramref name="target"/> is used.</param>
+    /// <param name="addHandler">Adds the handler to the event source.</param>
+    /// <param name="removeHandler">Removes the handler from the event source.</param>
+    /// <param name="enabledSetter">
+    /// Optional setter for an enabled-like property. If <see langword="null"/>, enabled synchronization is skipped.
+    /// The setter is expected to accept <paramref name="target"/> as the first argument and a <see cref="bool"/> value as the second.
+    /// </param>
+    /// <returns>A disposable that unbinds the command and stops enabled synchronization.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="command"/> is <see langword="null"/>.
+    /// </exception>
+    protected static IDisposable ForEvent<TEventArgs>(
+            ICommand? command,
+            object? target,
+            IObservable<object?>? commandParameter,
+            Action<EventHandler<TEventArgs>> addHandler,
+            Action<EventHandler<TEventArgs>> removeHandler,
+            Action<object?, object?, object?[]?>? enabledSetter)
+        where TEventArgs : EventArgs
+    {
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(addHandler);
+        ArgumentNullException.ThrowIfNull(removeHandler);
+
+        // Preserve existing idiom: null commandParameter means use target.
+        commandParameter ??= Observable.Return(target);
+
+        object? latestParam = null;
+
+        // Stable handler for deterministic unsubscription.
+        void Handler(object? sender, TEventArgs e)
+        {
+            var param = Volatile.Read(ref latestParam);
+            if (command.CanExecute(param))
+            {
+                command.Execute(param);
+            }
+        }
+
+        // Subscribe to parameter updates first so the first event sees the latest parameter.
+        var parameterSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+
+        // Hook the event without reflection.
+        addHandler(Handler);
+
+        // If there is no enabled setter, we're done.
+        if (enabledSetter is null)
+        {
+            return new CompositeDisposable(
+                parameterSub,
+                Disposable.Create(() => removeHandler(Handler)));
+        }
+
+        // Initial enabled state.
+        enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
+
+        // Keep enabled state in sync with CanExecuteChanged.
+        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void CanExecuteHandler(object? s, EventArgs e) =>
+                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
+                    return CanExecuteHandler;
+                },
+                h => command.CanExecuteChanged += h,
+                h => command.CanExecuteChanged -= h)
+            .Subscribe(x => enabledSetter(target, x, null));
+
+        return new CompositeDisposable(
+            parameterSub,
+            canExecuteSub,
+            Disposable.Create(() => removeHandler(Handler)));
+    }
+
+    /// <summary>
+    /// Creates a command binding from an event using explicit add/remove handler delegates and optionally
+    /// synchronizes an enabled property with <see cref="ICommand.CanExecute(object?)"/>.
+    /// </summary>
+    /// <param name="command">The command to bind.</param>
+    /// <param name="target">The event source object.</param>
+    /// <param name="commandParameter">Observable producing command parameter values. If <see langword="null"/>, <paramref name="target"/> is used.</param>
+    /// <param name="addHandler">Adds the handler to the event source.</param>
+    /// <param name="removeHandler">Removes the handler from the event source.</param>
+    /// <param name="enabledSetter">
+    /// Optional setter for an enabled-like property. If <see langword="null"/>, enabled synchronization is skipped.
+    /// The setter is expected to accept <paramref name="target"/> as the first argument and a <see cref="bool"/> value as the second.
+    /// </param>
+    /// <returns>A disposable that unbinds the command and stops enabled synchronization.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="command"/> is <see langword="null"/>.
+    /// </exception>
+    protected static IDisposable ForEvent(
+            ICommand? command,
+            object? target,
+            IObservable<object?>? commandParameter,
+            Action<EventHandler> addHandler,
+            Action<EventHandler> removeHandler,
+            Action<object?, object?, object?[]?>? enabledSetter)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(command);
+        ArgumentExceptionHelper.ThrowIfNull(target);
+        ArgumentNullException.ThrowIfNull(addHandler);
+        ArgumentNullException.ThrowIfNull(removeHandler);
+
+        // Preserve existing idiom: null commandParameter means use target.
+        commandParameter ??= Observable.Return(target);
+
+        object? latestParam = null;
+
+        // Stable handler for deterministic unsubscription.
+        void Handler(object? sender, EventArgs e)
+        {
+            var param = Volatile.Read(ref latestParam);
+            if (command.CanExecute(param))
+            {
+                command.Execute(param);
+            }
+        }
+
+        // Subscribe to parameter updates first so the first event sees the latest parameter.
+        var parameterSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+
+        // Hook the event without reflection.
+        addHandler(Handler);
+
+        // If there is no enabled setter, we're done.
+        if (enabledSetter is null)
+        {
+            return new CompositeDisposable(
+                parameterSub,
+                Disposable.Create(() => removeHandler(Handler)));
+        }
+
+        // Initial enabled state.
+        enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
+
+        // Keep enabled state in sync with CanExecuteChanged.
+        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
+                eventHandler =>
+                {
+                    void CanExecuteHandler(object? s, EventArgs e) =>
+                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
+                    return CanExecuteHandler;
+                },
+                h => command.CanExecuteChanged += h,
+                h => command.CanExecuteChanged -= h)
+            .Subscribe(x => enabledSetter(target, x, null));
+
+        return new CompositeDisposable(
+            parameterSub,
+            canExecuteSub,
+            Disposable.Create(() => removeHandler(Handler)));
     }
 
     /// <summary>

@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Mocks;
 
 /// <summary>
-/// A collection model.
+///     A collection model.
 /// </summary>
 public class FakeCollectionModel : ReactiveObject
 {
@@ -15,10 +15,10 @@ public class FakeCollectionModel : ReactiveObject
     private int _someNumber;
 
     /// <summary>
-    /// Gets or sets a value indicating whether this instance is hidden.
+    ///     Gets or sets a value indicating whether this instance is hidden.
     /// </summary>
     /// <value>
-    ///   <c>true</c> if this instance is hidden; otherwise, <c>false</c>.
+    ///     <c>true</c> if this instance is hidden; otherwise, <c>false</c>.
     /// </value>
     public bool IsHidden
     {
@@ -27,7 +27,7 @@ public class FakeCollectionModel : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets some number.
+    ///     Gets or sets some number.
     /// </summary>
     public int SomeNumber
     {

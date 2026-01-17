@@ -12,21 +12,14 @@ namespace ReactiveUI.Winforms;
 /// particularly useful types.
 /// </summary>
 /// <seealso cref="ICreatesObservableForProperty" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("WinformsCreatesObservableForProperty uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("WinformsCreatesObservableForProperty uses methods that may require unreferenced code")]
-#endif
 public class WinformsCreatesObservableForProperty : ICreatesObservableForProperty
 {
     private static readonly MemoizingMRUCache<(Type type, string name), EventInfo?> EventInfoCache = new(
      static (pair, _) => pair.type.GetEvent(pair.name + "Changed", BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Public),
-     RxApp.SmallCacheLimit);
+     RxCacheSize.SmallCacheLimit);
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
     {
         var supportsTypeBinding = typeof(Component).IsAssignableFrom(type);
@@ -40,10 +33,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
     {
         ArgumentExceptionHelper.ThrowIfNull(sender);
@@ -70,7 +60,7 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
                         }
                     });
 
-                    var scheduler = RxApp.MainThreadScheduler;
+                    var scheduler = RxSchedulers.MainThreadScheduler;
 
                     ei.AddEventHandler(sender, handler);
                     return Disposable.Create(() => scheduler.Schedule(() => ei.RemoveEventHandler(sender, handler)));

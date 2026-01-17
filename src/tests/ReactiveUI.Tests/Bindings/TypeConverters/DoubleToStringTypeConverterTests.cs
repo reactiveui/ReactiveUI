@@ -8,140 +8,118 @@ namespace ReactiveUI.Tests.Bindings.TypeConverters;
 public class DoubleToStringTypeConverterTests
 {
     [Test]
-    public async Task GetAffinityForObjects_DoubleToString_Returns10()
+    public async Task GetAffinityForObjects_Returns2()
     {
         var converter = new DoubleToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(double), typeof(string));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_StringToDouble_Returns10()
-    {
-        var converter = new DoubleToStringTypeConverter();
-        var affinity = converter.GetAffinityForObjects(typeof(string), typeof(double));
-        await Assert.That(affinity).IsEqualTo(10);
-    }
-
-    [Test]
-    public async Task GetAffinityForObjects_WrongTypes_Returns0()
-    {
-        var converter = new DoubleToStringTypeConverter();
-
-        await Assert.That(converter.GetAffinityForObjects(typeof(int), typeof(string))).IsEqualTo(0);
-        await Assert.That(converter.GetAffinityForObjects(typeof(string), typeof(int))).IsEqualTo(0);
+        var affinity = converter.GetAffinityForObjects();
+        await Assert.That(affinity).IsEqualTo(2);
     }
 
     [Test]
     public async Task TryConvert_DoubleToString_Succeeds()
     {
         var converter = new DoubleToStringTypeConverter();
-        double value = 123.456;
+        var value = 123.456;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
-    }
-
-    [Test]
-    public async Task TryConvert_StringToDouble_Succeeds()
-    {
-        var converter = new DoubleToStringTypeConverter();
-
-        var result = converter.TryConvert("123.456", typeof(double), null, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(123.456);
-    }
-
-    [Test]
-    public async Task TryConvert_InvalidString_ReturnsFalse()
-    {
-        var converter = new DoubleToStringTypeConverter();
-
-        var result = converter.TryConvert("invalid", typeof(double), null, out var output);
-
-        await Assert.That(result).IsFalse();
-    }
-
-    [Test]
-    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
-    {
-        var converter = new DoubleToStringTypeConverter();
-        double value = 42.5;
-
-        var result = converter.TryConvert(value, typeof(string), 2, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo("42.50");
-    }
-
-    [Test]
-    public async Task TryConvert_MinValue_Succeeds()
-    {
-        var converter = new DoubleToStringTypeConverter();
-        double value = double.MinValue;
-
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
-
-        await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(double.MinValue.ToString());
     }
 
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
     {
         var converter = new DoubleToStringTypeConverter();
-        double value = double.MaxValue;
+        var value = double.MaxValue;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(double.MaxValue.ToString());
     }
 
     [Test]
-    public async Task TryConvert_ScientificNotation_Succeeds()
+    public async Task TryConvert_MinValue_Succeeds()
     {
         var converter = new DoubleToStringTypeConverter();
+        var value = double.MinValue;
 
-        var result = converter.TryConvert("1.23E+10", typeof(double), null, out var output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(1.23E+10);
+        await Assert.That(output).IsEqualTo(double.MinValue.ToString());
     }
 
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new DoubleToStringTypeConverter();
-        double value = -123.456;
+        var value = -123.456;
 
-        var result = converter.TryConvert(value, typeof(string), null, out var output);
+        var result = converter.TryConvert(value, null, out var output);
 
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(value.ToString());
     }
 
     [Test]
-    public async Task TryConvert_EmptyString_ReturnsFalse()
+    public async Task TryConvert_WithConversionHint_FormatsCorrectly()
     {
         var converter = new DoubleToStringTypeConverter();
+        var value = 42.5;
 
-        var result = converter.TryConvert(string.Empty, typeof(double), null, out var output);
+        var result = converter.TryConvert(value, 2, out var output);
 
-        await Assert.That(result).IsFalse();
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo("42.50");
     }
 
     [Test]
-    public async Task TryConvert_StringToDoubleWithRounding_RoundsCorrectly()
+    public async Task TryConvert_WithStringFormatHint_CustomPrecision()
     {
         var converter = new DoubleToStringTypeConverter();
+        var value = 0.123456789;
 
-        var result = converter.TryConvert("123.456789", typeof(double), 2, out var output);
+        var result = converter.TryConvert(value, "0.0000", out var output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That((double)output!).IsEqualTo(123.46).Within(0.01);
+        await Assert.That(output).IsEqualTo(value.ToString("0.0000"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_GeneralFormat()
+    {
+        var converter = new DoubleToStringTypeConverter();
+        var value = 123.456;
+
+        var result = converter.TryConvert(value, "G", out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("G"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_RoundTripFormat()
+    {
+        var converter = new DoubleToStringTypeConverter();
+        var value = 123.456789012345;
+
+        var result = converter.TryConvert(value, "R", out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("R"));
+    }
+
+    [Test]
+    public async Task TryConvert_WithStringFormatHint_ScientificFormat()
+    {
+        var converter = new DoubleToStringTypeConverter();
+        var value = 12345.6789;
+
+        var result = converter.TryConvert(value, "E3", out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(value.ToString("E3"));
     }
 }

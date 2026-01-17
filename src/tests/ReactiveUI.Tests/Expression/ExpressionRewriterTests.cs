@@ -8,33 +8,35 @@ namespace ReactiveUI.Tests.Expression;
 public class ExpressionRewriterTests
 {
     [Test]
-    public async Task Rewrite_WithParameterExpression_ReturnsParameterExpression()
+    public async Task Rewrite_WithArrayIndex_ReturnsIndexExpression()
     {
-        Expression<Func<TestClass, TestClass>> expr = x => x;
+        Expression<Func<TestClass, int>> expr = x => x.Array[0];
 
         var result = Reflection.Rewrite(expr.Body);
 
-        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Parameter);
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
     [Test]
-    public async Task Rewrite_WithMemberAccess_ReturnsMemberExpression()
+    public void Rewrite_WithArrayIndexNonConstant_Throws()
     {
-        Expression<Func<TestClass, string?>> expr = x => x.Property;
+        var index = 0;
+        Expression<Func<TestClass, int>> expr = x => x.Array[index];
 
-        var result = Reflection.Rewrite(expr.Body);
-
-        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
+        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
     [Test]
-    public async Task Rewrite_WithNestedMemberAccess_ReturnsMemberExpression()
+    public async Task Rewrite_WithArrayLength_ReturnsMemberAccess()
     {
-        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        Expression<Func<TestClass, int>> expr = x => x.Array.Length;
 
         var result = Reflection.Rewrite(expr.Body);
 
+        // ArrayLength should be rewritten to MemberAccess of Length property
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
+        var memberExpr = (MemberExpression)result;
+        await Assert.That(memberExpr.Member.Name).IsEqualTo("Length");
     }
 
     [Test]
@@ -59,9 +61,9 @@ public class ExpressionRewriterTests
     }
 
     [Test]
-    public async Task Rewrite_WithArrayIndex_ReturnsIndexExpression()
+    public async Task Rewrite_WithIndexExpression_ValidatesConstantArguments()
     {
-        Expression<Func<TestClass, int>> expr = x => x.Array[0];
+        Expression<Func<TestClass, int>> expr = x => x.List[1];
 
         var result = Reflection.Rewrite(expr.Body);
 
@@ -69,12 +71,16 @@ public class ExpressionRewriterTests
     }
 
     [Test]
-    public void Rewrite_WithArrayIndexNonConstant_Throws()
+    public void Rewrite_WithIndexExpressionNonConstantArguments_Throws()
     {
-        var index = 0;
-        Expression<Func<TestClass, int>> expr = x => x.Array[index];
+        // Create an IndexExpression with non-constant arguments
+        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(TestClass), "x");
+        var listProperty = System.Linq.Expressions.Expression.Property(parameter, "List");
+        var indexer = typeof(List<int>).GetProperty("Item")!;
+        var nonConstantArg = System.Linq.Expressions.Expression.Parameter(typeof(int), "index");
+        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, [nonConstantArg]);
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
     }
 
     [Test]
@@ -97,51 +103,13 @@ public class ExpressionRewriterTests
     }
 
     [Test]
-    public async Task Rewrite_WithArrayLength_ReturnsMemberAccess()
+    public async Task Rewrite_WithMemberAccess_ReturnsMemberExpression()
     {
-        Expression<Func<TestClass, int>> expr = x => x.Array.Length;
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
 
         var result = Reflection.Rewrite(expr.Body);
 
-        // ArrayLength should be rewritten to MemberAccess of Length property
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
-        var memberExpr = (MemberExpression)result;
-        await Assert.That(memberExpr.Member.Name).IsEqualTo("Length");
-    }
-
-    [Test]
-    public async Task Rewrite_WithUnsupportedExpression_Throws()
-    {
-        Expression<Func<int, int>> expr = x => x + 1;
-
-        var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
-        await Assert.That(ex!.Message).Contains("Unsupported expression");
-        await Assert.That(ex.Message).Contains("Add");
-    }
-
-    [Test]
-    public async Task Rewrite_WithUnsupportedBinaryExpression_ThrowsWithHelpfulMessage()
-    {
-        Expression<Func<int, bool>> expr = x => x > 5;
-
-        var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
-        await Assert.That(ex!.Message).Contains("Did you meant to use expressions");
-    }
-
-    [Test]
-    public void Rewrite_WithNullExpression_Throws()
-    {
-        Assert.Throws<ArgumentNullException>(() => Reflection.Rewrite(null));
-    }
-
-    [Test]
-    public async Task Rewrite_WithIndexExpression_ValidatesConstantArguments()
-    {
-        Expression<Func<TestClass, int>> expr = x => x.List[1];
-
-        var result = Reflection.Rewrite(expr.Body);
-
-        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
     [Test]
@@ -150,6 +118,30 @@ public class ExpressionRewriterTests
         Expression<Func<TestClass, string?>> expr = x => x.GetValue();
 
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+    }
+
+    [Test]
+    public async Task Rewrite_WithNestedMemberAccess_ReturnsMemberExpression()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+
+        var result = Reflection.Rewrite(expr.Body);
+
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
+    }
+
+    [Test]
+    public void Rewrite_WithNullExpression_Throws() =>
+        Assert.Throws<ArgumentNullException>(() => Reflection.Rewrite(null));
+
+    [Test]
+    public async Task Rewrite_WithParameterExpression_ReturnsParameterExpression()
+    {
+        Expression<Func<TestClass, TestClass>> expr = x => x;
+
+        var result = Reflection.Rewrite(expr.Body);
+
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Parameter);
     }
 
     [Test]
@@ -164,27 +156,33 @@ public class ExpressionRewriterTests
     }
 
     [Test]
-    public void Rewrite_WithIndexExpressionNonConstantArguments_Throws()
+    public async Task Rewrite_WithUnsupportedBinaryExpression_ThrowsWithHelpfulMessage()
     {
-        // Create an IndexExpression with non-constant arguments
-        var parameter = System.Linq.Expressions.Expression.Parameter(typeof(TestClass), "x");
-        var listProperty = System.Linq.Expressions.Expression.Property(parameter, "List");
-        var indexer = typeof(List<int>).GetProperty("Item")!;
-        var nonConstantArg = System.Linq.Expressions.Expression.Parameter(typeof(int), "index");
-        var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, [nonConstantArg]);
+        Expression<Func<int, bool>> expr = x => x > 5;
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
+        var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        await Assert.That(ex!.Message).Contains("Did you meant to use expressions");
+    }
+
+    [Test]
+    public async Task Rewrite_WithUnsupportedExpression_Throws()
+    {
+        Expression<Func<int, int>> expr = x => x + 1;
+
+        var ex = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        await Assert.That(ex!.Message).Contains("Unsupported expression");
+        await Assert.That(ex.Message).Contains("Add");
     }
 
     private class TestClass
     {
-        public string? Property { get; set; }
+        public int[] Array { get; } = [1, 2, 3];
+
+        public List<int> List { get; } = [4, 5, 6];
 
         public TestClass? Nested { get; set; }
 
-        public int[] Array { get; set; } = [1, 2, 3];
-
-        public List<int> List { get; set; } = [4, 5, 6];
+        public string? Property { get; set; }
 
         public string? GetValue() => Property;
     }

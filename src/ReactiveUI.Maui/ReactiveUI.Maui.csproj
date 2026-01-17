@@ -22,6 +22,22 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.Maui.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Builder.Maui.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Reactive.Subjects" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Splat" />
+    <Using Include="ReactiveUI.Maui.Internal" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
@@ -39,7 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs" />
+    <Compile Remove="Common\RoutedViewHost{TViewModel}.cs" />
     <Compile Remove="Common\ViewModelViewHost.cs" />
+    <Compile Remove="Common\ViewModelViewHost{TViewModel}.cs" />
     <Compile Remove="WinUI\TransitioningContentControl.Empty.cs" />
   </ItemGroup>
 </Project>

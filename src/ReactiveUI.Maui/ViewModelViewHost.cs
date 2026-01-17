@@ -12,6 +12,8 @@ namespace ReactiveUI.Maui;
 /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
 /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
 /// </summary>
+[RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 public partial class ViewModelViewHost : ContentView, IViewFor
 {
     /// <summary>
@@ -49,15 +51,12 @@ public partial class ViewModelViewHost : ContentView, IViewFor
         typeof(ViewModelViewHost),
         false);
 
+    private readonly CompositeDisposable _subscriptions = [];
     private string? _viewContract;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost"/> class.
     /// </summary>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ViewModelViewHost uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ViewModelViewHost uses methods that may require unreferenced code")]
-#endif
     public ViewModelViewHost()
     {
         // NB: InUnitTestRunner also returns true in Design Mode
@@ -69,19 +68,25 @@ public partial class ViewModelViewHost : ContentView, IViewFor
 
         ViewContractObservable = Observable<string>.Default;
 
-        var vmAndContract = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).CombineLatest(
-                                                                              this.WhenAnyObservable(x => x.ViewContractObservable),
-                                                                              (vm, contract) => new { ViewModel = vm, Contract = contract, });
+        // Observe ViewModel property changes without expression trees (AOT-friendly)
+        var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
+            this,
+            nameof(ViewModel),
+            () => ViewModel);
 
-        this.WhenActivated(() =>
-            (IDisposable[])[
-                vmAndContract.Subscribe(x =>
-                {
-                    _viewContract = x.Contract;
+        // Combine ViewModel and ViewContractObservable streams
+        var vmAndContract = viewModelChanged.CombineLatest(
+            ViewContractObservable,
+            (vm, contract) => new { ViewModel = vm, Contract = contract });
 
-                    ResolveViewForViewModel(x.ViewModel, x.Contract);
-                })
-            ]);
+        // Subscribe directly without WhenActivated
+        vmAndContract
+            .Subscribe(x =>
+            {
+                _viewContract = x.Contract;
+                ResolveViewForViewModel(x.ViewModel, x.Contract);
+            })
+            .DisposeWith(_subscriptions);
     }
 
     /// <summary>
@@ -142,10 +147,8 @@ public partial class ViewModelViewHost : ContentView, IViewFor
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ResolveViewForViewModel uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ResolveViewForViewModel uses methods that may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -164,12 +167,12 @@ public partial class ViewModelViewHost : ContentView, IViewFor
 
         if (viewInstance is null)
         {
-            throw new Exception($"Couldn't find view for '{viewModel}'.");
+            throw new InvalidOperationException($"Couldn't find view for '{viewModel}'.");
         }
 
         if (viewInstance is not View castView)
         {
-            throw new Exception($"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
+            throw new InvalidOperationException($"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
         }
 
         viewInstance.ViewModel = viewModel;

@@ -43,7 +43,7 @@ csharp_indent_labels = one_less_than_current
 ###################
 # Modifier preferences
 ###################
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
 
 ###################
 # 'this.' qualification
@@ -72,17 +72,17 @@ dotnet_style_predefined_type_for_member_access = true:suggestion
 
 # Constant fields should be PascalCase
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style
-dotnet_naming_symbols.constant_fields.applicable_kinds   = field
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds = field
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
 # Static fields should have s_ prefix
 dotnet_naming_rule.static_fields_should_have_prefix.severity = suggestion
-dotnet_naming_rule.static_fields_should_have_prefix.symbols  = static_fields
-dotnet_naming_rule.static_fields_should_have_prefix.style    = static_prefix_style
-dotnet_naming_symbols.static_fields.applicable_kinds   = field
+dotnet_naming_rule.static_fields_should_have_prefix.symbols = static_fields
+dotnet_naming_rule.static_fields_should_have_prefix.style = static_prefix_style
+dotnet_naming_symbols.static_fields.applicable_kinds = field
 dotnet_naming_symbols.static_fields.required_modifiers = static
 dotnet_naming_symbols.static_fields.applicable_accessibilities = private, internal, private_protected
 dotnet_naming_style.static_prefix_style.required_prefix = s_
@@ -90,8 +90,8 @@ dotnet_naming_style.static_prefix_style.capitalization = camel_case
 
 # Internal and private fields should be _camelCase
 dotnet_naming_rule.camel_case_for_private_internal_fields.severity = suggestion
-dotnet_naming_rule.camel_case_for_private_internal_fields.symbols  = private_internal_fields
-dotnet_naming_rule.camel_case_for_private_internal_fields.style    = camel_case_underscore_style
+dotnet_naming_rule.camel_case_for_private_internal_fields.symbols = private_internal_fields
+dotnet_naming_rule.camel_case_for_private_internal_fields.style = camel_case_underscore_style
 dotnet_naming_symbols.private_internal_fields.applicable_kinds = field
 dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = private, internal
 dotnet_naming_style.camel_case_underscore_style.required_prefix = _
@@ -201,483 +201,483 @@ dotnet_diagnostic.AvoidAsyncVoid.severity = suggestion
 ###################
 # Microsoft .NET Analyzers (CA) - Design Rules
 ###################
-dotnet_diagnostic.CA1000.severity = none             # Do not declare static members on generic types
-dotnet_diagnostic.CA1001.severity = error            # Types that own disposable fields should be disposable
-dotnet_diagnostic.CA1016.severity = error            # Mark assemblies with AssemblyVersionAttribute
-dotnet_diagnostic.CA1027.severity = error            # Mark enums with FlagsAttribute
-dotnet_diagnostic.CA1030.severity = none             # Use events where appropriate
-dotnet_diagnostic.CA1031.severity = none             # Do not catch general exception types
-dotnet_diagnostic.CA1033.severity = none             # Interface methods should be callable by child types
-dotnet_diagnostic.CA1036.severity = none             # Override methods on comparable types
-dotnet_diagnostic.CA1056.severity = suggestion       # URI properties should not be strings
-dotnet_diagnostic.CA1060.severity = error            # Move P/Invokes to NativeMethods class
-dotnet_diagnostic.CA1061.severity = error            # Do not hide base class methods
-dotnet_diagnostic.CA1062.severity = error            # Validate arguments of public methods
-dotnet_diagnostic.CA1063.severity = error            # Implement IDisposable correctly
-dotnet_diagnostic.CA1064.severity = error            # Exceptions should be public
-dotnet_diagnostic.CA1065.severity = error            # Do not raise exceptions in unexpected locations
-dotnet_diagnostic.CA1066.severity = error            # Implement IEquatable when overriding Equals
-dotnet_diagnostic.CA1067.severity = error            # Override Equals when implementing IEquatable
-dotnet_diagnostic.CA1068.severity = error            # CancellationToken parameters must come last
-dotnet_diagnostic.CA1069.severity = error            # Enums should not have duplicate values
-dotnet_diagnostic.CA2000.severity = suggestion       # Dispose objects before losing scope
-dotnet_diagnostic.CA2002.severity = error            # Do not lock on objects with weak identity
-dotnet_diagnostic.CA2011.severity = error            # Do not assign property within its setter
-dotnet_diagnostic.CA2012.severity = error            # Use ValueTasks correctly
-dotnet_diagnostic.CA2013.severity = error            # Do not use ReferenceEquals with value types
-dotnet_diagnostic.CA2014.severity = error            # Do not use stackalloc in loops
-dotnet_diagnostic.CA2015.severity = error            # Do not define finalizers for types derived from MemoryManager<T>
-dotnet_diagnostic.CA2016.severity = error            # Forward the CancellationToken parameter to methods that take one
-dotnet_diagnostic.CA2200.severity = error            # Rethrow to preserve stack details
-dotnet_diagnostic.CA2213.severity = error            # Disposable fields should be disposed
-dotnet_diagnostic.CA2214.severity = error            # Do not call overridable methods in constructors
-dotnet_diagnostic.CA2216.severity = error            # Disposable types should declare finalizer
-dotnet_diagnostic.CA2229.severity = error            # Implement serialization constructors
-dotnet_diagnostic.CA2231.severity = error            # Overload operator equals on overriding ValueType.Equals
-dotnet_diagnostic.CA2235.severity = error            # Mark all non-serializable fields
-dotnet_diagnostic.CA2237.severity = error            # Mark ISerializable types with SerializableAttribute
-dotnet_diagnostic.CA2241.severity = error            # Provide correct arguments to formatting methods
-dotnet_diagnostic.CA2242.severity = error            # Test for NaN correctly
+dotnet_diagnostic.CA1000.severity = none # Do not declare static members on generic types
+dotnet_diagnostic.CA1001.severity = error # Types that own disposable fields should be disposable
+dotnet_diagnostic.CA1016.severity = error # Mark assemblies with AssemblyVersionAttribute
+dotnet_diagnostic.CA1027.severity = error # Mark enums with FlagsAttribute
+dotnet_diagnostic.CA1030.severity = none # Use events where appropriate
+dotnet_diagnostic.CA1031.severity = none # Do not catch general exception types
+dotnet_diagnostic.CA1033.severity = none # Interface methods should be callable by child types
+dotnet_diagnostic.CA1036.severity = none # Override methods on comparable types
+dotnet_diagnostic.CA1056.severity = suggestion # URI properties should not be strings
+dotnet_diagnostic.CA1060.severity = error # Move P/Invokes to NativeMethods class
+dotnet_diagnostic.CA1061.severity = error # Do not hide base class methods
+dotnet_diagnostic.CA1062.severity = error # Validate arguments of public methods
+dotnet_diagnostic.CA1063.severity = error # Implement IDisposable correctly
+dotnet_diagnostic.CA1064.severity = error # Exceptions should be public
+dotnet_diagnostic.CA1065.severity = error # Do not raise exceptions in unexpected locations
+dotnet_diagnostic.CA1066.severity = error # Implement IEquatable when overriding Equals
+dotnet_diagnostic.CA1067.severity = error # Override Equals when implementing IEquatable
+dotnet_diagnostic.CA1068.severity = error # CancellationToken parameters must come last
+dotnet_diagnostic.CA1069.severity = error # Enums should not have duplicate values
+dotnet_diagnostic.CA2000.severity = suggestion # Dispose objects before losing scope
+dotnet_diagnostic.CA2002.severity = error # Do not lock on objects with weak identity
+dotnet_diagnostic.CA2011.severity = error # Do not assign property within its setter
+dotnet_diagnostic.CA2012.severity = error # Use ValueTasks correctly
+dotnet_diagnostic.CA2013.severity = error # Do not use ReferenceEquals with value types
+dotnet_diagnostic.CA2014.severity = error # Do not use stackalloc in loops
+dotnet_diagnostic.CA2015.severity = error # Do not define finalizers for types derived from MemoryManager<T>
+dotnet_diagnostic.CA2016.severity = error # Forward the CancellationToken parameter to methods that take one
+dotnet_diagnostic.CA2200.severity = error # Rethrow to preserve stack details
+dotnet_diagnostic.CA2213.severity = error # Disposable fields should be disposed
+dotnet_diagnostic.CA2214.severity = error # Do not call overridable methods in constructors
+dotnet_diagnostic.CA2216.severity = error # Disposable types should declare finalizer
+dotnet_diagnostic.CA2229.severity = error # Implement serialization constructors
+dotnet_diagnostic.CA2231.severity = error # Overload operator equals on overriding ValueType.Equals
+dotnet_diagnostic.CA2235.severity = error # Mark all non-serializable fields
+dotnet_diagnostic.CA2237.severity = error # Mark ISerializable types with SerializableAttribute
+dotnet_diagnostic.CA2241.severity = error # Provide correct arguments to formatting methods
+dotnet_diagnostic.CA2242.severity = error # Test for NaN correctly
 
 ###################
 # Microsoft .NET Analyzers (CA) - Globalization Rules
 ###################
-dotnet_diagnostic.CA1303.severity = none             # Do not pass literals as localized parameters
-dotnet_diagnostic.CA1308.severity = none             # Normalize strings to uppercase
+dotnet_diagnostic.CA1303.severity = none # Do not pass literals as localized parameters
+dotnet_diagnostic.CA1308.severity = none # Normalize strings to uppercase
 
 ###################
 # Microsoft .NET Analyzers (CA) - Interoperability Rules
 ###################
-dotnet_diagnostic.CA1401.severity = error            # P/Invokes should not be visible
+dotnet_diagnostic.CA1401.severity = error # P/Invokes should not be visible
 
 ###################
 # Microsoft .NET Analyzers (CA) - Maintainability Rules
 ###################
-dotnet_diagnostic.CA1507.severity = error            # Use nameof in place of string
+dotnet_diagnostic.CA1507.severity = error # Use nameof in place of string
 
 ###################
 # Microsoft .NET Analyzers (CA) - Naming Rules
 ###################
-dotnet_diagnostic.CA1710.severity = suggestion       # Identifiers should have correct suffix
-dotnet_diagnostic.CA1724.severity = none             # Type Names Should Not Match Namespaces
+dotnet_diagnostic.CA1710.severity = suggestion # Identifiers should have correct suffix
+dotnet_diagnostic.CA1724.severity = none # Type Names Should Not Match Namespaces
 
 ###################
 # Microsoft .NET Analyzers (CA) - Performance Rules
 ###################
-dotnet_diagnostic.CA1802.severity = error            # Use Literals Where Appropriate
-dotnet_diagnostic.CA1805.severity = error            # Do not initialize unnecessarily
-dotnet_diagnostic.CA1810.severity = none             # Initialize reference type static fields inline
-dotnet_diagnostic.CA1812.severity = error            # Avoid uninstantiated internal classes
-dotnet_diagnostic.CA1813.severity = error            # Avoid unsealed attributes
-dotnet_diagnostic.CA1814.severity = error            # Prefer jagged arrays over multidimensional
-dotnet_diagnostic.CA1815.severity = error            # Override equals and operator equals on value types
-dotnet_diagnostic.CA1821.severity = error            # Remove empty finalizers
-dotnet_diagnostic.CA1822.severity = error            # Mark members as static
-dotnet_diagnostic.CA1825.severity = error            # Avoid zero-length array allocations
-dotnet_diagnostic.CA1826.severity = error            # Use property instead of Linq Enumerable method
-dotnet_diagnostic.CA1827.severity = error            # Do not use Count/LongCount when Any can be used
-dotnet_diagnostic.CA1828.severity = error            # Do not use CountAsync/LongCountAsync when AnyAsync can be used
-dotnet_diagnostic.CA1829.severity = error            # Use Length/Count property instead of Enumerable.Count method
-dotnet_diagnostic.CA1830.severity = error            # Prefer strongly-typed Append and Insert method overloads on StringBuilder
-dotnet_diagnostic.CA1831.severity = error            # Use AsSpan instead of Range-based indexers for string
-dotnet_diagnostic.CA1832.severity = error            # Use AsSpan or AsMemory instead of Range-based indexers for ReadOnlySpan/Memory
-dotnet_diagnostic.CA1833.severity = error            # Use AsSpan or AsMemory instead of Range-based indexers for Span/Memory
-dotnet_diagnostic.CA1834.severity = error            # Use StringBuilder.Append(char) for single character strings
-dotnet_diagnostic.CA1835.severity = error            # Prefer Memory-based overloads for ReadAsync and WriteAsync
-dotnet_diagnostic.CA1836.severity = error            # Prefer IsEmpty over Count when available
-dotnet_diagnostic.CA1837.severity = error            # Use Environment.ProcessId instead of Process.GetCurrentProcess().Id
-dotnet_diagnostic.CA1838.severity = error            # Avoid StringBuilder parameters for P/Invokes
-dotnet_diagnostic.CA2007.severity = none             # Do not directly await a Task
-dotnet_diagnostic.CA2008.severity = error            # Do not create tasks without passing a TaskScheduler
-dotnet_diagnostic.CA2009.severity = error            # Do not call ToImmutableCollection on an ImmutableCollection value
-dotnet_diagnostic.CA2207.severity = error            # Initialize value type static fields inline
+dotnet_diagnostic.CA1802.severity = error # Use Literals Where Appropriate
+dotnet_diagnostic.CA1805.severity = error # Do not initialize unnecessarily
+dotnet_diagnostic.CA1810.severity = none # Initialize reference type static fields inline
+dotnet_diagnostic.CA1812.severity = error # Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1813.severity = error # Avoid unsealed attributes
+dotnet_diagnostic.CA1814.severity = error # Prefer jagged arrays over multidimensional
+dotnet_diagnostic.CA1815.severity = error # Override equals and operator equals on value types
+dotnet_diagnostic.CA1821.severity = error # Remove empty finalizers
+dotnet_diagnostic.CA1822.severity = error # Mark members as static
+dotnet_diagnostic.CA1825.severity = error # Avoid zero-length array allocations
+dotnet_diagnostic.CA1826.severity = error # Use property instead of Linq Enumerable method
+dotnet_diagnostic.CA1827.severity = error # Do not use Count/LongCount when Any can be used
+dotnet_diagnostic.CA1828.severity = error # Do not use CountAsync/LongCountAsync when AnyAsync can be used
+dotnet_diagnostic.CA1829.severity = error # Use Length/Count property instead of Enumerable.Count method
+dotnet_diagnostic.CA1830.severity = error # Prefer strongly-typed Append and Insert method overloads on StringBuilder
+dotnet_diagnostic.CA1831.severity = error # Use AsSpan instead of Range-based indexers for string
+dotnet_diagnostic.CA1832.severity = error # Use AsSpan or AsMemory instead of Range-based indexers for ReadOnlySpan/Memory
+dotnet_diagnostic.CA1833.severity = error # Use AsSpan or AsMemory instead of Range-based indexers for Span/Memory
+dotnet_diagnostic.CA1834.severity = error # Use StringBuilder.Append(char) for single character strings
+dotnet_diagnostic.CA1835.severity = error # Prefer Memory-based overloads for ReadAsync and WriteAsync
+dotnet_diagnostic.CA1836.severity = error # Prefer IsEmpty over Count when available
+dotnet_diagnostic.CA1837.severity = error # Use Environment.ProcessId instead of Process.GetCurrentProcess().Id
+dotnet_diagnostic.CA1838.severity = error # Avoid StringBuilder parameters for P/Invokes
+dotnet_diagnostic.CA2007.severity = none # Do not directly await a Task
+dotnet_diagnostic.CA2008.severity = error # Do not create tasks without passing a TaskScheduler
+dotnet_diagnostic.CA2009.severity = error # Do not call ToImmutableCollection on an ImmutableCollection value
+dotnet_diagnostic.CA2207.severity = error # Initialize value type static fields inline
 
 ###################
 # Microsoft .NET Analyzers (CA) - Security Rules
 ###################
 
 # SQL Injection & Command Injection
-dotnet_diagnostic.CA2100.severity = error            # Review SQL queries for security vulnerabilities
-dotnet_diagnostic.CA3001.severity = error            # Review code for SQL injection vulnerabilities
-dotnet_diagnostic.CA3006.severity = error            # Review code for process command injection vulnerabilities
+dotnet_diagnostic.CA2100.severity = error # Review SQL queries for security vulnerabilities
+dotnet_diagnostic.CA3001.severity = error # Review code for SQL injection vulnerabilities
+dotnet_diagnostic.CA3006.severity = error # Review code for process command injection vulnerabilities
 
 # Cross-Site Scripting (XSS) & Injection Attacks
-dotnet_diagnostic.CA3002.severity = error            # Review code for XSS vulnerabilities
-dotnet_diagnostic.CA3003.severity = error            # Review code for file path injection vulnerabilities
-dotnet_diagnostic.CA3005.severity = error            # Review code for LDAP injection vulnerabilities
-dotnet_diagnostic.CA3007.severity = error            # Review code for open redirect vulnerabilities
-dotnet_diagnostic.CA3008.severity = error            # Review code for XPath injection vulnerabilities
-dotnet_diagnostic.CA3009.severity = error            # Review code for XML injection vulnerabilities
-dotnet_diagnostic.CA3010.severity = error            # Review code for XAML injection vulnerabilities
-dotnet_diagnostic.CA3011.severity = error            # Review code for DLL injection vulnerabilities
-dotnet_diagnostic.CA3012.severity = error            # Review code for regex injection vulnerabilities
-dotnet_diagnostic.CA3004.severity = error            # Review code for information disclosure vulnerabilities
+dotnet_diagnostic.CA3002.severity = error # Review code for XSS vulnerabilities
+dotnet_diagnostic.CA3003.severity = error # Review code for file path injection vulnerabilities
+dotnet_diagnostic.CA3005.severity = error # Review code for LDAP injection vulnerabilities
+dotnet_diagnostic.CA3007.severity = error # Review code for open redirect vulnerabilities
+dotnet_diagnostic.CA3008.severity = error # Review code for XPath injection vulnerabilities
+dotnet_diagnostic.CA3009.severity = error # Review code for XML injection vulnerabilities
+dotnet_diagnostic.CA3010.severity = error # Review code for XAML injection vulnerabilities
+dotnet_diagnostic.CA3011.severity = error # Review code for DLL injection vulnerabilities
+dotnet_diagnostic.CA3012.severity = error # Review code for regex injection vulnerabilities
+dotnet_diagnostic.CA3004.severity = error # Review code for information disclosure vulnerabilities
 
 # Insecure Deserialization
-dotnet_diagnostic.CA2300.severity = error            # Do not use insecure deserializer BinaryFormatter
-dotnet_diagnostic.CA2301.severity = error            # Do not call BinaryFormatter.Deserialize without setting Binder
-dotnet_diagnostic.CA2302.severity = error            # Ensure BinaryFormatter.Binder is set before deserializing
-dotnet_diagnostic.CA2305.severity = error            # Do not use insecure deserializer LosFormatter
-dotnet_diagnostic.CA2310.severity = error            # Do not use insecure deserializer NetDataContractSerializer
-dotnet_diagnostic.CA2311.severity = error            # Do not deserialize without setting NetDataContractSerializer.Binder
-dotnet_diagnostic.CA2312.severity = error            # Ensure NetDataContractSerializer.Binder is set before deserializing
-dotnet_diagnostic.CA2315.severity = error            # Do not use insecure deserializer ObjectStateFormatter
-dotnet_diagnostic.CA2321.severity = error            # Do not deserialize with JavaScriptSerializer using SimpleTypeResolver
-dotnet_diagnostic.CA2322.severity = error            # Ensure JavaScriptSerializer not initialized with SimpleTypeResolver
-dotnet_diagnostic.CA2326.severity = error            # Do not use TypeNameHandling values other than None
-dotnet_diagnostic.CA2327.severity = error            # Do not use insecure JsonSerializerSettings
-dotnet_diagnostic.CA2328.severity = error            # Ensure that JsonSerializerSettings are secure
-dotnet_diagnostic.CA2329.severity = error            # Do not deserialize with JsonSerializer using insecure configuration
-dotnet_diagnostic.CA2330.severity = error            # Ensure JsonSerializer has secure configuration when deserializing
-dotnet_diagnostic.CA2350.severity = error            # Ensure DataTable.ReadXml()'s input is trusted
-dotnet_diagnostic.CA2351.severity = error            # Ensure DataSet.ReadXml()'s input is trusted
-dotnet_diagnostic.CA2352.severity = error            # Unsafe DataSet/DataTable in serializable type vulnerable to RCE
-dotnet_diagnostic.CA2353.severity = error            # Unsafe DataSet or DataTable in serializable type
-dotnet_diagnostic.CA2354.severity = error            # Unsafe DataSet/DataTable in deserialized object graph vulnerable to RCE
-dotnet_diagnostic.CA2355.severity = error            # Unsafe DataSet or DataTable in deserialized object graph
-dotnet_diagnostic.CA2356.severity = error            # Unsafe DataSet/DataTable in web deserialized object graph
-dotnet_diagnostic.CA2361.severity = error            # Ensure autogenerated class with DataSet.ReadXml() not used with untrusted data
-dotnet_diagnostic.CA2362.severity = error            # Unsafe DataSet/DataTable in autogenerated serializable type vulnerable to RCE
-dotnet_diagnostic.CA5360.severity = error            # Do not call dangerous methods in deserialization
-dotnet_diagnostic.CA5362.severity = error            # Potential reference cycle in deserialized object graph
+dotnet_diagnostic.CA2300.severity = error # Do not use insecure deserializer BinaryFormatter
+dotnet_diagnostic.CA2301.severity = error # Do not call BinaryFormatter.Deserialize without setting Binder
+dotnet_diagnostic.CA2302.severity = error # Ensure BinaryFormatter.Binder is set before deserializing
+dotnet_diagnostic.CA2305.severity = error # Do not use insecure deserializer LosFormatter
+dotnet_diagnostic.CA2310.severity = error # Do not use insecure deserializer NetDataContractSerializer
+dotnet_diagnostic.CA2311.severity = error # Do not deserialize without setting NetDataContractSerializer.Binder
+dotnet_diagnostic.CA2312.severity = error # Ensure NetDataContractSerializer.Binder is set before deserializing
+dotnet_diagnostic.CA2315.severity = error # Do not use insecure deserializer ObjectStateFormatter
+dotnet_diagnostic.CA2321.severity = error # Do not deserialize with JavaScriptSerializer using SimpleTypeResolver
+dotnet_diagnostic.CA2322.severity = error # Ensure JavaScriptSerializer not initialized with SimpleTypeResolver
+dotnet_diagnostic.CA2326.severity = error # Do not use TypeNameHandling values other than None
+dotnet_diagnostic.CA2327.severity = error # Do not use insecure JsonSerializerSettings
+dotnet_diagnostic.CA2328.severity = error # Ensure that JsonSerializerSettings are secure
+dotnet_diagnostic.CA2329.severity = error # Do not deserialize with JsonSerializer using insecure configuration
+dotnet_diagnostic.CA2330.severity = error # Ensure JsonSerializer has secure configuration when deserializing
+dotnet_diagnostic.CA2350.severity = error # Ensure DataTable.ReadXml()'s input is trusted
+dotnet_diagnostic.CA2351.severity = error # Ensure DataSet.ReadXml()'s input is trusted
+dotnet_diagnostic.CA2352.severity = error # Unsafe DataSet/DataTable in serializable type vulnerable to RCE
+dotnet_diagnostic.CA2353.severity = error # Unsafe DataSet or DataTable in serializable type
+dotnet_diagnostic.CA2354.severity = error # Unsafe DataSet/DataTable in deserialized object graph vulnerable to RCE
+dotnet_diagnostic.CA2355.severity = error # Unsafe DataSet or DataTable in deserialized object graph
+dotnet_diagnostic.CA2356.severity = error # Unsafe DataSet/DataTable in web deserialized object graph
+dotnet_diagnostic.CA2361.severity = error # Ensure autogenerated class with DataSet.ReadXml() not used with untrusted data
+dotnet_diagnostic.CA2362.severity = error # Unsafe DataSet/DataTable in autogenerated serializable type vulnerable to RCE
+dotnet_diagnostic.CA5360.severity = error # Do not call dangerous methods in deserialization
+dotnet_diagnostic.CA5362.severity = error # Potential reference cycle in deserialized object graph
 
 # Cryptography - Weak & Broken Algorithms
-dotnet_diagnostic.CA5350.severity = error            # Do not use weak cryptographic algorithms (SHA1, RIPEMD160, TripleDES)
-dotnet_diagnostic.CA5351.severity = error            # Do not use broken cryptographic algorithms (MD5, DES, RC2)
-dotnet_diagnostic.CA5358.severity = error            # Do not use unsafe cipher modes (ECB, OFB, CFB)
-dotnet_diagnostic.CA5384.severity = error            # Do not use Digital Signature Algorithm (DSA)
-dotnet_diagnostic.CA5385.severity = error            # Use RSA algorithm with sufficient key size (>= 2048 bits)
-dotnet_diagnostic.CA5390.severity = error            # Do not hard-code encryption key
-dotnet_diagnostic.CA5394.severity = error            # Do not use insecure randomness (use RNGCryptoServiceProvider)
-dotnet_diagnostic.CA5401.severity = error            # Do not use CreateEncryptor with non-default IV
-dotnet_diagnostic.CA5403.severity = error            # Do not hard-code certificate
-dotnet_diagnostic.CA5373.severity = error            # Do not use obsolete key derivation function
+dotnet_diagnostic.CA5350.severity = error # Do not use weak cryptographic algorithms (SHA1, RIPEMD160, TripleDES)
+dotnet_diagnostic.CA5351.severity = error # Do not use broken cryptographic algorithms (MD5, DES, RC2)
+dotnet_diagnostic.CA5358.severity = error # Do not use unsafe cipher modes (ECB, OFB, CFB)
+dotnet_diagnostic.CA5384.severity = error # Do not use Digital Signature Algorithm (DSA)
+dotnet_diagnostic.CA5385.severity = error # Use RSA algorithm with sufficient key size (>= 2048 bits)
+dotnet_diagnostic.CA5390.severity = error # Do not hard-code encryption key
+dotnet_diagnostic.CA5394.severity = error # Do not use insecure randomness (use RNGCryptoServiceProvider)
+dotnet_diagnostic.CA5401.severity = error # Do not use CreateEncryptor with non-default IV
+dotnet_diagnostic.CA5403.severity = error # Do not hard-code certificate
+dotnet_diagnostic.CA5373.severity = error # Do not use obsolete key derivation function
 
 # TLS/SSL Protocol Security
-dotnet_diagnostic.CA5359.severity = error            # Do not disable certificate validation
-dotnet_diagnostic.CA5361.severity = error            # Do not disable SChannel use of strong crypto
-dotnet_diagnostic.CA5364.severity = error            # Do not use deprecated security protocols (TLS 1.0, TLS 1.1, SSL3)
-dotnet_diagnostic.CA5378.severity = error            # Do not disable ServicePointManagerSecurityProtocols
-dotnet_diagnostic.CA5386.severity = error            # Avoid hardcoding SecurityProtocolType value
-dotnet_diagnostic.CA5397.severity = error            # Do not use deprecated SslProtocols values
-dotnet_diagnostic.CA5398.severity = error            # Avoid hardcoded SslProtocols values
-dotnet_diagnostic.CA5399.severity = error            # Definitely disable HttpClient certificate revocation list check
-dotnet_diagnostic.CA5380.severity = error            # Do not add certificates to root store
-dotnet_diagnostic.CA5381.severity = error            # Ensure certificates are not added to root store
+dotnet_diagnostic.CA5359.severity = error # Do not disable certificate validation
+dotnet_diagnostic.CA5361.severity = error # Do not disable SChannel use of strong crypto
+dotnet_diagnostic.CA5364.severity = error # Do not use deprecated security protocols (TLS 1.0, TLS 1.1, SSL3)
+dotnet_diagnostic.CA5378.severity = error # Do not disable ServicePointManagerSecurityProtocols
+dotnet_diagnostic.CA5386.severity = error # Avoid hardcoding SecurityProtocolType value
+dotnet_diagnostic.CA5397.severity = error # Do not use deprecated SslProtocols values
+dotnet_diagnostic.CA5398.severity = error # Avoid hardcoded SslProtocols values
+dotnet_diagnostic.CA5399.severity = error # Definitely disable HttpClient certificate revocation list check
+dotnet_diagnostic.CA5380.severity = error # Do not add certificates to root store
+dotnet_diagnostic.CA5381.severity = error # Ensure certificates are not added to root store
 
 # XML Security
-dotnet_diagnostic.CA3061.severity = error            # Do not add schema by URL
-dotnet_diagnostic.CA3075.severity = error            # Insecure DTD processing
-dotnet_diagnostic.CA3076.severity = error            # Insecure XSLT script execution
-dotnet_diagnostic.CA3077.severity = error            # Insecure processing in API design, XML Document and XML Text Reader
-dotnet_diagnostic.CA5366.severity = error            # Use XmlReader for DataSet read XML
-dotnet_diagnostic.CA5369.severity = error            # Use XmlReader for deserialize
-dotnet_diagnostic.CA5370.severity = error            # Use XmlReader for validating reader
-dotnet_diagnostic.CA5371.severity = error            # Use XmlReader for schema read
-dotnet_diagnostic.CA5372.severity = error            # Use XmlReader for XPathDocument
-dotnet_diagnostic.CA5374.severity = error            # Do not use XslTransform
+dotnet_diagnostic.CA3061.severity = error # Do not add schema by URL
+dotnet_diagnostic.CA3075.severity = error # Insecure DTD processing
+dotnet_diagnostic.CA3076.severity = error # Insecure XSLT script execution
+dotnet_diagnostic.CA3077.severity = error # Insecure processing in API design, XML Document and XML Text Reader
+dotnet_diagnostic.CA5366.severity = error # Use XmlReader for DataSet read XML
+dotnet_diagnostic.CA5369.severity = error # Use XmlReader for deserialize
+dotnet_diagnostic.CA5370.severity = error # Use XmlReader for validating reader
+dotnet_diagnostic.CA5371.severity = error # Use XmlReader for schema read
+dotnet_diagnostic.CA5372.severity = error # Use XmlReader for XPathDocument
+dotnet_diagnostic.CA5374.severity = error # Do not use XslTransform
 
 # Web Security
-dotnet_diagnostic.CA3147.severity = error            # Mark verb handlers with ValidateAntiForgeryToken
-dotnet_diagnostic.CA5363.severity = error            # Do not disable request validation
-dotnet_diagnostic.CA5365.severity = error            # Do not disable HTTP header checking
-dotnet_diagnostic.CA5368.severity = error            # Set ViewStateUserKey for classes derived from Page
+dotnet_diagnostic.CA3147.severity = error # Mark verb handlers with ValidateAntiForgeryToken
+dotnet_diagnostic.CA5363.severity = error # Do not disable request validation
+dotnet_diagnostic.CA5365.severity = error # Do not disable HTTP header checking
+dotnet_diagnostic.CA5368.severity = error # Set ViewStateUserKey for classes derived from Page
 
 # P/Invoke & DLL Security
-dotnet_diagnostic.CA2101.severity = error            # Specify marshalling for P/Invoke string arguments
-dotnet_diagnostic.CA5393.severity = error            # Do not use unsafe DllImportSearchPath value
+dotnet_diagnostic.CA2101.severity = error # Specify marshalling for P/Invoke string arguments
+dotnet_diagnostic.CA5393.severity = error # Do not use unsafe DllImportSearchPath value
 
 # Archive & File Security
-dotnet_diagnostic.CA5389.severity = error            # Do not add archive item's path to target file system path (Zip Slip)
+dotnet_diagnostic.CA5389.severity = error # Do not add archive item's path to target file system path (Zip Slip)
 
 # Token Validation & Authentication
-dotnet_diagnostic.CA5404.severity = error            # Do not disable token validation checks
-dotnet_diagnostic.CA5405.severity = error            # Do not always skip token validation in delegates
+dotnet_diagnostic.CA5404.severity = error # Do not disable token validation checks
+dotnet_diagnostic.CA5405.severity = error # Do not always skip token validation in delegates
 
 # Other Security Rules
-dotnet_diagnostic.CA2109.severity = error            # Review visible event handlers
-dotnet_diagnostic.CA2119.severity = error            # Seal methods that satisfy private interfaces
-dotnet_diagnostic.CA2153.severity = error            # Do not catch corrupted state exceptions
-dotnet_diagnostic.CA5367.severity = error            # Do not serialize types with pointer fields
+dotnet_diagnostic.CA2109.severity = error # Review visible event handlers
+dotnet_diagnostic.CA2119.severity = error # Seal methods that satisfy private interfaces
+dotnet_diagnostic.CA2153.severity = error # Do not catch corrupted state exceptions
+dotnet_diagnostic.CA5367.severity = error # Do not serialize types with pointer fields
 
 ###################
 # Microsoft .NET Analyzers (CA) - Reliability Rules (Additional)
 ###################
-dotnet_diagnostic.CA2017.severity = error            # Parameter count mismatch in logging
-dotnet_diagnostic.CA2018.severity = error            # Buffer.BlockCopy count argument
-dotnet_diagnostic.CA2019.severity = error            # ThreadStatic fields should not use inline initialization
-dotnet_diagnostic.CA2020.severity = error            # Prevent behavioral change with IntPtr/UIntPtr
-dotnet_diagnostic.CA2021.severity = error            # Don't call Cast<T>/OfType<T> with incompatible types
-dotnet_diagnostic.CA2022.severity = error            # Avoid inexact read with Stream.Read
-dotnet_diagnostic.CA2023.severity = error            # Invalid braces in message template
-dotnet_diagnostic.CA2025.severity = error            # Do not pass IDisposable into unawaited tasks
+dotnet_diagnostic.CA2017.severity = error # Parameter count mismatch in logging
+dotnet_diagnostic.CA2018.severity = error # Buffer.BlockCopy count argument
+dotnet_diagnostic.CA2019.severity = error # ThreadStatic fields should not use inline initialization
+dotnet_diagnostic.CA2020.severity = error # Prevent behavioral change with IntPtr/UIntPtr
+dotnet_diagnostic.CA2021.severity = error # Don't call Cast<T>/OfType<T> with incompatible types
+dotnet_diagnostic.CA2022.severity = error # Avoid inexact read with Stream.Read
+dotnet_diagnostic.CA2023.severity = error # Invalid braces in message template
+dotnet_diagnostic.CA2025.severity = error # Do not pass IDisposable into unawaited tasks
 
 ###################
 # Roslynator Analyzers (RCS) - Code Simplification
 ###################
-dotnet_diagnostic.RCS1001.severity = error           # Add braces (when expression spans over multiple lines)
-dotnet_diagnostic.RCS1005.severity = error           # Simplify nested using statement
-dotnet_diagnostic.RCS1006.severity = error           # Merge 'else' with nested 'if'
-dotnet_diagnostic.RCS1020.severity = error           # Simplify Nullable<T> to T?
-dotnet_diagnostic.RCS1049.severity = error           # Simplify boolean comparison
-dotnet_diagnostic.RCS1068.severity = error           # Simplify logical negation
-dotnet_diagnostic.RCS1069.severity = error           # Remove unnecessary case label
-dotnet_diagnostic.RCS1071.severity = error           # Remove redundant base constructor call
-dotnet_diagnostic.RCS1073.severity = error           # Convert 'if' to 'return' statement
-dotnet_diagnostic.RCS1074.severity = error           # Remove redundant constructor
-dotnet_diagnostic.RCS1084.severity = error           # Use coalesce expression instead of conditional expression
-dotnet_diagnostic.RCS1128.severity = error           # Use coalesce expression
-dotnet_diagnostic.RCS1143.severity = error           # Simplify coalesce expression
-dotnet_diagnostic.RCS1171.severity = error           # Simplify lazy initialization
-dotnet_diagnostic.RCS1173.severity = error           # Use coalesce expression instead of 'if'
-dotnet_diagnostic.RCS1259.severity = error           # Remove empty syntax (replaces RCS1066)
-dotnet_diagnostic.RCS1264.severity = error           # Use 'var' or explicit type (replaces RCS1010, RCS1176, RCS1177)
+dotnet_diagnostic.RCS1001.severity = error # Add braces (when expression spans over multiple lines)
+dotnet_diagnostic.RCS1005.severity = error # Simplify nested using statement
+dotnet_diagnostic.RCS1006.severity = error # Merge 'else' with nested 'if'
+dotnet_diagnostic.RCS1020.severity = error # Simplify Nullable<T> to T?
+dotnet_diagnostic.RCS1049.severity = error # Simplify boolean comparison
+dotnet_diagnostic.RCS1068.severity = error # Simplify logical negation
+dotnet_diagnostic.RCS1069.severity = error # Remove unnecessary case label
+dotnet_diagnostic.RCS1071.severity = error # Remove redundant base constructor call
+dotnet_diagnostic.RCS1073.severity = error # Convert 'if' to 'return' statement
+dotnet_diagnostic.RCS1074.severity = error # Remove redundant constructor
+dotnet_diagnostic.RCS1084.severity = error # Use coalesce expression instead of conditional expression
+dotnet_diagnostic.RCS1128.severity = error # Use coalesce expression
+dotnet_diagnostic.RCS1143.severity = error # Simplify coalesce expression
+dotnet_diagnostic.RCS1171.severity = error # Simplify lazy initialization
+dotnet_diagnostic.RCS1173.severity = error # Use coalesce expression instead of 'if'
+dotnet_diagnostic.RCS1259.severity = error # Remove empty syntax (replaces RCS1066)
+dotnet_diagnostic.RCS1264.severity = error # Use 'var' or explicit type (replaces RCS1010, RCS1176, RCS1177)
 
 ###################
 # Roslynator Analyzers (RCS) - Code Quality & Best Practices
 ###################
-dotnet_diagnostic.RCS1018.severity = error           # Add/remove accessibility modifiers
-dotnet_diagnostic.RCS1037.severity = error           # Remove trailing white-space
-dotnet_diagnostic.RCS1055.severity = error           # Unnecessary semicolon at the end of declaration
-dotnet_diagnostic.RCS1078.severity = error           # Use "" or 'string.Empty'
-dotnet_diagnostic.RCS1085.severity = error           # Use auto-implemented property
-dotnet_diagnostic.RCS1090.severity = error           # Add/remove 'ConfigureAwait(false)' call
-dotnet_diagnostic.RCS1102.severity = error           # Make class static
-dotnet_diagnostic.RCS1105.severity = error           # Unnecessary interpolation
-dotnet_diagnostic.RCS1138.severity = error           # Add summary to documentation comment
-dotnet_diagnostic.RCS1139.severity = error           # Add summary element to documentation comment
-dotnet_diagnostic.RCS1158.severity = none            # Static member in generic type should use a type parameter
-dotnet_diagnostic.RCS1163.severity = none            # Unused parameter
-dotnet_diagnostic.RCS1166.severity = error           # Value type object is never equal to null
-dotnet_diagnostic.RCS1168.severity = suggestion      # Parameter name differs from base name
-dotnet_diagnostic.RCS1179.severity = error           # Unnecessary assignment
-dotnet_diagnostic.RCS1180.severity = error           # Inline lazy initialization
-dotnet_diagnostic.RCS1188.severity = error           # Remove redundant auto-property initialization
-dotnet_diagnostic.RCS1201.severity = error           # Use method chaining
-dotnet_diagnostic.RCS1207.severity = error           # Use anonymous function or method group
-dotnet_diagnostic.RCS1211.severity = error           # Remove unnecessary 'else'
-dotnet_diagnostic.RCS1231.severity = suggestion      # Make parameter ref read-only
-dotnet_diagnostic.RCS1242.severity = error           # Do not pass non-read-only struct by read-only reference
-dotnet_diagnostic.RCS1248.severity = error           # Normalize null check
-dotnet_diagnostic.RCS1256.severity = none            # Invalid argument null check
+dotnet_diagnostic.RCS1018.severity = error # Add/remove accessibility modifiers
+dotnet_diagnostic.RCS1037.severity = error # Remove trailing white-space
+dotnet_diagnostic.RCS1055.severity = error # Unnecessary semicolon at the end of declaration
+dotnet_diagnostic.RCS1078.severity = error # Use "" or 'string.Empty'
+dotnet_diagnostic.RCS1085.severity = error # Use auto-implemented property
+dotnet_diagnostic.RCS1090.severity = error # Add/remove 'ConfigureAwait(false)' call
+dotnet_diagnostic.RCS1102.severity = error # Make class static
+dotnet_diagnostic.RCS1105.severity = error # Unnecessary interpolation
+dotnet_diagnostic.RCS1138.severity = error # Add summary to documentation comment
+dotnet_diagnostic.RCS1139.severity = error # Add summary element to documentation comment
+dotnet_diagnostic.RCS1158.severity = none # Static member in generic type should use a type parameter
+dotnet_diagnostic.RCS1163.severity = none # Unused parameter
+dotnet_diagnostic.RCS1166.severity = error # Value type object is never equal to null
+dotnet_diagnostic.RCS1168.severity = suggestion # Parameter name differs from base name
+dotnet_diagnostic.RCS1179.severity = error # Unnecessary assignment
+dotnet_diagnostic.RCS1180.severity = error # Inline lazy initialization
+dotnet_diagnostic.RCS1188.severity = error # Remove redundant auto-property initialization
+dotnet_diagnostic.RCS1201.severity = error # Use method chaining
+dotnet_diagnostic.RCS1207.severity = error # Use anonymous function or method group
+dotnet_diagnostic.RCS1211.severity = error # Remove unnecessary 'else'
+dotnet_diagnostic.RCS1231.severity = suggestion # Make parameter ref read-only
+dotnet_diagnostic.RCS1242.severity = error # Do not pass non-read-only struct by read-only reference
+dotnet_diagnostic.RCS1248.severity = error # Normalize null check
+dotnet_diagnostic.RCS1256.severity = none # Invalid argument null check
 
 ###################
 # Roslynator Analyzers (RCS) - Performance & Optimization
 ###################
-dotnet_diagnostic.RCS1058.severity = error           # Use compound assignment
-dotnet_diagnostic.RCS1077.severity = error           # Optimize LINQ method call
-dotnet_diagnostic.RCS1080.severity = error           # Use 'Count/Length' property instead of 'Any' method
-dotnet_diagnostic.RCS1112.severity = error           # Combine 'Enumerable.Where' method chain
-dotnet_diagnostic.RCS1190.severity = error           # Join string expressions
-dotnet_diagnostic.RCS1195.severity = error           # Use ^ operator
-dotnet_diagnostic.RCS1197.severity = error           # Optimize StringBuilder.Append/AppendLine call
-dotnet_diagnostic.RCS1198.severity = none            # Avoid unnecessary boxing of value type
-dotnet_diagnostic.RCS1214.severity = error           # Unnecessary interpolated string
-dotnet_diagnostic.RCS1235.severity = error           # Optimize method call
+dotnet_diagnostic.RCS1058.severity = error # Use compound assignment
+dotnet_diagnostic.RCS1077.severity = error # Optimize LINQ method call
+dotnet_diagnostic.RCS1080.severity = error # Use 'Count/Length' property instead of 'Any' method
+dotnet_diagnostic.RCS1112.severity = error # Combine 'Enumerable.Where' method chain
+dotnet_diagnostic.RCS1190.severity = error # Join string expressions
+dotnet_diagnostic.RCS1195.severity = error # Use ^ operator
+dotnet_diagnostic.RCS1197.severity = error # Optimize StringBuilder.Append/AppendLine call
+dotnet_diagnostic.RCS1198.severity = none # Avoid unnecessary boxing of value type
+dotnet_diagnostic.RCS1214.severity = error # Unnecessary interpolated string
+dotnet_diagnostic.RCS1235.severity = error # Optimize method call
 
 ###################
 # StyleCop Analyzers (SA) - Spacing Rules
 ###################
-dotnet_diagnostic.SA1000.severity = error            # Keywords must be spaced correctly
-dotnet_diagnostic.SA1001.severity = error            # Commas must be spaced correctly
-dotnet_diagnostic.SA1002.severity = error            # Semicolons must be spaced correctly
-dotnet_diagnostic.SA1003.severity = error            # Symbols must be spaced correctly
-dotnet_diagnostic.SA1004.severity = error            # Documentation lines must begin with single space
-dotnet_diagnostic.SA1005.severity = error            # Single line comments must begin with single space
-dotnet_diagnostic.SA1006.severity = error            # Preprocessor keywords must not be preceded by space
-dotnet_diagnostic.SA1007.severity = error            # Operator keyword must be followed by space
-dotnet_diagnostic.SA1008.severity = error            # Opening parenthesis must be spaced correctly
-dotnet_diagnostic.SA1009.severity = error            # Closing parenthesis must be spaced correctly
-dotnet_diagnostic.SA1010.severity = none             # Opening square brackets must be spaced correctly
-dotnet_diagnostic.SA1011.severity = error            # Closing square brackets must be spaced correctly
-dotnet_diagnostic.SA1012.severity = error            # Opening braces must be spaced correctly
-dotnet_diagnostic.SA1013.severity = error            # Closing braces must be spaced correctly
-dotnet_diagnostic.SA1014.severity = error            # Opening generic brackets must be spaced correctly
-dotnet_diagnostic.SA1015.severity = error            # Closing generic brackets must be spaced correctly
-dotnet_diagnostic.SA1016.severity = error            # Opening attribute brackets must be spaced correctly
-dotnet_diagnostic.SA1017.severity = error            # Closing attribute brackets must be spaced correctly
-dotnet_diagnostic.SA1018.severity = error            # Nullable type symbols must not be preceded by space
-dotnet_diagnostic.SA1019.severity = error            # Member access symbols must be spaced correctly
-dotnet_diagnostic.SA1020.severity = error            # Increment decrement symbols must be spaced correctly
-dotnet_diagnostic.SA1021.severity = error            # Negative signs must be spaced correctly
-dotnet_diagnostic.SA1022.severity = error            # Positive signs must be spaced correctly
-dotnet_diagnostic.SA1023.severity = error            # Dereference and access of symbols must be spaced correctly
-dotnet_diagnostic.SA1024.severity = error            # Colons must be spaced correctly
-dotnet_diagnostic.SA1025.severity = error            # Code must not contain multiple whitespace in a row
-dotnet_diagnostic.SA1026.severity = error            # Code must not contain space after new keyword in implicitly typed array allocation
-dotnet_diagnostic.SA1027.severity = error            # Use tabs correctly
-dotnet_diagnostic.SA1028.severity = error            # Code must not contain trailing whitespace
+dotnet_diagnostic.SA1000.severity = error # Keywords must be spaced correctly
+dotnet_diagnostic.SA1001.severity = error # Commas must be spaced correctly
+dotnet_diagnostic.SA1002.severity = error # Semicolons must be spaced correctly
+dotnet_diagnostic.SA1003.severity = error # Symbols must be spaced correctly
+dotnet_diagnostic.SA1004.severity = error # Documentation lines must begin with single space
+dotnet_diagnostic.SA1005.severity = error # Single line comments must begin with single space
+dotnet_diagnostic.SA1006.severity = error # Preprocessor keywords must not be preceded by space
+dotnet_diagnostic.SA1007.severity = error # Operator keyword must be followed by space
+dotnet_diagnostic.SA1008.severity = error # Opening parenthesis must be spaced correctly
+dotnet_diagnostic.SA1009.severity = error # Closing parenthesis must be spaced correctly
+dotnet_diagnostic.SA1010.severity = none # Opening square brackets must be spaced correctly
+dotnet_diagnostic.SA1011.severity = error # Closing square brackets must be spaced correctly
+dotnet_diagnostic.SA1012.severity = error # Opening braces must be spaced correctly
+dotnet_diagnostic.SA1013.severity = error # Closing braces must be spaced correctly
+dotnet_diagnostic.SA1014.severity = error # Opening generic brackets must be spaced correctly
+dotnet_diagnostic.SA1015.severity = error # Closing generic brackets must be spaced correctly
+dotnet_diagnostic.SA1016.severity = error # Opening attribute brackets must be spaced correctly
+dotnet_diagnostic.SA1017.severity = error # Closing attribute brackets must be spaced correctly
+dotnet_diagnostic.SA1018.severity = error # Nullable type symbols must not be preceded by space
+dotnet_diagnostic.SA1019.severity = error # Member access symbols must be spaced correctly
+dotnet_diagnostic.SA1020.severity = error # Increment decrement symbols must be spaced correctly
+dotnet_diagnostic.SA1021.severity = error # Negative signs must be spaced correctly
+dotnet_diagnostic.SA1022.severity = error # Positive signs must be spaced correctly
+dotnet_diagnostic.SA1023.severity = error # Dereference and access of symbols must be spaced correctly
+dotnet_diagnostic.SA1024.severity = error # Colons must be spaced correctly
+dotnet_diagnostic.SA1025.severity = error # Code must not contain multiple whitespace in a row
+dotnet_diagnostic.SA1026.severity = error # Code must not contain space after new keyword in implicitly typed array allocation
+dotnet_diagnostic.SA1027.severity = error # Use tabs correctly
+dotnet_diagnostic.SA1028.severity = error # Code must not contain trailing whitespace
 
 ###################
 # StyleCop Analyzers (SA) - Readability Rules
 ###################
-dotnet_diagnostic.SA1100.severity = error            # Do not prefix calls with base unless local implementation exists
-dotnet_diagnostic.SA1101.severity = none             # Prefix local calls with this
-dotnet_diagnostic.SA1102.severity = error            # Query clause must follow previous clause
-dotnet_diagnostic.SA1103.severity = error            # Query clauses must be on same line or separate lines
-dotnet_diagnostic.SA1104.severity = error            # Query clause must begin on new line when previous clause spans multiple lines
-dotnet_diagnostic.SA1105.severity = error            # Query clauses spanning multiple lines must begin on own line
-dotnet_diagnostic.SA1106.severity = error            # Code must not contain empty statements
-dotnet_diagnostic.SA1107.severity = error            # Code must not contain multiple statements on one line
-dotnet_diagnostic.SA1108.severity = error            # Block statements must not contain embedded comments
-dotnet_diagnostic.SA1110.severity = error            # Opening parenthesis or bracket must be on declaration line
-dotnet_diagnostic.SA1111.severity = error            # Closing parenthesis must be on line of last parameter
-dotnet_diagnostic.SA1112.severity = error            # Closing parenthesis must be on line of opening parenthesis
-dotnet_diagnostic.SA1113.severity = error            # Comma must be on same line as previous parameter
-dotnet_diagnostic.SA1114.severity = error            # Parameter list must follow declaration
-dotnet_diagnostic.SA1115.severity = error            # Parameter must follow comma
-dotnet_diagnostic.SA1116.severity = error            # Split parameters must start on line after declaration
-dotnet_diagnostic.SA1117.severity = error            # Parameters must be on same line or separate lines
-dotnet_diagnostic.SA1118.severity = error            # Parameter must not span multiple lines
-dotnet_diagnostic.SA1120.severity = error            # Comments must contain text
-dotnet_diagnostic.SA1121.severity = error            # Use built-in type alias
-dotnet_diagnostic.SA1122.severity = error            # Use string.Empty for empty strings
-dotnet_diagnostic.SA1123.severity = error            # Do not place regions within elements
-dotnet_diagnostic.SA1124.severity = error            # Do not use regions
-dotnet_diagnostic.SA1125.severity = error            # Use shorthand for nullable types
-dotnet_diagnostic.SA1127.severity = error            # Generic type constraints must be on own line
-dotnet_diagnostic.SA1128.severity = error            # Constructor initializer must be on own line
-dotnet_diagnostic.SA1129.severity = error            # Do not use default value type constructor
-dotnet_diagnostic.SA1130.severity = error            # Use lambda syntax
-dotnet_diagnostic.SA1131.severity = error            # Use readable conditions
-dotnet_diagnostic.SA1132.severity = error            # Do not combine fields
-dotnet_diagnostic.SA1133.severity = error            # Do not combine attributes
-dotnet_diagnostic.SA1134.severity = error            # Attributes must not share line
-dotnet_diagnostic.SA1135.severity = error            # Using directives must be qualified
-dotnet_diagnostic.SA1136.severity = error            # Enum values should be on separate lines
-dotnet_diagnostic.SA1137.severity = error            # Elements should have the same indentation
-dotnet_diagnostic.SA1139.severity = error            # Use literal suffix notation instead of casting
+dotnet_diagnostic.SA1100.severity = error # Do not prefix calls with base unless local implementation exists
+dotnet_diagnostic.SA1101.severity = none # Prefix local calls with this
+dotnet_diagnostic.SA1102.severity = error # Query clause must follow previous clause
+dotnet_diagnostic.SA1103.severity = error # Query clauses must be on same line or separate lines
+dotnet_diagnostic.SA1104.severity = error # Query clause must begin on new line when previous clause spans multiple lines
+dotnet_diagnostic.SA1105.severity = error # Query clauses spanning multiple lines must begin on own line
+dotnet_diagnostic.SA1106.severity = error # Code must not contain empty statements
+dotnet_diagnostic.SA1107.severity = error # Code must not contain multiple statements on one line
+dotnet_diagnostic.SA1108.severity = error # Block statements must not contain embedded comments
+dotnet_diagnostic.SA1110.severity = error # Opening parenthesis or bracket must be on declaration line
+dotnet_diagnostic.SA1111.severity = error # Closing parenthesis must be on line of last parameter
+dotnet_diagnostic.SA1112.severity = error # Closing parenthesis must be on line of opening parenthesis
+dotnet_diagnostic.SA1113.severity = error # Comma must be on same line as previous parameter
+dotnet_diagnostic.SA1114.severity = error # Parameter list must follow declaration
+dotnet_diagnostic.SA1115.severity = error # Parameter must follow comma
+dotnet_diagnostic.SA1116.severity = error # Split parameters must start on line after declaration
+dotnet_diagnostic.SA1117.severity = error # Parameters must be on same line or separate lines
+dotnet_diagnostic.SA1118.severity = error # Parameter must not span multiple lines
+dotnet_diagnostic.SA1120.severity = error # Comments must contain text
+dotnet_diagnostic.SA1121.severity = error # Use built-in type alias
+dotnet_diagnostic.SA1122.severity = error # Use string.Empty for empty strings
+dotnet_diagnostic.SA1123.severity = error # Do not place regions within elements
+dotnet_diagnostic.SA1124.severity = error # Do not use regions
+dotnet_diagnostic.SA1125.severity = error # Use shorthand for nullable types
+dotnet_diagnostic.SA1127.severity = error # Generic type constraints must be on own line
+dotnet_diagnostic.SA1128.severity = error # Constructor initializer must be on own line
+dotnet_diagnostic.SA1129.severity = error # Do not use default value type constructor
+dotnet_diagnostic.SA1130.severity = error # Use lambda syntax
+dotnet_diagnostic.SA1131.severity = error # Use readable conditions
+dotnet_diagnostic.SA1132.severity = error # Do not combine fields
+dotnet_diagnostic.SA1133.severity = error # Do not combine attributes
+dotnet_diagnostic.SA1134.severity = error # Attributes must not share line
+dotnet_diagnostic.SA1135.severity = error # Using directives must be qualified
+dotnet_diagnostic.SA1136.severity = error # Enum values should be on separate lines
+dotnet_diagnostic.SA1137.severity = error # Elements should have the same indentation
+dotnet_diagnostic.SA1139.severity = error # Use literal suffix notation instead of casting
 
 ###################
 # StyleCop Analyzers (SA) - Ordering Rules
 ###################
-dotnet_diagnostic.SA1200.severity = none             # Using directives must be placed correctly
-dotnet_diagnostic.SA1201.severity = error            # Elements must appear in the correct order
-dotnet_diagnostic.SA1202.severity = error            # Elements must be ordered by access
-dotnet_diagnostic.SA1203.severity = error            # Constants must appear before fields
-dotnet_diagnostic.SA1204.severity = error            # Static elements must appear before instance elements
-dotnet_diagnostic.SA1205.severity = error            # Partial elements must declare access
-dotnet_diagnostic.SA1206.severity = error            # Declaration keywords must follow order
-dotnet_diagnostic.SA1207.severity = error            # Protected must come before internal
-dotnet_diagnostic.SA1208.severity = error            # System using directives must be placed before other using directives
-dotnet_diagnostic.SA1209.severity = error            # Using alias directives must be placed after other using directives
-dotnet_diagnostic.SA1210.severity = error            # Using directives must be ordered alphabetically by namespace
-dotnet_diagnostic.SA1211.severity = error            # Using alias directives must be ordered alphabetically by alias name
-dotnet_diagnostic.SA1212.severity = error            # Property accessors must follow order
-dotnet_diagnostic.SA1213.severity = error            # Event accessors must follow order
-dotnet_diagnostic.SA1214.severity = error            # Readonly elements must appear before non-readonly elements
-dotnet_diagnostic.SA1216.severity = error            # Using static directives must be placed at the correct location
-dotnet_diagnostic.SA1217.severity = error            # Using static directives must be ordered alphabetically
+dotnet_diagnostic.SA1200.severity = none # Using directives must be placed correctly
+dotnet_diagnostic.SA1201.severity = error # Elements must appear in the correct order
+dotnet_diagnostic.SA1202.severity = error # Elements must be ordered by access
+dotnet_diagnostic.SA1203.severity = error # Constants must appear before fields
+dotnet_diagnostic.SA1204.severity = error # Static elements must appear before instance elements
+dotnet_diagnostic.SA1205.severity = error # Partial elements must declare access
+dotnet_diagnostic.SA1206.severity = error # Declaration keywords must follow order
+dotnet_diagnostic.SA1207.severity = error # Protected must come before internal
+dotnet_diagnostic.SA1208.severity = error # System using directives must be placed before other using directives
+dotnet_diagnostic.SA1209.severity = error # Using alias directives must be placed after other using directives
+dotnet_diagnostic.SA1210.severity = error # Using directives must be ordered alphabetically by namespace
+dotnet_diagnostic.SA1211.severity = error # Using alias directives must be ordered alphabetically by alias name
+dotnet_diagnostic.SA1212.severity = error # Property accessors must follow order
+dotnet_diagnostic.SA1213.severity = error # Event accessors must follow order
+dotnet_diagnostic.SA1214.severity = error # Readonly elements must appear before non-readonly elements
+dotnet_diagnostic.SA1216.severity = error # Using static directives must be placed at the correct location
+dotnet_diagnostic.SA1217.severity = error # Using static directives must be ordered alphabetically
 
 ###################
 # StyleCop Analyzers (SA) - Naming Rules
 ###################
-dotnet_diagnostic.SA1300.severity = error            # Element must begin with upper-case letter
-dotnet_diagnostic.SA1302.severity = error            # Interface names must begin with I
-dotnet_diagnostic.SA1303.severity = error            # Const field names must begin with upper-case letter
-dotnet_diagnostic.SA1304.severity = error            # Non-private readonly fields must begin with upper-case letter
-dotnet_diagnostic.SA1306.severity = none             # Field names must begin with lower-case letter
-dotnet_diagnostic.SA1307.severity = error            # Accessible fields must begin with upper-case letter
-dotnet_diagnostic.SA1308.severity = error            # Variable names must not be prefixed
-dotnet_diagnostic.SA1309.severity = none             # Field names must not begin with underscore
-dotnet_diagnostic.SA1310.severity = error            # Field names must not contain underscore
-dotnet_diagnostic.SA1311.severity = none             # Static readonly fields must begin with upper-case letter
-dotnet_diagnostic.SA1312.severity = error            # Variable names must begin with lower-case letter
-dotnet_diagnostic.SA1313.severity = error            # Parameter names must begin with lower-case letter
-dotnet_diagnostic.SA1314.severity = error            # Type parameter names must begin with T
-dotnet_diagnostic.SA1316.severity = none             # Tuple element names should use correct casing
+dotnet_diagnostic.SA1300.severity = error # Element must begin with upper-case letter
+dotnet_diagnostic.SA1302.severity = error # Interface names must begin with I
+dotnet_diagnostic.SA1303.severity = error # Const field names must begin with upper-case letter
+dotnet_diagnostic.SA1304.severity = error # Non-private readonly fields must begin with upper-case letter
+dotnet_diagnostic.SA1306.severity = none # Field names must begin with lower-case letter
+dotnet_diagnostic.SA1307.severity = error # Accessible fields must begin with upper-case letter
+dotnet_diagnostic.SA1308.severity = error # Variable names must not be prefixed
+dotnet_diagnostic.SA1309.severity = none # Field names must not begin with underscore
+dotnet_diagnostic.SA1310.severity = error # Field names must not contain underscore
+dotnet_diagnostic.SA1311.severity = none # Static readonly fields must begin with upper-case letter
+dotnet_diagnostic.SA1312.severity = error # Variable names must begin with lower-case letter
+dotnet_diagnostic.SA1313.severity = error # Parameter names must begin with lower-case letter
+dotnet_diagnostic.SA1314.severity = error # Type parameter names must begin with T
+dotnet_diagnostic.SA1316.severity = none # Tuple element names should use correct casing
 
 ###################
 # StyleCop Analyzers (SA) - Maintainability Rules
 ###################
-dotnet_diagnostic.SA1119.severity = error            # Statement must not use unnecessary parenthesis
-dotnet_diagnostic.SA1400.severity = error            # Access modifier must be declared
-dotnet_diagnostic.SA1401.severity = error            # Fields must be private
-dotnet_diagnostic.SA1402.severity = error            # File may only contain a single type
-dotnet_diagnostic.SA1403.severity = error            # File may only contain a single namespace
-dotnet_diagnostic.SA1404.severity = error            # Code analysis suppression must have justification
-dotnet_diagnostic.SA1405.severity = error            # Debug.Assert must provide message text
-dotnet_diagnostic.SA1406.severity = error            # Debug.Fail must provide message text
-dotnet_diagnostic.SA1407.severity = error            # Arithmetic expressions must declare precedence
-dotnet_diagnostic.SA1408.severity = error            # Conditional expressions must declare precedence
-dotnet_diagnostic.SA1410.severity = error            # Remove delegate parenthesis when possible
-dotnet_diagnostic.SA1411.severity = error            # Attribute constructor must not use unnecessary parenthesis
-dotnet_diagnostic.SA1413.severity = none             # Use trailing commas in multi-line initializers
+dotnet_diagnostic.SA1119.severity = error # Statement must not use unnecessary parenthesis
+dotnet_diagnostic.SA1400.severity = error # Access modifier must be declared
+dotnet_diagnostic.SA1401.severity = error # Fields must be private
+dotnet_diagnostic.SA1402.severity = error # File may only contain a single type
+dotnet_diagnostic.SA1403.severity = error # File may only contain a single namespace
+dotnet_diagnostic.SA1404.severity = error # Code analysis suppression must have justification
+dotnet_diagnostic.SA1405.severity = error # Debug.Assert must provide message text
+dotnet_diagnostic.SA1406.severity = error # Debug.Fail must provide message text
+dotnet_diagnostic.SA1407.severity = error # Arithmetic expressions must declare precedence
+dotnet_diagnostic.SA1408.severity = error # Conditional expressions must declare precedence
+dotnet_diagnostic.SA1410.severity = error # Remove delegate parenthesis when possible
+dotnet_diagnostic.SA1411.severity = error # Attribute constructor must not use unnecessary parenthesis
+dotnet_diagnostic.SA1413.severity = none # Use trailing commas in multi-line initializers
 
 ###################
 # StyleCop Analyzers (SA) - Layout Rules
 ###################
-dotnet_diagnostic.SA1500.severity = error            # Braces for multi-line statements must not share line
-dotnet_diagnostic.SA1501.severity = error            # Statement must not be on single line
-dotnet_diagnostic.SA1502.severity = error            # Element must not be on single line
-dotnet_diagnostic.SA1503.severity = error            # Braces must not be omitted
-dotnet_diagnostic.SA1504.severity = error            # All accessors must be single-line or multi-line
-dotnet_diagnostic.SA1505.severity = none             # Opening braces must not be followed by blank line
-dotnet_diagnostic.SA1506.severity = error            # Element documentation headers must not be followed by blank line
-dotnet_diagnostic.SA1507.severity = error            # Code must not contain multiple blank lines in a row
-dotnet_diagnostic.SA1508.severity = error            # Closing braces must not be preceded by blank line
-dotnet_diagnostic.SA1509.severity = error            # Opening braces must not be preceded by blank line
-dotnet_diagnostic.SA1510.severity = error            # Chained statement blocks must not be preceded by blank line
-dotnet_diagnostic.SA1511.severity = error            # While-do footer must not be preceded by blank line
-dotnet_diagnostic.SA1512.severity = error            # Single-line comments must not be followed by blank line
-dotnet_diagnostic.SA1513.severity = error            # Closing brace must be followed by blank line
-dotnet_diagnostic.SA1514.severity = none             # Element documentation header must be preceded by blank line
-dotnet_diagnostic.SA1515.severity = error            # Single-line comment must be preceded by blank line
-dotnet_diagnostic.SA1516.severity = error            # Elements must be separated by blank line
-dotnet_diagnostic.SA1517.severity = error            # Code must not contain blank lines at start of file
-dotnet_diagnostic.SA1518.severity = error            # Use line endings correctly at end of file
-dotnet_diagnostic.SA1519.severity = error            # Braces must not be omitted from multi-line child statement
-dotnet_diagnostic.SA1520.severity = error            # Use braces consistently
+dotnet_diagnostic.SA1500.severity = error # Braces for multi-line statements must not share line
+dotnet_diagnostic.SA1501.severity = error # Statement must not be on single line
+dotnet_diagnostic.SA1502.severity = error # Element must not be on single line
+dotnet_diagnostic.SA1503.severity = error # Braces must not be omitted
+dotnet_diagnostic.SA1504.severity = error # All accessors must be single-line or multi-line
+dotnet_diagnostic.SA1505.severity = none # Opening braces must not be followed by blank line
+dotnet_diagnostic.SA1506.severity = error # Element documentation headers must not be followed by blank line
+dotnet_diagnostic.SA1507.severity = error # Code must not contain multiple blank lines in a row
+dotnet_diagnostic.SA1508.severity = error # Closing braces must not be preceded by blank line
+dotnet_diagnostic.SA1509.severity = error # Opening braces must not be preceded by blank line
+dotnet_diagnostic.SA1510.severity = error # Chained statement blocks must not be preceded by blank line
+dotnet_diagnostic.SA1511.severity = error # While-do footer must not be preceded by blank line
+dotnet_diagnostic.SA1512.severity = error # Single-line comments must not be followed by blank line
+dotnet_diagnostic.SA1513.severity = error # Closing brace must be followed by blank line
+dotnet_diagnostic.SA1514.severity = none # Element documentation header must be preceded by blank line
+dotnet_diagnostic.SA1515.severity = error # Single-line comment must be preceded by blank line
+dotnet_diagnostic.SA1516.severity = error # Elements must be separated by blank line
+dotnet_diagnostic.SA1517.severity = error # Code must not contain blank lines at start of file
+dotnet_diagnostic.SA1518.severity = error # Use line endings correctly at end of file
+dotnet_diagnostic.SA1519.severity = error # Braces must not be omitted from multi-line child statement
+dotnet_diagnostic.SA1520.severity = error # Use braces consistently
 
 ###################
 # StyleCop Analyzers (SA) - Documentation Rules
 ###################
-dotnet_diagnostic.SA1600.severity = error            # Elements must be documented
-dotnet_diagnostic.SA1601.severity = error            # Partial elements must be documented
-dotnet_diagnostic.SA1602.severity = error            # Enumeration items must be documented
-dotnet_diagnostic.SA1604.severity = error            # Element documentation must have summary
-dotnet_diagnostic.SA1605.severity = error            # Partial element documentation must have summary
-dotnet_diagnostic.SA1606.severity = error            # Element documentation must have summary text
-dotnet_diagnostic.SA1607.severity = error            # Partial element documentation must have summary text
-dotnet_diagnostic.SA1608.severity = error            # Element documentation must not have default summary
-dotnet_diagnostic.SA1610.severity = error            # Property documentation must have value text
-dotnet_diagnostic.SA1611.severity = error            # Element parameters must be documented
-dotnet_diagnostic.SA1612.severity = error            # Element parameter documentation must match element parameters
-dotnet_diagnostic.SA1613.severity = error            # Element parameter documentation must declare parameter name
-dotnet_diagnostic.SA1614.severity = error            # Element parameter documentation must have text
-dotnet_diagnostic.SA1615.severity = error            # Element return value must be documented
-dotnet_diagnostic.SA1616.severity = error            # Element return value documentation must have text
-dotnet_diagnostic.SA1617.severity = error            # Void return value must not be documented
-dotnet_diagnostic.SA1618.severity = error            # Generic type parameters must be documented
-dotnet_diagnostic.SA1619.severity = error            # Generic type parameters must be documented partial class
-dotnet_diagnostic.SA1620.severity = error            # Generic type parameter documentation must match type parameters
-dotnet_diagnostic.SA1621.severity = error            # Generic type parameter documentation must declare parameter name
-dotnet_diagnostic.SA1622.severity = error            # Generic type parameter documentation must have text
-dotnet_diagnostic.SA1623.severity = error            # Property summary documentation must match accessors
-dotnet_diagnostic.SA1624.severity = error            # Property summary documentation must omit set accessor with restricted access
-dotnet_diagnostic.SA1625.severity = error            # Element documentation must not be copied and pasted
-dotnet_diagnostic.SA1626.severity = error            # Single-line comments must not use documentation style slashes
-dotnet_diagnostic.SA1627.severity = error            # Documentation text must not be empty
-dotnet_diagnostic.SA1629.severity = error            # Documentation text must end with a period
-dotnet_diagnostic.SA1633.severity = error            # File must have header
-dotnet_diagnostic.SA1634.severity = error            # File header must show copyright
-dotnet_diagnostic.SA1635.severity = error            # File header must have copyright text
-dotnet_diagnostic.SA1636.severity = error            # File header copyright text must match
-dotnet_diagnostic.SA1637.severity = none             # File header must contain file name
-dotnet_diagnostic.SA1638.severity = none             # File header file name documentation must match file name
-dotnet_diagnostic.SA1640.severity = error            # File header must have valid company text
-dotnet_diagnostic.SA1641.severity = error            # File header company name text must match
-dotnet_diagnostic.SA1642.severity = error            # Constructor summary documentation must begin with standard text
-dotnet_diagnostic.SA1643.severity = error            # Destructor summary documentation must begin with standard text
-dotnet_diagnostic.SA1649.severity = error            # File name must match type name
-dotnet_diagnostic.SA1651.severity = error            # Do not use placeholder elements
+dotnet_diagnostic.SA1600.severity = error # Elements must be documented
+dotnet_diagnostic.SA1601.severity = error # Partial elements must be documented
+dotnet_diagnostic.SA1602.severity = error # Enumeration items must be documented
+dotnet_diagnostic.SA1604.severity = error # Element documentation must have summary
+dotnet_diagnostic.SA1605.severity = error # Partial element documentation must have summary
+dotnet_diagnostic.SA1606.severity = error # Element documentation must have summary text
+dotnet_diagnostic.SA1607.severity = error # Partial element documentation must have summary text
+dotnet_diagnostic.SA1608.severity = error # Element documentation must not have default summary
+dotnet_diagnostic.SA1610.severity = error # Property documentation must have value text
+dotnet_diagnostic.SA1611.severity = error # Element parameters must be documented
+dotnet_diagnostic.SA1612.severity = error # Element parameter documentation must match element parameters
+dotnet_diagnostic.SA1613.severity = error # Element parameter documentation must declare parameter name
+dotnet_diagnostic.SA1614.severity = error # Element parameter documentation must have text
+dotnet_diagnostic.SA1615.severity = error # Element return value must be documented
+dotnet_diagnostic.SA1616.severity = error # Element return value documentation must have text
+dotnet_diagnostic.SA1617.severity = error # Void return value must not be documented
+dotnet_diagnostic.SA1618.severity = error # Generic type parameters must be documented
+dotnet_diagnostic.SA1619.severity = error # Generic type parameters must be documented partial class
+dotnet_diagnostic.SA1620.severity = error # Generic type parameter documentation must match type parameters
+dotnet_diagnostic.SA1621.severity = error # Generic type parameter documentation must declare parameter name
+dotnet_diagnostic.SA1622.severity = error # Generic type parameter documentation must have text
+dotnet_diagnostic.SA1623.severity = error # Property summary documentation must match accessors
+dotnet_diagnostic.SA1624.severity = error # Property summary documentation must omit set accessor with restricted access
+dotnet_diagnostic.SA1625.severity = error # Element documentation must not be copied and pasted
+dotnet_diagnostic.SA1626.severity = error # Single-line comments must not use documentation style slashes
+dotnet_diagnostic.SA1627.severity = error # Documentation text must not be empty
+dotnet_diagnostic.SA1629.severity = error # Documentation text must end with a period
+dotnet_diagnostic.SA1633.severity = error # File must have header
+dotnet_diagnostic.SA1634.severity = error # File header must show copyright
+dotnet_diagnostic.SA1635.severity = error # File header must have copyright text
+dotnet_diagnostic.SA1636.severity = error # File header copyright text must match
+dotnet_diagnostic.SA1637.severity = none # File header must contain file name
+dotnet_diagnostic.SA1638.severity = none # File header file name documentation must match file name
+dotnet_diagnostic.SA1640.severity = error # File header must have valid company text
+dotnet_diagnostic.SA1641.severity = error # File header company name text must match
+dotnet_diagnostic.SA1642.severity = error # Constructor summary documentation must begin with standard text
+dotnet_diagnostic.SA1643.severity = error # Destructor summary documentation must begin with standard text
+dotnet_diagnostic.SA1649.severity = error # File name must match type name
+dotnet_diagnostic.SA1651.severity = error # Do not use placeholder elements
 
 ###################
 # StyleCop Alternative Analyzers (SX) - Alternative Rules
 ###################
-dotnet_diagnostic.SX1101.severity = error            # Do not prefix local members with this
-dotnet_diagnostic.SX1309.severity = error            # Field names must begin with underscore
-dotnet_diagnostic.SX1623.severity = none             # Property summary documentation must match accessors (alternative)
+dotnet_diagnostic.SX1101.severity = error # Do not prefix local members with this
+dotnet_diagnostic.SX1309.severity = error # Field names must begin with underscore
+dotnet_diagnostic.SX1623.severity = none # Property summary documentation must match accessors (alternative)
 
 #############################################
 # NUnit Analyzers
@@ -799,6 +799,138 @@ dotnet_diagnostic.NUnit3004.severity = error # Field should be disposed in TearD
 ###################
 dotnet_diagnostic.NUnit4001.severity = error # Simplify the Values attribute
 dotnet_diagnostic.NUnit4002.severity = error # Use Specific constraint
+
+###################
+# Trimming Analyzer Warnings (IL2001 - IL2123)
+# See: https://learn.microsoft.com/en-us/dotnet/core/deploying/trimming/trim-warnings/
+###################
+dotnet_diagnostic.IL2001.severity = error # Type in UnreferencedCode attribute doesn't have matching RequiresUnreferencedCode
+dotnet_diagnostic.IL2002.severity = error # Method with RequiresUnreferencedCode called from code without that attribute
+dotnet_diagnostic.IL2003.severity = error # RequiresUnreferencedCode attribute is only supported on methods
+dotnet_diagnostic.IL2004.severity = error # Incorrect RequiresUnreferencedCode signature
+dotnet_diagnostic.IL2005.severity = error # Could not resolve dependency assembly
+dotnet_diagnostic.IL2007.severity = error # Could not process embedded resource
+dotnet_diagnostic.IL2008.severity = error # Could not find type in assembly
+dotnet_diagnostic.IL2009.severity = error # Could not find method in type
+dotnet_diagnostic.IL2010.severity = error # Invalid value for PreserveDependencyAttribute
+dotnet_diagnostic.IL2011.severity = error # Unknown body modification
+dotnet_diagnostic.IL2012.severity = error # Could not find field in type
+dotnet_diagnostic.IL2013.severity = error # Substitution file contains invalid XML
+dotnet_diagnostic.IL2014.severity = error # Missing substitution file
+dotnet_diagnostic.IL2015.severity = error # Invalid XML encountered in substitution file
+dotnet_diagnostic.IL2016.severity = error # Could not find type from substitution XML
+dotnet_diagnostic.IL2017.severity = error # Could not find method in type specified in substitution XML
+dotnet_diagnostic.IL2018.severity = error # Could not find field in type specified in substitution XML
+dotnet_diagnostic.IL2019.severity = error # Could not find interface implementation in type
+dotnet_diagnostic.IL2022.severity = error # Type in DynamicallyAccessedMembers attribute doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2023.severity = error # Method returning DynamicallyAccessedMembers annotated type requires the same annotation
+dotnet_diagnostic.IL2024.severity = error # Multiple DynamicallyAccessedMembers annotations on a member are not supported
+dotnet_diagnostic.IL2025.severity = error # Duplicate preserve attribute
+dotnet_diagnostic.IL2026.severity = error # Using member annotated with RequiresUnreferencedCode
+dotnet_diagnostic.IL2027.severity = error # RequiresUnreferencedCodeAttribute is only supported on methods and constructors
+dotnet_diagnostic.IL2028.severity = error # Invalid RequiresUnreferencedCode attribute usage
+dotnet_diagnostic.IL2029.severity = error # RequiresUnreferencedCode attribute on type is not supported
+dotnet_diagnostic.IL2030.severity = error # Dynamic invocation of method requiring unreferenced code is not safe
+dotnet_diagnostic.IL2031.severity = error # Could not resolve dependency assembly from embedded resource
+dotnet_diagnostic.IL2032.severity = error # Error reading debug symbols
+dotnet_diagnostic.IL2033.severity = error # Trying to modify a sealed type
+dotnet_diagnostic.IL2034.severity = error # Value passed to the implicit 'this' parameter does not satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2035.severity = error # Unrecognized value passed to the parameter of method with 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2036.severity = error # Interface implementation has different DynamicallyAccessedMembers annotations than interface
+dotnet_diagnostic.IL2037.severity = error # BaseType annotation doesn't match
+dotnet_diagnostic.IL2038.severity = error # Derived type doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2039.severity = error # Implementation method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2040.severity = error # Interface member doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2041.severity = error # GetType call on DynamicallyAccessedMembers annotated generic parameter
+dotnet_diagnostic.IL2042.severity = error # The DynamicallyAccessedMembersAttribute value used in a custom attribute is not compatible
+dotnet_diagnostic.IL2043.severity = error # DynamicallyAccessedMembersAttribute on property conflicts with base property
+dotnet_diagnostic.IL2044.severity = error # DynamicallyAccessedMembersAttribute on event conflicts with base event
+dotnet_diagnostic.IL2045.severity = error # Field type doesn't satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2046.severity = error # Trimmer couldn't find PreserveBaseOverridesAttribute on a method
+dotnet_diagnostic.IL2048.severity = error # Internal attribute couldn't be removed
+dotnet_diagnostic.IL2049.severity = error # Could not process data format message
+dotnet_diagnostic.IL2050.severity = error # Correctness of COM interop cannot be guaranteed after trimming
+dotnet_diagnostic.IL2051.severity = error # COM related type is trimmed
+dotnet_diagnostic.IL2052.severity = error # Resolving member reference for P/Invoke into type that is trimmed
+dotnet_diagnostic.IL2053.severity = error # Target method is trimmed
+dotnet_diagnostic.IL2054.severity = error # Generic constraint type is annotated with DynamicallyAccessedMembersAttribute which requires unreferenced code
+dotnet_diagnostic.IL2055.severity = error # Type implements COM visible type but has no GUID
+dotnet_diagnostic.IL2056.severity = error # Generic parameter with DynamicallyAccessedMembers annotation is not publicly visible
+dotnet_diagnostic.IL2057.severity = error # Unrecognized value passed to the parameter of method with DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2058.severity = error # Parameter types of method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2059.severity = error # Unrecognized reflection pattern
+dotnet_diagnostic.IL2060.severity = error # Unrecognized value passed to parameter with DynamicallyAccessedMembersAttribute
+dotnet_diagnostic.IL2061.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2062.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2063.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2064.severity = error # Value assigned to field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2065.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2066.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2067.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2068.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2069.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2070.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2071.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2072.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2073.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2074.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2075.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2076.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2077.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2078.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2079.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2080.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2081.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2082.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2083.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2084.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2085.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2087.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2088.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2089.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2090.severity = error # Value passed to implicit this parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2091.severity = error # Target generic argument doesn't satisfy 'DynamicallyAccessedMembersAttribute' requirements
+dotnet_diagnostic.IL2092.severity = error # Value passed to generic parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2093.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2094.severity = error # DynamicallyAccessedMembers on 'this' parameter doesn't match overridden member
+dotnet_diagnostic.IL2095.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2096.severity = error # Calling method on statically typed generic instance requires unreferenced code
+dotnet_diagnostic.IL2097.severity = error # Value passed to parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2098.severity = error # Value stored in field doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2099.severity = error # Value returned from method doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2100.severity = error # XML stream doesn't conform to the schema
+dotnet_diagnostic.IL2101.severity = error # Embedded XML in assembly couldn't be loaded
+dotnet_diagnostic.IL2102.severity = error # Invalid warning number passed to UnconditionalSuppressMessage
+dotnet_diagnostic.IL2103.severity = error # Value passed to the 'propertyAccessExpression' parameter doesn't satisfy DynamicallyAccessedMembersAttribute requirements
+dotnet_diagnostic.IL2104.severity = error # Assembly that was specified through a custom step
+dotnet_diagnostic.IL2105.severity = error # Type from a custom step that couldn't be loaded
+dotnet_diagnostic.IL2106.severity = error # Method from a custom step that couldn't be loaded
+dotnet_diagnostic.IL2107.severity = error # Methods in types that derive from RemotingClientProxy cannot be statically determined
+dotnet_diagnostic.IL2108.severity = error # Invalid scope for UnconditionalSuppressMessage
+dotnet_diagnostic.IL2109.severity = error # Method doesn't have matching DynamicallyAccessedMembers annotation
+dotnet_diagnostic.IL2110.severity = error # Invalid member name in UnconditionalSuppressMessage
+dotnet_diagnostic.IL2111.severity = error # Method with parameters or return value with DynamicallyAccessedMembersAttribute is not supported
+dotnet_diagnostic.IL2112.severity = error # Reflection call to method with DynamicallyAccessedMembersAttribute requirements cannot be statically analyzed
+dotnet_diagnostic.IL2113.severity = error # DynamicallyAccessedMembers on type references Type.MakeGenericType with different requirements
+dotnet_diagnostic.IL2114.severity = error # DynamicallyAccessedMembers mismatch on signature types
+dotnet_diagnostic.IL2115.severity = error # DynamicallyAccessedMembers on type or base types references member which requires unreferenced code
+dotnet_diagnostic.IL2116.severity = error # DynamicallyAccessedMembers on parameter types doesn't match overridden parameter
+dotnet_diagnostic.IL2117.severity = error # Methods with DynamicallyAccessedMembersAttribute annotations cannot be replaced
+dotnet_diagnostic.IL2122.severity = error # Reflection call to method with UnreferencedCode attribute cannot be statically analyzed
+dotnet_diagnostic.IL2123.severity = error # DynamicallyAccessedMembers on method or parameter doesn't match overridden member
+
+###################
+# AOT Analyzer Warnings (IL3xxx)
+# See: https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/warnings/
+###################
+dotnet_diagnostic.IL3050.severity = error # Using member annotated with RequiresDynamicCode
+dotnet_diagnostic.IL3051.severity = error # RequiresDynamicCode attribute is only supported on methods and constructors
+dotnet_diagnostic.IL3052.severity = error # RequiresDynamicCode attribute on type is not supported
+dotnet_diagnostic.IL3053.severity = error # Assembly has RequiresDynamicCode attribute
+dotnet_diagnostic.IL3054.severity = error # Generic expansion in type requires dynamic code
+dotnet_diagnostic.IL3055.severity = error # MakeGenericType on non-supported type requires dynamic code
+dotnet_diagnostic.IL3056.severity = error # MakeGenericMethod on non-supported method requires dynamic code
+dotnet_diagnostic.IL3057.severity = error # Reflection access to generic parameter requires dynamic code
 
 #############################################
 # C++ Files

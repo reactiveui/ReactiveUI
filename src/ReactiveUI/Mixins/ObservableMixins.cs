@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -10,6 +12,11 @@ namespace ReactiveUI;
 /// </summary>
 public static class ObservableMixins
 {
+    /// <summary>
+    /// Initializes static members of the <see cref="ObservableMixins"/> class.
+    /// </summary>
+    static ObservableMixins() => RxAppBuilder.EnsureInitialized();
+
     /// <summary>
     /// Returns only values that are not null.
     /// Converts the nullability.

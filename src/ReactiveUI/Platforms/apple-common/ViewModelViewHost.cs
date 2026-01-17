@@ -42,17 +42,51 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which require dynamic code generation")]
-[RequiresUnreferencedCode("ViewModelViewHost uses ReactiveUI extension methods and RxApp properties which may require unreferenced code")]
-#endif
+[RequiresUnreferencedCode("This class uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 public class ViewModelViewHost : ReactiveViewController
 {
+    /// <summary>
+    /// Tracks the currently-adopted view controller and ensures it is disowned on replacement or disposal.
+    /// </summary>
     private readonly SerialDisposable _currentView;
-    private readonly ObservableAsPropertyHelper<string?> _viewContract;
+
+    /// <summary>
+    /// Holds subscriptions created during initialization.
+    /// </summary>
+    private readonly CompositeDisposable _subscriptions;
+
+    /// <summary>
+    /// Holds the subscription to <see cref="ViewContractObservable"/> (the inner observable) and swaps it when the
+    /// property changes.
+    /// </summary>
+    [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Disposed by _subscriptions")]
+    private readonly SerialDisposable _viewContractObservableSubscription;
+
+    /// <summary>
+    /// Backing field for <see cref="ViewContract"/>. This is updated by observing <see cref="ViewContractObservable"/>
+    /// and is raised as a property change for bindings.
+    /// </summary>
+    private string? _viewContract;
+
+    /// <summary>
+    /// Backing field for <see cref="ViewLocator"/>.
+    /// </summary>
     private IViewLocator? _viewLocator;
+
+    /// <summary>
+    /// Backing field for <see cref="DefaultContent"/>.
+    /// </summary>
     private NSViewController? _defaultContent;
+
+    /// <summary>
+    /// Backing field for <see cref="ViewModel"/>.
+    /// </summary>
     private object? _viewModel;
+
+    /// <summary>
+    /// Backing field for <see cref="ViewContractObservable"/>.
+    /// </summary>
     private IObservable<string?>? _viewContractObservable;
 
     /// <summary>
@@ -61,9 +95,17 @@ public class ViewModelViewHost : ReactiveViewController
     public ViewModelViewHost()
     {
         _currentView = new SerialDisposable();
-        _viewContract = this
-            .WhenAnyObservable(static x => x.ViewContractObservable)
-            .ToProperty(this, static x => x.ViewContract, initialValue: null, scheduler: RxSchedulers.MainThreadScheduler);
+        _subscriptions = new CompositeDisposable();
+        _viewContractObservableSubscription = new SerialDisposable();
+
+        // Drive ViewContract from ViewContractObservable without WhenAny*/expression trees (AOT-trimmer friendly).
+        // We always publish an initial null contract to preserve the original StartWith(null) behavior.
+        var contractStream = CreateViewContractStream()
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(SetViewContract);
+
+        _subscriptions.Add(contractStream);
+        _subscriptions.Add(_viewContractObservableSubscription);
 
         Initialize();
     }
@@ -112,7 +154,7 @@ public class ViewModelViewHost : ReactiveViewController
     /// </summary>
     public string? ViewContract
     {
-        get => _viewContract.Value;
+        get => _viewContract;
         set => ViewContractObservable = Observable.Return(value);
     }
 
@@ -123,11 +165,18 @@ public class ViewModelViewHost : ReactiveViewController
 
         if (disposing)
         {
+            _subscriptions.Dispose();
             _currentView.Dispose();
-            _viewContract.Dispose();
         }
     }
 
+    /// <summary>
+    /// Adds <paramref name="child"/> as a child controller of <paramref name="parent"/> and ensures its view fills
+    /// the parent bounds.
+    /// </summary>
+    /// <param name="parent">The parent controller.</param>
+    /// <param name="child">The child controller to adopt.</param>
+    /// <exception cref="ArgumentException">Thrown when the parent's view is <see langword="null"/>.</exception>
     private static void Adopt(NSViewController parent, NSViewController? child)
     {
         ArgumentExceptionHelper.ThrowIfNull(parent);
@@ -174,6 +223,11 @@ public class ViewModelViewHost : ReactiveViewController
 #endif
     }
 
+    /// <summary>
+    /// Removes <paramref name="child"/> from its parent controller and removes its view from the view hierarchy.
+    /// </summary>
+    /// <param name="child">The child controller to disown.</param>
+    /// <exception cref="ArgumentException">Thrown when the child's view is <see langword="null"/>.</exception>
     private static void Disown(NSViewController child)
     {
         if (child.View is null)
@@ -188,57 +242,137 @@ public class ViewModelViewHost : ReactiveViewController
         child.RemoveFromParentViewController();
     }
 
+    /// <summary>
+    /// Initializes reactive subscriptions that drive view resolution and controller swapping.
+    /// </summary>
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void Initialize()
     {
-        var viewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
-            .CombineLatest(
-                this.WhenAnyObservable(x => x.ViewContractObservable).StartWith((string?)null),
-                (vm, contract) => new { ViewModel = vm, Contract = contract })
-            .Where(x => x.ViewModel is not null);
+        var viewModelChanges = ObserveProperty(static x => x.ViewModel, nameof(ViewModel));
+        var defaultContentChanges = ObserveProperty(static x => x.DefaultContent, nameof(DefaultContent));
+        var contractChanges = ObserveProperty(static x => x.ViewContract, nameof(ViewContract));
 
-        var defaultViewChange = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel))
-            .CombineLatest(
-                this.WhenAnyValue<ViewModelViewHost, NSViewController?>(nameof(DefaultContent)),
-                (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
-            .Where(x => x.ViewModel is null && x.DefaultContent is not null)
-            .Select(x => x.DefaultContent);
+        var viewChange =
+            viewModelChanges
+                .CombineLatest(
+                    contractChanges,
+                    static (vm, contract) => new { ViewModel = vm, Contract = contract })
+                .Where(static x => x.ViewModel is not null);
 
-        viewChange
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Subscribe(
-                x =>
-                {
-                    var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                    var view = viewLocator.ResolveView<object?>(x.ViewModel, x.Contract);
+        var defaultViewChange =
+            viewModelChanges
+                .CombineLatest(
+                    defaultContentChanges,
+                    static (vm, defaultContent) => new { ViewModel = vm, DefaultContent = defaultContent })
+                .Where(static x => x.ViewModel is null && x.DefaultContent is not null)
+                .Select(static x => x.DefaultContent);
 
-                    if (view is null)
+        _subscriptions.Add(
+            viewChange
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
+                .Subscribe(
+                    x =>
                     {
-                        var message = $"Unable to resolve view for \"{x.ViewModel?.GetType()}\"";
+                        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                        var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
 
-                        if (x.Contract is not null)
+                        if (view is null)
                         {
-                            message += $" and contract \"{x.Contract.GetType()}\"";
+                            var message = $"Unable to resolve view for \"{x.ViewModel?.GetType()}\"";
+
+                            if (x.Contract is not null)
+                            {
+                                message += $" and contract \"{x.Contract.GetType()}\"";
+                            }
+
+                            message += ".";
+                            throw new Exception(message);
                         }
 
-                        message += ".";
-                        throw new Exception(message);
-                    }
+                        if (view is not NSViewController viewController)
+                        {
+                            //// TODO: As viewController may be NULL at this point this execution will never show the FullName, find fixed text to replace this with.
+                            throw new Exception($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                        }
 
-                    if (view is not NSViewController viewController)
-                    {
-                        //// TODO: As viewController may be NULL at this point this execution will never show the FullName, find fixed text to replace this with.
+                        view.ViewModel = x.ViewModel;
+                        Adopt(this, viewController);
 
-                        throw new Exception($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
-                    }
+                        _currentView.Disposable =
+                            new CompositeDisposable(
+                                viewController,
+                                Disposable.Create(() => Disown(viewController)));
+                    }));
 
-                    view.ViewModel = x.ViewModel;
-                    Adopt(this, viewController);
+        _subscriptions.Add(
+            defaultViewChange
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
+                .Subscribe(x => Adopt(this, x)));
+    }
 
-                    _currentView.Disposable = (CompositeDisposable?)[viewController, Disposable.Create(() => Disown(viewController))];
-                });
+    /// <summary>
+    /// Creates a contract stream that (1) emits an initial <see langword="null"/> value, (2) subscribes to the current
+    /// <see cref="ViewContractObservable"/>, and (3) swaps the inner subscription when the property changes.
+    /// </summary>
+    /// <returns>An observable of view contracts.</returns>
+    private IObservable<string?> CreateViewContractStream()
+    {
+        return Observable.Create<string?>(
+            observer =>
+            {
+                // Preserve the previous StartWith((string?)null) semantics.
+                observer.OnNext(null);
 
-        defaultViewChange
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Subscribe(x => Adopt(this, x));
+                void SwapInner(IObservable<string?>? source)
+                {
+                    _viewContractObservableSubscription.Disposable =
+                        source is null
+                            ? Disposable.Empty
+                            : source.Subscribe(observer);
+                }
+
+                // Subscribe to the initial observable (if any).
+                SwapInner(ViewContractObservable);
+
+                // Listen for property changes and rewire the inner subscription.
+                var outerSubscription =
+                    Changed
+                        .Where(static e => e.PropertyName == nameof(ViewContractObservable))
+                        .Subscribe(_ => SwapInner(ViewContractObservable));
+
+                return new CompositeDisposable(outerSubscription);
+            });
+    }
+
+    /// <summary>
+    /// Observes changes to a property without using WhenAny* APIs (avoids RUC/RDC from expression-based pipelines).
+    /// The observable emits the current value immediately and then emits on each subsequent property change.
+    /// </summary>
+    /// <typeparam name="T">The property type.</typeparam>
+    /// <param name="getter">A getter for the property value.</param>
+    /// <param name="propertyName">The name of the property to observe.</param>
+    /// <returns>An observable that emits the property value.</returns>
+    private IObservable<T> ObserveProperty<T>(Func<ViewModelViewHost, T> getter, string propertyName)
+    {
+        return Observable.Create<T>(
+            observer =>
+            {
+                observer.OnNext(getter(this));
+
+                return Changed
+                    .Where(e => e.PropertyName == propertyName)
+                    .Select(_ => getter(this))
+                    .Subscribe(observer);
+            });
+    }
+
+    /// <summary>
+    /// Updates the <see cref="ViewContract"/> backing field and raises property changed notifications.
+    /// </summary>
+    /// <param name="contract">The new contract value.</param>
+    private void SetViewContract(string? contract)
+    {
+        this.RaiseAndSetIfChanged(ref _viewContract, contract, nameof(ViewContract));
     }
 }

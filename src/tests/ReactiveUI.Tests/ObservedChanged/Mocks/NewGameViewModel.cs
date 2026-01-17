@@ -4,13 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Security.Cryptography;
-
 using DynamicData.Binding;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.ObservedChanged.Mocks;
 
 /// <summary>
-/// A sample view model that implements a game.
+///     A sample view model that implements a game.
 /// </summary>
 /// <seealso cref="ReactiveObject" />
 public class NewGameViewModel : ReactiveObject
@@ -18,7 +17,7 @@ public class NewGameViewModel : ReactiveObject
     private string? _newPlayerName;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="NewGameViewModel"/> class.
+    ///     Initializes a new instance of the <see cref="NewGameViewModel" /> class.
     /// </summary>
     public NewGameViewModel()
     {
@@ -26,76 +25,76 @@ public class NewGameViewModel : ReactiveObject
 
         var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
         StartGame = ReactiveCommand.Create(
-                                           () => { },
-                                           canStart);
+            () => { },
+            canStart);
         RandomizeOrder = ReactiveCommand.Create(
-                                                () =>
-                                                {
-                                                    using (Players.SuspendNotifications())
-                                                    {
-                                                        var list = Players.ToList();
-                                                        ShuffleCrypto(list);
-                                                        Players.Clear();
-                                                        Players.AddRange(list);
-                                                    }
-                                                },
-                                                canStart);
+            () =>
+            {
+                using (Players.SuspendNotifications())
+                {
+                    var list = Players.ToList();
+                    ShuffleCrypto(list);
+                    Players.Clear();
+                    Players.AddRange(list);
+                }
+            },
+            canStart);
 
         RemovePlayer = ReactiveCommand.Create<string>(player => Players.Remove(player));
         var canAddPlayer = this.WhenAnyValue(
-                                             x => x.Players.Count,
-                                             x => x.NewPlayerName,
-                                             (count, newPlayerName) =>
-                                                 count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) &&
-                                                 !Players.Contains(newPlayerName));
+            x => x.Players.Count,
+            x => x.NewPlayerName,
+            (count, newPlayerName) =>
+                count < 7 && !string.IsNullOrWhiteSpace(newPlayerName) &&
+                !Players.Contains(newPlayerName));
         AddPlayer = ReactiveCommand.Create(
-                                           () =>
-                                           {
-                                               if (NewPlayerName is null)
-                                               {
-                                                   throw new InvalidOperationException("NewPlayerName is null");
-                                               }
+            () =>
+            {
+                if (NewPlayerName is null)
+                {
+                    throw new InvalidOperationException("NewPlayerName is null");
+                }
 
-                                               Players.Add(NewPlayerName.Trim());
-                                               NewPlayerName = string.Empty;
-                                           },
-                                           canAddPlayer);
+                Players.Add(NewPlayerName.Trim());
+                NewPlayerName = string.Empty;
+            },
+            canAddPlayer);
     }
 
     /// <summary>
-    /// Gets the players collection.
-    /// </summary>
-    public ObservableCollectionExtended<string> Players { get; }
-
-    /// <summary>
-    /// Gets the add player command.
+    ///     Gets the add player command.
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddPlayer { get; }
 
     /// <summary>
-    /// Gets the remove player command.
+    ///     Gets the players collection.
     /// </summary>
-    public ReactiveCommand<string, Unit> RemovePlayer { get; }
+    public ObservableCollectionExtended<string> Players { get; }
 
     /// <summary>
-    /// Gets the start game command.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> StartGame { get; }
-
-    /// <summary>
-    /// Gets the randomize order command.
+    ///     Gets the randomize order command.
     /// </summary>
     public ReactiveCommand<Unit, Unit> RandomizeOrder { get; }
 
     /// <summary>
-    /// Gets or sets the new player name.
+    ///     Gets the remove player command.
+    /// </summary>
+    public ReactiveCommand<string, Unit> RemovePlayer { get; }
+
+    /// <summary>
+    ///     Gets the start game command.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> StartGame { get; }
+
+    /// <summary>
+    ///     Gets or sets the new player name.
     /// </summary>
     public string? NewPlayerName
     {
         get => _newPlayerName;
         set => this.RaiseAndSetIfChanged(
-                                         ref _newPlayerName,
-                                         value);
+            ref _newPlayerName,
+            value);
     }
 
     private static void ShuffleCrypto<T>(List<T> list)

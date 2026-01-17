@@ -6,6 +6,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows;
 
@@ -40,6 +41,17 @@ public partial class App : Application
                                                          ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
                                                          ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
                                                          ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
+            .WithSuspensionHost<ChatState>() // Configure typed suspension host
+            .WithCacheSizes(smallCacheLimit: 100, bigCacheLimit: 400) // Customize cache sizes
+            .WithExceptionHandler(Observer.Create<Exception>(static ex =>
+            {
+                // Custom exception handler - log unhandled reactive errors
+                Trace.WriteLine($"[ReactiveUI] Unhandled exception: {ex}");
+                if (Debugger.IsAttached)
+                {
+                    Debugger.Break();
+                }
+            }))
             .WithRegistration(static r =>
             {
                 // Register IScreen as a singleton so all resolutions share the same Router
@@ -60,7 +72,7 @@ public partial class App : Application
             .BuildApp();
 
         // Setup Suspension
-        RxApp.SuspensionHost.CreateNewAppState = static () => new ChatState();
+        RxSuspension.SuspensionHost.CreateNewAppState = static () => new ChatState();
 
         var statePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -71,7 +83,7 @@ public partial class App : Application
         _driver = new Services.FileJsonSuspensionDriver(statePath);
 
         // Set an initial state instantly to avoid blocking UI
-        RxApp.SuspensionHost.AppState = new ChatState();
+        RxSuspension.SuspensionHost.AppState = new ChatState();
 
         // Load persisted state asynchronously and update UI when ready
         _ = _driver
@@ -80,7 +92,7 @@ public partial class App : Application
             .Subscribe(
                 static stateObj =>
                 {
-                    RxApp.SuspensionHost.AppState = stateObj;
+                    RxSuspension.SuspensionHost.AppState = stateObj;
                     MessageBus.Current.SendMessage(new ChatStateChanged());
                     Trace.WriteLine("[App] State loaded");
                 },
@@ -125,9 +137,9 @@ public partial class App : Application
             Trace.WriteLine($"[App] Instance exiting. Remaining={remaining} Id={Services.AppInstance.Id}");
 
             // Only the last instance persists the final state to the central store
-            if (remaining == 0 && _driver is not null && RxApp.SuspensionHost.AppState is not null)
+            if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
             {
-                _driver.SaveState(RxApp.SuspensionHost.AppState).Wait();
+                _driver.SaveState(RxSuspension.SuspensionHost.AppState).Wait();
             }
         }
         finally

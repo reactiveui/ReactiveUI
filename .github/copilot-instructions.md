@@ -41,8 +41,20 @@ Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-ins
 
 ### Solution Files
 
-* Main solution: `src/ReactiveUI.sln` (repository `root/src` directory)
+* Main solution: `src/reactiveui.slnx` (repository `root/src` directory)
 * Integration tests: `integrationtests/` directory contains platform-specific solutions. These are not required for most tasks to compile.
+
+**About SLNX Format:**
+
+This repository uses **SLNX** (XML-based solution format) introduced in Visual Studio 2022 17.10+, instead of the legacy `.sln` format.
+
+**Key characteristics:**
+- Structured XML format vs. proprietary text format
+- Better support for complex multi-platform projects like ReactiveUI
+- Full compatibility with `dotnet` CLI (works identically to .sln)
+- Requires Visual Studio 2022 17.10+ or JetBrains Rider 2024.1+ for IDE support
+
+All commands in this document reference `src/reactiveui.slnx`.
 
 ---
 
@@ -67,24 +79,42 @@ dotnet workload restore
 cd ..
 
 # Restore NuGet packages
-dotnet restore src/ReactiveUI.sln
+dotnet restore src/reactiveui.slnx
 
 # Build the solution (requires Windows for platform-specific targets)
-dotnet build src/ReactiveUI.sln -c Release -warnaserror
+dotnet build src/reactiveui.slnx -c Release -warnaserror
 ```
 
 ### Test Commands (Microsoft Testing Platform)
 
 **CRITICAL:** This repository uses MTP configured in `src/global.json`. All TUnit-specific arguments must be passed after `--`.
 
+**Microsoft Testing Platform (MTP) Overview:**
+
+MTP is the modern test execution platform replacing VSTest, providing:
+- Native integration with `dotnet test` command
+- Better performance and modern architecture for .NET 6.0+
+- Enhanced test filtering and parallel execution control
+- Required for TUnit framework (ReactiveUI's chosen test framework)
+
+**Key Differences from VSTest:**
+- Arguments passed AFTER `--`: `dotnet test -- --treenode-filter "..."`
+- Configured via `global.json` (specifies "Microsoft.Testing.Platform")
+- Test settings in `testconfig.json` (parallel execution, coverage format)
+
+**Best Practices:**
+- **Never use `--no-build`** - always build before testing to avoid stale binaries
+- Use `--output Detailed` BEFORE `--` to see Console.WriteLine output
+- TUnit runs non-parallel (`"parallel": false`) to prevent test interference
+
 **Note:** Commands below assume repository root as working directory. Use `src/` prefix for paths.
 
 ```powershell
 # Run all tests
-dotnet test src/ReactiveUI.sln -c Release --no-build
+dotnet test src/reactiveui.slnx -c Release
 
 # Run tests with code coverage (Microsoft Code Coverage)
-dotnet test src/ReactiveUI.sln -- --coverage --coverage-output-format cobertura
+dotnet test src/reactiveui.slnx --coverage --coverage-output-format cobertura
 
 # Run specific test project
 dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj
@@ -96,16 +126,16 @@ dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --tr
 dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --treenode-filter "/*/*/MyClassName/*"
 
 # Filter by test property (e.g., Category)
-dotnet test src/ReactiveUI.sln -- --treenode-filter "/*/*/*/*[Category=Integration]"
+dotnet test src/reactiveui.slnx -- --treenode-filter "/*/*/*/*[Category=Integration]"
 
 # List all available tests
 dotnet test --project src/tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj -- --list-tests
 
 # Fail fast (stop on first failure)
-dotnet test src/ReactiveUI.sln -- --fail-fast
+dotnet test src/reactiveui.slnx -- --fail-fast
 
 # Generate TRX report with coverage
-dotnet test src/ReactiveUI.sln -- --coverage --coverage-output-format cobertura --report-trx --output Detailed
+dotnet test src/reactiveui.slnx --coverage --coverage-output-format cobertura -- --report-trx --output Detailed
 ```
 
 **TUnit Treenode-Filter Syntax:**
@@ -118,10 +148,14 @@ Examples:
 - All tests in namespace: `--treenode-filter "/*/MyNamespace/*/*"`
 - Filter by property: `--treenode-filter "/*/*/*/*[Category=Integration]"`
 
-**Key TUnit Command-Line Flags:**
-- `--treenode-filter` - Filter tests by path or properties
+**Key Command-Line Flags:**
+
+**dotnet test flags (BEFORE `--`):**
 - `--coverage` - Enable Microsoft Code Coverage
 - `--coverage-output-format` - Set format (cobertura, xml, coverage)
+
+**TUnit flags (AFTER `--`):**
+- `--treenode-filter` - Filter tests by path or properties
 - `--report-trx` - Generate TRX reports
 - `--output` - Verbosity (Normal or Detailed)
 - `--list-tests` - Display tests without running
@@ -528,10 +562,65 @@ _total = this.WhenAnyValue(
 
 ```powershell
 # Build with warnings as errors (includes StyleCop violations)
-dotnet build src/ReactiveUI.sln -c Release -warnaserror
+dotnet build src/reactiveui.slnx -c Release -warnaserror
 ```
 
 **Important:** Style violations will cause build failures. Use an IDE with EditorConfig support (Visual Studio, VS Code, Rider) to automatically format code according to project standards.
+
+### Zero Pragma Policy for Warning Suppression
+
+**CRITICAL: This project enforces a strict zero pragma policy.**
+
+* **NO `#pragma warning disable` statements are allowed** in any code files
+* **All StyleCop analyzer warnings (SA****) MUST be fixed**, never suppressed
+* **Code analyzer warnings (CA****) may ONLY be suppressed as an absolute last resort** using `[SuppressMessage]` attribute with these requirements:
+  1. You have attempted to fix the warning first
+  2. Fixing it would make the code worse or is not technically feasible
+  3. You use `[SuppressMessage]` attribute (NOT pragma)
+  4. You provide a clear, valid justification in the `Justification` parameter
+
+#### Examples
+
+```csharp
+// ❌ WRONG - Never use pragma directives
+#pragma warning disable CA1062
+public void ProcessData(object data)
+{
+    data.ToString();  // CA1062: Validate parameter is non-null
+}
+#pragma warning restore CA1062
+
+// ✅ CORRECT - Fix the issue
+public void ProcessData(object data)
+{
+    ArgumentNullException.ThrowIfNull(data);
+    data.ToString();
+}
+
+// ⚠️ ACCEPTABLE - SuppressMessage with justification (last resort only)
+[SuppressMessage("Microsoft.Design", "CA1062:ValidateArgumentsOfPublicMethods",
+    Justification = "TUnit framework guarantees non-null parameters from test data sources")]
+public async Task ValidateConverter(IBindingTypeConverter converter, int expectedAffinity)
+{
+    var affinity = converter.GetAffinityForObjects();  // converter is never null
+    await Assert.That(affinity).IsEqualTo(expectedAffinity);
+}
+```
+
+#### Common StyleCop Fixes (Must Be Fixed, Never Suppressed)
+
+* **SA1202** (Static members before instance members): Reorder class members
+* **SA1204** (Static members before non-static): Move static members to top
+* **SA1402** (One type per file): Convert file-scoped types to nested private classes
+* **SA1611** (Parameter documentation missing): Add `<param>` XML tags
+* **SA1615** (Return value documentation missing): Add `<returns>` XML tags
+* **SA1600** (Elements should be documented): Add XML documentation to public members
+
+#### Enforcement
+
+* Builds fail with `-warnaserror` if any analyzer warnings exist
+* Any pragma directives will be flagged and rejected during code review
+* `SuppressMessage` usage requires clear justification and approval
 
 ---
 

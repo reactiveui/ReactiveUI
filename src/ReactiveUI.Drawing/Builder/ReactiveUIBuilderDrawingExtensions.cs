@@ -17,10 +17,6 @@ public static class ReactiveUIBuilderDrawingExtensions
     /// </summary>
     /// <param name="builder">The builder instance.</param>
     /// <returns>The builder instance for method chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     public static IReactiveUIBuilder WithDrawing(this IReactiveUIBuilder builder)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);

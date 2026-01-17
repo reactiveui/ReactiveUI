@@ -18,18 +18,23 @@ namespace ReactiveUI;
 /// <example>
 /// <code language="csharp">
 /// <![CDATA[
-/// public sealed class ConventionViewLocator : IViewLocator
+/// public sealed class CustomViewLocator : IViewLocator
 /// {
-///     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
-///     {
-///         if (viewModel is null)
-///         {
-///             return null;
-///         }
+///     private readonly Dictionary<Type, Func<IViewFor>> _mappings = new();
 ///
-///         var viewTypeName = viewModel.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
-///         var viewType = Type.GetType(viewTypeName);
-///         return viewType is null ? null : (IViewFor?)Activator.CreateInstance(viewType);
+///     public void Register<TViewModel, TView>(Func<TView> factory)
+///         where TViewModel : class
+///         where TView : class, IViewFor<TViewModel>
+///     {
+///         _mappings[typeof(TViewModel)] = () => factory();
+///     }
+///
+///     public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+///         where TViewModel : class
+///     {
+///         return _mappings.TryGetValue(typeof(TViewModel), out var factory)
+///             ? (IViewFor<TViewModel>)factory()
+///             : null;
 ///     }
 /// }
 /// ]]>
@@ -38,15 +43,21 @@ namespace ReactiveUI;
 public interface IViewLocator : IEnableLogger
 {
     /// <summary>
-    /// Determines the view for an associated view model.
+    /// Resolves a view for a view model type known at compile time. Fully AOT-compatible.
     /// </summary>
-    /// <typeparam name="T">The view model type.</typeparam>
-    /// <param name="viewModel">The view model for which a view is required.</param>
+    /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
     /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ResolveView uses reflection and type discovery which require dynamic code generation")]
-    [RequiresUnreferencedCode("ResolveView uses reflection and type discovery which may require unreferenced code")]
-#endif
-    IViewFor? ResolveView<T>(T? viewModel, string? contract = null);
+    IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+        where TViewModel : class;
+
+    /// <summary>
+    /// Resolves a view for a view model instance using runtime type information.
+    /// </summary>
+    /// <param name="instance">The view model instance to resolve a view for.</param>
+    /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
+    /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
+    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    IViewFor? ResolveView(object? instance, string? contract = null);
 }

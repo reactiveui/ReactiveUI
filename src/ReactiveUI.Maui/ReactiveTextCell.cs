@@ -14,13 +14,9 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="TextCell" />
 /// <seealso cref="IViewFor{TViewModel}" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveTextCell uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveTextCell uses methods that may require unreferenced code")]
-#endif
 [Obsolete("ListView and its cells are obsolete in .NET MAUI, please use CollectionView with a DataTemplate and a ReactiveContentView-based view instead. This will be removed in a future release.")]
 [ExcludeFromCodeCoverage]
-public partial class ReactiveTextCell<TViewModel> : TextCell, IViewFor<TViewModel>
+public partial class ReactiveTextCell<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TextCell, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

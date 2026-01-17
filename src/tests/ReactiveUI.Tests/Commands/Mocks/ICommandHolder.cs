@@ -5,17 +5,17 @@
 
 using System.Windows.Input;
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Commands.Mocks;
 
 /// <summary>
-/// A ReactiveObject which hosts a command.
+///     A ReactiveObject which hosts a command.
 /// </summary>
 public class ICommandHolder : ReactiveObject
 {
     private ICommand? _theCommand;
 
     /// <summary>
-    /// Gets or sets the command.
+    ///     Gets or sets the command.
     /// </summary>
     public ICommand? TheCommand
     {

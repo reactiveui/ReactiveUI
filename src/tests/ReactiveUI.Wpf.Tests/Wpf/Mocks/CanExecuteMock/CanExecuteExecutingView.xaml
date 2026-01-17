@@ -1,0 +1,27 @@
+﻿<rxui:ReactiveUserControl
+    x:Class="ReactiveUI.Tests.Wpf.Mocks.CanExecuteMock.CanExecuteExecutingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ReactiveUI.Tests.Wpf"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:mocks="clr-namespace:ReactiveUI.Tests.Wpf.Mocks"
+    x:TypeArguments="mocks:CommandBindingViewModel"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid>
+        <TextBlock Margin="0,30,0,0" Text="Test User Control" />
+        <TextBlock
+            x:Name="Result"
+            Margin="0,0,0,30"
+            VerticalAlignment="Bottom"
+            Text="Result Will be Displayed here" />
+        <Button
+            x:Name="Execute"
+            Height="30"
+            VerticalAlignment="Center"
+            Content="Execute" />
+    </Grid>
+</rxui:ReactiveUserControl>

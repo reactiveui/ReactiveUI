@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Mocks;
 
 /// <summary>
-/// A mock view model.
+///     A mock view model.
 /// </summary>
 public class CommandBindViewModel : ReactiveObject
 {
@@ -16,7 +16,7 @@ public class CommandBindViewModel : ReactiveObject
     private int _value;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandBindViewModel"/> class.
+    ///     Initializes a new instance of the <see cref="CommandBindViewModel" /> class.
     /// </summary>
     public CommandBindViewModel()
     {
@@ -26,7 +26,7 @@ public class CommandBindViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets the command1.
+    ///     Gets or sets the command1.
     /// </summary>
     public ReactiveCommand<int, Unit> Command1
     {
@@ -35,7 +35,7 @@ public class CommandBindViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets the command2.
+    ///     Gets or sets the command2.
     /// </summary>
     public ReactiveCommand<Unit, Unit> Command2
     {
@@ -44,12 +44,12 @@ public class CommandBindViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// Gets or sets the nested view model.
+    ///     Gets or sets the nested view model.
     /// </summary>
     public FakeNestedViewModel NestedViewModel { get; set; }
 
     /// <summary>
-    /// Gets or sets the value.
+    ///     Gets or sets the value.
     /// </summary>
     public int Value
     {

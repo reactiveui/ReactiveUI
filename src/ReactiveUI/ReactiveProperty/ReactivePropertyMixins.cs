@@ -30,10 +30,11 @@ public static class ReactivePropertyMixins
     /// or
     /// self.
     /// </exception>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses DataAnnotations validation which requires dynamic code generation.")]
-    [RequiresUnreferencedCode("The method uses DataAnnotations validation which may require unreferenced code.")]
-#endif
+    /// <remarks>
+    /// This method uses DataAnnotations validation which requires reflection and is not compatible with AOT compilation.
+    /// For AOT scenarios, use manual validation instead.
+    /// </remarks>
+    [RequiresUnreferencedCode("DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
         ArgumentExceptionHelper.ThrowIfNull(selfSelector);
@@ -43,7 +44,9 @@ public static class ReactivePropertyMixins
         var propertyInfo = (PropertyInfo)memberExpression.Member;
         var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
         var attrs = propertyInfo.GetCustomAttributes<ValidationAttribute>().ToArray();
-        var context = new ValidationContext(self)
+
+        // Use the AOT-compatible constructor that doesn't require reflection for type discovery
+        var context = new ValidationContext(self, serviceProvider: null, items: null)
         {
             DisplayName = display?.GetName() ?? propertyInfo.Name,
             MemberName = nameof(ReactiveProperty<T>.Value),

@@ -30,8 +30,6 @@ public static class InteractionBindingMixins
 {
     private static readonly InteractionBinderImplementation _binderImplementation = new();
 
-    static InteractionBindingMixins() => RxApp.EnsureInitialized();
-
     /// <summary>
     /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
     /// </summary>
@@ -44,10 +42,7 @@ public static class InteractionBindingMixins
     /// <typeparam name="TInput">The interaction's input type.</typeparam>
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         this TView view,
         TViewModel? viewModel,
@@ -74,10 +69,7 @@ public static class InteractionBindingMixins
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <typeparam name="TDontCare">The interaction's signal type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindInteraction uses expression binding which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindInteraction uses expression binding which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         this TView view,
         TViewModel? viewModel,

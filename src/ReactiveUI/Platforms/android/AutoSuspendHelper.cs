@@ -14,7 +14,7 @@ namespace ReactiveUI;
 /// <remarks>
 /// <para>
 /// Register this helper inside your <see cref="Application"/> subclass to translate Activity lifecycle callbacks into
-/// <see cref="RxApp.SuspensionHost"/> signals. The helper automatically distinguishes cold starts from restores by
+/// <see cref="RxSuspension.SuspensionHost"/> signals. The helper automatically distinguishes cold starts from restores by
 /// inspecting <see cref="LatestBundle"/> and routes pause/save events to <see cref="ISuspensionDriver"/> via
 /// <see cref="SuspensionHostExtensions.SetupDefaultSuspendResume(ISuspensionHost, ISuspensionDriver?)"/>.
 /// </para>
@@ -36,18 +36,14 @@ namespace ReactiveUI;
 ///     {
 ///         base.OnCreate();
 ///         _autoSuspendHelper = new AutoSuspendHelper(this);
-///         RxApp.SuspensionHost.CreateNewAppState = () => new ShellState();
-///         RxApp.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FilesDir!.AbsolutePath));
+///         RxSuspension.SuspensionHost.CreateNewAppState = () => new ShellState();
+///         RxSuspension.SuspensionHost.SetupDefaultSuspendResume(new FileSuspensionDriver(FilesDir!.AbsolutePath));
 ///     }
 /// }
 /// ]]>
 /// </code>
 /// </para>
 /// </remarks>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("AutoSuspendHelper uses RxApp.SuspensionHost which requires dynamic code generation")]
-[RequiresUnreferencedCode("AutoSuspendHelper uses RxApp.SuspensionHost which may require unreferenced code")]
-#endif
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
     private readonly Subject<Bundle?> _onCreate = new();
@@ -72,11 +68,11 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
 
         _onCreate.Merge(_onSaveInstanceState).Subscribe(static x => LatestBundle = x);
 
-        RxApp.SuspensionHost.IsLaunchingNew = _onCreate.Where(static x => x is null).Select(static _ => Unit.Default);
-        RxApp.SuspensionHost.IsResuming = _onCreate.Where(static x => x is not null).Select(static _ => Unit.Default);
-        RxApp.SuspensionHost.IsUnpausing = _onRestart;
-        RxApp.SuspensionHost.ShouldPersistState = _onPause.Select(static _ => Disposable.Empty);
-        RxApp.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
+        RxSuspension.SuspensionHost.IsLaunchingNew = _onCreate.Where(static x => x is null).Select(static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsResuming = _onCreate.Where(static x => x is not null).Select(static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsUnpausing = _onRestart;
+        RxSuspension.SuspensionHost.ShouldPersistState = _onPause.Select(static _ => Disposable.Empty);
+        RxSuspension.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
     }
 
     /// <summary>

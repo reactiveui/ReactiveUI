@@ -16,10 +16,11 @@
   <ItemGroup>
     <PackageReference Include="bunit" />
     <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
-    <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="ReactiveUI.Tests.Utilities.Schedulers" />
     <Using Include="Bunit" />
     <Using Include="ReactiveUI" />
     <Using Include="System.Reactive" />

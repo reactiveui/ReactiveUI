@@ -3,14 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+using ReactiveUI.Tests.ReactiveObjects.Mocks;
+
+namespace ReactiveUI.Tests.Commands;
 
 public class CreatesCommandBindingTests
 {
     /// <summary>
-    /// Test that makes sure events binder binds to explicit event.
+    ///     Test that makes sure events binder binds to explicit event.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task EventBinderBindsToExplicitEvent()
     {
@@ -21,11 +23,15 @@ public class CreatesCommandBindingTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), true)).IsGreaterThan(0);
-            await Assert.That(fixture.GetAffinityForObject(input.GetType(), false)).IsLessThanOrEqualTo(0);
+            await Assert.That(fixture.GetAffinityForObject<TestFixture>(true)).IsGreaterThan(0);
+            await Assert.That(fixture.GetAffinityForObject<TestFixture>(false)).IsLessThanOrEqualTo(0);
         }
 
-        var disposable = fixture.BindCommandToObject<PropertyChangedEventArgs>(cmd, input, Observable.Return((object)5), "PropertyChanged");
+        var disposable = fixture.BindCommandToObject<TestFixture, PropertyChangedEventArgs>(
+            cmd,
+            input,
+            Observable.Return((object)5),
+            "PropertyChanged");
         input.IsNotNullString = "Foo";
         await Assert.That(wasCalled).IsTrue();
 

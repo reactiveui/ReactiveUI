@@ -17,9 +17,7 @@ public class ReactiveUIBuilderBlockingTests
         using var locator = new ModernDependencyResolver();
 
         var builder = locator.CreateReactiveUIBuilder();
-        builder.WithCoreServices().Build();
-
-        locator.InitializeReactiveUI();
+        builder.WithCoreServices().BuildApp();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         await Assert.That(observableProperty).IsNotNull();

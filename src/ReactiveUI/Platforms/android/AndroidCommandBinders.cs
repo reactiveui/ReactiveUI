@@ -10,19 +10,43 @@ using Android.Views;
 namespace ReactiveUI;
 
 /// <summary>
-/// Android implementation that provides binding to an ICommand in the ViewModel to a Control
-/// in the View.
+/// Android implementation that provides binding to an ICommand in the ViewModel to a control in the View.
 /// </summary>
 [Preserve(AllMembers = true)]
-public class AndroidCommandBinders : FlexibleCommandBinder
+public sealed class AndroidCommandBinders : FlexibleCommandBinder
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
     /// </summary>
-    [SuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Marked as Preserve")]
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the <c>Enabled</c> property cannot be found on <see cref="View"/>, which is required for binding.
+    /// </exception>
     public AndroidCommandBinders()
     {
-        var view = typeof(View);
-        Register(view, 9, (cmd, t, cp) => ForEvent(cmd, t, cp, "Click", view.GetRuntimeProperty("Enabled") ?? throw new InvalidOperationException("Could not find property 'Enabled' on type View, which is needed for binding")));
+        var viewType = typeof(View);
+
+        // Cache reflection metadata once at registration time.
+        var enabledProperty =
+            viewType.GetRuntimeProperty("Enabled")
+            ?? throw new InvalidOperationException(
+                "Could not find property 'Enabled' on type View, which is needed for binding");
+
+        // Precompute the setter once; ForEvent will no-op enabled sync if null (but for View it should exist).
+        var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
+
+        Register(viewType, 9, (cmd, target, commandParameter) =>
+        {
+            // Keep existing behavior: ForEvent throws if cmd is null.
+            // Also keep the "null commandParameter means use target" idiom (handled inside ForEvent overload).
+            var view = (View)target!;
+
+            return ForEvent(
+                cmd,
+                view,
+                commandParameter,
+                addHandler: h => view.Click += h,
+                removeHandler: h => view.Click -= h,
+                enabledSetter: enabledSetter);
+        });
     }
 }

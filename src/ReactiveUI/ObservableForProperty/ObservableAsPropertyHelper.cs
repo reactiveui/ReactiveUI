@@ -63,10 +63,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// The scheduler that the notifications will be provided on -
     /// this should normally be a Dispatcher-based scheduler.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
-#endif
     public ObservableAsPropertyHelper(
         IObservable<T?> observable,
         Action<T?> onChanged,
@@ -104,10 +100,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// The scheduler that the notifications will provided on - this
     /// should normally be a Dispatcher-based scheduler.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
-#endif
     public ObservableAsPropertyHelper(
         IObservable<T?> observable,
         Action<T?> onChanged,
@@ -146,10 +138,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// The scheduler that the notifications will provided on - this
     /// should normally be a Dispatcher-based scheduler.
     /// </param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
-#endif
     public ObservableAsPropertyHelper(
         IObservable<T?> observable,
         Action<T?> onChanged,
@@ -164,7 +152,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         scheduler ??= CurrentThreadScheduler.Instance;
         onChanging ??= _ => { };
 
-        _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxApp.DefaultExceptionHandler));
+        _thrownExceptions = new Lazy<ISubject<Exception>>(() => new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, RxState.DefaultExceptionHandler));
 
         _subject = new ScheduledSubject<T?>(scheduler);
         _subject.Subscribe(
@@ -249,10 +237,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// normally be a Dispatcher-based scheduler.
     /// </param>
     /// <returns>A default property helper.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableAsPropertyHelper uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableAsPropertyHelper uses methods that may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<T> Default(T? initialValue = default, IScheduler? scheduler = null) => // TODO: Create Test
         new(Observable<T>.Never, static _ => { }, initialValue!, false, scheduler);
 

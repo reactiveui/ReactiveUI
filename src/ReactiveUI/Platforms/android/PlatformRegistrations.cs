@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Helpers;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -14,18 +12,14 @@ namespace ReactiveUI;
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [SuppressMessage("Trimming", "IL2046:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "Not using reflection")]
-    [SuppressMessage("AOT", "IL3051:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "Not using reflection")]
-#endif
-    public void Register(Action<Func<object>, Type> registerFunction) // TODO: Create Test
+    public void Register(IRegistrar registrar) // TODO: Create Test
     {
-        ArgumentExceptionHelper.ThrowIfNull(registerFunction);
+        ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        registerFunction(static () => new PlatformOperations(), typeof(IPlatformOperations));
-        registerFunction(static () => new ComponentModelTypeConverter(), typeof(IBindingTypeConverter));
-        registerFunction(static () => new AndroidObservableForWidgets(), typeof(ICreatesObservableForProperty));
-        registerFunction(static () => new AndroidCommandBinders(), typeof(ICreatesCommandBinding));
+        registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
+        registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
+        registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new AndroidObservableForWidgets());
+        registrar.RegisterConstant<ICreatesCommandBinding>(static () => new AndroidCommandBinders());
 
         if (!ModeDetector.InUnitTestRunner())
         {
@@ -33,6 +27,6 @@ public class PlatformRegistrations : IWantsToRegisterStuff
             RxSchedulers.MainThreadScheduler = HandlerScheduler.MainThreadScheduler;
         }
 
-        registerFunction(static () => new BundleSuspensionDriver(), typeof(ISuspensionDriver));
+        registrar.RegisterConstant<ISuspensionDriver>(static () => new BundleSuspensionDriver());
     }
 }

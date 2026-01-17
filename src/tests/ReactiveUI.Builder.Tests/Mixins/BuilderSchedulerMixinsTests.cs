@@ -4,10 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
-
 using Splat.Builder;
 
-namespace ReactiveUI.Builder.Tests;
+namespace ReactiveUI.Builder.Tests.Mixins;
 
 [NotInParallel]
 public class BuilderSchedulerMixinsTests

@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Threading;
-using Microsoft.Reactive.Testing;
 
 namespace ReactiveUI.Testing;
 
@@ -22,22 +21,18 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <returns>An object that when disposed, restores the previous default
     /// schedulers.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithScheduler uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithScheduler uses methods that may require unreferenced code")]
-#endif
     public static IDisposable WithScheduler(IScheduler scheduler)
     {
-        var prevDef = RxApp.MainThreadScheduler;
-        var prevTask = RxApp.TaskpoolScheduler;
+        var prevDef = RxSchedulers.MainThreadScheduler;
+        var prevTask = RxSchedulers.TaskpoolScheduler;
 
-        RxApp.MainThreadScheduler = scheduler;
-        RxApp.TaskpoolScheduler = scheduler;
+        RxSchedulers.MainThreadScheduler = scheduler;
+        RxSchedulers.TaskpoolScheduler = scheduler;
 
         return Disposable.Create(() =>
         {
-            RxApp.MainThreadScheduler = prevDef;
-            RxApp.TaskpoolScheduler = prevTask;
+            RxSchedulers.MainThreadScheduler = prevDef;
+            RxSchedulers.TaskpoolScheduler = prevTask;
         });
     }
 
@@ -52,10 +47,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The function to execute.</param>
     /// <returns>The return value of the function.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("With uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
-#endif
     public static TRet With<T, TRet>(this T scheduler, Func<T, TRet> block)
         where T : IScheduler
     {
@@ -81,10 +72,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The function to execute.</param>
     /// <returns>The return value of the function.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
-#endif
     public static async Task<TRet> WithAsync<T, TRet>(this T scheduler, Func<T, Task<TRet>> block)
         where T : IScheduler
     {
@@ -106,10 +93,6 @@ public static class SchedulerExtensions
     /// <typeparam name="T">The type.</typeparam>
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The action to execute.</param>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("With uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("With uses methods that may require unreferenced code")]
-#endif
     public static void With<T>(this T scheduler, Action<T> block)
         where T : IScheduler =>
         scheduler.With(x =>
@@ -126,10 +109,6 @@ public static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to use.</param>
     /// <param name="block">The action to execute.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("WithAsync uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("WithAsync uses methods that may require unreferenced code")]
-#endif
     public static Task WithAsync<T>(this T scheduler, Func<T, Task> block)
         where T : IScheduler =>
         scheduler.WithAsync(async x =>
@@ -137,91 +116,4 @@ public static class SchedulerExtensions
             await block(x).ConfigureAwait(false);
             return 0;
         });
-
-    /// <summary>
-    /// AdvanceToMs moves the TestScheduler to the specified time in
-    /// milliseconds.
-    /// </summary>
-    /// <param name="scheduler">The scheduler to advance.</param>
-    /// <param name="milliseconds">The time offset to set the TestScheduler
-    /// to, in milliseconds. Note that this is *not* additive or
-    /// incremental, it sets the time.</param>
-    public static void AdvanceToMs(this TestScheduler scheduler, double milliseconds)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(scheduler);
-
-        scheduler.AdvanceTo(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
-    }
-
-    /// <summary>
-    /// AdvanceByMs moves the TestScheduler along by the specified time in
-    /// milliseconds.
-    /// </summary>
-    /// <param name="scheduler">The scheduler to advance.</param>
-    /// <param name="milliseconds">The relative time to advance the TestScheduler
-    /// by, in milliseconds.</param>
-    public static void AdvanceByMs(this TestScheduler scheduler, double milliseconds)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(scheduler);
-
-        scheduler.AdvanceBy(scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)));
-    }
-
-    /// <summary>
-    /// OnNextAt is a method to help create simulated input Observables in
-    /// conjunction with CreateHotObservable or CreateColdObservable.
-    /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="scheduler">The scheduler to fire from.</param>
-    /// <param name="milliseconds">The time offset to fire the notification
-    /// on the recorded notification.</param>
-    /// <param name="value">The value to produce.</param>
-    /// <returns>A recorded notification that can be provided to
-    /// TestScheduler.CreateHotObservable.</returns>
-    public static Recorded<Notification<T>> OnNextAt<T>(this TestScheduler scheduler, double milliseconds, T value) =>
-        new(
-            scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-            Notification.CreateOnNext(value));
-
-    /// <summary>
-    /// OnErrorAt is a method to help create simulated input Observables in
-    /// conjunction with CreateHotObservable or CreateColdObservable.
-    /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="scheduler">The scheduler to fire from.</param>
-    /// <param name="milliseconds">The time offset to fire the notification
-    /// on the recorded notification.</param>
-    /// <param name="ex">The exception to terminate the Observable
-    /// with.</param>
-    /// <returns>A recorded notification that can be provided to
-    /// TestScheduler.CreateHotObservable.</returns>
-    public static Recorded<Notification<T>> OnErrorAt<T>(this TestScheduler scheduler, double milliseconds, Exception ex) =>
-        new(
-            scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-            Notification.CreateOnError<T>(ex));
-
-    /// <summary>
-    /// OnCompletedAt is a method to help create simulated input Observables in
-    /// conjunction with CreateHotObservable or CreateColdObservable.
-    /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="scheduler">The scheduler to fire from.</param>
-    /// <param name="milliseconds">The time offset to fire the notification
-    /// on the recorded notification.</param>
-    /// <returns>A recorded notification that can be provided to
-    /// TestScheduler.CreateHotObservable.</returns>
-    public static Recorded<Notification<T>> OnCompletedAt<T>(this TestScheduler scheduler, double milliseconds) =>
-        new(
-            scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
-            Notification.CreateOnCompleted<T>());
-
-    /// <summary>
-    /// Converts a timespan to a virtual time for testing.
-    /// </summary>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <param name="span">Timespan to convert.</param>
-    /// <returns>Timespan for virtual scheduler to use.</returns>
-    public static long FromTimeSpan(this TestScheduler scheduler, TimeSpan span) => span.Ticks;
 }
-
-// vim: tw=120 ts=4 sw=4 et :

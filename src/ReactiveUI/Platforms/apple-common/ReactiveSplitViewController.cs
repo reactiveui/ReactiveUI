@@ -17,10 +17,6 @@ namespace ReactiveUI;
 /// This is a View that is both a NSSplitViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveSplitViewController inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveSplitViewController inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     private readonly Subject<Unit> _activated = new();
@@ -162,10 +158,6 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveSplitViewController<TViewModel> inherits from ReactiveObject which uses extension methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveSplitViewController<TViewModel> inherits from ReactiveObject which uses extension methods that may require unreferenced code")]
-#endif
 public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
     where TViewModel : class
 {

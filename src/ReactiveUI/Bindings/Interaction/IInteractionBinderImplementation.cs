@@ -22,10 +22,7 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// <typeparam name="TInput">The interaction's input type.</typeparam>
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindInteraction uses expression evaluation which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindInteraction uses expression evaluation which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         TViewModel? viewModel,
         TView view,
@@ -47,10 +44,7 @@ public interface IInteractionBinderImplementation : IEnableLogger
     /// <typeparam name="TOutput">The interaction's output type.</typeparam>
     /// <typeparam name="TDontCare">The interaction's signal type.</typeparam>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("BindInteraction uses expression evaluation which requires dynamic code generation")]
-    [RequiresUnreferencedCode("BindInteraction uses expression evaluation which may require unreferenced code")]
-#endif
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         TViewModel? viewModel,
         TView view,

@@ -8,14 +8,27 @@ using ReactiveUI.Builder;
 namespace ReactiveUI.Tests;
 
 /// <summary>
-/// Tests for <see cref="RxAppBuilder"/>.
+///     Tests for <see cref="RxAppBuilder" />.
 /// </summary>
 public class RxAppBuilderTest
 {
     /// <summary>
-    /// Tests that CreateReactiveUIBuilder returns a builder.
+    ///     Tests that CreateReactiveUIBuilder throws for null resolver.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CreateReactiveUIBuilder_NullResolver_Throws()
+    {
+        IMutableDependencyResolver resolver = null!;
+
+        await Assert.That(() => resolver.CreateReactiveUIBuilder())
+            .Throws<ArgumentNullException>();
+    }
+
+    /// <summary>
+    ///     Tests that CreateReactiveUIBuilder returns a builder.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateReactiveUIBuilder_ReturnsBuilder()
     {
@@ -26,9 +39,9 @@ public class RxAppBuilderTest
     }
 
     /// <summary>
-    /// Tests that CreateReactiveUIBuilder with resolver returns a builder.
+    ///     Tests that CreateReactiveUIBuilder with resolver returns a builder.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateReactiveUIBuilder_WithResolver_ReturnsBuilder()
     {
@@ -41,20 +54,7 @@ public class RxAppBuilderTest
     }
 
     /// <summary>
-    /// Tests that CreateReactiveUIBuilder throws for null resolver.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task CreateReactiveUIBuilder_NullResolver_Throws()
-    {
-        IMutableDependencyResolver resolver = null!;
-
-        await Assert.That(() => resolver.CreateReactiveUIBuilder())
-            .Throws<ArgumentNullException>();
-    }
-
-    /// <summary>
-    /// Test resolver for testing.
+    ///     Test resolver for testing.
     /// </summary>
     private class TestResolver : IMutableDependencyResolver, IReadonlyDependencyResolver
     {
@@ -110,11 +110,6 @@ public class RxAppBuilderTest
         {
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
-        public void RegisterConstant(object? value, Type? serviceType, string? contract)
-        {
-        }
-
         public void RegisterConstant<T>(T? value)
             where T : class
         {
@@ -125,18 +120,58 @@ public class RxAppBuilderTest
         {
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        public void RegisterConstant(object? value, Type? serviceType, string? contract)
+        {
+        }
+
+        public void RegisterLazySingleton<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+            T>(Func<T?> factory)
+            where T : class
+        {
+        }
+
+        public void RegisterLazySingleton<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+            T>(
+            Func<T?> factory,
+            string? contract)
+            where T : class
+        {
+        }
+
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
         public void RegisterLazySingleton(Func<object?> factory, Type? serviceType, string? contract)
         {
         }
 
-        public void RegisterLazySingleton<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(Func<T?> factory)
-            where T : class
+        public IDisposable ServiceRegistrationCallback(Type serviceType, Action<IDisposable> callback) =>
+            Disposable.Empty;
+
+        public IDisposable ServiceRegistrationCallback(
+            Type serviceType,
+            string? contract,
+            Action<IDisposable> callback) => Disposable.Empty;
+
+        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Disposable.Empty;
+
+        public IDisposable ServiceRegistrationCallback<T>(string? contract, Action<IDisposable> callback) =>
+            Disposable.Empty;
+
+        public void UnregisterAll(Type? serviceType)
         {
         }
 
-        public void RegisterLazySingleton<[System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(Func<T?> factory, string? contract)
-            where T : class
+        public void UnregisterAll(Type? serviceType, string? contract)
+        {
+        }
+
+        public void UnregisterAll<T>()
+        {
+        }
+
+        public void UnregisterAll<T>(string? contract)
         {
         }
 
@@ -155,29 +190,5 @@ public class RxAppBuilderTest
         public void UnregisterCurrent<T>(string? contract)
         {
         }
-
-        public void UnregisterAll(Type? serviceType)
-        {
-        }
-
-        public void UnregisterAll(Type? serviceType, string? contract)
-        {
-        }
-
-        public void UnregisterAll<T>()
-        {
-        }
-
-        public void UnregisterAll<T>(string? contract)
-        {
-        }
-
-        public IDisposable ServiceRegistrationCallback(Type serviceType, Action<IDisposable> callback) => Disposable.Empty;
-
-        public IDisposable ServiceRegistrationCallback(Type serviceType, string? contract, Action<IDisposable> callback) => Disposable.Empty;
-
-        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Disposable.Empty;
-
-        public IDisposable ServiceRegistrationCallback<T>(string? contract, Action<IDisposable> callback) => Disposable.Empty;
     }
 }

@@ -40,10 +40,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -92,10 +88,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -139,10 +131,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -189,10 +177,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing
     /// field for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -249,10 +233,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing
     /// field for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -300,10 +280,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing
     /// field for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -355,10 +331,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -400,10 +372,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -454,10 +422,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing field
     /// for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -508,10 +472,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing
     /// field for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -567,10 +527,6 @@ public static class OAPHCreationHelperMixin
     /// An initialized ObservableAsPropertyHelper; use this as the backing
     /// field for your property.
     /// </returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
         this IObservable<TRet> target,
         TObj source,
@@ -591,10 +547,6 @@ public static class OAPHCreationHelperMixin
         return result;
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
@@ -632,10 +584,6 @@ public static class OAPHCreationHelperMixin
                                                     scheduler);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
@@ -672,10 +620,6 @@ public static class OAPHCreationHelperMixin
                                                     scheduler);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,
@@ -698,10 +642,6 @@ public static class OAPHCreationHelperMixin
                                                     scheduler);
     }
 
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("ObservableToProperty uses RaisingPropertyChanged which requires dynamic code generation")]
-    [RequiresUnreferencedCode("ObservableToProperty uses RaisingPropertyChanged which may require unreferenced code")]
-#endif
     internal static ObservableAsPropertyHelper<TRet> ObservableToProperty<TObj, TRet>(
         this TObj target,
         IObservable<TRet?> observable,

@@ -3,26 +3,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Mocks;
 
 /// <summary>
-/// A ancestor view.
+///     A ancestor view.
 /// </summary>
 public class InteractionAncestorView : ReactiveObject, IViewFor<InteractionAncestorViewModel>
 {
     private InteractionAncestorViewModel? _viewModel;
 
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (InteractionAncestorViewModel?)value;
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public InteractionAncestorViewModel? ViewModel
     {
         get => _viewModel;
         set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+    }
+
+    /// <inheritdoc />
+    object? IViewFor.ViewModel
+    {
+        get => ViewModel;
+        set => ViewModel = (InteractionAncestorViewModel?)value;
     }
 }

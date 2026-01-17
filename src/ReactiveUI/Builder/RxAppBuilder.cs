@@ -10,6 +10,14 @@ namespace ReactiveUI.Builder;
 /// </summary>
 public static class RxAppBuilder
 {
+#if NET9_0_OR_GREATER
+    private static readonly System.Threading.Lock _resetLock = new();
+#else
+    private static readonly object _resetLock = new();
+#endif
+
+    private static int _hasBeenInitialized; // 0 = false, 1 = true
+
     /// <summary>
     /// Creates a ReactiveUI builder with the Splat Locator instance.
     /// </summary>
@@ -31,5 +39,83 @@ public static class RxAppBuilder
 
         var readonlyResolver = resolver as IReadonlyDependencyResolver ?? AppLocator.Current;
         return new(resolver, readonlyResolver);
+    }
+
+    /// <summary>
+    /// Ensures ReactiveUI has been initialized via the builder pattern.
+    /// Throws an exception if BuildApp() has not been called.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if ReactiveUI has not been initialized via the builder pattern.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method replaces the old RxApp.EnsureInitialized() pattern.
+    /// Call this method at the start of your application or in test setup to verify ReactiveUI is properly initialized.
+    /// </para>
+    /// <para>
+    /// To initialize ReactiveUI, call:
+    /// <code>
+    /// RxAppBuilder.CreateReactiveUIBuilder()
+    ///     .WithCoreServices()
+    ///     .BuildApp();
+    /// </code>
+    /// </para>
+    /// </remarks>
+    public static void EnsureInitialized()
+    {
+        lock (_resetLock)
+        {
+            if (_hasBeenInitialized == 0)
+            {
+                throw new InvalidOperationException(
+                    "ReactiveUI has not been initialized. You must initialize ReactiveUI using the builder pattern. " +
+                    "See https://www.reactiveui.net/docs/handbook/rxappbuilder.html for migration guidance.\n\n" +
+                    "Example:\n" +
+                    "RxAppBuilder.CreateReactiveUIBuilder()\n" +
+                    "    .WithCoreServices()\n" +
+                    "    .WithPlatformServices()\n" +
+                    "    .BuildApp();");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resets the initialization state of ReactiveUI.
+    /// This method is intended for testing purposes only.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// This method is thread-safe and performs all reset operations atomically.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        lock (_resetLock)
+        {
+            // Reset schedulers back to defaults
+            RxSchedulers.ResetForTesting();
+
+            // Reset Splat builder state first
+            Splat.Builder.AppBuilder.ResetBuilderStateForTests();
+
+            // Reset the locator to a clean InstanceGenericFirstDependencyResolver
+            AppLocator.SetLocator(new InstanceGenericFirstDependencyResolver());
+
+            // Clear activation fetcher cache since it queries the AppLocator
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
+            // Finally, reset the initialization flag
+            _hasBeenInitialized = 0;
+        }
+    }
+
+    /// <summary>
+    /// Marks ReactiveUI as initialized. Called by ReactiveUIBuilder.BuildApp().
+    /// </summary>
+    internal static void MarkAsInitialized()
+    {
+        lock (_resetLock)
+        {
+            _hasBeenInitialized = 1;
+        }
     }
 }

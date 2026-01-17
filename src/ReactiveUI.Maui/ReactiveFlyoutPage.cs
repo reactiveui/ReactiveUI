@@ -13,11 +13,7 @@ namespace ReactiveUI.Maui;
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="FlyoutPage" />
 /// <seealso cref="IViewFor{TViewModel}" />
-#if NET6_0_OR_GREATER
-[RequiresDynamicCode("ReactiveFlyoutPage uses methods that require dynamic code generation")]
-[RequiresUnreferencedCode("ReactiveFlyoutPage uses methods that may require unreferenced code")]
-#endif
-public partial class ReactiveFlyoutPage<TViewModel> : FlyoutPage, IViewFor<TViewModel>
+public partial class ReactiveFlyoutPage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : FlyoutPage, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>

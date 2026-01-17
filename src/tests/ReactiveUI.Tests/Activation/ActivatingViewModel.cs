@@ -3,15 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Activation;
 
 /// <summary>
-/// Simulates a activating view model.
+///     Simulates a activating view model.
 /// </summary>
 public class ActivatingViewModel : ReactiveObject, IActivatableViewModel
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ActivatingViewModel"/> class.
+    ///     Initializes a new instance of the <see cref="ActivatingViewModel" /> class.
     /// </summary>
     public ActivatingViewModel()
     {
@@ -25,12 +25,12 @@ public class ActivatingViewModel : ReactiveObject, IActivatableViewModel
     }
 
     /// <summary>
-    /// Gets or sets the Activator which will be used by the View when Activation/Deactivation occurs.
+    ///     Gets or sets the Activator which will be used by the View when Activation/Deactivation occurs.
     /// </summary>
     public ViewModelActivator Activator { get; protected set; }
 
     /// <summary>
-    /// Gets or sets the active count.
+    ///     Gets or sets the active count.
     /// </summary>
     public int IsActiveCount { get; protected set; }
 }

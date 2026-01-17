@@ -1,0 +1,51 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="arm64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Examples/">
+    <Project Path="examples/ReactiveUI.Builder.WpfApp/ReactiveUI.Builder.WpfApp.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="../.editorconfig" />
+    <File Path="../version.json" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="stylecop.json" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/ReactiveUI.AOTTests/ReactiveUI.AOT.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Blazor.Tests/ReactiveUI.Blazor.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Builder.Maui.Tests/ReactiveUI.Builder.Maui.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Builder.Tests/ReactiveUI.Builder.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Maui.Tests/ReactiveUI.Maui.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Splat.Tests/ReactiveUI.Splat.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Test.Utilities/ReactiveUI.Test.Utilities.csproj" />
+    <Project Path="tests/ReactiveUI.TestGuiMocks/ReactiveUI.TestGuiMocks.csproj" />
+    <Project Path="tests/ReactiveUI.Testing.Tests/ReactiveUI.Testing.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Tests/ReactiveUI.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.WinForms.Tests/ReactiveUI.WinForms.Tests.csproj" />
+    <Project Path="tests/ReactiveUI.Wpf.Tests/ReactiveUI.Wpf.Tests.csproj" />
+  </Folder>
+  <Project Path="ReactiveUI.AndroidX/ReactiveUI.AndroidX.csproj" />
+  <Project Path="ReactiveUI.Blazor/ReactiveUI.Blazor.csproj">
+    <Build Solution="*|arm64" Project="false" />
+    <Build Solution="*|x64" Project="false" />
+    <Build Solution="*|x86" Project="false" />
+  </Project>
+  <Project Path="ReactiveUI.Blend/ReactiveUI.Blend.csproj" />
+  <Project Path="ReactiveUI.Drawing/ReactiveUI.Drawing.csproj" />
+  <Project Path="ReactiveUI.Maui/ReactiveUI.Maui.csproj" />
+  <Project Path="ReactiveUI.Testing.Reactive/ReactiveUI.Testing.Reactive.csproj" />
+  <Project Path="ReactiveUI.Testing/ReactiveUI.Testing.csproj" />
+  <Project Path="ReactiveUI.Winforms/ReactiveUI.Winforms.csproj" />
+  <Project Path="ReactiveUI.WinUI/ReactiveUI.WinUI.csproj" />
+  <Project Path="ReactiveUI.Wpf/ReactiveUI.Wpf.csproj" />
+  <Project Path="ReactiveUI/ReactiveUI.csproj" />
+  <Properties Name="TestCaseManagementSettings" Scope="PostLoad">
+    <Property Name="CategoryFile" Value="ReactiveUI.vsmdi" />
+  </Properties>
+</Solution>

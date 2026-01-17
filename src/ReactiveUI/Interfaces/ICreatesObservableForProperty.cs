@@ -6,51 +6,69 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// ICreatesObservableForProperty represents an object that knows how to
-/// create notifications for a given type of object. Implement this if you
-/// are porting RxUI to a new UI toolkit, or generally want to enable WhenAny
-/// for another type of object that can be observed in a unique way.
+/// <see cref="ICreatesObservableForProperty"/> represents a component that can produce change notifications for a
+/// given property on a given object.
 /// </summary>
+/// <remarks>
+/// Implementations are typically platform-specific (e.g., a UI toolkit) but this interface must remain platform-agnostic.
+/// </remarks>
 public interface ICreatesObservableForProperty : IEnableLogger
 {
     /// <summary>
-    /// Returns a positive integer when this class supports
-    /// GetNotificationForProperty for this particular Type. If the method
-    /// isn't supported at all, return a non-positive integer. When multiple
-    /// implementations return a positive value, the host will use the one
-    /// which returns the highest value. When in doubt, return '2' or '0'.
+    /// Returns a positive integer when this instance supports <see cref="GetNotificationForProperty"/> for
+    /// the specified <paramref name="type"/> and <paramref name="propertyName"/>.
     /// </summary>
-    /// <param name="type">The type to query for.</param>
-    /// <param name="propertyName">The property of the type to query for.</param>
-    /// <param name="beforeChanged">If true, returns whether GNFP is supported before a change occurs.</param>
-    /// <returns>A positive integer if GNFP is supported, zero or a negative
-    /// value otherwise.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetAffinityForObject uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-#endif
+    /// <remarks>
+    /// <para>
+    /// If the method is not supported, return a non-positive integer.
+    /// When multiple implementations return a positive value, the host selects the highest value.
+    /// </para>
+    /// <para>
+    /// Implementations should avoid expensive work here; this is typically a hot-path query.
+    /// </para>
+    /// </remarks>
+    /// <param name="type">The runtime type to query.</param>
+    /// <param name="propertyName">The property name to query.</param>
+    /// <param name="beforeChanged">
+    /// If <see langword="true"/>, indicates the caller requests notifications before the property value changes.
+    /// If <see langword="false"/>, indicates after-change notifications.
+    /// </param>
+    /// <returns>
+    /// A positive integer if supported; zero or a negative value otherwise.
+    /// </returns>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false);
 
     /// <summary>
-    /// Subscribe to notifications on the specified property, given an
-    /// object and a property name.
+    /// Subscribes to change notifications for the specified <paramref name="propertyName"/> on <paramref name="sender"/>.
     /// </summary>
     /// <param name="sender">The object to observe.</param>
-    /// <param name="expression">The expression on the object to observe.
-    ///     This will be either a MemberExpression or an IndexExpression
-    ///     depending on the property.
+    /// <param name="expression">
+    /// The expression describing the observed member.
+    /// This is typically a <c>MemberExpression</c> or an <c>IndexExpression</c>.
     /// </param>
-    /// <param name="propertyName">The property of the type to query for.</param>
-    /// <param name="beforeChanged">If true, signal just before the
-    ///     property value actually changes. If false, signal after the
-    ///     property changes.</param>
-    /// <param name="suppressWarnings">If true, no warnings should be logged.</param>
-    /// <returns>An IObservable which is signaled whenever the specified
-    /// property on the object changes. If this cannot be done for a
-    /// specified value of beforeChanged, return Observable.Never.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("GetNotificationForProperty uses methods that require dynamic code generation")]
-    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-#endif
-    IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false);
+    /// <param name="propertyName">The property name to observe.</param>
+    /// <param name="beforeChanged">
+    /// If <see langword="true"/>, signal before the property value changes; otherwise signal after the change.
+    /// </param>
+    /// <param name="suppressWarnings">If <see langword="true"/>, warnings should not be logged.</param>
+    /// <returns>
+    /// An observable that produces an <see cref="IObservedChange{TSender,TValue}"/> whenever the observed property changes.
+    /// If observing is not possible for the specified <paramref name="beforeChanged"/> value, implementations should return
+    /// an observable that never produces values.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="sender"/> is not compatible with the observing mechanism implemented by the instance.
+    /// </exception>
+    /// <remarks>
+    /// The <paramref name="expression"/> describes the observed member and is used to populate
+    /// <see cref="IObservedChange{TSender,TValue}"/> instances emitted by the returned observable.
+    /// </remarks>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged = false,
+        bool suppressWarnings = false);
 }

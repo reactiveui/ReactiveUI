@@ -29,7 +29,7 @@ namespace ReactiveUI.Builder;
 ///         .RegisterSingletonViewModel<AppShellViewModel>()
 ///         .WithRegistration(resolver =>
 ///         {
-///             resolver.RegisterLazySingleton(() => new ApiClient(), typeof(IApiClient));
+///             resolver.RegisterLazySingleton<IApiClient>(() => new ApiClient());
 ///         })
 ///         .BuildApp());
 /// ]]>
@@ -44,6 +44,13 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <param name="configure">A delegate to configure the message bus.</param>
     /// <returns>The builder instance for chaining.</returns>
     IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure);
+
+    /// <summary>
+    /// Registers a custom message bus instance.
+    /// </summary>
+    /// <param name="messageBus">The message bus instance to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithMessageBus(IMessageBus messageBus);
 
     /// <summary>
     /// Configures the suspension driver.
@@ -129,10 +136,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
     IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new();
 
@@ -140,10 +143,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// Withes the platform services.
     /// </summary>
     /// <returns>The builder instance for chaining.</returns>
-#if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("ProcessRegistrationForNamespace uses reflection to locate types which may be trimmed.")]
-    [RequiresDynamicCode("Calls ReactiveUI.IWantsToRegisterStuff.Register(Action<Func<Object>, Type>)")]
-#endif
     IReactiveUIBuilder WithPlatformServices();
 
     /// <summary>
@@ -171,15 +170,43 @@ public interface IReactiveUIBuilder : IAppBuilder
     IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true);
 
     /// <summary>
+    /// Configures a custom exception handler for unhandled errors in ReactiveUI observables.
+    /// If not configured, ReactiveUI uses a default handler that breaks the debugger and throws UnhandledErrorException.
+    /// </summary>
+    /// <param name="exceptionHandler">The custom exception handler to use.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithExceptionHandler(IObserver<Exception> exceptionHandler);
+
+    /// <summary>
+    /// Configures the non-generic suspension host for application lifecycle management.
+    /// Creates a default <see cref="ISuspensionHost"/> instance if not explicitly provided.
+    /// </summary>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithSuspensionHost();
+
+    /// <summary>
+    /// Configures a typed suspension host for application lifecycle management.
+    /// Creates a <see cref="ISuspensionHost"/> instance configured for the specified app state type.
+    /// </summary>
+    /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithSuspensionHost<TAppState>();
+
+    /// <summary>
+    /// Configures custom cache size limits for ReactiveUI's internal memoizing caches.
+    /// If not configured, platform-specific defaults are used (32/64 for mobile, 64/256 for desktop).
+    /// </summary>
+    /// <param name="smallCacheLimit">The small cache limit to use (must be greater than 0).</param>
+    /// <param name="bigCacheLimit">The big cache limit to use (must be greater than 0).</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit);
+
+    /// <summary>
     /// Withes the views from assembly.
     /// </summary>
     /// <param name="assembly">The assembly.</param>
     /// <returns>The builder instance for chaining.</returns>
-
-#if NET6_0_OR_GREATER
-    [RequiresDynamicCode("The method uses reflection and will not work in AOT environments.")]
-    [RequiresUnreferencedCode("The method uses reflection and will not work in AOT environments.")]
-#endif
+    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly);
 
     /// <summary>

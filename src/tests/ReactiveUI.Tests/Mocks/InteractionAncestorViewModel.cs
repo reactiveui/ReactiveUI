@@ -3,10 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests;
+namespace ReactiveUI.Tests.Mocks;
 
 /// <summary>
-/// A ancestor view model.
+///     A ancestor view model.
 /// </summary>
 /// <seealso cref="ReactiveObject" />
 public class InteractionAncestorViewModel : ReactiveObject
@@ -14,15 +14,12 @@ public class InteractionAncestorViewModel : ReactiveObject
     private InteractionBindViewModel _interactionBindViewModel;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="InteractionAncestorViewModel"/> class.
+    ///     Initializes a new instance of the <see cref="InteractionAncestorViewModel" /> class.
     /// </summary>
-    public InteractionAncestorViewModel()
-    {
-        _interactionBindViewModel = new InteractionBindViewModel();
-    }
+    public InteractionAncestorViewModel() => _interactionBindViewModel = new InteractionBindViewModel();
 
     /// <summary>
-    /// Gets or sets the interaction view model.
+    ///     Gets or sets the interaction view model.
     /// </summary>
     public InteractionBindViewModel InteractionViewModel
     {
