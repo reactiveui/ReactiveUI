@@ -10,17 +10,15 @@ namespace ReactiveUI.Tests.Utilities.Logging;
 /// </summary>
 public static class LoggingRegistrationExecutorExtensions
 {
-    extension(TestContext context)
+    /// <summary>
+    /// Retrieves the current test logger instance associated with the context, if one is available.
+    /// </summary>
+    /// <param name="context">The test context.</param>
+    /// <returns>A <see cref="TestLogger"/> instance if a test logger is present in the context; otherwise, <see
+    /// langword="null"/>.</returns>
+    public static TestLogger? GetTestLogger(this TestContext context)
     {
-        /// <summary>
-        /// Retrieves the current test logger instance associated with the context, if one is available.
-        /// </summary>
-        /// <returns>A <see cref="TestLogger"/> instance if a test logger is present in the context; otherwise, <see
-        /// langword="null"/>.</returns>
-        public TestLogger? GetTestLogger()
-        {
-            ArgumentNullException.ThrowIfNull(context);
-            return (TestLogger?)context.StateBag.Items["TestLogger"];
-        }
+        ArgumentNullException.ThrowIfNull(context);
+        return (TestLogger?)context.StateBag.Items["TestLogger"];
     }
 }
