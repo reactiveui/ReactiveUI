@@ -46,7 +46,7 @@
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.1" />
-    <PackageVersion Include="TUnit" Version="1.7.20" />
+    <PackageVersion Include="TUnit" Version="1.11.18" />
     <PackageVersion Include="Verify.TUnit" Version="31.9.3" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
