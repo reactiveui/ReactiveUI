@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TUnit"/>
+    <PackageReference Include="TUnit.Core"/>
     <PackageReference Include="PublicApiGenerator"/>
     <PackageReference Include="Verify.TUnit"/>
   </ItemGroup>
