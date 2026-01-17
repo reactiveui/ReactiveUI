@@ -11,28 +11,9 @@ namespace ReactiveUI.Tests.Xaml;
 /// Routable ViewModel MixinTests.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class RoutableViewModelMixinTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model is first added.
     /// </summary>

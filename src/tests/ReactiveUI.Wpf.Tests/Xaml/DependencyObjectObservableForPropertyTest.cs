@@ -16,34 +16,14 @@ namespace ReactiveUI.Tests.Xaml;
 /// Tests for the dependency object property binding.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class DependencyObjectObservableForPropertyTest
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task DependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DepObjFixture();
@@ -81,7 +61,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task DerivedDependencyObjectObservableForPropertySmokeTest()
     {
         var fixture = new DerivedDepObjFixture();
@@ -119,7 +98,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task WhenAnyWithDependencyObjectTest()
     {
         var inputs = new[] { "Foo", "Bar", "Baz" };
@@ -149,7 +127,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ListBoxSelectedItemTest()
     {
         var input = new ListBox();
@@ -176,7 +153,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetAffinityForObject_NonDependencyObject_ReturnsZero()
     {
@@ -192,7 +168,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetAffinityForObject_ValidDependencyProperty_ReturnsFour()
     {
@@ -208,7 +183,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetAffinityForObject_NonExistentProperty_ReturnsZero()
     {
@@ -224,7 +198,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_NullSender_Throws()
     {
@@ -240,7 +213,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_NonDependencyProperty_Throws()
     {
@@ -257,7 +229,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_WithSuppressWarnings_DoesNotLog()
     {
@@ -281,7 +252,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_DependencyPropertyChange_Notifies()
     {
@@ -311,7 +281,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_Disposal_StopsNotifications()
     {
@@ -341,7 +310,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_MultipleSubscribers_AllReceiveNotifications()
     {
@@ -379,7 +347,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_BeforeChanged_NotSupported()
     {
@@ -405,7 +372,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetAffinityForObject_WithBeforeChanged_ReturnsCorrectAffinity()
     {
@@ -421,7 +387,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_ObservableExpression_PassedThrough()
     {
@@ -447,7 +412,6 @@ public class DependencyObjectObservableForPropertyTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     [NotInParallel]
     public async Task GetNotificationForProperty_DerivedDependencyObject_Works()
     {

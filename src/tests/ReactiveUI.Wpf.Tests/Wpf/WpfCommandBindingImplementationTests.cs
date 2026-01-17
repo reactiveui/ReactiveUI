@@ -21,34 +21,14 @@ namespace ReactiveUI.Tests.Wpf;
 /// global service locator state. This state must not be mutated concurrently by parallel tests.
 /// </remarks>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class WpfCommandBindingImplementationTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Commands the bind to explicit event wireup.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindToExplicitEventWireup()
     {
         var vm = new CommandBindingViewModel();
@@ -72,7 +52,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandToObjectWithEventTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -92,7 +71,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandToObjectTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -112,7 +90,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandToObjectEventIsNull()
     {
         var vm = new CommandBindingViewModel();
@@ -132,7 +109,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandToObjectWithEventCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -153,7 +129,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandToObjectCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
@@ -174,7 +149,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindViewModelToViewWithObservable()
     {
         var vm = new CommandBindingViewModel();
@@ -221,7 +195,6 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CommandBindViewModelToViewWithFunc()
     {
         var vm = new CommandBindingViewModel();
@@ -264,7 +237,6 @@ public class WpfCommandBindingImplementationTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
     {
         var testLogger = new TestLogger();
@@ -280,7 +252,6 @@ public class WpfCommandBindingImplementationTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()

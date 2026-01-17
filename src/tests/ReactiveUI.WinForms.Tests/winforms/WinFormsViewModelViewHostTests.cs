@@ -16,6 +16,9 @@ public class WinFormsViewModelViewHostTests
     [Before(Test)]
     public void SetUp() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
+    [After(Test)]
+    public void TearDown() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = false;
+
     [Test]
     public async Task SettingViewModelShouldAddTheViewtoItsControls()
     {

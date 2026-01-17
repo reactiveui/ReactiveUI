@@ -5,17 +5,18 @@
 
 using System.Text.Json.Serialization.Metadata;
 
+using ReactiveUI.Tests.Utilities.SuspensionHost;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
 ///     Tests for SuspensionHostExtensions that use static state.
 ///     These tests must run in NonParallel suite due to static fields in SuspensionHostExtensions.
 /// </summary>
+[NotInParallel]
+[TestExecutor<SuspensionHostTestExecutor>]
 public class SuspensionHostExtensionsTests
 {
-    private Func<IObservable<Unit>>? _previousEnsureLoadAppStateFunc;
-    private ISuspensionDriver? _previousSuspensionDriver;
-
     [Test]
     public async Task DummySuspensionDriver_InvalidateState_ReturnsUnitObservable()
     {
@@ -337,26 +338,6 @@ public class SuspensionHostExtensionsTests
     [Test]
     public async Task ObserveAppStateThrowsForNullHost() => await Assert
         .That(() => ((ISuspensionHost)null!).ObserveAppState<DummyAppState>()).Throws<ArgumentNullException>();
-
-    /// <summary>
-    ///     Restores the static fields in SuspensionHostExtensions after each test.
-    /// </summary>
-    [After(Test)]
-    public void RestoreStaticState()
-    {
-        SuspensionHostExtensions.EnsureLoadAppStateFunc = _previousEnsureLoadAppStateFunc;
-        SuspensionHostExtensions.SuspensionDriver = _previousSuspensionDriver;
-    }
-
-    /// <summary>
-    ///     Saves the static state before each test.
-    /// </summary>
-    [Before(Test)]
-    public void SaveStaticState()
-    {
-        _previousEnsureLoadAppStateFunc = SuspensionHostExtensions.EnsureLoadAppStateFunc;
-        _previousSuspensionDriver = SuspensionHostExtensions.SuspensionDriver;
-    }
 
     [Test]
     public async Task SetupDefaultSuspendResume_IsResumingOrIsLaunchingNew_TriggersStateLoad()

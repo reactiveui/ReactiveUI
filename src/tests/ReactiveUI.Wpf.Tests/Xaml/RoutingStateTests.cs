@@ -13,28 +13,9 @@ using ReactiveUI.Tests.Xaml.Mocks;
 namespace ReactiveUI.Tests.Xaml;
 
 [NotInParallel]
-[Skip("Flaky test - needs investigation")]
+[TestExecutor<WpfTestExecutor>]
 public class RoutingStateTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
 
     /// <summary>
     /// Navigations the push pop test.
@@ -44,10 +25,10 @@ public class RoutingStateTests
     public async Task NavigationPushPopTest()
     {
         var input = new TestViewModel { SomeProp = "Foo" };
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
 
         await Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync()).IsFalse();
-        fixture.Navigate.Execute(new TestViewModel()).Subscribe();
+        fixture.Navigate.Execute(input).Subscribe();
 
         using (Assert.Multiple())
         {
@@ -63,10 +44,11 @@ public class RoutingStateTests
             await Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync()).IsTrue();
         }
 
-        var navigatedTo = fixture.NavigateBack.Execute().Subscribe(_ => { }, ex => throw ex);
+        IRoutableViewModel? navigatedTo = null;
+        fixture.NavigateBack.Execute().Subscribe(vm => navigatedTo = vm);
         using (Assert.Multiple())
         {
-            await Assert.That(input.GetType()).IsEqualTo(navigatedTo.GetType());
+            await Assert.That(navigatedTo).IsSameReferenceAs(input);
             await Assert.That(fixture.NavigationStack).Count().IsEqualTo(1);
         }
     }
@@ -78,7 +60,7 @@ public class RoutingStateTests
     [Test]
     public async Task CurrentViewModelObservableIsAccurate()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         fixture.CurrentViewModel.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var output).Subscribe();
 
         await Assert.That(output).Count().IsEqualTo(1);
@@ -160,7 +142,7 @@ public class RoutingStateTests
                .Bind(out var output)
                .Subscribe();
 
-        fixture.Router = new RoutingState();
+        fixture.Router = new RoutingState(ImmediateScheduler.Instance);
 
         await Assert.That(output).Count().IsEqualTo(1);
 
@@ -191,7 +173,7 @@ public class RoutingStateTests
     {
         var fixture = new TestScreen
         {
-            Router = new RoutingState()
+            Router = new RoutingState(ImmediateScheduler.Instance)
         };
         var viewModel = new TestViewModel();
 
@@ -241,7 +223,7 @@ public class RoutingStateTests
 
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
-    public void RoutingStateThrows()
+    public async Task RoutingStateThrows()
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var fixture = new RoutingState(scheduler);
@@ -256,7 +238,16 @@ public class RoutingStateTests
             .NavigateAndReset
             .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var navigateAndReset).Subscribe();
 
-        Assert.Throws<Exception>(() => fixture.Navigate.Execute(null!).Subscribe());
+        Exception? thrownException = null;
+
+        // Subscribe to ThrownExceptions to prevent global error handler from being triggered
+        fixture.Navigate.ThrownExceptions.Subscribe(ex => thrownException = ex);
+
+        // Execute with null to trigger the exception - subscribe with error handler to catch it
+        fixture.Navigate.Execute(null!).Subscribe(_ => { }, ex => { });
+
+        await Assert.That(thrownException).IsNotNull();
+        await Assert.That(thrownException!.Message).Contains("Navigate must be called on an IRoutableViewModel");
     }
 
     /// <summary>
@@ -266,7 +257,7 @@ public class RoutingStateTests
     [Test]
     public async Task FindViewModelInStackFindsCorrectViewModel()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         var vm1 = new TestViewModel { SomeProp = "First" };
         var vm2 = new TestViewModel { SomeProp = "Second" };
         var vm3 = new TestViewModel { SomeProp = "Third" };
@@ -287,7 +278,7 @@ public class RoutingStateTests
     [Test]
     public async Task FindViewModelInStackReturnsNullWhenNotFound()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         var found = fixture.FindViewModelInStack<TestViewModel>();
 
         await Assert.That(found).IsNull();
@@ -300,7 +291,7 @@ public class RoutingStateTests
     [Test]
     public async Task FindViewModelInStackSearchesFromTop()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         var vm1 = new TestViewModel { SomeProp = "First" };
         var vm2 = new AlternateViewModel();
         var vm3 = new TestViewModel { SomeProp = "Third" };
@@ -331,7 +322,7 @@ public class RoutingStateTests
     [Test]
     public async Task GetCurrentViewModelReturnsTopViewModel()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         var vm1 = new TestViewModel { SomeProp = "First" };
         var vm2 = new TestViewModel { SomeProp = "Second" };
 
@@ -350,7 +341,7 @@ public class RoutingStateTests
     [Test]
     public async Task GetCurrentViewModelReturnsNullForEmptyStack()
     {
-        var fixture = new RoutingState();
+        var fixture = new RoutingState(ImmediateScheduler.Instance);
         var current = fixture.GetCurrentViewModel();
 
         await Assert.That(current).IsNull();
@@ -373,7 +364,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToObservableFires()
     {
-        var screen = new TestScreen { Router = new RoutingState() };
+        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var fired = false;
@@ -391,7 +382,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToObservableCompletesWhenRemoved()
     {
-        var screen = new TestScreen { Router = new RoutingState() };
+        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var completed = false;
@@ -410,7 +401,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatingFromObservableFires()
     {
-        var screen = new TestScreen { Router = new RoutingState() };
+        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
         var vm1 = new TestViewModel { HostScreen = screen };
         var vm2 = new TestViewModel { HostScreen = screen };
 
@@ -430,7 +421,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToSetsUpAndTearsDown()
     {
-        var screen = new TestScreen { Router = new RoutingState() };
+        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var setupCount = 0;

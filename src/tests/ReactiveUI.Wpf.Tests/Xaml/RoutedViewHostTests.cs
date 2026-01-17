@@ -4,9 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
+using System.Windows.Threading;
 
 using DynamicData;
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
+using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -19,24 +22,12 @@ namespace ReactiveUI.Tests.Xaml;
 /// global service locator state.
 /// </remarks>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class RoutedViewHostTests
 {
-    [After(Test)]
-    public void TearDown()
-    {
-        RxAppBuilder.ResetForTesting();
-    }
-
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    [Skip("Flaky test - needs investigation")]
     public async Task RoutedViewHostDefaultContentNotNull()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithCoreServices()
-            .BuildApp();
-
         var uc = new RoutedViewHost
         {
             DefaultContent = new System.Windows.Controls.Label()
@@ -58,20 +49,11 @@ public class RoutedViewHostTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    [Skip("Flaky test - needs investigation")]
+    [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
         var router = new RoutingState(ImmediateScheduler.Instance);
         var viewModel = new TestViewModel();
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .WithWpf()
-            .RegisterView<TestView, TestViewModel>()
-            .WithRegistration(r => r.Register(() => new TestView()))
-            .WithRegistration(r => r.RegisterConstant(viewModel))
-            .ConfigureViewLocator(locator => locator.Map<TestViewModel, TestView>(() => new TestView()))
-            .BuildApp();
 
         var uc = new RoutedViewHost
         {
@@ -100,16 +82,9 @@ public class RoutedViewHostTests
     }
 
     [Test]
-    [TestExecutor<STAThreadExecutor>]
-    [Skip("Flaky test - needs investigation")]
+    [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .RegisterView<TestView, TestViewModel>()
-            .WithCoreServices()
-            .BuildApp();
-
         var router = new RoutingState();
         var viewModel = new TestViewModel();
 
@@ -136,5 +111,42 @@ public class RoutedViewHostTests
 
         // Test Navigation before activated
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
+    }
+
+    /// <summary>
+    /// Test executor for RoutedViewHost tests that require view registration.
+    /// </summary>
+    public class WpfWithViewAndRoutingExecutor : STAThreadExecutor
+    {
+        private readonly AppBuilderTestHelper _helper = new();
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            _helper.Initialize(builder =>
+            {
+                // Include WPF platform services and register test view for routing tests
+                builder
+                    .WithWpf()
+                    .RegisterView<TestView, TestViewModel>()
+                    .WithCoreServices();
+
+                // Configure WPF scheduler for test execution
+                // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
+                // so we must manually configure it for tests that need WPF controls
+                var dispatcher = Dispatcher.CurrentDispatcher;
+                RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
+                RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            });
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            _helper.CleanUp();
+            base.CleanUp();
+        }
     }
 }

@@ -34,5 +34,7 @@
     <Using Include="Microsoft.Maui.Controls" />
     <Using Include="ReactiveUI" />
     <Using Include="ReactiveUI.Maui" />
+    <Using Include="TUnit.Core" />
+    <Using Include="TUnit.Core.Executors" />
   </ItemGroup>
 </Project>

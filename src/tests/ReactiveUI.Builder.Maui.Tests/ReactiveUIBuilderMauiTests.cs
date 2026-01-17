@@ -8,6 +8,8 @@ using System.Reactive.Disposables;
 
 using Microsoft.Maui.Dispatching;
 
+using ReactiveUI.Maui.Tests;
+
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests;
@@ -15,22 +17,9 @@ namespace ReactiveUI.Builder.Maui.Tests;
 /// <summary>
 /// Tests for ReactiveUI Builder MAUI extensions.
 /// </summary>
+[TestExecutor<MauiTestExecutor>]
 public class ReactiveUIBuilderMauiTests
 {
-    private readonly MauiTestFixture _fixture = new();
-
-    /// <summary>
-    /// Sets up the test dispatcher for MAUI controls.
-    /// </summary>
-    [Before(Test)]
-    public void Setup() => _fixture.Setup();
-
-    /// <summary>
-    /// Restores the previous dispatcher provider.
-    /// </summary>
-    [After(Test)]
-    public void Teardown() => _fixture.Teardown();
-
     /// <summary>
     /// Verifies that the WithMaui builder extension registers required MAUI services.
     /// </summary>

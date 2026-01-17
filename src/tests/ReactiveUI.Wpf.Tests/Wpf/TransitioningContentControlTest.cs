@@ -13,34 +13,14 @@ namespace ReactiveUI.Tests.Wpf;
 /// Tests for <see cref="TransitioningContentControl"/>.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class TransitioningContentControlTest
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that Transition property can be set and retrieved.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Transition_SetAndGet_WorksCorrectly()
     {
         var control = new TransitioningContentControl
@@ -60,7 +40,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Direction_SetAndGet_WorksCorrectly()
     {
         var control = new TransitioningContentControl
@@ -80,7 +59,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Duration_SetAndGet_WorksCorrectly()
     {
         var control = new TransitioningContentControl
@@ -100,7 +78,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Transition_AllTypes_CanBeSet()
     {
         var control = new TransitioningContentControl();
@@ -125,7 +102,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Direction_AllDirections_CanBeSet()
     {
         var control = new TransitioningContentControl();
@@ -149,7 +125,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TransitionProperty_IsRegistered()
     {
         await Assert.That(TransitioningContentControl.TransitionProperty).IsNotNull();
@@ -160,7 +135,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TransitionDirectionProperty_IsRegistered()
     {
         await Assert.That(TransitioningContentControl.TransitionDirectionProperty).IsNotNull();
@@ -171,7 +145,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TransitionDurationProperty_IsRegistered()
     {
         await Assert.That(TransitioningContentControl.TransitionDurationProperty).IsNotNull();
@@ -182,7 +155,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OverrideDpi_CanBeSet()
     {
         TransitioningContentControl.OverrideDpi = true;
@@ -197,7 +169,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Content_SetAndGet_WorksCorrectly()
     {
         var control = new TransitioningContentControl();
@@ -213,7 +184,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Constructor_CreatesControlWithDefaults()
     {
         var control = new TransitioningContentControl();
@@ -229,7 +199,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDpiScaleForElement_WithoutOverride_ReturnsActualDpi()
     {
         TransitioningContentControl.OverrideDpi = false;
@@ -246,7 +215,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetDpiScaleForElement_WithOverride_ReturnsOverriddenDpi()
     {
         TransitioningContentControl.OverrideDpi = true;
@@ -265,7 +233,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SetFadeTransitionDefaults_WithValidStoryboard_SetsDuration()
     {
         var control = new TransitioningContentControl
@@ -293,7 +260,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task SetFadeTransitionDefaults_WithNullStoryboard_DoesNotThrow()
     {
         var control = new TransitioningContentControl();
@@ -438,7 +404,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ConfigureStandardTransition_WithFadeType_ReturnsCorrectName()
     {
         var control = CreateControlWithTemplate();
@@ -506,7 +471,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task PrepareTransitionImages_WithNewContent_SetsContentPresenterContent()
     {
         var control = CreateControlWithTemplateParts();
@@ -522,7 +486,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetRenderTargetBitmapFromUiElement_WithZeroSize_ReturnsDefault()
     {
         var button = new Button();
@@ -537,7 +500,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetRenderTargetBitmapFromUiElement_WithRenderedElement_CreatesBitmap()
     {
         var button = new Button
@@ -564,7 +526,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetTransitionStoryboardByName_WithNullName_ThrowsArgumentNullException()
     {
         var control = CreateControlWithTemplate();
@@ -577,7 +538,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetTransitionStoryboardByName_WithEmptyName_ThrowsArgumentException()
     {
         var control = CreateControlWithTemplate();
@@ -590,7 +550,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetTransitionStoryboardByName_WithoutVisualStateGroup_ThrowsInvalidOperationException()
     {
         var control = new TransitioningContentControl();
@@ -604,7 +563,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetTransitionStoryboardByName_WithInvalidTransition_ThrowsInvalidOperationException()
     {
         var control = CreateControlWithTemplate();
@@ -618,7 +576,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task GetTransitionStoryboardByName_WithValidTransition_ReturnsStoryboard()
     {
         var control = CreateControlWithTemplate();
@@ -664,7 +621,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OnApplyTemplate_WithoutContainer_ThrowsInvalidOperationException()
     {
         var control = new TransitioningContentControl();
@@ -683,7 +639,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OnApplyTemplate_WithoutContentPresenter_ThrowsInvalidOperationException()
     {
         var control = new TransitioningContentControl();
@@ -702,7 +657,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task OnApplyTemplate_WithAllParts_Succeeds()
     {
         var control = CreateControlWithTemplateParts();
@@ -715,7 +669,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TransitionType_Enum_HasExpectedValues()
     {
         var values = Enum.GetValues(typeof(TransitioningContentControl.TransitionType));
@@ -728,7 +681,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task TransitionDirection_Enum_HasExpectedValues()
     {
         var values = Enum.GetValues(typeof(TransitioningContentControl.TransitionDirection));
@@ -741,7 +693,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task CompletingTransition_Set_TriggersSetTransitionDefaultValues()
     {
         var control = new TransitioningContentControl
@@ -768,7 +719,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task StartingTransition_Set_TriggersSetTransitionDefaultValues()
     {
         var control = new TransitioningContentControl
@@ -797,7 +747,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task PrepareTransitionImages_CapturesCurrentContent()
     {
         var control = CreateControlWithTemplate();
@@ -824,7 +773,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task ConfigureBounceTransition_SetsBothTransitions()
     {
         var control = CreateControlWithTemplate();
@@ -871,7 +819,6 @@ public class TransitioningContentControlTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task PrepareTransitionImages_WithZeroSizeElement_HandlesGracefully()
     {
         var control = CreateControlWithTemplate();

@@ -17,34 +17,14 @@ namespace ReactiveUI.Tests.Wpf;
 /// Tests for ObservableTrigger.
 /// </summary>
 [NotInParallel]
+[TestExecutor<WpfTestExecutor>]
 public class ObservableTriggerTests
 {
-    private WpfAppBuilderScope? _appBuilderScope;
-
-    /// <summary>
-    /// Sets up the WPF app builder scope for each test.
-    /// </summary>
-    [Before(Test)]
-    public void Setup()
-    {
-        _appBuilderScope = new WpfAppBuilderScope();
-    }
-
-    /// <summary>
-    /// Tears down the WPF app builder scope after each test.
-    /// </summary>
-    [After(Test)]
-    public void TearDown()
-    {
-        _appBuilderScope?.Dispose();
-    }
-
     /// <summary>
     /// Tests that the trigger invokes actions when the observable emits.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Observable_WhenEmits_InvokesActions()
     {
         var button = new Button();
@@ -81,7 +61,6 @@ public class ObservableTriggerTests
     /// Tests that OnObservableChanged throws ArgumentException for invalid sender.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnObservableChanged_InvalidSender_ThrowsArgumentException()
     {
         var button = new Button();
@@ -99,7 +78,6 @@ public class ObservableTriggerTests
     /// Tests that OnObservableChanged throws ArgumentNullException for default event args.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnObservableChanged_DefaultEventArgs_ThrowsArgumentNullException()
     {
         var trigger = new ObservableTrigger();
@@ -115,7 +93,6 @@ public class ObservableTriggerTests
     /// Tests that OnObservableChanged throws ArgumentNullException for null NewValue.
     /// </summary>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public void OnObservableChanged_NullNewValue_ThrowsArgumentNullException()
     {
         var trigger = new ObservableTrigger();
@@ -137,7 +114,6 @@ public class ObservableTriggerTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Observable_Getter_ReturnsSetValue()
     {
         var button = new Button();
@@ -162,7 +138,6 @@ public class ObservableTriggerTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Observable_WhenChangedMultipleTimes_DisposesOldSubscription()
     {
         var button = new Button();
@@ -194,7 +169,6 @@ public class ObservableTriggerTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AutoResubscribeOnError_WhenTrue_ResubscribesAfterError()
     {
         var button = new Button();
@@ -234,7 +208,6 @@ public class ObservableTriggerTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task AutoResubscribeOnError_WhenFalse_DoesNotResubscribe()
     {
         var button = new Button();
@@ -266,7 +239,6 @@ public class ObservableTriggerTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<STAThreadExecutor>]
     public async Task Observable_MultipleEmissions_InvokesActionsMultipleTimes()
     {
         var button = new Button();
