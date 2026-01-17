@@ -47,6 +47,9 @@
     <Using Include="System.Reactive.Subjects" />
     <Using Include="System.Threading.Tasks" />
     <Using Include="Splat" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
     <Using Include="ReactiveUI.Maui.Internal" />
   </ItemGroup>
 
