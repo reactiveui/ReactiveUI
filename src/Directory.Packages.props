@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageVersion Include="Akavache.Sqlite3" Version="11.5.1" />
     <PackageVersion Include="Akavache.SystemTextJson" Version="11.5.1" />
-    <PackageVersion Include="bunit" Version="2.4.2" />
+    <PackageVersion Include="bunit" Version="2.5.3" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
