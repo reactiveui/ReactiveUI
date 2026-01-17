@@ -8,100 +8,110 @@ namespace ReactiveUI.Testing;
 /// <summary>
 /// Default methods for the <see cref="IBuilder"/> abstraction.
 /// </summary>
-[SuppressMessage("Design", "RCS1263: Parameter not found", Justification = "False positive with extension class")]
 public static class IBuilderExtensions
 {
-    /// <summary>Extension methods associated with the IBuilder.</summary>
-    /// <param name="builder">This builder.</param>
+    /// <summary>
+    /// Adds the specified field to the builder.
+    /// </summary>
     /// <typeparam name="TBuilder">The type of the builder.</typeparam>
-    extension<TBuilder>(TBuilder builder)
+    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <param name="builder">This builder.</param>
+    /// <param name="field">The field.</param>
+    /// <param name="value">The value.</param>
+    /// <returns>The builder.</returns>
+    public static TBuilder With<TBuilder, TField>(this TBuilder builder, out TField field, TField value)
         where TBuilder : IBuilder
     {
-        /// <summary>
-        /// Adds the specified field to the builder.
-        /// </summary>
-        /// <typeparam name="TField">The type of the field.</typeparam>
-        /// <param name="field">The field.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>The builder.</returns>
-        public TBuilder With<TField>(out TField field, TField value)
-        {
-            field = value;
-            return builder;
-        }
+        field = value;
+        return builder;
+    }
 
-        /// <summary>
-        /// Adds the specified list of fields to the builder.
-        /// </summary>
-        /// <typeparam name="TField">The type of the field.</typeparam>
-        /// <param name="field">The field.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>The builder.</returns>
-        public TBuilder With<TField>(
-            ref List<TField>? field,
-            IEnumerable<TField> values)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(field);
+    /// <summary>
+    /// Adds the specified list of fields to the builder.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
+    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <param name="builder">This builder.</param>
+    /// <param name="field">The field.</param>
+    /// <param name="values">The values.</param>
+    /// <returns>The builder.</returns>
+    public static TBuilder With<TBuilder, TField>(
+        this TBuilder builder,
+        ref List<TField>? field,
+        IEnumerable<TField> values)
+        where TBuilder : IBuilder
+    {
+        ArgumentExceptionHelper.ThrowIfNull(field);
 
-            field.AddRange(values);
+        field.AddRange(values);
 
-            return builder;
-        }
+        return builder;
+    }
 
-        /// <summary>
-        /// Adds the specified field to the builder.
-        /// </summary>
-        /// <typeparam name="TField">The type of the field.</typeparam>
-        /// <param name="field">The field.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>The builder.</returns>
-        public TBuilder With<TField>(ref List<TField>? field, TField value)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(field);
+    /// <summary>
+    /// Adds the specified field to the builder.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
+    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <param name="builder">This builder.</param>
+    /// <param name="field">The field.</param>
+    /// <param name="value">The value.</param>
+    /// <returns>The builder.</returns>
+    public static TBuilder With<TBuilder, TField>(this TBuilder builder, ref List<TField>? field, TField value)
+        where TBuilder : IBuilder
+    {
+        ArgumentExceptionHelper.ThrowIfNull(field);
 
-            field.Add(value);
-            return builder;
-        }
+        field.Add(value);
+        return builder;
+    }
 
-        /// <summary>
-        /// Adds the specified key value pair to the provided dictionary.
-        /// </summary>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <typeparam name="TField">The type of the field.</typeparam>
-        /// <param name="dictionary">The dictionary.</param>
-        /// <param name="keyValuePair">The key value pair.</param>
-        /// <returns>The builder.</returns>
-        public TBuilder With<TKey, TField>(
-            ref Dictionary<TKey, TField> dictionary,
-            KeyValuePair<TKey, TField> keyValuePair)
-            where TKey : notnull
-        {
-            ArgumentExceptionHelper.ThrowIfNull(dictionary);
+    /// <summary>
+    /// Adds the specified key value pair to the provided dictionary.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <param name="builder">This builder.</param>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="keyValuePair">The key value pair.</param>
+    /// <returns>The builder.</returns>
+    public static TBuilder With<TBuilder, TKey, TField>(
+        this TBuilder builder,
+        ref Dictionary<TKey, TField> dictionary,
+        KeyValuePair<TKey, TField> keyValuePair)
+        where TBuilder : IBuilder
+        where TKey : notnull
+    {
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
-            dictionary.Add(keyValuePair.Key, keyValuePair.Value);
-            return builder;
-        }
+        dictionary.Add(keyValuePair.Key, keyValuePair.Value);
+        return builder;
+    }
 
-        /// <summary>
-        /// Adds the specified key and value to the provided dictionary.
-        /// </summary>
-        /// <typeparam name="TKey">The type of the key.</typeparam>
-        /// <typeparam name="TField">The type of the field.</typeparam>
-        /// <param name="dictionary">The dictionary.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>The builder.</returns>
-        public TBuilder With<TKey, TField>(
-            ref Dictionary<TKey, TField> dictionary,
-            TKey key,
-            TField value)
-            where TKey : notnull
-        {
-            ArgumentExceptionHelper.ThrowIfNull(dictionary);
+    /// <summary>
+    /// Adds the specified key and value to the provided dictionary.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the builder.</typeparam>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TField">The type of the field.</typeparam>
+    /// <param name="builder">This builder.</param>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    /// <returns>The builder.</returns>
+    public static TBuilder With<TBuilder, TKey, TField>(
+        this TBuilder builder,
+        ref Dictionary<TKey, TField> dictionary,
+        TKey key,
+        TField value)
+        where TBuilder : IBuilder
+        where TKey : notnull
+    {
+        ArgumentExceptionHelper.ThrowIfNull(dictionary);
 
-            dictionary.Add(key, value);
-            return builder;
-        }
+        dictionary.Add(key, value);
+        return builder;
     }
 
     /// <summary>

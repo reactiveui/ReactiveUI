@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Remove="**\*.cs" />
     <None Include="**\*.cs" />
+    <Compile Include="API\**\*.cs" />
   </ItemGroup>
 
   <Choose>
@@ -31,7 +32,6 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj" />
         <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj" />
-        <Compile Include="API\**\*.cs" />
         <Compile Include="Wpf\**\*.cs" />
         <Compile Include="Xaml\**\*.cs" />
         <Compile Include="WhenAny\**\*.cs" />

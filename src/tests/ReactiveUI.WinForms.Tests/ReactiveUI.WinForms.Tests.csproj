@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Remove="**\*.cs" />
     <None Include="**\*.cs" />
+    <Compile Include="API\**\*.cs" />
   </ItemGroup>
 
   <Choose>
@@ -30,7 +31,6 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
-        <Compile Include="API\**\*.cs" />
         <Compile Include="winforms\**\*.cs" />
       </ItemGroup>
     </When>
@@ -42,7 +42,6 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj" />
         <PackageReference Include="System.ValueTuple" />
-        <Compile Include="API\**\*.cs" />
         <Compile Include="winforms\**\*.cs" />
         <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)" />
         <Compile Include="..\ReactiveUI.NonParallel.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs" />
