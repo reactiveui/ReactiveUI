@@ -5,6 +5,7 @@
 
 using System.Runtime.Versioning;
 using System.Windows.Threading;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -25,52 +26,33 @@ namespace ReactiveUI.Tests.Wpf;
 [SupportedOSPlatform("windows")]
 public class WpfTestExecutor : STAThreadExecutor
 {
-    private IScheduler? _originalMainThreadScheduler;
-    private IScheduler? _originalTaskpoolScheduler;
+    private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
     protected override void Initialize()
     {
         base.Initialize();
 
-        // Save the current schedulers so we can restore them later
-        _originalMainThreadScheduler = RxSchedulers.MainThreadScheduler;
-        _originalTaskpoolScheduler = RxSchedulers.TaskpoolScheduler;
+        _helper.Initialize(builder =>
+        {
+            // Include WPF platform services to ensure view locator, activation, etc. work
+            builder
+                .WithWpf()
+                .WithCoreServices();
 
-        RxAppBuilder.ResetForTesting();
-
-        // Replace with a new locator that tests can modify
-        // Include WPF platform services to ensure view locator, activation, etc. work
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithCoreServices()
-            .BuildApp();
-
-        // Configure WPF scheduler for test execution
-        // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
-        // so we must manually configure it for tests that need WPF controls
-        var dispatcher = Dispatcher.CurrentDispatcher;
-        RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
-        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            // Configure WPF scheduler for test execution
+            // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
+            // so we must manually configure it for tests that need WPF controls
+            var dispatcher = Dispatcher.CurrentDispatcher;
+            RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
+            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+        });
     }
 
     /// <inheritdoc/>
     protected override void CleanUp()
     {
-        // Restore original schedulers before resetting
-        if (_originalMainThreadScheduler != null)
-        {
-            RxSchedulers.MainThreadScheduler = _originalMainThreadScheduler;
-        }
-
-        if (_originalTaskpoolScheduler != null)
-        {
-            RxSchedulers.TaskpoolScheduler = _originalTaskpoolScheduler;
-        }
-
-        // Reset AppBuilder state to clean up test-specific registrations
-        RxAppBuilder.ResetForTesting();
-
+        _helper.CleanUp();
         base.CleanUp();
     }
 }

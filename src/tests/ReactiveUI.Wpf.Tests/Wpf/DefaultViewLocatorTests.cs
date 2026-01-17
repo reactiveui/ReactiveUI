@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Xaml;
 using ReactiveUI.Tests.Xaml.Mocks;
 
@@ -64,26 +65,27 @@ public partial class DefaultViewLocatorTests
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
+        private readonly AppBuilderTestHelper _helper = new();
+
         /// <inheritdoc />
         protected override void Initialize()
         {
             base.Initialize();
 
-            RxAppBuilder.ResetForTesting();
-
-            // Replace with a new locator that tests can modify
-            // Include WPF platform services to ensure view locator, activation, etc. work
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithWpf()
-                .RegisterView<TView, TViewModel>()
-                .WithCoreServices()
-                .BuildApp();
+            _helper.Initialize(builder =>
+            {
+                // Include WPF platform services and register test view
+                builder
+                    .WithWpf()
+                    .RegisterView<TView, TViewModel>()
+                    .WithCoreServices();
+            });
         }
 
         /// <inheritdoc />
         protected override void CleanUp()
         {
-            RxAppBuilder.ResetForTesting();
+            _helper.CleanUp();
             base.CleanUp();
         }
     }

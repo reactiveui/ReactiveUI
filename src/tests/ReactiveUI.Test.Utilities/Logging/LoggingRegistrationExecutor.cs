@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
 using Splat;
 
 namespace ReactiveUI.Tests.Utilities.Logging;
@@ -17,15 +18,13 @@ namespace ReactiveUI.Tests.Utilities.Logging;
 ///     allowing tests to run without requiring explicit logging setup. The logging configuration is reset before and after
 ///     each test execution to prevent side effects between tests.
 /// </remarks>
-public class LoggingRegistrationExecutor : ITestExecutor
+public class LoggingRegistrationExecutor : BaseAppBuilderTestExecutor
 {
     /// <inheritdoc />
-    public async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
+    protected override void ConfigureAppBuilder(IReactiveUIBuilder builder, TestContext context)
     {
+        ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(action);
-
-        RxAppBuilder.ResetForTesting();
 
         var logger = new TestLogger();
         var fullLogger = new WrappingFullLogger(logger);
@@ -34,21 +33,13 @@ public class LoggingRegistrationExecutor : ITestExecutor
         // This ensures ILogManager is available even if tests don't set up their own
         var currentLogManager = new TestLogManager(fullLogger);
 
+        // Store test utilities in context
         context.StateBag["TestLogger"] = logger;
         context.StateBag["TestLogManager"] = currentLogManager;
 
-        _ = RxAppBuilder.CreateReactiveUIBuilder()
+        // Configure builder with logging registration and core services
+        builder
             .WithRegistration(r => r.Register<ILogManager>(() => currentLogManager))
-            .WithCoreServices()
-            .BuildApp();
-
-        try
-        {
-            await action();
-        }
-        finally
-        {
-            RxAppBuilder.ResetForTesting();
-        }
+            .WithCoreServices();
     }
 }

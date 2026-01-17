@@ -9,37 +9,12 @@ namespace ReactiveUI.Tests.Utilities.AppBuilder;
 ///     Test executor that sets up AppBuilder isolation for test duration.
 ///     Ensures tests run serially and AppBuilder state is reset before/after each test.
 /// </summary>
-public class AppBuilderTestExecutor : ITestExecutor
+/// <remarks>
+/// This executor uses the default <see cref="BaseAppBuilderTestExecutor"/> behavior,
+/// which registers core services only. For custom registrations, derive from
+/// <see cref="BaseAppBuilderTestExecutor"/> and override <see cref="BaseAppBuilderTestExecutor.ConfigureAppBuilder"/>.
+/// </remarks>
+public class AppBuilderTestExecutor : BaseAppBuilderTestExecutor
 {
-    /// <inheritdoc />
-    public async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
-    {
-        ArgumentNullException.ThrowIfNull(testAction);
-
-        // Force-reset any previous builder state to avoid waiting deadlocks.
-        RxAppBuilder.ResetForTesting();
-        Splat.Builder.AppBuilder.ResetBuilderStateForTests();
-
-        // Re-initialize ReactiveUI with core services after reset
-        // This ensures tests have a clean, properly initialized environment
-        _ = RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .BuildApp();
-
-        try
-        {
-            // Execute actual test with timeout so it doesn't hang forever on CI.
-            await testAction();
-        }
-        finally
-        {
-            // Final reset after test and rebuild to ensure completely clean state for next test
-            RxAppBuilder.ResetForTesting();
-
-            // Rebuild to clear any service registrations made during the test
-            _ = RxAppBuilder.CreateReactiveUIBuilder()
-                .WithCoreServices()
-                .BuildApp();
-        }
-    }
+    // No additional configuration needed - base class handles everything
 }

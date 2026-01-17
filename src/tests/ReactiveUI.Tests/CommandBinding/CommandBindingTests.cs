@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
+
 using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.CommandBinding;
 
@@ -67,37 +69,22 @@ public class CommandBindingTests
     /// <summary>
     /// Provides test execution support for command binding scenarios using the ReactiveUI framework.
     /// </summary>
-    public class CommandBindingExecutorTests : ITestExecutor
+    public class CommandBindingExecutorTests : BaseAppBuilderTestExecutor
     {
         /// <inheritdoc />
-        public async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
+        protected override void ConfigureAppBuilder(IReactiveUIBuilder builder, TestContext context)
         {
+            ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(context);
-            ArgumentNullException.ThrowIfNull(action);
 
-            try
-            {
-                var scheduler = ImmediateScheduler.Instance;
+            var scheduler = ImmediateScheduler.Instance;
 
-                RxAppBuilder.ResetForTesting();
-                RxAppBuilder
-                    .CreateReactiveUIBuilder()
-                    .WithMainThreadScheduler(scheduler)
-                    .WithTaskPoolScheduler(scheduler)
-                    .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
-                    .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
-                    .WithCoreServices()
-                    .BuildApp();
-
-                RxSchedulers.MainThreadScheduler = scheduler;
-                RxSchedulers.TaskpoolScheduler = scheduler;
-
-                await action();
-            }
-            finally
-            {
-                RxAppBuilder.ResetForTesting();
-            }
+            builder
+                .WithMainThreadScheduler(scheduler)
+                .WithTaskPoolScheduler(scheduler)
+                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))
+                .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new FakeCustomBinder()))
+                .WithCoreServices();
         }
     }
 

@@ -7,6 +7,7 @@ using System.Windows;
 
 using DynamicData;
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Wpf.Mocks.ViewModelViewHosts;
 using ReactiveUI.Tests.Xaml.Mocks;
 
@@ -158,102 +159,110 @@ public class WpfActiveContentTests
 
     public class ViewBRegisteredExecutor : STAThreadExecutor
     {
+        private readonly AppBuilderTestHelper _helper = new();
+
         protected override void Initialize()
         {
-            RxAppBuilder.ResetForTesting();
-
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithWpf()
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
-                .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
-                .WithCoreServices()
-                .BuildApp();
-
             base.Initialize();
+
+            _helper.Initialize(builder =>
+            {
+                builder
+                    .WithWpf()
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithCoreServices();
+            });
         }
 
         protected override void CleanUp()
         {
-            RxAppBuilder.ResetForTesting();
+            _helper.CleanUp();
             base.CleanUp();
         }
     }
 
     public class View0FallbackExecutor : STAThreadExecutor
     {
+        private readonly AppBuilderTestHelper _helper = new();
+
         protected override void Initialize()
         {
-            RxAppBuilder.ResetForTesting();
-
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithWpf()
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
-                .WithCoreServices()
-                .BuildApp();
-
             base.Initialize();
+
+            _helper.Initialize(builder =>
+            {
+                builder
+                    .WithWpf()
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithCoreServices();
+            });
         }
 
         protected override void CleanUp()
         {
-            RxAppBuilder.ResetForTesting();
+            _helper.CleanUp();
             base.CleanUp();
         }
     }
 
     public class NoneWithBypassExecutor : STAThreadExecutor
     {
+        private readonly AppBuilderTestHelper _helper = new();
+
         protected override void Initialize()
         {
-            RxAppBuilder.ResetForTesting();
-
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithWpf()
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
-                .WithCoreServices()
-                .BuildApp();
-
             base.Initialize();
+
+            _helper.Initialize(builder =>
+            {
+                builder
+                    .WithWpf()
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithCoreServices();
+            });
         }
 
         protected override void CleanUp()
         {
-            RxAppBuilder.ResetForTesting();
+            _helper.CleanUp();
             base.CleanUp();
         }
     }
 
     public class ExecutorBIfViewBIsRegistered : STAThreadExecutor
     {
+        private readonly AppBuilderTestHelper _helper = new();
+
         protected override void Initialize()
         {
-            RxAppBuilder.ResetForTesting();
-
-            RxAppBuilder.CreateReactiveUIBuilder()
-                .WithWpf()
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
-                .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                .WithTaskPoolScheduler(ImmediateScheduler.Instance)
-                .WithCoreServices()
-                .BuildApp();
-
             base.Initialize();
+
+            _helper.Initialize(builder =>
+            {
+                builder
+                    .WithWpf()
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
+                    .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
+                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
+                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithCoreServices();
+            });
         }
 
         protected override void CleanUp()
         {
-            RxAppBuilder.ResetForTesting();
+            _helper.CleanUp();
             base.CleanUp();
         }
     }
