@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
