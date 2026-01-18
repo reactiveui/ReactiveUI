@@ -41,6 +41,11 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
         Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null
             ? (() =>
             {
+                if (viewModel is null)
+                {
+                    return [];
+                }
+
                 vmChainGetter!.TryGetAllValues(viewModel, out var fetchedValues);
                 return fetchedValues;
             })

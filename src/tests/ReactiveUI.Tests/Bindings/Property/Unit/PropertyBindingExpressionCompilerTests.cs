@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests;
 
@@ -13,6 +14,7 @@ namespace ReactiveUI.Tests;
 /// <remarks>
 /// These tests verify expression compilation, analysis, and observable creation logic.
 /// </remarks>
+[TestExecutor<AppBuilderTestExecutor>]
 public class PropertyBindingExpressionCompilerTests
 {
     /// <summary>
@@ -66,6 +68,63 @@ public class PropertyBindingExpressionCompilerTests
         // Assert
         await Assert.That(shouldEmit).IsFalse();
         await Assert.That(value).IsEqualTo("InitialValue");
+    }
+
+    /// <summary>
+    /// Verifies that CreateSetThenGet with a converter converts the value before setting.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateSetThenGet_WithConverter_ConvertsAndSetsValue()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var view = new TestView();
+
+        Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        // Converter that appends "Converted"
+        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => input + "Converted";
+        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
+        var (shouldEmit, value) = setThenGet(view, "Test", null);
+
+        // Assert
+        await Assert.That(shouldEmit).IsTrue();
+        await Assert.That(value).IsEqualTo("TestConverted");
+        await Assert.That(view.SomeStringProperty).IsEqualTo("TestConverted");
+    }
+
+    /// <summary>
+    /// Verifies that CreateSetThenGet with a converter does not emit if the converted value matches existing.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateSetThenGet_WithConverter_WhenConvertedValueUnchanged_DoesNotEmit()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var view = new TestView { SomeStringProperty = "TestConverted" };
+
+        Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        // Converter that appends "Converted"
+        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => input + "Converted";
+        var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
+        var (shouldEmit, value) = setThenGet(view, "Test", null); // "Test" -> "TestConverted" which matches current
+
+        // Assert
+        await Assert.That(shouldEmit).IsFalse();
+        await Assert.That(value).IsEqualTo("TestConverted");
     }
 
     /// <summary>
@@ -147,6 +206,23 @@ public class PropertyBindingExpressionCompilerTests
     }
 
     /// <summary>
+    /// Verifies that ShouldReplayOnHostChanges returns true when chain is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task ShouldReplayOnHostChanges_WithNullChain_ReturnsTrue()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+
+        // Act
+        var result = compiler.ShouldReplayOnHostChanges(null);
+
+        // Assert
+        await Assert.That(result).IsTrue();
+    }
+
+    /// <summary>
     /// Verifies that GetExpressionChainArray returns null for null input.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
@@ -181,6 +257,179 @@ public class PropertyBindingExpressionCompilerTests
         // Assert
         await Assert.That(result).IsNotNull();
         await Assert.That(result!.Length).IsGreaterThan(0);
+    }
+
+    /// <summary>
+    /// Verifies that CreateDirectSetObservable emits changes when observable updates.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateDirectSetObservable_EmitsChanges()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var view = new TestView();
+        var updates = new System.Reactive.Subjects.Subject<string>();
+
+        Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        var observable = compiler.CreateDirectSetObservable<TestView, string?, string>(
+            view,
+            updates,
+            rewritten,
+            getter,
+            setter,
+            (_, _) => null); // No converter
+
+        var emitted = new List<string?>();
+        using var sub = observable.Subscribe(x => emitted.Add(x.Value));
+
+        // Emit changes
+        updates.OnNext("First");
+        updates.OnNext("Second");
+
+        // Assert
+        await Assert.That(view.SomeStringProperty).IsEqualTo("Second");
+        await Assert.That(emitted.Count).IsEqualTo(2);
+        await Assert.That(emitted[0]).IsEqualTo("First");
+        await Assert.That(emitted[1]).IsEqualTo("Second");
+    }
+
+    /// <summary>
+    /// Verifies that CreateDirectSetObservable does not emit when values are unchanged.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateDirectSetObservable_WhenValueUnchanged_DoesNotEmit()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var view = new TestView { SomeStringProperty = "Initial" };
+        var updates = new System.Reactive.Subjects.Subject<string>();
+
+        Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        var observable = compiler.CreateDirectSetObservable<TestView, string?, string>(
+            view,
+            updates,
+            rewritten,
+            getter,
+            setter,
+            (_, _) => null);
+
+        var emitted = new List<string?>();
+        using var sub = observable.Subscribe(x => emitted.Add(x.Value));
+
+        // Emit same value twice
+        updates.OnNext("Initial");
+        updates.OnNext("Changed");
+        updates.OnNext("Changed");
+
+        // Assert
+        await Assert.That(emitted.Count).IsEqualTo(1); // Only "Changed" should emit (not "Initial" or duplicate "Changed")
+        await Assert.That(emitted[0]).IsEqualTo("Changed");
+    }
+
+    /// <summary>
+    /// Verifies that CreateDirectSetObservable applies converter before setting.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateDirectSetObservable_WithConverter_ConvertsAndSetsValue()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var view = new TestView();
+        var updates = new System.Reactive.Subjects.Subject<int>();
+
+        Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        // Converter that converts int to string with prefix
+        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => "Number:" + input;
+        var observable = compiler.CreateDirectSetObservable<TestView, string?, int>(
+            view,
+            updates,
+            rewritten,
+            getter,
+            setter,
+            (_, _) => converter);
+
+        var emitted = new List<string?>();
+        using var sub = observable.Subscribe(x => emitted.Add(x.Value));
+
+        updates.OnNext(42);
+
+        // Assert
+        await Assert.That(view.SomeStringProperty).IsEqualTo("Number:42");
+        await Assert.That(emitted.Count).IsEqualTo(1);
+        await Assert.That(emitted[0]).IsEqualTo("Number:42");
+    }
+
+    /// <summary>
+    /// Verifies that CreateChainedSetObservable emits changes when property chain updates.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateChainedSetObservable_EmitsChanges()
+    {
+        // Arrange
+        var compiler = new PropertyBindingExpressionCompiler();
+        var viewModel = new TestViewModel { Model = new TestModel { AnotherProperty = 10 } };
+        var updates = new System.Reactive.Subjects.Subject<int>();
+
+        Expression<Func<TestViewModel, int>> expr = vm => vm.Model!.AnotherProperty;
+        var rewritten = Reflection.Rewrite(expr.Body);
+        var chain = compiler.GetExpressionChainArray(rewritten.GetParent())!;
+        var memberInfo = rewritten.GetMemberInfo();
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var setter = Reflection.GetValueSetterOrThrow(memberInfo);
+
+        // Act
+        var observable = compiler.CreateChainedSetObservable<TestViewModel, int, int>(
+            viewModel,
+            updates,
+            rewritten,
+            chain,
+            getter,
+            setter,
+            (_, _) => null); // No converter
+
+        var emitted = new List<int>();
+        using var sub = observable.Subscribe(x => emitted.Add(x.Value));
+
+        // 1. Emit update
+        updates.OnNext(20);
+        await Assert.That(viewModel.Model.AnotherProperty).IsEqualTo(20);
+        await Assert.That(emitted.Count).IsEqualTo(1);
+        await Assert.That(emitted[0]).IsEqualTo(20);
+
+        // 2. Change host (Model) - should not overwrite if property is non-default
+        var newModel = new TestModel { AnotherProperty = 100 };
+        viewModel.Model = newModel;
+
+        await Assert.That(newModel.AnotherProperty).IsEqualTo(100);
+
+        // 3. Change host (Model) with default value - should overwrite with last observed (20)
+        var defaultModel = new TestModel { AnotherProperty = 0 };
+        viewModel.Model = defaultModel;
+
+        await Assert.That(defaultModel.AnotherProperty).IsEqualTo(20);
+        await Assert.That(emitted.Last()).IsEqualTo(20);
     }
 
     /// <summary>

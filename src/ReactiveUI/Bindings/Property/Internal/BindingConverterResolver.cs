@@ -19,7 +19,7 @@ namespace ReactiveUI;
 [RequiresUnreferencedCode("Uses RxConverters and Splat which may require dynamic type resolution")]
 internal class BindingConverterResolver : IBindingConverterResolver
 {
-    private static readonly ConcurrentDictionary<(Type fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new();
+    private static readonly ConcurrentDictionary<(Type fromType, Type? toType), Func<object?, object?, object?[]?, object?>?> _setMethodCache = new();
 
     /// <inheritdoc/>
     public object? GetBindingConverter(Type fromType, Type toType) =>
@@ -33,18 +33,20 @@ internal class BindingConverterResolver : IBindingConverterResolver
             return null;
         }
 
-        var converter = _setMethodCache.GetOrAdd(
+        return _setMethodCache.GetOrAdd(
             (fromType, toType),
-            static key => ResolveBestSetMethodConverter(key.fromType, key.toType));
+            static key =>
+            {
+                var converter = ResolveBestSetMethodConverter(key.fromType, key.toType);
+                if (converter is null)
+                {
+                    return null;
+                }
 
-        if (converter is null)
-        {
-            return null;
-        }
-
-        // Adapt the converter's contract to the local call shape expected by SetThenGet.
-        // Note: do not store this delegate in the cache; the cache stores the converter instance.
-        return (currentValue, newValue, indexParameters) => converter.PerformSet(currentValue, newValue, indexParameters);
+                // Adapt the converter's contract to the local call shape expected by SetThenGet.
+                // Cache the delegate to ensure reference equality for repeated calls.
+                return (currentValue, newValue, indexParameters) => converter.PerformSet(currentValue, newValue, indexParameters);
+            });
     }
 
     /// <summary>
