@@ -13,7 +13,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         var wasCalled = false;
-        var command = ReactiveCommand.Create(() => wasCalled = true);
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
 
         using (var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null)))
         {
@@ -82,7 +82,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         var wasCalled = false;
-        var command = ReactiveCommand.Create(() => wasCalled = true);
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
 
         using var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null));
 
@@ -96,7 +96,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         var wasCalled = false;
-        var command = ReactiveCommand.Create(() => wasCalled = true);
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
 
         using var binding = binder.BindCommandToObject<ClickableControl, EventArgs>(
             command,
@@ -114,7 +114,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new MouseUpControl();
         var wasCalled = false;
-        var command = ReactiveCommand.Create(() => wasCalled = true);
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
 
         using var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null));
 
@@ -127,7 +127,7 @@ public class CreatesCommandBindingViaEventTests
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new object();
-        var command = ReactiveCommand.Create(() => { });
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
 
         Assert.Throws<Exception>(() =>
             binder.BindCommandToObject(command, target, Observable.Return<object?>(null)));
@@ -137,7 +137,7 @@ public class CreatesCommandBindingViaEventTests
     public void BindCommandToObject_WithNullTarget_Throws()
     {
         var binder = new CreatesCommandBindingViaEvent();
-        var command = ReactiveCommand.Create(() => { });
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
 
         Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControl>(command, null, Observable.Return<object?>(null)));
@@ -149,7 +149,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         object? receivedParameter = null;
-        var command = ReactiveCommand.Create<object?>(param => receivedParameter = param);
+        var command = ReactiveCommand.Create<object?>(param => receivedParameter = param, outputScheduler: ImmediateScheduler.Instance);
         var parameter = new BehaviorSubject<object?>("test");
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
@@ -206,6 +206,247 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    [Test]
+    public async Task BindCommandToObject_WithNullCommand_ReturnsEmptyDisposable()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+
+        var binding = binder.BindCommandToObject<ClickableControl>(null, target, Observable.Return<object?>(null));
+
+        await Assert.That(binding).IsNotNull();
+        binding?.Dispose(); // Should not throw
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithExplicitEventAndNullCommand_ReturnsEmptyDisposable()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+
+        var binding = binder.BindCommandToObject<ClickableControl, EventArgs>(
+            null,
+            target,
+            Observable.Return<object?>(null),
+            "Click");
+
+        await Assert.That(binding).IsNotNull();
+        binding?.Dispose(); // Should not throw
+    }
+
+    [Test]
+    public void BindCommandToObject_WithNullEventName_Throws()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Assert.Throws<ArgumentNullException>(() =>
+            binder.BindCommandToObject<ClickableControl, EventArgs>(
+                command,
+                target,
+                Observable.Return<object?>(null),
+                null!));
+    }
+
+    [Test]
+    public void BindCommandToObject_WithEmptyEventName_Throws()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Assert.Throws<ArgumentException>(() =>
+            binder.BindCommandToObject<ClickableControl, EventArgs>(
+                command,
+                target,
+                Observable.Return<object?>(null),
+                string.Empty));
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithAddRemoveHandlers_ExecutesCommand()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+        var wasCalled = false;
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
+
+        using var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+            command,
+            target,
+            Observable.Return<object?>(null),
+            handler => target.GenericClick += handler,
+            handler => target.GenericClick -= handler);
+
+        target.RaiseGenericClick();
+        await Assert.That(wasCalled).IsTrue();
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithAddRemoveHandlers_AfterDispose_DoesNotExecute()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+        var wasCalled = false;
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
+
+        using (var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+            command,
+            target,
+            Observable.Return<object?>(null),
+            handler => target.GenericClick += handler,
+            handler => target.GenericClick -= handler))
+        {
+            // Binding active
+        }
+
+        target.RaiseGenericClick();
+        await Assert.That(wasCalled).IsFalse();
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithAddRemoveHandlers_PassesParameter()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+        object? receivedParameter = null;
+        var command = ReactiveCommand.Create<object?>(param => receivedParameter = param, outputScheduler: ImmediateScheduler.Instance);
+        var parameter = new BehaviorSubject<object?>("testParam");
+
+        using var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+            command,
+            target,
+            parameter,
+            handler => target.GenericClick += handler,
+            handler => target.GenericClick -= handler);
+
+        target.RaiseGenericClick();
+        await Assert.That(receivedParameter).IsEqualTo("testParam");
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithAddRemoveHandlers_NullCommand_ReturnsEmptyDisposable()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+
+        var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+            null,
+            target,
+            Observable.Return<object?>(null),
+            handler => target.GenericClick += handler,
+            handler => target.GenericClick -= handler);
+
+        await Assert.That(binding).IsNotNull();
+        binding?.Dispose(); // Should not throw
+    }
+
+    [Test]
+    public void BindCommandToObject_WithAddRemoveHandlers_NullTarget_Throws()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Assert.Throws<ArgumentNullException>(() =>
+            binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+                command,
+                null,
+                Observable.Return<object?>(null),
+                handler => { },
+                handler => { }));
+    }
+
+    [Test]
+    public void BindCommandToObject_WithAddRemoveHandlers_NullAddHandler_Throws()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Assert.Throws<ArgumentNullException>(() =>
+            binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+                command,
+                target,
+                Observable.Return<object?>(null),
+                null!,
+                handler => { }));
+    }
+
+    [Test]
+    public void BindCommandToObject_WithAddRemoveHandlers_NullRemoveHandler_Throws()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControlWithGenericEvent();
+        var command = ReactiveCommand.Create(() => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Assert.Throws<ArgumentNullException>(() =>
+            binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
+                command,
+                target,
+                Observable.Return<object?>(null),
+                handler => { },
+                null!));
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithEventHandlerOverload_ExecutesCommand()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+        var wasCalled = false;
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
+
+        using var binding = binder.BindCommandToObject(
+            command,
+            target,
+            Observable.Return<object?>(null),
+            handler => target.Click += handler,
+            handler => target.Click -= handler);
+
+        target.RaiseClick();
+        await Assert.That(wasCalled).IsTrue();
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithEventHandlerOverload_NullCommand_ReturnsEmptyDisposable()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new ClickableControl();
+
+        var binding = binder.BindCommandToObject(
+            null,
+            target,
+            Observable.Return<object?>(null),
+            handler => target.Click += handler,
+            handler => target.Click -= handler);
+
+        await Assert.That(binding).IsNotNull();
+        binding.Dispose(); // Should not throw
+    }
+
+    [Test]
+    public async Task BindCommandToObject_WithTouchUpInsideEvent_ExecutesCommand()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var target = new TouchUpInsideControl();
+        var wasCalled = false;
+        var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
+
+        using var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null));
+
+        target.RaiseTouchUpInside();
+        await Assert.That(wasCalled).IsTrue();
+    }
+
+    [Test]
+    public async Task GetAffinityForObject_WithTouchUpInsideEvent_Returns3()
+    {
+        var binder = new CreatesCommandBindingViaEvent();
+        var affinity = binder.GetAffinityForObject<TouchUpInsideControl>(false);
+        await Assert.That(affinity).IsEqualTo(3);
+    }
+
     private class ClickableControl
     {
         public event EventHandler? Click;
@@ -218,5 +459,19 @@ public class CreatesCommandBindingViaEventTests
         public event EventHandler? MouseUp;
 
         public void RaiseMouseUp() => MouseUp?.Invoke(this, EventArgs.Empty);
+    }
+
+    private class TouchUpInsideControl
+    {
+        public event EventHandler? TouchUpInside;
+
+        public void RaiseTouchUpInside() => TouchUpInside?.Invoke(this, EventArgs.Empty);
+    }
+
+    private class ClickableControlWithGenericEvent
+    {
+        public event EventHandler<EventArgs>? GenericClick;
+
+        public void RaiseGenericClick() => GenericClick?.Invoke(this, EventArgs.Empty);
     }
 }

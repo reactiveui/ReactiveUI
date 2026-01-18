@@ -150,6 +150,119 @@ public class ViewModelViewHostGenericTests
     }
 
     /// <summary>
+    /// Tests that DefaultContent getter returns null when not set.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DefaultContent_WhenNotSet_ReturnsNull()
+    {
+        var host = new ViewModelViewHost<TestViewModel>();
+
+        await Assert.That(host.DefaultContent).IsNull();
+    }
+
+    /// <summary>
+    /// Tests that ViewContract setter updates ViewContractObservable.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewContract_WhenSet_UpdatesViewContractObservable()
+    {
+        var host = new ViewModelViewHost<TestViewModel>();
+        var originalObservable = host.ViewContractObservable;
+
+        host.ViewContract = "TestContract";
+
+        // ViewContractObservable should be a different instance after setting ViewContract
+        await Assert.That(host.ViewContractObservable).IsNotSameReferenceAs(originalObservable);
+    }
+
+    /// <summary>
+    /// Tests that constructor initializes ViewContractObservable in unit test mode.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Constructor_InUnitTestMode_InitializesViewContractObservable()
+    {
+        var host = new ViewModelViewHost<TestViewModel>();
+
+        // In unit test mode, ViewContractObservable should be set to Observable.Never
+        await Assert.That(host.ViewContractObservable).IsNotNull();
+    }
+
+    /// <summary>
+    /// Tests that multiple ViewModel assignments update the property.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModel_MultipleAssignments_UpdatesProperty()
+    {
+        var viewModel1 = new TestViewModel { Name = "First" };
+        var viewModel2 = new TestViewModel { Name = "Second" };
+
+        var host = new ViewModelViewHost<TestViewModel>
+        {
+            ViewModel = viewModel1
+        };
+
+        await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel1);
+
+        host.ViewModel = viewModel2;
+
+        await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel2);
+    }
+
+    /// <summary>
+    /// Tests that setting IViewFor.ViewModel to null works.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task IViewFor_ViewModel_CanBeSetToNull()
+    {
+        IViewFor host = new ViewModelViewHost<TestViewModel>
+        {
+            ViewModel = new TestViewModel()
+        };
+
+        host.ViewModel = null;
+
+        await Assert.That(host.ViewModel).IsNull();
+        await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsNull();
+    }
+
+    /// <summary>
+    /// Tests that IViewFor.ViewModel setter works correctly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task IViewFor_ViewModelSetter_WorksCorrectly()
+    {
+        var viewModel = new TestViewModel();
+        IViewFor host = new ViewModelViewHost<TestViewModel>();
+
+        host.ViewModel = viewModel;
+
+        await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
+        await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsSameReferenceAs(viewModel);
+    }
+
+    /// <summary>
+    /// Tests that ViewContractObservable can be set.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewContractObservable_CanBeSet()
+    {
+        var observable = Observable.Return("TestContract");
+        var host = new ViewModelViewHost<TestViewModel>
+        {
+            ViewContractObservable = observable
+        };
+
+        await Assert.That(host.ViewContractObservable).IsSameReferenceAs(observable);
+    }
+
+    /// <summary>
     /// Test view model.
     /// </summary>
     private sealed class TestViewModel : ReactiveObject
