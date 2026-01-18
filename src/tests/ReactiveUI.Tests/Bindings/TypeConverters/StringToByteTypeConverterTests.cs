@@ -68,4 +68,86 @@ public class StringToByteTypeConverterTests
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo((byte)123);
     }
+
+    [Test]
+    public async Task TryConvert_NullString_ReturnsFalse()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvert(null, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsEqualTo((byte)0);
+    }
+
+    [Test]
+    public async Task TryConvert_ZeroValue_Succeeds()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvert("0", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((byte)0);
+    }
+
+    [Test]
+    public async Task TryConvert_MaxValue_Succeeds()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvert("255", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((byte)255);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_ValidString_Succeeds()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvertTyped("100", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo((byte)100);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_InvalidType_ReturnsFalse()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvertTyped(123, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_NullInput_ReturnsFalse()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        var result = converter.TryConvertTyped(null, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsNull();
+    }
+
+    [Test]
+    public async Task FromType_ReturnsStringType()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        await Assert.That(converter.FromType).IsEqualTo(typeof(string));
+    }
+
+    [Test]
+    public async Task ToType_ReturnsByteType()
+    {
+        var converter = new StringToByteTypeConverter();
+
+        await Assert.That(converter.ToType).IsEqualTo(typeof(byte));
+    }
 }
