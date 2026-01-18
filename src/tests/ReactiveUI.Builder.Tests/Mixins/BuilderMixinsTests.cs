@@ -345,6 +345,52 @@ public class BuilderMixinsTests
         }
     }
 
+    // Additional coverage tests for WithInstance overloads
+    [Test]
+    public async Task WithInstance_SingleParameter_InvokesActionWithResolvedInstance()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        resolver.RegisterConstant("test-value", typeof(string));
+
+        string? captured = null;
+        builder.WithInstance<string>(value => captured = value);
+        builder.WithCoreServices().Build();
+
+        await Assert.That(captured).IsEqualTo("test-value");
+    }
+
+    [Test]
+    public async Task WithInstance_TwoParameters_InvokesActionWithBothInstances()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        resolver.RegisterConstant("string-value", typeof(string));
+        resolver.RegisterConstant(42, typeof(int));
+
+        string? capturedString = null;
+        int? capturedInt = null;
+        builder.WithInstance<string, int>((s, i) =>
+        {
+            capturedString = s;
+            capturedInt = i;
+        });
+        builder.WithCoreServices().Build();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(capturedString).IsEqualTo("string-value");
+            await Assert.That(capturedInt).IsEqualTo(42);
+        }
+    }
+
+    [Test]
+    public void WithInstance_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            BuilderMixins.WithInstance<string>(null!, _ => { }));
+    }
+
     private sealed class BuilderMixinsTestViewModel : ReactiveObject
     {
     }

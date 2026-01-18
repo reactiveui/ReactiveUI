@@ -116,6 +116,24 @@ public class ViewLocatorTests
     }
 
     /// <summary>
+    ///     Verifies that <see cref="ViewLocator.Current" /> returns a valid locator
+    ///     when ReactiveUI is properly initialized.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task Current_ReturnsValidLocator_WhenInitialized()
+    {
+        // Arrange - AppBuilderTestExecutor ensures proper initialization
+
+        // Act
+        var locator = ViewLocator.Current;
+
+        // Assert
+        await Assert.That(locator).IsNotNull();
+        await Assert.That(locator).IsTypeOf<DefaultViewLocator>();
+    }
+
+    /// <summary>
     ///     Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.
     /// </summary>
     private sealed class TestView : IViewFor<TestViewModel>
