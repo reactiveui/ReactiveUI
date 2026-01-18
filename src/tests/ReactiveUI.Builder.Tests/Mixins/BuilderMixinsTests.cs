@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text.Json.Serialization.Metadata;
@@ -342,6 +343,255 @@ public class BuilderMixinsTests
         {
             await Assert.That(first).IsNotNull();
             await Assert.That(first).IsSameReferenceAs(second);
+        }
+    }
+
+    // Additional coverage tests for WithInstance overloads
+    [Test]
+    public async Task WithInstance_SingleParameter_InvokesActionWithResolvedInstance()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        resolver.RegisterConstant("test-value", typeof(string));
+
+        string? captured = null;
+        builder.WithInstance<string>(value => captured = value);
+        builder.WithCoreServices().Build();
+
+        await Assert.That(captured).IsEqualTo("test-value");
+    }
+
+    [Test]
+    public async Task WithInstance_TwoParameters_InvokesActionWithBothInstances()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        resolver.RegisterConstant("string-value", typeof(string));
+        resolver.RegisterConstant(42, typeof(int));
+
+        string? capturedString = null;
+        int? capturedInt = null;
+        builder.WithInstance<string, int>((s, i) =>
+        {
+            capturedString = s;
+            capturedInt = i;
+        });
+        builder.WithCoreServices().Build();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(capturedString).IsEqualTo("string-value");
+            await Assert.That(capturedInt).IsEqualTo(42);
+        }
+    }
+
+    [Test]
+    public void WithInstance_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            BuilderMixins.WithInstance<string>(null!, _ => { }));
+    }
+
+    [Test]
+    public async Task RegisterViews_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        await Assert.That(() => BuilderMixins.RegisterViews(null!, _ => { }))
+            .Throws<ArgumentNullException>();
+    }
+
+    [Test]
+    public async Task RegisterViews_WithNullConfigure_ThrowsArgumentNullException()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+
+        await Assert.That(() => BuilderMixins.RegisterViews(builder, null!))
+            .Throws<ArgumentNullException>();
+    }
+
+    [Test]
+    public async Task RegisterViews_WithViewLocator_ReturnsBuilder()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+
+        // WithCoreServices registers the DefaultViewLocator
+        builder.WithCoreServices().Build();
+
+        var result = BuilderMixins.RegisterViews(builder, views =>
+            views.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>());
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public async Task WithViewModule_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        await Assert.That(() => BuilderMixins.WithViewModule<TestViewModule>(null!))
+            .Throws<ArgumentNullException>();
+    }
+
+    [Test]
+    public async Task WithViewModule_ReturnsBuilder()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+
+        // WithCoreServices registers the DefaultViewLocator
+        builder.WithCoreServices().Build();
+
+        var result = BuilderMixins.WithViewModule<TestViewModule>(builder);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public async Task BuildApp_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        await Assert.That(() => BuilderMixins.BuildApp(null!))
+            .Throws<ArgumentNullException>();
+    }
+
+    [Test]
+    public async Task BuildApp_WithNonReactiveUIBuilder_ThrowsInvalidOperationException()
+    {
+        var nonReactiveBuilder = new NonReactiveUIAppBuilder();
+
+        var ex = await Assert.That(() => BuilderMixins.BuildApp(nonReactiveBuilder))
+            .Throws<InvalidOperationException>();
+
+        await Assert.That(ex).IsNotNull();
+        await Assert.That(ex.Message).Contains("not an IReactiveUIBuilder");
+    }
+
+    [Test]
+    public async Task BuildApp_WithReactiveUIBuilder_BuildsSuccessfully()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        builder.WithCoreServices();
+
+        var result = BuilderMixins.BuildApp(builder);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public async Task WithMessageBus_WithNullBuilder_ThrowsArgumentNullException()
+    {
+        var messageBus = new MessageBus();
+
+        await Assert.That(() => BuilderMixins.WithMessageBus(null!, messageBus))
+            .Throws<ArgumentNullException>();
+    }
+
+    [Test]
+    public async Task WithMessageBus_RegistersCustomMessageBus()
+    {
+        using var resolver = new ModernDependencyResolver();
+        var builder = resolver.CreateReactiveUIBuilder();
+        var customMessageBus = new MessageBus();
+
+        BuilderMixins.WithMessageBus(builder, customMessageBus);
+        builder.WithCoreServices().Build();
+
+        var registered = resolver.GetService<IMessageBus>();
+        await Assert.That(registered).IsSameReferenceAs(customMessageBus);
+    }
+
+    [Test]
+    public async Task WithTaskPoolScheduler_WithSetRxAppFalse_DoesNotSetRxSchedulers()
+    {
+        var original = RxSchedulers.TaskpoolScheduler;
+        try
+        {
+            // Set a known baseline scheduler
+            var baselineScheduler = CurrentThreadScheduler.Instance;
+            RxSchedulers.TaskpoolScheduler = baselineScheduler;
+
+            using var resolver = new ModernDependencyResolver();
+            var builder = resolver.CreateReactiveUIBuilder();
+            var scheduler = ImmediateScheduler.Instance;
+
+            builder.WithTaskPoolScheduler(scheduler, setRxApp: false);
+            builder.WithCoreServices().Build();
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(builder.TaskpoolScheduler).IsSameReferenceAs(scheduler);
+
+                // RxSchedulers should remain unchanged (still the baseline)
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(baselineScheduler);
+            }
+        }
+        finally
+        {
+            RxSchedulers.TaskpoolScheduler = original;
+        }
+    }
+
+    [Test]
+    public async Task WithMainThreadScheduler_WithSetRxAppFalse_DoesNotSetRxSchedulers()
+    {
+        var original = RxSchedulers.MainThreadScheduler;
+        try
+        {
+            // Set a known baseline scheduler
+            var baselineScheduler = CurrentThreadScheduler.Instance;
+            RxSchedulers.MainThreadScheduler = baselineScheduler;
+
+            using var resolver = new ModernDependencyResolver();
+            var builder = resolver.CreateReactiveUIBuilder();
+            var scheduler = ImmediateScheduler.Instance;
+
+            builder.WithMainThreadScheduler(scheduler, setRxApp: false);
+            builder.WithCoreServices().Build();
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(scheduler);
+
+                // RxSchedulers should remain unchanged (still the baseline)
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(baselineScheduler);
+            }
+        }
+        finally
+        {
+            RxSchedulers.MainThreadScheduler = original;
+        }
+    }
+
+    private sealed class TestViewModule : IViewModule
+    {
+        public void RegisterViews(DefaultViewLocator locator)
+        {
+            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>(() => new BuilderMixinsTestView());
+        }
+    }
+
+    private sealed class NonReactiveUIAppBuilder : IAppBuilder
+    {
+        public IAppInstance Build() => new TestAppInstance();
+
+        public IAppBuilder UseCurrentSplatLocator() => this;
+
+        public IAppBuilder UsingModule<T>(T module)
+            where T : IModule => this;
+
+        public IAppBuilder WithCoreServices() => this;
+
+        public IAppBuilder WithCustomRegistration(Action<IMutableDependencyResolver> action) => this;
+    }
+
+    private sealed class TestAppInstance : IAppInstance
+    {
+        public IReadonlyDependencyResolver Current => throw new NotImplementedException();
+
+        public IMutableDependencyResolver CurrentMutable => throw new NotImplementedException();
+
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required by interface")]
+        public void Dispose()
+        {
         }
     }
 

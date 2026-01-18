@@ -717,6 +717,36 @@ public class AutoPersistHelperTest
     }
 
     /// <summary>
+    ///     Tests that CreateMetadata returns metadata with HasDataContract=false for types without DataContract.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateMetadata_WithoutDataContract_ReturnsMetadataWithoutContract()
+    {
+        var metadata = AutoPersistHelper.CreateMetadata<ObjectWithoutDataContract>();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(metadata).IsNotNull();
+            await Assert.That(metadata.HasDataContract).IsFalse();
+            await Assert.That(metadata.PersistablePropertyNames).IsEmpty();
+        }
+    }
+
+    /// <summary>
+    ///     Tests that CreateMetadata caches metadata instances.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task CreateMetadata_CachesMetadata()
+    {
+        var metadata1 = AutoPersistHelper.CreateMetadata<TestFixture>();
+        var metadata2 = AutoPersistHelper.CreateMetadata<TestFixture>();
+
+        await Assert.That(metadata1).IsSameReferenceAs(metadata2);
+    }
+
+    /// <summary>
     ///     Test object without DataContract attribute.
     /// </summary>
     private class ObjectWithoutDataContract : ReactiveObject

@@ -59,4 +59,86 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(result).IsTrue();
         await Assert.That(output).IsEqualTo(123.456);
     }
+
+    [Test]
+    public async Task TryConvert_NullString_ReturnsFalse()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvert(null, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsEqualTo(0.0);
+    }
+
+    [Test]
+    public async Task TryConvert_ZeroValue_Succeeds()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvert("0", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(0.0);
+    }
+
+    [Test]
+    public async Task TryConvert_NegativeValue_Succeeds()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvert("-123.456", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(-123.456);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_ValidString_Succeeds()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvertTyped("456.789", null, out var output);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(output).IsEqualTo(456.789);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_InvalidType_ReturnsFalse()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvertTyped(123.456, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_NullInput_ReturnsFalse()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        var result = converter.TryConvertTyped(null, null, out var output);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(output).IsNull();
+    }
+
+    [Test]
+    public async Task FromType_ReturnsStringType()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        await Assert.That(converter.FromType).IsEqualTo(typeof(string));
+    }
+
+    [Test]
+    public async Task ToType_ReturnsDoubleType()
+    {
+        var converter = new StringToDoubleTypeConverter();
+
+        await Assert.That(converter.ToType).IsEqualTo(typeof(double));
+    }
 }

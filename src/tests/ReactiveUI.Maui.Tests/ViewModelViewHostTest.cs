@@ -131,10 +131,85 @@ public class ViewModelViewHostTest
     }
 
     /// <summary>
+    /// Tests that ResolveViewForViewModel resolves the view and sets the content.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ResolveViewForViewModel_ResolvesAndSetsContent()
+    {
+        var host = new TestableViewModelViewHost();
+        var viewModel = new TestViewModel();
+        var view = new TestView();
+        var locator = new MockViewLocator(view);
+
+        host.ViewLocator = locator;
+        host.ViewModel = viewModel;
+        host.SimulateViewModelChange();
+
+        await Assert.That(host.Content).IsEqualTo(view);
+        await Assert.That(view.ViewModel).IsEqualTo(viewModel);
+    }
+
+    /// <summary>
+    /// Tests that DefaultContent is shown when ViewModel is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DefaultContent_IsShown_WhenViewModelIsNull()
+    {
+        var host = new TestableViewModelViewHost();
+        var defaultContent = new Label();
+        host.DefaultContent = defaultContent;
+
+        // Trigger update
+        host.ViewModel = new TestViewModel(); // First set to something
+        host.ViewModel = null; // Then set to null
+        host.SimulateViewModelChange();
+
+        await Assert.That(host.Content).IsEqualTo(defaultContent);
+    }
+
+    /// <summary>
     /// Test view model for testing.
     /// </summary>
     private class TestViewModel
     {
+    }
+
+    private class TestView : ContentView, IViewFor<TestViewModel>
+    {
+        public TestViewModel? ViewModel { get; set; }
+
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TestViewModel?)value;
+        }
+    }
+
+    private class MockViewLocator : IViewLocator
+    {
+        private readonly IViewFor _view;
+
+        public MockViewLocator(IViewFor view)
+        {
+            _view = view;
+        }
+
+        public IViewFor<T>? ResolveView<T>(string? contract = null)
+            where T : class => _view as IViewFor<T>;
+
+        [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract = null) => _view;
+    }
+
+    private class TestableViewModelViewHost : ViewModelViewHost
+    {
+        public void SimulateViewModelChange()
+        {
+            ResolveViewForViewModel(ViewModel, ViewContract);
+        }
     }
 
     /// <summary>
