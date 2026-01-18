@@ -17,6 +17,11 @@ namespace ReactiveUI.Testing.Tests;
 [TestExecutor<AppBuilderTestExecutor>]
 public class AppBuilderTestBaseTests
 {
+    /// <summary>
+    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/>
+    /// executes an asynchronous test body successfully.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithAsyncTestBody_ExecutesTest()
     {
@@ -34,6 +39,11 @@ public class AppBuilderTestBaseTests
         await Assert.That(executed).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
+    /// executes a synchronous test body successfully.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithSyncTestBody_ExecutesTest()
     {
@@ -50,6 +60,11 @@ public class AppBuilderTestBaseTests
         await Assert.That(executed).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/>
+    /// propagates exceptions thrown by the asynchronous test body.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithAsyncTestBody_PropagatesExceptions()
     {
@@ -64,6 +79,11 @@ public class AppBuilderTestBaseTests
         }).Throws<InvalidOperationException>();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
+    /// propagates exceptions thrown by the synchronous test body.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithSyncTestBody_PropagatesExceptions()
     {
@@ -77,6 +97,11 @@ public class AppBuilderTestBaseTests
         }).Throws<InvalidOperationException>();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
+    /// can be called multiple times sequentially without interference.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_AllowsMultipleSequentialCalls()
     {

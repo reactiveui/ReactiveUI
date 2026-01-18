@@ -17,6 +17,11 @@ namespace ReactiveUI.Testing.Tests;
 [TestExecutor<WithMessageBusExecutor>]
 public class MessageBusExtensionsTests
 {
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.WithMessageBus"/> restores the original MessageBus instance
+    /// after the returned IDisposable is disposed.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WithMessageBus_RestoresOriginalMessageBus_WhenDisposed()
     {
@@ -35,6 +40,11 @@ public class MessageBusExtensionsTests
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.WithMessageBus"/> allows normal MessageBus operations
+    /// such as listening for and sending messages.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WithMessageBus_AllowsMessageBusOperations()
     {
@@ -54,6 +64,11 @@ public class MessageBusExtensionsTests
         await Assert.That(messageReceived).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With(IMessageBus, Action)"/> executes the provided action
+    /// with the test MessageBus as the current instance.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Action_ExecutesActionWithMessageBus()
     {
@@ -74,6 +89,11 @@ public class MessageBusExtensionsTests
         await Assert.That(capturedBus).IsSameReferenceAs(testBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With(IMessageBus, Action)"/> restores the original MessageBus
+    /// after the action completes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Action_RestoresOriginalMessageBus()
     {
@@ -88,6 +108,11 @@ public class MessageBusExtensionsTests
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With(IMessageBus, Action)"/> throws an ArgumentException
+    /// when the action parameter is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Action_ThrowsArgumentNullException_WhenBlockIsNull()
     {
@@ -99,6 +124,11 @@ public class MessageBusExtensionsTests
             .Throws<ArgumentException>();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With{T}(IMessageBus, Func{T})"/> executes the provided function
+    /// with the test MessageBus as the current instance and returns the function's result.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Function_ExecutesFunctionWithMessageBus()
     {
@@ -118,6 +148,11 @@ public class MessageBusExtensionsTests
         await Assert.That(capturedBus).IsSameReferenceAs(testBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With{T}(IMessageBus, Func{T})"/> restores the original MessageBus
+    /// after the function completes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Function_RestoresOriginalMessageBus()
     {
@@ -132,6 +167,11 @@ public class MessageBusExtensionsTests
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With{T}(IMessageBus, Func{T})"/> throws an ArgumentException
+    /// when the function parameter is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Function_ThrowsArgumentNullException_WhenBlockIsNull()
     {
@@ -143,6 +183,11 @@ public class MessageBusExtensionsTests
             .Throws<ArgumentException>();
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With{T}(IMessageBus, Func{T})"/> correctly returns
+    /// the value produced by the function.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_Function_ReturnsCorrectValue()
     {
@@ -156,6 +201,11 @@ public class MessageBusExtensionsTests
         await Assert.That(result).IsEqualTo("test result");
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.WithMessageBus"/> supports nested usage,
+    /// correctly switching between MessageBus instances and restoring them in the proper order.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task WithMessageBus_CanBeNested()
     {
@@ -181,6 +231,11 @@ public class MessageBusExtensionsTests
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
     }
 
+    /// <summary>
+    /// Verifies that <see cref="MessageBusExtensions.With(IMessageBus, Action)"/> propagates exceptions
+    /// thrown by the action while still restoring the original MessageBus.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task With_PropagatesExceptions()
     {
