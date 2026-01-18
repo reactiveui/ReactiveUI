@@ -27,13 +27,41 @@ namespace ReactiveUI;
 [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
 public class PropertyBinderImplementation : IPropertyBinderImplementation
 {
+    private static readonly IBindingConverterResolver _staticConverterResolver = new BindingConverterResolver();
+
+    private readonly IBindingConverterResolver _converterResolver;
+    private readonly IPropertyBindingExpressionCompiler _expressionCompiler;
+    private readonly IBindingHookEvaluator _hookEvaluator;
+
     /// <summary>
-    /// Caches the best set-method converter for a given (<c>fromType</c>, <c>toType</c>) pair.
+    /// Initializes a new instance of the <see cref="PropertyBinderImplementation"/> class
+    /// with default dependencies.
     /// </summary>
-    /// <remarks>
-    /// The cached value is the selected <see cref="ISetMethodBindingConverter"/> instance, or <see langword="null"/> if none matches.
-    /// </remarks>
-    private static readonly System.Collections.Concurrent.ConcurrentDictionary<(Type fromType, Type? toType), ISetMethodBindingConverter?> _setMethodCache = new();
+    public PropertyBinderImplementation()
+        : this(new BindingConverterResolver(), new PropertyBindingExpressionCompiler(), new BindingHookEvaluator())
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PropertyBinderImplementation"/> class
+    /// with specified dependencies (for testing).
+    /// </summary>
+    /// <param name="converterResolver">The converter resolver to use.</param>
+    /// <param name="expressionCompiler">The expression compiler to use.</param>
+    /// <param name="hookEvaluator">The hook evaluator to use.</param>
+    internal PropertyBinderImplementation(
+        IBindingConverterResolver converterResolver,
+        IPropertyBindingExpressionCompiler expressionCompiler,
+        IBindingHookEvaluator hookEvaluator)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(converterResolver);
+        ArgumentExceptionHelper.ThrowIfNull(expressionCompiler);
+        ArgumentExceptionHelper.ThrowIfNull(hookEvaluator);
+
+        _converterResolver = converterResolver;
+        _expressionCompiler = expressionCompiler;
+        _hookEvaluator = hookEvaluator;
+    }
 
     /// <summary>
     /// Initializes static members of the <see cref="PropertyBinderImplementation"/> class.
@@ -307,7 +335,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         var viewExpression = Reflection.Rewrite(viewProperty.Body);
         var viewType = viewExpression.Type;
 
-        var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
         if (!ret)
         {
             return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
@@ -387,7 +415,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
-        var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
         if (!ret)
         {
             return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
@@ -414,7 +442,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-        var shouldBind = target is not IViewFor viewFor || EvalBindingHooks<object, IViewFor>(null, viewFor, null!, viewExpression, BindingDirection.OneWay);
+        var shouldBind = target is not IViewFor viewFor || _hookEvaluator.EvaluateBindingHooks<object, IViewFor>(null, viewFor, null!, viewExpression, BindingDirection.OneWay);
         if (!shouldBind)
         {
             return Disposable.Empty;
@@ -490,430 +518,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     /// </para>
     /// </remarks>
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
-        ResolveBestConverter(lhs, rhs);
-
-    /// <summary>
-    /// Resolves the best converter for a given type pair using the ConverterService.
-    /// </summary>
-    /// <param name="fromType">The source type.</param>
-    /// <param name="toType">The target type.</param>
-    /// <returns>
-    /// The selected converter (typed preferred), or <see langword="null"/> if none matches.
-    /// </returns>
-    /// <remarks>
-    /// <para>
-    /// This method first attempts to use <see cref="RxConverters.Current"/> for lock-free converter resolution.
-    /// If no ConverterService is available (legacy initialization), it falls back to Splat-based resolution.
-    /// </para>
-    /// <para>
-    /// The ConverterService provides:
-    /// <list type="bullet">
-    /// <item><description>Lock-free reads via snapshot pattern</description></item>
-    /// <item><description>Built-in affinity-based selection (highest wins)</description></item>
-    /// <item><description>Two-phase resolution: typed converters first, then fallback converters</description></item>
-    /// </list>
-    /// </para>
-    /// </remarks>
-    private static object? ResolveBestConverter(Type fromType, Type toType)
-    {
-        // Try to use the new ConverterService first (lock-free, optimized)
-        try
-        {
-            var converter = RxConverters.Current.ResolveConverter(fromType, toType);
-            if (converter is not null)
-            {
-                return converter;
-            }
-        }
-        catch
-        {
-            // ConverterService not available, fall back to Splat
-        }
-
-        // Fallback to Splat-based resolution for backward compatibility
-        // Phase 1: exact-pair typed converters by affinity.
-        var typed = AppLocator.Current.GetServices<IBindingTypeConverter>();
-        var bestTypedScore = -1;
-        IBindingTypeConverter? bestTyped = null;
-
-        foreach (var c in typed)
-        {
-            if (c is null || c.FromType != fromType || c.ToType != toType)
-            {
-                continue;
-            }
-
-            var score = c.GetAffinityForObjects();
-            if (score > bestTypedScore && score > 0)
-            {
-                bestTypedScore = score;
-                bestTyped = c;
-            }
-        }
-
-        if (bestTyped is not null)
-        {
-            return bestTyped;
-        }
-
-        // Phase 2: fallback converters by affinity.
-        var fallbacks = AppLocator.Current.GetServices<IBindingFallbackConverter>();
-        var bestFallbackScore = -1;
-        IBindingFallbackConverter? bestFallback = null;
-
-        foreach (var c in fallbacks)
-        {
-            if (c is null)
-            {
-                continue;
-            }
-
-            var score = c.GetAffinityForObjects(fromType, toType);
-            if (score > bestFallbackScore && score > 0)
-            {
-                bestFallbackScore = score;
-                bestFallback = c;
-            }
-        }
-
-        return bestFallback;
-    }
-
-    /// <summary>
-    /// Converts an expression chain to a materialized array using collection expression syntax.
-    /// </summary>
-    /// <param name="expression">The expression whose chain should be materialized.</param>
-    /// <returns>
-    /// An array of expressions representing the chain, or <see langword="null"/> when the chain cannot be obtained.
-    /// </returns>
-    private static Expression[]? GetExpressionChainArrayOrNull(Expression? expression) =>
-        expression is null ? null : [.. expression.GetExpressionChain()];
-
-    /// <summary>
-    /// Creates the default value instance for <paramref name="type"/> used by the "replay on host changes" logic.
-    /// </summary>
-    /// <param name="type">The member type.</param>
-    /// <returns>
-    /// A boxed default value for value types, or <see langword="null"/> for reference types.
-    /// </returns>
-    private static object? CreateDefaultValueForType(Type type)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(type);
-
-        return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
-    }
-
-    /// <summary>
-    /// Determines whether values should be replayed when the host changes.
-    /// </summary>
-    /// <param name="hostExpressionChain">The host expression chain.</param>
-    /// <returns>
-    /// <see langword="true"/> when replay-on-host-change behavior should be enabled; otherwise <see langword="false"/>.
-    /// </returns>
-    /// <remarks>
-    /// This preserves the original behavior: when the chain includes <c>IViewFor.ViewModel</c>, replay is disabled.
-    /// </remarks>
-    private static bool ShouldReplayOnHostChanges(Expression[]? hostExpressionChain)
-    {
-        if (hostExpressionChain is null)
-        {
-            return true;
-        }
-
-        for (var i = 0; i < hostExpressionChain.Length; i++)
-        {
-            if (hostExpressionChain[i] is MemberExpression member &&
-                string.Equals(member.Member.Name, nameof(IViewFor.ViewModel), StringComparison.Ordinal))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Resolves the current host object for the binding by evaluating the host expression chain.
-    /// </summary>
-    /// <param name="target">The root binding target.</param>
-    /// <param name="hostExpressionChain">The expression chain used to compute the host.</param>
-    /// <returns>
-    /// The resolved host object, or <see langword="null"/> if the chain cannot be evaluated.
-    /// </returns>
-    private static object? ResolveHostFromChainOrNull(object target, Expression[] hostExpressionChain)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentExceptionHelper.ThrowIfNull(hostExpressionChain);
-
-        object? host = target;
-
-        if (!Reflection.TryGetValueForPropertyChain(out host, host, hostExpressionChain))
-        {
-            return null;
-        }
-
-        return host;
-    }
-
-    /// <summary>
-    /// Gets the set-method conversion shim for an assignment into a target member.
-    /// </summary>
-    /// <param name="fromType">The runtime type of the inbound value.</param>
-    /// <param name="targetType">The target member type.</param>
-    /// <returns>
-    /// A conversion function used by set-method converters, or <see langword="null"/> if no converter is applicable.
-    /// </returns>
-    private static Func<object?, object?, object?[]?, object?>? GetSetConverter(Type? fromType, Type? targetType)
-    {
-        if (fromType is null)
-        {
-            return null;
-        }
-
-        var converter = _setMethodCache.GetOrAdd(
-            (fromType, targetType),
-            static key => ResolveBestSetMethodConverter(key.fromType, key.toType));
-
-        if (converter is null)
-        {
-            return null;
-        }
-
-        // Adapt the converter's contract to the local call shape expected by SetThenGet.
-        // Note: do not store this delegate in the cache; the cache stores the converter instance.
-        return (currentValue, newValue, indexParameters) => converter.PerformSet(currentValue, newValue, indexParameters);
-    }
-
-    /// <summary>
-    /// Resolves the best <see cref="ISetMethodBindingConverter"/> for a given pair.
-    /// </summary>
-    /// <param name="fromType">The inbound runtime type.</param>
-    /// <param name="toType">The target type.</param>
-    /// <returns>The selected converter, or <see langword="null"/> if none matches.</returns>
-    private static ISetMethodBindingConverter? ResolveBestSetMethodConverter(Type fromType, Type? toType)
-    {
-        var converters = AppLocator.Current.GetServices<ISetMethodBindingConverter>();
-
-        var bestScore = -1;
-        ISetMethodBindingConverter? best = null;
-
-        foreach (var c in converters)
-        {
-            if (c is null)
-            {
-                continue;
-            }
-
-            var score = c.GetAffinityForObjects(fromType, toType);
-            if (score > bestScore && score > 0)
-            {
-                bestScore = score;
-                best = c;
-            }
-        }
-
-        return best;
-    }
-
-    /// <summary>
-    /// Determines whether <paramref name="viewExpression"/> is a direct member access on the root parameter.
-    /// </summary>
-    /// <param name="viewExpression">The view expression to inspect.</param>
-    /// <returns>
-    /// <see langword="true"/> if the member is directly on the root parameter; otherwise <see langword="false"/>.
-    /// </returns>
-    private static bool IsDirectMemberOnRootParameter(Expression viewExpression) =>
-        viewExpression.GetParent()?.NodeType == ExpressionType.Parameter;
-
-    /// <summary>
-    /// Creates an observable that applies changes directly to <paramref name="target"/> when the member is directly on the root parameter.
-    /// </summary>
-    /// <typeparam name="TTarget">The target object type.</typeparam>
-    /// <typeparam name="TValue">The value type emitted by the returned observable.</typeparam>
-    /// <typeparam name="TObs">The change element type.</typeparam>
-    /// <param name="synchronizedChanges">The synchronized change stream.</param>
-    /// <param name="target">The target object.</param>
-    /// <param name="viewExpression">The view expression describing the member to set.</param>
-    /// <param name="setThenGet">The set-then-get delegate.</param>
-    /// <returns>An observable sequence of values that were effectively set.</returns>
-    private static IObservable<TValue> CreateDirectSetObservable<TTarget, TValue, TObs>(
-        IObservable<TObs> synchronizedChanges,
-        TTarget target,
-        Expression viewExpression,
-        Func<object?, object?, object?[]?, (bool shouldEmit, object? value)> setThenGet)
-        where TTarget : class
-    {
-        ArgumentExceptionHelper.ThrowIfNull(synchronizedChanges);
-        ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentExceptionHelper.ThrowIfNull(viewExpression);
-        ArgumentExceptionHelper.ThrowIfNull(setThenGet);
-
-        var arguments = viewExpression.GetArgumentsArray();
-
-        return synchronizedChanges.Select(value => setThenGet(target, value, arguments))
-                                  .Where(result => result.shouldEmit)
-                                  .Select(result => result.value is null ? default! : (TValue)result.value);
-    }
-
-    /// <summary>
-    /// Creates the core "set then get" function that applies a value to a target member and returns whether a value should be emitted.
-    /// </summary>
-    /// <param name="viewExpression">The view expression describing the member to set.</param>
-    /// <param name="getter">The compiled getter for the member.</param>
-    /// <param name="setter">The compiled setter for the member.</param>
-    /// <returns>
-    /// A delegate that sets and then gets the value, returning whether the value should be emitted and the resulting value.
-    /// </returns>
-    private static Func<object?, object?, object?[]?, (bool shouldEmit, object? value)> CreateSetThenGet(
-        Expression viewExpression,
-        Func<object?, object?[]?, object?> getter,
-        Action<object?, object?, object?[]?> setter)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(viewExpression);
-        ArgumentExceptionHelper.ThrowIfNull(getter);
-        ArgumentExceptionHelper.ThrowIfNull(setter);
-
-        return (paramTarget, paramValue, paramParams) =>
-        {
-            var converter = GetSetConverter(paramValue?.GetType(), viewExpression.Type);
-
-            if (converter is null)
-            {
-                var currentValue = getter(paramTarget, paramParams);
-                if (EqualityComparer<object?>.Default.Equals(currentValue, paramValue))
-                {
-                    return (false, currentValue);
-                }
-
-                setter(paramTarget, paramValue, paramParams);
-                return (true, getter(paramTarget, paramParams));
-            }
-
-            var existing = getter(paramTarget, paramParams);
-            var converted = converter(existing, paramValue, paramParams);
-            var shouldEmit = !EqualityComparer<object?>.Default.Equals(existing, converted);
-            return (shouldEmit, converted);
-        };
-    }
-
-    /// <summary>
-    /// Creates an observable that applies changes to a member whose host is obtained via a property chain.
-    /// </summary>
-    /// <typeparam name="TTarget">The root target object type.</typeparam>
-    /// <typeparam name="TValue">The value type emitted by the returned observable.</typeparam>
-    /// <typeparam name="TObs">The change element type.</typeparam>
-    /// <param name="synchronizedChanges">The synchronized change stream.</param>
-    /// <param name="target">The root target object.</param>
-    /// <param name="viewExpression">The view expression describing the member to set.</param>
-    /// <param name="setThenGet">The set-then-get delegate.</param>
-    /// <param name="getter">The compiled getter for the member.</param>
-    /// <returns>An observable sequence of values that were effectively set.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the host expression cannot be obtained.</exception>
-    private static IObservable<TValue> CreateChainedSetObservable<TTarget, TValue, TObs>(
-        IObservable<TObs> synchronizedChanges,
-        TTarget target,
-        Expression viewExpression,
-        Func<object?, object?, object?[]?, (bool shouldEmit, object? value)> setThenGet,
-        Func<object?, object?[]?, object?> getter)
-        where TTarget : class
-    {
-        ArgumentExceptionHelper.ThrowIfNull(synchronizedChanges);
-        ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentExceptionHelper.ThrowIfNull(viewExpression);
-        ArgumentExceptionHelper.ThrowIfNull(setThenGet);
-        ArgumentExceptionHelper.ThrowIfNull(getter);
-
-        var hostExpression = viewExpression.GetParent() ?? throw new InvalidOperationException("Host expression was not found.");
-        var hostChain = GetExpressionChainArrayOrNull(hostExpression);
-        var hostChanges = target.WhenAnyDynamic(hostExpression, x => x.Value).Synchronize();
-        var arguments = viewExpression.GetArgumentsArray();
-        var propertyDefaultValue = CreateDefaultValueForType(viewExpression.Type);
-
-        var shouldReplayOnHostChanges = ShouldReplayOnHostChanges(hostChain);
-
-        return Observable.Create<TValue>(observer =>
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
-
-            object? latestHost = null;
-            object? currentHost = null;
-            object? lastObservedValue = null;
-            var hasObservedValue = false;
-
-            bool HostPropertyEqualsDefault(object? host)
-            {
-                if (host is null)
-                {
-                    return false;
-                }
-
-                var currentValue = getter(host, arguments);
-                return EqualityComparer<object?>.Default.Equals(currentValue, propertyDefaultValue);
-            }
-
-            void ApplyValueToHost(object? host, object? value)
-            {
-                if (host is null || !hasObservedValue)
-                {
-                    return;
-                }
-
-                var (shouldEmit, result) = setThenGet(host, value, arguments);
-                if (!shouldEmit)
-                {
-                    return;
-                }
-
-                observer.OnNext(result is null ? default! : (TValue)result);
-            }
-
-            var hostDisposable = hostChanges.Subscribe(
-                hostValue =>
-                {
-                    latestHost = hostValue;
-
-                    if (ReferenceEquals(hostValue, currentHost))
-                    {
-                        return;
-                    }
-
-                    currentHost = hostValue;
-
-                    if (!shouldReplayOnHostChanges || !hasObservedValue || !HostPropertyEqualsDefault(hostValue))
-                    {
-                        return;
-                    }
-
-                    ApplyValueToHost(hostValue, lastObservedValue);
-                },
-                observer.OnError);
-
-            var changeDisposable = synchronizedChanges.Subscribe(
-                value =>
-                {
-                    hasObservedValue = true;
-                    lastObservedValue = value;
-
-                    var host = latestHost;
-
-                    if (hostChain is not null)
-                    {
-                        host = ResolveHostFromChainOrNull(target, hostChain);
-                        latestHost = host;
-                    }
-
-                    if (host is null)
-                    {
-                        return;
-                    }
-
-                    ApplyValueToHost(host, value);
-                },
-                observer.OnError);
-
-            return new CompositeDisposable(hostDisposable, changeDisposable);
-        });
-    }
+        _staticConverterResolver.GetBindingConverter(lhs, rhs);
 
     /// <summary>
     /// Binds an observable to a target member directly using compiled accessors.
@@ -943,14 +548,12 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
         var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("getter was not found.");
 
-        var synchronizedChanges = changeObservable.Synchronize();
-        var setThenGet = CreateSetThenGet(viewExpression, getter, setter);
+        var setObservableWithEmit =
+            _expressionCompiler.IsDirectMemberAccess(viewExpression)
+                ? _expressionCompiler.CreateDirectSetObservable<TTarget, TValue, TObs>(target, changeObservable, viewExpression, getter, setter, _converterResolver.GetSetMethodConverter)
+                : _expressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(target, changeObservable, viewExpression, _expressionCompiler.GetExpressionChainArray(viewExpression.GetParent()!) ?? [], getter, setter, _converterResolver.GetSetMethodConverter);
 
-        IObservable<TValue> setObservable =
-            IsDirectMemberOnRootParameter(viewExpression)
-                ? CreateDirectSetObservable<TTarget, TValue, TObs>(synchronizedChanges, target, viewExpression, setThenGet)
-                : CreateChainedSetObservable<TTarget, TValue, TObs>(synchronizedChanges, target, viewExpression, setThenGet, getter);
-
+        var setObservable = setObservableWithEmit.Select(x => x.Value);
         var subscription = SubscribeWithBindingErrorHandling(setObservable, viewExpression);
 
         return (subscription, setObservable);
@@ -983,70 +586,6 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
                 throw new TargetInvocationException($"{viewExpression} Binding received an Exception!", ex.InnerException);
             });
-    }
-
-    /// <summary>
-    /// Evaluates registered <see cref="IPropertyBindingHook"/> instances to determine whether a binding should be created.
-    /// </summary>
-    /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <typeparam name="TView">The view type.</typeparam>
-    /// <param name="viewModel">The view model instance (may be <see langword="null"/>).</param>
-    /// <param name="view">The view instance.</param>
-    /// <param name="vmExpression">The rewritten view model expression.</param>
-    /// <param name="viewExpression">The rewritten view expression.</param>
-    /// <param name="direction">The binding direction.</param>
-    /// <returns><see langword="true"/> if the binding should proceed; otherwise <see langword="false"/>.</returns>
-    private bool EvalBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView view, Expression vmExpression, Expression viewExpression, BindingDirection direction)
-        where TViewModel : class
-        where TView : class, IViewFor
-    {
-        var hooks = AppLocator.Current.GetServices<IPropertyBindingHook>();
-        ArgumentExceptionHelper.ThrowIfNull(view);
-
-        // Compile chains once for hook evaluation.
-        var vmChainGetter = vmExpression != null
-            ? new Reflection.CompiledPropertyChain<object?, object?>([.. vmExpression.GetExpressionChain()])
-            : null;
-        var viewChainGetter = new Reflection.CompiledPropertyChain<TView, object?>([.. viewExpression.GetExpressionChain()]);
-
-        Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null
-            ? (() =>
-            {
-                vmChainGetter!.TryGetAllValues(viewModel, out var fetchedValues);
-                return fetchedValues;
-            })
-            : (() => [new ObservedChange<object, object?>(null!, null, viewModel)]);
-
-        Func<IObservedChange<object, object?>[]> vFetcher = () =>
-        {
-            viewChainGetter.TryGetAllValues(view, out var fetchedValues);
-            return fetchedValues;
-        };
-
-        // Replace Aggregate with a loop to avoid enumerator overhead and closures.
-        var shouldBind = true;
-        foreach (var hook in hooks)
-        {
-            if (hook is null)
-            {
-                continue;
-            }
-
-            if (!hook.ExecuteHook(viewModel, view!, vmFetcher!, vFetcher!, direction))
-            {
-                shouldBind = false;
-                break;
-            }
-        }
-
-        if (!shouldBind)
-        {
-            var vmString = $"{typeof(TViewModel).Name}.{string.Join(".", vmExpression)}";
-            var vString = $"{typeof(TView).Name}.{string.Join(".", viewExpression)}";
-            this.Log().Warn(CultureInfo.InvariantCulture, "Binding hook asked to disable binding {0} => {1}", vmString, vString);
-        }
-
-        return shouldBind;
     }
 
     private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
@@ -1131,7 +670,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                             : (true, vAsViewModel, isVm));
         }
 
-        var ret = EvalBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
         if (!ret)
         {
             return null!;
