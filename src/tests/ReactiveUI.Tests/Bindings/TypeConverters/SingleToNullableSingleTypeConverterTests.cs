@@ -38,9 +38,44 @@ public class SingleToNullableSingleTypeConverterTests
     }
 
     [Test]
-    public async Task ToType_ReturnsFloatNullable()
+    public async Task ToType_ReturnsSingleNullable()
     {
         var converter = new SingleToNullableSingleTypeConverter();
         await Assert.That(converter.ToType).IsEqualTo(typeof(float?));
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
+    {
+        var converter = new SingleToNullableSingleTypeConverter();
+        float value = 42.5f;
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsTrue();
+        await Assert.That(result).IsEqualTo((float?)42.5f);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
+    {
+        var converter = new SingleToNullableSingleTypeConverter();
+
+        var success = converter.TryConvertTyped(null, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()
+    {
+        var converter = new SingleToNullableSingleTypeConverter();
+        string value = "invalid";
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
     }
 }

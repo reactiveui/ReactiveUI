@@ -54,4 +54,39 @@ public class NullableDecimalToDecimalTypeConverterTests
         var converter = new NullableDecimalToDecimalTypeConverter();
         await Assert.That(converter.ToType).IsEqualTo(typeof(decimal));
     }
+
+    [Test]
+    public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
+    {
+        var converter = new NullableDecimalToDecimalTypeConverter();
+        decimal? value = 42.5m;
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsTrue();
+        await Assert.That(result).IsEqualTo(42.5m);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
+    {
+        var converter = new NullableDecimalToDecimalTypeConverter();
+
+        var success = converter.TryConvertTyped(null, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()
+    {
+        var converter = new NullableDecimalToDecimalTypeConverter();
+        string value = "invalid";
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
+    }
 }

@@ -54,4 +54,39 @@ public class NullableIntegerToIntegerTypeConverterTests
         var converter = new NullableIntegerToIntegerTypeConverter();
         await Assert.That(converter.ToType).IsEqualTo(typeof(int));
     }
+
+    [Test]
+    public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
+    {
+        var converter = new NullableIntegerToIntegerTypeConverter();
+        int? value = 42;
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsTrue();
+        await Assert.That(result).IsEqualTo(42);
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
+    {
+        var converter = new NullableIntegerToIntegerTypeConverter();
+
+        var success = converter.TryConvertTyped(null, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
+    }
+
+    [Test]
+    public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()
+    {
+        var converter = new NullableIntegerToIntegerTypeConverter();
+        string value = "invalid";
+
+        var success = converter.TryConvertTyped(value, null, out var result);
+
+        await Assert.That(success).IsFalse();
+        await Assert.That(result).IsNull();
+    }
 }
