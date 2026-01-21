@@ -1,21 +1,21 @@
 {
-  "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "22.3",
+  "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/main/src/NerdBank.GitVersioning/version.schema.json",
+
+  "version": "23.1.0-beta.{height}",
+
   "publicReleaseRefSpec": [
-    "^refs/heads/master$", // we release out of master
+    "^refs/heads/master$",
     "^refs/heads/main$",
     "^refs/heads/latest$",
-    "^refs/heads/preview/.*", // we release previews
-    "^refs/heads/patches/.*", // we release previews
-    "^refs/heads/rel/\\d+\\.\\d+\\.\\d+" // we also release branches starting with rel/N.N.N
+    "^refs/heads/preview/.*",
+    "^refs/heads/patches/.*",
+    "^refs/heads/rel/\\d+\\.\\d+\\.\\d+"
   ],
-  "nugetPackageVersion":{
-    "semVer": 2
-  },
+
+  "nugetPackageVersion": { "semVer": 2 },
+
   "cloudBuild": {
     "setVersionVariables": true,
-    "buildNumber": {
-      "enabled": false
-    }
+    "buildNumber": { "enabled": false }
   }
 }
