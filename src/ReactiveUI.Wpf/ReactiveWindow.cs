@@ -54,6 +54,18 @@ public class ReactiveWindow<TViewModel> :
                                     new PropertyMetadata(null));
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveWindow{TViewModel}"/> class.
+    /// </summary>
+    /// <remarks>When the window is activated, this constructor ensures that the ViewModel's activation logic
+    /// is also triggered if the ViewModel implements IActivatableViewModel. This enables coordinated activation and
+    /// deactivation of resources tied to the window and its ViewModel.</remarks>
+    public ReactiveWindow() => this.WhenActivated(disposables =>
+                                    {
+                                        // No-op, but ensures that when the Page is activated,
+                                        // any IActivatableViewModel logic in the ViewModel is also triggered.
+                                    });
+
+    /// <summary>
     /// Gets the binding root view model.
     /// </summary>
     public TViewModel? BindingRoot => ViewModel;
