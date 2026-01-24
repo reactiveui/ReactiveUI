@@ -120,6 +120,14 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         _disposedValue = true;
     }
 
+    /// <summary>
+    /// Handles Android activity lifecycle events and forwards them to the associated AutoSuspendHelper instance for
+    /// reactive processing.
+    /// </summary>
+    /// <remarks>This class implements the Application.IActivityLifecycleCallbacks interface to observe
+    /// activity lifecycle changes. It is intended for internal use to bridge Android lifecycle events to reactive
+    /// streams managed by AutoSuspendHelper.</remarks>
+    /// <param name="this">The AutoSuspendHelper instance that receives lifecycle event notifications.</param>
     private class ObservableLifecycle(AutoSuspendHelper @this) : Java.Lang.Object, Application.IActivityLifecycleCallbacks
     {
         public void OnActivityCreated(Activity? activity, Bundle? savedInstanceState) => @this._onCreate.OnNext(savedInstanceState);

@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests.Mocks;
 /// <summary>
 /// A view model with a weird name for testing view resolution.
 /// </summary>
-public class ViewModelWithWeirdName : ReactiveObject
-{
-}
+public class ViewModelWithWeirdName : ReactiveObject;

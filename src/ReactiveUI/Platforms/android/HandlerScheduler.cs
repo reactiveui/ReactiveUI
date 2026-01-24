@@ -86,5 +86,3 @@ public class HandlerScheduler(Handler handler) : IScheduler, IEnableLogger
         return Schedule(state, dueTime - Now, action);
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :

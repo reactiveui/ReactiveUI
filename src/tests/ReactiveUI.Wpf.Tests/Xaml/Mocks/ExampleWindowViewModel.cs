@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests.Mocks;
 /// <summary>
 /// A mock view model for testing window view resolution.
 /// </summary>
-public class ExampleWindowViewModel : ReactiveObject
-{
-}
+public class ExampleWindowViewModel : ReactiveObject;

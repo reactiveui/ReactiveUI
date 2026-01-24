@@ -31,17 +31,24 @@ public static class InteractionBindingMixins
     private static readonly InteractionBinderImplementation _binderImplementation = new();
 
     /// <summary>
-    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds an interaction from a view model to a view, allowing the view to handle interaction requests using the
+    /// specified handler.
     /// </summary>
-    /// <param name="view">The view to bind to.</param>
-    /// <param name="viewModel">The view model to bind to.</param>
-    /// <param name="propertyName">The name of the property on the View Model.</param>
-    /// <param name="handler">The handler.</param>
-    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-    /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TInput">The interaction's input type.</typeparam>
-    /// <typeparam name="TOutput">The interaction's output type.</typeparam>
-    /// <returns>An object that when disposed, disconnects the binding.</returns>
+    /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
+    /// such as displaying dialogs or requesting user input. The returned IDisposable should be disposed when the
+    /// binding is no longer needed, such as when the view is unloaded, to avoid memory leaks. This method uses
+    /// reflection and may not be compatible with trimming or AOT scenarios.</remarks>
+    /// <typeparam name="TViewModel">The type of the view model that contains the interaction property.</typeparam>
+    /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
+    /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
+    /// <typeparam name="TOutput">The type of the output parameter for the interaction.</typeparam>
+    /// <param name="view">The view instance that will handle the interaction.</param>
+    /// <param name="viewModel">The view model instance containing the interaction property. Can be null if the view is not currently bound to a
+    /// view model.</param>
+    /// <param name="propertyName">An expression identifying the interaction property on the view model to bind.</param>
+    /// <param name="handler">A function that will be invoked to handle each interaction request. Receives the interaction context and returns
+    /// a task representing the asynchronous operation.</param>
+    /// <returns>An IDisposable that can be disposed to unbind the interaction and release associated resources.</returns>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput>(
         this TView view,
@@ -57,18 +64,25 @@ public static class InteractionBindingMixins
                 handler);
 
     /// <summary>
-    /// Binds the <see cref="IInteraction{TInput, TOutput}"/> on a ViewModel to the specified handler.
+    /// Binds an interaction from a view model to a view, allowing the view to handle interaction requests using the
+    /// specified handler.
     /// </summary>
-    /// <param name="view">The view to bind to.</param>
-    /// <param name="viewModel">The view model to bind to.</param>
-    /// <param name="propertyName">The name of the property on the View Model.</param>
-    /// <param name="handler">The handler.</param>
-    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-    /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TInput">The interaction's input type.</typeparam>
-    /// <typeparam name="TOutput">The interaction's output type.</typeparam>
-    /// <typeparam name="TDontCare">The interaction's signal type.</typeparam>
-    /// <returns>An object that when disposed, disconnects the binding.</returns>
+    /// <remarks>This method enables the view to respond to interaction requests initiated by the view model,
+    /// typically for user-driven workflows such as dialogs or prompts. The handler is invoked each time the interaction
+    /// is triggered. The returned IDisposable should be disposed when the binding is no longer needed, such as when the
+    /// view is unloaded.</remarks>
+    /// <typeparam name="TViewModel">The type of the view model containing the interaction property.</typeparam>
+    /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
+    /// <typeparam name="TInput">The type of the input parameter for the interaction.</typeparam>
+    /// <typeparam name="TOutput">The type of the output parameter for the interaction.</typeparam>
+    /// <typeparam name="TDontCare">The type of the value produced by the handler observable. This value is ignored.</typeparam>
+    /// <param name="view">The view instance that will handle the interaction.</param>
+    /// <param name="viewModel">The view model instance containing the interaction property. Can be null if the view is not currently bound to a
+    /// view model.</param>
+    /// <param name="propertyName">An expression identifying the interaction property on the view model to bind.</param>
+    /// <param name="handler">A function that handles the interaction by processing the interaction context and returning an observable
+    /// sequence. The result of the observable is ignored.</param>
+    /// <returns>An IDisposable that can be disposed to unbind the interaction and release associated resources.</returns>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public static IDisposable BindInteraction<TViewModel, TView, TInput, TOutput, TDontCare>(
         this TView view,

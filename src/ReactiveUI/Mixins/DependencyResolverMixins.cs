@@ -51,6 +51,20 @@ public static class DependencyResolverMixins
         }
     }
 
+    /// <summary>
+    /// Registers a type with the specified dependency resolver, using singleton or transient lifetime based on the
+    /// type's attributes and an optional contract.
+    /// </summary>
+    /// <remarks>If the implementation type is marked with the SingleInstanceViewAttribute, it is registered
+    /// as a singleton; otherwise, it is registered as transient. The contract parameter allows multiple registrations
+    /// of the same service type under different contracts.</remarks>
+    /// <param name="resolver">The dependency resolver with which to register the type. Cannot be null.</param>
+    /// <param name="ti">The type information for the implementation to register. Must provide accessible constructors as required by the
+    /// registration process.</param>
+    /// <param name="serviceType">The service type to associate with the registration. This is the type that will be resolved from the dependency
+    /// resolver.</param>
+    /// <param name="contract">An optional contract string that distinguishes this registration from others of the same service type. If null,
+    /// the registration is not associated with a contract.</param>
     private static void RegisterType(
         IMutableDependencyResolver resolver,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
@@ -80,6 +94,13 @@ public static class DependencyResolverMixins
         }
     }
 
+    /// <summary>
+    /// Creates a factory delegate that instantiates objects of the specified type using a public parameterless
+    /// constructor.
+    /// </summary>
+    /// <param name="typeInfo">The type metadata for which to create the factory. The type must have a public parameterless constructor.</param>
+    /// <returns>A delegate that creates a new instance of the specified type when invoked.</returns>
+    /// <exception cref="Exception">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
     private static Func<object> TypeFactory(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         TypeInfo typeInfo)

@@ -10,8 +10,16 @@ using Splat.Builder;
 namespace ReactiveUI.Builder;
 
 /// <summary>
-/// BuilderMixins.
+/// Provides extension methods for configuring and building ReactiveUI applications using a fluent builder pattern.
+/// These methods enable registration of views, view models, schedulers, converters, and platform-specific modules in a
+/// type-safe and AOT-compatible manner.
 /// </summary>
+/// <remarks>The BuilderMixins class contains a comprehensive set of extension methods designed to simplify and
+/// standardize the setup of ReactiveUI applications. It supports advanced scenarios such as custom platform
+/// integration, dependency resolver configuration, and bulk registration of converters. All methods are intended to be
+/// used with the ReactiveUI builder interfaces and support method chaining for fluent configuration. For AOT
+/// (Ahead-Of-Time) environments, prefer explicit registration methods over reflection-based approaches for maximum
+/// compatibility.</remarks>
 public static class BuilderMixins
 {
     /// <summary>

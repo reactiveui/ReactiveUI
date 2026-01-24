@@ -6,16 +6,17 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Extension methods associated with the RoutingState class.
+/// Provides extension methods for querying and retrieving view models from a routing state navigation stack.
 /// </summary>
 public static class RoutingStateMixins
 {
     /// <summary>
-    /// Locate the first ViewModel in the stack that matches a certain Type.
+    /// Searches the navigation stack in reverse order and returns the first view model of the specified type, if found.
     /// </summary>
-    /// <typeparam name="T">The view model type.</typeparam>
-    /// <param name="item">The routing state.</param>
-    /// <returns>The matching ViewModel or null if none exists.</returns>
+    /// <typeparam name="T">The type of view model to search for. Must implement <see cref="IRoutableViewModel"/>.</typeparam>
+    /// <param name="item">The <see cref="RoutingState"/> instance whose navigation stack is searched.</param>
+    /// <returns>The first view model of type <typeparamref name="T"/> found in the navigation stack, or <see langword="null"/>
+    /// if no such view model exists.</returns>
     public static T? FindViewModelInStack<T>(this RoutingState item)
         where T : IRoutableViewModel
     {
@@ -25,10 +26,10 @@ public static class RoutingStateMixins
     }
 
     /// <summary>
-    /// Returns the currently visible ViewModel.
+    /// Gets the current view model from the top of the navigation stack.
     /// </summary>
-    /// <param name="item">The routing state.</param>
-    /// <returns>The matching ViewModel or null if none exists.</returns>
+    /// <param name="item">The routing state instance from which to retrieve the current view model. Cannot be null.</param>
+    /// <returns>The view model at the top of the navigation stack, or null if the navigation stack is empty.</returns>
     public static IRoutableViewModel? GetCurrentViewModel(this RoutingState item)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);

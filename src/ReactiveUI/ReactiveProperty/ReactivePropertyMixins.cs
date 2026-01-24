@@ -11,29 +11,27 @@ using System.ComponentModel.DataAnnotations;
 namespace ReactiveUI;
 
 /// <summary>
-/// Reactive Property Extensions.
+/// Provides extension methods for adding validation and observing validation errors on ReactiveProperty instances.
 /// </summary>
+/// <remarks>These mixins enable integration of DataAnnotations-based validation and error observation with
+/// ReactiveProperty. Some methods may use reflection and are not compatible with ahead-of-time (AOT) compilation; refer
+/// to individual method documentation for details.</remarks>
 public static class ReactivePropertyMixins
 {
 #if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
     /// <summary>
-    /// Set validation logic from DataAnnotations attributes.
+    /// Adds DataAnnotations-based validation to the specified reactive property using the validation attributes defined
+    /// on the property.
     /// </summary>
-    /// <typeparam name="T">Property type.</typeparam>
-    /// <param name="self">Target ReactiveProperty.</param>
-    /// <param name="selfSelector">The self selector.</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
-    /// <exception cref="ArgumentNullException">
-    /// selfSelector
-    /// or
-    /// self.
-    /// </exception>
-    /// <remarks>
-    /// This method uses DataAnnotations validation which requires reflection and is not compatible with AOT compilation.
-    /// For AOT scenarios, use manual validation instead.
-    /// </remarks>
+    /// <remarks>This method uses reflection to discover DataAnnotations attributes and is not compatible with
+    /// trimming or AOT scenarios. For environments where reflection is restricted, use manual validation instead. The
+    /// validation logic is based on the attributes applied to the property referenced by the selector
+    /// expression.</remarks>
+    /// <typeparam name="T">The type of the value held by the reactive property.</typeparam>
+    /// <param name="self">The reactive property to which validation will be added. Cannot be null.</param>
+    /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
+    /// and display metadata. Cannot be null.</param>
+    /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
     [RequiresUnreferencedCode("DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
     public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
@@ -71,11 +69,13 @@ public static class ReactivePropertyMixins
 #endif
 
     /// <summary>
-    /// Create an IObservable instance to observe validation error messages of ReactiveProperty.
+    /// Returns an observable sequence that emits the first validation error message, if any, from the specified
+    /// reactive property whenever its error state changes.
     /// </summary>
-    /// <typeparam name="T">Property type.</typeparam>
-    /// <param name="self">Target ReactiveProperty.</param>
-    /// <returns>A IObservable of string.</returns>
+    /// <typeparam name="T">The type of the value held by the reactive property.</typeparam>
+    /// <param name="self">The reactive property to observe for validation errors. Cannot be null.</param>
+    /// <returns>An observable sequence of strings representing the first validation error message, or null if there are no
+    /// errors.</returns>
     public static IObservable<string?> ObserveValidationErrors<T>(this ReactiveProperty<T> self)
     {
         ArgumentExceptionHelper.ThrowIfNull(self);

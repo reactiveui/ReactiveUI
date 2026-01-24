@@ -956,9 +956,9 @@ namespace ReactiveUI
     {
         public static System.IObservable<T> Log<T, TObj>(this System.IObservable<T> @this, TObj logObject, string? message = null, System.Func<T, string>? stringifier = null)
             where TObj : Splat.IEnableLogger { }
-        public static System.IObservable<T> LoggedCatch<T, TObj>(this System.IObservable<T> @this, TObj klass, System.IObservable<T>? next = null, string? message = null)
+        public static System.IObservable<T> LoggedCatch<T, TObj>(this System.IObservable<T> @this, TObj @class, System.IObservable<T>? next = null, string? message = null)
             where TObj : Splat.IEnableLogger { }
-        public static System.IObservable<T> LoggedCatch<T, TObj, TException>(this System.IObservable<T> @this, TObj klass, System.Func<TException, System.IObservable<T>> next, string? message = null)
+        public static System.IObservable<T> LoggedCatch<T, TObj, TException>(this System.IObservable<T> @this, TObj @class, System.Func<TException, System.IObservable<T>> next, string? message = null)
             where TObj : Splat.IEnableLogger
             where TException : System.Exception { }
     }

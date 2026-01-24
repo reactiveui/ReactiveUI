@@ -9,6 +9,11 @@ using Android.Widget;
 
 namespace ReactiveUI;
 
+/// <summary>
+/// Provides a container for methods used to preserve specific Android UI components during linking.
+/// </summary>
+/// <remarks>This class is intended for internal use to ensure that certain Android UI types and their members are
+/// not removed by the linker. It is not intended to be used directly in application code.</remarks>
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {

@@ -9,6 +9,4 @@ namespace ReactiveUI.Tests.Mocks;
 /// A view for <see cref="ExampleViewModel"/> with a contract.
 /// </summary>
 [ViewContract("contract")]
-public class ExampleViewContract : ReactiveUserControl<ExampleViewModel>
-{
-}
+public class ExampleViewContract : ReactiveUserControl<ExampleViewModel>;

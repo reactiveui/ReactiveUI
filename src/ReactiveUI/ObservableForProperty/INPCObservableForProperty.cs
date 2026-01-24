@@ -8,8 +8,14 @@ using System.Reflection;
 namespace ReactiveUI;
 
 /// <summary>
-/// Generates Observables based on observing INotifyPropertyChanged objects.
+/// Provides an implementation of property change notification observation for objects implementing either
+/// INotifyPropertyChanged or INotifyPropertyChanging.
 /// </summary>
+/// <remarks>This class enables the creation of observables that emit notifications when a property value changes
+/// or is about to change on objects that support the standard .NET property change notification interfaces. It is
+/// typically used in reactive programming scenarios to monitor property changes in data-binding or MVVM patterns.
+/// Reflection is used to inspect runtime types, which may have implications for trimming or ahead-of-time (AOT)
+/// compilation.</remarks>
 public class INPCObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>

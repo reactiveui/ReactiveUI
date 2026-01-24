@@ -6,8 +6,12 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Attribute that marks a resource for wiring.
+/// Specifies that a resource should be wired up to the target element, optionally using a specified resource name
+/// override.
 /// </summary>
+/// <remarks>Apply this attribute to a class, method, property, or other code element to indicate that a resource
+/// should be associated with it. Use the optional resource name override to specify a custom resource name if the
+/// default naming convention does not apply.</remarks>
 [AttributeUsage(AttributeTargets.All)]
 public sealed class WireUpResourceAttribute : Attribute
 {
