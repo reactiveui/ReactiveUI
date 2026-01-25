@@ -76,10 +76,10 @@ public static class ViewForMixins
     /// disposables created within the block are disposed when the view model is deactivated.
     /// </summary>
     /// <remarks>Use this method to manage subscriptions or other resources that should be tied to the
-    /// activation lifecycle of the view model. All disposables added to the provided <see cref="CompositeDisposable"/>
+    /// activation lifecycle of the view model. All disposables added to the provided <see cref="System.Reactive.Disposables.CompositeDisposable"/>
     /// will be disposed automatically when the view model is deactivated.</remarks>
     /// <param name="item">The view model that supports activation and deactivation. Cannot be null.</param>
-    /// <param name="block">An action that receives a <see cref="CompositeDisposable"/> to which disposables can be added for automatic
+    /// <param name="block">An action that receives a <see cref="System.Reactive.Disposables.CompositeDisposable"/> to which disposables can be added for automatic
     /// cleanup upon deactivation. Cannot be null.</param>
     public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block) // TODO: Create Test
     {
@@ -192,16 +192,16 @@ public static class ViewForMixins
     /// for the activation lifecycle.
     /// </summary>
     /// <remarks>Use this method to manage subscriptions and other disposables that should be tied to the
-    /// activation and deactivation of the view. All disposables added to the provided <see cref="CompositeDisposable"/>
+    /// activation and deactivation of the view. All disposables added to the provided <see cref="System.Reactive.Disposables.CompositeDisposable"/>
     /// will be disposed when the returned <see cref="IDisposable"/> is disposed, typically when the view is
     /// deactivated.</remarks>
     /// <param name="item">The view that implements <see cref="IActivatableView"/> to be activated.</param>
-    /// <param name="block">An action that receives a <see cref="CompositeDisposable"/> to which activation-related disposables should be
+    /// <param name="block">An action that receives a <see cref="System.Reactive.Disposables.CompositeDisposable"/> to which activation-related disposables should be
     /// added. This block is executed when the view is activated.</param>
     /// <param name="view">An optional <see cref="IViewFor"/> instance representing the view context. If not specified, the method uses the
     /// <paramref name="item"/> as the view.</param>
     /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes of all disposables added to the <see
-    /// cref="CompositeDisposable"/> when disposed.</returns>
+    /// cref="System.Reactive.Disposables.CompositeDisposable"/> when disposed.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
             item.WhenActivated(
@@ -235,7 +235,7 @@ public static class ViewForMixins
     /// disposables are disposed when the view is deactivated or reactivated.</param>
     /// <param name="activation">An observable sequence that signals activation state changes. Emits <see langword="true"/> to indicate
     /// activation and <see langword="false"/> to indicate deactivation.</param>
-    /// <returns>A <see cref="CompositeDisposable"/> that manages the subscription to the activation observable and the
+    /// <returns>A <see cref="System.Reactive.Disposables.CompositeDisposable"/> that manages the subscription to the activation observable and the
     /// disposables created by the block. Disposing this object cleans up all associated resources.</returns>
     private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
     {
