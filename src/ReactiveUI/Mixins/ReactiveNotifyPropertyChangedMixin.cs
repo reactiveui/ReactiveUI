@@ -8,9 +8,18 @@ using ReactiveUI.Builder;
 namespace ReactiveUI;
 
 /// <summary>
-/// Extension methods associated with the Observable Changes and the
-/// Reactive Notify Property Changed based events.
+/// Provides extension methods for observing property change notifications on objects, enabling reactive programming
+/// patterns for property changes without relying on expression tree analysis. These methods allow consumers to create
+/// observable sequences that emit notifications when specified properties change, supporting both simple property names
+/// and expression-based property access.
 /// </summary>
+/// <remarks>The methods in this class are designed to work with types that implement property change
+/// notification, such as ReactiveObject or compatible types. Overloads are provided to observe property changes by
+/// property name or by expression, with options to control notification timing (before or after change), initial value
+/// emission, and distinct value filtering. These APIs are especially useful in scenarios where expression tree analysis
+/// is not available or desirable, such as ahead-of-time (AOT) compilation environments. Consumers should be aware that
+/// some methods require unreferenced code and may not be compatible with all trimming scenarios. For more information
+/// on supported platforms and usage, refer to the ReactiveUI documentation.</remarks>
 [Preserve(AllMembers = true)]
 [RequiresUnreferencedCode(
     "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
@@ -555,6 +564,21 @@ public static class ReactiveNotifyPropertyChangedMixin
         return isDistinct ? r.DistinctUntilChanged(x => x.Value) : r;
     }
 
+    /// <summary>
+    /// Creates an observable sequence that emits observed changes for each member in an expression-based property
+    /// chain, starting from a given source change.
+    /// </summary>
+    /// <remarks>This method uses reflection to evaluate the expression-based member chain. If the source
+    /// value is null, the returned sequence contains only the initial change. Otherwise, it tracks changes for each
+    /// property in the chain. Reflection-based member access may be affected by trimming in some deployment
+    /// scenarios.</remarks>
+    /// <param name="expression">An expression representing the property or member chain to observe for changes.</param>
+    /// <param name="sourceChange">The initial observed change that serves as the starting point for tracking nested property changes.</param>
+    /// <param name="beforeChange">true to observe property values before they change; otherwise, false to observe values after the change.</param>
+    /// <param name="suppressWarnings">true to suppress warnings related to property observation; otherwise, false.</param>
+    /// <returns>An observable sequence of observed changes for each member in the specified property chain. The sequence emits
+    /// an initial change corresponding to the source, followed by subsequent changes as properties in the chain are
+    /// updated.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(
         Expression expression,
@@ -577,6 +601,21 @@ public static class ReactiveNotifyPropertyChangedMixin
             .Select(static x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
     }
 
+    /// <summary>
+    /// Creates an observable that signals when a specified property on an object changes, using an expression to
+    /// identify the property.
+    /// </summary>
+    /// <remarks>This method uses reflection to evaluate the property specified by the expression. Members
+    /// referenced in the expression may be trimmed when using certain linking or trimming tools, which can affect
+    /// runtime behavior. The observable returned emits IObservedChange notifications for the specified
+    /// property.</remarks>
+    /// <param name="sender">The object whose property changes are to be observed. Cannot be null.</param>
+    /// <param name="expression">An expression that identifies the property to observe. Must represent a valid property member.</param>
+    /// <param name="beforeChange">true to observe notifications before the property value changes; otherwise, false to observe after the change.</param>
+    /// <param name="suppressWarnings">true to suppress warnings related to property observation; otherwise, false.</param>
+    /// <returns>An observable sequence that produces notifications when the specified property changes on the sender object.</returns>
+    /// <exception cref="ArgumentException">Thrown if expression does not represent a valid property member.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if no suitable property change observable factory is found for the specified property and sender type.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static IObservable<IObservedChange<object?, object?>> NotifyForProperty(
         object sender,

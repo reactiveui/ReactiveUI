@@ -6,8 +6,13 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Observable Func Mixins.
+/// Provides extension methods for creating observables from expression-based property accessors on view model
+/// instances.
 /// </summary>
+/// <remarks>These extension methods enable reactive observation of property changes by converting expression
+/// trees into observable sequences. This is useful for scenarios where you want to monitor changes to properties in
+/// view models and react to those changes in a composable, declarative manner. The methods in this class rely on
+/// reflection and may be affected by trimming in certain deployment scenarios.</remarks>
 public static class ObservableFuncMixins
 {
     /// <summary>

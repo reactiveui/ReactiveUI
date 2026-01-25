@@ -20,15 +20,20 @@ public static class ObservableLoggingMixin
     static ObservableLoggingMixin() => RxAppBuilder.EnsureInitialized();
 
     /// <summary>
-    /// Logs an Observable to Splat's Logger.
+    /// Returns an observable sequence that logs each notification using the specified logger object.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TObj">The object type.</typeparam>
-    /// <param name="this">The source observable to log to splat.</param>
-    /// <param name="logObject">The hosting class, usually 'this'.</param>
-    /// <param name="message">An optional method.</param>
-    /// <param name="stringifier">An optional Func to convert Ts to strings.</param>
-    /// <returns>The same Observable.</returns>
+    /// <remarks>This method does not modify the elements of the sequence or affect its timing, but adds side
+    /// effects for logging purposes. Logging occurs for each notification: OnNext (with the element value), OnError,
+    /// and OnCompleted. The returned observable can be further composed or subscribed to as usual.</remarks>
+    /// <typeparam name="T">The type of the elements in the source observable sequence.</typeparam>
+    /// <typeparam name="TObj">The type of the logger object. Must implement <see cref="IEnableLogger"/>.</typeparam>
+    /// <param name="this">The source observable sequence whose notifications will be logged.</param>
+    /// <param name="logObject">An object that provides logging capabilities. Must implement <see cref="IEnableLogger"/>.</param>
+    /// <param name="message">An optional message to include in each log entry. If null, an empty string is used.</param>
+    /// <param name="stringifier">An optional function to convert each element to a string for logging. If null, the element's <see
+    /// cref="object.ToString()"/> method is used.</param>
+    /// <returns>An observable sequence that is functionally equivalent to the source, but logs each OnNext, OnError, and
+    /// OnCompleted notification using the provided logger.</returns>
     public static IObservable<T> Log<T, TObj>(
         this IObservable<T> @this,
         TObj logObject,
@@ -53,44 +58,55 @@ public static class ObservableLoggingMixin
     }
 
     /// <summary>
-    /// Like Catch, but also prints a message and the error to the log.
+    /// Returns an observable sequence that logs any exception using the specified logger and continues with the
+    /// provided fallback sequence, if supplied.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TObj">The object type.</typeparam>
-    /// <param name="this">The source observable to log to splat.</param>
-    /// <param name="klass">The hosting class, usually 'this'.</param>
-    /// <param name="next">The Observable to replace the current one OnError.</param>
-    /// <param name="message">An error message to print.</param>
-    /// <returns>The same Observable.</returns>
-    public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj klass, IObservable<T>? next = null, string? message = null) // TODO: Create Test
+    /// <remarks>This method is useful for handling errors in observable sequences by logging exceptions and
+    /// optionally providing a fallback sequence to continue processing. The exception is logged at the warning level
+    /// using the provided logger.</remarks>
+    /// <typeparam name="T">The type of the elements in the observable sequence.</typeparam>
+    /// <typeparam name="TObj">The type of the logger, which must implement <see cref="IEnableLogger"/>.</typeparam>
+    /// <param name="this">The source observable sequence to monitor for exceptions.</param>
+    /// <param name="class">An object that provides logging capabilities and is used to log any exceptions encountered.</param>
+    /// <param name="next">An optional observable sequence to continue with after an exception is caught. If not specified, a default empty
+    /// sequence is used.</param>
+    /// <param name="message">An optional message to include in the log entry when an exception is caught. If null, an empty string is used.</param>
+    /// <returns>An observable sequence that emits the original elements until an exception occurs, logs the exception, and then
+    /// continues with the specified fallback sequence.</returns>
+    public static IObservable<T> LoggedCatch<T, TObj>(this IObservable<T> @this, TObj @class, IObservable<T>? next = null, string? message = null) // TODO: Create Test
         where TObj : IEnableLogger
     {
         next ??= Observable<T>.Default;
         return @this.Catch<T, Exception>(ex =>
         {
-            klass.Log().Warn(ex, message ?? string.Empty);
+            @class.Log().Warn(ex, message ?? string.Empty);
             return next;
         });
     }
 
     /// <summary>
-    /// Like Catch, but also prints a message and the error to the log.
+    /// Handles exceptions of a specified type in the observable sequence by logging a warning and continuing with an
+    /// alternative observable sequence.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TObj">The object type.</typeparam>
-    /// <typeparam name="TException">The exception type.</typeparam>
-    /// <param name="this">The source observable to log to splat.</param>
-    /// <param name="klass">The hosting class, usually 'this'.</param>
-    /// <param name="next">A Func to create an Observable to replace the
-    /// current one OnError.</param>
-    /// <param name="message">An error message to print.</param>
-    /// <returns>The same Observable.</returns>
-    public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj klass, Func<TException, IObservable<T>> next, string? message = null) // TODO: Create Test
+    /// <remarks>This method is useful for handling recoverable errors in reactive streams while ensuring that
+    /// exceptions are logged for diagnostic purposes. Only exceptions of type TException are caught and logged; other
+    /// exceptions are propagated.</remarks>
+    /// <typeparam name="T">The type of the elements in the source observable sequence.</typeparam>
+    /// <typeparam name="TObj">The type of the logger-enabled object used for logging. Must implement IEnableLogger.</typeparam>
+    /// <typeparam name="TException">The type of exception to catch and handle. Must derive from Exception.</typeparam>
+    /// <param name="this">The source observable sequence to monitor for exceptions.</param>
+    /// <param name="class">An object that provides logging capabilities. Used to log the caught exception as a warning.</param>
+    /// <param name="next">A function that returns an alternative observable sequence to continue with when an exception of type TException
+    /// is caught. The function receives the caught exception as its parameter.</param>
+    /// <param name="message">An optional message to include in the warning log. If null, an empty string is used.</param>
+    /// <returns>An observable sequence that continues with the sequence returned by the next function after logging the
+    /// exception, or propagates other exceptions.</returns>
+    public static IObservable<T> LoggedCatch<T, TObj, TException>(this IObservable<T> @this, TObj @class, Func<TException, IObservable<T>> next, string? message = null) // TODO: Create Test
         where TObj : IEnableLogger
         where TException : Exception =>
         @this.Catch<T, TException>(ex =>
         {
-            klass.Log().Warn(ex, message ?? string.Empty);
+            @class.Log().Warn(ex, message ?? string.Empty);
             return next(ex);
         });
 }

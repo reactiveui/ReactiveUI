@@ -9,11 +9,15 @@ using System.Runtime.CompilerServices;
 namespace ReactiveUI;
 
 /// <summary>
-/// ReactiveProperty - a two way bindable declarative observable property with imperative get set.
+/// Represents a reactive property that notifies subscribers of value changes and supports asynchronous validation and
+/// error notification.
 /// </summary>
-/// <typeparam name="T">The type of the property.</typeparam>
-/// <seealso cref="ReactiveObject" />
-/// <seealso cref="IReactiveProperty&lt;T&gt;" />
+/// <remarks>ReactiveProperty{T} provides observable value semantics, allowing consumers to subscribe to value
+/// changes and validation error updates. It supports INotifyPropertyChanged and INotifyDataErrorInfo for integration
+/// with data binding scenarios. Validation logic can be attached to perform asynchronous or synchronous checks, and
+/// error notifications are propagated to observers. Thread safety and scheduling of notifications are managed via the
+/// provided scheduler. Disposing the instance releases all resources and completes all observable streams.</remarks>
+/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 [DataContract]
 public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 {
@@ -97,43 +101,52 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     private IEnumerable? _currentErrors;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
-    /// The Value will be default(T). DistinctUntilChanged is true. Current Value is published on subscribe.
+    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class with the default value, using the task pool
+    /// scheduler and default notification and distinctness settings.
     /// </summary>
+    /// <remarks>This constructor is a convenient way to create a <see cref="ReactiveProperty{T}"/> with commonly used
+    /// defaults. The property will use the default value for its type, schedule notifications on the task pool
+    /// scheduler, and will not suppress notifications or enforce distinctness by default.</remarks>
     public ReactiveProperty()
         : this(default, RxSchedulers.TaskpoolScheduler, false, false)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class.
-    /// The Value will be initialValue. DistinctUntilChanged is true. Current Value is published on subscribe.
+    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class with the specified initial value.
     /// </summary>
-    /// <param name="initialValue">The initial value.</param>
+    /// <param name="initialValue">The initial value to assign to the property. Can be null for reference types and nullable value types.</param>
     public ReactiveProperty(T? initialValue)
         : this(initialValue, RxSchedulers.TaskpoolScheduler, false, false)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveProperty{T}" /> class.
+    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class with the specified initial value, subscription
+    /// behavior, and duplicate value handling, using the default task pool scheduler.
     /// </summary>
-    /// <param name="initialValue">The initial value.</param>
-    /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
-    /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
+    /// <param name="initialValue">The initial value to assign to the property. Can be null if the type parameter T is a reference type or a
+    /// nullable value type.</param>
+    /// <param name="skipCurrentValueOnSubscribe">true to prevent subscribers from immediately receiving the current value upon subscription; otherwise, false.</param>
+    /// <param name="allowDuplicateValues">true to allow consecutive duplicate values to be published; otherwise, false.</param>
     public ReactiveProperty(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
         : this(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveProperty{T}" /> class.
+    /// Initializes a new instance of the <see cref="ReactiveProperty{T}"/> class with the specified initial value, scheduler, and
+    /// configuration options.
     /// </summary>
-    /// <param name="initialValue">The initial value.</param>
-    /// <param name="scheduler">The scheduler.</param>
-    /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
-    /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="scheduler"/> is <see langword="null"/>.</exception>
+    /// <remarks>Use this constructor to customize the behavior of value emission and notification scheduling
+    /// for the ReactiveProperty. The configuration options allow control over whether subscribers receive the current
+    /// value immediately and whether duplicate values are propagated.</remarks>
+    /// <param name="initialValue">The initial value to assign to the property. This value is immediately available to subscribers upon
+    /// subscription unless skipped by configuration.</param>
+    /// <param name="scheduler">The scheduler used to notify observers of value changes. If null, a default task pool scheduler is used.</param>
+    /// <param name="skipCurrentValueOnSubscribe">true to prevent the current value from being emitted to new subscribers upon subscription; otherwise, false.</param>
+    /// <param name="allowDuplicateValues">true to allow consecutive duplicate values to be published to subscribers; otherwise, false to suppress
+    /// duplicate notifications.</param>
     public ReactiveProperty(T? initialValue, IScheduler? scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
     {
         _skipCurrentValue = skipCurrentValueOnSubscribe ? 1 : 0;
@@ -156,11 +169,11 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     public bool IsDisposed => _disposables.IsDisposed;
 
     /// <summary>
-    /// Gets or sets the value.
+    /// Gets or sets the current value of the container.
     /// </summary>
-    /// <value>
-    /// The value.
-    /// </value>
+    /// <remarks>Assigning a new value triggers change notifications if the value differs from the previous
+    /// one. If duplicate assignments are allowed, setting the same value may also trigger a refresh
+    /// notification.</remarks>
     [DataMember]
     [JsonInclude]
     public T? Value
@@ -185,27 +198,24 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>
-    /// Gets a value indicating whether this instance has errors.
+    /// Gets a value indicating whether any errors are currently present.
     /// </summary>
-    /// <value>
-    ///   <c>true</c> if this instance has errors; otherwise, <c>false</c>.
-    /// </value>
     public bool HasErrors => _currentErrors != null;
 
     /// <summary>
-    /// Gets the observe error changed.
+    /// Gets an observable sequence that signals when the collection of validation errors changes.
     /// </summary>
-    /// <value>
-    /// The observe error changed.
-    /// </value>
+    /// <remarks>Subscribers receive notifications whenever the set of errors is updated. The sequence emits
+    /// the current collection of errors after each change. The observable completes when the owning object is disposed,
+    /// if applicable.</remarks>
     public IObservable<IEnumerable?> ObserveErrorChanged => _errorChanged.Value.AsObservable();
 
     /// <summary>
-    /// Gets the observe has errors.
+    /// Gets an observable sequence that signals whether the object currently has validation errors.
     /// </summary>
-    /// <value>
-    /// The observe has errors.
-    /// </value>
+    /// <remarks>The returned observable emits a new value each time the error state changes. Subscribers
+    /// receive the current error state immediately upon subscription, followed by updates as errors are added or
+    /// cleared.</remarks>
     public IObservable<bool> ObserveHasErrors => ObserveErrorChanged.Select(_ => HasErrors);
 
     /// <summary>
@@ -249,13 +259,16 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         => new(initialValue, scheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
 
     /// <summary>
-    /// Set INotifyDataErrorInfo's asynchronous validation, return value is self.
+    /// Adds a validation rule to the current ReactiveProperty instance using the specified validator function.
     /// </summary>
-    /// <param name="validator">If success return IO&lt;null&gt;, failure return IO&lt;IEnumerable&gt;(Errors).</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
+    /// errors from all registered validators are combined. The ErrorsChanged event is raised whenever the set of
+    /// validation errors changes.</remarks>
+    /// <param name="validator">A function that takes an observable sequence of property values and returns an observable sequence of validation
+    /// errors. The returned sequence should emit validation results whenever the property value changes.</param>
+    /// <param name="ignoreInitialError">true to ignore validation for the initial value of the property; otherwise, false. If true, validation will only
+    /// occur on subsequent value changes.</param>
+    /// <returns>The current ReactiveProperty instance with the added validation rule.</returns>
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<IEnumerable?>> validator, bool ignoreInitialError = false)
     {
         _validatorStore.Value.Add(validator);
@@ -304,57 +317,67 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>
-    /// Set INotifyDataErrorInfo's asynchronous validation, return value is self.
+    /// Adds a validation rule to the property using the specified validator function.
     /// </summary>
-    /// <param name="validator">If success return IO&lt;null&gt;, failure return IO&lt;IEnumerable&gt;(Errors).</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>Multiple validation rules can be added by calling this method multiple times. Validation
+    /// errors are aggregated and exposed by the property. The validator function should be stateless and
+    /// thread-safe.</remarks>
+    /// <param name="validator">A function that receives an observable sequence of property values and returns an observable sequence of
+    /// validation error messages. The returned string is interpreted as the error message; a null value indicates no
+    /// error.</param>
+    /// <param name="ignoreInitialError">true to suppress the initial validation error until the property value changes; otherwise, false.</param>
+    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => validator(xs).Select(x => (IEnumerable?)x), ignoreInitialError);
 
     /// <summary>
-    /// Set INotifyDataErrorInfo's asynchronous validation.
+    /// Adds asynchronous validation logic to the reactive property using the specified validator function.
     /// </summary>
-    /// <param name="validator">Validation logic.</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>This method enables chaining of multiple validation rules on a <see cref="ReactiveProperty{T}"/>.
+    /// Validation is triggered whenever the property's value changes. The validator function can perform asynchronous
+    /// operations, such as remote checks or complex computations.</remarks>
+    /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors. The
+    /// function receives the current value as input and returns a task that produces an enumerable of validation error
+    /// objects. If the collection is empty or null, the value is considered valid.</param>
+    /// <param name="ignoreInitialError">true to suppress validation errors for the initial value; otherwise, false.</param>
+    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the specified validation logic applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<IEnumerable?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
     /// <summary>
-    /// Set INotifyDataErrorInfo's asynchronous validation.
+    /// Adds an asynchronous validation rule to the property using the specified validator function.
     /// </summary>
-    /// <param name="validator">Validation logic.</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>The validator function is invoked whenever the property's value changes. If multiple
+    /// validation rules are added, all are evaluated and their error messages are aggregated.</remarks>
+    /// <param name="validator">A function that asynchronously validates the property's value and returns an error message if validation fails,
+    /// or null if the value is valid.</param>
+    /// <param name="ignoreInitialError">true to suppress the initial validation error until the value changes; otherwise, false.</param>
+    /// <returns>A <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
 
     /// <summary>
-    /// Set INotifyDataErrorInfo validation.
+    /// Adds a validation rule to the reactive property using the specified validator function.
     /// </summary>
-    /// <param name="validator">Validation logic.</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>If multiple validation rules are added, all validators are evaluated and their errors are
+    /// aggregated. The validator function is invoked whenever the property's value changes.</remarks>
+    /// <param name="validator">A function that takes the current value and returns a collection of validation errors. Returns null or an empty
+    /// collection if the value is valid.</param>
+    /// <param name="ignoreInitialError">true to ignore validation errors for the initial value; otherwise, false.</param>
+    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
     /// <summary>
-    /// Set INotifyDataErrorInfo validation.
+    /// Adds a validation rule to the property using the specified validator function.
     /// </summary>
-    /// <param name="validator">Validation logic.</param>
-    /// <param name="ignoreInitialError">if set to <c>true</c> [ignore initial error].</param>
-    /// <returns>
-    /// Self.
-    /// </returns>
+    /// <remarks>If multiple validation rules are added, all validators are evaluated and their error messages
+    /// are aggregated. The property is considered valid only if all validators return null or an empty
+    /// string.</remarks>
+    /// <param name="validator">A function that takes the current value of the property and returns a validation error message if the value is
+    /// invalid; otherwise, returns null or an empty string if the value is valid.</param>
+    /// <param name="ignoreInitialError">true to suppress validation errors for the initial value of the property; otherwise, false.</param>
+    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError = false) =>
         AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
 
@@ -373,8 +396,11 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>
-    /// Check validation.
+    /// Triggers the validation check for the current value.
     /// </summary>
+    /// <remarks>This method notifies any observers that a validation check should be performed using the
+    /// current value. Typically used to initiate validation logic in response to user actions or programmatic
+    /// changes.</remarks>
 #if NET8_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
@@ -383,8 +409,11 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     public void CheckValidation() => _checkValidation.OnNext(_value);
 
     /// <summary>
-    /// Invoke OnNext.
+    /// Refreshes the current value and notifies subscribers of any changes.
     /// </summary>
+    /// <remarks>Call this method to force the value to be re-evaluated and to raise change notifications,
+    /// even if the value has not changed. This is useful when the underlying data source may have changed independently
+    /// of property setters.</remarks>
     public void Refresh()
     {
         SetValue(_value);
@@ -393,27 +422,30 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>
-    /// Gets the errors.
+    /// Gets the validation errors for the specified property or for the entire object.
     /// </summary>
-    /// <param name="propertyName">Name of the property.</param>
-    /// <returns>A IEnumerable.</returns>
+    /// <param name="propertyName">The name of the property to retrieve validation errors for, or null or empty to retrieve errors for the entire
+    /// object.</param>
+    /// <returns>An enumerable collection of validation errors for the specified property, or for the entire object if <paramref
+    /// name="propertyName"/> is null or empty. Returns null if there are no errors.</returns>
     public IEnumerable? GetErrors(string? propertyName) => _currentErrors;
 
     /// <summary>
-    /// Gets the errors.
+    /// Returns the validation errors for the specified property or for the entire object.
     /// </summary>
-    /// <param name="propertyName">Name of the property.</param>
-    /// <returns>A IEnumerable.</returns>
+    /// <param name="propertyName">The name of the property to retrieve validation errors for, or null or empty to retrieve errors for the entire
+    /// object.</param>
+    /// <returns>An enumerable collection of validation errors. Returns an empty collection if there are no errors for the
+    /// specified property or object.</returns>
     IEnumerable INotifyDataErrorInfo.GetErrors(string? propertyName) => _currentErrors ?? Enumerable.Empty<object>();
 
     /// <summary>
-    /// Notifies the provider that an observer is to receive notifications.
+    /// Subscribes the specified observer to receive notifications from this observable sequence.
     /// </summary>
-    /// <param name="observer">The object that is to receive notifications.</param>
-    /// <returns>
-    /// A reference to an interface that allows observers to stop receiving notifications before
-    /// the provider has finished sending them.
-    /// </returns>
+    /// <remarks>If the observable has already been disposed, the observer's OnCompleted method is called
+    /// immediately and a no-op disposable is returned.</remarks>
+    /// <param name="observer">The observer that will receive notifications. Cannot be null.</param>
+    /// <returns>A disposable object that can be used to unsubscribe the observer from the observable sequence.</returns>
     public IDisposable Subscribe(IObserver<T?> observer)
     {
         if (observer == null)
@@ -456,9 +488,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     }
 
     /// <summary>
-    /// Sets the backing value, publishes to the validation stream, and publishes to the value-change stream.
+    /// Sets the current value and notifies subscribers of the change.
     /// </summary>
-    /// <param name="value">The new value.</param>
+    /// <param name="value">The new value to assign. May be null if the type parameter allows null values.</param>
 #if NET8_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else

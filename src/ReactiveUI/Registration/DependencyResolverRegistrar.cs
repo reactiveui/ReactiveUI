@@ -6,13 +6,13 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// An AOT-friendly implementation of <see cref="IRegistrar"/> that wraps
-/// an <see cref="IMutableDependencyResolver"/> from Splat.
+/// Provides an implementation of the IRegistrar interface that registers services with an underlying
+/// IMutableDependencyResolver.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="DependencyResolverRegistrar"/> class.
-/// </remarks>
-/// <param name="resolver">The dependency resolver to wrap.</param>
+/// <remarks>This class acts as an adapter, allowing services to be registered with the specified dependency
+/// resolver using various registration methods. All registrations are forwarded to the underlying
+/// IMutableDependencyResolver instance.</remarks>
+/// <param name="resolver">The dependency resolver used to register service instances and factories. Cannot be null.</param>
 internal sealed class DependencyResolverRegistrar(IMutableDependencyResolver resolver) : IRegistrar
 {
     private readonly IMutableDependencyResolver _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));

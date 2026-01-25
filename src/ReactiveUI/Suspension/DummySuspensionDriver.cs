@@ -3,23 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Text.Json.Serialization.Metadata;
 
 namespace ReactiveUI;
 
 /// <summary>
-/// A suspension driver that does not persist any state.
+/// Provides a no-op implementation of the ISuspensionDriver interface for scenarios where application state persistence
+/// is not required.
 /// </summary>
-/// <remarks>
-/// <para>
-/// This driver is useful for unit tests and for platforms or applications where persistence is undesired.
-/// </para>
-/// <para>
-/// All load operations return <see langword="null"/> (or <see langword="default"/> for the requested type),
-/// and all save/invalidate operations complete immediately.
-/// </para>
-/// </remarks>
+/// <remarks>This class can be used in testing or development environments where state loading and saving are
+/// unnecessary. All methods complete immediately without performing any actual serialization or storage operations. No
+/// state is persisted or restored when using this driver.</remarks>
 public sealed class DummySuspensionDriver : ISuspensionDriver
 {
     /// <inheritdoc />

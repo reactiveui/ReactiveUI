@@ -6,9 +6,11 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Indicates that an object implementing <see cref="IHandleObservableErrors"/> has caused an error and nothing is attached
-/// to <see cref="IHandleObservableErrors.ThrownExceptions"/> to handle that error.
+/// Represents an exception that is thrown when an unhandled error occurs during application execution.
 /// </summary>
+/// <remarks>Use this exception to signal unexpected or unhandled errors that do not fit more specific exception
+/// types. This exception is typically used to wrap errors that cannot be categorized or recovered from within the
+/// application logic.</remarks>
 #if !NET8_0_OR_GREATER
 [Serializable]
 #endif

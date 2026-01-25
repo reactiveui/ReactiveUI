@@ -36,10 +36,13 @@ public static class PropertyBindingMixins
 {
     private static readonly PropertyBinderImplementation _binderImplementation;
 
-    static PropertyBindingMixins()
-    {
-        _binderImplementation = new PropertyBinderImplementation();
-    }
+    /// <summary>
+    /// Initializes static members of the <see cref="PropertyBindingMixins"/> class.
+    /// </summary>
+    /// <remarks>This static constructor is called automatically to perform type-level initialization before
+    /// any static members are accessed or any static methods are invoked. It is not intended to be called directly by
+    /// user code.</remarks>
+    static PropertyBindingMixins() => _binderImplementation = new PropertyBinderImplementation();
 
     /// <summary>
     /// Binds the specified view model property to the given view property.

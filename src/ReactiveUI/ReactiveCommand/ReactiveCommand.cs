@@ -795,6 +795,11 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     {
     }
 
+    /// <summary>
+    /// Specifies markers used to indicate the boundaries and result point of an execution process.
+    /// </summary>
+    /// <remarks>Use this enumeration to identify the start, result, or end of an execution sequence when
+    /// processing or tracking execution flow.</remarks>
     private enum ExecutionDemarcation
     {
         Begin,
@@ -872,6 +877,12 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         _canExecuteSubscription.Dispose();
     }
 
+    /// <summary>
+    /// Represents information about a specific stage and result of an execution process.
+    /// </summary>
+    /// <remarks>The ExecutionInfo struct encapsulates both the demarcation point within an execution flow and
+    /// the associated result value. It is typically used to track or communicate the current execution state and its
+    /// outcome in scenarios such as workflow processing or state machines.</remarks>
     private readonly struct ExecutionInfo
     {
         private ExecutionInfo(ExecutionDemarcation demarcation, TResult result)

@@ -8,8 +8,12 @@ using ReactiveUI.Builder;
 namespace ReactiveUI;
 
 /// <summary>
-/// Extension methods associated with observables.
+/// Provides extension methods and utilities for working with observable sequences, including helpers for filtering null
+/// values and converting asynchronous actions to observables.
 /// </summary>
+/// <remarks>This static class offers mixin methods to enhance the usability of IObservable{T} sequences,
+/// particularly in scenarios involving nullability and asynchronous operations. All members are thread-safe and
+/// intended for use with reactive programming patterns.</remarks>
 public static class ObservableMixins
 {
     /// <summary>

@@ -6,8 +6,12 @@
 namespace ReactiveUI.Builder;
 
 /// <summary>
-/// Extension methods for configuring ReactiveUI with the Splat builder.
+/// Provides static methods for configuring and initializing ReactiveUI using the builder pattern.
 /// </summary>
+/// <remarks>RxAppBuilder enables applications to set up ReactiveUI with explicit dependency resolver
+/// configuration and initialization. It replaces the legacy RxApp.EnsureInitialized() approach, encouraging use of the
+/// builder pattern for clearer and more reliable application startup. For migration guidance and usage examples, see
+/// the ReactiveUI documentation.</remarks>
 public static class RxAppBuilder
 {
 #if NET9_0_OR_GREATER
