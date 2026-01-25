@@ -6,13 +6,13 @@
 namespace ReactiveUI;
 
 /// <summary>
-/// Provides access to ReactiveUI suspension functionality.
+/// Provides access to the application's suspension host for managing process lifecycle events, such as application
+/// suspension and resumption. This class enables integration with platform-specific lifecycle management, particularly
+/// on mobile devices.
 /// </summary>
-/// <remarks>
-/// This class provides suspension host functionality for application lifecycle management.
-/// Configure using <see cref="Builder.IReactiveUIBuilder.WithSuspensionHost"/> or
-/// <see cref="Builder.IReactiveUIBuilder.WithSuspensionHost{TAppState}"/>.
-/// </remarks>
+/// <remarks>The suspension host is automatically initialized with a default implementation if not configured
+/// explicitly. This class is intended for use by application infrastructure and advanced scenarios that require direct
+/// access to lifecycle events. Most applications interact with the suspension host through higher-level APIs.</remarks>
 public static class RxSuspension
 {
     private static ISuspensionHost? _suspensionHost;

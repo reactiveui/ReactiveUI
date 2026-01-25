@@ -153,6 +153,11 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <returns>The interaction context.</returns>
     protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
 
+    /// <summary>
+    /// Adds a handler delegate to be invoked for interaction contexts.
+    /// </summary>
+    /// <param name="handler">A delegate that processes an interaction context and returns an observable sequence representing the handler's
+    /// completion. Cannot be null.</param>
     private void AddHandler(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
     {
         lock (_sync)
@@ -161,6 +166,11 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         }
     }
 
+    /// <summary>
+    /// Removes the specified interaction handler from the collection of registered handlers.
+    /// </summary>
+    /// <param name="handler">The handler delegate to remove. Represents a function that processes an interaction context and returns an
+    /// observable sequence.</param>
     private void RemoveHandler(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> handler)
     {
         lock (_sync)

@@ -8,8 +8,13 @@ using ReactiveUI.Builder;
 namespace ReactiveUI;
 
 /// <summary>
-/// A collection of helpers for <see cref="IObservedChange{TSender, TValue}"/>.
+/// Provides extension methods for working with observed property changes, enabling retrieval of property names and
+/// values from change notifications, and conversion of change streams to value streams.
 /// </summary>
+/// <remarks>These methods are intended to simplify handling of property change notifications in reactive
+/// programming scenarios. They support extracting property names, retrieving current property values, and projecting
+/// streams of change notifications into streams of property values. Some methods use reflection to evaluate property
+/// expressions, which may have implications for trimming and performance in certain environments.</remarks>
 public static class ObservedChangedMixin
 {
     /// <summary>
@@ -18,31 +23,31 @@ public static class ObservedChangedMixin
     static ObservedChangedMixin() => RxAppBuilder.EnsureInitialized();
 
     /// <summary>
-    /// Returns the name of a property which has been changed.
+    /// Retrieves the name of the property associated with the observed change.
     /// </summary>
-    /// <typeparam name="TSender">The sender type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    /// <param name="item">The observed change.</param>
-    /// <returns>
-    /// The name of the property which has changed.
-    /// </returns>
+    /// <typeparam name="TSender">The type of the object that raised the change notification.</typeparam>
+    /// <typeparam name="TValue">The type of the property value being observed.</typeparam>
+    /// <param name="item">The observed change instance from which to extract the property name. Cannot be null.</param>
+    /// <returns>A string containing the name of the property associated with the observed change.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="item"/> is null.</exception>
     public static string GetPropertyName<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
         item is null
             ? throw new ArgumentNullException(nameof(item))
             : Reflection.ExpressionToPropertyNames(item.Expression);
 
     /// <summary>
-    /// Returns the current value of a property given a notification that
-    /// it has changed.
+    /// Retrieves the current value from the observed change, evaluating the property chain represented by the change
+    /// notification.
     /// </summary>
-    /// <typeparam name="TSender">The sender.</typeparam>
-    /// <typeparam name="TValue">The changed value.</typeparam>
-    /// <param name="item">
-    /// The <see cref="IObservedChange{TSender, TValue}"/> instance to get the value of.
-    /// </param>
-    /// <returns>
-    /// The current value of the property.
-    /// </returns>
+    /// <remarks>This method uses reflection to evaluate the property chain described by the observed change.
+    /// If any property in the chain is null, an exception is thrown. Use with caution when members may be trimmed or
+    /// unavailable at runtime.</remarks>
+    /// <typeparam name="TSender">The type of the object that raised the change notification.</typeparam>
+    /// <typeparam name="TValue">The type of the value being observed.</typeparam>
+    /// <param name="item">The observed change instance from which to retrieve the value. Cannot be null.</param>
+    /// <returns>The value obtained from the observed property chain. The value is of type TValue.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the item parameter is null.</exception>
+    /// <exception cref="Exception">Thrown if any property in the observed property chain is null, preventing the value from being retrieved.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
         item is null
@@ -52,54 +57,47 @@ public static class ObservedChangedMixin
                 : returnValue;
 
     /// <summary>
-    /// Returns the current value of a property given a notification that
-    /// it has changed.
+    /// Gets the current value from the observed change, or the default value for the type if the value cannot be
+    /// retrieved.
     /// </summary>
-    /// <typeparam name="TSender">The sender.</typeparam>
-    /// <typeparam name="TValue">The changed value.</typeparam>
-    /// <param name="item">
-    /// The <see cref="IObservedChange{TSender, TValue}"/> instance to get the value of.
-    /// </param>
-    /// <returns>
-    /// The current value of the property.
-    /// </returns>
+    /// <typeparam name="TSender">The type of the object that is the source of the change notification.</typeparam>
+    /// <typeparam name="TValue">The type of the value being observed.</typeparam>
+    /// <param name="item">The observed change instance from which to retrieve the value. Cannot be null.</param>
+    /// <returns>The value associated with the observed change if available; otherwise, the default value for the type
+    /// <typeparamref name="TValue"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="item"/> is null.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) => // TODO: Create Test
         item is null ? throw new ArgumentNullException(nameof(item)) : !item.TryGetValue(out var returnValue) ? default : returnValue;
 
     /// <summary>
-    /// Given a stream of notification changes, this method will convert
-    /// the property changes to the current value of the property.
+    /// Projects each observed change notification to the current value of the observed property or member chain.
     /// </summary>
-    /// <typeparam name="TSender">The sender type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    /// <param name="item">
-    /// The change notification stream to get the values of.
-    /// </param>
-    /// <returns>
-    /// An Observable representing the stream of current values of
-    /// the given change notification stream.
-    /// </returns>
+    /// <remarks>This method uses reflection to evaluate expression-based member chains, which may be affected
+    /// by trimming in some deployment scenarios. Use caution when linking against assemblies that may be trimmed, as
+    /// required members may be removed.</remarks>
+    /// <typeparam name="TSender">The type of the object that owns the property or member being observed.</typeparam>
+    /// <typeparam name="TValue">The type of the value being observed and returned.</typeparam>
+    /// <param name="item">An observable sequence of change notifications representing changes to a property or member chain.</param>
+    /// <returns>An observable sequence that emits the current value of the observed property or member chain each time a change
+    /// notification is received.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> item) => // TODO: Create Test
         item.Select(GetValue);
 
     /// <summary>
-    /// Attempts to return the current value of a property given a
-    /// notification that it has changed. If any property in the
-    /// property expression is null, false is returned.
+    /// Attempts to retrieve the value associated with the observed change, using the value directly if available or
+    /// evaluating the expression chain if necessary.
     /// </summary>
-    /// <typeparam name="TSender">The sender type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    /// <param name="item">
-    /// The <see cref="IObservedChange{TSender, TValue}"/> instance to get the value of.
-    /// </param>
-    /// <param name="changeValue">
-    /// The value of the property expression.
-    /// </param>
-    /// <returns>
-    /// True if the entire expression was able to be followed, false otherwise.
-    /// </returns>
+    /// <remarks>This method may use reflection to evaluate expression-based member chains if the value is not
+    /// directly available. Members accessed via reflection may be trimmed during linking, which can affect the ability
+    /// to retrieve the value in some scenarios.</remarks>
+    /// <typeparam name="TSender">The type of the object that raised the change notification.</typeparam>
+    /// <typeparam name="TValue">The type of the value associated with the observed change.</typeparam>
+    /// <param name="item">The observed change instance from which to retrieve the value.</param>
+    /// <param name="changeValue">When this method returns, contains the value associated with the observed change if retrieval was successful;
+    /// otherwise, the default value for the type.</param>
+    /// <returns>true if the value was successfully retrieved; otherwise, false.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item, out TValue changeValue)
     {
@@ -113,24 +111,18 @@ public static class ObservedChangedMixin
     }
 
     /// <summary>
-    /// Given a fully filled-out IObservedChange object, SetValueToProperty
-    /// will apply it to the specified object (i.e. it will ensure that
-    /// target.property == This.GetValue() and "replay" the observed change
-    /// onto another object).
+    /// Sets the value from the observed change to the specified property on the target object using an expression-based
+    /// property chain.
     /// </summary>
-    /// <typeparam name="TSender">The sender type.</typeparam>
-    /// <typeparam name="TValue">The value type.</typeparam>
-    /// <typeparam name="TTarget">The target type.</typeparam>
-    /// <param name="item">
-    /// The <see cref="IObservedChange{TSender, TValue}"/> instance to use as a
-    /// value to apply.
-    /// </param>
-    /// <param name="target">
-    /// The target object to apply the change to.
-    /// </param>
-    /// <param name="property">
-    /// The target property to apply the change to.
-    /// </param>
+    /// <remarks>This method uses reflection to evaluate the property expression and set the value, which may
+    /// be affected by trimming in some environments. The method does not throw if the target is null.</remarks>
+    /// <typeparam name="TSender">The type of the object that raised the change notification.</typeparam>
+    /// <typeparam name="TValue">The type of the value being observed and set.</typeparam>
+    /// <typeparam name="TTarget">The type of the target object whose property will be set.</typeparam>
+    /// <param name="item">The observed change containing the value to set.</param>
+    /// <param name="target">The target object whose property will be updated. If null, no action is taken.</param>
+    /// <param name="property">An expression that identifies the property on the target object to set. Must be a simple or nested property
+    /// access expression.</param>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     internal static void SetValueToProperty<TSender, TValue, TTarget>(
         this IObservedChange<TSender, TValue> item,
@@ -143,5 +135,3 @@ public static class ObservedChangedMixin
         }
     }
 }
-
-// vim: tw=120 ts=4 sw=4 et :

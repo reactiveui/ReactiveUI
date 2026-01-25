@@ -5,6 +5,17 @@
 
 namespace ReactiveUI;
 
+/// <summary>
+/// Provides a composite comparer that applies a parent comparer followed by an additional comparison delegate when
+/// comparing objects of type T.
+/// </summary>
+/// <remarks>Use this class to chain multiple comparison strategies, such as for multi-level sorting. The parent
+/// comparer is evaluated first; if it determines the objects are equal, the provided comparison delegate is used to
+/// break ties.</remarks>
+/// <typeparam name="T">The type of objects to compare.</typeparam>
+/// <param name="parent">An optional parent comparer to apply first when comparing two objects. If null, only the specified comparison
+/// delegate is used.</param>
+/// <param name="comparison">A delegate that defines the comparison to apply if the parent comparer considers the objects equal. Cannot be null.</param>
 internal sealed class ChainedComparer<T>(IComparer<T>? parent, Comparison<T> comparison) : IComparer<T>
 {
     /// <inheritdoc />

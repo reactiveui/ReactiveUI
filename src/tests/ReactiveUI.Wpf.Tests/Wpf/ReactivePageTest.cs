@@ -33,7 +33,5 @@ public class ReactivePageTest
     /// <summary>
     /// Test view model for testing.
     /// </summary>
-    private class TestViewModel
-    {
-    }
+    private class TestViewModel;
 }

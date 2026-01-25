@@ -8,35 +8,35 @@ using System.Collections;
 namespace ReactiveUI;
 
 /// <summary>
-/// Reactive Property.
+/// Represents a reactive property that supports value observation, change notification, validation, and cancellation.
 /// </summary>
-/// <typeparam name="T">The type of the property.</typeparam>
-/// <seealso cref="IObservable&lt;T&gt;" />
-/// <seealso cref="ICancelable" />
+/// <remarks>Implementations of this interface provide a property that notifies observers of value changes,
+/// supports error notification for data validation, and allows cancellation of ongoing operations. This interface is
+/// commonly used in reactive programming scenarios to enable data binding and validation in UI frameworks.</remarks>
+/// <typeparam name="T">The type of the value stored by the reactive property.</typeparam>
 public interface IReactiveProperty<T> : IObservable<T?>, ICancelable, INotifyDataErrorInfo, INotifyPropertyChanged
 {
     /// <summary>
-    /// Gets or sets the value.
+    /// Gets or sets the value contained in the current instance.
     /// </summary>
-    /// <value>
-    /// The value.
-    /// </value>
     public T? Value { get; set; }
 
     /// <summary>
-    /// Gets the observe error changed.
+    /// Gets an observable sequence that signals when the collection of errors changes.
     /// </summary>
-    /// <value>The observe error changed.</value>
+    /// <remarks>Subscribers receive a notification each time the set of errors is updated. The sequence emits
+    /// the current collection of errors, which may be null or empty if there are no errors present.</remarks>
     IObservable<IEnumerable?> ObserveErrorChanged { get; }
 
     /// <summary>
-    /// Gets the observe has errors.
+    /// Gets an observable sequence that signals whether the object currently has validation errors.
     /// </summary>
-    /// <value>The observe has errors.</value>
+    /// <remarks>The observable emits a new value whenever the error state changes. Subscribers can use this
+    /// to react to validation state updates in real time.</remarks>
     IObservable<bool> ObserveHasErrors { get; }
 
     /// <summary>
-    /// Refreshes this instance.
+    /// Reloads the current state or data from the underlying source.
     /// </summary>
     void Refresh();
 }
