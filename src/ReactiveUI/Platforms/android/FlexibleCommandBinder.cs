@@ -9,8 +9,14 @@ using System.Windows.Input;
 namespace ReactiveUI;
 
 /// <summary>
-/// Command binder for android controls.
+/// Provides a base class for creating flexible command binding strategies that associate commands with object events
+/// and properties at runtime.
 /// </summary>
+/// <remarks>FlexibleCommandBinder enables advanced scenarios for binding ICommand instances to various object
+/// types, supporting custom event and property conventions. Implementations can register binding strategies for
+/// specific types and control how commands are attached to UI elements or other objects. This class is intended for use
+/// in frameworks or libraries that require extensible command binding logic, such as MVVM platforms. Thread safety and
+/// binding lifetime management are the responsibility of the caller.</remarks>
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
     /// <summary>
@@ -374,6 +380,9 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <param name="createBinding">Creates the binding.</param>
     protected void Register(Type type, int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding) => _config[type] = new CommandBindingInfo { Affinity = affinity, CreateBinding = createBinding };
 
+    /// <summary>
+    /// Provides information about a command binding, including its affinity and a factory for creating the binding.
+    /// </summary>
     private class CommandBindingInfo
     {
         public int Affinity { get; set; }

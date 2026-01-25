@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Interfaces;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -154,12 +152,24 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
         set => this.RaiseAndSetIfChanged(ref _appState, value);
     }
 
+    /// <summary>
+    /// Releases all resources used by the current instance of the class.
+    /// </summary>
+    /// <remarks>Call this method when you are finished using the object to release unmanaged resources and
+    /// perform other cleanup operations. After calling Dispose, the object should not be used.</remarks>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the object and optionally releases the managed resources.
+    /// </summary>
+    /// <remarks>This method is called by public Dispose methods and finalizers to free resources. When
+    /// disposing is true, this method releases all resources held by managed objects. Override this method to release
+    /// additional resources in derived classes.</remarks>
+    /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)

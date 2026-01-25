@@ -8,9 +8,13 @@ using Splat.Builder;
 namespace ReactiveUI.Builder;
 
 /// <summary>
-/// IReactiveUIInstance.
+/// Defines an application instance that provides access to schedulers for UI and background operations in a reactive
+/// programming context.
 /// </summary>
-/// <seealso cref="IAppInstance" />
+/// <remarks>Implementations of this interface supply schedulers that allow code to schedule work on the UI thread
+/// or on background threads, facilitating reactive and asynchronous programming patterns. The specific scheduler
+/// implementations may vary depending on the application's execution mode (e.g., normal runtime or unit
+/// testing).</remarks>
 public interface IReactiveUIInstance : IAppInstance
 {
     /// <summary>

@@ -27,8 +27,13 @@ public class MessageBus : IMessageBus
     private readonly Dictionary<(Type type, string? contract), IScheduler> _schedulerMappings = [];
 
     /// <summary>
-    /// Gets or sets the Current MessageBus.
+    /// Gets or sets the global message bus instance used for publishing and subscribing to messages across the
+    /// application.
     /// </summary>
+    /// <remarks>By default, this property is initialized with a standard message bus implementation.
+    /// Assigning a custom implementation allows for advanced scenarios such as testing, customization, or integration
+    /// with external messaging systems. This property is static and affects all consumers within the application
+    /// domain.</remarks>
     public static IMessageBus Current { get; set; } = new MessageBus();
 
     /// <summary>
@@ -137,6 +142,13 @@ public class MessageBus : IMessageBus
     /// only used for one purpose, leave this as null.</param>
     public void SendMessage<T>(T message, string? contract = null) => SetupSubjectIfNecessary<T>(contract).OnNext(message);
 
+    /// <summary>
+    /// Ensures that a subject for the specified type and contract exists, creating and registering it if necessary.
+    /// </summary>
+    /// <typeparam name="T">The type of the items published and observed by the subject.</typeparam>
+    /// <param name="contract">An optional contract string used to distinguish between different subjects of the same type. Can be null.</param>
+    /// <returns>An ISubject{T} instance associated with the specified type and contract. If a subject already exists, it is
+    /// returned; otherwise, a new subject is created and registered.</returns>
     private ISubject<T> SetupSubjectIfNecessary<T>(string? contract)
     {
         ISubject<T>? ret = null;
@@ -156,6 +168,17 @@ public class MessageBus : IMessageBus
         return ret!;
     }
 
+    /// <summary>
+    /// Executes a specified action while holding a lock on the message bus, providing access to the message bus
+    /// dictionary and a key composed of the specified type and contract.
+    /// </summary>
+    /// <remarks>This method ensures thread-safe access to the message bus by acquiring a lock during the
+    /// execution of the specified action. The provided dictionary may be modified within the action. If the referenced
+    /// value for the specified key is no longer alive after the action, the key is removed from the
+    /// dictionary.</remarks>
+    /// <param name="type">The type component of the message bus key to operate on.</param>
+    /// <param name="contract">The contract string component of the message bus key to operate on. Can be null to indicate no contract.</param>
+    /// <param name="block">The action to execute, which receives the message bus dictionary and the key tuple as parameters.</param>
     private void WithMessageBus(
         Type type,
         string? contract,
@@ -172,6 +195,13 @@ public class MessageBus : IMessageBus
         }
     }
 
+    /// <summary>
+    /// Retrieves the scheduler associated with the specified type and contract, or returns the current thread scheduler
+    /// if no mapping exists.
+    /// </summary>
+    /// <param name="item">A tuple containing the type and an optional contract string used to identify the scheduler mapping.</param>
+    /// <returns>The scheduler associated with the specified type and contract, or the current thread scheduler if no mapping is
+    /// found.</returns>
     private IScheduler GetScheduler((Type type, string? contract) item)
     {
         _schedulerMappings.TryGetValue(item, out var scheduler);

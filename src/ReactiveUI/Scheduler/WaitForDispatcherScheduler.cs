@@ -46,6 +46,15 @@ public class WaitForDispatcherScheduler : IScheduler
     public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) => // TODO: Create Test
         AttemptToCreateScheduler().Schedule(state, dueTime, action);
 
+    /// <summary>
+    /// Attempts to create and return an instance of the scheduler. If the scheduler cannot be created, returns a
+    /// fallback scheduler instance.
+    /// </summary>
+    /// <remarks>This method caches the created scheduler instance for future calls. If the underlying
+    /// scheduler factory throws an <see cref="InvalidOperationException"/> or <see cref="ArgumentNullException"/>, the
+    /// method returns a scheduler that executes work on the current thread instead.</remarks>
+    /// <returns>An <see cref="IScheduler"/> instance. If the scheduler cannot be created due to the dispatcher not being ready,
+    /// returns <see cref="CurrentThreadScheduler.Instance"/> as a fallback.</returns>
     private IScheduler AttemptToCreateScheduler()
     {
         if (_scheduler is not null)

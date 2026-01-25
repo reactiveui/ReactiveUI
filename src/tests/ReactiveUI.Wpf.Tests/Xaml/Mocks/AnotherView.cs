@@ -8,6 +8,4 @@ namespace ReactiveUI.Tests.Mocks;
 /// <summary>
 /// A view for <see cref="AnotherViewModel"/>.
 /// </summary>
-public class AnotherView : ReactiveUserControl<AnotherViewModel>
-{
-}
+public class AnotherView : ReactiveUserControl<AnotherViewModel>;

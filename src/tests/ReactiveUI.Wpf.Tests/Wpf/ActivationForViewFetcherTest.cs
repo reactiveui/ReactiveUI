@@ -93,7 +93,5 @@ public class ActivationForViewFetcherTest
     /// <summary>
     /// Test non-FrameworkElement view for testing.
     /// </summary>
-    private class TestNonFrameworkElementView : IActivatableView
-    {
-    }
+    private class TestNonFrameworkElementView : IActivatableView;
 }

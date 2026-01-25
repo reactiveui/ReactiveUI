@@ -11,8 +11,12 @@ using Context = Android.Content.Context;
 namespace ReactiveUI;
 
 /// <summary>
-/// Extension methods for <see cref="Context"/>.
+/// Provides extension methods for binding to Android services using observable sequences.
 /// </summary>
+/// <remarks>The ContextExtensions class offers methods that simplify service binding in Android applications by
+/// exposing service connection events as IObservable sequences. These methods enable reactive programming patterns for
+/// service lifecycle management, making it easier to subscribe to service connection and disconnection events. All
+/// members are static and intended to be used as extension methods on the Context type.</remarks>
 public static class ContextExtensions
 {
     /// <summary>

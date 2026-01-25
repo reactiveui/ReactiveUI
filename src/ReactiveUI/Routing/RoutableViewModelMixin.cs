@@ -8,8 +8,14 @@ using DynamicData;
 namespace ReactiveUI;
 
 /// <summary>
-/// Extension methods associated with the IRoutableViewModel interface.
+/// Provides extension methods for IRoutableViewModel to observe and manage navigation-related focus and lifecycle
+/// events within a navigation stack.
 /// </summary>
+/// <remarks>These methods enable ViewModels to react to navigation changes, such as gaining or losing focus, by
+/// subscribing to observables or setting up disposable resources. They are intended to be used in scenarios where
+/// ViewModels participate in navigation stacks and need to manage resources or state based on their navigation status.
+/// All methods require a non-null IRoutableViewModel instance and are typically used within applications utilizing
+/// reactive navigation patterns.</remarks>
 public static class RoutableViewModelMixin
 {
     private static readonly ListChangeReason[] _navigationStackRemovalOperations = [ListChangeReason.Remove, ListChangeReason.RemoveRange];
@@ -114,6 +120,12 @@ public static class RoutableViewModelMixin
                .TakeUntil(itemRemoved);
     }
 
+    /// <summary>
+    /// Determines whether the specified item was removed from the change set.
+    /// </summary>
+    /// <param name="changeSet">The set of changes to evaluate for item removal.</param>
+    /// <param name="item">The item to check for removal within the change set.</param>
+    /// <returns>true if the item was removed according to the change set; otherwise, false.</returns>
     private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item) =>
         changeSet
             .Any(

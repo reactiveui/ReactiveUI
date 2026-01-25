@@ -27,6 +27,12 @@ public static class RxSchedulers
 
     private static volatile IScheduler? _taskpoolScheduler;
 
+    /// <summary>
+    /// Initializes static members of the <see cref="RxSchedulers"/> class.
+    /// </summary>
+    /// <remarks>This static constructor sets up default scheduler instances for use throughout the
+    /// application. It ensures that TaskpoolScheduler and MainThreadScheduler are assigned appropriate default values
+    /// before any static members are accessed.</remarks>
     static RxSchedulers()
     {
         TaskpoolScheduler = TaskPoolScheduler.Default;

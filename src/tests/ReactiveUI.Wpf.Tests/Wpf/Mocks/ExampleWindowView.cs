@@ -5,6 +5,4 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>
-{
-}
+public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>;

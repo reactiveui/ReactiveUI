@@ -14,21 +14,27 @@ namespace ReactiveUI;
 public class CanActivateViewFetcher : IActivationForViewFetcher
 {
     /// <summary>
-    /// Returns a positive integer for derived instances of the <see cref="ICanActivate"/> interface.
+    /// Determines the affinity score for the specified view type based on whether it implements the ICanActivate
+    /// interface.
     /// </summary>
-    /// <param name="view">The source type to check.</param>
-    /// <returns>
-    /// A positive integer if <see cref="GetActivationForView(IActivatableView)"/> is supported,
-    /// zero otherwise.
-    /// </returns>
+    /// <remarks>Use this method to assess whether a view type is suitable for activation scenarios that
+    /// require the ICanActivate interface. A higher affinity score indicates a stronger match.</remarks>
+    /// <param name="view">The type of the view to evaluate for activation capability. Cannot be null.</param>
+    /// <returns>An integer affinity score: 10 if the view type implements ICanActivate; otherwise, 0.</returns>
     public int GetAffinityForView(Type view) =>
         typeof(ICanActivate).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
 
     /// <summary>
-    /// Get an observable defining whether the view is active.
+    /// Returns an observable sequence that indicates the activation state of the specified view.
     /// </summary>
-    /// <param name="view">The view to observe.</param>
-    /// <returns>An observable tracking whether the view is active.</returns>
+    /// <remarks>If the provided view does not implement <see cref="ICanActivate"/>, the returned observable
+    /// emits <see langword="false"/> and completes immediately. Otherwise, the observable reflects the view's
+    /// activation and deactivation events as they occur.</remarks>
+    /// <param name="view">The view for which to observe activation and deactivation events. If the view does not support activation, the
+    /// observable will emit a single value of <see langword="false"/>.</param>
+    /// <returns>An observable sequence of <see langword="true"/> and <see langword="false"/> values that reflect the activation
+    /// and deactivation state of the view. The sequence emits <see langword="true"/> when the view is activated and
+    /// <see langword="false"/> when it is deactivated.</returns>
     public IObservable<bool> GetActivationForView(IActivatableView view) =>
         view is not ICanActivate canActivate
             ? Observable.Return(false)

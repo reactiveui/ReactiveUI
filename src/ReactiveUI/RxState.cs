@@ -8,8 +8,11 @@ using System.Diagnostics;
 namespace ReactiveUI;
 
 /// <summary>
-/// Static class that holds the default exception handler for ReactiveUI.
+/// Provides global state and configuration for ReactiveUI's exception handling in observable pipelines.
 /// </summary>
+/// <remarks>This static class manages the default exception handler used by ReactiveUI to process unhandled
+/// errors in observables. It is primarily intended for internal framework use and advanced scenarios where custom error
+/// handling is required. Most application code does not need to interact with this class directly.</remarks>
 public static class RxState
 {
     private static IObserver<Exception>? _defaultExceptionHandler;

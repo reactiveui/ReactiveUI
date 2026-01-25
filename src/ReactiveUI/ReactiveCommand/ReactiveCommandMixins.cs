@@ -30,15 +30,19 @@ namespace ReactiveUI;
 public static class ReactiveCommandMixins
 {
     /// <summary>
-    /// A utility method that will pipe an Observable to an ICommand (i.e.
-    /// it will first call its CanExecute with the provided value, then if
-    /// the command can be executed, Execute() will be called).
+    /// Subscribes to the observable sequence and invokes the specified command for each element, if the command can
+    /// execute with the element as its parameter.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="item">The source observable to pipe into the command.</param>
-    /// <param name="command">The command to be executed.</param>
-    /// <returns>An object that when disposes, disconnects the Observable
-    /// from the command.</returns>
+    /// <remarks>The command's CanExecuteChanged event is monitored to ensure that the command is only
+    /// executed when it is able to do so. If the command is null, no action is taken for elements in the sequence.
+    /// Disposing the returned IDisposable will unsubscribe from the sequence and stop further command
+    /// invocations.</remarks>
+    /// <typeparam name="T">The type of the elements in the observable sequence and the parameter type for the command.</typeparam>
+    /// <param name="item">The observable sequence whose elements are passed to the command as parameters.</param>
+    /// <param name="command">The command to invoke for each element in the sequence. The command is executed only if its CanExecute method
+    /// returns true for the element. This parameter can be null.</param>
+    /// <returns>An IDisposable object that can be used to unsubscribe from the observable sequence and stop invoking the
+    /// command.</returns>
     public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand? command)
     {
         var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
@@ -58,16 +62,18 @@ public static class ReactiveCommandMixins
     }
 
     /// <summary>
-    /// A utility method that will pipe an Observable to an ICommand (i.e.
-    /// it will first call its CanExecute with the provided value, then if
-    /// the command can be executed, Execute() will be called).
+    /// Subscribes to the observable sequence and invokes the specified reactive command for each element, if the
+    /// command can execute.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TResult">The result type.</typeparam>
-    /// <param name="item">The source observable to pipe into the command.</param>
-    /// <param name="command">The command to be executed.</param>
-    /// <returns>An object that when disposes, disconnects the Observable
-    /// from the command.</returns>
+    /// <remarks>The command is only executed for elements where its CanExecute observable returns true. If
+    /// the command's execution results in an error, the error is suppressed and processing continues with subsequent
+    /// elements.</remarks>
+    /// <typeparam name="T">The type of the elements in the source observable sequence.</typeparam>
+    /// <typeparam name="TResult">The type of the result produced by the reactive command.</typeparam>
+    /// <param name="item">The source observable sequence whose elements are used as input to the command.</param>
+    /// <param name="command">The reactive command to invoke for each element in the sequence. Cannot be null.</param>
+    /// <returns>An IDisposable that can be disposed to unsubscribe from the sequence and stop invoking the command.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if the command parameter is null.</exception>
     public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command) =>
         command is null
             ? throw new ArgumentNullException(nameof(command))
@@ -77,17 +83,20 @@ public static class ReactiveCommandMixins
               .Subscribe();
 
     /// <summary>
-    /// A utility method that will pipe an Observable to an ICommand (i.e.
-    /// it will first call its CanExecute with the provided value, then if
-    /// the command can be executed, Execute() will be called).
+    /// Subscribes to the observable sequence and invokes the specified command on the target object whenever a new
+    /// value is emitted, if the command can execute with that value.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TTarget">The target type.</typeparam>
-    /// <param name="item">The source observable to pipe into the command.</param>
-    /// <param name="target">The root object which has the Command.</param>
-    /// <param name="commandProperty">The expression to reference the Command.</param>
-    /// <returns>An object that when disposes, disconnects the Observable
-    /// from the command.</returns>
+    /// <remarks>The command is only executed if it is not null and its CanExecute method returns true for the
+    /// emitted value. The subscription listens for changes to the command property and to the command's
+    /// CanExecuteChanged event. This method uses reflection to evaluate the command property expression, which may be
+    /// affected by trimming in some deployment scenarios.</remarks>
+    /// <typeparam name="T">The type of the values emitted by the observable sequence.</typeparam>
+    /// <typeparam name="TTarget">The type of the target object that contains the command property. Must be a reference type.</typeparam>
+    /// <param name="item">The observable sequence whose emitted values will be passed to the command as parameters.</param>
+    /// <param name="target">The target object that contains the command property. Can be null.</param>
+    /// <param name="commandProperty">An expression that identifies the command property on the target object to be invoked. The expression should
+    /// return an object implementing ICommand.</param>
+    /// <returns>An IDisposable that can be used to unsubscribe from the observable sequence and stop invoking the command.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ICommand?>> commandProperty)
         where TTarget : class
@@ -110,18 +119,20 @@ public static class ReactiveCommandMixins
     }
 
     /// <summary>
-    /// A utility method that will pipe an Observable to an ICommand (i.e.
-    /// it will first call its CanExecute with the provided value, then if
-    /// the command can be executed, Execute() will be called).
+    /// Subscribes to the specified observable and invokes a reactive command on the target object whenever a new value
+    /// is emitted.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <typeparam name="TResult">The result type.</typeparam>
-    /// <typeparam name="TTarget">The target type.</typeparam>
-    /// <param name="item">The source observable to pipe into the command.</param>
-    /// <param name="target">The root object which has the Command.</param>
-    /// <param name="commandProperty">The expression to reference the Command.</param>
-    /// <returns>An object that when disposes, disconnects the Observable
-    /// from the command.</returns>
+    /// <remarks>The command is only executed if it is not null and its CanExecute observable returns <see
+    /// langword="true"/> for the current value. If the command is null or cannot execute, no action is taken for that
+    /// value. This method uses reflection to evaluate the command property expression, which may be affected by
+    /// trimming in some deployment scenarios.</remarks>
+    /// <typeparam name="T">The type of the values emitted by the source observable.</typeparam>
+    /// <typeparam name="TResult">The type of the result produced by the reactive command.</typeparam>
+    /// <typeparam name="TTarget">The type of the target object that contains the reactive command.</typeparam>
+    /// <param name="item">The observable sequence whose emitted values will be passed to the command for execution.</param>
+    /// <param name="target">The target object that contains the reactive command to be invoked. Can be null.</param>
+    /// <param name="commandProperty">An expression that identifies the reactive command property on the target object to be invoked.</param>
+    /// <returns>An IDisposable that can be disposed to unsubscribe from the observable and stop invoking the command.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
         where TTarget : class
@@ -156,6 +167,12 @@ public static class ReactiveCommandMixins
                                              .Select(b => resultSelector(b, a)))
                              .Switch());
 
+    /// <summary>
+    /// Represents the result of invoking a command, including the command instance, whether it can be executed, and an
+    /// associated value.
+    /// </summary>
+    /// <typeparam name="TCommand">The type of the command being invoked.</typeparam>
+    /// <typeparam name="TValue">The type of the value associated with the command invocation.</typeparam>
     private readonly struct InvokeCommandInfo<TCommand, TValue>
     {
         public InvokeCommandInfo(TCommand command, bool canExecute, TValue value)
