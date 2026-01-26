@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace ReactiveUI.Winforms;
@@ -62,7 +61,6 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <param name="commandParameter">An observable that supplies command parameter values.</param>
     /// <returns>A disposable that unbinds the command, or null if no default event was found.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/> is <see langword="null"/>.</exception>
-    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(ICommand? command, T? target, IObservable<object?> commandParameter)
         where T : class
     {
@@ -113,7 +111,6 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
-    [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, string eventName)
         where T : class
     {
@@ -146,14 +143,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
             if (enabledProperty is not null)
             {
-                object? latestParam = null;
-                ret.Add(commandParameter.Subscribe(x => latestParam = x));
-
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(latestParam)),
+                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(latestParameter)),
                                                                  x => command.CanExecuteChanged += x,
                                                                  x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParam))
+                                  .StartWith(command.CanExecute(latestParameter))
                                   .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }
@@ -203,8 +197,10 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             }
         }
 
-        var ret = new CompositeDisposable();
-        ret.Add(commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)));
+        var ret = new CompositeDisposable
+        {
+            commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x))
+        };
 
         addHandler(Handler);
         ret.Add(Disposable.Create(() => removeHandler(Handler)));
@@ -217,14 +213,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
             if (enabledProperty is not null)
             {
-                object? latestParam = null;
-                ret.Add(commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x)));
-
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParam))),
+                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
                                                                  x => command.CanExecuteChanged += x,
                                                                  x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParam))
+                                  .StartWith(command.CanExecute(latestParameter))
                                   .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }
@@ -272,8 +265,10 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             }
         }
 
-        var ret = new CompositeDisposable();
-        ret.Add(commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)));
+        var ret = new CompositeDisposable
+        {
+            commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x))
+        };
 
         addHandler(Handler);
         ret.Add(Disposable.Create(() => removeHandler(Handler)));
@@ -286,14 +281,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
             if (enabledProperty is not null)
             {
-                object? latestParam = null;
-                ret.Add(commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x)));
-
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParam))),
+                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
                                                                  x => command.CanExecuteChanged += x,
                                                                  x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParam))
+                                  .StartWith(command.CanExecute(latestParameter))
                                   .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }

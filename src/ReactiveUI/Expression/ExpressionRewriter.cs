@@ -62,7 +62,7 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// appropriate expression tree node.
     /// </summary>
     /// <remarks>This method supports rewriting array index expressions only when the index is a constant. For
-    /// array types, it produces an <see cref="Expression.ArrayAccess"/>; for other types with indexers, it produces an
+    /// array types, it produces an <see cref="Expression.ArrayAccess(Expression, IEnumerable{Expression})"/>; for other types with indexers, it produces an
     /// <see cref="Expression.MakeIndex"/> using the type's indexer property. Reflection is used to access runtime type
     /// information, which may have compatibility implications with trimming and AOT compilation.</remarks>
     /// <param name="node">The binary expression node to visit. Must represent an array or indexer access with a constant index.</param>

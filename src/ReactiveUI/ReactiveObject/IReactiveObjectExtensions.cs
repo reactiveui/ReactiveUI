@@ -581,10 +581,9 @@ public static class IReactiveObjectExtensions
         /// <remarks>The returned observable buffers and emits change events based on the current delay
         /// settings. Subscribers receive only distinct change events. The subject and observable are created only when
         /// first accessed.</remarks>
-        /// <returns>A lazy-initialized tuple consisting of an <see cref="ISubject{IReactivePropertyChangedEventArgs{TSender}}"/>
-        /// for publishing change notifications and an <see
-        /// cref="IObservable{IReactivePropertyChangedEventArgs{TSender}}"/> that emits distinct change events,
-        /// respecting any configured delay in change notifications.</returns>
+        /// <returns>A lazy-initialized tuple consisting of an <see cref="ISubject{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
+        /// for publishing change notifications and an <see cref="IObservable{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
+        /// that emits distinct change events, respecting any configured delay in change notifications.</returns>
         private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable() =>
             new(() =>
             {
