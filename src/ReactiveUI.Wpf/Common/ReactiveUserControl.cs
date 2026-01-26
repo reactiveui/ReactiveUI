@@ -144,6 +144,15 @@ class ReactiveUserControl<TViewModel> :
     {
     }
 #endif
+#else
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
+    /// </summary>
+    public ReactiveUserControl() => this.WhenActivated(disposables =>
+                                         {
+                                             // No-op, but ensures that when the Page is activated,
+                                             // any IActivatableViewModel logic in the ViewModel is also triggered.
+                                         });
 #endif
 
     /// <summary>
