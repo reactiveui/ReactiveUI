@@ -12,6 +12,8 @@ namespace ReactiveUI.Builder.BlazorServer.Services;
 /// </summary>
 public sealed class ReactiveUiAppHostedService : IHostedService
 {
+    private FileJsonSuspensionDriver? _driver;
+
     /// <summary>
     /// Initializes the application state and starts required services asynchronously.
     /// </summary>
@@ -27,6 +29,30 @@ public sealed class ReactiveUiAppHostedService : IHostedService
 
         // Set an initial state instantly (same idea as WPF to avoid blocking)
         RxSuspension.SuspensionHost.AppState = new ChatState();
+
+        var statePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ReactiveUI.Builder.WpfApp",
+            "state.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
+
+        _driver = new FileJsonSuspensionDriver(statePath);
+
+        // Set an initial state instantly to avoid blocking UI
+        RxSuspension.SuspensionHost.AppState = new ChatState();
+
+        // Load persisted state asynchronously and update UI when ready
+        _ = _driver
+            .LoadState()
+            .ObserveOn(RxSchedulers.MainThreadScheduler)
+            .Subscribe(
+                static stateObj =>
+                {
+                    RxSuspension.SuspensionHost.AppState = stateObj;
+                    MessageBus.Current.SendMessage(new ChatStateChanged());
+                    Trace.WriteLine("[App] State loaded");
+                },
+                static ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
 
         var lifetime = Locator.Current.GetService<AppLifetimeCoordinator>();
         var count = lifetime?.Increment() ?? 1;
@@ -47,5 +73,11 @@ public sealed class ReactiveUiAppHostedService : IHostedService
         var lifetime = Locator.Current.GetService<AppLifetimeCoordinator>();
         var remaining = lifetime?.Decrement() ?? 0;
         Trace.WriteLine($"[Blazor] Instance exiting. Remaining={remaining} Id={AppInstance.Id}");
+
+        // Only the last instance persists the final state to the central store
+        if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
+        {
+            _driver.SaveState(RxSuspension.SuspensionHost.AppState).Wait();
+        }
     }
 }
