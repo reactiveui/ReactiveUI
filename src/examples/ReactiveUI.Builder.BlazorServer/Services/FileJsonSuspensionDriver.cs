@@ -36,46 +36,69 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <summary>
     /// Loads the application state from persistent storage.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the state.
-    /// </typeparam>
-    /// <param name="typeInfo">
-    /// The type information.
-    /// </param>
     /// <returns>
     /// An object observable.
     /// </returns>
-    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => throw new NotImplementedException();
+    public IObservable<object?> LoadState() => Observable.Start<object?>(
+    () =>
+    {
+        if (!File.Exists(path))
+        {
+            return new ChatState();
+        }
+
+        var json = File.ReadAllText(path);
+        return JsonSerializer.Deserialize<ChatState>(json) ?? new ChatState();
+    },
+    RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
-    /// Returns an observable sequence that emits the current application state when subscribed.
+    /// Loads the application state from persistent storage using source-generated JSON metadata.
     /// </summary>
-    /// <returns>An observable sequence that produces the current state object, or null if no state is available.</returns>
-    /// <exception cref="NotImplementedException">The method is not implemented.</exception>
-    public IObservable<object?> LoadState() => throw new NotImplementedException();
+    /// <typeparam name="T">The type of state to load.</typeparam>
+    /// <param name="typeInfo">The source-generated JSON type info.</param>
+    /// <returns>An observable that produces the deserialized state.</returns>
+    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => Observable.Start(
+    () =>
+    {
+        if (!File.Exists(path))
+        {
+            return default(T);
+        }
+
+        var json = File.ReadAllText(path);
+        return JsonSerializer.Deserialize(json, typeInfo);
+    },
+    RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
     /// Saves the application state to disk.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the state.
-    /// </typeparam>
+    /// <typeparam name="T">The type of state to save.</typeparam>
     /// <param name="state">The application state.</param>
     /// <returns>
     /// A completed observable.
     /// </returns>
-    public IObservable<Unit> SaveState<T>(T state) => throw new NotImplementedException();
+    public IObservable<Unit> SaveState<T>(T state) => Observable.Start(
+    () =>
+    {
+        var json = JsonSerializer.Serialize(state, _options);
+        File.WriteAllText(path, json);
+    },
+    RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
-    /// Saves the application state to disk.
+    /// Saves the application state to disk using source-generated JSON metadata.
     /// </summary>
-    /// <typeparam name="T">
-    /// The type of the state.
-    /// </typeparam>
+    /// <typeparam name="T">The type of state to save.</typeparam>
     /// <param name="state">The application state.</param>
-    /// <param name="typeInfo">The type information.</param>
-    /// <returns>
-    /// A completed observable.
-    /// </returns>
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => throw new NotImplementedException();
+    /// <param name="typeInfo">The source-generated JSON type info.</param>
+    /// <returns>A completed observable.</returns>
+    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => Observable.Start(
+    () =>
+    {
+        var json = JsonSerializer.Serialize(state, typeInfo);
+        File.WriteAllText(path, json);
+    },
+    RxSchedulers.TaskpoolScheduler);
 }
