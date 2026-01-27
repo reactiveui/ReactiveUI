@@ -1,0 +1,63 @@
+﻿@using ReactiveUI
+@using Splat
+@implements IDisposable
+@inject IScreen Screen
+@inject IViewLocator ViewLocator
+
+@if (_content is null)
+{
+    <div>Loading...</div>
+}
+else
+{
+    @_content
+}
+
+@code
+{
+    private IDisposable? _subscription;
+    private RenderFragment? _content;
+
+    protected override void OnInitialized()
+    {
+        if (Screen is null)
+        {
+            throw new InvalidOperationException("IScreen service is not registered in the Splat locator.");
+        }
+
+        if (ViewLocator is null)
+        {
+            throw new InvalidOperationException("IViewLocator service is not registered in the Splat locator.");
+        }
+
+        _subscription = Screen.Router
+            .CurrentViewModel
+            .Subscribe(vm =>
+            {
+                if (vm is null)
+                {
+                    _content = null;
+                    InvokeAsync(StateHasChanged);
+                    return;
+                }
+
+                var view = ViewLocator.ResolveView(vm);
+
+                if (view is null)
+                {
+                    throw new InvalidOperationException($"No view found for ViewModel of type {vm.GetType().FullName}.");
+                }
+
+                _content = builder =>
+                {
+                    builder.OpenComponent(0, view.GetType());
+                    builder.AddAttribute(1, "ViewModel", vm);
+                    builder.CloseComponent();
+                };
+
+                InvokeAsync(StateHasChanged);
+            });
+    }
+
+    public void Dispose() => _subscription?.Dispose();
+}

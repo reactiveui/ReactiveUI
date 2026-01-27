@@ -1,9 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿@using ReactiveUI.Blazor
+@using ReactiveUI.Builder.Blazor.ViewModels
+@inherits ReactiveLayoutComponentBase<AppBootstrapper>
 
 <div class="page">
-    <div class="sidebar">
+@*     <div class="sidebar">
         <NavMenu />
-    </div>
+    </div> *@
 
     <main>
         <div class="top-row px-4">
@@ -11,7 +13,7 @@
         </div>
 
         <article class="content px-4">
-            @Body
+            <ReactiveRouterHost />
         </article>
     </main>
 </div>
