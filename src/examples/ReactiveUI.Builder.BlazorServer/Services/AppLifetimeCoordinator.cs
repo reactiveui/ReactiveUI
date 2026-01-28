@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.IO.MemoryMappedFiles;
+
 namespace ReactiveUI.Builder.BlazorServer.Services;
 
 /// <summary>
@@ -10,8 +12,8 @@ namespace ReactiveUI.Builder.BlazorServer.Services;
 /// </summary>
 public sealed class AppLifetimeCoordinator : IDisposable
 {
-    private const string MapName = "ReactiveUI.Builder.Blazor.InstanceCounter";
-    private const string MutexName = "ReactiveUI.Builder.Blazor.InstanceMutex";
+    private const string MapName = "ReactiveUI.Builder.BlazorServer.InstanceCounter";
+    private const string MutexName = "ReactiveUI.Builder.BlazorServer.InstanceMutex";
 
     private static readonly TimeSpan LockTimeout = TimeSpan.FromMilliseconds(500);
 
