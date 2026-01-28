@@ -1,0 +1,60 @@
+﻿@namespace ReactiveUI.Builder.BlazorServer.Views
+@using Microsoft.AspNetCore.Components.Web
+@using ReactiveUI.Blazor
+@using ReactiveUI.Builder.BlazorServer.ViewModels
+@inherits ReactiveComponentBase<LobbyViewModel>
+
+<h3>Lobby</h3>
+
+<div style="margin: 16px;">
+    <!-- DisplayNameBox -->
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <label style="min-width: 110px;">Display Name:</label>
+        <input class="form-control"
+               style="width: 240px;"
+               @bind-value="ViewModel?.DisplayName" />
+    </div>
+
+    <!-- RoomNameBox + CreateRoomButton -->
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <input class="form-control"
+               style="width: 240px;"
+               placeholder="Room name"
+               @bind-value="ViewModel?.RoomName" />
+
+        <button type="button"
+                class="btn btn-primary"
+                @onclick="OnCreateRoomClicked"
+                disabled="@ViewModel.CreateRoomDisabled">
+            Create Room
+        </button>
+    </div>
+
+    <!-- DeleteRoomButton -->
+    <div style="margin-bottom: 8px;">
+        <button type="button"
+                class="btn btn-danger"
+                @onclick="OnDeleteSelectedClicked"
+                disabled="@ViewModel.DeleteRoomDisabled">
+            Delete Selected Room
+        </button>
+    </div>
+
+    @if (ViewModel?.Rooms is not null)
+    {
+        <ul>
+            @foreach (var room in ViewModel.Rooms)
+            {
+                <li @onclick="() => OnRoomClicked(room)"
+                    @ondblclick="()=>OnRoomDoubleClicked(room)"
+                    style="cursor: pointer; padding: 6px; border-radius: 6px; background: @(room.Name == ViewModel.SelectedChatRoom?.Name ? "#e7f1ff" : "transparent");">
+                    <div><b>Id:</b> @room.Id</div>
+                    <div><b>Room name:</b> @room.Name</div>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+}
