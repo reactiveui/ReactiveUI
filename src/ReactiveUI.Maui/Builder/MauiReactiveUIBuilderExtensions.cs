@@ -70,6 +70,7 @@ public static partial class MauiReactiveUIBuilderExtensions
 
         return builder
             .WithMauiScheduler(dispatcher)
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Maui.Registrations>()
             .WithPlatformServices();
     }

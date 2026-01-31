@@ -136,7 +136,11 @@ public class BlazorReactiveUIBuilderExtensionsTests
     {
         public IScheduler? MainThreadScheduler { get; private set; }
 
+        public IScheduler? TaskpoolScheduler { get; private set; }
+
         public bool MainThreadSchedulerSet { get; private set; }
+
+        public bool TaskpoolSchedulerSet { get; private set; }
 
         public bool PlatformModuleCalled { get; private set; }
 
@@ -165,7 +169,9 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         public Splat.Builder.IAppBuilder WithCustomRegistration(Action<IMutableDependencyResolver> configureAction) => throw new NotImplementedException();
 
-        public IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure) => throw new NotImplementedException();
+        public IReactiveUIBuilder WithMessageBus() => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithMessageBus(Action<IMessageBus> configure) => throw new NotImplementedException();
 
         public IReactiveUIBuilder WithMessageBus(IMessageBus messageBus) => throw new NotImplementedException();
 
@@ -191,13 +197,21 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder RegisterViewModel<TViewModel>()
             where TViewModel : class, IReactiveObject, new() => throw new NotImplementedException();
 
+        public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
+            where TViewModel : class, IReactiveObject, new() => throw new NotImplementedException();
+
         public IReactiveUIBuilder WithPlatformServices() => throw new NotImplementedException();
 
         public IReactiveUIBuilder WithRegistration(Action<IMutableDependencyResolver> configureAction) => throw new NotImplementedException();
 
         public IReactiveUIBuilder WithRegistrationOnBuild(Action<IMutableDependencyResolver> configureAction) => throw new NotImplementedException();
 
-        public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true) => throw new NotImplementedException();
+        public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true)
+        {
+            TaskpoolScheduler = scheduler;
+            TaskpoolSchedulerSet = true;
+            return this;
+        }
 
         public IReactiveUIBuilder WithViewsFromAssembly(System.Reflection.Assembly assembly) => throw new NotImplementedException();
 

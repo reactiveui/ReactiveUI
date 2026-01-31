@@ -1957,11 +1957,12 @@ namespace ReactiveUI.Builder
     public static class BuilderMixins
     {
         public static ReactiveUI.Builder.IReactiveUIBuilder BuildApp(this Splat.Builder.IAppBuilder appBuilder) { }
-        public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.MessageBus> configure) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.ISuspensionDriver> configure) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.DefaultViewLocator> configure) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder RegisterConstantViewModel<TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
         public static ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder)
             where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
             where TViewModel :  class, ReactiveUI.IReactiveObject { }
@@ -2001,7 +2002,9 @@ namespace ReactiveUI.Builder
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
         public static ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this ReactiveUI.Builder.IReactiveUIInstance reactiveUIInstance, System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, ReactiveUI.IMessageBus messageBus) { }
+        public static ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(this ReactiveUI.Builder.IReactiveUIBuilder reactiveUIBuilder, System.Action<ReactiveUI.IMessageBus> configure) { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>(this ReactiveUI.Builder.IReactiveUIBuilder builder)
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
         public static ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(this ReactiveUI.Builder.IReactiveUIBuilder builder, System.Action<Splat.IMutableDependencyResolver> configureAction) { }
@@ -2018,11 +2021,12 @@ namespace ReactiveUI.Builder
     public interface IReactiveUIBuilder : Splat.Builder.IAppBuilder
     {
         ReactiveUI.Builder.IReactiveUIInstance BuildApp();
-        ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices);
         ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations);
+        ReactiveUI.Builder.IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new ();
         ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
             where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
             where TViewModel :  class, ReactiveUI.IReactiveObject;
@@ -2054,7 +2058,9 @@ namespace ReactiveUI.Builder
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action);
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action);
         ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);
+        ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus();
         ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(ReactiveUI.IMessageBus messageBus);
+        ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(System.Action<ReactiveUI.IMessageBus> configure);
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new ();
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
@@ -2079,11 +2085,12 @@ namespace ReactiveUI.Builder
         public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
         public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
         public ReactiveUI.Builder.IReactiveUIInstance BuildApp() { }
-        public ReactiveUI.Builder.IReactiveUIBuilder ConfigureMessageBus(System.Action<ReactiveUI.MessageBus> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ForCustomPlatform(System.Reactive.Concurrency.IScheduler mainThreadScheduler, System.Action<Splat.IMutableDependencyResolver> platformServices) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ForPlatforms(params System.Action<ReactiveUI.Builder.IReactiveUIBuilder>[] platformConfigurations) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
+            where TViewModel :  class, ReactiveUI.IReactiveObject, new () { }
         public ReactiveUI.Builder.IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
             where TView :  class, ReactiveUI.IViewFor<TViewModel>, new ()
             where TViewModel :  class, ReactiveUI.IReactiveObject { }
@@ -2124,7 +2131,9 @@ namespace ReactiveUI.Builder
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action) { }
         public ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(System.Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithMainThreadScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus() { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(ReactiveUI.IMessageBus messageBus) { }
+        public ReactiveUI.Builder.IReactiveUIBuilder WithMessageBus(System.Action<ReactiveUI.IMessageBus> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformModule<T>()
             where T : ReactiveUI.IWantsToRegisterStuff, new () { }
         public ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices() { }

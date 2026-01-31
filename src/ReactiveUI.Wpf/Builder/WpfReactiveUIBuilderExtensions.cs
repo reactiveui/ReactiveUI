@@ -32,7 +32,8 @@ public static class WpfReactiveUIBuilderExtensions
         return builder
             .WithPlatformModule<Wpf.Registrations>()
             .WithPlatformServices()
-            .WithWpfScheduler();
+            .WithWpfScheduler()
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default);
     }
 
     /// <summary>

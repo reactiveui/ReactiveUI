@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
@@ -70,7 +69,7 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     {
         if (!File.Exists(path))
         {
-            return default(T);
+            return default;
         }
 
         var json = File.ReadAllText(path);

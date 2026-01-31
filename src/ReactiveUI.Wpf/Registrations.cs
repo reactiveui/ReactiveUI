@@ -29,13 +29,6 @@ public class Registrations : IWantsToRegisterStuff
         registrar.RegisterConstant<IPropertyBindingHook>(static () => new AutoDataTemplateBindingHook());
         registrar.RegisterConstant<IBindingFallbackConverter>(static () => new ComponentModelFallbackConverter());
 
-        if (!ModeDetector.InUnitTestRunner())
-        {
-            // NB: On .NET Core, trying to touch DispatcherScheduler blows up :cry:
-            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => DispatcherScheduler.Current);
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
-        }
-
         RxSchedulers.SuppressViewCommandBindingMessage = true;
     }
 }

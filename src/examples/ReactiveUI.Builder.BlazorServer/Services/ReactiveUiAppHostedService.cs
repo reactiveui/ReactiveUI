@@ -5,8 +5,6 @@
 
 using System.Diagnostics;
 using System.Reactive.Linq;
-using Microsoft.Extensions.Hosting;
-using ReactiveUI;
 using ReactiveUI.Builder.BlazorServer.Models;
 using Splat;
 

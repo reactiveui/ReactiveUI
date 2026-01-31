@@ -35,7 +35,7 @@ public partial class App : Application
         base.OnStartup(e);
 
         // Initialize ReactiveUI via the Builder only
-        RxAppBuilder.CreateReactiveUIBuilder()
+        var app = RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
                                                          ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
@@ -52,16 +52,11 @@ public partial class App : Application
                     Debugger.Break();
                 }
             }))
+            .WithMessageBus()
             .WithRegistration(static r =>
             {
                 // Register IScreen as a singleton so all resolutions share the same Router
                 r.RegisterLazySingleton<IScreen>(static () => new ViewModels.AppBootstrapper());
-
-                // Register MessageBus as a singleton if not already
-                if (Locator.Current.GetService<IMessageBus>() is null)
-                {
-                    r.RegisterConstant(MessageBus.Current);
-                }
 
                 // Cross-process instance lifetime coordination
                 r.RegisterLazySingleton(static () => new Services.AppLifetimeCoordinator());

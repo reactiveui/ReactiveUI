@@ -33,6 +33,7 @@ public static class WinFormsReactiveUIBuilderExtensions
 
         return builder
             .WithMainThreadScheduler(WinFormsMainThreadScheduler)
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Winforms.Registrations>();
     }
 
