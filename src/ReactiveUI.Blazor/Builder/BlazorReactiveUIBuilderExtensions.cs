@@ -40,6 +40,25 @@ public static class BlazorReactiveUIBuilderExtensions
 
         return builder
             .WithBlazorScheduler()
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
+            .WithPlatformModule<Blazor.Registrations>();
+    }
+
+    /// <summary>
+    /// Configures ReactiveUI for Blazor platform with appropriate schedulers.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithBlazorWasm(this IReactiveUIBuilder builder)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        return builder
+            .WithBlazorWasmScheduler()
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Blazor.Registrations>();
     }
 

@@ -8,8 +8,6 @@ using ReactiveUI.Builder;
 using ReactiveUI.Builder.BlazorServer.Components;
 using ReactiveUI.Builder.BlazorServer.Services;
 using ReactiveUI.Builder.BlazorServer.ViewModels;
-using ReactiveUI.Builder.BlazorServer.Views;
-using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,14 +28,8 @@ builder.Services.UseMicrosoftDependencyResolver();
 
 RxAppBuilder.CreateReactiveUIBuilder()
    .WithBlazor()
+   .WithMessageBus()
    .WithViewsFromAssembly(typeof(Program).Assembly)
-   .WithRegistration(locator =>
-   {
-       if (Locator.Current.GetService<IMessageBus>() is null)
-       {
-           locator.RegisterConstant(MessageBus.Current);
-       }
-   })
    .BuildApp();
 
 var app = builder.Build();

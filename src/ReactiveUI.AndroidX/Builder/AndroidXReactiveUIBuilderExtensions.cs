@@ -34,6 +34,7 @@ public static class AndroidXReactiveUIBuilderExtensions
 
         return builder
             .WithMainThreadScheduler(HandlerScheduler.MainThreadScheduler)
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<AndroidX.Registrations>();
     }
 

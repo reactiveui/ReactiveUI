@@ -310,16 +310,32 @@ public static class BuilderMixins
     /// Configures the ReactiveUI message bus.
     /// </summary>
     /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+
+        reactiveUIBuilder.WithMessageBus();
+        return reactiveUIBuilder;
+    }
+
+    /// <summary>
+    /// Configures the ReactiveUI message bus.
+    /// </summary>
+    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
     /// <param name="configure">The configuration action.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder ConfigureMessageBus(this IReactiveUIBuilder reactiveUIBuilder, Action<MessageBus> configure)
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder, Action<IMessageBus> configure)
     {
         ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
-        reactiveUIBuilder.ConfigureMessageBus(configure);
+        reactiveUIBuilder.WithMessageBus(configure);
         return reactiveUIBuilder;
     }
 
@@ -389,6 +405,22 @@ public static class BuilderMixins
         ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
 
         reactiveUIBuilder.RegisterViewModel<TViewModel>();
+        return reactiveUIBuilder;
+    }
+
+    /// <summary>
+    /// Registers a constant instance of the specified view model type for use with the ReactiveUI builder.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
+    /// constructor.</typeparam>
+    /// <param name="reactiveUIBuilder">The ReactiveUI builder to configure. Cannot be null.</param>
+    /// <returns>The same ReactiveUI builder instance, to allow for method chaining.</returns>
+    public static IReactiveUIBuilder RegisterConstantViewModel<TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+        where TViewModel : class, IReactiveObject, new()
+    {
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+
+        reactiveUIBuilder.RegisterConstantViewModel<TViewModel>();
         return reactiveUIBuilder;
     }
 

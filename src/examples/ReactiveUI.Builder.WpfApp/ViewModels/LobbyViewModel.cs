@@ -46,7 +46,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
         // Remote changes and sync (ignore own events)
         var remoteRoomsChanged = MessageBus.Current
-            .Listen<Services.RoomEventMessage>(contract: "__rooms__")
+            .Listen<RoomEventMessage>(contract: "__rooms__")
             .Where(m => m.InstanceId != Services.AppInstance.Id)
             .Do(evt =>
             {
@@ -56,7 +56,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
                     case Services.RoomEventKind.SyncRequest:
                         // Respond with our snapshot of room names
                         var snapshot = GetState().Rooms.ConvertAll(r => r.Name);
-                        var response = new Services.RoomEventMessage(Services.RoomEventKind.Add, string.Empty)
+                        var response = new RoomEventMessage(Services.RoomEventKind.Add, string.Empty)
                         {
                             Snapshot = snapshot,
                             InstanceId = Services.AppInstance.Id,
@@ -82,7 +82,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         // Request a snapshot from peers shortly after activation
         RxSchedulers.MainThreadScheduler.Schedule(Unit.Default, TimeSpan.FromMilliseconds(500), (s, __) =>
         {
-            var req = new Services.RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty) { InstanceId = Services.AppInstance.Id };
+            var req = new RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty) { InstanceId = Services.AppInstance.Id };
             Trace.WriteLine("[Lobby] Broadcasting SyncRequest");
             MessageBus.Current.SendMessage(req, contract: "__rooms__");
             return Disposable.Empty;
@@ -140,7 +140,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
     private static ChatState GetState() => RxSuspension.SuspensionHost.GetAppState<ChatState>();
 
-    private static void ApplyRoomEvent(Services.RoomEventMessage evt)
+    private static void ApplyRoomEvent(RoomEventMessage evt)
     {
         var state = GetState();
 
@@ -184,7 +184,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             state.Rooms.Add(room);
 
             // Broadcast room add to peers
-            var evt = new Services.RoomEventMessage(Services.RoomEventKind.Add, room.Name) { InstanceId = Services.AppInstance.Id };
+            var evt = new RoomEventMessage(Services.RoomEventKind.Add, room.Name) { InstanceId = Services.AppInstance.Id };
             MessageBus.Current.SendMessage(evt, contract: "__rooms__");
             Trace.WriteLine($"[Lobby] Created room '{room.Name}'");
         }
@@ -198,7 +198,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         var state = GetState();
         if (state.Rooms.Remove(room))
         {
-            var evt = new Services.RoomEventMessage(Services.RoomEventKind.Remove, room.Name) { InstanceId = Services.AppInstance.Id };
+            var evt = new RoomEventMessage(Services.RoomEventKind.Remove, room.Name) { InstanceId = Services.AppInstance.Id };
             MessageBus.Current.SendMessage(evt, contract: "__rooms__");
             MessageBus.Current.SendMessage(new ChatStateChanged());
             Trace.WriteLine($"[Lobby] Deleted room '{room.Name}'");
