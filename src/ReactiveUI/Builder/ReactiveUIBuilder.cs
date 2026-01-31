@@ -275,16 +275,26 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <summary>
     /// Configures the ReactiveUI message bus.
     /// </summary>
+    /// <returns>The builder instance for chaining.</returns>
+    public IReactiveUIBuilder WithMessageBus() =>
+        WithRegistrationOnBuild(resolver =>
+        {
+            _messageBus = new MessageBus();
+            resolver.RegisterConstant<IMessageBus>(_messageBus);
+        });
+
+    /// <summary>
+    /// Configures the ReactiveUI message bus.
+    /// </summary>
     /// <param name="configure">The configuration action.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure) =>
+    public IReactiveUIBuilder WithMessageBus(Action<IMessageBus> configure) =>
         WithRegistrationOnBuild(resolver =>
-            resolver.Register<IMessageBus>(() =>
-            {
-                var messageBus = new MessageBus();
-                configure(messageBus);
-                return messageBus;
-            }));
+        {
+            _messageBus = new MessageBus();
+            configure(_messageBus);
+            resolver.RegisterConstant<IMessageBus>(_messageBus);
+        });
 
     /// <summary>
     /// Registers a custom message bus instance.
@@ -631,6 +641,18 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
             WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
+
+    /// <summary>
+    /// Registers a constant instance of the specified view model type in the dependency resolver.
+    /// </summary>
+    /// <remarks>This method creates a single instance of the specified view model type and registers it as a
+    /// constant in the resolver. All requests for this view model type will return the same instance.</remarks>
+    /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
+    /// constructor.</typeparam>
+    /// <returns>The current builder instance, enabling further configuration of the dependency resolver.</returns>
+    public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
+        where TViewModel : class, IReactiveObject, new() =>
+            WithRegistration(static resolver => resolver.RegisterConstant(new TViewModel()));
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.

@@ -41,9 +41,15 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <summary>
     /// Configures the message bus.
     /// </summary>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithMessageBus();
+
+    /// <summary>
+    /// Configures the message bus.
+    /// </summary>
     /// <param name="configure">A delegate to configure the message bus.</param>
     /// <returns>The builder instance for chaining.</returns>
-    IReactiveUIBuilder ConfigureMessageBus(Action<MessageBus> configure);
+    IReactiveUIBuilder WithMessageBus(Action<IMessageBus> configure);
 
     /// <summary>
     /// Registers a custom message bus instance.
@@ -119,6 +125,18 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
     IReactiveUIBuilder RegisterViewModel<TViewModel>()
+        where TViewModel : class, IReactiveObject, new();
+
+    /// <summary>
+    /// Registers a constant instance of the specified view model type for use in the reactive UI builder.
+    /// </summary>
+    /// <remarks>The registered view model instance is created once using its parameterless constructor and
+    /// reused for all requests. Use this method when the view model does not require per-request state or
+    /// dependencies.</remarks>
+    /// <typeparam name="TViewModel">The type of the view model to register. Must be a reference type that implements IReactiveObject and has a
+    /// parameterless constructor.</typeparam>
+    /// <returns>The current instance of the reactive UI builder, enabling method chaining.</returns>
+    IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
 
     /// <summary>

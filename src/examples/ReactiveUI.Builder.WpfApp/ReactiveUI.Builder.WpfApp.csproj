@@ -19,6 +19,14 @@
 
   <ItemGroup>
     <Using Include="ReactiveUI.Helpers" />
+    <Using Include="System.Collections.ObjectModel" />
+    <Using Include="System.IO.MemoryMappedFiles" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Net" />
+    <Using Include="System.Net.Sockets" />
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="System.Text.Json" />
   </ItemGroup>
 
 </Project>

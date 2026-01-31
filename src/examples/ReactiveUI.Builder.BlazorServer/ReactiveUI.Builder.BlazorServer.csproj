@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
     <DefaultPackageDescription>Blazor Server example app for ReactiveUI Builder.</DefaultPackageDescription>
   </PropertyGroup>

@@ -31,7 +31,7 @@ public class BuilderMixinsTests
             () => BuilderMixins.UsingSplatBuilder(null!, _ => { }),
             () => BuilderMixins.ForCustomPlatform(null!, scheduler, _ => { }),
             () => BuilderMixins.ForPlatforms(null!, _ => { }),
-            () => BuilderMixins.ConfigureMessageBus(null!, _ => { }),
+            () => BuilderMixins.WithMessageBus(null!, _ => { }),
             () => BuilderMixins.ConfigureViewLocator(null!, _ => { }),
             () => BuilderMixins.ConfigureSuspensionDriver(null!, _ => { }),
             () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
@@ -230,7 +230,7 @@ public class BuilderMixinsTests
         var builder = resolver.CreateReactiveUIBuilder();
         var configured = false;
 
-        BuilderMixins.ConfigureMessageBus(builder, _ => configured = true);
+        BuilderMixins.WithMessageBus(builder, _ => configured = true);
         builder.WithCoreServices().Build();
 
         using (Assert.Multiple())

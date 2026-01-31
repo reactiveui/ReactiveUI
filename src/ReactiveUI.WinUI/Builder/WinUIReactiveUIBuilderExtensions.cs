@@ -29,6 +29,7 @@ public static class WinUIReactiveUIBuilderExtensions
 
         return builder
             .WithWinUIScheduler()
+            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<WinUI.Registrations>();
     }
 

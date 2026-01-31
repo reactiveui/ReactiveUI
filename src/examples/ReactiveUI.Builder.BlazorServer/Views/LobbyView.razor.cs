@@ -5,7 +5,6 @@
 
 using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components.Web;
-using ReactiveUI;
 using ReactiveUI.Blazor;
 using ReactiveUI.Builder.BlazorServer.Models;
 using ReactiveUI.Builder.BlazorServer.ViewModels;
