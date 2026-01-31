@@ -138,8 +138,17 @@ public class DefaultPropertyBindingTests
         vm.SomeText = "Bar";
         await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeText);
 
+        // Set up observable to wait for ViewModel property change before setting View property
+        var vmPropertyUpdated = vm.WhenAnyValue(static x => x.SomeText)
+            .Where(x => x == "Bar2")
+            .FirstAsync()
+            .Timeout(TimeSpan.FromSeconds(5));
+
         view.Property3.Text = "Bar2";
-        await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeText);
+
+        // Wait for the two-way binding to propagate to the ViewModel
+        await vmPropertyUpdated;
+        await Assert.That(vm.SomeText).IsEqualTo("Bar2");
 
         var disp2 = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
         vm.SomeDouble = 123.4;
