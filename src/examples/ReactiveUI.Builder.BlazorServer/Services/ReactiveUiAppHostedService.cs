@@ -37,7 +37,7 @@ public sealed class ReactiveUiAppHostedService : IHostedService
 
         var statePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "ReactiveUI.Builder.WpfApp",
+            "ReactiveUI.Builder.BlazorServer",
             "state.json");
         Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
