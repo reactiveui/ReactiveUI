@@ -42,6 +42,7 @@
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="$(SplatVersion)" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="System.Collections.Immutable" Version="10.0.2" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />

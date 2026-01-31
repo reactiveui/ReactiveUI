@@ -1,0 +1,53 @@
+﻿@namespace ReactiveUI.Builder.BlazorServer.Views
+@using Microsoft.AspNetCore.Components.Web
+@using ReactiveUI.Blazor
+@using ReactiveUI.Builder.BlazorServer.ViewModels
+@inherits ReactiveComponentBase<ChatRoomViewModel>
+
+<h3>Chat room</h3>
+
+<div style="margin: 16px;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <div>
+            <button class="btn btn-secondary" @onclick="OnNavigateBack">
+                Back
+            </button>
+        </div>
+        <div style="font-size: 18px; font-weight: 700;">
+            @ViewModel?.RoomName
+        </div>
+    </div>
+
+    <div style="margin-bottom: 12px;">
+        <ul>
+            @if (ViewModel?.Messages is not null)
+            {
+                @foreach (var message in ViewModel.Messages)
+                {
+                    <li class="list-group-item">
+                        <span>[</span>
+                        <span>@message.Timestamp</span>
+                        <span>] </span>
+                        <strong>@message.Sender</strong>
+                        <span>: </span>
+                        <span>@message.Text</span>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <input class="form-control"
+               style="width: 240px;"
+               @bind-value:event="oninput"
+               @bind-value="@ViewModel?.MessageText" />
+
+        <button type="button"
+                class="btn btn-primary"
+                @onclick="@OnSendClicked"
+                disabled="@ViewModel?.CanSendDisabled">
+            Send
+        </button>
+    </div>
+</div>
