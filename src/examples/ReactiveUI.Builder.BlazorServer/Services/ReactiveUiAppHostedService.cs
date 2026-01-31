@@ -28,7 +28,7 @@ public sealed class ReactiveUiAppHostedService : IHostedService
     /// </remarks>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous start operation.</returns>
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new ChatState();
 
@@ -62,6 +62,8 @@ public sealed class ReactiveUiAppHostedService : IHostedService
         var lifetime = Locator.Current.GetService<AppLifetimeCoordinator>();
         var count = lifetime?.Increment() ?? 1;
         Trace.WriteLine($"[Blazor] Instance started. Count={count} Id={AppInstance.Id}");
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -82,7 +84,7 @@ public sealed class ReactiveUiAppHostedService : IHostedService
         // Only the last instance persists the final state to the central store
         if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
         {
-            _driver.SaveState(RxSuspension.SuspensionHost.AppState).Wait();
+            await _driver.SaveState(RxSuspension.SuspensionHost.AppState);
         }
     }
 }
