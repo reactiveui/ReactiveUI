@@ -194,7 +194,5 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     /// <summary>
     /// A concrete implementation of ReactiveInjectableComponentBase for testing with activatable ViewModels.
     /// </summary>
-    public class TestActivatableInjectableComponent : ReactiveInjectableComponentBase<TestActivatableViewModel>
-    {
-    }
+    public class TestActivatableInjectableComponent : ReactiveInjectableComponentBase<TestActivatableViewModel>;
 }

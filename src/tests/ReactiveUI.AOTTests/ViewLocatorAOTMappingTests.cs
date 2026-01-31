@@ -85,13 +85,9 @@ public class ViewLocatorAOTMappingTests
         public VmB? ViewModel { get; set; }
     }
 
-    private sealed class VmA : ReactiveObject
-    {
-    }
+    private sealed class VmA : ReactiveObject;
 
-    private sealed class VmB : ReactiveObject
-    {
-    }
+    private sealed class VmB : ReactiveObject;
 
     private sealed class ViewA : IViewFor<VmA>
     {

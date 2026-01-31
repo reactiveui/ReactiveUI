@@ -29,10 +29,9 @@ public class ReactiveUIBuilderMauiTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-
         locator.CreateReactiveUIBuilder()
                .WithMaui()
-               .Build();
+               .BuildApp();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         await Assert.That(observableProperty).IsNotNull();
