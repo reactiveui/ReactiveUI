@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <DefaultPackageDescription>Blazor Server example app for ReactiveUI Builder.</DefaultPackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>
