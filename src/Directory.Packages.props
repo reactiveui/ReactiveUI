@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SplatVersion>19.2.1</SplatVersion>
-    <TUnitVersion>1.11.56</TUnitVersion>
+    <TUnitVersion>1.12.102</TUnitVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.9.2.1</XamarinAndroidXLifecycleLiveDataVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.0</MauiVersion>
