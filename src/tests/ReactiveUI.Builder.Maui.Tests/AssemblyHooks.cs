@@ -14,10 +14,8 @@ public static class AssemblyHooks
     /// Called before any tests in this assembly start.
     /// </summary>
     [Before(HookType.Assembly)]
-    public static void AssemblySetup()
-    {
+    public static void AssemblySetup() =>
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-    }
 
     /// <summary>
     /// Called after all tests in this assembly complete.

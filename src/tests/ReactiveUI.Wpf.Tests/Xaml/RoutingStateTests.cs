@@ -221,13 +221,17 @@ public class RoutingStateTests
         var scheduler = TestContext.Current!.GetScheduler();
         var fixture = new RoutingState(scheduler);
 
-        Exception? thrownException = null;
-
-        // Subscribe to ThrownExceptions to prevent global error handler from being triggered
-        fixture.Navigate.ThrownExceptions.Subscribe(ex => thrownException = ex);
+        // Set up observable to capture the thrown exception
+        var exceptionTask = fixture.Navigate.ThrownExceptions
+            .FirstAsync()
+            .Timeout(TimeSpan.FromSeconds(5))
+            .ToTask();
 
         // Execute with null to trigger the exception - subscribe with error handler to catch it
         fixture.Navigate.Execute(null!).Subscribe(_ => { }, ex => { });
+
+        // Wait for the exception to be captured through ThrownExceptions
+        var thrownException = await exceptionTask;
 
         await Assert.That(thrownException).IsNotNull();
         await Assert.That(thrownException!.Message).Contains("Navigate must be called on an IRoutableViewModel");

@@ -21,11 +21,11 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
     public WpfViewDependencyResolverTests()
     {
         _resolver = new ModernDependencyResolver();
-        _resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(_resolver)
+        _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()
+            .WithWpf()
+            .WithViewsFromAssembly(GetType().Assembly)
             .BuildApp();
-        _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
 
     /// <summary>

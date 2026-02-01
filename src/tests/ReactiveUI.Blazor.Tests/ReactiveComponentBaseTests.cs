@@ -143,7 +143,5 @@ public class ReactiveComponentBaseTests : BunitContext
     /// <summary>
     /// A concrete implementation of ReactiveComponentBase for testing activatable ViewModels.
     /// </summary>
-    public class TestActivatableComponent : ReactiveComponentBase<TestActivatableViewModel>
-    {
-    }
+    public class TestActivatableComponent : ReactiveComponentBase<TestActivatableViewModel>;
 }

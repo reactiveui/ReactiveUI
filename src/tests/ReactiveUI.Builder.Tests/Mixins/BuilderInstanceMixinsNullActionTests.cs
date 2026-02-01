@@ -16,8 +16,8 @@ public class BuilderInstanceMixinsNullActionTests
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r => r.RegisterConstant(s1, typeof(InstanceService01)));
+        builder.WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01>(null!);
 
@@ -30,11 +30,13 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            r.RegisterConstant(s2, typeof(InstanceService02));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02>(null!);
 
@@ -47,13 +49,15 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>(null!);
 
@@ -66,15 +70,17 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>(null!);
 
@@ -87,17 +93,19 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05>(null!);
 
@@ -110,19 +118,21 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06>(null!);
 
@@ -135,21 +145,23 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07>(null!);
 
@@ -162,23 +174,25 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08>(null!);
 
@@ -191,25 +205,27 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09>(null!);
 
@@ -222,27 +238,29 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10>(null!);
 
@@ -255,29 +273,31 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11>(null!);
 
@@ -290,31 +310,33 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(s12, typeof(InstanceService12));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+            var s12 = new InstanceService12();
+            r.RegisterConstant(s12, typeof(InstanceService12));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11, InstanceService12>(null!);
 
@@ -327,33 +349,35 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(s12, typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(s13, typeof(InstanceService13));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+            var s12 = new InstanceService12();
+            r.RegisterConstant(s12, typeof(InstanceService12));
+            var s13 = new InstanceService13();
+            r.RegisterConstant(s13, typeof(InstanceService13));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11, InstanceService12, InstanceService13>(null!);
 
@@ -366,35 +390,37 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(s12, typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(s13, typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(s14, typeof(InstanceService14));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+            var s12 = new InstanceService12();
+            r.RegisterConstant(s12, typeof(InstanceService12));
+            var s13 = new InstanceService13();
+            r.RegisterConstant(s13, typeof(InstanceService13));
+            var s14 = new InstanceService14();
+            r.RegisterConstant(s14, typeof(InstanceService14));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11, InstanceService12, InstanceService13, InstanceService14>(null!);
 
@@ -407,37 +433,39 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(s12, typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(s13, typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(s14, typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(s15, typeof(InstanceService15));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+            var s12 = new InstanceService12();
+            r.RegisterConstant(s12, typeof(InstanceService12));
+            var s13 = new InstanceService13();
+            r.RegisterConstant(s13, typeof(InstanceService13));
+            var s14 = new InstanceService14();
+            r.RegisterConstant(s14, typeof(InstanceService14));
+            var s15 = new InstanceService15();
+            r.RegisterConstant(s15, typeof(InstanceService15));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15>(null!);
 
@@ -450,39 +478,41 @@ public class BuilderInstanceMixinsNullActionTests
         AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(s1, typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(s2, typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(s3, typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(s4, typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(s5, typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(s6, typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(s7, typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(s8, typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(s9, typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(s10, typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(s11, typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(s12, typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(s13, typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(s14, typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(s15, typeof(InstanceService15));
-        var s16 = new InstanceService16();
-        resolver.RegisterConstant(s16, typeof(InstanceService16));
-        builder.WithCoreServices().Build();
+        builder.WithRegistrationOnBuild(r =>
+        {
+            var s1 = new InstanceService01();
+            r.RegisterConstant(s1, typeof(InstanceService01));
+            var s2 = new InstanceService02();
+            r.RegisterConstant(s2, typeof(InstanceService02));
+            var s3 = new InstanceService03();
+            r.RegisterConstant(s3, typeof(InstanceService03));
+            var s4 = new InstanceService04();
+            r.RegisterConstant(s4, typeof(InstanceService04));
+            var s5 = new InstanceService05();
+            r.RegisterConstant(s5, typeof(InstanceService05));
+            var s6 = new InstanceService06();
+            r.RegisterConstant(s6, typeof(InstanceService06));
+            var s7 = new InstanceService07();
+            r.RegisterConstant(s7, typeof(InstanceService07));
+            var s8 = new InstanceService08();
+            r.RegisterConstant(s8, typeof(InstanceService08));
+            var s9 = new InstanceService09();
+            r.RegisterConstant(s9, typeof(InstanceService09));
+            var s10 = new InstanceService10();
+            r.RegisterConstant(s10, typeof(InstanceService10));
+            var s11 = new InstanceService11();
+            r.RegisterConstant(s11, typeof(InstanceService11));
+            var s12 = new InstanceService12();
+            r.RegisterConstant(s12, typeof(InstanceService12));
+            var s13 = new InstanceService13();
+            r.RegisterConstant(s13, typeof(InstanceService13));
+            var s14 = new InstanceService14();
+            r.RegisterConstant(s14, typeof(InstanceService14));
+            var s15 = new InstanceService15();
+            r.RegisterConstant(s15, typeof(InstanceService15));
+            var s16 = new InstanceService16();
+            r.RegisterConstant(s16, typeof(InstanceService16));
+        }).WithCoreServices().BuildApp();
 
         var result = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05, InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10, InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15, InstanceService16>(null!);
 

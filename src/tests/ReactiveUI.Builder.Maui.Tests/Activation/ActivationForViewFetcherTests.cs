@@ -28,11 +28,10 @@ public sealed partial class ActivationForViewFetcherTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var resolver = new ModernDependencyResolver();
-        resolver.InitializeSplat();
         resolver.CreateReactiveUIBuilder()
             .WithPlatformServices()
+            .WithRegistrationOnBuild(r => r.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher()))
             .BuildApp();
-        resolver.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher());
 
         using (resolver.WithResolver())
         {
