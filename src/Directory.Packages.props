@@ -23,13 +23,13 @@
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.1.0" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.102" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7463" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
     <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
@@ -44,10 +44,10 @@
     <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
     <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="$(SplatVersion)" />
     <PackageVersion Include="stylecop.analyzers" Version="1.2.0-beta.556" />
-    <PackageVersion Include="System.Collections.Immutable" Version="10.0.2" />
+    <PackageVersion Include="System.Collections.Immutable" Version="10.0.3" />
     <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
     <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.2" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.3" />
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)" />
     <PackageVersion Include="Verify.TUnit" Version="31.10.0" />
@@ -55,7 +55,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.3" />
     <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     <!-- Lifecycle (align everything to 2.9.x) -->
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
