@@ -28,7 +28,7 @@ jobs:
       id-token: write
     steps:
       - name: Download signed packages
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: signed-nuget
 
