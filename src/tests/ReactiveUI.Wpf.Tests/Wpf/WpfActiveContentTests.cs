@@ -152,9 +152,15 @@ public class WpfActiveContentTests
     public async Task DummySuspensionDriverTest()
     {
         var dsd = new DummySuspensionDriver();
-        dsd.LoadState().Select(static _ => 1).Subscribe(async static v => await Assert.That(v).IsEqualTo(1));
-        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(async static v => await Assert.That(v).IsEqualTo(2));
-        dsd.InvalidateState().Select(static _ => 3).Subscribe(async static v => await Assert.That(v).IsEqualTo(3));
+        int? loadResult = null;
+        int? saveResult = null;
+        int? invalidateResult = null;
+        dsd.LoadState().Select(static _ => 1).Subscribe(v => loadResult = v);
+        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(v => saveResult = v);
+        dsd.InvalidateState().Select(static _ => 3).Subscribe(v => invalidateResult = v);
+        await Assert.That(loadResult).IsEqualTo(1);
+        await Assert.That(saveResult).IsEqualTo(2);
+        await Assert.That(invalidateResult).IsEqualTo(3);
     }
 
     public class ViewBRegisteredExecutor : STAThreadExecutor
