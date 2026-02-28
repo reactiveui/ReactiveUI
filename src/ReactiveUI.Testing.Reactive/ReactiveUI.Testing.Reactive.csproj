@@ -7,7 +7,7 @@
     <PackageDescription>Provides TestScheduler extensions for testing ReactiveUI applications with Microsoft.Reactive.Testing</PackageDescription>
     <PackageId>ReactiveUI.Testing.Reactive</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;testscheduler;</PackageTags>
-    <IsPackable>true</IsPackage>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <Using Include="System" />
