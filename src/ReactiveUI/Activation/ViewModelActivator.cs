@@ -90,7 +90,30 @@ public sealed class ViewModelActivator : IDisposable
     /// </param>
     public void Deactivate(bool ignoreRefCount = false)
     {
-        if (Interlocked.Decrement(ref _refCount) == 0 || ignoreRefCount)
+        if (ignoreRefCount)
+        {
+            Interlocked.Exchange(ref _refCount, 0);
+            Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
+            _deactivated.OnNext(Unit.Default);
+            return;
+        }
+
+        // Guard against going negative — only decrement if current value is > 0
+        int current;
+        int next;
+        do
+        {
+            current = Volatile.Read(ref _refCount);
+            if (current <= 0)
+            {
+                return;
+            }
+
+            next = current - 1;
+        }
+        while (Interlocked.CompareExchange(ref _refCount, next, current) != current);
+
+        if (next == 0)
         {
             Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
             _deactivated.OnNext(Unit.Default);

@@ -6,7 +6,7 @@
 using System.Reactive;
 using Microsoft.Reactive.Testing;
 
-namespace ReactiveUI.Testing.Reactive;
+namespace ReactiveUI.Testing;
 
 /// <summary>
 /// Extension methods for TestScheduler from Microsoft.Reactive.Testing.

@@ -259,5 +259,23 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public IReactiveUIBuilder WithSuspensionHost<TAppState>() => throw new NotImplementedException();
 
         public IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithConverter(IBindingTypeConverter converter) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithConverter(Func<IBindingTypeConverter> factory) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithFallbackConverter(IBindingFallbackConverter converter) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithFallbackConverter(Func<IBindingFallbackConverter> factory) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithSetMethodConverter(ISetMethodBindingConverter converter) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithSetMethodConverter(Func<ISetMethodBindingConverter> factory) => throw new NotImplementedException();
+
+        public IReactiveUIBuilder WithConvertersFrom(IReadonlyDependencyResolver resolver) => throw new NotImplementedException();
     }
 }

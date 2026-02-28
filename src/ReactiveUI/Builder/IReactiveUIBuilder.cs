@@ -220,6 +220,73 @@ public interface IReactiveUIBuilder : IAppBuilder
     IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit);
 
     /// <summary>
+    /// Registers a typed binding converter using the concrete type.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithConverter<TFrom, TTo>(BindingTypeConverter<TFrom, TTo> converter);
+
+    /// <summary>
+    /// Registers a typed binding converter using the interface.
+    /// </summary>
+    /// <param name="converter">The converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithConverter(IBindingTypeConverter converter);
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <typeparam name="TFrom">The source type for the conversion.</typeparam>
+    /// <typeparam name="TTo">The target type for the conversion.</typeparam>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithConverter<TFrom, TTo>(Func<BindingTypeConverter<TFrom, TTo>> factory);
+
+    /// <summary>
+    /// Registers a typed binding converter via factory (interface, lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithConverter(Func<IBindingTypeConverter> factory);
+
+    /// <summary>
+    /// Registers a fallback binding converter.
+    /// </summary>
+    /// <param name="converter">The fallback converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithFallbackConverter(IBindingFallbackConverter converter);
+
+    /// <summary>
+    /// Registers a fallback binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the fallback converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithFallbackConverter(Func<IBindingFallbackConverter> factory);
+
+    /// <summary>
+    /// Registers a set-method binding converter.
+    /// </summary>
+    /// <param name="converter">The set-method converter instance to register.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithSetMethodConverter(ISetMethodBindingConverter converter);
+
+    /// <summary>
+    /// Registers a set-method binding converter via factory (lazy instantiation).
+    /// </summary>
+    /// <param name="factory">The factory function that creates the set-method converter.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithSetMethodConverter(Func<ISetMethodBindingConverter> factory);
+
+    /// <summary>
+    /// Imports all converters from a Splat dependency resolver into the builder.
+    /// </summary>
+    /// <param name="resolver">The Splat resolver to import converters from.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    IReactiveUIBuilder WithConvertersFrom(IReadonlyDependencyResolver resolver);
+
+    /// <summary>
     /// Withes the views from assembly.
     /// </summary>
     /// <param name="assembly">The assembly.</param>

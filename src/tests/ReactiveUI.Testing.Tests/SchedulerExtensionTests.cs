@@ -7,8 +7,6 @@ using System.Threading;
 
 using Microsoft.Reactive.Testing;
 
-using ReactiveUI.Testing.Reactive;
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;

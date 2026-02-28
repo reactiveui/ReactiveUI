@@ -100,7 +100,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         // Check if we have converters or if types are assignable
         var hasConverters = vmToViewConverterObj is not null && viewToVMConverterObj is not null;
-        var typesAreAssignable = typeof(TVProp).IsAssignableFrom(typeof(TVMProp)) && typeof(TVMProp).IsAssignableFrom(typeof(TVProp));
+        var typesAreAssignable = typeof(TVProp).IsAssignableFrom(typeof(TVMProp)) || typeof(TVMProp).IsAssignableFrom(typeof(TVProp));
 
         if (!hasConverters && !typesAreAssignable)
         {
