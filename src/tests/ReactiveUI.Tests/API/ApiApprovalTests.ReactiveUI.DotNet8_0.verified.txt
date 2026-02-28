@@ -2040,7 +2040,14 @@ namespace ReactiveUI.Builder
         ReactiveUI.Builder.IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
             where T : Splat.Builder.IModule;
         ReactiveUI.Builder.IReactiveUIBuilder WithCacheSizes(int smallCacheLimit, int bigCacheLimit);
+        ReactiveUI.Builder.IReactiveUIBuilder WithConverter(ReactiveUI.IBindingTypeConverter converter);
+        ReactiveUI.Builder.IReactiveUIBuilder WithConverter(System.Func<ReactiveUI.IBindingTypeConverter> factory);
+        ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(ReactiveUI.BindingTypeConverter<TFrom, TTo> converter);
+        ReactiveUI.Builder.IReactiveUIBuilder WithConverter<TFrom, TTo>(System.Func<ReactiveUI.BindingTypeConverter<TFrom, TTo>> factory);
+        ReactiveUI.Builder.IReactiveUIBuilder WithConvertersFrom(Splat.IReadonlyDependencyResolver resolver);
         ReactiveUI.Builder.IReactiveUIBuilder WithExceptionHandler(System.IObserver<System.Exception> exceptionHandler);
+        ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(ReactiveUI.IBindingFallbackConverter converter);
+        ReactiveUI.Builder.IReactiveUIBuilder WithFallbackConverter(System.Func<ReactiveUI.IBindingFallbackConverter> factory);
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T>(System.Action<T?> action);
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2>(System.Action<T1?, T2?> action);
         ReactiveUI.Builder.IReactiveUIInstance WithInstance<T1, T2, T3>(System.Action<T1?, T2?, T3?> action);
@@ -2066,6 +2073,8 @@ namespace ReactiveUI.Builder
         ReactiveUI.Builder.IReactiveUIBuilder WithPlatformServices();
         ReactiveUI.Builder.IReactiveUIBuilder WithRegistration(System.Action<Splat.IMutableDependencyResolver> configureAction);
         ReactiveUI.Builder.IReactiveUIBuilder WithRegistrationOnBuild(System.Action<Splat.IMutableDependencyResolver> configureAction);
+        ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(ReactiveUI.ISetMethodBindingConverter converter);
+        ReactiveUI.Builder.IReactiveUIBuilder WithSetMethodConverter(System.Func<ReactiveUI.ISetMethodBindingConverter> factory);
         ReactiveUI.Builder.IReactiveUIBuilder WithSuspensionHost();
         ReactiveUI.Builder.IReactiveUIBuilder WithSuspensionHost<TAppState>();
         ReactiveUI.Builder.IReactiveUIBuilder WithTaskPoolScheduler(System.Reactive.Concurrency.IScheduler scheduler, bool setRxApp = true);

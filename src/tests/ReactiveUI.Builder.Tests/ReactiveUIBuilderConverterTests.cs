@@ -125,6 +125,65 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
+    [Test]
+    public async Task WithFallbackConverter_Instance_ReturnsBuilderForChaining()
+    {
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+        var converter = new TestFallbackConverter();
+
+        var result = builder.WithFallbackConverter(converter);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public void WithFallbackConverter_Instance_WithNull_Throws()
+    {
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+
+        Assert.Throws<ArgumentNullException>(() =>
+            builder.WithFallbackConverter((IBindingFallbackConverter)null!));
+    }
+
+    [Test]
+    public async Task WithFallbackConverter_Factory_ReturnsBuilderForChaining()
+    {
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+
+        var result = builder.WithFallbackConverter(() => new TestFallbackConverter());
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    [Test]
+    public void WithFallbackConverter_Factory_WithNull_Throws()
+    {
+        using var locator = new ModernDependencyResolver();
+        var builder = locator.CreateReactiveUIBuilder();
+
+        Assert.Throws<ArgumentNullException>(() =>
+            builder.WithFallbackConverter((Func<IBindingFallbackConverter>)null!));
+    }
+
+    [Test]
+    public async Task WithFallbackConverter_ViaInterfaceTypedVariable_DoesNotRecurse()
+    {
+        // Regression test for https://github.com/reactiveui/ReactiveUI/issues/4293
+        // Calling WithFallbackConverter on an IReactiveUIBuilder-typed variable caused
+        // infinite recursion (StackOverflowException) because the extension method in
+        // BuilderMixins called itself instead of delegating to the interface method.
+        using var locator = new ModernDependencyResolver();
+        IReactiveUIBuilder builder = locator.CreateReactiveUIBuilder();
+        var converter = new TestFallbackConverter();
+
+        var result = builder.WithFallbackConverter(converter);
+
+        await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
     private sealed class TestTypedConverter : BindingTypeConverter<int, string>
     {
         public override int GetAffinityForObjects() => 1;
@@ -148,6 +207,17 @@ public class ReactiveUIBuilderConverterTests
         {
             result = from?.ToString();
             return from != null;
+        }
+    }
+
+    private sealed class TestFallbackConverter : IBindingFallbackConverter
+    {
+        public int GetAffinityForObjects(Type fromType, Type toType) => 1;
+
+        public bool TryConvert(Type fromType, object from, Type toType, object? conversionHint, [NotNullWhen(true)] out object? result)
+        {
+            result = from;
+            return true;
         }
     }
 }
