@@ -29,9 +29,10 @@ public static class WpfReactiveUIBuilderExtensions
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
-        return builder
+        return ((IReactiveUIBuilder)builder.WithCoreServices())
             .WithPlatformModule<Wpf.Registrations>()
             .WithPlatformServices()
+            .WithWpfConverters()
             .WithWpfScheduler()
             .WithTaskPoolScheduler(TaskPoolScheduler.Default);
     }
@@ -53,5 +54,25 @@ public static class WpfReactiveUIBuilderExtensions
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder.WithMainThreadScheduler(WpfMainThreadScheduler);
+    }
+
+    /// <summary>
+    /// Registers WPF-specific converters to the ConverterService.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <remarks>
+    /// This method registers WPF-specific converters (<see cref="BooleanToVisibilityTypeConverter"/>,
+    /// <see cref="VisibilityToBooleanTypeConverter"/>) and the <see cref="ComponentModelFallbackConverter"/>
+    /// to the <c>ConverterService</c> so they are available when using the builder pattern.
+    /// </remarks>
+    public static IReactiveUIBuilder WithWpfConverters(this IReactiveUIBuilder builder)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+
+        return builder
+            .WithConverter(new BooleanToVisibilityTypeConverter())
+            .WithConverter(new VisibilityToBooleanTypeConverter())
+            .WithFallbackConverter(new ComponentModelFallbackConverter());
     }
 }
