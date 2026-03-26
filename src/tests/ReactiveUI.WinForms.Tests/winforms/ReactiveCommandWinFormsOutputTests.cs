@@ -21,7 +21,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 ///
 /// The WinForms initialization is performed via
 /// AppLocator.CurrentMutable.CreateReactiveUIBuilder().WithWinForms().BuildApp()
-/// which is called by the <see cref="WinFormsTestExecutor"/>.
+/// (which now includes core services) as called by the <see cref="WinFormsTestExecutor"/>.
 /// </remarks>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
