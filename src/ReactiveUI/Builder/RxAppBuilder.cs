@@ -101,8 +101,13 @@ public static class RxAppBuilder
             // Reset Splat builder state first
             Splat.Builder.AppBuilder.ResetBuilderStateForTests();
 
-            // Reset the locator to a clean InstanceGenericFirstDependencyResolver
-            AppLocator.SetLocator(new InstanceGenericFirstDependencyResolver());
+            // Reset the locator to a clean ModernDependencyResolver.
+            // Using ModernDependencyResolver (which implements IMutableDependencyResolver) ensures
+            // that AppLocator.CurrentMutable returns a valid, non-disposed mutable resolver after reset.
+            // InstanceGenericFirstDependencyResolver is read-only and does not implement
+            // IMutableDependencyResolver, which causes AppLocator.CurrentMutable to still return
+            // the old (now disposed) ModernDependencyResolver after SetLocator is called with it.
+            AppLocator.SetLocator(new ModernDependencyResolver());
 
             // Clear activation fetcher cache since it queries the AppLocator
             ViewForMixins.ResetActivationFetcherCacheForTesting();
