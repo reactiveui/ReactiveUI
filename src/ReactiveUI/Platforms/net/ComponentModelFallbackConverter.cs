@@ -51,11 +51,16 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
         {
             try
             {
-                // Check if component model can convert this pair
-                // String is a special case - use the target type's converter for string→T conversions
+                // Check if component model can convert this pair.
+                // String is a special case: for string→T conversions, use the target type's converter
+                // and check CanConvertFrom(string) rather than CanConvertTo(string).
+                // CanConvertTo(string) returns true for nearly all TypeConverters, causing false
+                // positives that lead to NotSupportedException at conversion time.
                 var (lookupFrom, lookupTo) = key.From == typeof(string) ? (key.To, key.From) : (key.From, key.To);
                 var converter = TypeDescriptor.GetConverter(lookupFrom);
-                return converter?.CanConvertTo(lookupTo) == true;
+                return key.From == typeof(string)
+                    ? converter?.CanConvertFrom(typeof(string)) == true
+                    : converter?.CanConvertTo(lookupTo) == true;
             }
             catch
             {
@@ -139,13 +144,17 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
         Justification = "The callers of this method ensure getting the converter is trim compatible - i.e. the type is not Nullable<T>.")]
     private static TypeConverter? GetConverter([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
     {
-        // Component model special-case: string conversion uses the target's converter for ConvertFrom(string).
-        var (lookupFrom, lookupTo) = fromType == typeof(string) ? (toType, fromType) : (fromType, toType);
+        // String is a special case: for string→T conversions use the target's converter and ConvertFrom.
+        // Check CanConvertFrom(string) to avoid false positives from CanConvertTo(string),
+        // which is true for nearly all TypeConverters and would cause NotSupportedException.
+        var lookupFrom = fromType == typeof(string) ? toType : fromType;
 
         return _converterCache.GetOrAdd((fromType, toType), _ =>
         {
             var converter = TypeDescriptor.GetConverter(lookupFrom);
-            return converter?.CanConvertTo(lookupTo) == true ? converter : null;
+            return fromType == typeof(string)
+                ? (converter?.CanConvertFrom(typeof(string)) == true ? converter : null)
+                : (converter?.CanConvertTo(toType) == true ? converter : null);
         });
     }
 }
