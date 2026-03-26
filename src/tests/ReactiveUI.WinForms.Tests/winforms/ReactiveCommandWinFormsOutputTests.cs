@@ -122,9 +122,11 @@ public class ReactiveCommandWinFormsOutputTests
 
         using (Assert.Multiple())
         {
-            // Should have at least: false (initial), true (executing), false (completed)
-            await Assert.That(executingValues).Count().IsGreaterThanOrEqualTo(2);
+            // Should have: false (initial), true (executing), false (completed)
+            await Assert.That(executingValues).Count().IsGreaterThanOrEqualTo(3);
             await Assert.That(executingValues[0]).IsFalse();
+            await Assert.That(executingValues[1]).IsTrue();
+            await Assert.That(executingValues[executingValues.Count - 1]).IsFalse();
         }
     }
 
@@ -163,7 +165,9 @@ public class ReactiveCommandWinFormsOutputTests
         var results = new List<string>();
         command.Subscribe(x => results.Add(x));
 
-        Observable.Return("hello").InvokeCommand(command);
+        var source = new Subject<string>();
+        source.InvokeCommand(command);
+        source.OnNext("hello");
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0]).IsEqualTo("HELLO");
@@ -183,7 +187,9 @@ public class ReactiveCommandWinFormsOutputTests
         var results = new List<string>();
         viewModel.NavigateCommand.Subscribe(x => results.Add(x));
 
-        Observable.Return("page1").InvokeCommand(viewModel, vm => vm.NavigateCommand);
+        var source = new Subject<string>();
+        source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
+        source.OnNext("page1");
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0]).IsEqualTo("page1");
