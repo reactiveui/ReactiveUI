@@ -31,7 +31,7 @@ public static class WinFormsReactiveUIBuilderExtensions
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
-        return builder
+        return ((IReactiveUIBuilder)builder.WithCoreServices())
             .WithMainThreadScheduler(WinFormsMainThreadScheduler)
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Winforms.Registrations>();

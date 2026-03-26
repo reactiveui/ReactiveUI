@@ -37,8 +37,7 @@ public class WinFormsViewsTestExecutor : STAThreadExecutor
             // Register views from this assembly for view resolution tests
             builder
                 .WithWinForms()
-                .WithViewsFromAssembly(typeof(WinFormsViewsTestExecutor).Assembly)
-                .WithCoreServices();
+                .WithViewsFromAssembly(typeof(WinFormsViewsTestExecutor).Assembly);
         });
     }
 
