@@ -25,8 +25,7 @@ public static class AssemblyHooks
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
         // Initialize ReactiveUI with WinForms services
-        var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithWinForms().WithCoreServices().BuildApp();
+        AppLocator.CurrentMutable.CreateReactiveUIBuilder().WithWinForms().WithCoreServices().BuildApp();
     }
 
     /// <summary>
