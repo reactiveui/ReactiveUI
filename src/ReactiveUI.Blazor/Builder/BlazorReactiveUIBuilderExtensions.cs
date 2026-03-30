@@ -38,7 +38,7 @@ public static class BlazorReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        return builder
+        return ((IReactiveUIBuilder)builder.WithCoreServices())
             .WithBlazorScheduler()
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Blazor.Registrations>();

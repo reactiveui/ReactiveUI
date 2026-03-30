@@ -5,6 +5,8 @@
 
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Hosting;
+using ReactiveUI.Helpers;
+using ReactiveUI.Maui;
 
 namespace ReactiveUI.Builder;
 
@@ -68,10 +70,11 @@ public static partial class MauiReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        return builder
+        return ((IReactiveUIBuilder)builder.WithCoreServices())
             .WithMauiScheduler(dispatcher)
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<Maui.Registrations>()
+            .WithMauiConverters()
             .WithPlatformServices();
     }
 
@@ -129,6 +132,26 @@ public static partial class MauiReactiveUIBuilderExtensions
         builder.WithTaskPoolScheduler(TaskPoolScheduler.Default);
         var scheduler = ResolveMainThreadScheduler(dispatcher);
         return builder.WithMainThreadScheduler(scheduler);
+    }
+
+    /// <summary>
+    /// Registers Maui-specific converters to the ConverterService.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    /// <remarks>
+    /// This method registers Maui-specific converters (<see cref="BooleanToVisibilityTypeConverter"/>,
+    /// <see cref="VisibilityToBooleanTypeConverter"/>) and the <see cref="ComponentModelFallbackConverter"/>
+    /// to the <c>ConverterService</c> so they are available when using the builder pattern.
+    /// </remarks>
+    public static IReactiveUIBuilder WithMauiConverters(this IReactiveUIBuilder builder)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(builder);
+
+        return builder
+            .WithConverter(new BooleanToVisibilityTypeConverter())
+            .WithConverter(new VisibilityToBooleanTypeConverter())
+            .WithFallbackConverter(new ComponentModelFallbackConverter());
     }
 
     private static IScheduler ResolveMainThreadScheduler(IDispatcher? dispatcher)
