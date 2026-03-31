@@ -32,7 +32,7 @@ public static class AndroidXReactiveUIBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        return builder
+        return ((IReactiveUIBuilder)builder.WithCoreServices())
             .WithMainThreadScheduler(HandlerScheduler.MainThreadScheduler)
             .WithTaskPoolScheduler(TaskPoolScheduler.Default)
             .WithPlatformModule<AndroidX.Registrations>();
