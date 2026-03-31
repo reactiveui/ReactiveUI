@@ -165,7 +165,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
         public Splat.Builder.IAppBuilder UsingModule<T>(T registrationModule)
             where T : Splat.Builder.IModule => throw new NotImplementedException();
 
-        public Splat.Builder.IAppBuilder WithCoreServices() => throw new NotImplementedException();
+        public Splat.Builder.IAppBuilder WithCoreServices() => this;
 
         public Splat.Builder.IAppBuilder WithCustomRegistration(Action<IMutableDependencyResolver> configureAction) => throw new NotImplementedException();
 
