@@ -362,7 +362,7 @@ public class SuspensionHostGenericTests
 
         untypedHost.CreateNewAppState = null;
 
-        await Assert.That(host.CreateNewAppStateTyped).IsNull();
+        await Assert.That(host.CreateNewAppStateTyped is null).IsTrue();
     }
 
     [Test]

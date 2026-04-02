@@ -5,35 +5,35 @@
   </PropertyGroup>
   <PropertyGroup>
     <SplatVersion>19.3.1</SplatVersion>
-    <TUnitVersion>1.17.54</TUnitVersion>
+    <TUnitVersion>1.24.18</TUnitVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
-    <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.1</XamarinAndroidXLifecycleLiveDataVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.41</MauiVersion>
+    <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.2</XamarinAndroidXLifecycleLiveDataVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.51</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.120</MauiVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.141</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.135</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.141</XamlBehaviorsWpfVersion>
-    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.141</XamlBehaviorsWpfVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.3</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.13</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.24</AspNetVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.142</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.142</XamlBehaviorsWpfVersion>
+    <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.142</XamlBehaviorsWpfVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.5</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.14</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.25</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Akavache.Sqlite3" Version="11.5.1" />
     <PackageVersion Include="Akavache.SystemTextJson" Version="11.5.1" />
-    <PackageVersion Include="bunit" Version="2.6.2" />
+    <PackageVersion Include="bunit" Version="2.7.2" />
     <PackageVersion Include="DynamicData" Version="9.4.31" />
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.4.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.5.2" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.1.0" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.201" />
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)" />
     <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
@@ -54,7 +54,7 @@
     <PackageVersion Include="System.Text.Json" Version="10.0.3" />
     <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)" />
-    <PackageVersion Include="Verify.TUnit" Version="31.13.2" />
+    <PackageVersion Include="Verify.TUnit" Version="31.14.0" />
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
     <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
@@ -72,13 +72,13 @@
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
     <!-- Fragment/Collection/SavedState to match their latest constraints -->
-    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.4" />
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.4" />
-    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.4.0.1" />
-    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.1" />
-    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.16" />
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.2" />
+    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.5" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.5" />
+    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.4.0.2" />
+    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2" />
+    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.17" />
   </ItemGroup>
   <ItemGroup Condition="'$(UseMaui)' != 'true'">
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />

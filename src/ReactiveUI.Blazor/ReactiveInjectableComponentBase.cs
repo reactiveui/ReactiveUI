@@ -108,6 +108,10 @@ public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, IN
                 h => PropertyChanged -= h,
                 nameof(ViewModel),
                 () => InvokeAsync(StateHasChanged));
+
+            // Re-render to pick up any property changes that occurred during activation (OnInitialized)
+            // before these subscriptions were wired.
+            InvokeAsync(StateHasChanged);
         }
 
         base.OnAfterRender(firstRender);

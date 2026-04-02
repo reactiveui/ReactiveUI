@@ -26,7 +26,7 @@ public class ReactiveComponentBaseTests : BunitContext
         var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         // Initial render should have occurred once.
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(1);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
 
         // Change a property on the ViewModel to trigger a notification.
         viewModel.SomeProperty = "Changed";
@@ -48,7 +48,7 @@ public class ReactiveComponentBaseTests : BunitContext
         var viewModel1 = new TestViewModel();
         var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel1));
 
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(1);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
 
         var viewModel2 = new TestViewModel();
         cut.Render(parameters => parameters.Add(p => p.ViewModel, viewModel2));

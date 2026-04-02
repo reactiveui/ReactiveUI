@@ -21,7 +21,7 @@ public class ReactiveLayoutComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
         var cut = Render<TestLayoutComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(1);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
 
         viewModel.SomeProperty = "Changed";
 
