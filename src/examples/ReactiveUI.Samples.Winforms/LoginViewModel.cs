@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI.Samples.Winforms;
 
@@ -26,14 +27,19 @@ public class LoginViewModel : ReactiveObject
             vm => vm.Password,
             (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
 
-        Cancel = ReactiveCommand.Create(() => { }, outputScheduler: scheduler);
+        var cancelSubject = new Subject<Unit>();
 
         Login = ReactiveCommand.CreateFromObservable(
             () => Observable
                 .Return(Password is "secret")
                 .Delay(TimeSpan.FromSeconds(1), scheduler)
-                .TakeUntil(Cancel),
+                .TakeUntil(cancelSubject),
             canLogin,
+            scheduler);
+
+        Cancel = ReactiveCommand.Create(
+            () => cancelSubject.OnNext(Unit.Default),
+            Login.IsExecuting,
             scheduler);
     }
 
