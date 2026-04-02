@@ -8,6 +8,9 @@
   <Folder Name="/Examples/">
     <Project Path="examples/ReactiveUI.Builder.BlazorServer/ReactiveUI.Builder.BlazorServer.csproj" Id="5d87db90-4f69-470e-8c4f-4e68516ee3fb" />
     <Project Path="examples/ReactiveUI.Builder.WpfApp/ReactiveUI.Builder.WpfApp.csproj" />
+    <Project Path="examples/ReactiveUI.Samples.Wpf/ReactiveUI.Samples.Wpf.csproj" />
+    <Project Path="examples/ReactiveUI.Samples.Winforms/ReactiveUI.Samples.Winforms.csproj" />
+    <Project Path="examples/ReactiveUI.Samples.Maui/ReactiveUI.Samples.Maui.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../.editorconfig" />
