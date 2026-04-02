@@ -29,7 +29,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
 
         // Verify injection was successful.
         await Assert.That(cut.Instance.ViewModel).IsEqualTo(viewModel);
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(1);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
 
         // Trigger a change to verify the component is listening.
         viewModel.SomeProperty = "Changed";

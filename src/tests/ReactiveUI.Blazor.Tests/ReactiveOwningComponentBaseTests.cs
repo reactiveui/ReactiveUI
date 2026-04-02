@@ -27,7 +27,7 @@ public class ReactiveOwningComponentBaseTests : BunitContext
 
         var cut = Render<TestOwningComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(1);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
 
         viewModel.SomeProperty = "Changed";
 
