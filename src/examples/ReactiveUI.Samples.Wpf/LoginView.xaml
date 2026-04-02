@@ -1,0 +1,22 @@
+<reactiveui:ReactiveUserControl
+    x:Class="ReactiveUI.Samples.Wpf.LoginView"
+    x:TypeArguments="local:LoginViewModel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:local="clr-namespace:ReactiveUI.Samples.Wpf">
+
+    <StackPanel Margin="20" VerticalAlignment="Center">
+        <TextBlock Text="Username" Margin="0,0,0,4" />
+        <TextBox x:Name="Username" Margin="0,0,0,12" />
+
+        <TextBlock Text="Password" Margin="0,0,0,4" />
+        <PasswordBox x:Name="Password" Margin="0,0,0,16" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="Cancel" Content="Cancel" Width="80" Margin="0,0,8,0" />
+            <Button x:Name="Login" Content="Login" Width="80" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+
+</reactiveui:ReactiveUserControl>
