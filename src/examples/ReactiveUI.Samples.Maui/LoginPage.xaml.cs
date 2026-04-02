@@ -35,7 +35,7 @@ public partial class LoginPage : ReactiveUI.Maui.ReactiveContentPage<LoginViewMo
 
             ViewModel.Login
                 .SelectMany(success => Observable.FromAsync(() =>
-                    DisplayAlert(
+                    Shell.Current.DisplayAlertAsync(
                         success ? "Login Successful" : "Login Failed",
                         success ? "Welcome!" : "Invalid credentials.",
                         "OK")))

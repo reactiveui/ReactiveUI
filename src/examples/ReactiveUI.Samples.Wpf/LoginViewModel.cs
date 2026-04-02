@@ -11,10 +11,12 @@ namespace ReactiveUI.Samples.Wpf;
 /// <summary>
 /// A view model that handles user login with reactive validation and async execution.
 /// </summary>
-public class LoginViewModel : ReactiveObject
+public class LoginViewModel : ReactiveObject, IDisposable
 {
-    private string? _userName;
-    private string? _password;
+    /// <summary>
+    /// Signal used to cancel an in-flight login operation via TakeUntil.
+    /// </summary>
+    private readonly Subject<Unit> _cancelSignal = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoginViewModel"/> class.
@@ -27,18 +29,16 @@ public class LoginViewModel : ReactiveObject
             vm => vm.Password,
             (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
 
-        var cancelSubject = new Subject<Unit>();
-
         Login = ReactiveCommand.CreateFromObservable(
             () => Observable
                 .Return(Password is "secret")
                 .Delay(TimeSpan.FromSeconds(1), scheduler)
-                .TakeUntil(cancelSubject),
+                .TakeUntil(_cancelSignal),
             canLogin,
             scheduler);
 
         Cancel = ReactiveCommand.Create(
-            () => cancelSubject.OnNext(Unit.Default),
+            () => _cancelSignal.OnNext(Unit.Default),
             Login.IsExecuting,
             scheduler);
     }
@@ -48,8 +48,8 @@ public class LoginViewModel : ReactiveObject
     /// </summary>
     public string? UserName
     {
-        get => _userName;
-        set => this.RaiseAndSetIfChanged(ref _userName, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>
@@ -57,8 +57,8 @@ public class LoginViewModel : ReactiveObject
     /// </summary>
     public string? Password
     {
-        get => _password;
-        set => this.RaiseAndSetIfChanged(ref _password, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>
@@ -70,4 +70,25 @@ public class LoginViewModel : ReactiveObject
     /// Gets the cancel command. Only available while login is executing.
     /// </summary>
     public ReactiveCommand<Unit, Unit> Cancel { get; }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases managed resources.
+    /// </summary>
+    /// <param name="disposing">Whether to release managed resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _cancelSignal.Dispose();
+            Login.Dispose();
+            Cancel.Dispose();
+        }
+    }
 }

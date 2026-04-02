@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI.Builder.BlazorServer.Models;
@@ -19,7 +20,6 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     private readonly ChatRoom _room;
     private readonly string _user;
     private readonly Guid _senderInstanceId;
-    private string _messageText = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatRoomViewModel" /> class.
@@ -79,11 +79,13 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// <summary>
     /// Gets or sets the message text.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
     public string MessageText
     {
-        get => _messageText;
-        set => this.RaiseAndSetIfChanged(ref _messageText, value);
-    }
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = string.Empty;
 
     /// <summary>
     /// Gets command to send a message.
