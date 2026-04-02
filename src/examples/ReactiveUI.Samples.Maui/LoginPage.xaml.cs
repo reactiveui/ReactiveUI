@@ -34,11 +34,12 @@ public partial class LoginPage : ReactiveUI.Maui.ReactiveContentPage<LoginViewMo
                 .DisposeWith(d);
 
             ViewModel.Login
-                .Subscribe(async success =>
-                    await (Shell.Current?.DisplayAlert(
+                .SelectMany(success => Observable.FromAsync(() =>
+                    DisplayAlert(
                         success ? "Login Successful" : "Login Failed",
                         success ? "Welcome!" : "Invalid credentials.",
-                        "OK") ?? Task.CompletedTask))
+                        "OK")))
+                .Subscribe()
                 .DisposeWith(d);
         });
     }

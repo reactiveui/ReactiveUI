@@ -34,7 +34,9 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
                 .DisposeWith(d);
 
             // WPF PasswordBox doesn't support data binding, so marshal changes manually.
-            Observable.FromEventPattern(Password, nameof(PasswordBox.PasswordChanged))
+            Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+                    h => Password.PasswordChanged += h,
+                    h => Password.PasswordChanged -= h)
                 .Select(_ => Password.Password)
                 .BindTo(this, v => v.ViewModel!.Password)
                 .DisposeWith(d);

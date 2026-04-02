@@ -6,16 +6,12 @@
 namespace ReactiveUI.Samples.Maui;
 
 /// <summary>
-/// MAUI application shell that creates the initial navigation window.
+/// Application shell providing Shell navigation for the MAUI sample.
 /// </summary>
-public partial class App : Application
+public partial class AppShell : Shell
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="App"/> class.
+    /// Initializes a new instance of the <see cref="AppShell"/> class.
     /// </summary>
-    public App() => InitializeComponent();
-
-    /// <inheritdoc/>
-    protected override Window CreateWindow(IActivationState? activationState) =>
-        new(new AppShell());
+    public AppShell() => InitializeComponent();
 }
