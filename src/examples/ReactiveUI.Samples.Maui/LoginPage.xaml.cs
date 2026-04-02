@@ -35,10 +35,10 @@ public partial class LoginPage : ReactiveUI.Maui.ReactiveContentPage<LoginViewMo
 
             ViewModel.Login
                 .Subscribe(async success =>
-                    await DisplayAlert(
+                    await (Shell.Current?.DisplayAlert(
                         success ? "Login Successful" : "Login Failed",
                         success ? "Welcome!" : "Invalid credentials.",
-                        "OK"))
+                        "OK") ?? Task.CompletedTask))
                 .DisposeWith(d);
         });
     }
