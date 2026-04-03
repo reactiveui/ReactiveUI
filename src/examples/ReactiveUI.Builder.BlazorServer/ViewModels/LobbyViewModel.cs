@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -19,9 +20,6 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     private readonly ObservableAsPropertyHelper<bool> _createRoomDisabledHelper;
     private readonly ObservableAsPropertyHelper<bool> _deleteRoomDisabledHelper;
     private readonly ObservableAsPropertyHelper<IReadOnlyList<ChatRoom>> _rooms;
-    private string _roomName = string.Empty;
-    private string _displayName = Environment.MachineName;
-    private ChatRoom? _selectedChatRoom;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LobbyViewModel"/> class.
@@ -109,27 +107,31 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// </summary>
     public ChatRoom? SelectedChatRoom
     {
-        get => _selectedChatRoom;
-        set => this.RaiseAndSetIfChanged(ref _selectedChatRoom, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <summary>
     /// Gets or sets the display name for the current user.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
     public string DisplayName
     {
-        get => _displayName;
-        set => this.RaiseAndSetIfChanged(ref _displayName, value);
-    }
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = Environment.MachineName;
 
     /// <summary>
     /// Gets or sets the new room name.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
     public string RoomName
     {
-        get => _roomName;
-        set => this.RaiseAndSetIfChanged(ref _roomName, value);
-    }
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = string.Empty;
 
     /// <summary>
     /// Gets the current list of rooms.

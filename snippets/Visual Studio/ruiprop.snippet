@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
   <CodeSnippet Format="1.0.0">
     <Header>
       <Title>ReactiveUI property</Title>
-      <Description>Inserts a ReactiveUI property</Description>
+      <Description>Inserts a ReactiveUI property using C# 13 field keyword</Description>
       <Shortcut>ruiprop</Shortcut>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -13,13 +13,8 @@
       <Declarations>
         <Literal Editable="true">
           <ID>type</ID>
-          <ToolTip>Type of field and property</ToolTip>
+          <ToolTip>Type of property</ToolTip>
           <Default>string</Default>
-        </Literal>
-        <Literal Editable="true">
-          <ID>fieldName</ID>
-          <ToolTip>Name of backing field</ToolTip>
-          <Default>myField</Default>
         </Literal>
         <Literal Editable="true">
           <ID>propertyName</ID>
@@ -28,11 +23,10 @@
         </Literal>
       </Declarations>
       <Code Language="csharp" Delimiter="$">
-        <![CDATA[private $type$ $fieldName$;
-		public $type$ $propertyName$ 
-        { 
-            get => $fieldName$; 
-            set => this.RaiseAndSetIfChanged(ref $fieldName$, value); 
+        <![CDATA[public $type$ $propertyName$
+        {
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }$end$]]>
       </Code>
     </Snippet>

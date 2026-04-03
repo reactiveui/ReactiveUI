@@ -1,3 +1,7 @@
-# Contributor Code of Conduct
+# Code of Conduct
 
-If you’re being harassed, noticed someone else being harassed, or have any other concerns, please <a href="mailto:hello@reactiveui.net">contact us immediately</a>. Your reports will be taken seriously and will not be dismissed or argued with. All members, committers and volunteers in this community are required to act according to the <a href="https://reactiveui.net/code-of-conduct/">Code of Conduct</a>. These guidelines help steer our interactions and strive to keep ReactiveUI a positive, growing project, community and help us provide and ensure a safe environment for everyone. When referring to a group of people, we aim to use gender-neutral terms like "team", "folks", "everyone". (For details, we recommend <a href="https://modelviewculture.com/pieces/gendered-language-feature-or-bug-in-software-documentation" target="_blank">this post</a>).</p>
+This project has adopted the code of conduct defined by the Contributor Covenant to clarify expected behavior in our community.
+
+For more information, see the [.NET Foundation Code of Conduct](https://dotnetfoundation.org/code-of-conduct).
+
+To report concerns, please contact us at [hello@reactiveui.net](mailto:hello@reactiveui.net).

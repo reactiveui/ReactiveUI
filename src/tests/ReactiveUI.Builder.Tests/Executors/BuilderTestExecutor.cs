@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.WinForms.Tests.Winforms;
+namespace ReactiveUI.Builder.Tests.Executors;
 
-[assembly: NotInParallel]
-[assembly: TestExecutor<WinFormsTestExecutor>]
+/// <summary>
+/// Standard test executor for Builder tests that resets state and bootstraps core services.
+/// </summary>
+public sealed class BuilderTestExecutor : BuilderTestExecutorBase;

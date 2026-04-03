@@ -32,12 +32,10 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 | Any               | [ReactiveUI.SourceGenerators][SGDoc]| [![SGBadge]][SG]       |
 | Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
 | WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
-| UWP               | [ReactiveUI.Uwp][UwpDoc]            | [![UwpBadge]][Uwp]     |
 | WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
 | MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui]   |
 | Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
 | AndroidX          | [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
-| Tizen             | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
 | Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
 | Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]     |
 | Platform Uno      | [ReactiveUI.Uno.WinUI][UnoWinUiDoc] | [![UnoWinUiBadge]][UnoWinUi] |
@@ -60,10 +58,6 @@ Install the following packages to start building your own ReactiveUI app. <b>Not
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
-
-[Uwp]: https://www.nuget.org/packages/ReactiveUI.Uwp/
-[UwpBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uwp.svg
-[UwpDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
 [WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
@@ -123,14 +117,28 @@ As of May 2024, Microsoft ended support for Xamarin per their [support policy](h
 
 For guidance on migrating from Xamarin to MAUI, see the [official migration documentation](https://docs.microsoft.com/dotnet/maui/migration/).
 
-### MAUI .NET 8 Users  
-ReactiveUI now requires .NET 9 for MAUI platforms. Update your projects to:
-- `net9.0-android` (was `net8.0-android`)
-- `net9.0-ios` (was `net8.0-ios`) 
-- `net9.0-maccatalyst` (was `net8.0-maccatalyst`)
-- `net9.0-windows` (was `net8.0-windows`)
+### MAUI Users
+ReactiveUI supports .NET 9 and .NET 10 for MAUI platforms:
+- `net10.0-android` / `net9.0-android`
+- `net10.0-ios` / `net9.0-ios`
+- `net10.0-maccatalyst` / `net9.0-maccatalyst`
+- `net10.0-windows10.0.19041.0` / `net9.0-windows10.0.19041.0`
 
-Note: Non-MAUI `net8.0` library targets remain fully supported.
+Non-MAUI `net8.0` library targets remain fully supported.
+
+## Examples
+
+Platform-specific sample applications are included in [`src/examples/`](src/examples/):
+
+| Sample | Platform | Description |
+|--------|----------|-------------|
+| [ReactiveUI.Samples.Wpf](src/examples/ReactiveUI.Samples.Wpf) | WPF | Login form with reactive bindings, PasswordBox event marshaling |
+| [ReactiveUI.Samples.Winforms](src/examples/ReactiveUI.Samples.Winforms) | WinForms | Login form with IViewFor, programmatic UI layout |
+| [ReactiveUI.Samples.Maui](src/examples/ReactiveUI.Samples.Maui) | MAUI | Cross-platform login with Shell navigation, ReactiveContentPage |
+| [ReactiveUI.Builder.WpfApp](src/examples/ReactiveUI.Builder.WpfApp) | WPF | Multi-instance chat app with routing, suspension, and network sync |
+| [ReactiveUI.Builder.BlazorServer](src/examples/ReactiveUI.Builder.BlazorServer) | Blazor Server | Chat app with server-side Blazor and reactive components |
+
+All samples target .NET 10, use `RxAppBuilder` for initialization, and demonstrate `WhenActivated`, `Bind`/`BindCommand`, and proper subscription disposal.
 
 This is how we use the donations:
 

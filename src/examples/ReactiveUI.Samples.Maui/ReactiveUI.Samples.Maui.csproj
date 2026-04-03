@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- On CI, build as net10.0 library to validate compilation without triggering
+         platform packaging steps (Android Cecil bugs, Xcode version requirements).
+         Locally, build with full platform TFMs as an app. -->
+    <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' == 'true'">net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true'">net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true' and ($([MSBuild]::IsOSPlatform('windows')) or $([MSBuild]::IsOSPlatform('osx')))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true' and $([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <DefaultPackageDescription>A sample MAUI login application using ReactiveUI.</DefaultPackageDescription>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.19041.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <WindowsPackageType>None</WindowsPackageType>
+    <GenerateAppxPackageOnBuild>false</GenerateAppxPackageOnBuild>
+    <PublishAppxPackage>false</PublishAppxPackage>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Reactive" />
+    <Using Include="System.Reactive.Disposables" />
+    <Using Include="System.Reactive.Disposables.Fluent" />
+    <Using Include="System.Reactive.Linq" />
+    <Using Include="ReactiveUI" />
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Maui" />
+  </ItemGroup>
+
+</Project>

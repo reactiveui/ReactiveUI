@@ -97,12 +97,11 @@ public $Type$ $Name$ =&gt; _$fieldName$.Value;</s:String>
 	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=5BF7A7AE99C02B4B879040F4E3FC4989/Field/=fieldName/Order/@EntryValue">2</s:Int64>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/Shortcut/@EntryValue">raiseif</s:String>
-	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/Text/@EntryValue">$PropertyType$ _$fieldName$$END$;&#xD;
-public $PropertyType$ $PropertyName$&#xD;
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/Text/@EntryValue">public $PropertyType$ $PropertyName$&#xD;
 {&#xD;
-    get { return _$fieldName$; }&#xD;
-    set { this.RaiseAndSetIfChanged(ref _$fieldName$, value); }&#xD;
-}</s:String>
+    get;&#xD;
+    set =&gt; this.RaiseAndSetIfChanged(ref field, value);&#xD;
+}$END$</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/Applicability/=Live/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=4CDA9FF8B60E48418877CF5BDEE17771/Scope/=B68999B9D6B43E47A02B22C12A54C3CC/@KeyIndexDefined">True</s:Boolean>

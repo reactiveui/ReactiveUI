@@ -7,11 +7,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Text.Json.Serialization.Metadata;
-using Splat.Builder;
+
+using ReactiveUI.Builder.Tests.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 [NotInParallel]
+[TestExecutor<BuilderMixinsTests.ResetOnlyExecutor>]
 public class BuilderMixinsTests
 {
     private static readonly Action[] NullBuilderCases;
@@ -40,9 +42,6 @@ public class BuilderMixinsTests
             () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)];
     }
 
-    [Before(HookType.Test)]
-    public void SetUp() => AppBuilder.ResetBuilderStateForTests();
-
     [Test]
     public void Builder_extension_methods_throw_when_builder_null()
     {
@@ -59,8 +58,7 @@ public class BuilderMixinsTests
         var original = RxSchedulers.TaskpoolScheduler;
         try
         {
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithTaskPoolScheduler(scheduler);
@@ -84,8 +82,7 @@ public class BuilderMixinsTests
         var original = RxSchedulers.MainThreadScheduler;
         try
         {
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithMainThreadScheduler(scheduler);
@@ -106,56 +103,51 @@ public class BuilderMixinsTests
     [Test]
     public async Task WithRegistrationOnBuild_registers_service_when_building()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.WithRegistrationOnBuild(builder, r => r.RegisterConstant("mixins", typeof(string)));
         builder.WithCoreServices().Build();
 
-        await Assert.That(resolver.GetService<string>()).IsEqualTo("mixins");
+        await Assert.That(Locator.Current.GetService<string>()).IsEqualTo("mixins");
     }
 
     [Test]
     public async Task WithRegistration_registers_service_immediately()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.WithRegistration(builder, r => r.RegisterConstant(42, typeof(int)));
 
-        await Assert.That(resolver.GetService<int>()).IsEqualTo(42);
+        await Assert.That(Locator.Current.GetService<int>()).IsEqualTo(42);
     }
 
     [Test]
     public async Task WithViewsFromAssembly_registers_views_in_resolver()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.WithViewsFromAssembly(builder, typeof(BuilderMixinsTestView).Assembly);
         builder.WithCoreServices().Build();
 
-        var view = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
+        var view = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
         await Assert.That(view).IsTypeOf<BuilderMixinsTestView>();
     }
 
     [Test]
     public async Task WithPlatformModule_registers_module_types()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.WithPlatformModule<TestRegistrationModule>(builder);
         builder.WithCoreServices().Build();
 
-        await Assert.That(resolver.GetService<PlatformRegistrationMarker>()).IsNotNull();
+        await Assert.That(Locator.Current.GetService<PlatformRegistrationMarker>()).IsNotNull();
     }
 
     [Test]
     public async Task UsingSplatModule_invokes_module_registration()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var module = new TestSplatModule();
 
         BuilderMixins.UsingSplatModule(builder, module);
@@ -163,7 +155,7 @@ public class BuilderMixinsTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(resolver.GetService<SplatModuleMarker>()).IsNotNull();
+            await Assert.That(Locator.Current.GetService<SplatModuleMarker>()).IsNotNull();
             await Assert.That(module.Registered).IsTrue();
         }
     }
@@ -171,8 +163,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task UsingSplatBuilder_Executes_Callback()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var invoked = false;
 
         BuilderMixins.UsingSplatBuilder(builder, _ => invoked = true);
@@ -183,8 +174,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task UsingSplatBuilder_Handles_Null_Callback()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         var result = BuilderMixins.UsingSplatBuilder(builder, null);
 
@@ -194,8 +184,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task ForCustomPlatform_sets_scheduler_and_platform_registrations()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var scheduler = ImmediateScheduler.Instance;
 
         BuilderMixins.ForCustomPlatform(builder, scheduler, r => r.RegisterConstant(new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker)));
@@ -204,15 +193,14 @@ public class BuilderMixinsTests
         using (Assert.Multiple())
         {
             await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(scheduler);
-            await Assert.That(resolver.GetService<PlatformRegistrationMarker>()).IsNotNull();
+            await Assert.That(Locator.Current.GetService<PlatformRegistrationMarker>()).IsNotNull();
         }
     }
 
     [Test]
     public async Task ForPlatforms_invokes_all_actions()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var executed = new List<string>();
 
         BuilderMixins.ForPlatforms(
@@ -226,8 +214,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task ConfigureMessageBus_registers_configured_instance()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var configured = false;
 
         BuilderMixins.WithMessageBus(builder, _ => configured = true);
@@ -235,7 +222,7 @@ public class BuilderMixinsTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(resolver.GetService<IMessageBus>()).IsAssignableTo<MessageBus>();
+            await Assert.That(Locator.Current.GetService<IMessageBus>()).IsAssignableTo<MessageBus>();
             await Assert.That(configured).IsTrue();
         }
     }
@@ -243,8 +230,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task ConfigureViewLocator_registers_configured_locator()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var configured = false;
 
         BuilderMixins.ConfigureViewLocator(builder, _ => configured = true);
@@ -252,7 +238,7 @@ public class BuilderMixinsTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(resolver.GetService<IViewLocator>()).IsAssignableTo<DefaultViewLocator>();
+            await Assert.That(Locator.Current.GetService<IViewLocator>()).IsAssignableTo<DefaultViewLocator>();
             await Assert.That(configured).IsTrue();
         }
     }
@@ -260,10 +246,9 @@ public class BuilderMixinsTests
     [Test]
     public async Task ConfigureSuspensionDriver_invokes_action_when_driver_registered()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var driver = new TestSuspensionDriver();
-        resolver.RegisterConstant(driver, typeof(ISuspensionDriver));
+        Locator.CurrentMutable.RegisterConstant(driver, typeof(ISuspensionDriver));
         ISuspensionDriver? observed = null;
 
         BuilderMixins.ConfigureSuspensionDriver(builder, d => observed = d);
@@ -275,13 +260,12 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterViewModel_registers_transient_view_model()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(builder);
 
-        var first = resolver.GetService<BuilderMixinsTestViewModel>();
-        var second = resolver.GetService<BuilderMixinsTestViewModel>();
+        var first = Locator.Current.GetService<BuilderMixinsTestViewModel>();
+        var second = Locator.Current.GetService<BuilderMixinsTestViewModel>();
 
         using (Assert.Multiple())
         {
@@ -294,13 +278,12 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterSingletonViewModel_registers_singleton_instance()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(builder);
 
-        var first = resolver.GetService<BuilderMixinsTestViewModel>();
-        var second = resolver.GetService<BuilderMixinsTestViewModel>();
+        var first = Locator.Current.GetService<BuilderMixinsTestViewModel>();
+        var second = Locator.Current.GetService<BuilderMixinsTestViewModel>();
 
         using (Assert.Multiple())
         {
@@ -312,13 +295,12 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterView_registers_transient_view()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(builder);
 
-        var first = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
-        var second = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
+        var first = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
+        var second = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
 
         using (Assert.Multiple())
         {
@@ -331,13 +313,12 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterSingletonView_registers_singleton_view()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(builder);
 
-        var first = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
-        var second = resolver.GetService<IViewFor<BuilderMixinsTestViewModel>>();
+        var first = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
+        var second = Locator.Current.GetService<IViewFor<BuilderMixinsTestViewModel>>();
 
         using (Assert.Multiple())
         {
@@ -350,9 +331,8 @@ public class BuilderMixinsTests
     [Test]
     public async Task WithInstance_SingleParameter_InvokesActionWithResolvedInstance()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        resolver.RegisterConstant("test-value", typeof(string));
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
+        Locator.CurrentMutable.RegisterConstant("test-value", typeof(string));
 
         string? captured = null;
         builder.WithInstance<string>(value => captured = value);
@@ -364,10 +344,9 @@ public class BuilderMixinsTests
     [Test]
     public async Task WithInstance_TwoParameters_InvokesActionWithBothInstances()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        resolver.RegisterConstant("string-value", typeof(string));
-        resolver.RegisterConstant(42, typeof(int));
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
+        Locator.CurrentMutable.RegisterConstant("string-value", typeof(string));
+        Locator.CurrentMutable.RegisterConstant(42, typeof(int));
 
         string? capturedString = null;
         int? capturedInt = null;
@@ -402,8 +381,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterViews_WithNullConfigure_ThrowsArgumentNullException()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         await Assert.That(() => BuilderMixins.RegisterViews(builder, null!))
             .Throws<ArgumentNullException>();
@@ -412,8 +390,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task RegisterViews_WithViewLocator_ReturnsBuilder()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         // WithCoreServices registers the DefaultViewLocator
         builder.WithCoreServices().Build();
@@ -434,8 +411,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task WithViewModule_ReturnsBuilder()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
         // WithCoreServices registers the DefaultViewLocator
         builder.WithCoreServices().Build();
@@ -467,8 +443,7 @@ public class BuilderMixinsTests
     [Test]
     public async Task BuildApp_WithReactiveUIBuilder_BuildsSuccessfully()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         builder.WithCoreServices();
 
         var result = BuilderMixins.BuildApp(builder);
@@ -488,14 +463,13 @@ public class BuilderMixinsTests
     [Test]
     public async Task WithMessageBus_RegistersCustomMessageBus()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var customMessageBus = new MessageBus();
 
         BuilderMixins.WithMessageBus(builder, customMessageBus);
         builder.WithCoreServices().Build();
 
-        var registered = resolver.GetService<IMessageBus>();
+        var registered = Locator.Current.GetService<IMessageBus>();
         await Assert.That(registered).IsSameReferenceAs(customMessageBus);
     }
 
@@ -509,8 +483,7 @@ public class BuilderMixinsTests
             var baselineScheduler = CurrentThreadScheduler.Instance;
             RxSchedulers.TaskpoolScheduler = baselineScheduler;
 
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithTaskPoolScheduler(scheduler, setRxApp: false);
@@ -540,8 +513,7 @@ public class BuilderMixinsTests
             var baselineScheduler = CurrentThreadScheduler.Instance;
             RxSchedulers.MainThreadScheduler = baselineScheduler;
 
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithMainThreadScheduler(scheduler, setRxApp: false);
@@ -558,6 +530,14 @@ public class BuilderMixinsTests
         finally
         {
             RxSchedulers.MainThreadScheduler = original;
+        }
+    }
+
+    internal sealed class ResetOnlyExecutor : BuilderTestExecutorBase
+    {
+        protected override void ConfigureBuilder()
+        {
+            // Tests in this class configure and build the builder themselves.
         }
     }
 
