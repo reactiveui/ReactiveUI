@@ -5,7 +5,12 @@
 
 using System;
 using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core;
+using TUnit.Core.Executors;
+
+[assembly: NotInParallel]
+[assembly: TestExecutor<AppBuilderTestExecutor>]
 
 namespace ReactiveUI.Testing.Tests;
 
@@ -20,13 +25,9 @@ public static class AssemblyHooks
     [Before(HookType.Assembly)]
     public static void AssemblySetup()
     {
-        // Override ModeDetector to ensure we're detected as being in a unit test runner
+        // Override ModeDetector to ensure we're detected as being in a unit test runner.
+        // App builder initialization is handled per-test via test executors.
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-
-        // Initialize ReactiveUI with core services
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .BuildApp();
     }
 
     /// <summary>

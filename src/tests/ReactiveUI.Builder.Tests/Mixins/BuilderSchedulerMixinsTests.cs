@@ -4,16 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
-using Splat.Builder;
+
+using ReactiveUI.Builder.Tests.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 [NotInParallel]
 public class BuilderSchedulerMixinsTests
 {
-    [Before(HookType.Test)]
-    public void SetUp() => AppBuilder.ResetBuilderStateForTests();
-
     [Test]
     public void WithTaskPoolScheduler_Throws_When_Builder_Null()
     {
@@ -29,13 +27,13 @@ public class BuilderSchedulerMixinsTests
     }
 
     [Test]
+    [TestExecutor<ResetOnlyExecutor>]
     public async Task WithTaskPoolScheduler_Sets_Scheduler_And_Rx_Schedulers()
     {
         var original = RxSchedulers.TaskpoolScheduler;
         try
         {
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithTaskPoolScheduler(scheduler);
@@ -54,13 +52,13 @@ public class BuilderSchedulerMixinsTests
     }
 
     [Test]
+    [TestExecutor<ResetOnlyExecutor>]
     public async Task WithMainThreadScheduler_Sets_Scheduler_And_Rx_Schedulers()
     {
         var original = RxSchedulers.MainThreadScheduler;
         try
         {
-            using var resolver = new ModernDependencyResolver();
-            var builder = resolver.CreateReactiveUIBuilder();
+            var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = ImmediateScheduler.Instance;
 
             builder.WithMainThreadScheduler(scheduler);
@@ -79,10 +77,10 @@ public class BuilderSchedulerMixinsTests
     }
 
     [Test]
+    [TestExecutor<ResetOnlyExecutor>]
     public async Task WithTaskPoolScheduler_Extension_Method_Returns_Builder()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var scheduler = ImmediateScheduler.Instance;
 
         var result = BuilderMixins.WithTaskPoolScheduler(builder, scheduler);
@@ -91,14 +89,22 @@ public class BuilderSchedulerMixinsTests
     }
 
     [Test]
+    [TestExecutor<ResetOnlyExecutor>]
     public async Task WithMainThreadScheduler_Extension_Method_Returns_Builder()
     {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
         var scheduler = ImmediateScheduler.Instance;
 
         var result = BuilderMixins.WithMainThreadScheduler(builder, scheduler);
 
         await Assert.That(result).IsSameReferenceAs(builder);
+    }
+
+    internal sealed class ResetOnlyExecutor : BuilderTestExecutorBase
+    {
+        protected override void ConfigureBuilder()
+        {
+            // Tests in this class configure and build the builder themselves.
+        }
     }
 }

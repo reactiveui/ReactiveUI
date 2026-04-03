@@ -4,41 +4,41 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Blazor;
-using Splat.Builder;
+using ReactiveUI.Builder.Tests.Executors;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
 public class ReactiveUIBuilderBlazorTests
 {
     [Test]
+    [TestExecutor<WithBlazorExecutor>]
     public async Task WithBlazor_Should_Register_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
-
-        builder.WithBlazor().Build();
-
-        var platformOperations = locator.GetService<IPlatformOperations>();
+        var platformOperations = Locator.Current.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();
 
-        var typeConverters = locator.GetServices<IBindingTypeConverter>();
+        var typeConverters = Locator.Current.GetServices<IBindingTypeConverter>();
         await Assert.That(typeConverters).IsNotEmpty();
     }
 
     [Test]
+    [TestExecutor<WithBlazorExecutor>]
     public async Task WithCoreServices_AndBlazor_Should_Register_All_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
-
-        builder.WithBlazor().Build();
-
-        var observableProperty = locator.GetService<ICreatesObservableForProperty>();
+        var observableProperty = Locator.Current.GetService<ICreatesObservableForProperty>();
         await Assert.That(observableProperty).IsNotNull();
 
-        var platformOperations = locator.GetService<IPlatformOperations>();
+        var platformOperations = Locator.Current.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();
+    }
+
+    internal sealed class WithBlazorExecutor : BuilderTestExecutorBase
+    {
+        protected override void ConfigureBuilder() =>
+            ((IReactiveUIBuilder)RxAppBuilder.CreateReactiveUIBuilder()
+                .WithCoreServices())
+                .WithBlazor()
+                .BuildApp();
     }
 }

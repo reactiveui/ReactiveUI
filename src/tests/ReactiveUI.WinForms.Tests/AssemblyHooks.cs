@@ -3,16 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using ReactiveUI.Builder;
-using Splat.Builder;
-using TUnit.Core;
-
 namespace ReactiveUI.WinForms.Tests;
 
 /// <summary>
 /// Assembly-level hooks for WinForms test initialization and cleanup.
 /// </summary>
+/// <remarks>
+/// App builder initialization is handled per-test via WinFormsTestExecutor,
+/// not at the assembly level, to ensure proper isolation between tests.
+/// </remarks>
 public static class AssemblyHooks
 {
     /// <summary>
@@ -23,9 +22,6 @@ public static class AssemblyHooks
     {
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-
-        // Initialize ReactiveUI with WinForms services
-        AppLocator.CurrentMutable.CreateReactiveUIBuilder().WithWinForms().BuildApp();
     }
 
     /// <summary>

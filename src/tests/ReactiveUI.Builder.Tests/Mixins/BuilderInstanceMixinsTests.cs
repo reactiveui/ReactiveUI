@@ -12,7 +12,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_1_Type_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -30,7 +29,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_1_Type_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -46,7 +44,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_1_Type_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -64,7 +61,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_1_Type_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -80,7 +76,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_2_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -108,7 +103,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_2_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -124,7 +118,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_2_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -152,7 +145,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_2_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -168,7 +160,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_3_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -203,7 +194,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_3_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -219,7 +209,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_3_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -254,7 +243,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_3_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -270,7 +258,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_4_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -312,7 +299,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_4_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -329,7 +315,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_4_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -371,7 +356,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_4_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -388,7 +372,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_5_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -439,7 +422,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_5_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -457,7 +439,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_5_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -508,7 +489,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_5_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -526,7 +506,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_6_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -584,7 +563,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_6_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -602,7 +580,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_6_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -660,7 +637,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_6_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -678,7 +654,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_7_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -743,7 +718,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_7_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -761,7 +735,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_7_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -826,7 +799,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_7_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -844,7 +816,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_8_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -916,7 +887,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_8_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -934,7 +904,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_8_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1006,7 +975,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_8_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1024,7 +992,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_9_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1103,7 +1070,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_9_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1122,7 +1088,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_9_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1201,7 +1166,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_9_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1220,7 +1184,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_10_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1307,7 +1270,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_10_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1326,7 +1288,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_10_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1413,7 +1374,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_10_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1432,7 +1392,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_11_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1526,7 +1485,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_11_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1545,7 +1503,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_11_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1639,7 +1596,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_11_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1658,7 +1614,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_12_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1759,7 +1714,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_12_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1778,7 +1732,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_12_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -1879,7 +1832,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_12_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -1898,7 +1850,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_13_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2006,7 +1957,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_13_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2026,7 +1976,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_13_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2134,7 +2083,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_13_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2154,7 +2102,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_14_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2269,7 +2216,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_14_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2288,7 +2234,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_14_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2403,7 +2348,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_14_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2422,7 +2366,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_15_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2545,7 +2488,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_15_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2565,7 +2507,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_15_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2688,7 +2629,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_15_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2708,7 +2648,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_16_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2838,7 +2777,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Builder_WithInstance_16_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,
@@ -2858,7 +2796,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_16_Types_invokes_action()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = resolver.CreateReactiveUIBuilder();
         var s1 = new InstanceService01();
@@ -2988,7 +2925,6 @@ public class BuilderInstanceMixinsTests
     [Test]
     public async Task Extension_WithInstance_16_Types_skips_when_null()
     {
-        AppBuilder.ResetBuilderStateForTests();
         using var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(
                                             resolver,

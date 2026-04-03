@@ -3,24 +3,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat.Builder;
+using ReactiveUI.Builder.Tests.Executors;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Drawing;
 
 public class ReactiveUIBuilderDrawingTests
 {
     [Test]
+    [TestExecutor<WithDrawingExecutor>]
     public async Task WithDrawing_Should_Register_Services()
     {
-        AppBuilder.ResetBuilderStateForTests();
-        using var locator = new ModernDependencyResolver();
-        var builder = locator.CreateReactiveUIBuilder();
-
-        builder.WithDrawing().Build();
-
-        // Drawing registers bitmap loader in non-NETSTANDARD contexts; we can still assert no exception and core services with chaining
-        locator.CreateReactiveUIBuilder().WithDrawing().Build();
-        var bindingConverters = locator.GetServices<IBindingTypeConverter>();
+        var bindingConverters = Locator.Current.GetServices<IBindingTypeConverter>();
         await Assert.That(bindingConverters).IsNotNull();
     }
 
@@ -32,5 +26,14 @@ public class ReactiveUIBuilderDrawingTests
         var exception = await Assert.That(() => builder!.WithDrawing()).Throws<ArgumentNullException>();
         await Assert.That(exception).IsNotNull();
         await Assert.That(exception.ParamName).IsEqualTo("builder");
+    }
+
+    internal sealed class WithDrawingExecutor : BuilderTestExecutorBase
+    {
+        protected override void ConfigureBuilder() =>
+            ((IReactiveUIBuilder)RxAppBuilder.CreateReactiveUIBuilder()
+                .WithCoreServices())
+                .WithDrawing()
+                .BuildApp();
     }
 }
