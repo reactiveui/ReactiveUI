@@ -1,8 +1,7 @@
 <templateSet group="ReactiveUI">
-  <template name="ruiprop" value="public $type$ $propertyName$ { get =&gt; $fieldName$; set =&gt; this.RaiseAndSetIfChanged(ref $fieldName$, value); }" description="Inserts a ReactiveUI property" toReformat="false" toShortenFQNames="true">
+  <template name="ruiprop" value="public $type$ $propertyName$ { get; set =&gt; this.RaiseAndSetIfChanged(ref field, value); }" description="Inserts a ReactiveUI property using C# 13 field keyword" toReformat="false" toShortenFQNames="true">
     <variable name="type" expression="" defaultValue="&quot;string&quot;" alwaysStopAt="true" />
     <variable name="propertyName" expression="" defaultValue="&quot;MyProperty&quot;" alwaysStopAt="true" />
-    <variable name="fieldName" expression="" defaultValue="&quot;myField&quot;" alwaysStopAt="true" />
     <context>
       <option name="CSS" value="false" />
       <option name="HTML" value="false" />
