@@ -54,7 +54,7 @@ public class CommandBindingImplementationTests
         var invokeCount = 0;
         vm.Command3.Subscribe(_ => ++invokeCount);
 
-        var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
+        var disp = fixture.BindCommand(vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
 
         view.Command1.PerformClick();
         using (Assert.Multiple())
@@ -96,7 +96,7 @@ public class CommandBindingImplementationTests
         var invokeCount = 0;
         vm.Command3.Subscribe(_ => ++invokeCount);
 
-        var disp = CommandBinderImplementationMixins.BindCommand(fixture, vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
+        var disp = fixture.BindCommand(vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
 
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
         using (Assert.Multiple())
