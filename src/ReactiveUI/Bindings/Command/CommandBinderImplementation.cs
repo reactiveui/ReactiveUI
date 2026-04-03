@@ -68,17 +68,20 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     {
         ArgumentExceptionHelper.ThrowIfNull(vmProperty);
         ArgumentExceptionHelper.ThrowIfNull(controlProperty);
+        ArgumentExceptionHelper.ThrowIfNull(withParameter);
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);
+        var parameterExpression = Reflection.Rewrite(withParameter.Body);
 
         var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
+        var parameterObservable = Reflection.ViewModelWhenAnyValue(viewModel, view, parameterExpression).Cast<TParam>();
 
         var bindingDisposable = BindCommandInternal<TView, TProp, TParam, TControl>(
             source,
             view,
             controlExpression,
-            withParameter.ToObservable(viewModel),
+            parameterObservable,
             toEvent);
 
         return new ReactiveBinding<TView, TProp>(

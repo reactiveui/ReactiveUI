@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 using ReactiveUI.Tests.Utilities.Logging;
 using ReactiveUI.Tests.Wpf.Mocks;
+using ReactiveUI.Tests.Xaml.Mocks;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -271,5 +272,23 @@ public class WpfCommandBindingImplementationTests
         GC.WaitForPendingFinalizers();
 
         await Assert.That(weakRef.IsAlive).IsFalse();
+    }
+
+    [Test]
+    public async Task CommandParameterIsCorrectAfterViewModelReassignment()
+    {
+        var vm = new CommandBindingViewModel { Value = 1 };
+        var view = new CommandBindingView { ViewModel = vm };
+
+        var received = 0;
+        view.ViewModel.Command1 = ReactiveCommand.Create<int, int>(i => received = i);
+
+        var binding = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
+
+        view.ViewModel = new CommandBindingViewModel { Value = 2 };
+
+        view.Command1.RaiseCustomClick();
+
+        await Assert.That(received).IsEqualTo(2);
     }
 }
