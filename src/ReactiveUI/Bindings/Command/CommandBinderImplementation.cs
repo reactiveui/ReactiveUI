@@ -25,29 +25,7 @@ namespace ReactiveUI;
 /// </remarks>
 public class CommandBinderImplementation : ICommandBinderImplementation
 {
-    /// <summary>
-    /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
-    /// an optional parameter when triggered by a specified event.
-    /// </summary>
-    /// <remarks>This method uses reflection to observe properties and events, which may be affected by
-    /// trimming in some deployment scenarios. The binding is one-way, from the view model command to the view control.
-    /// If the specified event is not found on the control, an exception may be thrown at runtime.</remarks>
-    /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
-    /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
-    /// <typeparam name="TProp">The type of the command property to bind, implementing ICommand.</typeparam>
-    /// <typeparam name="TControl">The type of the control on the view to which the command will be bound.</typeparam>
-    /// <typeparam name="TParam">The type of the parameter passed to the command when it is executed.</typeparam>
-    /// <param name="viewModel">The view model instance containing the command to bind. Can be null if the binding should be established without
-    /// an initial view model.</param>
-    /// <param name="view">The view instance containing the control to which the command will be bound. Cannot be null.</param>
-    /// <param name="vmProperty">An expression specifying the command property on the view model to bind. Cannot be null.</param>
-    /// <param name="controlProperty">An expression specifying the control on the view to which the command will be bound. Cannot be null.</param>
-    /// <param name="withParameter">An expression specifying the parameter to pass to the command when it is executed. Can be null if the command
-    /// does not require a parameter.</param>
-    /// <param name="toEvent">The name of the event on the control that triggers the command execution. If null, a default event is used based
-    /// on the control type.</param>
-    /// <returns>An IReactiveBinding{TView, TProp} representing the established command binding. Disposing the returned object
-    /// will remove the binding.</returns>
+    /// <inheritdoc />
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
@@ -68,17 +46,20 @@ public class CommandBinderImplementation : ICommandBinderImplementation
     {
         ArgumentExceptionHelper.ThrowIfNull(vmProperty);
         ArgumentExceptionHelper.ThrowIfNull(controlProperty);
+        ArgumentExceptionHelper.ThrowIfNull(withParameter);
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);
+        var parameterExpression = Reflection.Rewrite(withParameter.Body);
 
         var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>();
+        var parameterObservable = Reflection.ViewModelWhenAnyValue(viewModel, view, parameterExpression).Cast<TParam>();
 
         var bindingDisposable = BindCommandInternal<TView, TProp, TParam, TControl>(
             source,
             view,
             controlExpression,
-            withParameter.ToObservable(viewModel),
+            parameterObservable,
             toEvent);
 
         return new ReactiveBinding<TView, TProp>(
@@ -90,31 +71,7 @@ public class CommandBinderImplementation : ICommandBinderImplementation
             bindingDisposable);
     }
 
-    /// <summary>
-    /// Binds a command from the view model to a control on the view, enabling the control to execute the command with
-    /// an optional parameter stream and event trigger.
-    /// </summary>
-    /// <remarks>This method uses reflection to observe and bind to members, which may be affected by trimming
-    /// in some environments. The binding is one-way, from the view model command to the view control. If the control or
-    /// command property is not found, the binding will not be established. The method is suitable for scenarios where
-    /// commands need to be dynamically bound to controls with support for parameter streams and custom event
-    /// triggers.</remarks>
-    /// <typeparam name="TView">The type of the view implementing the IViewFor interface.</typeparam>
-    /// <typeparam name="TViewModel">The type of the view model containing the command property.</typeparam>
-    /// <typeparam name="TProp">The type of the command property, which must implement ICommand.</typeparam>
-    /// <typeparam name="TControl">The type of the control on the view to which the command will be bound.</typeparam>
-    /// <typeparam name="TParam">The type of the parameter passed to the command when it is executed.</typeparam>
-    /// <param name="viewModel">The view model instance containing the command to bind. Can be null if the view model is not available at
-    /// binding time.</param>
-    /// <param name="view">The view instance containing the control to which the command will be bound.</param>
-    /// <param name="vmProperty">An expression specifying the command property on the view model to bind.</param>
-    /// <param name="controlProperty">An expression specifying the control on the view that will trigger the command.</param>
-    /// <param name="withParameter">An observable sequence providing the parameter to pass to the command when it is executed. The latest value is
-    /// used for each command invocation.</param>
-    /// <param name="toEvent">The name of the event on the control that triggers the command. If null, a default event is used based on the
-    /// control type.</param>
-    /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
-    /// Disposing the binding will remove the command association.</returns>
+    /// <inheritdoc />
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
     public IReactiveBinding<TView, TProp> BindCommand<
         TView,
@@ -197,7 +154,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         var isInitialBind = true;
 
         // Check for optional platform-specific command rebinding customization
-        var rebindingCustomizer = AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>();
+        var rebindingCustomizer = string.IsNullOrEmpty(toEvent)
+            ? AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>()
+            : null;
 
         // Cache boxing of parameter values once to avoid rebuilding the Select pipeline on every rebind.
         var boxedParameter = withParameter.Select(static p => (object?)p);
