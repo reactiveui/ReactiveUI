@@ -275,20 +275,27 @@ public class WpfCommandBindingImplementationTests
     }
 
     [Test]
-    public async Task CommandParameterIsCorrectAfterViewModelReassignment()
+    public async Task CommandAndParameterRebindToNewViewModelInstance()
     {
         var vm = new CommandBindingViewModel { Value = 1 };
         var view = new CommandBindingView { ViewModel = vm };
 
-        var received = 0;
-        view.ViewModel.Command1 = ReactiveCommand.Create<int, int>(i => received = i);
+        var received1 = 0;
+        view.ViewModel.Command1.Subscribe(i => received1 = i);
 
         var binding = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
 
         view.ViewModel = new CommandBindingViewModel { Value = 2 };
 
+        var received2 = 0;
+        view.ViewModel.Command1.Subscribe(i => received2 = i);
+
         view.Command1.RaiseCustomClick();
 
-        await Assert.That(received).IsEqualTo(2);
+        using (Assert.Multiple())
+        {
+            await Assert.That(received1).IsEqualTo(0);
+            await Assert.That(received2).IsEqualTo(2);
+        }
     }
 }

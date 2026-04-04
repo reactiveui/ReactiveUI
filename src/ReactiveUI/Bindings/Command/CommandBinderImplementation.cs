@@ -200,7 +200,9 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         var isInitialBind = true;
 
         // Check for optional platform-specific command rebinding customization
-        var rebindingCustomizer = AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>();
+        var rebindingCustomizer = string.IsNullOrEmpty(toEvent)
+            ? AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>()
+            : null;
 
         // Cache boxing of parameter values once to avoid rebuilding the Select pipeline on every rebind.
         var boxedParameter = withParameter.Select(static p => (object?)p);
