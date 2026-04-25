@@ -517,6 +517,57 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
 
+    private static IObservable<bool> ScheduleOnMainThreadIfRequired<TView>(TView view, bool value)
+        where TView : class
+    {
+        var dispatcher = GetDispatcher(view);
+        if (dispatcher is null || IsDispatcherAccessAvailable(view))
+        {
+            return Observable.Return(value);
+        }
+
+        return Observable.Create<bool>(observer =>
+        {
+            var operation = dispatcher.GetType()
+                .GetMethod("BeginInvoke", [typeof(Delegate), typeof(object[])])
+                ?.Invoke(
+                    dispatcher,
+                    [
+                        new Action(() =>
+                        {
+                            observer.OnNext(value);
+                            observer.OnCompleted();
+                        }),
+                        Array.Empty<object>(),
+                    ]);
+
+            return Disposable.Create(() => operation?.GetType().GetMethod("Abort", Type.EmptyTypes)?.Invoke(operation, null));
+        });
+    }
+
+    private static object? GetDispatcher(object target) =>
+        target.GetType().GetProperty("Dispatcher")?.GetValue(target);
+
+    private static void SetOnDispatcherIfRequired(object target, Action setter)
+    {
+        var dispatcher = GetDispatcher(target);
+        if (dispatcher is null || IsDispatcherAccessAvailable(target))
+        {
+            setter();
+            return;
+        }
+
+        dispatcher.GetType()
+            .GetMethod("BeginInvoke", [typeof(Delegate), typeof(object[])])
+            ?.Invoke(dispatcher, [setter, Array.Empty<object>()]);
+    }
+
+    private static bool IsDispatcherAccessAvailable(object target)
+    {
+        var checkAccess = target.GetType().GetMethod("CheckAccess", Type.EmptyTypes);
+        return checkAccess is null || checkAccess.Invoke(target, null) as bool? != false;
+    }
+
     /// <summary>
     /// Binds an observable to a target member directly using compiled accessors.
     /// </summary>
@@ -630,7 +681,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             var somethingChanged = Observable.Merge(
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
-                signalObservable);
+                signalObservable)
+                .SelectMany(value => ScheduleOnMainThreadIfRequired(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -652,7 +704,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                     : signalViewUpdate.Select(_ => true)
                         .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
                 signalInitialUpdate.Select(_ => true),
-                view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
+                view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false))
+                .SelectMany(value => ScheduleOnMainThreadIfRequired(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -684,7 +737,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             if (isVmWithLatestValue.isViewModel)
             {
-                viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false);
+                SetOnDispatcherIfRequired(view, () => viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false));
             }
             else
             {

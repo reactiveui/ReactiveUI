@@ -4,10 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
+using System.Windows.Controls;
 
 using DynamicData;
 
 using ReactiveUI.Tests.Wpf.Mocks;
+using Splat;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -15,6 +17,24 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfActivationForViewFetcherTest
 {
+    [Test]
+    [TestExecutor<WpfTestExecutor>]
+    public async Task WhenActivatedInDesignerModeWithoutRegisteredFetcherDoesNotThrow()
+    {
+        using var locator = new ModernDependencyResolver();
+        using (locator.WithResolver())
+        {
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
+            var view = new DesignModeActivatableUserControl();
+
+            await Assert.That(view.ActivationDisposable).IsNotNull();
+            view.ActivationDisposable.Dispose();
+        }
+
+        ViewForMixins.ResetActivationFetcherCacheForTesting();
+    }
+
     [Test]
     public async Task FrameworkElementIsActivatedAndDeactivated()
     {
@@ -140,5 +160,17 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(unloaded);
 
         await new[] { true, false, true, false }.AssertAreEqual(activated);
+    }
+
+    private sealed class DesignModeActivatableUserControl : UserControl, IActivatableView
+    {
+        static DesignModeActivatableUserControl() =>
+            DesignerProperties.IsInDesignModeProperty.OverrideMetadata(
+                typeof(DesignModeActivatableUserControl),
+                new FrameworkPropertyMetadata(true));
+
+        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static _ => { });
+
+        public IDisposable ActivationDisposable { get; }
     }
 }

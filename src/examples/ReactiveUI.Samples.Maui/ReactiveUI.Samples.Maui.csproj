@@ -10,6 +10,8 @@
     <TargetFrameworks Condition="'$(GITHUB_ACTIONS)' != 'true' and $([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
     <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
     <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>

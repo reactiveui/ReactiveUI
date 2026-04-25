@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 
 using ReactiveUI.Builder.WpfApp.Models;

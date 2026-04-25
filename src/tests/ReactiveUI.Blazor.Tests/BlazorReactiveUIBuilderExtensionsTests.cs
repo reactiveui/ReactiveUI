@@ -160,6 +160,8 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         public Splat.Builder.IAppInstance Build() => throw new NotImplementedException();
 
+        IReactiveUIInstance IReactiveUIBuilder.Build() => throw new NotImplementedException();
+
         public Splat.Builder.IAppBuilder UseCurrentSplatLocator() => throw new NotImplementedException();
 
         public Splat.Builder.IAppBuilder UsingModule<T>(T registrationModule)

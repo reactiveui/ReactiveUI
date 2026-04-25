@@ -112,6 +112,37 @@ public class ReactiveUIBuilderCoreTests
     }
 
     [Test]
+    public async Task Build_Should_Return_ReactiveInstance_And_Initialize_ReactiveUI()
+    {
+        RxAppBuilder.ResetForTesting();
+
+        var builder = RxAppBuilder.CreateReactiveUIBuilder();
+        builder.WithCoreServices();
+
+        var app = builder.Build();
+
+        RxAppBuilder.EnsureInitialized();
+
+        await Assert.That(app).IsNotNull();
+        await Assert.That(app).IsAssignableTo<IReactiveUIInstance>();
+    }
+
+    [Test]
+    public async Task BuildApp_Should_Use_Build_Implementation()
+    {
+        RxAppBuilder.ResetForTesting();
+
+        var app = RxAppBuilder.CreateReactiveUIBuilder()
+            .WithCoreServices()
+            .BuildApp();
+
+        RxAppBuilder.EnsureInitialized();
+
+        await Assert.That(app).IsNotNull();
+        await Assert.That(app).IsAssignableTo<IReactiveUIInstance>();
+    }
+
+    [Test]
     public void ForPlatforms_With_Null_Array_Should_Throw()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();

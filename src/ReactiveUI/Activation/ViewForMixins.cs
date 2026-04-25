@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 
 namespace ReactiveUI;
 
@@ -132,6 +134,12 @@ public static class ViewForMixins
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)
         {
+            if (IsInDesignMode(item))
+            {
+                _activationFetcherCache.InvalidateAll();
+                return Disposable.Empty;
+            }
+
             const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, msg, item.GetType().FullName));
         }
@@ -223,6 +231,35 @@ public static class ViewForMixins
     /// from the service locator on the next access.
     /// </remarks>
     internal static void ResetActivationFetcherCacheForTesting() => _activationFetcherCache.InvalidateAll();
+
+    /// <summary>
+    /// Determines whether the view is being constructed by a designer surface.
+    /// </summary>
+    /// <param name="item">The view being activated.</param>
+    /// <returns><see langword="true"/> when the current context is design mode; otherwise, <see langword="false"/>.</returns>
+    private static bool IsInDesignMode(object item)
+    {
+        if (LicenseManager.UsageMode == LicenseUsageMode.Designtime)
+        {
+            return true;
+        }
+
+        var dependencyObjectType = Type.GetType("System.Windows.DependencyObject, WindowsBase", throwOnError: false);
+        if (dependencyObjectType is null || !dependencyObjectType.IsInstanceOfType(item))
+        {
+            return false;
+        }
+
+        var designerPropertiesType = Type.GetType("System.ComponentModel.DesignerProperties, PresentationFramework", throwOnError: false);
+        var getIsInDesignMode = designerPropertiesType?.GetMethod(
+            "GetIsInDesignMode",
+            BindingFlags.Public | BindingFlags.Static,
+            binder: null,
+            types: [dependencyObjectType],
+            modifiers: null);
+
+        return getIsInDesignMode?.Invoke(null, [item]) as bool? == true;
+    }
 
     /// <summary>
     /// Manages the activation and deactivation lifecycle of a view by subscribing to an activation observable and

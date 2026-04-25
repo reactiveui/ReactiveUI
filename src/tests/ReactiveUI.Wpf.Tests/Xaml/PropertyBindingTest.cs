@@ -10,6 +10,7 @@ using DynamicData.Binding;
 
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using ReactiveUI.Tests.Xaml.Utilities;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -370,6 +371,59 @@ public class PropertyBindingTest
 
         vm.Property1 = "bbb";
         await Assert.That(view.FakeItemsControl.SelectedItem).IsEqualTo("bbb");
+    }
+
+    /// <summary>
+    /// Tests that Bind two-way selected item of ComboBox updates in both directions.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TwoWayBindToSelectedItemOfComboBox()
+    {
+        var vm = new PropertyBindViewModel();
+        var view = new PropertyBindView { ViewModel = vm };
+        view.ComboBoxSelection.ItemsSource = new ObservableCollectionExtended<string>(new[] { "aaa", "bbb", "ccc" });
+
+        view.Bind(view.ViewModel, static x => x.Property1, static x => x.ComboBoxSelection.SelectedItem);
+
+        view.ComboBoxSelection.SelectedItem = "aaa";
+        await Assert.That(vm.Property1).IsEqualTo("aaa");
+
+        vm.Property1 = "bbb";
+        await Assert.That(view.ComboBoxSelection.SelectedItem).IsEqualTo("bbb");
+    }
+
+    /// <summary>
+    /// Tests that view model updates from a background thread are marshalled before setting WPF controls.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelToViewBindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
+    {
+        var vm = new PropertyBindViewModel();
+        var view = new PropertyBindView { ViewModel = vm };
+        view.Bind(view.ViewModel, static x => x.Property1, static x => x.SomeTextBox.Text);
+
+        Exception? thrown = null;
+        await Task.Run(() =>
+        {
+            try
+            {
+                vm.Property1 = "background update";
+            }
+            catch (Exception ex)
+            {
+                thrown = ex;
+            }
+        });
+
+        DispatcherUtilities.DoEvents();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(thrown).IsNull();
+            await Assert.That(view.SomeTextBox.Text).IsEqualTo("background update");
+        }
     }
 
     /// <summary>

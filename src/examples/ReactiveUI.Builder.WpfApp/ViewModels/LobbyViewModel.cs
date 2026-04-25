@@ -3,12 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
@@ -115,6 +111,17 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         get => field;
         set => this.RaiseAndSetIfChanged(ref field, value);
     } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the selected combo item used by the WPF binding regression surface.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
+    public ChatRoom? SelectedComboItem
+    {
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     /// <summary>
     /// Gets the current list of rooms.
