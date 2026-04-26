@@ -8,6 +8,7 @@ using System.Windows.Controls;
 
 using DynamicData;
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Wpf.Mocks;
 using Splat;
 
@@ -17,6 +18,24 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfActivationForViewFetcherTest
 {
+    [Test]
+    [TestExecutor<WpfTestExecutor>]
+    public async Task GetIsDesignModeReturnsFalseForRuntimeWpfView()
+    {
+        var view = new RuntimeActivatableViewFor();
+
+        await Assert.That(view.GetIsDesignMode()).IsFalse();
+    }
+
+    [Test]
+    [TestExecutor<WpfTestExecutor>]
+    public async Task GetIsDesignModeReturnsTrueForDesignerWpfView()
+    {
+        var view = new DesignModeActivatableViewFor();
+
+        await Assert.That(view.GetIsDesignMode()).IsTrue();
+    }
+
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task WhenActivatedInDesignerModeWithoutRegisteredFetcherDoesNotThrow()
@@ -30,6 +49,77 @@ public class WpfActivationForViewFetcherTest
 
             await Assert.That(view.ActivationDisposable).IsNotNull();
             view.ActivationDisposable.Dispose();
+        }
+
+        ViewForMixins.ResetActivationFetcherCacheForTesting();
+    }
+
+    [Test]
+    [TestExecutor<WpfTestExecutor>]
+    public async Task WpfWhenActivatedOverloadsShortCircuitInDesignerModeWithoutRegisteredFetcher()
+    {
+        using var locator = new ModernDependencyResolver();
+        using (locator.WithResolver())
+        {
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
+            var view = new DesignModeActivatableViewFor();
+            var disposables = new CompositeDisposable(
+                view.WhenActivated(static () => [Disposable.Empty]),
+                view.WhenActivated(static (Action<IDisposable> _) => { }),
+                view.WhenActivated(static (CompositeDisposable _) => { }),
+                view.WhenActivated(static () => [Disposable.Empty], view),
+                view.WhenActivated(static (Action<IDisposable> _) => { }, view));
+
+            await Assert.That(disposables.Count).IsEqualTo(5);
+            disposables.Dispose();
+        }
+
+        ViewForMixins.ResetActivationFetcherCacheForTesting();
+    }
+
+    [Test]
+    [TestExecutor<WpfTestExecutor>]
+    public async Task WpfWhenActivatedOverloadsDelegateToRuntimeActivationFetcher()
+    {
+        using var locator = new ModernDependencyResolver();
+        locator
+            .CreateReactiveUIBuilder()
+            .WithWpf()
+            .Build();
+
+        using (locator.WithResolver())
+        {
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
+            var view = new RuntimeActivatableViewFor();
+            var activationCount = 0;
+            var disposables = new CompositeDisposable(
+                view.WhenActivated(() =>
+                {
+                    activationCount++;
+                    return [Disposable.Empty];
+                }),
+                view.WhenActivated((Action<IDisposable> _) => activationCount++),
+                view.WhenActivated((CompositeDisposable _) => activationCount++),
+                view.WhenActivated(
+                    () =>
+                    {
+                        activationCount++;
+                        return [Disposable.Empty];
+                    },
+                    view),
+                view.WhenActivated(
+                    (Action<IDisposable> _) => activationCount++,
+                    view));
+
+            view.RaiseEvent(new RoutedEventArgs
+            {
+                RoutedEvent = FrameworkElement.LoadedEvent
+            });
+
+            await Assert.That(activationCount).IsEqualTo(5);
+            disposables.Dispose();
         }
 
         ViewForMixins.ResetActivationFetcherCacheForTesting();
@@ -172,5 +262,17 @@ public class WpfActivationForViewFetcherTest
         public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static _ => { });
 
         public IDisposable ActivationDisposable { get; }
+    }
+
+    private sealed class RuntimeActivatableViewFor : ReactiveUserControl<object>;
+
+    private sealed class DesignModeActivatableViewFor : UserControl, IViewFor<object>
+    {
+        static DesignModeActivatableViewFor() =>
+            DesignerProperties.IsInDesignModeProperty.OverrideMetadata(
+                typeof(DesignModeActivatableViewFor),
+                new FrameworkPropertyMetadata(true));
+
+        public object? ViewModel { get; set; }
     }
 }

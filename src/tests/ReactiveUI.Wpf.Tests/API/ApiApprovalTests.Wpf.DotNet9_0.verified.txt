@@ -141,6 +141,26 @@ namespace ReactiveUI
         public override int GetAffinityForObjects() { }
         public override bool TryConvert(System.Windows.Visibility from, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out bool result) { }
     }
+    public static class WpfViewForMixins
+    {
+        public static bool GetIsDesignMode<TView>(this TView item)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        public static System.IDisposable WhenActivated<TView>(this TView item, System.Action<System.Action<System.IDisposable>> block)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        public static System.IDisposable WhenActivated<TView>(this TView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        public static System.IDisposable WhenActivated<TView>(this TView item, System.Action<System.Action<System.IDisposable>> block, ReactiveUI.IViewFor view)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        public static System.IDisposable WhenActivated<TView>(this TView item, System.Action<System.Reactive.Disposables.CompositeDisposable> block, ReactiveUI.IViewFor? view = null)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        public static System.IDisposable WhenActivated<TView>(this TView item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable>> block, ReactiveUI.IViewFor? view)
+            where TView : System.Windows.FrameworkElement, ReactiveUI.IActivatableView { }
+    }
 }
 namespace ReactiveUI.Builder
 {

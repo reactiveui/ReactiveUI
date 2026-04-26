@@ -1696,6 +1696,7 @@ namespace ReactiveUI
     }
     public static class ViewForMixins
     {
+        public static bool GetIsDesignMode(this ReactiveUI.IActivatableView item) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
