@@ -10,7 +10,6 @@
     <NoWarn>$(NoWarn);SA1600;CA1812;</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="TUnit" />
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
   </ItemGroup>

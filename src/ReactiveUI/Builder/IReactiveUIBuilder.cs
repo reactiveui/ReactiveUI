@@ -310,6 +310,13 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
+    new IReactiveUIInstance Build();
+
+    /// <summary>
+    /// Builds the application and returns the ReactiveUI instance wrapper.
+    /// </summary>
+    /// <returns>IReactiveUIInstance instance for chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
     IReactiveUIInstance BuildApp();
 
     /// <summary>

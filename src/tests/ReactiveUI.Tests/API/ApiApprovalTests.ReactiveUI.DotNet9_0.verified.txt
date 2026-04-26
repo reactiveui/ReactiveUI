@@ -1696,6 +1696,7 @@ namespace ReactiveUI
     }
     public static class ViewForMixins
     {
+        public static bool GetIsDesignMode(this ReactiveUI.IActivatableView item) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         public static System.IDisposable WhenActivated(this ReactiveUI.IActivatableView item, System.Action<System.Action<System.IDisposable>> block) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
@@ -2020,6 +2021,7 @@ namespace ReactiveUI.Builder
     }
     public interface IReactiveUIBuilder : Splat.Builder.IAppBuilder
     {
+        ReactiveUI.Builder.IReactiveUIInstance Build();
         ReactiveUI.Builder.IReactiveUIInstance BuildApp();
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure);
         ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure);
@@ -2093,6 +2095,7 @@ namespace ReactiveUI.Builder
         public ReactiveUI.ConverterService ConverterService { get; }
         public System.Reactive.Concurrency.IScheduler? MainThreadScheduler { get; }
         public System.Reactive.Concurrency.IScheduler? TaskpoolScheduler { get; }
+        public ReactiveUI.Builder.IReactiveUIInstance Build() { }
         public ReactiveUI.Builder.IReactiveUIInstance BuildApp() { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureSuspensionDriver(System.Action<ReactiveUI.ISuspensionDriver> configure) { }
         public ReactiveUI.Builder.IReactiveUIBuilder ConfigureViewLocator(System.Action<ReactiveUI.DefaultViewLocator> configure) { }

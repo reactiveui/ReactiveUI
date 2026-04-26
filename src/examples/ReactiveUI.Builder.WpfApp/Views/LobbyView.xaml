@@ -13,6 +13,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel
@@ -41,9 +42,22 @@
             Orientation="Horizontal">
             <Button x:Name="DeleteRoomButton" Content="Delete Selected Room" />
         </StackPanel>
+        <StackPanel
+            Grid.Row="3"
+            Margin="0,0,0,8"
+            Orientation="Horizontal">
+            <TextBlock
+                Margin="0,0,8,0"
+                VerticalAlignment="Center"
+                Text="Combo selection:" />
+            <ComboBox
+                x:Name="ComboBoxSelection"
+                Width="240"
+                DisplayMemberPath="Name" />
+        </StackPanel>
         <ListBox
             x:Name="RoomsList"
-            Grid.Row="3"
+            Grid.Row="4"
             DisplayMemberPath="Name" />
     </Grid>
 </UserControl>

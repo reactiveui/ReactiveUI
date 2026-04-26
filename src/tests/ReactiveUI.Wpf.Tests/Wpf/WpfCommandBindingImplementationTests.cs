@@ -9,6 +9,8 @@ using System.Windows.Input;
 
 using ReactiveUI.Tests.Utilities.Logging;
 using ReactiveUI.Tests.Wpf.Mocks;
+using ReactiveUI.Tests.Xaml.Mocks;
+using ReactiveUI.Tests.Xaml.Utilities;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -271,5 +273,60 @@ public class WpfCommandBindingImplementationTests
         GC.WaitForPendingFinalizers();
 
         await Assert.That(weakRef.IsAlive).IsFalse();
+    }
+
+    [Test]
+    public async Task CommandAndParameterRebindToNewViewModelInstance()
+    {
+        var vm = new CommandBindingViewModel { Value = 1 };
+        var view = new CommandBindingView { ViewModel = vm };
+
+        var received1 = 0;
+        view.ViewModel.Command1.Subscribe(i => received1 = i);
+
+        var binding = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
+
+        view.ViewModel = new CommandBindingViewModel { Value = 2 };
+
+        var received2 = 0;
+        view.ViewModel.Command1.Subscribe(i => received2 = i);
+
+        view.Command1.RaiseCustomClick();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(received1).IsEqualTo(0);
+            await Assert.That(received2).IsEqualTo(2);
+        }
+    }
+
+    [Test]
+    public async Task CommandRebindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
+    {
+        var vm = new CommandBindingViewModel();
+        var view = new CommandBindingView { ViewModel = vm };
+        using var binding = view.BindCommand(vm, static x => x.Command2, static x => x.Command1);
+        var replacement = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Exception? thrown = null;
+        await Task.Run(() =>
+        {
+            try
+            {
+                vm.Command2 = replacement;
+            }
+            catch (Exception ex)
+            {
+                thrown = ex;
+            }
+        });
+
+        DispatcherUtilities.DoEvents();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(thrown).IsNull();
+            await Assert.That(view.Command1.Command).IsSameReferenceAs(replacement);
+        }
     }
 }

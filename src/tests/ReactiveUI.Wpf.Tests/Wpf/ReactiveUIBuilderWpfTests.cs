@@ -20,6 +20,9 @@ public class ReactiveUIBuilderWpfTests
 
         var activationFetcher = locator.GetService<IActivationForViewFetcher>();
         await Assert.That(activationFetcher).IsNotNull();
+
+        var propertyBinder = locator.GetService<IPropertyBinderImplementation>();
+        await Assert.That(propertyBinder).IsNotNull();
     }
 
     [Test]

@@ -518,6 +518,31 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
 
     /// <summary>
+    /// Schedules a binding notification before a view value is read or written.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view participating in the binding.</param>
+    /// <param name="value">The binding notification value.</param>
+    /// <returns>An observable that emits <paramref name="value"/> when the binding should continue.</returns>
+    internal virtual IObservable<bool> ScheduleForBinding<TView>(TView view, bool value)
+        where TView : class =>
+        Observable.Return(value);
+
+    /// <summary>
+    /// Sets a value on the view.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view being updated.</param>
+    /// <param name="setter">The value setter to invoke.</param>
+    internal virtual void SetViewValue<TView>(TView view, Action setter)
+        where TView : class
+    {
+        ArgumentExceptionHelper.ThrowIfNull(setter);
+
+        setter();
+    }
+
+    /// <summary>
     /// Binds an observable to a target member directly using compiled accessors.
     /// </summary>
     /// <typeparam name="TTarget">The target object type.</typeparam>
@@ -630,7 +655,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
             var somethingChanged = Observable.Merge(
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
-                signalObservable);
+                signalObservable)
+                .SelectMany(value => ScheduleForBinding(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -652,7 +678,8 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                     : signalViewUpdate.Select(_ => true)
                         .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
                 signalInitialUpdate.Select(_ => true),
-                view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false));
+                view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false))
+                .SelectMany(value => ScheduleForBinding(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -684,7 +711,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             if (isVmWithLatestValue.isViewModel)
             {
-                viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false);
+                SetViewValue(view, () => viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false));
             }
             else
             {

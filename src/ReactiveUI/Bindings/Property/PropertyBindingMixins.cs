@@ -34,7 +34,7 @@ namespace ReactiveUI;
 [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
 public static class PropertyBindingMixins
 {
-    private static readonly PropertyBinderImplementation _binderImplementation;
+    private static readonly PropertyBinderImplementation _defaultBinderImplementation;
 
     /// <summary>
     /// Initializes static members of the <see cref="PropertyBindingMixins"/> class.
@@ -42,7 +42,10 @@ public static class PropertyBindingMixins
     /// <remarks>This static constructor is called automatically to perform type-level initialization before
     /// any static members are accessed or any static methods are invoked. It is not intended to be called directly by
     /// user code.</remarks>
-    static PropertyBindingMixins() => _binderImplementation = new PropertyBinderImplementation();
+    static PropertyBindingMixins() => _defaultBinderImplementation = new PropertyBinderImplementation();
+
+    private static IPropertyBinderImplementation BinderImplementation =>
+        AppLocator.Current.GetService<IPropertyBinderImplementation>() ?? _defaultBinderImplementation;
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
@@ -89,7 +92,7 @@ public static class PropertyBindingMixins
         IBindingTypeConverter? viewToVMConverterOverride = null)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(
+        BinderImplementation.Bind(
                                    viewModel,
                                    view,
                                    vmProperty,
@@ -143,7 +146,7 @@ public static class PropertyBindingMixins
         TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride, triggerUpdate);
+        BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride, triggerUpdate);
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
@@ -184,7 +187,7 @@ public static class PropertyBindingMixins
         Func<TVMProp?, TVProp> vmToViewConverter,
         Func<TVProp, TVMProp?> viewToVmConverter)
         where TViewModel : class
-        where TView : class, IViewFor => _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
+        where TView : class, IViewFor => BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
@@ -226,7 +229,7 @@ public static class PropertyBindingMixins
         TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter, triggerUpdate);
+        BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter, triggerUpdate);
 
     /// <summary>
     /// Binds the given property on the view model to a given property on the view in a one-way (view model to view) fashion.
@@ -273,7 +276,7 @@ public static class PropertyBindingMixins
         IBindingTypeConverter? vmToViewConverterOverride = null)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.OneWayBind(
+        BinderImplementation.OneWayBind(
                                          viewModel,
                                          view,
                                          vmProperty,
@@ -319,7 +322,7 @@ public static class PropertyBindingMixins
         Func<TProp, TOut> selector)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
+        BinderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
 
     /// <summary>
     /// BindTo takes an Observable stream and applies it to a target
@@ -352,5 +355,5 @@ public static class PropertyBindingMixins
         object? conversionHint = null,
         IBindingTypeConverter? vmToViewConverterOverride = null)
         where TTarget : class =>
-        _binderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
+        BinderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
 }

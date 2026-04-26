@@ -24,6 +24,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     private int? _smallCacheLimit;
     private int? _bigCacheLimit;
     private IMessageBus? _messageBus;
+    private bool _reactiveUiInitialized;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -694,29 +695,24 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
     /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
-    public IReactiveUIInstance BuildApp()
+    public new IReactiveUIInstance Build()
     {
-        if (Build() is not IReactiveUIInstance appInstance || appInstance.Current is null)
+        if (base.Build() is not IReactiveUIInstance appInstance || appInstance.Current is null)
         {
             throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
         }
 
-        // Initialize static state (cache sizes, exception handler, suspension host)
-        InitializeStaticState();
-
-        // Set the global converter service
-        RxConverters.SetService(ConverterService);
-
-        if (_messageBus is not null)
-        {
-            MessageBus.Current = _messageBus;
-        }
-
-        // Mark ReactiveUI as initialized via builder pattern
-        RxAppBuilder.MarkAsInitialized();
+        InitializeReactiveUI();
 
         return appInstance;
     }
+
+    /// <summary>
+    /// Builds the application and returns the ReactiveUI instance wrapper.
+    /// </summary>
+    /// <returns>IReactiveUIInstance instance for chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if building the app instance fails.</exception>
+    public IReactiveUIInstance BuildApp() => Build();
 
     /// <summary>
     /// Resolves a single instance and passes it to the action.
@@ -1310,26 +1306,48 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Gets the platform-specific default small cache limit.
     /// </summary>
     /// <returns>The default small cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultSmallCacheLimit()
-    {
+    private static int GetPlatformDefaultSmallCacheLimit() =>
 #if ANDROID || IOS
-        return 32;
+        32;
 #else
-        return 64;
+        64;
 #endif
-    }
 
     /// <summary>
     /// Gets the platform-specific default big cache limit.
     /// </summary>
     /// <returns>The default big cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultBigCacheLimit()
-    {
+    private static int GetPlatformDefaultBigCacheLimit() =>
 #if ANDROID || IOS
-        return 64;
+        64;
 #else
-        return 256;
+        256;
 #endif
+
+    /// <summary>
+    /// Initializes ReactiveUI global state after the Splat build has completed.
+    /// </summary>
+    private void InitializeReactiveUI()
+    {
+        if (_reactiveUiInitialized)
+        {
+            return;
+        }
+
+        // Initialize static state (cache sizes, exception handler, suspension host)
+        InitializeStaticState();
+
+        // Set the global converter service
+        RxConverters.SetService(ConverterService);
+
+        if (_messageBus is not null)
+        {
+            MessageBus.Current = _messageBus;
+        }
+
+        // Mark ReactiveUI as initialized via builder pattern
+        RxAppBuilder.MarkAsInitialized();
+        _reactiveUiInitialized = true;
     }
 
     /// <summary>
