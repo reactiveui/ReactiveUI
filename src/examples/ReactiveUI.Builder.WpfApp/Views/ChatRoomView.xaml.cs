@@ -5,7 +5,6 @@
 
 using System.Reactive.Disposables.Fluent;
 using System.Windows;
-
 using ReactiveUI.Builder.WpfApp.ViewModels;
 
 namespace ReactiveUI.Builder.WpfApp.Views;

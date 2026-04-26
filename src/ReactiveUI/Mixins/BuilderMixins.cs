@@ -139,7 +139,7 @@ public static class BuilderMixins
                 "The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
         }
 
-        reactiveUiBuilder.BuildApp();
+        reactiveUiBuilder.Build();
         return reactiveUiBuilder;
     }
 

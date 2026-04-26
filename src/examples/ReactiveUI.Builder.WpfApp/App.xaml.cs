@@ -3,11 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Windows;
 
 using ReactiveUI.Builder.WpfApp.Models;
@@ -38,9 +35,9 @@ public partial class App : Application
         var app = RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
-                                                         ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
-                                                         ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
-                                                         ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
+            ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
+            ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
+            ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
             .WithSuspensionHost<ChatState>() // Configure typed suspension host
             .WithCacheSizes(smallCacheLimit: 100, bigCacheLimit: 400) // Customize cache sizes
             .WithExceptionHandler(Observer.Create<Exception>(static ex =>
@@ -64,7 +61,7 @@ public partial class App : Application
                 // Network service used to broadcast/receive messages across instances
                 r.RegisterLazySingleton(static () => new Services.ChatNetworkService());
             })
-            .BuildApp();
+            .Build();
 
         // Setup Suspension
         RxSuspension.SuspensionHost.CreateNewAppState = static () => new ChatState();

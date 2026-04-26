@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<maui:MauiWinUIApplication
+    x:Class="ReactiveUI.Samples.Maui.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:maui="using:Microsoft.Maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+</maui:MauiWinUIApplication>

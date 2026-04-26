@@ -5,7 +5,6 @@
 
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -34,6 +33,7 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
         {
             this.Bind(ViewModel, vm => vm.DisplayName, v => v.DisplayNameBox.Text).DisposeWith(d);
             this.Bind(ViewModel, vm => vm.RoomName, v => v.RoomNameBox.Text).DisposeWith(d);
+            this.Bind(ViewModel, vm => vm.SelectedComboItem, v => v.ComboBoxSelection.SelectedItem).DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.CreateRoom, v => v.CreateRoomButton).DisposeWith(d);
 
             RoomsList.MouseDoubleClick += Dbl;
@@ -52,6 +52,7 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.RoomsList.ItemsSource).DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.ComboBoxSelection.ItemsSource).DisposeWith(d);
         });
 
         // Enter key to join
