@@ -517,55 +517,29 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
 
-    private static IObservable<bool> ScheduleOnMainThreadIfRequired<TView>(TView view, bool value)
+    /// <summary>
+    /// Schedules a binding notification before a view value is read or written.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view participating in the binding.</param>
+    /// <param name="value">The binding notification value.</param>
+    /// <returns>An observable that emits <paramref name="value"/> when the binding should continue.</returns>
+    internal virtual IObservable<bool> ScheduleForBinding<TView>(TView view, bool value)
+        where TView : class =>
+        Observable.Return(value);
+
+    /// <summary>
+    /// Sets a value on the view.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view being updated.</param>
+    /// <param name="setter">The value setter to invoke.</param>
+    internal virtual void SetViewValue<TView>(TView view, Action setter)
         where TView : class
     {
-        var dispatcher = GetDispatcher(view);
-        if (dispatcher is null || IsDispatcherAccessAvailable(view))
-        {
-            return Observable.Return(value);
-        }
+        ArgumentExceptionHelper.ThrowIfNull(setter);
 
-        return Observable.Create<bool>(observer =>
-        {
-            var operation = dispatcher.GetType()
-                .GetMethod("BeginInvoke", [typeof(Delegate), typeof(object[])])
-                ?.Invoke(
-                    dispatcher,
-                    [
-                        new Action(() =>
-                        {
-                            observer.OnNext(value);
-                            observer.OnCompleted();
-                        }),
-                        Array.Empty<object>(),
-                    ]);
-
-            return Disposable.Create(() => operation?.GetType().GetMethod("Abort", Type.EmptyTypes)?.Invoke(operation, null));
-        });
-    }
-
-    private static object? GetDispatcher(object target) =>
-        target.GetType().GetProperty("Dispatcher")?.GetValue(target);
-
-    private static void SetOnDispatcherIfRequired(object target, Action setter)
-    {
-        var dispatcher = GetDispatcher(target);
-        if (dispatcher is null || IsDispatcherAccessAvailable(target))
-        {
-            setter();
-            return;
-        }
-
-        dispatcher.GetType()
-            .GetMethod("BeginInvoke", [typeof(Delegate), typeof(object[])])
-            ?.Invoke(dispatcher, [setter, Array.Empty<object>()]);
-    }
-
-    private static bool IsDispatcherAccessAvailable(object target)
-    {
-        var checkAccess = target.GetType().GetMethod("CheckAccess", Type.EmptyTypes);
-        return checkAccess is null || checkAccess.Invoke(target, null) as bool? != false;
+        setter();
     }
 
     /// <summary>
@@ -682,7 +656,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                 Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
                 signalInitialUpdate.Select(_ => true),
                 signalObservable)
-                .SelectMany(value => ScheduleOnMainThreadIfRequired(view, value));
+                .SelectMany(value => ScheduleForBinding(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -705,7 +679,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                         .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
                 signalInitialUpdate.Select(_ => true),
                 view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false))
-                .SelectMany(value => ScheduleOnMainThreadIfRequired(view, value));
+                .SelectMany(value => ScheduleForBinding(view, value));
 
             changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
                 !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
@@ -737,7 +711,7 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         {
             if (isVmWithLatestValue.isViewModel)
             {
-                SetOnDispatcherIfRequired(view, () => viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false));
+                SetViewValue(view, () => viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false));
             }
             else
             {

@@ -8,9 +8,11 @@ using System.Globalization;
 
 using DynamicData.Binding;
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 using ReactiveUI.Tests.Xaml.Utilities;
+using Splat;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -400,29 +402,35 @@ public class PropertyBindingTest
     [Test]
     public async Task ViewModelToViewBindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
     {
-        var vm = new PropertyBindViewModel();
-        var view = new PropertyBindView { ViewModel = vm };
-        view.Bind(view.ViewModel, static x => x.Property1, static x => x.SomeTextBox.Text);
+        using var locator = new ModernDependencyResolver();
+        locator.CreateReactiveUIBuilder().WithWpf().Build();
 
-        Exception? thrown = null;
-        await Task.Run(() =>
+        using (locator.WithResolver())
         {
-            try
-            {
-                vm.Property1 = "background update";
-            }
-            catch (Exception ex)
-            {
-                thrown = ex;
-            }
-        });
+            var vm = new PropertyBindViewModel();
+            var view = new PropertyBindView { ViewModel = vm };
+            using var binding = view.Bind(view.ViewModel, static x => x.Property1, static x => x.SomeTextBox.Text);
 
-        DispatcherUtilities.DoEvents();
+            Exception? thrown = null;
+            await Task.Run(() =>
+            {
+                try
+                {
+                    vm.Property1 = "background update";
+                }
+                catch (Exception ex)
+                {
+                    thrown = ex;
+                }
+            });
 
-        using (Assert.Multiple())
-        {
-            await Assert.That(thrown).IsNull();
-            await Assert.That(view.SomeTextBox.Text).IsEqualTo("background update");
+            DispatcherUtilities.DoEvents();
+
+            using (Assert.Multiple())
+            {
+                await Assert.That(thrown).IsNull();
+                await Assert.That(view.SomeTextBox.Text).IsEqualTo("background update");
+            }
         }
     }
 
