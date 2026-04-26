@@ -132,6 +132,12 @@ public static class ViewForMixins
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)
         {
+            if (item.GetIsDesignMode())
+            {
+                _activationFetcherCache.InvalidateAll();
+                return Disposable.Empty;
+            }
+
             const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
             throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, msg, item.GetType().FullName));
         }
@@ -212,6 +218,18 @@ public static class ViewForMixins
                                    return [d];
                                },
                                view);
+
+    /// <summary>
+    /// Gets a value indicating whether the view is currently being loaded by a designer surface.
+    /// </summary>
+    /// <param name="item">The view being activated.</param>
+    /// <returns><see langword="false"/> by default. Platform packages can provide more specific overloads for their view types.</returns>
+    public static bool GetIsDesignMode(this IActivatableView item)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(item);
+
+        return false;
+    }
 
     /// <summary>
     /// Clears the activation fetcher cache. This method is intended for use by unit tests

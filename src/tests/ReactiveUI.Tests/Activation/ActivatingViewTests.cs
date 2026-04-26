@@ -10,6 +10,34 @@ namespace ReactiveUI.Tests.Activation;
 
 public class ActivatingViewTests
 {
+    [Test]
+    public async Task GetIsDesignModeReturnsFalseByDefault()
+    {
+        var fixture = new DefaultDesignModeActivatableView();
+
+        await Assert.That(fixture.GetIsDesignMode()).IsFalse();
+    }
+
+    [Test]
+    public async Task WhenActivatedWithoutFetcherThrowsWhenDefaultDesignModeIsFalse()
+    {
+        using var locator = new ModernDependencyResolver();
+        using (locator.WithResolver())
+        {
+            ViewForMixins.ResetActivationFetcherCacheForTesting();
+
+            var fixture = new DefaultDesignModeActivatableView();
+
+            var ex = await Assert.That(() => fixture.WhenActivated(static _ => { }))
+                .Throws<ArgumentException>();
+
+            await Assert.That(ex).IsNotNull();
+            await Assert.That(ex!.Message).Contains("Don't know how to detect when");
+        }
+
+        ViewForMixins.ResetActivationFetcherCacheForTesting();
+    }
+
     /// <summary>
     ///     Tests to make sure that views generally activate.
     /// </summary>
@@ -229,4 +257,6 @@ public class ActivatingViewTests
             }
         }
     }
+
+    private sealed class DefaultDesignModeActivatableView : ReactiveObject, IActivatableView;
 }

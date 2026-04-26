@@ -45,6 +45,12 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
         DependencyProperty.Register("FakeItemsControl", typeof(ListBox), typeof(PropertyBindView), new PropertyMetadata(null));
 
     /// <summary>
+    /// The combo box selection property.
+    /// </summary>
+    public static readonly DependencyProperty ComboBoxSelectionProperty =
+        DependencyProperty.Register("ComboBoxSelection", typeof(ComboBox), typeof(PropertyBindView), new PropertyMetadata(null));
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PropertyBindView"/> class.
     /// </summary>
     public PropertyBindView()
@@ -53,6 +59,7 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
         Property2 = new TextBox();
         FakeControl = new PropertyBindFakeControl();
         FakeItemsControl = new ListBox();
+        ComboBoxSelection = new ComboBox();
     }
 
     /// <summary>
@@ -89,6 +96,15 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
         get => (ListBox)GetValue(FakeItemsControlProperty);
         set => SetValue(FakeItemsControlProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the combo box selection.
+    /// </summary>
+    public ComboBox ComboBoxSelection
+    {
+        get => (ComboBox)GetValue(ComboBoxSelectionProperty);
+        set => SetValue(ComboBoxSelectionProperty, value);
     }
 
     /// <inheritdoc/>

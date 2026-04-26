@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ReactiveUI.Wpf;
 
@@ -37,9 +38,19 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
         var commandProperty = control.GetType().GetProperty("Command");
 
         // If the control has a writable Command property, update it directly
-        if (commandProperty is not null && commandProperty.CanWrite)
+        if (commandProperty?.CanWrite == true)
         {
-            commandProperty.SetValue(control, command);
+            if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
+            {
+                dispatcherObject.Dispatcher.BeginInvoke(
+                    new Action(() => commandProperty.SetValue(control, command)),
+                    DispatcherPriority.Normal);
+            }
+            else
+            {
+                commandProperty.SetValue(control, command);
+            }
+
             return true;
         }
 

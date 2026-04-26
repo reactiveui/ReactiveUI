@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 using ReactiveUI.Tests.Utilities.Logging;
 using ReactiveUI.Tests.Wpf.Mocks;
+using ReactiveUI.Tests.Xaml.Utilities;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -271,5 +272,35 @@ public class WpfCommandBindingImplementationTests
         GC.WaitForPendingFinalizers();
 
         await Assert.That(weakRef.IsAlive).IsFalse();
+    }
+
+    [Test]
+    public async Task CommandRebindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
+    {
+        var vm = new CommandBindingViewModel();
+        var view = new CommandBindingView { ViewModel = vm };
+        using var binding = view.BindCommand(vm, static x => x.Command2, static x => x.Command1);
+        var replacement = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
+
+        Exception? thrown = null;
+        await Task.Run(() =>
+        {
+            try
+            {
+                vm.Command2 = replacement;
+            }
+            catch (Exception ex)
+            {
+                thrown = ex;
+            }
+        });
+
+        DispatcherUtilities.DoEvents();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(thrown).IsNull();
+            await Assert.That(view.Command1.Command).IsSameReferenceAs(replacement);
+        }
     }
 }
