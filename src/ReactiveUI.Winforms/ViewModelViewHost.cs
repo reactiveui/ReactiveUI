@@ -45,7 +45,6 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// <summary>
     /// Gets or sets a value indicating whether [default cache views enabled].
     /// </summary>
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public static bool DefaultCacheViewsEnabled { get; set; }
 
     /// <summary>
@@ -58,7 +57,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// </summary>
     [Category("ReactiveUI")]
     [Description("The default control when no viewmodel is specified")]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Control? DefaultContent
     {
         get => _defaultContent;
@@ -72,7 +71,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// The view contract observable.
     /// </value>
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IObservable<string>? ViewContractObservable
     {
         get => _viewContractObservable;
@@ -83,14 +82,14 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// Gets or sets the view locator.
     /// </summary>
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>
     [Category("ReactiveUI")]
     [Description("The viewmodel to host.")]
     [Bindable(true)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public object? ViewModel
     {
         get => _viewModel;
@@ -103,7 +102,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     [Category("ReactiveUI")]
     [Description("The Current View")]
     [Bindable(true)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public object? Content
     {
         get => _content;

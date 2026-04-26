@@ -98,7 +98,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// </value>
     [Category("ReactiveUI")]
     [Description("The default control when no viewmodel is specified")]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Control? DefaultContent
     {
         get => _defaultContent;
@@ -110,7 +110,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// </summary>
     [Category("ReactiveUI")]
     [Description("The router.")]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public RoutingState? Router
     {
         get => _router;
@@ -121,7 +121,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// Gets or sets the view contract observable.
     /// </summary>
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IObservable<string>? ViewContractObservable
     {
         get => _viewContractObservable;
@@ -132,7 +132,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// Gets or sets the view locator.
     /// </summary>
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>
