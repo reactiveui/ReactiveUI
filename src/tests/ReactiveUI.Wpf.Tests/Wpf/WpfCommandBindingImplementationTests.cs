@@ -299,7 +299,7 @@ public class WpfCommandBindingImplementationTests
             await Assert.That(received2).IsEqualTo(2);
         }
     }
-  
+
     [Test]
     public async Task CommandRebindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
     {
