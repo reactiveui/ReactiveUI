@@ -74,8 +74,8 @@
     <!-- Fragment/Collection/SavedState to match their latest constraints -->
     <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.2" />
     <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2" />
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.5" />
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.5" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0" />
     <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.4.0.2" />
     <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2" />
     <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.17" />
