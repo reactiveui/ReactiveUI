@@ -34,7 +34,7 @@
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.203" />
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1721" />
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)" />
     <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
