@@ -70,6 +70,36 @@ public partial class SuspensionHostExtensionsAotTests
     }
 
     [Test]
+    public async Task GetAppState_Typed_WhenNoPersistedState_CreatesAndStoresNewAppState()
+    {
+        var createdState = new TestAppState { Value = 99 };
+        var createNewAppStateCallCount = 0;
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = () =>
+            {
+                createNewAppStateCallCount++;
+                return createdState;
+            },
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldPersistState = Observable.Never<IDisposable>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState>();
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+
+        var state = host.GetAppState();
+
+        await Assert.That(state).IsSameReferenceAs(createdState);
+        await Assert.That(host.AppStateValue).IsSameReferenceAs(createdState);
+        await Assert.That(createNewAppStateCallCount).IsEqualTo(1);
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+    }
+
+    [Test]
     public async Task ObserveAppState_Typed_EmitsCurrentValueImmediately()
     {
         var state = new TestAppState { Value = 42 };

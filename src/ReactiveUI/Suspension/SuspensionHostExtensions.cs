@@ -284,15 +284,19 @@ public static class SuspensionHostExtensions
             return Observable.Return(Unit.Default);
         }
 
+        object? loadedState;
+
         try
         {
-            item.AppState = _suspensionDriver.LoadState().Wait();
+            loadedState = _suspensionDriver.LoadState().Wait();
         }
         catch (Exception ex)
         {
             item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
-            item.AppState = item.CreateNewAppState?.Invoke();
+            loadedState = null;
         }
+
+        item.AppState = loadedState ?? item.CreateNewAppState?.Invoke();
 
         return Observable.Return(Unit.Default);
     }
@@ -321,15 +325,19 @@ public static class SuspensionHostExtensions
             return Observable.Return(Unit.Default);
         }
 
+        TAppState? loadedState;
+
         try
         {
-            item.AppStateValue = _suspensionDriver.LoadState(typeInfo).Wait();
+            loadedState = _suspensionDriver.LoadState(typeInfo).Wait();
         }
         catch (Exception ex)
         {
             item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
-            item.AppStateValue = item.CreateNewAppStateTyped?.Invoke();
+            loadedState = null;
         }
+
+        item.AppStateValue = loadedState ?? item.CreateNewAppStateTyped?.Invoke();
 
         return Observable.Return(Unit.Default);
     }
