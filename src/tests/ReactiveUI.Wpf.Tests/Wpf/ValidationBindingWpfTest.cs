@@ -5,6 +5,8 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 using ReactiveUI.Wpf.Binding;
 
@@ -187,6 +189,36 @@ public class ValidationBindingWpfTest
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result!.Name).IsEqualTo("Text");
+    }
+
+    /// <summary>
+    /// Tests that GetDependencyProperty finds dependency properties inherited from base controls.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetDependencyProperty_FindsInheritedPropertyByName()
+    {
+        var comboBox = new ComboBox();
+
+        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.GetDependencyProperty(comboBox, nameof(Selector.SelectedValue));
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result).IsSameReferenceAs(Selector.SelectedValueProperty);
+    }
+
+    /// <summary>
+    /// Tests that GetDependencyProperty finds dependency properties inherited by TextBox.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetDependencyProperty_FindsInheritedTextBoxBasePropertyByName()
+    {
+        var textBox = new TextBox();
+
+        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.GetDependencyProperty(textBox, nameof(TextBoxBase.IsReadOnly));
+
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result).IsSameReferenceAs(TextBoxBase.IsReadOnlyProperty);
     }
 
     /// <summary>
@@ -373,6 +405,25 @@ public class ValidationBindingWpfTest
         {
             await Assert.That(ex.ParamName).IsEqualTo("viewProperty");
         }
+    }
+
+    /// <summary>
+    /// Tests that BindWithValidation supports ComboBox.SelectedValue.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task BindWithValidation_BindsComboBoxSelectedValue()
+    {
+        var view = new TestViewWithComboBox();
+        var viewModel = new TestViewModel { SelectedValue = "initial" };
+        view.ViewModel = viewModel;
+
+        using var binding = view.BindWithValidation(viewModel, vm => vm.SelectedValue, v => v.MyComboBox.SelectedValue);
+
+        var bindingExpression = BindingOperations.GetBindingExpression(view.MyComboBox, Selector.SelectedValueProperty);
+
+        await Assert.That(bindingExpression).IsNotNull();
+        await Assert.That(bindingExpression!.ParentBinding.Path.Path).IsEqualTo("SelectedValue");
     }
 
     /// <summary>
@@ -645,10 +696,30 @@ public class ValidationBindingWpfTest
         public TextBox MyTextBox { get; }
     }
 
+    private class TestViewWithComboBox : StackPanel, IViewFor<TestViewModel>
+    {
+        public TestViewWithComboBox()
+        {
+            MyComboBox = new ComboBox { Name = "MyComboBox" };
+            Children.Add(MyComboBox);
+        }
+
+        public TestViewModel? ViewModel { get; set; }
+
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = value as TestViewModel;
+        }
+
+        public ComboBox MyComboBox { get; }
+    }
+
     private class TestViewModel : ReactiveObject
     {
         private string? _testProperty;
         private NestedTestObject? _nestedObject;
+        private string? _selectedValue;
 
         public string? TestProperty
         {
@@ -660,6 +731,12 @@ public class ValidationBindingWpfTest
         {
             get => _nestedObject;
             set => this.RaiseAndSetIfChanged(ref _nestedObject, value);
+        }
+
+        public string? SelectedValue
+        {
+            get => _selectedValue;
+            set => this.RaiseAndSetIfChanged(ref _selectedValue, value);
         }
     }
 
