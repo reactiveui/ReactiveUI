@@ -5,6 +5,8 @@
 
 using System.Reactive;
 
+using ReactiveUI.Tests.Utilities.AppBuilder;
+
 namespace ReactiveUI.Tests.Utilities.SuspensionHost;
 
 /// <summary>
@@ -17,13 +19,13 @@ namespace ReactiveUI.Tests.Utilities.SuspensionHost;
 /// - SuspensionHostExtensions.SuspensionDriver
 /// Tests using this executor should be marked with [NotInParallel] due to static state modifications.
 /// </remarks>
-public class SuspensionHostTestExecutor : ITestExecutor
+public class SuspensionHostTestExecutor : AppBuilderTestExecutor
 {
     private Func<IObservable<Unit>>? _previousEnsureLoadAppStateFunc;
     private ISuspensionDriver? _previousSuspensionDriver;
 
     /// <inheritdoc/>
-    public virtual async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
+    public override async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
     {
         ArgumentNullException.ThrowIfNull(testAction);
 
@@ -31,7 +33,7 @@ public class SuspensionHostTestExecutor : ITestExecutor
 
         try
         {
-            await testAction();
+            await base.ExecuteTest(context, testAction);
         }
         finally
         {

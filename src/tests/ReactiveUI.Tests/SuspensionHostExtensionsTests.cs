@@ -125,6 +125,36 @@ public class SuspensionHostExtensionsTests
     }
 
     [Test]
+    public async Task GetAppState_WhenNoPersistedState_CreatesAndStoresNewAppState()
+    {
+        var createdState = new DummyAppState();
+        var createNewAppStateCallCount = 0;
+        using var host = new SuspensionHost
+        {
+            CreateNewAppState = () =>
+            {
+                createNewAppStateCallCount++;
+                return createdState;
+            },
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldPersistState = Observable.Never<IDisposable>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver { ReturnNullOnLoad = true };
+
+        using var disposable = host.SetupDefaultSuspendResume(driver);
+
+        var state = host.GetAppState<DummyAppState>();
+
+        await Assert.That(state).IsSameReferenceAs(createdState);
+        await Assert.That(host.AppState).IsSameReferenceAs(createdState);
+        await Assert.That(createNewAppStateCallCount).IsEqualTo(1);
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+    }
+
+    [Test]
     public async Task EnsureLoadAppState_WithExistingAppState_DoesNotLoad()
     {
         var existingState = new DummyAppState();
@@ -475,6 +505,8 @@ public class SuspensionHostExtensionsTests
 
         public bool ShouldThrowOnLoad { get; set; }
 
+        public bool ReturnNullOnLoad { get; set; }
+
         public object? StateToLoad { get; set; }
 
         public IObservable<Unit> InvalidateState()
@@ -495,6 +527,11 @@ public class SuspensionHostExtensionsTests
                 return Observable.Throw<object?>(
                     new InvalidOperationException("Failed to load state"),
                     ImmediateScheduler.Instance);
+            }
+
+            if (ReturnNullOnLoad)
+            {
+                return Observable.Return<object?>(null, ImmediateScheduler.Instance);
             }
 
             return Observable.Return(StateToLoad ?? new DummyAppState(), ImmediateScheduler.Instance);
