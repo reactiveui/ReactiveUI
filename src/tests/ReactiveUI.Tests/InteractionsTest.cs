@@ -65,21 +65,32 @@ public class InteractionsTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    [TestExecutor<WithSchedulerExecutor>]
     public async Task HandlersAreExecutedOnHandlerScheduler()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
+        var schedulerThreadId = -1;
+        using var scheduler = new EventLoopScheduler(
+            threadStart =>
+            {
+                var thread = new Thread(threadStart) { IsBackground = true };
+                schedulerThreadId = thread.ManagedThreadId;
+                return thread;
+            });
         var interaction = new Interaction<Unit, string>(scheduler);
+        var handlerThreadId = -1;
 
-        using (interaction.RegisterHandler(x => x.SetOutput("done")))
+        using (interaction.RegisterHandler(x =>
         {
-            var handled = false;
-            interaction
-                .Handle(Unit.Default)
-                .Subscribe(_ => handled = true);
+            handlerThreadId = Environment.CurrentManagedThreadId;
+            x.SetOutput("done");
+        }))
+        {
+            var result = await interaction.Handle(Unit.Default).ToTask().WaitAsync(TimeSpan.FromSeconds(5));
 
-            // With ImmediateScheduler, handlers execute immediately
-            await Assert.That(handled).IsTrue();
+            using (Assert.Multiple())
+            {
+                await Assert.That(result).IsEqualTo("done");
+                await Assert.That(handlerThreadId).IsEqualTo(schedulerThreadId);
+            }
         }
     }
 
