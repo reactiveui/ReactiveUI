@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Data;
@@ -221,6 +222,17 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         if (element is null || string.IsNullOrEmpty(name))
         {
             return null;
+        }
+
+        if (element is DependencyObject dependencyObject)
+        {
+            var targetType = dependencyObject.DependencyObjectType.SystemType;
+            var descriptor = DependencyPropertyDescriptor.FromName(name, targetType, targetType);
+
+            if (descriptor?.DependencyProperty is not null)
+            {
+                return descriptor.DependencyProperty;
+            }
         }
 
         return EnumerateDependencyProperties(element)
