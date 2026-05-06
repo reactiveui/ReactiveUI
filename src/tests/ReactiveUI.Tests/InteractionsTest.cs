@@ -226,6 +226,130 @@ public class InteractionsTest
     }
 
     /// <summary>
+    ///     Tests that task handler exceptions are propagated to the interaction observer.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TaskHandlerExceptionsShouldPropagate()
+    {
+        var interaction = new Interaction<Unit, string>();
+        var expected = new InvalidOperationException("task handler failed");
+
+        interaction.RegisterHandler(_ => Task.FromException(expected));
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => interaction.Handle(Unit.Default).ToTask());
+        await Assert.That(ex).IsSameReferenceAs(expected);
+    }
+
+    /// <summary>
+    ///     Tests that task handlers can complete without handling the interaction.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TaskHandlersThatCompleteWithoutOutputShouldFallThroughToNextHandler()
+    {
+        var interaction = new Interaction<Unit, string>();
+
+        interaction.RegisterHandler(static context => context.SetOutput("fallback"));
+        interaction.RegisterHandler(static _ => Task.CompletedTask);
+
+        var result = await interaction.Handle(Unit.Default);
+
+        await Assert.That(result).IsEqualTo("fallback");
+    }
+
+    /// <summary>
+    ///     Tests that task handlers which do not set output still surface the unhandled interaction.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TaskHandlersThatCompleteWithoutOutputShouldCauseUnhandledInteractionException()
+    {
+        var interaction = new Interaction<string, Unit>();
+
+        interaction.RegisterHandler(static _ => Task.CompletedTask);
+
+        var ex = await Assert.ThrowsAsync<UnhandledInteractionException<string, Unit>>(() =>
+            interaction.Handle("task").ToTask());
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(ex!.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex.Input).IsEqualTo("task");
+        }
+    }
+
+    /// <summary>
+    ///     Tests that exceptions thrown while creating observable handlers are propagated.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableHandlerFactoryExceptionsShouldPropagate()
+    {
+        var interaction = new Interaction<Unit, string>();
+        var expected = new InvalidOperationException("observable handler factory failed");
+
+        interaction.RegisterHandler<Unit>(_ => throw expected);
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => interaction.Handle(Unit.Default).ToTask());
+        await Assert.That(ex).IsSameReferenceAs(expected);
+    }
+
+    /// <summary>
+    ///     Tests that errors produced by observable handlers are propagated.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableHandlerErrorsShouldPropagate()
+    {
+        var interaction = new Interaction<Unit, string>();
+        var expected = new InvalidOperationException("observable handler failed");
+
+        interaction.RegisterHandler(_ => Observable.Throw<Unit>(expected));
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => interaction.Handle(Unit.Default).ToTask());
+        await Assert.That(ex).IsSameReferenceAs(expected);
+    }
+
+    /// <summary>
+    ///     Tests that observable handlers can complete without handling the interaction.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableHandlersThatCompleteWithoutOutputShouldFallThroughToNextHandler()
+    {
+        var interaction = new Interaction<Unit, string>();
+
+        interaction.RegisterHandler(static context => context.SetOutput("fallback"));
+        interaction.RegisterHandler(static _ => Observable.Empty<Unit>());
+
+        var result = await interaction.Handle(Unit.Default);
+
+        await Assert.That(result).IsEqualTo("fallback");
+    }
+
+    /// <summary>
+    ///     Tests that observable handlers which do not set output still surface the unhandled interaction.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableHandlersThatCompleteWithoutOutputShouldCauseUnhandledInteractionException()
+    {
+        var interaction = new Interaction<string, Unit>();
+
+        interaction.RegisterHandler(static _ => Observable.Empty<Unit>());
+
+        var ex = await Assert.ThrowsAsync<UnhandledInteractionException<string, Unit>>(() =>
+            interaction.Handle("observable").ToTask());
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(ex!.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex.Input).IsEqualTo("observable");
+        }
+    }
+
+    /// <summary>
     ///     Tests that handlers can opt not to handle the interaction.
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
