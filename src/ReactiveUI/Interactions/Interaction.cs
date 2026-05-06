@@ -170,13 +170,10 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
 
     /// <summary>
-    /// Yields once so asynchronous handlers are not invoked inside the current scheduler trampoline.
+    /// Yields through the default task scheduler so asynchronous handlers are not invoked inside the current scheduler trampoline.
     /// </summary>
-    /// <returns>A task that completes after the current context has yielded.</returns>
-    private static async Task YieldToCurrentContext()
-    {
-        await Task.Yield();
-    }
+    /// <returns>A task that completes after the current scheduler trampoline has yielded.</returns>
+    private static Task YieldToCurrentContext() => Task.Run(static () => { });
 
     /// <summary>
     /// Registers a normalized interaction handler.
