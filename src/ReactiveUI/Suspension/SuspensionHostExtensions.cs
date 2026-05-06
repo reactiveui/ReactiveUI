@@ -200,7 +200,9 @@ public static class SuspensionHostExtensions
                     .Subscribe(_ => item.Log().Info("Invalidated app state")));
 
         ret.Add(item.ShouldPersistState
-                    .SelectMany(x => _suspensionDriver.SaveState(item.AppState!).Finally(x.Dispose))
+                    .SelectMany(x => EnsureLoadAppStateOnce(item, _suspensionDriver)
+                        .SelectMany(_ => _suspensionDriver!.SaveState(item.AppState!))
+                        .Finally(x.Dispose))
                     .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
                     .Subscribe(_ => item.Log().Info("Persisted application state")));
 
@@ -246,7 +248,9 @@ public static class SuspensionHostExtensions
                     .Subscribe(_ => item.Log().Info("Invalidated app state")));
 
         ret.Add(item.ShouldPersistState
-                    .SelectMany(x => _suspensionDriver.SaveState(item.AppStateValue!, typeInfo).Finally(x.Dispose))
+                    .SelectMany(x => EnsureLoadAppStateOnce(item, _suspensionDriver, typeInfo)
+                        .SelectMany(_ => _suspensionDriver!.SaveState(item.AppStateValue!, typeInfo))
+                        .Finally(x.Dispose))
                     .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
                     .Subscribe(_ => item.Log().Info("Persisted application state")));
 
@@ -302,6 +306,25 @@ public static class SuspensionHostExtensions
     }
 
     /// <summary>
+    /// Runs the pending one-time untyped app-state load, or materializes state directly if the pending loader has already been consumed.
+    /// </summary>
+    /// <param name="item">The suspension host.</param>
+    /// <param name="driver">The suspension driver.</param>
+    /// <returns>A completed observable.</returns>
+    [RequiresUnreferencedCode(
+        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
+        "Prefer EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
+    [RequiresDynamicCode(
+        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
+        "Prefer EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
+    private static IObservable<Unit> EnsureLoadAppStateOnce(ISuspensionHost item, ISuspensionDriver? driver)
+    {
+        var ensureLoadAppState = Interlocked.Exchange(ref _ensureLoadAppStateFunc, null);
+
+        return ensureLoadAppState?.Invoke() ?? item.EnsureLoadAppState(driver);
+    }
+
+    /// <summary>
     /// Ensures a one-time typed app state load from storage using source-generated JSON metadata (trimming/AOT friendly).
     /// </summary>
     /// <typeparam name="TAppState">The application state type.</typeparam>
@@ -340,5 +363,21 @@ public static class SuspensionHostExtensions
         item.AppStateValue = loadedState ?? item.CreateNewAppStateTyped?.Invoke();
 
         return Observable.Return(Unit.Default);
+    }
+
+    /// <summary>
+    /// Runs the pending one-time typed app-state load, or materializes state directly if the pending loader has already been consumed.
+    /// </summary>
+    /// <typeparam name="TAppState">The application state type.</typeparam>
+    /// <param name="item">The typed suspension host.</param>
+    /// <param name="driver">The suspension driver.</param>
+    /// <param name="typeInfo">Source-generated metadata for <typeparamref name="TAppState"/>.</param>
+    /// <returns>A completed observable.</returns>
+    private static IObservable<Unit> EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState> item, ISuspensionDriver? driver, JsonTypeInfo<TAppState> typeInfo)
+        where TAppState : class
+    {
+        var ensureLoadAppState = Interlocked.Exchange(ref _ensureLoadAppStateFunc, null);
+
+        return ensureLoadAppState?.Invoke() ?? item.EnsureLoadAppState(driver, typeInfo);
     }
 }

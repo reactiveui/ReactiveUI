@@ -255,6 +255,135 @@ public partial class SuspensionHostExtensionsAotTests
     }
 
     [Test]
+    public async Task SetupDefaultSuspendResume_Typed_ShouldPersistCreatedState_WhenNoPersistedStateAndPersistOccursBeforeGetAppState()
+    {
+        var createdState = new TestAppState { Value = 321 };
+        var createNewAppStateCallCount = 0;
+        var persistTokenDisposed = false;
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = () =>
+            {
+                createNewAppStateCallCount++;
+                return createdState;
+            },
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState>();
+        var persistSubject = new Subject<IDisposable>();
+        host.ShouldPersistState = persistSubject.ObserveOn(ImmediateScheduler.Instance);
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+        var persistToken = Disposable.Create(() => persistTokenDisposed = true);
+
+        persistSubject.OnNext(persistToken);
+
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(createNewAppStateCallCount).IsEqualTo(1);
+        await Assert.That(host.AppStateValue).IsSameReferenceAs(createdState);
+        await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(driver.LastSavedState).IsSameReferenceAs(createdState);
+        await Assert.That(persistTokenDisposed).IsTrue();
+    }
+
+    [Test]
+    public async Task SetupDefaultSuspendResume_Typed_ShouldPersistCreatedState_WhenLaunchSignalWasRaisedBeforeSetup()
+    {
+        var createdState = new TestAppState { Value = 654 };
+        var createNewAppStateCallCount = 0;
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = () =>
+            {
+                createNewAppStateCallCount++;
+                return createdState;
+            },
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var launchSubject = new Subject<Unit>();
+        var resumeSubject = new Subject<Unit>();
+        var persistSubject = new Subject<IDisposable>();
+        host.IsLaunchingNew = launchSubject.ObserveOn(ImmediateScheduler.Instance);
+        host.IsResuming = resumeSubject.ObserveOn(ImmediateScheduler.Instance);
+        host.ShouldPersistState = persistSubject.ObserveOn(ImmediateScheduler.Instance);
+
+        launchSubject.OnNext(Unit.Default);
+
+        var driver = new TestSuspensionDriver<TestAppState>();
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+
+        persistSubject.OnNext(Disposable.Empty);
+
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(createNewAppStateCallCount).IsEqualTo(1);
+        await Assert.That(host.AppStateValue).IsSameReferenceAs(createdState);
+        await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(driver.LastSavedState).IsSameReferenceAs(createdState);
+    }
+
+    [Test]
+    public async Task SetupDefaultSuspendResume_Typed_ShouldPersistLoadedState_WhenPersistOccursBeforeGetAppState()
+    {
+        var loadedState = new TestAppState { Value = 987 };
+        var createNewAppStateCallCount = 0;
+        using var host = new SuspensionHost<TestAppState>
+        {
+            CreateNewAppStateTyped = () =>
+            {
+                createNewAppStateCallCount++;
+                return new TestAppState();
+            },
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState> { StateToLoad = loadedState };
+        var persistSubject = new Subject<IDisposable>();
+        host.ShouldPersistState = persistSubject.ObserveOn(ImmediateScheduler.Instance);
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+
+        persistSubject.OnNext(Disposable.Empty);
+
+        await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
+        await Assert.That(createNewAppStateCallCount).IsEqualTo(0);
+        await Assert.That(host.AppStateValue).IsSameReferenceAs(loadedState);
+        await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(driver.LastSavedState).IsSameReferenceAs(loadedState);
+    }
+
+    [Test]
+    public async Task SetupDefaultSuspendResume_Typed_ShouldDisposePersistTokenAfterSave()
+    {
+        var appState = new TestAppState { Value = 111 };
+        var persistTokenDisposed = false;
+        using var host = new SuspensionHost<TestAppState>
+        {
+            AppStateValue = appState,
+            IsLaunchingNew = Observable.Never<Unit>(),
+            IsResuming = Observable.Never<Unit>(),
+            ShouldInvalidateState = Observable.Never<Unit>()
+        };
+
+        var driver = new TestSuspensionDriver<TestAppState>();
+        var persistSubject = new Subject<IDisposable>();
+        host.ShouldPersistState = persistSubject.ObserveOn(ImmediateScheduler.Instance);
+
+        using var disposable = host.SetupDefaultSuspendResume(TestAppStateContext.Default.TestAppState, driver);
+        var persistToken = Disposable.Create(() => persistTokenDisposed = true);
+
+        persistSubject.OnNext(persistToken);
+
+        await Assert.That(driver.SaveStateCallCount).IsEqualTo(1);
+        await Assert.That(persistTokenDisposed).IsTrue();
+    }
+
+    [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldInvalidateState_CallsDriverInvalidateState()
     {
         using var host = new SuspensionHost<TestAppState>
