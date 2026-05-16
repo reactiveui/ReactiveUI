@@ -26,13 +26,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
         // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
         // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
+        //
+        // Note: A control is not yet set sited in its constructor. We must delay the design mode check until after one of the events fires.
         if (view is Control control)
         {
-            if (GetCachedIsDesignMode(control))
-            {
-                return Observable<bool>.Empty;
-            }
-
             var handleDestroyed = Observable.FromEvent<EventHandler, bool>(
                                                                            eventHandler => (_, _) => eventHandler(false),
                                                                            h => control.HandleDestroyed += h,
@@ -65,7 +62,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                                                      .DistinctUntilChanged();
             }
 
-            return controlActivation;
+            return controlActivation.Where(_ => !GetCachedIsDesignMode(control));
         }
 
         if (view is null)
@@ -86,12 +83,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         return Observable<bool>.Empty;
     }
 
-    private static bool GetIsDesignMode(Control control) =>
-        LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
-
     private bool GetCachedIsDesignMode(Control control)
     {
-        _isDesignModeCache ??= GetIsDesignMode(control);
+        _isDesignModeCache ??= control.IsAncestorSiteInDesignMode;
 
         return _isDesignModeCache.Value;
     }
