@@ -45,8 +45,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                                                                           h => control.VisibleChanged += h,
                                                                           h => control.VisibleChanged -= h);
 
-            var controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged)
-                                              .DistinctUntilChanged();
+            IObservable<bool> controlActivation;
 
             if (view is Form form)
             {
@@ -58,11 +57,15 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                  },
                  h => form.FormClosed += h,
                  h => form.FormClosed -= h);
-                controlActivation = controlActivation.Merge(formClosed)
-                                                     .DistinctUntilChanged();
+
+                controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged, formClosed);
+            }
+            else
+            {
+                controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged);
             }
 
-            return controlActivation.Where(_ => !GetCachedIsDesignMode(control));
+            return controlActivation.DistinctUntilChanged().Where(_ => !GetCachedIsDesignMode(control));
         }
 
         if (view is null)
