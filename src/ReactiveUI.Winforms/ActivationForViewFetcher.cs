@@ -88,7 +88,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
 
     private bool GetCachedIsDesignMode(Control control)
     {
-        _isDesignModeCache ??= control.IsAncestorSiteInDesignMode;
+        _isDesignModeCache ??= control.GetIsAncestorSiteInDesignMode();
 
         return _isDesignModeCache.Value;
     }
