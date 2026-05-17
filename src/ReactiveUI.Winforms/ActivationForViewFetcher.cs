@@ -26,13 +26,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
         // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
         // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
+        //
+        // Note: A control is not yet set sited in its constructor. We must delay the design mode check until after one of the events fires.
         if (view is Control control)
         {
-            if (GetCachedIsDesignMode(control))
-            {
-                return Observable<bool>.Empty;
-            }
-
             var handleDestroyed = Observable.FromEvent<EventHandler, bool>(
                                                                            eventHandler => (_, _) => eventHandler(false),
                                                                            h => control.HandleDestroyed += h,
@@ -48,8 +45,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                                                                           h => control.VisibleChanged += h,
                                                                           h => control.VisibleChanged -= h);
 
-            var controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged)
-                                              .DistinctUntilChanged();
+            IObservable<bool> controlActivation;
 
             if (view is Form form)
             {
@@ -61,11 +57,15 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                  },
                  h => form.FormClosed += h,
                  h => form.FormClosed -= h);
-                controlActivation = controlActivation.Merge(formClosed)
-                                                     .DistinctUntilChanged();
+
+                controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged, formClosed);
+            }
+            else
+            {
+                controlActivation = Observable.Merge(handleDestroyed, handleCreated, visibleChanged);
             }
 
-            return controlActivation;
+            return controlActivation.DistinctUntilChanged().Where(_ => !GetCachedIsDesignMode(control));
         }
 
         if (view is null)
@@ -86,12 +86,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         return Observable<bool>.Empty;
     }
 
-    private static bool GetIsDesignMode(Control control) =>
-        LicenseManager.UsageMode == LicenseUsageMode.Designtime || control.Site?.DesignMode == true || control.Parent?.Site?.DesignMode == true;
-
     private bool GetCachedIsDesignMode(Control control)
     {
-        _isDesignModeCache ??= GetIsDesignMode(control);
+        _isDesignModeCache ??= control.GetIsAncestorSiteInDesignMode();
 
         return _isDesignModeCache.Value;
     }
