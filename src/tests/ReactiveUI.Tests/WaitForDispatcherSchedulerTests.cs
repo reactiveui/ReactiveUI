@@ -48,7 +48,7 @@ public class WaitForDispatcherSchedulerTests
     }
 
     /// <summary>
-    ///     Tests that factories throws exception re calls on schedule.
+    ///     Tests that factory throws exception re calls on schedule.
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
@@ -65,6 +65,61 @@ public class WaitForDispatcherSchedulerTests
         sut.Schedule(() => { });
 
         await Assert.That(schedulerFactoryCalls).IsEqualTo(2);
+    }
+
+    /// <summary>
+    ///     Tests that when the factory first throws but later succeeds, the scheduler is cached and reused.
+    ///     This covers the regression where WpfMainThreadScheduler falls back to CurrentThreadScheduler when
+    ///     Schedule is called from a non-UI thread before the WPF Application Dispatcher is available.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task FactoryThrowsThenSucceeds_CachesSuccessfulScheduler()
+    {
+        var schedulerFactoryCalls = 0;
+        var successScheduler = CurrentThreadScheduler.Instance;
+        var schedulerFactory = new Func<IScheduler>(() =>
+        {
+            schedulerFactoryCalls++;
+            if (schedulerFactoryCalls == 1)
+            {
+                throw new InvalidOperationException("Dispatcher not ready yet.");
+            }
+
+            return successScheduler;
+        });
+
+        var sut = new WaitForDispatcherScheduler(schedulerFactory);
+
+        // First Schedule call — factory throws, falls back to CurrentThreadScheduler (not cached)
+        IScheduler? firstCallScheduler = null;
+        sut.Schedule<object>(
+            null!,
+            (scheduler, state) =>
+            {
+                firstCallScheduler = scheduler;
+                return Disposable.Empty;
+            });
+
+        // Second Schedule call — factory succeeds, result is cached
+        IScheduler? secondCallScheduler = null;
+        sut.Schedule<object>(
+            null!,
+            (scheduler, state) =>
+            {
+                secondCallScheduler = scheduler;
+                return Disposable.Empty;
+            });
+
+        // Third Schedule call — uses cached scheduler, factory not called again
+        var callsBeforeThird = schedulerFactoryCalls;
+        sut.Schedule<object>(
+            null!,
+            (scheduler, state) => Disposable.Empty);
+
+        await Assert.That(firstCallScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
+        await Assert.That(secondCallScheduler).IsEqualTo(successScheduler);
+        await Assert.That(schedulerFactoryCalls).IsEqualTo(callsBeforeThird);
     }
 
     /// <summary>

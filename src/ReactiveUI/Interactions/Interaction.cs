@@ -118,12 +118,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
         IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> context) =>
-            Observable.FromAsync(
-                    async () =>
-                    {
-                        await YieldToCurrentContext();
-                        return handler(context);
-                    })
+            Observable.FromAsync(() => Task.Run(() => handler(context)))
                 .SelectMany(result => result.Select(_ => Unit.Default));
 
         return RegisterHandlerCore(ContentHandler);
