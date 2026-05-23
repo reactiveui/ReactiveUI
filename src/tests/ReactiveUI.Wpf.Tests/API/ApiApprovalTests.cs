@@ -4,7 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if WINDOWS
 using ReactiveUI.Tests.Utilities;
+#endif
 
 namespace ReactiveUI.Tests.API;
 

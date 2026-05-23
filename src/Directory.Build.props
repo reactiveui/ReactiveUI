@@ -84,9 +84,12 @@
     <!-- Testing target frameworks for non-platform tests (core .NET + .NET Framework) -->
     <ReactiveUITestingTargets>net8.0;net9.0;net10.0</ReactiveUITestingTargets>
 
-    <!-- Testing target frameworks for UI platform tests (.NET Framework + Windows-specific TFMs) -->
+    <!-- Testing target frameworks for UI platform tests. Windows-specific TFMs only on Windows: off-Windows
+         these test projects fall back to the plain net TFMs so they run on the Linux/macOS CI legs (their
+         Windows-only project references are gated behind a -windows10.0.19041.0 <When> condition). Building them
+         as net*-windows off-Windows would produce assemblies the runner cannot launch (no Microsoft.WindowsDesktop.App). -->
     <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
-    <ReactiveUITestingUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
+    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
