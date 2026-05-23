@@ -66,6 +66,12 @@ public class RoutedViewHost<
     /// <exception cref="InvalidOperationException">You *must* register an IScreen class representing your App's main Screen.</exception>
     public RoutedViewHost()
     {
+        // Resolve the Router before wiring the subscriptions: SubscribeToNavigationStackChanges hooks
+        // Router.NavigationStack directly, so Router must already be set or it would dereference null.
+        var screen = AppLocator.Current.GetService<IScreen>() ??
+                     throw new InvalidOperationException("You *must* register an IScreen class representing your App's main Screen");
+        Router = screen.Router;
+
         // Subscribe directly without WhenActivated
         SubscribeToNavigationStackChanges();
         SubscribeToNavigateBack();
@@ -85,10 +91,6 @@ public class RoutedViewHost<
                 this.Log().Error(ex, "Failed to perform initial navigation stack sync");
             }
         });
-
-        var screen = AppLocator.Current.GetService<IScreen>() ??
-                     throw new InvalidOperationException("You *must* register an IScreen class representing your App's main Screen");
-        Router = screen.Router;
     }
 
     /// <summary>
