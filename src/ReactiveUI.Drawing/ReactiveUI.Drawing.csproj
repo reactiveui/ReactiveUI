@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
-    <!-- Short-term: project-reference local Splat.Drawing until a System.Reactive-free package is published. -->
-    <ProjectReference Include="..\..\..\splat\src\Splat.Drawing\Splat.Drawing.csproj"/>
+    <PackageReference Include="Splat.Drawing"/>
   </ItemGroup>
 </Project>
