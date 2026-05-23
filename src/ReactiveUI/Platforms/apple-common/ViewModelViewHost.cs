@@ -4,11 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 #if UIKIT
-using UIKit;
-
-using NSViewController = UIKit.UIViewController;
-#else
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using AppKit;
+using UIKit;
 #endif
 
 namespace ReactiveUI;

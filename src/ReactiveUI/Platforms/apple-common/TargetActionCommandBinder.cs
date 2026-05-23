@@ -6,12 +6,11 @@
 #nullable enable
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-
 using Foundation;
-
 using ObjCRuntime;
 
 #if UIKIT

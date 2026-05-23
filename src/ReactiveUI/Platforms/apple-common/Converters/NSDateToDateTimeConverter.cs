@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 #if UIKIT || MACOS
+using System.Diagnostics.CodeAnalysis;
 using Foundation;
 
 namespace ReactiveUI;

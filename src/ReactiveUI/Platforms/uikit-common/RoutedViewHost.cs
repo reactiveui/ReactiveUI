@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 
 using NSViewController = UIKit.UIViewController;
 
