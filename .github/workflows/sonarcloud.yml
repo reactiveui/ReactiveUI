@@ -15,8 +15,6 @@ jobs:
         with:
             productNamespacePrefix: ReactiveUI
             installWorkloads: true
-            versioningTool: minver
-            minverMinimumMajorMinor: '23.2'
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/TestResults/**'

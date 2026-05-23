@@ -21,7 +21,5 @@ jobs:
       configuration: Release
       productNamespacePrefix: "ReactiveUI"
       installWorkloads: true
-      versioningTool: minver
-      minverMinimumMajorMinor: '23.2'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
