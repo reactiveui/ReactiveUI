@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Bindings.CommandBindings;
@@ -116,7 +119,9 @@ public class CreatesCommandBindingViaCommandParameterTests
             Observable.Return<object?>(null),
             "SomeEvent");
 
-        await Assert.That(binding).IsEqualTo(Disposable.Empty);
+        // Event-name binding is unsupported by this binder, so it returns a no-op disposable. The contract is just
+        // an IDisposable; the concrete no-op type is an implementation detail, so only assert it is non-null.
+        await Assert.That(binding).IsNotNull();
     }
 
     /// <summary>

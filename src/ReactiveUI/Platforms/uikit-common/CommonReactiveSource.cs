@@ -10,6 +10,8 @@ using System.Globalization;
 
 using Foundation;
 
+using ReactiveUI.Internal;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -294,7 +296,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         var sectionChanged =
             (notifyCollectionChanged is null
-                ? Observable<Unit>.Never
+                ? NeverObservable<Unit>.Instance
                 : notifyCollectionChanged.ObserveCollectionChanges().Select(static _ => Unit.Default))
             .StartWith(Unit.Default);
 
@@ -359,7 +361,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                             .Join(
                                 anySectionChanged,
                                 _ => isReloading,
-                                _ => Observable<Unit>.Empty,
+                                _ => EmptyObservable<Unit>.Instance,
                                 static (_, __) => Unit.Default)
                             .Subscribe(
                                 _ =>
@@ -382,7 +384,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                             .Join(
                                 anySectionChanged,
                                 _ => isReloading,
-                                _ => Observable<Unit>.Empty,
+                                _ => EmptyObservable<Unit>.Instance,
                                 static (_, changeDetails) => (changeDetails.Change, changeDetails.Section))
                             .Subscribe(
                                 y =>

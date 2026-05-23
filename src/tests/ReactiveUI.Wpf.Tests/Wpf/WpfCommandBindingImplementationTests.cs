@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Input;
 
@@ -10,6 +11,8 @@ using ReactiveUI.Tests.Utilities.Logging;
 using ReactiveUI.Tests.Wpf.Mocks;
 using ReactiveUI.Tests.Xaml.Mocks;
 using ReactiveUI.Tests.Xaml.Utilities;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -264,7 +267,7 @@ public class WpfCommandBindingImplementationTests
             var view = new CommandBindingView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
             var disp = view.BindCommand(vm, static x => x.Command2, static x => x.Command2, MouseUpEventName);
-            view.ViewModel = new CommandBindingViewModel();
+            view.ViewModel = new();
 
             return (disp, weakRef);
         }
@@ -277,6 +280,10 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that the command and its parameter rebind when the view model instance is replaced.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandAndParameterRebindToNewViewModelInstance()
     {
@@ -286,9 +293,9 @@ public class WpfCommandBindingImplementationTests
         var received1 = 0;
         view.ViewModel.Command1.Subscribe(i => received1 = i);
 
-        var binding = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
+        _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
 
-        view.ViewModel = new CommandBindingViewModel { Value = 2 };
+        view.ViewModel = new() { Value = ExpectedSecondInvocation };
 
         var received2 = 0;
         view.ViewModel.Command1.Subscribe(i => received2 = i);
@@ -298,10 +305,14 @@ public class WpfCommandBindingImplementationTests
         using (Assert.Multiple())
         {
             await Assert.That(received1).IsEqualTo(0);
-            await Assert.That(received2).IsEqualTo(2);
+            await Assert.That(received2).IsEqualTo(ExpectedSecondInvocation);
         }
     }
 
+    /// <summary>
+    /// Verifies that rebinding a command from a background thread does not touch the WPF control directly.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandRebindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
     {

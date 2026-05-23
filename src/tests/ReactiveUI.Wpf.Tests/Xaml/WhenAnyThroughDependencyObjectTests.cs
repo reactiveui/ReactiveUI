@@ -4,9 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
+using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.WhenAny.Mockups;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -30,7 +32,7 @@ public class WhenAnyThroughDependencyObjectTests
     {
         var vm = new HostTestFixture
         {
-            Child = new TestFixture
+            Child = new()
             {
                 IsNotNullString = "Foo",
                 IsOnlyOneWord = "Baz",

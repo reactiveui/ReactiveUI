@@ -4,6 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Disposables;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Blazor.Internal;
 
@@ -26,7 +29,7 @@ internal sealed class ReactiveComponentState : IDisposable
     /// <summary>
     /// Signals component activation. Emits <see cref="Unit.Default"/> when <see cref="NotifyActivated"/> is called.
     /// </summary>
-    private readonly Subject<Unit> _initSubject = new();
+    private readonly BroadcastSubject<Unit> _initSubject = new();
 
     /// <summary>
     /// Signals component deactivation. Emits <see cref="Unit.Default"/> when <see cref="NotifyDeactivated"/> is called.
@@ -38,7 +41,7 @@ internal sealed class ReactiveComponentState : IDisposable
         "Design",
         "CA2213:Disposable fields should be disposed",
         Justification = "Disposed explicitly in Dispose method.")]
-    private readonly Subject<Unit> _deactivateSubject = new();
+    private readonly BroadcastSubject<Unit> _deactivateSubject = new();
 
     /// <summary>
     /// Holds subscriptions tied to the component lifetime. Disposed when the component is disposed.
@@ -49,11 +52,11 @@ internal sealed class ReactiveComponentState : IDisposable
     /// Holds subscriptions created on first render.
     /// </summary>
     /// <remarks>
-    /// This SerialDisposable avoids framework conflicts that occur when certain subscriptions are created
-    /// during OnInitialized rather than OnAfterRender. The subscription is replaced each time
-    /// <see cref="FirstRenderSubscriptions"/> is assigned.
+    /// Deferring these subscriptions to OnAfterRender avoids framework conflicts that occur when they are created
+    /// during OnInitialized. Assigning <see cref="FirstRenderSubscriptions"/> disposes any previously held value,
+    /// giving the swap semantics a SerialDisposable previously provided without allocating one.
     /// </remarks>
-    private readonly SerialDisposable _firstRenderSubscriptions = new();
+    private IDisposable? _firstRenderSubscriptions;
 
     /// <summary>
     /// Indicates whether the state has been disposed. Prevents double disposal.
@@ -67,7 +70,7 @@ internal sealed class ReactiveComponentState : IDisposable
     /// This observable emits once during component initialization and can be used to trigger
     /// reactive activation patterns for view models implementing <see cref="IActivatableViewModel"/>.
     /// </remarks>
-    public IObservable<Unit> Activated => _initSubject.AsObservable();
+    public IObservable<Unit> Activated => _initSubject;
 
     /// <summary>
     /// Gets an observable that emits when the component is deactivated.
@@ -76,7 +79,7 @@ internal sealed class ReactiveComponentState : IDisposable
     /// This observable emits during component disposal, allowing cleanup operations to execute
     /// while subscriptions are still active.
     /// </remarks>
-    public IObservable<Unit> Deactivated => _deactivateSubject.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivateSubject;
 
     /// <summary>
     /// Gets the composite disposable for lifetime subscriptions.
@@ -96,13 +99,12 @@ internal sealed class ReactiveComponentState : IDisposable
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This property wraps a <see cref="SerialDisposable"/> to ensure that setting a new subscription
-    /// automatically disposes the previous one. Typically set once during OnAfterRender when firstRender is true.
+    /// Setting this property disposes any previously held value before storing the new one, giving the swap
+    /// semantics without allocating a serial disposable. Typically set once during OnAfterRender when firstRender is true.
     /// </para>
     /// <para>
-    /// Performance: The property is intentionally implemented with explicit getters and setters rather than
-    /// as an auto-property to provide controlled access to the underlying SerialDisposable's Disposable property,
-    /// ensuring proper disposal semantics.
+    /// Performance: the property is intentionally implemented with an explicit setter rather than as an
+    /// auto-property so it can dispose the previous subscription on assignment.
     /// </para>
     /// </remarks>
     [SuppressMessage(
@@ -111,8 +113,12 @@ internal sealed class ReactiveComponentState : IDisposable
         Justification = "Intentional wrapper for SerialDisposable.Disposable property to ensure proper disposal semantics.")]
     public IDisposable? FirstRenderSubscriptions
     {
-        get => _firstRenderSubscriptions.Disposable;
-        set => _firstRenderSubscriptions.Disposable = value;
+        get => _firstRenderSubscriptions;
+        set
+        {
+            _firstRenderSubscriptions?.Dispose();
+            _firstRenderSubscriptions = value;
+        }
     }
 
     /// <summary>
@@ -160,7 +166,7 @@ internal sealed class ReactiveComponentState : IDisposable
             return;
         }
 
-        _firstRenderSubscriptions.Dispose();
+        _firstRenderSubscriptions?.Dispose();
         _lifetimeDisposables.Dispose();
         _initSubject.Dispose();
         _deactivateSubject.Dispose();

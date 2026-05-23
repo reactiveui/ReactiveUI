@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder;
@@ -19,7 +21,14 @@ public static class WpfReactiveUIBuilderExtensions
     /// The WPF main thread scheduler.
     /// </value>
     public static IScheduler WpfMainThreadScheduler { get; } =
+#if NET462
+        // System.Reactive 6.x ships no net462 asset, and its netstandard2.0 facade (which net462 resolves to) does
+        // not include DispatcherScheduler. Fall back to the current-thread scheduler so net462 compiles; use net472+
+        // for true WPF dispatcher marshalling.
+        CurrentThreadScheduler.Instance;
+#else
         new WaitForDispatcherScheduler(static () => DispatcherScheduler.Current);
+#endif
 
     /// <summary>
     /// Configures ReactiveUI for WPF platform with appropriate schedulers.

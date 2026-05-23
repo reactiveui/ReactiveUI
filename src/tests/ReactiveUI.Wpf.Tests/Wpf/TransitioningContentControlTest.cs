@@ -6,6 +6,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -314,7 +315,7 @@ public class TransitioningContentControlTest
 
         // Force a measure and arrange to set ActualWidth/Height
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -357,7 +358,7 @@ public class TransitioningContentControlTest
         };
 
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var completingAnimation = new DoubleAnimation();
@@ -398,7 +399,7 @@ public class TransitioningContentControlTest
         };
 
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -625,7 +626,7 @@ public class TransitioningContentControlTest
         };
 
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Should not throw even without storyboards set (methods check for null)
         control.SetTransitionDefaultValues();
@@ -642,9 +643,9 @@ public class TransitioningContentControlTest
     {
         var control = new TransitioningContentControl
         {
-            Template = new ControlTemplate(typeof(TransitioningContentControl))
+            Template = new(typeof(TransitioningContentControl))
             {
-                VisualTree = new FrameworkElementFactory(typeof(Grid)) { Name = "WrongName" },
+                VisualTree = new(typeof(Grid)) { Name = "WrongName" },
             },
         };
 
@@ -661,9 +662,9 @@ public class TransitioningContentControlTest
     {
         var control = new TransitioningContentControl
         {
-            Template = new ControlTemplate(typeof(TransitioningContentControl))
+            Template = new(typeof(TransitioningContentControl))
             {
-                VisualTree = new FrameworkElementFactory(typeof(Grid)) { Name = PartContainerName },
+                VisualTree = new(typeof(Grid)) { Name = PartContainerName },
             },
         };
 
@@ -749,7 +750,7 @@ public class TransitioningContentControlTest
         };
 
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -772,7 +773,7 @@ public class TransitioningContentControlTest
         control.Width = ControlSize;
         control.Height = ControlSize;
         control.Measure(new Size(ControlSize, ControlSize));
-        control.Arrange(new Rect(0, 0, ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Set initial content
         if (control.CurrentContentPresentationSite is not null)
@@ -922,7 +923,7 @@ public class TransitioningContentControlTest
     private static void AddTransitionStates(VisualStateGroup stateGroup)
     {
         // Normal state
-        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new Storyboard() });
+        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
 
         // Fade transition
         var fadeStoryboard = new Storyboard();

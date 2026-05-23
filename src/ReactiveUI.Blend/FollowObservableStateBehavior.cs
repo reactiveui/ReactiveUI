@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Blend;
 
@@ -100,7 +101,9 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 
         var newValue = (IObservable<string>)e.NewValue;
         var scheduler = item.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
-        item._watcher = newValue.ObserveOn(scheduler).Subscribe(
+        item._watcher = ScheduledObserver<string>.Subscribe(
+            newValue,
+            scheduler,
             x =>
             {
                 var target = item.TargetObject ?? item.AssociatedObject;

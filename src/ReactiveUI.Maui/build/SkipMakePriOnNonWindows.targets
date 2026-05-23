@@ -1,0 +1,7 @@
+<Project>
+  <!-- Replaces the WindowsAppSDK / MSIX PRI generation targets with no-ops so MakePri.exe is never invoked
+       off-Windows. MakePri.exe is a native Windows tool that crashes under Wine. The managed assembly still
+       compiles, enabling reference/CI validation on Linux and macOS. -->
+  <Target Name="_GenerateProjectPriFile" />
+  <Target Name="_GenerateProjectPriFileCore" />
+</Project>

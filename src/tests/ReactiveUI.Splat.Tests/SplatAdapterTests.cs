@@ -8,6 +8,7 @@ using Autofac;
 using DryIoc;
 using Ninject;
 using ReactiveUI.Builder;
+using Splat;
 using Splat.Autofac;
 using Splat.DryIoc;
 using Splat.Ninject;

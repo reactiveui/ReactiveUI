@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Android.Views;
+using ReactiveUI.Helpers;
 using static ReactiveUI.ControlFetcherMixin;
 using Fragment = AndroidX.Fragment.App.Fragment;
 

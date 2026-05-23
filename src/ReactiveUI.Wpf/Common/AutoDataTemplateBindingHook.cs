@@ -6,6 +6,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -29,7 +30,11 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
         var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
         assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(",", StringComparison.Ordinal));
 
-        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName, StringComparison.Ordinal));
+#if NET8_0_OR_GREATER
+        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName ?? string.Empty, StringComparison.Ordinal));
+#else
+        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName ?? string.Empty));
+#endif
     });
 
     /// <inheritdoc/>

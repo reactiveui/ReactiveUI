@@ -3,9 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
+using System.Linq.Expressions;
 using ReactiveUI.Winforms;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -24,7 +24,7 @@ public class ContentControlBindingHookTests
     {
         var hook = new ContentControlBindingHook();
         Assert.Throws<ArgumentNullException>(() =>
-            hook.ExecuteHook(null, new object(), () => [], null!, BindingDirection.OneWay));
+            hook.ExecuteHook(null, new(), () => [], null!, BindingDirection.OneWay));
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class ContentControlBindingHookTests
 
         var result = hook.ExecuteHook(
             null,
-            new object(),
+            new(),
             () => [],
             () => viewProperties,
             BindingDirection.OneWay);
@@ -69,7 +69,7 @@ public class ContentControlBindingHookTests
 
         var result = hook.ExecuteHook(
             null,
-            new object(),
+            new(),
             () => [],
             () => viewProperties,
             BindingDirection.OneWay);
@@ -94,7 +94,7 @@ public class ContentControlBindingHookTests
 
         var result = hook.ExecuteHook(
             null,
-            new object(),
+            new(),
             () => [],
             () => viewProperties,
             BindingDirection.OneWay);
@@ -113,7 +113,7 @@ public class ContentControlBindingHookTests
 
         var result = hook.ExecuteHook(
             null,
-            new object(),
+            new(),
             () => [],
             () => [],
             BindingDirection.OneWay);
@@ -139,7 +139,7 @@ public class ContentControlBindingHookTests
 
         var result = hook.ExecuteHook(
             null,
-            new object(),
+            new(),
             () => [],
             () => viewProperties,
             BindingDirection.OneWay);

@@ -3,7 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI;
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Internal;
+using Splat;
 
 #if HAS_WINUI
 using Microsoft.UI.Xaml;
@@ -55,7 +57,7 @@ public
             "ViewContractObservable",
             typeof(IObservable<string>),
             typeof(RoutedViewHost),
-            new(Observable<string>.Default));
+            new(new ReturnObservable<string>(default!)));
 
     /// <summary>
     /// Stores the most recently observed view contract.
@@ -88,32 +90,35 @@ public
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string>.Never
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
-                    eventHandler =>
+            ? NeverObservable<string?>.Instance
+            : new DistinctUntilChangedObservable<string?>(
+                new StartWithObservable<string?>(
+                    new FromEventObservable<string?>(onNext =>
                     {
-                        void Handler(object sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
-                        return Handler;
-                    },
-                    x => SizeChanged += x,
-                    x => SizeChanged -= x)
-                .StartWith(platformGetter())
-                .DistinctUntilChanged();
+                        void Handler(object sender, SizeChangedEventArgs e) => onNext(platformGetter());
+                        SizeChanged += Handler;
+                        return new ActionDisposable(() => SizeChanged -= Handler);
+                    }),
+                    platformGetter()));
 
         IRoutableViewModel? currentViewModel = null;
-        var vmAndContract = this.WhenAnyObservable(x => x.Router.CurrentViewModel).Do(x => currentViewModel = x)
-            .StartWith(currentViewModel).CombineLatest(
-                this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x)
-                    .StartWith(ViewContract),
-                (viewModel, contract) => (viewModel, contract));
+        var vmAndContract = new CombineLatestObservable<IRoutableViewModel?, string?, (IRoutableViewModel? viewModel, string? contract)>(
+            new StartWithObservable<IRoutableViewModel?>(
+                new DoObservable<IRoutableViewModel?>(this.WhenAnyObservable(x => x.Router.CurrentViewModel), x => currentViewModel = x),
+                currentViewModel),
+            new StartWithObservable<string?>(
+                new DoObservable<string?>(this.WhenAnyObservable(x => x.ViewContractObservable), x => _viewContract = x),
+                ViewContract),
+            (viewModel, contract) => (viewModel, contract));
 
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
         this.WhenActivated(d =>
-            d(vmAndContract.DistinctUntilChanged().Subscribe(
-                ResolveViewForViewModel,
-                ex => RxState.DefaultExceptionHandler.OnNext(ex))));
+            d(new DistinctUntilChangedObservable<(IRoutableViewModel? viewModel, string? contract)>(vmAndContract)
+                .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
+                    ResolveViewForViewModel,
+                    ex => RxState.DefaultExceptionHandler.OnNext(ex)))));
     }
 
     /// <summary>
@@ -157,7 +162,7 @@ public
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>

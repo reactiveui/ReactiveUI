@@ -5,6 +5,7 @@
 
 using System.Reactive.Concurrency;
 using ReactiveUI.Builder.Tests.Executors;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 

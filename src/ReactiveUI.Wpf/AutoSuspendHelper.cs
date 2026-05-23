@@ -3,7 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using System.Windows;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -51,48 +54,46 @@ public class AutoSuspendHelper : IEnableLogger
     {
         IdleTimeout = TimeSpan.FromSeconds(15.0);
 
-        RxSuspension.SuspensionHost.IsLaunchingNew =
-            Observable.FromEvent<StartupEventHandler, Unit>(
-                eventHandler =>
-                {
-                    void Handler(object sender, StartupEventArgs e) => eventHandler(Unit.Default);
-                    return Handler;
-                },
-                x => app.Startup += x,
-                x => app.Startup -= x);
+        var isUnpausing = new FromEventObservable<Unit>(onNext =>
+        {
+            void Handler(object? sender, EventArgs e) => onNext(Unit.Default);
+            app.Activated += Handler;
+            return new ActionDisposable(() => app.Activated -= Handler);
+        });
 
-        RxSuspension.SuspensionHost.IsUnpausing =
-            Observable.FromEvent<EventHandler, Unit>(
-                eventHandler => (_, _) => eventHandler(Unit.Default),
-                x => app.Activated += x,
-                x => app.Activated -= x);
+        RxSuspension.SuspensionHost.IsLaunchingNew = new FromEventObservable<Unit>(onNext =>
+        {
+            void Handler(object sender, StartupEventArgs e) => onNext(Unit.Default);
+            app.Startup += Handler;
+            return new ActionDisposable(() => app.Startup -= Handler);
+        });
 
-        RxSuspension.SuspensionHost.IsResuming = Observable<Unit>.Never;
+        RxSuspension.SuspensionHost.IsUnpausing = isUnpausing;
+        RxSuspension.SuspensionHost.IsResuming = NeverObservable<Unit>.Instance;
 
         // NB: No way to tell OS that we need time to suspend, we have to
         // do it in-process
-        var deactivated = Observable.FromEvent<EventHandler, Unit>(
-            eventHandler => (_, _) => eventHandler(Unit.Default),
-            x => app.Deactivated += x,
-            x => app.Deactivated -= x);
+        var deactivated = new FromEventObservable<Unit>(onNext =>
+        {
+            void Handler(object? sender, EventArgs e) => onNext(Unit.Default);
+            app.Deactivated += Handler;
+            return new ActionDisposable(() => app.Deactivated -= Handler);
+        });
 
-        var exit = Observable.FromEvent<ExitEventHandler, IDisposable>(
-            eventHandler =>
-            {
-                void Handler(object sender, ExitEventArgs e) => eventHandler(Disposable.Empty);
-                return Handler;
-            },
-            x => app.Exit += x,
-            x => app.Exit -= x);
+        var exit = new FromEventObservable<IDisposable>(onNext =>
+        {
+            void Handler(object sender, ExitEventArgs e) => onNext(EmptyDisposable.Instance);
+            app.Exit += Handler;
+            return new ActionDisposable(() => app.Exit -= Handler);
+        });
 
-        RxSuspension.SuspensionHost.ShouldPersistState = exit.Merge(
-            deactivated
-                .SelectMany(_ => Observable.Timer(IdleTimeout, RxSchedulers.TaskpoolScheduler))
-                .TakeUntil(RxSuspension.SuspensionHost.IsUnpausing)
-                .Repeat()
-                .Select(_ => Disposable.Empty));
+        // Persist when the app exits, or when it stays deactivated for the idle timeout without being reactivated
+        // (a reset-on-reactivate idle timer), replacing the SelectMany(Timer)+TakeUntil+Repeat+Merge pipeline.
+        RxSuspension.SuspensionHost.ShouldPersistState = new MergedObservable<IDisposable>(
+            exit,
+            new IdleTimeoutObservable(deactivated, isUnpausing, () => IdleTimeout, RxSchedulers.TaskpoolScheduler));
 
-        var untimelyDeath = new Subject<Unit>();
+        var untimelyDeath = new BroadcastSubject<Unit>();
         AppDomain.CurrentDomain.UnhandledException += (_, _) => untimelyDeath.OnNext(Unit.Default);
         RxSuspension.SuspensionHost.ShouldInvalidateState = untimelyDeath;
     }

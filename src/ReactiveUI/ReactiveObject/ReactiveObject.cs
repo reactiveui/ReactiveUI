@@ -1,9 +1,17 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+
+#if !MONO
+using System.ComponentModel.DataAnnotations;
+#endif
+
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReactiveUI;
 
@@ -13,13 +21,17 @@ namespace ReactiveUI;
 /// Changing and Changed Observables to monitor object changes.
 /// </summary>
 [DataContract]
-public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
+public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject, IReactiveObjectStateSlot
 {
     /// <summary>Tracks whether PropertyChanging event subscriptions have been initialized.</summary>
     private bool _propertyChangingEventsSubscribed;
 
     /// <summary>Tracks whether PropertyChanged event subscriptions have been initialized.</summary>
     private bool _propertyChangedEventsSubscribed;
+
+    /// <summary>Stores this instance's reactive notification state directly, avoiding a table lookup.</summary>
+    [IgnoreDataMember]
+    private object? _reactiveStateSlot;
 
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging
@@ -125,4 +137,7 @@ public class ReactiveObject : IReactiveNotifyPropertyChanged<IReactiveObject>, I
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
     public IDisposable DelayChangeNotifications() =>
         IReactiveObjectExtensions.DelayChangeNotifications(this);
+
+    /// <inheritdoc/>
+    ref object? IReactiveObjectStateSlot.GetReactiveStateSlot() => ref _reactiveStateSlot;
 }

@@ -3,6 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>
@@ -27,7 +31,7 @@ public static class SchedulerExtensions
         RxSchedulers.MainThreadScheduler = scheduler;
         RxSchedulers.TaskpoolScheduler = scheduler;
 
-        return Disposable.Create(() =>
+        return new ActionDisposable(() =>
         {
             RxSchedulers.MainThreadScheduler = prevDef;
             RxSchedulers.TaskpoolScheduler = prevTask;

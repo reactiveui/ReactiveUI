@@ -4,9 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
+
+// Alias rather than import Microsoft.UI.Xaml: the Maui-windows TFM also imports Microsoft.Maui.Controls implicitly,
+// so a bare DataTemplate would be ambiguous with Microsoft.Maui.Controls.DataTemplate.
+using DataTemplate = Microsoft.UI.Xaml.DataTemplate;
 
 namespace ReactiveUI;
 

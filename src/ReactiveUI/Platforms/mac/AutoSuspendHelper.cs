@@ -9,6 +9,8 @@ using AppKit;
 
 using Foundation;
 
+using ReactiveUI.Internal;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -92,7 +94,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         // Developer-time guard. Cache the result per delegate runtime type to avoid repeated reflection.
         EnsureMethodsNotOverloadedCached();
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
+        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
         RxSuspension.SuspensionHost.IsResuming = _isResuming;
         RxSuspension.SuspensionHost.IsUnpausing = _isUnpausing;
         RxSuspension.SuspensionHost.ShouldPersistState = _shouldPersistState;

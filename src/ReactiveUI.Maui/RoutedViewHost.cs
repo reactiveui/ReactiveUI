@@ -4,8 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reflection;
 using Microsoft.Maui.Controls;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI.Maui;
 
@@ -114,7 +121,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         if (vm is null)
         {
-            return Observable.Empty<Page>();
+            return EmptyObservable<Page>.Instance;
         }
 
         var ret = ViewLocator.Current.ResolveView(vm);
@@ -123,7 +130,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             var msg =
                 $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
 
-            return Observable.Throw<Page>(new InvalidOperationException(msg));
+            return new ThrowObservable<Page>(new InvalidOperationException(msg));
         }
 
         ret.ViewModel = vm;
@@ -134,7 +141,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             pg.Title = vm.UrlPathSegment;
         }
 
-        return Observable.Return(pg);
+        return new ReturnObservable<Page>(pg);
     }
 
     /// <summary>
@@ -251,11 +258,22 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
         "trimming can't validate that the requirements of those annotations are met.")]
     private void SubscribeToNavigationStackChanges() =>
-        Observable.FromEventPattern<NotifyCollectionChangedEventHandler, NotifyCollectionChangedEventArgs>(
-                x => Router.NavigationStack.CollectionChanged += x,
-                x => Router.NavigationStack.CollectionChanged -= x)
-            .Where(_ => !_currentlyNavigating && Router?.NavigationStack.Count == 0)
-            .Subscribe(async _ => await SyncNavigationStacksAsync())
+        new FromEventObservable<Unit>(onNext =>
+            {
+                void Handler(object? sender, NotifyCollectionChangedEventArgs e) => onNext(Unit.Default);
+                Router.NavigationStack.CollectionChanged += Handler;
+                return new ActionDisposable(() => Router.NavigationStack.CollectionChanged -= Handler);
+            })
+            .Subscribe(new DelegateObserver<Unit>(async _ =>
+            {
+                // Replaces .Where(_ => !_currentlyNavigating && Router?.NavigationStack.Count == 0).
+                if (_currentlyNavigating || Router?.NavigationStack.Count != 0)
+                {
+                    return;
+                }
+
+                await SyncNavigationStacksAsync();
+            }))
             .DisposeWith(_subscriptions);
 
     /// <summary>
@@ -269,23 +287,32 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     private void SubscribeToNavigateBack() =>
         Router?
             .NavigateBack
-            .Subscribe(async _ =>
-            {
-                try
-                {
-                    _currentlyNavigating = true;
-                    await PopAsync();
-                }
-                finally
-                {
-                    _currentlyNavigating = false;
-                }
-
-                _action = "NavigatedBack";
-                InvalidateCurrentViewModel();
-                await SyncNavigationStacksAsync();
-            })
+            .Subscribe(new DelegateObserver<IRoutableViewModel>(async _ => await OnNavigateBackAsync()))
             .DisposeWith(_subscriptions);
+
+    /// <summary>Pops the page for a back navigation request and resyncs the stacks.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
+        "trimming can't validate that the requirements of those annotations are met.")]
+    private async Task OnNavigateBackAsync()
+    {
+        try
+        {
+            _currentlyNavigating = true;
+            await PopAsync();
+        }
+        finally
+        {
+            _currentlyNavigating = false;
+        }
+
+        _action = "NavigatedBack";
+        InvalidateCurrentViewModel();
+        await SyncNavigationStacksAsync();
+    }
 
     /// <summary>
     /// Subscribes to <see cref="RoutingState.Navigate"/> requests and pushes the resolved page.
@@ -298,34 +325,69 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     private void SubscribeToNavigate() =>
         Router?
             .Navigate
-            .Where(_ => StacksAreDifferent())
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .SelectMany(_ => PagesForViewModel(Router.GetCurrentViewModel()))
-            .SelectMany(async page =>
-            {
-                var animated = true;
-                var attribute = page.GetType().GetCustomAttribute<DisableAnimationAttribute>();
-                if (attribute is not null)
-                {
-                    animated = false;
-                }
-
-                try
-                {
-                    _currentlyNavigating = true;
-                    await PushAsync(page, animated);
-                }
-                finally
-                {
-                    _currentlyNavigating = false;
-                }
-
-                await SyncNavigationStacksAsync();
-
-                return page;
-            })
-            .Subscribe()
+            .Subscribe(new DelegateObserver<IRoutableViewModel>(_ => OnNavigateRequested()))
             .DisposeWith(_subscriptions);
+
+    /// <summary>
+    /// Handles a navigate request: skips when the stacks already match and otherwise marshals the push onto the main
+    /// thread. Replaces the <c>Where(...).ObserveOn(...).SelectMany(...).SelectMany(async ...)</c> pipeline.
+    /// </summary>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
+        "trimming can't validate that the requirements of those annotations are met.")]
+    private void OnNavigateRequested()
+    {
+        if (!StacksAreDifferent())
+        {
+            return;
+        }
+
+        RxSchedulers.MainThreadScheduler.Schedule(() => _ = OnNavigateAsync());
+    }
+
+    /// <summary>Resolves the page for the current view model and pushes it, then resyncs the stacks.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
+        "trimming can't validate that the requirements of those annotations are met.")]
+    private async Task OnNavigateAsync()
+    {
+        // PagesForViewModel emits a single page synchronously (or signals an error), so the subscription resolves it inline.
+        Page? page = null;
+        Exception? error = null;
+        PagesForViewModel(Router.GetCurrentViewModel())
+            .Subscribe(new DelegateObserver<Page>(p => page = p, e => error = e))
+            .Dispose();
+
+        if (error is not null)
+        {
+            this.Log().Error(error, "Failed to resolve the page for navigation");
+            return;
+        }
+
+        if (page is null)
+        {
+            return;
+        }
+
+        var animated = page.GetType().GetCustomAttribute<DisableAnimationAttribute>() is null;
+
+        try
+        {
+            _currentlyNavigating = true;
+            await PushAsync(page, animated);
+        }
+        finally
+        {
+            _currentlyNavigating = false;
+        }
+
+        await SyncNavigationStacksAsync();
+    }
 
     /// <summary>
     /// Subscribes to the <see cref="NavigationPage.Popped"/> event to keep the router stack in sync
@@ -333,28 +395,31 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     private void SubscribeToPopped()
     {
-        var poppingEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
-            eventHandler =>
-            {
-                void Handler(object? sender, NavigationEventArgs e) => eventHandler(Unit.Default);
-                return Handler;
-            },
-            x => Popped += x,
-            x => Popped -= x);
+        var poppingEvent = new FromEventObservable<Unit>(onNext =>
+        {
+            void Handler(object? sender, NavigationEventArgs e) => onNext(Unit.Default);
+            Popped += Handler;
+            return new ActionDisposable(() => Popped -= Handler);
+        });
 
         // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
         poppingEvent
-            .Where(_ => !_currentlyNavigating && Router is not null)
-            .Subscribe(_ =>
+            .Subscribe(new DelegateObserver<Unit>(_ =>
             {
-                if (Router?.NavigationStack.Count > 0)
+                // Replaces .Where(_ => !_currentlyNavigating && Router is not null).
+                if (_currentlyNavigating || Router is null)
+                {
+                    return;
+                }
+
+                if (Router.NavigationStack.Count > 0)
                 {
                     Router.NavigationStack.RemoveAt(Router.NavigationStack.Count - 1);
                 }
 
                 _action = "Popped";
                 InvalidateCurrentViewModel();
-            })
+            }))
             .DisposeWith(_subscriptions);
     }
 
@@ -364,30 +429,30 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     /// </summary>
     private void SubscribeToPoppedToRoot()
     {
-        var poppingToRootEvent = Observable.FromEvent<EventHandler<NavigationEventArgs>, Unit>(
-            eventHandler =>
-            {
-                void Handler(object? sender, NavigationEventArgs e) => eventHandler(Unit.Default);
-                return Handler;
-            },
-            x => PoppedToRoot += x,
-            x => PoppedToRoot -= x);
+        var poppingToRootEvent = new FromEventObservable<Unit>(onNext =>
+        {
+            void Handler(object? sender, NavigationEventArgs e) => onNext(Unit.Default);
+            PoppedToRoot += Handler;
+            return new ActionDisposable(() => PoppedToRoot -= Handler);
+        });
 
         poppingToRootEvent
-            .Where(_ => !_currentlyNavigating && Router is not null)
-            .Subscribe(_ =>
+            .Subscribe(new DelegateObserver<Unit>(_ =>
             {
-                for (var i = Router?.NavigationStack.Count - 1; i > 0; i--)
+                // Replaces .Where(_ => !_currentlyNavigating && Router is not null).
+                if (_currentlyNavigating || Router is null)
                 {
-                    if (i.HasValue)
-                    {
-                        Router?.NavigationStack.RemoveAt(i.Value);
-                    }
+                    return;
+                }
+
+                for (var i = Router.NavigationStack.Count - 1; i > 0; i--)
+                {
+                    Router.NavigationStack.RemoveAt(i);
                 }
 
                 _action = "PoppedToRoot";
                 InvalidateCurrentViewModel();
-            })
+            }))
             .DisposeWith(_subscriptions);
     }
 

@@ -5,7 +5,10 @@
 
 using System.Collections;
 using System.Globalization;
-
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Subjects;
 using DynamicData.Binding;
 
 using ReactiveUI.Builder;
@@ -13,6 +16,7 @@ using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 using ReactiveUI.Tests.Xaml.Utilities;
 using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -51,6 +55,7 @@ public partial class PropertyBindingTest
     private const string GammaValue = "Gamma";
 
     private static readonly string[] _itemsControlSource = ["aaa", "bbb", "ccc"];
+    private static readonly string[] _collection = ["aaa", "bbb", "ccc"];
 
     /// <summary>
     /// Performs a smoke test with two way binding with func converter.
@@ -136,18 +141,18 @@ public partial class PropertyBindingTest
     [Test]
     public async Task TypeConvertedTwoWayBindSmokeTest()
     {
-        const int initialProperty2 = 17;
-        const int parsedProperty2 = 42;
-        const decimal initialJustADecimal = 17.2m;
-        const decimal parsedJustADecimal = 42.3m;
-        const int initialJustAInt32 = 12;
-        const int parsedJustAInt32 = 13;
+        const int InitialProperty2 = 17;
+        const int ParsedProperty2 = 42;
+        const decimal InitialJustADecimal = 17.2m;
+        const decimal ParsedJustADecimal = 42.3m;
+        const int InitialJustAInt32 = 12;
+        const int ParsedJustAInt32 = 13;
 
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
 
-        vm.Property2 = initialProperty2;
+        vm.Property2 = InitialProperty2;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.Property2.ToString());
 
         var disp = fixture.Bind(vm, view, static x => x.Property2, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
@@ -155,15 +160,15 @@ public partial class PropertyBindingTest
         using (Assert.Multiple())
         {
             await Assert.That(view.SomeTextBox.Text).IsEqualTo(vm.Property2.ToString());
-            await Assert.That(vm.Property2).IsEqualTo(initialProperty2);
+            await Assert.That(vm.Property2).IsEqualTo(InitialProperty2);
         }
 
         view.SomeTextBox.Text = "42";
-        await Assert.That(vm.Property2).IsEqualTo(parsedProperty2);
+        await Assert.That(vm.Property2).IsEqualTo(ParsedProperty2);
 
         // Bad formatting error
         view.SomeTextBox.Text = "--";
-        await Assert.That(vm.Property2).IsEqualTo(parsedProperty2);
+        await Assert.That(vm.Property2).IsEqualTo(ParsedProperty2);
 
         disp.Dispose();
         vm.Property2 = 0;
@@ -174,21 +179,21 @@ public partial class PropertyBindingTest
             await Assert.That(view.SomeTextBox.Text).IsNotEqualTo("0");
         }
 
-        vm.JustADecimal = initialJustADecimal;
+        vm.JustADecimal = InitialJustADecimal;
         var disp1 = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         using (Assert.Multiple())
         {
             await Assert.That(view.SomeTextBox.Text).IsEqualTo(vm.JustADecimal.ToString(CultureInfo.CurrentCulture));
-            await Assert.That(vm.JustADecimal).IsEqualTo(initialJustADecimal);
+            await Assert.That(vm.JustADecimal).IsEqualTo(InitialJustADecimal);
         }
 
-        view.SomeTextBox.Text = parsedJustADecimal.ToString(CultureInfo.CurrentCulture);
-        await Assert.That(vm.JustADecimal).IsEqualTo(parsedJustADecimal);
+        view.SomeTextBox.Text = ParsedJustADecimal.ToString(CultureInfo.CurrentCulture);
+        await Assert.That(vm.JustADecimal).IsEqualTo(ParsedJustADecimal);
 
         // Bad formatting.
         view.SomeTextBox.Text = "--";
-        await Assert.That(vm.JustADecimal).IsEqualTo(parsedJustADecimal);
+        await Assert.That(vm.JustADecimal).IsEqualTo(ParsedJustADecimal);
 
         disp1.Dispose();
 
@@ -201,17 +206,17 @@ public partial class PropertyBindingTest
         }
 
         // Empty test
-        vm.JustAInt32 = initialJustAInt32;
+        vm.JustAInt32 = InitialJustAInt32;
         _ = fixture.Bind(vm, view, static x => x.JustAInt32, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
 
         view.SomeTextBox.Text = string.Empty;
-        await Assert.That(vm.JustAInt32).IsEqualTo(initialJustAInt32);
+        await Assert.That(vm.JustAInt32).IsEqualTo(InitialJustAInt32);
 
         view.SomeTextBox.Text = "1.2";
-        await Assert.That(vm.JustAInt32).IsEqualTo(initialJustAInt32);
+        await Assert.That(vm.JustAInt32).IsEqualTo(InitialJustAInt32);
 
         view.SomeTextBox.Text = "13";
-        await Assert.That(vm.JustAInt32).IsEqualTo(parsedJustAInt32);
+        await Assert.That(vm.JustAInt32).IsEqualTo(ParsedJustAInt32);
     }
 
     /// <summary>
@@ -427,7 +432,7 @@ public partial class PropertyBindingTest
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        view.ComboBoxSelection.ItemsSource = new ObservableCollectionExtended<string>(new[] { "aaa", "bbb", "ccc" });
+        view.ComboBoxSelection.ItemsSource = new ObservableCollectionExtended<string>(_collection);
 
         view.Bind(view.ViewModel, static x => x.Property1, static x => x.ComboBoxSelection.SelectedItem);
 
@@ -626,7 +631,7 @@ public partial class PropertyBindingTest
             var view = new PropertyBindView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
             var disp = view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
-            view.ViewModel = new PropertyBindViewModel();
+            view.ViewModel = new();
 
             return (disp, weakRef);
         }
@@ -687,10 +692,10 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
 
-        const Func<string?, string?> nullFunc = null!;
+        const Func<string?, string?> NullFunc = null!;
 
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, nullFunc, s => s));
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, nullFunc));
+        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, NullFunc, s => s));
+        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, NullFunc));
     }
 
     /// <summary>
@@ -733,7 +738,7 @@ public partial class PropertyBindingTest
             var view = new PropertyBindView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
             var disp = view.Bind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
-            view.ViewModel = new PropertyBindViewModel();
+            view.ViewModel = new();
 
             return (disp, weakRef);
         }
@@ -810,7 +815,7 @@ public partial class PropertyBindingTest
     [Test]
     public async Task BindToSetsNestedPropertyOncePerValueOnSameHost()
     {
-        const int expectedDistinctSetCount = 3;
+        const int ExpectedDistinctSetCount = 3;
 
         var view = new TrackingHostView { ViewModel = new() };
 
@@ -831,7 +836,7 @@ public partial class PropertyBindingTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(nested.SetCallCount).IsEqualTo(expectedDistinctSetCount);
+            await Assert.That(nested.SetCallCount).IsEqualTo(ExpectedDistinctSetCount);
             await Assert.That(nested.SomeText).IsEqualTo(GammaValue);
         }
     }

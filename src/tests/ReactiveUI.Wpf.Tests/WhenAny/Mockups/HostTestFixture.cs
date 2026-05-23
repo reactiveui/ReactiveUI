@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny.Mockups;
@@ -20,7 +21,7 @@ public sealed class HostTestFixture : ReactiveObject
     /// <summary>
     /// Backing field for the <see cref="Child"/> property.
     /// </summary>
-    private TestFixture? _Child;
+    private TestFixture? _child;
 
     /// <summary>
     /// Backing field for the <see cref="Owner"/> property.
@@ -30,12 +31,12 @@ public sealed class HostTestFixture : ReactiveObject
     /// <summary>
     /// Backing field for the <see cref="PocoChild"/> property.
     /// </summary>
-    private NonObservableTestFixture? _PocoChild;
+    private NonObservableTestFixture? _pocoChild;
 
     /// <summary>
     /// Backing field for the <see cref="SomeOtherParam"/> property.
     /// </summary>
-    private int _SomeOtherParam;
+    private int _someOtherParam;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HostTestFixture"/> class.
@@ -61,8 +62,8 @@ public sealed class HostTestFixture : ReactiveObject
     /// </summary>
     public TestFixture? Child
     {
-        get => _Child;
-        set => this.RaiseAndSetIfChanged(ref _Child, value);
+        get => _child;
+        set => this.RaiseAndSetIfChanged(ref _child, value);
     }
 
     /// <summary>
@@ -79,8 +80,8 @@ public sealed class HostTestFixture : ReactiveObject
     /// </summary>
     public NonObservableTestFixture? PocoChild
     {
-        get => _PocoChild;
-        set => this.RaiseAndSetIfChanged(ref _PocoChild, value);
+        get => _pocoChild;
+        set => this.RaiseAndSetIfChanged(ref _pocoChild, value);
     }
 
     /// <summary>
@@ -88,7 +89,7 @@ public sealed class HostTestFixture : ReactiveObject
     /// </summary>
     public int SomeOtherParam
     {
-        get => _SomeOtherParam;
-        set => this.RaiseAndSetIfChanged(ref _SomeOtherParam, value);
+        get => _someOtherParam;
+        set => this.RaiseAndSetIfChanged(ref _someOtherParam, value);
     }
 }

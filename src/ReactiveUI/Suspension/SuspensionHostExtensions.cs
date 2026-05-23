@@ -1,14 +1,16 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Text.Json.Serialization.Metadata;
+using ReactiveUI.Helpers;
 using ReactiveUI.Interfaces;
 using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -336,7 +338,7 @@ public static class SuspensionHostExtensions
     {
         if (item.AppState is not null)
         {
-            return Observable<Unit>.Default;
+            return SingleValueObservable.Unit;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -344,7 +346,7 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return Observable<Unit>.Default;
+            return SingleValueObservable.Unit;
         }
 
         try
@@ -358,7 +360,7 @@ public static class SuspensionHostExtensions
             item.AppState = item.CreateNewAppState?.Invoke();
         }
 
-        return Observable<Unit>.Default;
+        return SingleValueObservable.Unit;
     }
 
     /// <summary>
@@ -377,7 +379,7 @@ public static class SuspensionHostExtensions
     {
         if (item.AppStateValue is not null)
         {
-            return Observable<Unit>.Default;
+            return SingleValueObservable.Unit;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -385,7 +387,7 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return Observable<Unit>.Default;
+            return SingleValueObservable.Unit;
         }
 
         try
@@ -399,7 +401,7 @@ public static class SuspensionHostExtensions
             item.AppStateValue = item.CreateNewAppStateTyped?.Invoke();
         }
 
-        return Observable<Unit>.Default;
+        return SingleValueObservable.Unit;
     }
 
     /// <summary>Runs the pending one-time app-state load exactly once, if one is registered.</summary>

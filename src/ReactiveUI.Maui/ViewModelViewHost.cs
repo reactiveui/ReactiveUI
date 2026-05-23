@@ -1,9 +1,14 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Microsoft.Maui.Controls;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI.Maui;
 
@@ -43,7 +48,7 @@ public class ViewModelViewHost : ContentView, IViewFor
         nameof(ViewContractObservable),
         typeof(IObservable<string>),
         typeof(ViewModelViewHost),
-        Observable<string>.Never);
+        NeverObservable<string>.Instance);
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -72,19 +77,19 @@ public class ViewModelViewHost : ContentView, IViewFor
         // NB: InUnitTestRunner also returns true in Design Mode
         if (ModeDetector.InUnitTestRunner())
         {
-            ViewContractObservable = Observable<string>.Never;
+            ViewContractObservable = NeverObservable<string>.Instance;
             return;
         }
 
-        ViewContractObservable = Observable<string>.Default;
+        ViewContractObservable = new ReturnObservable<string?>(null);
 
         // Re-resolve when the contract changes; ViewModel changes are handled by OnViewModelPropertyChanged.
         ViewContractObservable
-            .Subscribe(contract =>
+            .Subscribe(new DelegateObserver<string?>(contract =>
             {
                 _viewContract = contract;
                 ResolveViewForViewModel(ViewModel, contract);
-            })
+            }))
             .DisposeWith(_subscriptions);
     }
 
@@ -128,7 +133,7 @@ public class ViewModelViewHost : ContentView, IViewFor
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>

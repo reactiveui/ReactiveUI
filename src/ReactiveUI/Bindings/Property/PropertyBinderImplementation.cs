@@ -3,12 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reflection;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -339,7 +340,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
                 view,
                 viewExpression,
                 viewModelExpression,
-                Observable<TViewPropertyType>.Empty,
+                EmptyObservable<TViewPropertyType>.Instance,
                 BindingDirection.OneWay,
                 EmptyDisposable.Instance);
         }
@@ -429,7 +430,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
                 view,
                 viewExpression,
                 viewModelExpression,
-                Observable<TOut>.Empty,
+                EmptyObservable<TOut>.Instance,
                 BindingDirection.OneWay,
                 EmptyDisposable.Instance);
         }
@@ -556,6 +557,34 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     /// </remarks>
     internal static object? GetConverterForTypes(Type lhs, Type rhs) =>
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
+
+    /// <summary>
+    /// Schedules a two-way change signal before the view is read or written. The default is a synchronous
+    /// pass-through; platform binders (e.g. WPF) override this to marshal onto the UI thread, and only when
+    /// off-thread.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view participating in the binding.</param>
+    /// <param name="value">The change signal to forward once scheduled.</param>
+    /// <returns>An observable that emits <paramref name="value"/> when the binding should continue.</returns>
+    protected virtual IObservable<bool> ScheduleForBinding<TView>(TView view, bool value)
+        where TView : class =>
+        new SingleValueObservable<bool>(value);
+
+    /// <summary>
+    /// Applies a view-value setter. The default invokes it inline; platform binders (e.g. WPF) override this to
+    /// marshal onto the UI thread, and only when off-thread.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="view">The view being updated.</param>
+    /// <param name="setter">The view-value setter to invoke.</param>
+    protected virtual void SetViewValue<TView>(TView view, Action setter)
+        where TView : class
+    {
+        ArgumentExceptionHelper.ThrowIfNull(setter);
+
+        setter();
+    }
 
     /// <summary>
     /// Binds an observable to a target member directly using compiled accessors.
@@ -698,7 +727,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             signalInitialUpdate);
 
         var changeWithValues = new SelectObservable<bool, (bool isValid, object? view, bool isViewModel)>(
-            somethingChanged,
+            new ScheduledChangeObservable<TView>(somethingChanged, this, view),
             isViewModelChange =>
                 ProjectChange(isViewModelChange, view, viewModelChainGetter, viewChainGetter, viewModelToViewConverter, viewToViewModelConverter));
 
@@ -726,7 +755,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
         {
             if (latestValue.isViewModel)
             {
-                viewChainSetter.TrySetValue(view, latestValue.view, false);
+                SetViewValue(view, () => viewChainSetter.TrySetValue(view, latestValue.view, false));
             }
             else
             {
@@ -743,6 +772,47 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             changes,
             BindingDirection.TwoWay,
             new CompositeDisposable(upstreamConnection, setterSubscription));
+    }
+
+    /// <summary>
+    /// Routes each two-way change signal through <see cref="ScheduleForBinding{TView}"/> so the subsequent view
+    /// read and write run where the platform binder requires (e.g. the WPF dispatcher). A fused
+    /// <c>SelectMany</c>-over-single: it forwards each scheduled value, ignores the inner completion, and completes
+    /// only when the source does.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="source">The change-signal source.</param>
+    /// <param name="owner">The binder providing the scheduling hook.</param>
+    /// <param name="view">The view participating in the binding.</param>
+    private sealed class ScheduledChangeObservable<TView>(IObservable<bool> source, PropertyBinderImplementation owner, TView view)
+        : IObservable<bool>
+        where TView : class
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<bool> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            return source.Subscribe(new Sink(observer, owner, view));
+        }
+
+        /// <summary>Forwards each source signal through the binder's scheduling hook.</summary>
+        /// <param name="downstream">The downstream observer.</param>
+        /// <param name="owner">The binder providing the scheduling hook.</param>
+        /// <param name="view">The view participating in the binding.</param>
+        private sealed class Sink(IObserver<bool> downstream, PropertyBinderImplementation owner, TView view) : IObserver<bool>
+        {
+            /// <inheritdoc/>
+            public void OnNext(bool value) =>
+                owner.ScheduleForBinding(view, value)
+                    .Subscribe(new DelegateObserver<bool>(downstream.OnNext, downstream.OnError));
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
     }
 
     /// <summary>Projects each value of a source through a selector. Specialised binding projection; no generic operator.</summary>

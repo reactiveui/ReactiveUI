@@ -1,11 +1,10 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using System.Windows.Controls;
-using PropertyMetadata = System.Windows.PropertyMetadata;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace ReactiveUI.Tests.Wpf.Mocks.ViewModelViewHosts;
 
@@ -28,7 +27,7 @@ public static class FakeViewWithContract
     /// A mock view model shared by the contract views.
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
-    public sealed class MyViewModel : ReactiveUI.ReactiveObject;
+    public sealed class MyViewModel : ReactiveObject;
 
     /// <summary>
     /// Used as the default view with no contracted.
@@ -40,7 +39,7 @@ public static class FakeViewWithContract
         /// </summary>
         // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(View0), new PropertyMetadata(null));
+            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(View0), new(null));
 
         /// <summary>
         /// Gets or sets the ViewModel.
@@ -65,7 +64,7 @@ public static class FakeViewWithContract
         /// </summary>
         // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewA), new PropertyMetadata(null));
+            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewA), new(null));
 
         /// <summary>
         /// Gets or sets the ViewModel.
@@ -90,7 +89,7 @@ public static class FakeViewWithContract
         /// </summary>
         // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewB), new PropertyMetadata(null));
+            DependencyProperty.Register("ViewModel", typeof(MyViewModel), typeof(ViewB), new(null));
 
         /// <summary>
         /// Gets or sets the ViewModel.

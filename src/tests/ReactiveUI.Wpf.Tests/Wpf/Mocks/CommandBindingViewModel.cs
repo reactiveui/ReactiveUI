@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Concurrency;
 using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.Tests.Wpf.Mocks;
@@ -30,17 +32,17 @@ public class CommandBindingViewModel : ReactiveUI.ReactiveObject
     /// <summary>
     /// Backing field for the <see cref="Command1"/> property.
     /// </summary>
-    private ReactiveCommand<int, int> _Command1;
+    private ReactiveCommand<int, int> _command1;
 
     /// <summary>
     /// Backing field for the <see cref="Command2"/> property.
     /// </summary>
-    private ReactiveCommand<Unit, Unit> _Command2;
+    private ReactiveCommand<Unit, Unit> _command2;
 
     /// <summary>
     /// Backing field for the <see cref="Command3"/> property.
     /// </summary>
-    private ReactiveCommand<Unit, int?> _Command3;
+    private ReactiveCommand<Unit, int?> _command3;
 
     /// <summary>
     /// Backing field for the <see cref="Value"/> property.
@@ -56,10 +58,10 @@ public class CommandBindingViewModel : ReactiveUI.ReactiveObject
         Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public CommandBindingViewModel()
     {
-        _Command1 = ReactiveCommand.Create<int, int>(static _ => _, outputScheduler: ImmediateScheduler.Instance);
-        _Command2 = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
-        _Command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxSchedulers.TaskpoolScheduler);
-        _result = _Command3.ToProperty(this, static x => x.Result, scheduler: ImmediateScheduler.Instance);
+        _command1 = ReactiveCommand.Create<int, int>(static _ => _, outputScheduler: ImmediateScheduler.Instance);
+        _command2 = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
+        _command3 = ReactiveCommand.CreateFromTask(RunAsync, outputScheduler: RxSchedulers.TaskpoolScheduler);
+        _result = _command3.ToProperty(this, static x => x.Result, scheduler: ImmediateScheduler.Instance);
     }
 
     /// <summary>
@@ -67,8 +69,8 @@ public class CommandBindingViewModel : ReactiveUI.ReactiveObject
     /// </summary>
     public ReactiveCommand<int, int> Command1
     {
-        get => _Command1;
-        set => this.RaiseAndSetIfChanged(ref _Command1, value);
+        get => _command1;
+        set => this.RaiseAndSetIfChanged(ref _command1, value);
     }
 
     /// <summary>
@@ -76,8 +78,8 @@ public class CommandBindingViewModel : ReactiveUI.ReactiveObject
     /// </summary>
     public ReactiveCommand<Unit, Unit> Command2
     {
-        get => _Command2;
-        set => this.RaiseAndSetIfChanged(ref _Command2, value);
+        get => _command2;
+        set => this.RaiseAndSetIfChanged(ref _command2, value);
     }
 
     /// <summary>
@@ -85,8 +87,8 @@ public class CommandBindingViewModel : ReactiveUI.ReactiveObject
     /// </summary>
     public ReactiveCommand<Unit, int?> Command3
     {
-        get => _Command3;
-        set => this.RaiseAndSetIfChanged(ref _Command3, value);
+        get => _command3;
+        set => this.RaiseAndSetIfChanged(ref _command3, value);
     }
 
     /// <summary>

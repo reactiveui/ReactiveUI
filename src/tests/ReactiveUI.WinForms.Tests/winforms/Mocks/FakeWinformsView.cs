@@ -3,7 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
@@ -17,12 +17,12 @@ public class FakeWinformsView : Control, IViewFor<FakeWinformViewModel>
     /// </summary>
     public FakeWinformsView()
     {
-        Property1 = new Button();
-        Property2 = new Label();
-        Property3 = new TextBox();
-        Property4 = new RichTextBox();
-        BooleanProperty = new CheckBox();
-        SomeDouble = new TextBox();
+        Property1 = new();
+        Property2 = new();
+        Property3 = new();
+        Property4 = new();
+        BooleanProperty = new();
+        SomeDouble = new();
     }
 
     /// <inheritdoc/>

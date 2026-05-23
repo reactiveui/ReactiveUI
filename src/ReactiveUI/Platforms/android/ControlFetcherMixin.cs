@@ -1,13 +1,14 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Android.App;
 using Android.Views;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -353,11 +354,24 @@ public static partial class ControlFetcherMixin
         "Minor Code Smell",
         "S4225:Extension methods should not extend object",
         Justification = "Receiver is intentionally polymorphic across Android and AndroidX Fragment types.")]
-    internal static PropertyInfo[] GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
+    public static PropertyInfo[] GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
     {
         var type = @this.GetType();
 
         return GetWireUpMembers(type, resolveStrategy);
+    }
+
+    /// <summary>
+    /// Gets the resource name for the specified property based on optional overrides.
+    /// </summary>
+    /// <param name="member">The property being wired.</param>
+    /// <returns>The resource name to use.</returns>
+    [RequiresUnreferencedCode("Attribute lookup uses reflection and may require members removed by trimming.")]
+    [RequiresDynamicCode("Attribute lookup uses reflection that may require dynamic code generation.")]
+    public static string GetResourceName(this PropertyInfo member)
+    {
+        var attr = member.GetCustomAttribute<WireUpResourceAttribute>();
+        return attr?.ResourceNameOverride ?? member.Name;
     }
 
     /// <summary>
@@ -385,19 +399,6 @@ public static partial class ControlFetcherMixin
 
             return [.. list];
         });
-
-    /// <summary>
-    /// Gets the resource name for the specified property based on optional overrides.
-    /// </summary>
-    /// <param name="member">The property being wired.</param>
-    /// <returns>The resource name to use.</returns>
-    [RequiresUnreferencedCode("Attribute lookup uses reflection and may require members removed by trimming.")]
-    [RequiresDynamicCode("Attribute lookup uses reflection that may require dynamic code generation.")]
-    internal static string GetResourceName(this PropertyInfo member)
-    {
-        var attr = member.GetCustomAttribute<WireUpResourceAttribute>();
-        return attr?.ResourceNameOverride ?? member.Name;
-    }
 
     /// <summary>
     /// Determines whether a property should be wired up for the given resolve strategy.

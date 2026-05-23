@@ -35,6 +35,7 @@ internal sealed class DoesNotReturnIfAttribute : Attribute
     public bool ParameterValue { get; }
 }
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly: TypeForwardedTo(typeof(DoesNotReturnIfAttribute))]

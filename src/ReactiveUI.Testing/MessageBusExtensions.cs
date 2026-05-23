@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+
 namespace ReactiveUI.Testing;
 
 /// <summary>
@@ -62,7 +65,7 @@ public static class MessageBusExtensions
 
         Monitor.Enter(mbGate);
         MessageBus.Current = messageBus;
-        return Disposable.Create(() =>
+        return new ActionDisposable(() =>
         {
             MessageBus.Current = origMessageBus;
             Monitor.Exit(mbGate);

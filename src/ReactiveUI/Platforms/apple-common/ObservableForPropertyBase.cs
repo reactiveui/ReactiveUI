@@ -7,6 +7,8 @@ using System.Collections.Concurrent;
 
 using Foundation;
 
+using ReactiveUI.Internal;
+
 #if UIKIT
 using UIKit;
 #else
@@ -120,7 +122,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
         if (beforeChanged)
         {
-            return Observable<IObservedChange<object, object?>>.Never;
+            return NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
         var type = sender.GetType();

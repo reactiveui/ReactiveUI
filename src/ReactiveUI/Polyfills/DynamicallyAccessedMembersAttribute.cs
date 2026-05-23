@@ -4,11 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 #if !NET
-using System.Diagnostics;
+using Targets = System.AttributeTargets;
 
 namespace System.Diagnostics.CodeAnalysis;
-
-using Targets = System.AttributeTargets;
 
 /// <summary>
 /// Indicates that certain members on a specified <see cref="Type"/> are accessed dynamically,
@@ -45,6 +43,7 @@ internal sealed class DynamicallyAccessedMembersAttribute : Attribute
 }
 
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly: TypeForwardedTo(typeof(DynamicallyAccessedMembersAttribute))]

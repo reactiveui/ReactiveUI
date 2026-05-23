@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Builder.Tests.Executors;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
@@ -394,22 +395,22 @@ public class BuilderInstanceMixinsNullActionTests
             var builder = RxAppBuilder.CreateReactiveUIBuilder();
             builder.WithRegistrationOnBuild(r =>
             {
-                r.RegisterConstant(new InstanceService01(), typeof(InstanceService01));
-                r.RegisterConstant(new InstanceService02(), typeof(InstanceService02));
-                r.RegisterConstant(new InstanceService03(), typeof(InstanceService03));
-                r.RegisterConstant(new InstanceService04(), typeof(InstanceService04));
-                r.RegisterConstant(new InstanceService05(), typeof(InstanceService05));
-                r.RegisterConstant(new InstanceService06(), typeof(InstanceService06));
-                r.RegisterConstant(new InstanceService07(), typeof(InstanceService07));
-                r.RegisterConstant(new InstanceService08(), typeof(InstanceService08));
-                r.RegisterConstant(new InstanceService09(), typeof(InstanceService09));
-                r.RegisterConstant(new InstanceService10(), typeof(InstanceService10));
-                r.RegisterConstant(new InstanceService11(), typeof(InstanceService11));
-                r.RegisterConstant(new InstanceService12(), typeof(InstanceService12));
-                r.RegisterConstant(new InstanceService13(), typeof(InstanceService13));
-                r.RegisterConstant(new InstanceService14(), typeof(InstanceService14));
-                r.RegisterConstant(new InstanceService15(), typeof(InstanceService15));
-                r.RegisterConstant(new InstanceService16(), typeof(InstanceService16));
+                r.RegisterConstant(new InstanceService01());
+                r.RegisterConstant(new InstanceService02());
+                r.RegisterConstant(new InstanceService03());
+                r.RegisterConstant(new InstanceService04());
+                r.RegisterConstant(new InstanceService05());
+                r.RegisterConstant(new InstanceService06());
+                r.RegisterConstant(new InstanceService07());
+                r.RegisterConstant(new InstanceService08());
+                r.RegisterConstant(new InstanceService09());
+                r.RegisterConstant(new InstanceService10());
+                r.RegisterConstant(new InstanceService11());
+                r.RegisterConstant(new InstanceService12());
+                r.RegisterConstant(new InstanceService13());
+                r.RegisterConstant(new InstanceService14());
+                r.RegisterConstant(new InstanceService15());
+                r.RegisterConstant(new InstanceService16());
             });
             builder.WithCoreServices().BuildApp();
         }

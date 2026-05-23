@@ -17,14 +17,4 @@
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="ReactiveUI.Builder"/>
-    <Using Include="System"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Reactive.Concurrency"/>
-    <Using Include="System.Threading"/>
-    <Using Include="System.Threading.Tasks"/>
-    <Using Include="TUnit.Core"/>
-    <Using Include="TUnit.Core.Interfaces"/>
-  </ItemGroup>
 </Project>

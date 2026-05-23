@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
@@ -11,11 +11,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
-  </ItemGroup>
-  <ItemGroup>
-    <Using Include="Splat"/>
-    <Using Include="System.Collections.Generic"/>
-    <Using Include="System.Linq"/>
-    <Using Include="System.Reactive.Linq"/>
   </ItemGroup>
 </Project>

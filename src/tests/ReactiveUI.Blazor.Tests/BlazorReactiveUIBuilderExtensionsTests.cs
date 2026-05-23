@@ -6,6 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using ReactiveUI.Builder;
+using Splat;
 
 namespace ReactiveUI.Blazor.Tests;
 
@@ -185,6 +186,8 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         /// <inheritdoc/>
         public Splat.Builder.IAppInstance Build() => throw new NotSupportedException();
+
+        IReactiveUIInstance IReactiveUIBuilder.Build() => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public Splat.Builder.IAppBuilder UseCurrentSplatLocator() => throw new NotSupportedException();

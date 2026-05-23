@@ -5,6 +5,7 @@
 
 using System.Reactive;
 using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Internal;
 
@@ -135,7 +136,18 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
                 return;
             }
 
-            _current.Disposable = handlerResult.Subscribe(new HandlerObserver(this, index));
+            var handlerObserver = new HandlerObserver(this, index);
+            var subscription = handlerResult.Subscribe(handlerObserver);
+
+            // If the handler completed (or errored) synchronously during Subscribe, it has already advanced the run and
+            // stored the next scheduled step in _current; overwriting that with this now-dead subscription would dispose
+            // (cancel) the next step and stall the run. Only retain the subscription while the handler is still running.
+            if (handlerObserver.IsCompleted)
+            {
+                return;
+            }
+
+            _current.Disposable = subscription;
         }
 
         /// <summary>Emits the output once handled, or the unhandled-interaction error otherwise.</summary>
@@ -175,16 +187,27 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
         /// <param name="index">The index of the handler being observed.</param>
         private sealed class HandlerObserver(Sink sink, int index) : IObserver<Unit>
         {
+            /// <summary>Gets a value indicating whether the handler has completed or errored.</summary>
+            public bool IsCompleted { get; private set; }
+
             /// <inheritdoc/>
             public void OnNext(Unit value)
             {
             }
 
             /// <inheritdoc/>
-            public void OnError(Exception error) => sink.OnHandlerError(error);
+            public void OnError(Exception error)
+            {
+                IsCompleted = true;
+                sink.OnHandlerError(error);
+            }
 
             /// <inheritdoc/>
-            public void OnCompleted() => sink.OnHandlerCompleted(index);
+            public void OnCompleted()
+            {
+                IsCompleted = true;
+                sink.OnHandlerCompleted(index);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System;
+using Splat;
 using TUnit.Core;
 
 namespace ReactiveUI.Maui.Tests;

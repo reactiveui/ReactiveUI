@@ -4,7 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using AndroidX.RecyclerView.Widget;
-using DynamicData;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.AndroidX;
 
@@ -16,31 +17,19 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     where TViewModel : class, IReactiveObject
 {
     /// <summary>
-    /// The source list that backs the adapter.
+    /// The materialized change-set binding that backs the adapter.
     /// </summary>
-    private readonly SourceList<TViewModel> _list;
-
-    /// <summary>
-    /// The subscription that keeps the bindings in sync with the source list.
-    /// </summary>
-    private readonly IDisposable _inner;
+    private readonly ChangeSetBinder<TViewModel> _binder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.
     /// </summary>
     /// <param name="backingList">The backing list.</param>
-    protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
-    {
-        _list = new(backingList);
-
-        _inner = _list
-            .Connect()
-            .ForEachChange(UpdateBindings)
-            .Subscribe();
-    }
+    protected ReactiveRecyclerViewAdapter(IObservable<IReactiveChangeSet<TViewModel>> backingList) =>
+        _binder = new(backingList, onChange: UpdateBindings);
 
     /// <inheritdoc/>
-    public override int ItemCount => _list.Count;
+    public override int ItemCount => _binder.Count;
 
     /// <inheritdoc/>
     public override int GetItemViewType(int position) => GetItemViewType(position, GetViewModelByPosition(position));
@@ -72,8 +61,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     {
         if (disposing)
         {
-            _inner.Dispose();
-            _list.Dispose();
+            _binder.Dispose();
         }
 
         base.Dispose(disposing);
@@ -84,51 +72,40 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     /// </summary>
     /// <param name="position">The position in the list.</param>
     /// <returns>The view model at the position, or null.</returns>
-    private TViewModel? GetViewModelByPosition(int position) => position >= _list.Count ? null : _list.Items[position];
+    private TViewModel? GetViewModelByPosition(int position) => position >= _binder.Count ? null : _binder[position];
 
     /// <summary>
-    /// Updates the adapter bindings in response to a change in the source list.
+    /// Raises fine-grained <see cref="RecyclerView.Adapter"/> notifications in response to a single change.
+    /// Range and reset operations are flattened to one change per item upstream, so only the per-item
+    /// notifications are needed here.
     /// </summary>
     /// <param name="change">The change to apply.</param>
-    private void UpdateBindings(Change<TViewModel> change)
+    private void UpdateBindings(ReactiveChange<TViewModel> change)
     {
         switch (change.Reason)
         {
-            case ListChangeReason.Add:
+            case ReactiveChangeReason.Add:
                 {
-                    NotifyItemInserted(change.Item.CurrentIndex);
+                    NotifyItemInserted(change.CurrentIndex);
                     break;
                 }
 
-            case ListChangeReason.Remove:
+            case ReactiveChangeReason.Remove:
                 {
-                    NotifyItemRemoved(change.Item.CurrentIndex);
+                    NotifyItemRemoved(change.CurrentIndex);
                     break;
                 }
 
-            case ListChangeReason.Moved:
+            case ReactiveChangeReason.Move:
                 {
-                    NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
+                    NotifyItemMoved(change.PreviousIndex, change.CurrentIndex);
                     break;
                 }
 
-            case ListChangeReason.Replace:
-            case ListChangeReason.Refresh:
+            case ReactiveChangeReason.Replace:
+            case ReactiveChangeReason.Refresh:
                 {
-                    NotifyItemChanged(change.Item.CurrentIndex);
-                    break;
-                }
-
-            case ListChangeReason.AddRange:
-                {
-                    NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
-                    break;
-                }
-
-            case ListChangeReason.RemoveRange:
-            case ListChangeReason.Clear:
-                {
-                    NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
+                    NotifyItemChanged(change.CurrentIndex);
                     break;
                 }
         }

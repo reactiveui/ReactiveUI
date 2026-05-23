@@ -3,9 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Subjects;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -167,7 +169,7 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task CommandBindWithDelaySetVMParameterExpression()
+    public async Task CommandBindWithDelaySetVmParameterExpression()
     {
         var view = new ReactiveObjectCommandBindView
         {
@@ -193,7 +195,7 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task CommandBindWithDelaySetVMParameterNoInpcExpression()
+    public async Task CommandBindWithDelaySetVmParameterNoInpcExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
 

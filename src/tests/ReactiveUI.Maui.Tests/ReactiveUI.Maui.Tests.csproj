@@ -22,20 +22,4 @@
     <!-- Optional: if CI machines don't have the runtime installed -->
     <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Using Include="Splat"/>
-    <Using Include="System"/>
-    <Using Include="System.Collections.Generic"/>
-    <Using Include="System.Linq"/>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="System.Threading"/>
-    <Using Include="System.Threading.Tasks"/>
-    <Using Include="Microsoft.Maui.Controls"/>
-    <Using Include="ReactiveUI"/>
-    <Using Include="ReactiveUI.Maui"/>
-    <Using Include="TUnit.Core"/>
-    <Using Include="TUnit.Core.Executors"/>
-  </ItemGroup>
 </Project>

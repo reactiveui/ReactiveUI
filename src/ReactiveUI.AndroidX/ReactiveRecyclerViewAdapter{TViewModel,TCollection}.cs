@@ -5,7 +5,6 @@
 
 using System.Collections.Specialized;
 using AndroidX.RecyclerView.Widget;
-using DynamicData.Binding;
 
 namespace ReactiveUI.AndroidX;
 
@@ -19,6 +18,6 @@ namespace ReactiveUI.AndroidX;
 /// </remarks>
 /// <param name="backingList">The backing list.</param>
 public abstract class ReactiveRecyclerViewAdapter<TViewModel, TCollection>(TCollection backingList)
-    : ReactiveRecyclerViewAdapter<TViewModel>(backingList.ToObservableChangeSet<TCollection, TViewModel>())
+    : ReactiveRecyclerViewAdapter<TViewModel>(backingList.ToReactiveChangeSet<TCollection, TViewModel>())
     where TViewModel : class, IReactiveObject
     where TCollection : ICollection<TViewModel>, INotifyCollectionChanged;

@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;

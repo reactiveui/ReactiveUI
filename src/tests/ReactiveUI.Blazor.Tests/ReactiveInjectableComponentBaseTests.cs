@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Disposables.Fluent;
+using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ReactiveUI.Blazor.Tests;

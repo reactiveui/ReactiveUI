@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows;
 using System.Windows.Controls;
 #endif
+using System.Reactive.Disposables;
 
 #if HAS_UNO
 namespace ReactiveUI.Uno

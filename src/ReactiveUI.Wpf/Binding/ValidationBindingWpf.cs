@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup.Primitives;
 using System.Windows.Media;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Wpf.Binding;
 
@@ -48,7 +50,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <summary>
     /// The disposable that tears down the active binding.
     /// </summary>
-    private IDisposable? _inner;
+    private ActionDisposable? _inner;
 
     /// <summary>
     /// Tracks whether this instance has already been disposed.
@@ -90,10 +92,9 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
                               $"Dependency property '{propertyName}' not found on {typeof(TVProp).Name}",
                               nameof(viewProperty));
 
-        Changed = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression)
-            .Select(static tvm => (TVMProp?)tvm)
-            .Merge(view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value)
-                .Select(static p => default(TVMProp)));
+        Changed = new ChangedObservable(
+            Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression),
+            view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value));
         Direction = BindingDirection.TwoWay;
         Bind();
     }
@@ -139,7 +140,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
 
-        _inner = Disposable.Create(() => BindingOperations.ClearBinding(_control, _dpPropertyName));
+        _inner = new(() => BindingOperations.ClearBinding(_control, _dpPropertyName));
 
         return _inner;
     }
@@ -341,6 +342,35 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
             {
                 yield return descendant;
             }
+        }
+    }
+
+    /// <summary>
+    /// Emits the view model value (cast to <typeparamref name="TVMProp"/>) on each view-model change and a default
+    /// value on each view change — a fused replacement for
+    /// <c>viewModelValues.Select(cast).Merge(viewChanges.Select(_ =&gt; default))</c>. The projection is folded into
+    /// the observers, so there is no intermediate operator subscription.
+    /// </summary>
+    /// <param name="viewModelValues">The view model value stream.</param>
+    /// <param name="viewChanges">The view property change stream.</param>
+    private sealed class ChangedObservable(IObservable<object> viewModelValues, IObservable<TVProp?> viewChanges)
+        : IObservable<TVMProp?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TVMProp?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            var viewModelSubscription = viewModelValues.Subscribe(
+                new DelegateObserver<object>(value => observer.OnNext((TVMProp?)value), observer.OnError));
+            var viewSubscription = viewChanges.Subscribe(
+                new DelegateObserver<TVProp?>(_ => observer.OnNext(default), observer.OnError));
+
+            return new ActionDisposable(() =>
+            {
+                viewModelSubscription.Dispose();
+                viewSubscription.Dispose();
+            });
         }
     }
 }

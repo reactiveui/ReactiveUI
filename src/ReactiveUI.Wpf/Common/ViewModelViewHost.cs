@@ -15,8 +15,10 @@ using Windows.UI.Xaml.Controls;
 #else
 
 using System.Windows;
-
 #endif
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Internal;
+using Splat;
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
@@ -56,7 +58,7 @@ public
             nameof(ViewContractObservable),
             typeof(IObservable<string>),
             typeof(ViewModelViewHost),
-            new(Observable<string>.Default));
+            new(new ReturnObservable<string>(default!)));
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -92,31 +94,35 @@ public
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string?>.Never
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
-                    eventHandler =>
+            ? NeverObservable<string?>.Instance
+            : new DistinctUntilChangedObservable<string?>(
+                new StartWithObservable<string?>(
+                    new FromEventObservable<string?>(onNext =>
                     {
-                        void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
-                        return Handler;
-                    },
-                    x => SizeChanged += x,
-                    x => SizeChanged -= x)
-                .StartWith(platformGetter())
-                .DistinctUntilChanged();
+                        void Handler(object? sender, SizeChangedEventArgs e) => onNext(platformGetter());
+                        SizeChanged += Handler;
+                        return new ActionDisposable(() => SizeChanged -= Handler);
+                    }),
+                    platformGetter()));
 
-        var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x)
-            .StartWith(ViewContract);
-        var viewModelChanged = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).StartWith(ViewModel);
-        var vmAndContract = contractChanged
-            .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
+        var contractChanged = new StartWithObservable<string?>(
+            new DoObservable<string?>(this.WhenAnyObservable(x => x.ViewContractObservable), x => _viewContract = x),
+            ViewContract);
+        var viewModelChanged = new StartWithObservable<object?>(
+            this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)),
+            ViewModel);
+        var vmAndContract = new CombineLatestObservable<string?, object?, (object? ViewModel, string? Contract)>(
+            contractChanged,
+            viewModelChanged,
+            (contract, vm) => (ViewModel: vm, Contract: contract));
 
         this.WhenActivated(d =>
         {
-            d(contractChanged
-                .ObserveOn(RxSchedulers.MainThreadScheduler)
-                .Subscribe(x => _viewContract = x ?? string.Empty));
+            d(new ObserveOnObservable<string?>(contractChanged, RxSchedulers.MainThreadScheduler)
+                .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty)));
 
-            d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
+            d(new DistinctUntilChangedObservable<(object? ViewModel, string? Contract)>(vmAndContract)
+                .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(x => ResolveViewForViewModel(x.ViewModel, x.Contract))));
         });
     }
 
@@ -157,7 +163,7 @@ public
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>

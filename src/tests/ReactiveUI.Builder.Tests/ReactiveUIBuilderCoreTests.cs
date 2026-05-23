@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Builder.Tests.Executors;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests;
 
@@ -160,6 +162,7 @@ public class ReactiveUIBuilderCoreTests
     /// <summary>
     /// Verifies that passing a null platform array throws <see cref="ArgumentNullException"/>.
     /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Build_Should_Return_ReactiveInstance_And_Initialize_ReactiveUI()
     {
@@ -176,6 +179,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(app).IsAssignableTo<IReactiveUIInstance>();
     }
 
+    /// <summary>
+    /// Verifies that calling BuildApp on a builder instance produces a valid current locator.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task BuildApp_Should_Use_Build_Implementation()
     {
@@ -191,6 +198,9 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(app).IsAssignableTo<IReactiveUIInstance>();
     }
 
+    /// <summary>
+    /// Verifies that <c>ForPlatforms</c> throws when passed a null platforms array.
+    /// </summary>
     [Test]
     public void ForPlatforms_With_Null_Array_Should_Throw()
     {

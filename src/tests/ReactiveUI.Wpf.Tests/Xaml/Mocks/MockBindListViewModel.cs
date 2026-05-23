@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using DynamicData;
+using Splat;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 

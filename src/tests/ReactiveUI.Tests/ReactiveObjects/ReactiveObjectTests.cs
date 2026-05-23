@@ -4,6 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
+using System.ComponentModel;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text.Json;
 using DynamicData;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;

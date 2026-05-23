@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing.Reactive</AssemblyName>
@@ -10,10 +10,7 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="System"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Reactive.Concurrency"/>
-    <Using Include="ReactiveUI.Helpers"/>
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing"/>

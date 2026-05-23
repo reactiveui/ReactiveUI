@@ -3,10 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Hosting;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using ReactiveUI.Maui;
+using Splat;
 
 namespace ReactiveUI.Builder;
 
@@ -236,7 +241,7 @@ public static class MauiReactiveUIBuilderExtensions
                 throw new ArgumentNullException(nameof(action));
             }
 
-            var disposable = new SingleAssignmentDisposable();
+            var disposable = new OnceDisposable();
 
             void Execute()
             {
@@ -284,7 +289,7 @@ public static class MauiReactiveUIBuilderExtensions
                 return Schedule(state, action);
             }
 
-            var disposable = new SingleAssignmentDisposable();
+            var disposable = new OnceDisposable();
             var timer = _dispatcher.CreateTimer();
             timer.IsRepeating = false;
             timer.Interval = normalized;
@@ -306,7 +311,7 @@ public static class MauiReactiveUIBuilderExtensions
             timer.Tick += handler;
             timer.Start();
 
-            return new CompositeDisposable(disposable, Disposable.Create(() =>
+            return new CompositeDisposable(disposable, new ActionDisposable(() =>
             {
                 timer.Tick -= handler;
                 timer.Stop();

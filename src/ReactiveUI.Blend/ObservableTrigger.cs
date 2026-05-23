@@ -6,6 +6,7 @@
 using System.Reactive.Concurrency;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Blend;
 
@@ -19,7 +20,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// </summary>
     public static readonly DependencyProperty ObservableProperty =
         DependencyProperty.Register(
-            "Observable",
+            nameof(Observable),
             typeof(IObservable<object>),
             typeof(ObservableTrigger),
             new(OnObservableChanged));
@@ -80,7 +81,9 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
 
         var newValue = (IObservable<object>)e.NewValue;
         var scheduler = triggerItem.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
-        triggerItem._watcher = newValue.ObserveOn(scheduler).Subscribe(
+        triggerItem._watcher = ScheduledObserver<object>.Subscribe(
+            newValue,
+            scheduler,
             triggerItem.InvokeActions,
             _ =>
             {

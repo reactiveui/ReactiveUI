@@ -4,9 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
-
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -155,7 +158,7 @@ public class RoutingState : ReactiveObject
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;
-        NavigationChanged = NavigationStack.ToObservableChangeSet();
+        NavigationChanged = NavigationStack.ToReactiveChangeSet();
 
         var countAsBehavior = new NavigationCountObservable(this);
         NavigateBack =
@@ -217,7 +220,7 @@ public class RoutingState : ReactiveObject
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
             observer.OnNext(owner.NavigationStack.Count);
-            return owner.NavigationChanged.CountChanged()
+            return owner.NavigationChanged.WhenCountChanged()
                 .Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ => observer.OnNext(owner.NavigationStack.Count)));
         }
     }

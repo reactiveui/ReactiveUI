@@ -3,12 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
+using Splat;
+
 namespace ReactiveUI.Tests.Wpf;
 
 /// <summary>
 /// Tests for the WPF ReactiveUI builder extensions.
 /// </summary>
-public class ReactiveUIBuilderWpfTests
+public class ReactiveUiBuilderWpfTests
 {
     /// <summary>
     /// Verifies that <c>WithWpf</c> registers the WPF platform services.

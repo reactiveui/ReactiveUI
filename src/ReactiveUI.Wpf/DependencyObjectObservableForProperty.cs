@@ -1,10 +1,14 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -73,15 +77,21 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             throw new InvalidOperationException("Couldn't find dependency property " + propertyName + " on " + type.Name);
         }
 
-        return Observable.Create<IObservedChange<object, object?>>(subj =>
+        return new FromEventObservable<IObservedChange<object, object?>>(onNext =>
         {
             var handler = new EventHandler((_, _) =>
-                subj.OnNext(new ObservedChange<object, object?>(sender, expression, null)));
-            var scheduler = RxSchedulers.MainThreadScheduler;
+                onNext(new ObservedChange<object, object?>(sender, expression, null)));
 
             dependencyPropertyDescriptor.AddValueChanged(sender, handler);
-            return Disposable.Create(() =>
-                scheduler.Schedule(() => dependencyPropertyDescriptor.RemoveValueChanged(sender, handler)));
+
+            return new ActionDisposable(() =>
+                RxSchedulers.MainThreadScheduler.Schedule(
+                    (Descriptor: dependencyPropertyDescriptor, Sender: sender, Handler: handler),
+                    static (_, state) =>
+                    {
+                        state.Descriptor.RemoveValueChanged(state.Sender, state.Handler);
+                        return EmptyDisposable.Instance;
+                    }));
         });
     }
 

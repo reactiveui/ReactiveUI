@@ -5,8 +5,10 @@
 
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using System.Reactive.Subjects;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.AOT.Tests;

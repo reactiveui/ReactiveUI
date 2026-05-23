@@ -3,6 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Subjects;
+using ReactiveUI.Internal;
+using Splat;
+
 namespace ReactiveUI.Maui;
 
 /// <summary>
@@ -49,22 +54,22 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Signals that the application is going to the background.
     /// </summary>
-    private readonly Subject<IDisposable> _onSleep = new();
+    private readonly BroadcastSubject<IDisposable> _onSleep = new();
 
     /// <summary>
     /// Signals that the application is launching fresh.
     /// </summary>
-    private readonly Subject<Unit> _onLaunchingNew = new();
+    private readonly BroadcastSubject<Unit> _onLaunchingNew = new();
 
     /// <summary>
     /// Signals that the application is returning to the foreground.
     /// </summary>
-    private readonly Subject<Unit> _onResume = new();
+    private readonly BroadcastSubject<Unit> _onResume = new();
 
     /// <summary>
     /// Signals that the application is starting.
     /// </summary>
-    private readonly Subject<Unit> _onStart = new();
+    private readonly BroadcastSubject<Unit> _onStart = new();
 
     /// <summary>
     /// To detect redundant calls.
@@ -92,7 +97,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Gets a subject to indicate whether the application has crashed.
     /// </summary>
-    public static Subject<Unit> UntimelyDemise { get; } = new();
+    public static ISubject<Unit> UntimelyDemise { get; } = new BroadcastSubject<Unit>();
 
     /// <summary>
     /// Call this method in the constructor of your .NET MAUI
@@ -108,7 +113,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>
     /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> when the app is going to the background.
     /// </summary>
-    public void OnSleep() => _onSleep.OnNext(Disposable.Empty);
+    public void OnSleep() => _onSleep.OnNext(EmptyDisposable.Instance);
 
     /// <summary>
     /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> when the app returns to the foreground.

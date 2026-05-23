@@ -10,17 +10,17 @@ namespace ReactiveUI;
 /// observation factories and view activation fetchers. A higher value indicates a stronger
 /// match; zero means the candidate does not apply.
 /// </summary>
-internal static class BindingAffinity
+public static class BindingAffinity
 {
     /// <summary>The affinity returned by the built-in value and string type converters.</summary>
-    public const int DefaultInternalTypeConverter = 2;
+    public static readonly int DefaultInternalTypeConverter = 2;
 
     /// <summary>The affinity for binding to a type's conventional default event.</summary>
-    public const int DefaultEvent = 3;
+    public static readonly int DefaultEvent = 3;
 
     /// <summary>The affinity for an explicit or interface-based match, such as INotifyPropertyChanged or a named event.</summary>
-    public const int Explicit = 5;
+    public static readonly int Explicit = 5;
 
     /// <summary>The affinity for a strong, exact-type match, such as IReactiveObject or ICanActivate.</summary>
-    public const int ExactType = 10;
+    public static readonly int ExactType = 10;
 }

@@ -4,6 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel.DataAnnotations;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using TUnit.Core.Executors;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 

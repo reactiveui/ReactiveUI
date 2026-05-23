@@ -3,10 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.ObservableAsPropertyHelper.Mocks;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.ObservableAsPropertyHelper;
 
@@ -421,7 +428,7 @@ public class ObservableAsPropertyHelperTest
         var output = new List<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
-            Observable<int>.Never,
+            NeverObservable<int>.Instance,
             output.Add,
             InitialValue,
             scheduler: scheduler);

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Splat;
+
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 /// <summary>
@@ -39,23 +41,23 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService08 s8,
         out InstanceService09 s9)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
     }
 
@@ -90,25 +92,25 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService09 s9,
         out InstanceService10 s10)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
     }
 
@@ -145,27 +147,27 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService10 s10,
         out InstanceService11 s11)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
     }
 
@@ -204,29 +206,29 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService11 s11,
         out InstanceService12 s12)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
-        s12 = new InstanceService12();
+        s12 = new();
         resolver.RegisterConstant(s12, typeof(InstanceService12));
     }
 
@@ -267,31 +269,31 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService12 s12,
         out InstanceService13 s13)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
-        s12 = new InstanceService12();
+        s12 = new();
         resolver.RegisterConstant(s12, typeof(InstanceService12));
-        s13 = new InstanceService13();
+        s13 = new();
         resolver.RegisterConstant(s13, typeof(InstanceService13));
     }
 
@@ -334,33 +336,33 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService13 s13,
         out InstanceService14 s14)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
-        s12 = new InstanceService12();
+        s12 = new();
         resolver.RegisterConstant(s12, typeof(InstanceService12));
-        s13 = new InstanceService13();
+        s13 = new();
         resolver.RegisterConstant(s13, typeof(InstanceService13));
-        s14 = new InstanceService14();
+        s14 = new();
         resolver.RegisterConstant(s14, typeof(InstanceService14));
     }
 
@@ -405,35 +407,35 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService14 s14,
         out InstanceService15 s15)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
-        s12 = new InstanceService12();
+        s12 = new();
         resolver.RegisterConstant(s12, typeof(InstanceService12));
-        s13 = new InstanceService13();
+        s13 = new();
         resolver.RegisterConstant(s13, typeof(InstanceService13));
-        s14 = new InstanceService14();
+        s14 = new();
         resolver.RegisterConstant(s14, typeof(InstanceService14));
-        s15 = new InstanceService15();
+        s15 = new();
         resolver.RegisterConstant(s15, typeof(InstanceService15));
     }
 
@@ -480,37 +482,37 @@ public partial class BuilderInstanceMixinsTests
         out InstanceService15 s15,
         out InstanceService16 s16)
     {
-        s1 = new InstanceService01();
+        s1 = new();
         resolver.RegisterConstant(s1, typeof(InstanceService01));
-        s2 = new InstanceService02();
+        s2 = new();
         resolver.RegisterConstant(s2, typeof(InstanceService02));
-        s3 = new InstanceService03();
+        s3 = new();
         resolver.RegisterConstant(s3, typeof(InstanceService03));
-        s4 = new InstanceService04();
+        s4 = new();
         resolver.RegisterConstant(s4, typeof(InstanceService04));
-        s5 = new InstanceService05();
+        s5 = new();
         resolver.RegisterConstant(s5, typeof(InstanceService05));
-        s6 = new InstanceService06();
+        s6 = new();
         resolver.RegisterConstant(s6, typeof(InstanceService06));
-        s7 = new InstanceService07();
+        s7 = new();
         resolver.RegisterConstant(s7, typeof(InstanceService07));
-        s8 = new InstanceService08();
+        s8 = new();
         resolver.RegisterConstant(s8, typeof(InstanceService08));
-        s9 = new InstanceService09();
+        s9 = new();
         resolver.RegisterConstant(s9, typeof(InstanceService09));
-        s10 = new InstanceService10();
+        s10 = new();
         resolver.RegisterConstant(s10, typeof(InstanceService10));
-        s11 = new InstanceService11();
+        s11 = new();
         resolver.RegisterConstant(s11, typeof(InstanceService11));
-        s12 = new InstanceService12();
+        s12 = new();
         resolver.RegisterConstant(s12, typeof(InstanceService12));
-        s13 = new InstanceService13();
+        s13 = new();
         resolver.RegisterConstant(s13, typeof(InstanceService13));
-        s14 = new InstanceService14();
+        s14 = new();
         resolver.RegisterConstant(s14, typeof(InstanceService14));
-        s15 = new InstanceService15();
+        s15 = new();
         resolver.RegisterConstant(s15, typeof(InstanceService15));
-        s16 = new InstanceService16();
+        s16 = new();
         resolver.RegisterConstant(s16, typeof(InstanceService16));
     }
 

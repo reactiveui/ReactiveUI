@@ -3,8 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -540,9 +541,26 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         /// <inheritdoc/>
         public void Dispose()
         {
+            // Capture before tearing down: disposing the inner subscription disposes the async cancellation source,
+            // so the cancel action must be invoked first (while it is still valid).
+            var cancel = _cancel;
+
+            // Cancel first, while the cancellation source is still alive: disposing the inner subscription tears down
+            // the async run (which disposes that source), so invoking the cancel action afterwards would hit a
+            // disposed CancellationTokenSource.
+            cancel?.Invoke();
             _inner?.Dispose();
             _outer?.Dispose();
-            _cancel?.Invoke();
+
+            // For asynchronous executions the cancelled task keeps running until it actually completes, and
+            // IsExecuting must stay true until then — its terminal notification (OnError / OnResultCompleted) raises
+            // the balancing end. For synchronous/observable executions cancellation is performed by unsubscribing
+            // (NoCancel), so disposal ends the execution here.
+            if (cancel is not null && cancel != NoCancel)
+            {
+                return;
+            }
+
             EndOnce();
         }
 

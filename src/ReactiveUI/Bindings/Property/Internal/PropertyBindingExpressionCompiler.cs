@@ -3,10 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
 using System.Reflection;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -235,7 +236,7 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
         public IDisposable Subscribe(IObserver<T> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return source.Subscribe(new Sink(observer, new object()));
+            return source.Subscribe(new Sink(observer, new()));
         }
 
         /// <summary>Delivers each notification to the downstream while holding a gate.</summary>

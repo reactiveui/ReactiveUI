@@ -3,11 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.AndroidX;
 
@@ -38,12 +43,12 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// <summary>
     /// The subject that signals when the view is activated.
     /// </summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly BroadcastSubject<Unit> _activated = new();
 
     /// <summary>
     /// The subject that signals when the view is deactivated.
     /// </summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly BroadcastSubject<Unit> _deactivated = new();
 
     /// <summary>
     /// The backing field for the view model.
@@ -63,42 +68,33 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         view.ViewAttachedToWindow += OnViewAttachedToWindow;
         view.ViewDetachedFromWindow += OnViewDetachedFromWindow;
 
-        Selected = Observable.FromEvent<EventHandler, int>(
-            eventHandler =>
-            {
-                void Handler(object? sender, EventArgs e) => eventHandler(AbsoluteAdapterPosition);
-                return Handler;
-            },
-            h => view.Click += h,
-            h => view.Click -= h);
+        Selected = new FromEventObservable<int>(onNext =>
+        {
+            void Handler(object? sender, EventArgs e) => onNext(AbsoluteAdapterPosition);
+            view.Click += Handler;
+            return new ActionDisposable(() => view.Click -= Handler);
+        });
 
-        LongClicked = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, int>(
-            eventHandler =>
-            {
-                void Handler(object? sender, View.LongClickEventArgs e) => eventHandler(AbsoluteAdapterPosition);
+        LongClicked = new FromEventObservable<int>(onNext =>
+        {
+            void Handler(object? sender, View.LongClickEventArgs e) => onNext(AbsoluteAdapterPosition);
+            view.LongClick += Handler;
+            return new ActionDisposable(() => view.LongClick -= Handler);
+        });
 
-                return Handler;
-            },
-            h => view.LongClick += h,
-            h => view.LongClick -= h);
+        SelectedWithViewModel = new FromEventObservable<TViewModel?>(onNext =>
+        {
+            void Handler(object? sender, EventArgs e) => onNext(ViewModel);
+            view.Click += Handler;
+            return new ActionDisposable(() => view.Click -= Handler);
+        });
 
-        SelectedWithViewModel = Observable.FromEvent<EventHandler, TViewModel?>(
-            eventHandler =>
-            {
-                void Handler(object? sender, EventArgs e) => eventHandler(ViewModel);
-                return Handler;
-            },
-            h => view.Click += h,
-            h => view.Click -= h);
-
-        LongClickedWithViewModel = Observable.FromEvent<EventHandler<View.LongClickEventArgs>, TViewModel?>(
-            eventHandler =>
-            {
-                void Handler(object? sender, View.LongClickEventArgs e) => eventHandler(ViewModel);
-                return Handler;
-            },
-            h => view.LongClick += h,
-            h => view.LongClick -= h);
+        LongClickedWithViewModel = new FromEventObservable<TViewModel?>(onNext =>
+        {
+            void Handler(object? sender, View.LongClickEventArgs e) => onNext(ViewModel);
+            view.LongClick += Handler;
+            return new ActionDisposable(() => view.LongClick -= Handler);
+        });
     }
 
     /// <inheritdoc/>
@@ -138,10 +134,10 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <summary>
     /// Gets the current view being shown.

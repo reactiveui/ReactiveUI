@@ -3,8 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Reactive;
 using Android.Runtime;
 using AndroidX.Preference;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.AndroidX;
 
@@ -18,12 +21,12 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     /// <summary>
     /// The subject that signals when the fragment is activated.
     /// </summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly BroadcastSubject<Unit> _activated = new();
 
     /// <summary>
     /// The subject that signals when the fragment is deactivated.
     /// </summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly BroadcastSubject<Unit> _deactivated = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
@@ -62,12 +65,12 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     /// <summary>
     /// Gets a signal when the fragment is activated.
     /// </summary>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 
     /// <summary>
     /// Gets a signal when the fragment is deactivated.
     /// </summary>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);

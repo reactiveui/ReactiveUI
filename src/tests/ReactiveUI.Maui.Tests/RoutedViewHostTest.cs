@@ -5,9 +5,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 

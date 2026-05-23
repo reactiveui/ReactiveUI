@@ -3,9 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 #if WINUI_TARGET
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
+// Alias Page: the Maui-windows TFM also imports Microsoft.Maui.Controls implicitly, so a bare Page would be
+// ambiguous between Microsoft.UI.Xaml.Controls.Page and Microsoft.Maui.Controls.Page.
+using Page = Microsoft.UI.Xaml.Controls.Page;
 #else
 using Microsoft.Maui.Controls;
 #endif
@@ -99,7 +104,7 @@ public partial class ReactivePage<
             "ViewModel",
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 #else
     /// <summary>
     /// The view model bindable property.

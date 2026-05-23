@@ -3,7 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using DynamicData;
+using ReactiveUI.Internal;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
@@ -24,7 +30,7 @@ public class InteractionsTest
     [Test]
     public async Task AttemptingToGetInteractionOutputBeforeItHasBeenSetShouldCauseException()
     {
-        var interaction = new Interaction<Unit, Unit>();
+        var interaction = new Interaction<Unit, Unit>(ImmediateScheduler.Instance);
 
         interaction.RegisterHandler(context => _ = ((InteractionContext<Unit, Unit>)context).GetOutput());
 
@@ -39,7 +45,7 @@ public class InteractionsTest
     [Test]
     public async Task AttemptingToSetInteractionOutputMoreThanOnceShouldCauseException()
     {
-        var interaction = new Interaction<Unit, Unit>();
+        var interaction = new Interaction<Unit, Unit>(ImmediateScheduler.Instance);
 
         interaction.RegisterHandler(context =>
         {
@@ -54,13 +60,16 @@ public class InteractionsTest
     /// <summary>
     ///     Tests that Handled interactions should not cause exception.
     /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-    public void HandledInteractionsShouldNotCauseException()
+    public async Task HandledInteractionsShouldNotCauseException()
     {
-        var interaction = new Interaction<Unit, bool>();
+        var interaction = new Interaction<Unit, bool>(ImmediateScheduler.Instance);
         interaction.RegisterHandler(static c => c.SetOutput(true));
 
-        interaction.Handle(Unit.Default).FirstAsync().Wait();
+        // Await rather than block: blocking (.Wait()) on a CurrentThreadScheduler-scheduled interaction can deadlock
+        // when a scheduler trampoline is already active on the test thread.
+        _ = await interaction.Handle(Unit.Default).FirstAsync();
     }
 
     /// <summary>
@@ -104,8 +113,7 @@ public class InteractionsTest
             handler1AWasCalled = true;
         });
         var handler1B = interaction.RegisterHandler(x =>
-            Observables
-                        .Unit.Delay(TimeSpan.FromSeconds(1), scheduler).Do(_ => x.SetOutput(OutputB)));
+            SingleValueObservable.Unit.Delay(TimeSpan.FromSeconds(1), scheduler).Do(_ => x.SetOutput(OutputB)));
 
         using (handler1A)
         using (handler1B)
@@ -131,7 +139,7 @@ public class InteractionsTest
     [Test]
     public async Task HandlersCanContainAsynchronousCodeViaTasks()
     {
-        var interaction = new Interaction<Unit, string>();
+        var interaction = new Interaction<Unit, string>(ImmediateScheduler.Instance);
 
         interaction.RegisterHandler(context =>
         {
@@ -139,9 +147,9 @@ public class InteractionsTest
             return Task.FromResult(true);
         });
 
-        string? result = null;
-        interaction
-                .Handle(Unit.Default).Subscribe(r => result = r);
+        // The Task-based handler yields before running (see #4351), so it completes asynchronously; await the
+        // interaction result rather than reading it synchronously after Subscribe.
+        var result = await interaction.Handle(Unit.Default);
 
         await Assert.That(result).IsEqualTo(ResultOutput);
     }
@@ -153,7 +161,7 @@ public class InteractionsTest
     [Test]
     public async Task HandlersCanOptNotToHandleTheInteraction()
     {
-        var interaction = new Interaction<bool, string>();
+        var interaction = new Interaction<bool, string>(ImmediateScheduler.Instance);
 
         var handler1A = interaction.RegisterHandler(static x => x.SetOutput(OutputA));
         var handler1B = interaction.RegisterHandler(static x =>
@@ -175,21 +183,21 @@ public class InteractionsTest
                 using (handler1C)
                 using (Assert.Multiple())
                 {
-                    await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo(OutputC);
-                    await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo(OutputC);
+                    await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputC);
+                    await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputC);
                 }
 
                 using (Assert.Multiple())
                 {
-                    await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo(OutputA);
-                    await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo(OutputB);
+                    await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputA);
+                    await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputB);
                 }
             }
 
             using (Assert.Multiple())
             {
-                await Assert.That(interaction.Handle(false).FirstAsync().Wait()).IsEqualTo(OutputA);
-                await Assert.That(interaction.Handle(true).FirstAsync().Wait()).IsEqualTo(OutputA);
+                await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputA);
+                await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputA);
             }
         }
     }
@@ -201,14 +209,14 @@ public class InteractionsTest
     [Test]
     public async Task HandlersReturningObservablesCanReturnAnyKindOfObservable()
     {
-        var interaction = new Interaction<Unit, string>();
+        var interaction = new Interaction<Unit, string>(ImmediateScheduler.Instance);
 
         const int SampleValue = 42;
         _ = interaction.RegisterHandler(x =>
             Observable
                     .Return(SampleValue).Do(_ => x.SetOutput(ResultOutput)));
 
-        var result = interaction.Handle(Unit.Default).FirstAsync().Wait();
+        var result = await interaction.Handle(Unit.Default).FirstAsync();
         await Assert.That(result).IsEqualTo(ResultOutput);
     }
 
@@ -219,23 +227,23 @@ public class InteractionsTest
     [Test]
     public async Task NestedHandlersAreExecutedInReverseOrderOfSubscription()
     {
-        var interaction = new Interaction<Unit, string>();
+        var interaction = new Interaction<Unit, string>(ImmediateScheduler.Instance);
 
         using (interaction.RegisterHandler(static x => x.SetOutput(OutputA)))
         {
-            await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo(OutputA);
+            await Assert.That(await interaction.Handle(Unit.Default).FirstAsync()).IsEqualTo(OutputA);
             using (interaction.RegisterHandler(static x => x.SetOutput(OutputB)))
             {
-                await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo(OutputB);
+                await Assert.That(await interaction.Handle(Unit.Default).FirstAsync()).IsEqualTo(OutputB);
                 using (interaction.RegisterHandler(static x => x.SetOutput(OutputC)))
                 {
-                    await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo(OutputC);
+                    await Assert.That(await interaction.Handle(Unit.Default).FirstAsync()).IsEqualTo(OutputC);
                 }
 
-                await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo(OutputB);
+                await Assert.That(await interaction.Handle(Unit.Default).FirstAsync()).IsEqualTo(OutputB);
             }
 
-            await Assert.That(interaction.Handle(Unit.Default).FirstAsync().Wait()).IsEqualTo(OutputA);
+            await Assert.That(await interaction.Handle(Unit.Default).FirstAsync()).IsEqualTo(OutputA);
         }
     }
 
@@ -245,7 +253,7 @@ public class InteractionsTest
     [Test]
     public void RegisterNullHandlerShouldCauseException()
     {
-        var interaction = new Interaction<Unit, Unit>();
+        var interaction = new Interaction<Unit, Unit>(ImmediateScheduler.Instance);
 
         Assert.Throws<ArgumentNullException>(() =>
             interaction.RegisterHandler((Action<IInteractionContext<Unit, Unit>>)null!));
@@ -261,22 +269,22 @@ public class InteractionsTest
     [Test]
     public async Task UnhandledInteractionsShouldCauseException()
     {
-        var interaction = new Interaction<string, Unit>();
-        var ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() =>
-            interaction.Handle("foo").FirstAsync().Wait());
+        var interaction = new Interaction<string, Unit>(ImmediateScheduler.Instance);
+        var ex = await Assert.That(async () => await interaction.Handle("foo").FirstAsync())
+            .Throws<UnhandledInteractionException<string, Unit>>();
         using (Assert.Multiple())
         {
-            await Assert.That(ex.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex!.Interaction).IsSameReferenceAs(interaction);
             await Assert.That(ex.Input).IsEqualTo("foo");
         }
 
         interaction.RegisterHandler(_ => { });
         interaction.RegisterHandler(_ => { });
-        ex = Assert.Throws<UnhandledInteractionException<string, Unit>>(() =>
-            interaction.Handle("bar").FirstAsync().Wait());
+        ex = await Assert.That(async () => await interaction.Handle("bar").FirstAsync())
+            .Throws<UnhandledInteractionException<string, Unit>>();
         using (Assert.Multiple())
         {
-            await Assert.That(ex.Interaction).IsSameReferenceAs(interaction);
+            await Assert.That(ex!.Interaction).IsSameReferenceAs(interaction);
             await Assert.That(ex.Input).IsEqualTo("bar");
         }
     }

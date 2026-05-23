@@ -5,6 +5,9 @@
 
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -56,8 +59,8 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
                 var (lookupFrom, lookupTo) = key.From == typeof(string) ? (key.To, key.From) : (key.From, key.To);
                 var converter = TypeDescriptor.GetConverter(lookupFrom);
                 return key.From == typeof(string)
-                    ? converter?.CanConvertFrom(typeof(string)) == true
-                    : converter?.CanConvertTo(lookupTo) == true;
+                    ? converter.CanConvertFrom(typeof(string))
+                    : converter.CanConvertTo(lookupTo);
             }
             catch
             {

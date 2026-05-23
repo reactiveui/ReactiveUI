@@ -4,7 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -39,11 +39,14 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     /// <summary>The inner command that executes all child commands and aggregates their results.</summary>
     private readonly ReactiveCommand<TParam, IList<TResult>> _innerCommand;
 
-    /// <summary>The merged exception stream of the inner command and every child command.</summary>
+    /// <summary>The merged exception stream of every child command.</summary>
     private readonly IObservable<Exception> _thrownExceptions;
 
     /// <summary>Subscription that drives the <see cref="System.Windows.Input.ICommand"/> CanExecuteChanged event.</summary>
     private readonly IDisposable _canExecuteSubscription;
+
+    /// <summary>Subscription that observes (and discards) the inner command's exceptions to keep them handled.</summary>
+    private readonly IDisposable _innerExceptionsSubscription;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CombinedReactiveCommand{TParam, TResult}"/> class using the default output scheduler.
@@ -103,9 +106,11 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             childCanExecute[i] = childCommandsArray[i].CanExecute;
         }
 
+        var parentGate = canExecute ?? SingleValueObservable.True;
+
         // all-true of [parent, child0..childN] (the parent gate plus every child's CanExecute).
         var canExecuteSources = new IObservable<bool>[childCommandsArray.Length + 1];
-        canExecuteSources[0] = canExecute ?? SingleValueObservable.True;
+        canExecuteSources[0] = parentGate;
         Array.Copy(childCanExecute, 0, canExecuteSources, 1, childCanExecute.Length);
         var combinedCanExecute = new AllTrueCanExecuteObservable(canExecuteSources);
 
@@ -123,14 +128,20 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             combinedCanExecute,
             localOutputScheduler);
 
+        // The public exception stream surfaces each child command's exceptions plus any failure of the parent gate,
+        // each exactly once. A child error also propagates through the inner command (it aggregates the child
+        // executions), as does a parent-gate failure, so the inner command's ThrownExceptions would re-report the
+        // same exceptions; observe and discard it separately to keep them handled without double-counting.
         var exceptionSources = new IObservable<Exception>[childCommandsArray.Length + 1];
-        exceptionSources[0] = _innerCommand.ThrownExceptions;
         for (var i = 0; i < childCommandsArray.Length; i++)
         {
-            exceptionSources[i + 1] = childCommandsArray[i].ThrownExceptions;
+            exceptionSources[i] = childCommandsArray[i].ThrownExceptions;
         }
 
+        exceptionSources[childCommandsArray.Length] = new CanExecuteFailureObservable(parentGate);
+
         _thrownExceptions = new MergedExceptionsObservable(exceptionSources);
+        _innerExceptionsSubscription = _innerCommand.ThrownExceptions.Subscribe(new DelegateObserver<Exception>(static _ => { }));
 
         _canExecuteSubscription = CanExecute.Subscribe(new DelegateObserver<bool>(OnCanExecuteChanged));
     }
@@ -162,6 +173,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
         }
 
         _canExecuteSubscription.Dispose();
+        _innerExceptionsSubscription.Dispose();
         _innerCommand.Dispose();
     }
 
@@ -474,10 +486,45 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
     }
 
     /// <summary>
-    /// Forwards the thrown exceptions of the inner command and every child command into one stream. Specialised to the
-    /// combined command; no generic merge operator.
+    /// Surfaces only the failure of a CanExecute source as a single exception, ignoring its boolean values and normal
+    /// completion. Used so a parent-gate error reaches the combined command's exception stream once.
     /// </summary>
-    /// <param name="sources">The inner and child exception streams.</param>
+    /// <param name="source">The parent CanExecute gate to observe for failure.</param>
+    private sealed class CanExecuteFailureObservable(IObservable<bool> source) : IObservable<Exception>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<Exception> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Translates the source's terminal signals: an error becomes a single value, completion passes through.</summary>
+        /// <param name="downstream">The observer receiving the failure, if any.</param>
+        private sealed class Sink(IObserver<Exception> downstream) : IObserver<bool>
+        {
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+
+            /// <inheritdoc/>
+            public void OnError(Exception error)
+            {
+                downstream.OnNext(error);
+                downstream.OnCompleted();
+            }
+
+            /// <inheritdoc/>
+            public void OnNext(bool value)
+            {
+            }
+        }
+    }
+
+    /// <summary>
+    /// Forwards the thrown exceptions of every child command and the parent gate failure into one stream. Specialised
+    /// to the combined command; no generic merge operator.
+    /// </summary>
+    /// <param name="sources">The child exception streams and the parent-gate failure stream.</param>
     private sealed class MergedExceptionsObservable(IObservable<Exception>[] sources) : IObservable<Exception>
     {
         /// <inheritdoc/>

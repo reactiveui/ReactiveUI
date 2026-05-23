@@ -3,10 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -103,7 +108,7 @@ public class RoutingStateTests
         fixture.WhenAnyObservable(static x => x.Router!.CurrentViewModel)
                .Subscribe(vm => output.Add(vm));
 
-        fixture.Router = new RoutingState(ImmediateScheduler.Instance);
+        fixture.Router = new(ImmediateScheduler.Instance);
 
         await Assert.That(output).Count().IsEqualTo(1);
 
@@ -134,7 +139,7 @@ public class RoutingStateTests
     {
         var fixture = new TestScreen
         {
-            Router = new RoutingState(ImmediateScheduler.Instance)
+            Router = new(ImmediateScheduler.Instance)
         };
         var viewModel = new TestViewModel();
 
@@ -318,7 +323,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToObservableFires()
     {
-        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
+        var screen = new TestScreen { Router = new(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var fired = false;
@@ -336,7 +341,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToObservableCompletesWhenRemoved()
     {
-        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
+        var screen = new TestScreen { Router = new(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var completed = false;
@@ -355,7 +360,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatingFromObservableFires()
     {
-        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
+        var screen = new TestScreen { Router = new(ImmediateScheduler.Instance) };
         var vm1 = new TestViewModel { HostScreen = screen };
         var vm2 = new TestViewModel { HostScreen = screen };
 
@@ -375,7 +380,7 @@ public class RoutingStateTests
     [Test]
     public async Task WhenNavigatedToSetsUpAndTearsDown()
     {
-        var screen = new TestScreen { Router = new RoutingState(ImmediateScheduler.Instance) };
+        var screen = new TestScreen { Router = new(ImmediateScheduler.Instance) };
         var vm = new TestViewModel { HostScreen = screen };
 
         var setupCount = 0;

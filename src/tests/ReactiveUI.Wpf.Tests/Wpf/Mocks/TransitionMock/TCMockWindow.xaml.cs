@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests.Wpf.Mocks.TransitionMock;
 /// Interaction logic for MainWindow.xaml.
 /// </summary>
 [ExcludeFromViewRegistration]
-public partial class TCMockWindow
+public partial class TcMockWindow
 {
     /// <summary>
     /// The off-screen position used to hide the window during tests.
@@ -17,9 +17,9 @@ public partial class TCMockWindow
     private const int OffScreenPosition = -10000;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TCMockWindow"/> class.
+    /// Initializes a new instance of the <see cref="TcMockWindow"/> class.
     /// </summary>
-    public TCMockWindow()
+    public TcMockWindow()
     {
         InitializeComponent();
 

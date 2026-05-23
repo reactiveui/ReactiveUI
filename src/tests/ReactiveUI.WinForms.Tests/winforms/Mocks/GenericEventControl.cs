@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
 /// <summary>
@@ -20,5 +18,5 @@ public class GenericEventControl : Control
     /// <summary>
     /// Raises the custom event.
     /// </summary>
-    public void RaiseCustomEvent() => CustomEvent?.Invoke(this, new CustomEventArgs());
+    public void RaiseCustomEvent() => CustomEvent?.Invoke(this, new());
 }

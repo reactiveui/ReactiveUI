@@ -5,8 +5,9 @@
 
 using System.Reactive;
 using System.Reactive.Subjects;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 

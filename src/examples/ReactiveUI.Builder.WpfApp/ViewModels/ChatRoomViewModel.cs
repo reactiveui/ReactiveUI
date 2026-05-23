@@ -102,9 +102,20 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// Adds the current <see cref="MessageText"/> to the room, broadcasts it to other instances over the
     /// <see cref="MessageBus"/>, and clears the input. Backs the <see cref="SendMessage"/> command.
     /// </summary>
+    [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available all TFMs")]
     private void SendMessageImpl()
     {
-        var msg = new ChatMessage { Sender = _user, Text = MessageText, Timestamp = TimeProvider.System.GetUtcNow() };
+        var msg = new ChatMessage
+        {
+            Sender = _user,
+            Text = MessageText,
+            Timestamp =
+#if NET8_0_OR_GREATER
+                TimeProvider.System.GetUtcNow(),
+#else
+                DateTimeOffset.Now,
+#endif
+        };
         _room.Messages.Add(msg);
         var networkMessage = new ChatNetworkMessage(_room.Id, _room.Name, msg.Sender, msg.Text, msg.Timestamp)
         {

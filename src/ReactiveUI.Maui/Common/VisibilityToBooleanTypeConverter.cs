@@ -4,9 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
-using Microsoft.UI.Xaml;
+// Alias rather than import the namespace: the Maui-windows TFM also imports Microsoft.Maui implicitly, so a bare
+// Visibility would be ambiguous between Microsoft.UI.Xaml.Visibility and Microsoft.Maui.Visibility.
+using Visibility = Microsoft.UI.Xaml.Visibility;
 #else
-using Microsoft.Maui;
+using Visibility = Microsoft.Maui.Visibility;
 #endif
 
 #if IS_MAUI

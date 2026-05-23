@@ -1,0 +1,10 @@
+<Project>
+  <!-- Chain to the repository-level Directory.Build.targets (this file shadows it for the Maui project). -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- Off-Windows, neutralize the Maui-windows MSIX PRI generation: MakePri.exe is a native Windows tool that
+       crashes under Wine. Imported conditionally (rather than defining a conditioned target) so Windows builds
+       still run the real PRI generation. -->
+  <Import Project="$(MSBuildThisFileDirectory)build\SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows'))" />
+</Project>

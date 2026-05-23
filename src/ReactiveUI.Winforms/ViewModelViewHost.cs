@@ -1,7 +1,12 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Winforms;
 
@@ -43,7 +48,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     {
         InitializeComponent();
         _cacheViews = DefaultCacheViewsEnabled;
-        SetupBindings().ForEach(_disposables.Add);
+        _disposables.Add(new BindingSink(this));
     }
 
     /// <inheritdoc/>
@@ -154,43 +159,6 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     }
 
     /// <summary>
-    /// Creates the subscriptions that keep the hosted view in sync with the view model and content.
-    /// </summary>
-    /// <returns>The disposables representing the active subscriptions.</returns>
-    private IEnumerable<IDisposable> SetupBindings()
-    {
-        var viewChanges =
-            this.WhenAnyValue<ViewModelControlHost, object?>(nameof(Content))
-                .WhereNotNull()
-                .OfType<Control>()
-                .Subscribe(SwapHostedView);
-
-        yield return viewChanges;
-
-        yield return this.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent)).Subscribe(x =>
-        {
-            if (x is null)
-            {
-                return;
-            }
-
-            Content = DefaultContent;
-        });
-
-        ViewContractObservable = Observable.Return(string.Empty);
-
-        var vmAndContract =
-            this.WhenAnyValue<ViewModelControlHost, object?>(nameof(ViewModel))
-                .CombineLatest(
-                    this.WhenAnyObservable(x => x.ViewContractObservable!),
-                    (vm, contract) => new { ViewModel = vm, Contract = contract });
-
-        yield return vmAndContract.Subscribe(
-            x => UpdateContentForViewModel(x.ViewModel, x.Contract),
-            RxState.DefaultExceptionHandler.OnNext);
-    }
-
-    /// <summary>
     /// Replaces the currently visible control with the supplied view, docked to fill the host.
     /// </summary>
     /// <param name="view">The control to display.</param>
@@ -268,5 +236,82 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         // setting the viewmodel allows the view to update its bindings
         c.ViewModel = viewModel;
         return true;
+    }
+
+    /// <summary>
+    /// A single fused sink that owns every subscription the host needs and drives view presentation directly. It
+    /// folds the four sources — <see cref="Content"/>, <see cref="DefaultContent"/>, <see cref="ViewModel"/> and the
+    /// <see cref="ViewContractObservable"/> — into one object, performing the view-model/contract <c>CombineLatest</c>
+    /// inline instead of allocating a separate combine operator and per-source observers.
+    /// </summary>
+    private sealed class BindingSink : IDisposable
+    {
+        /// <summary>The host whose presentation this sink drives.</summary>
+        private readonly ViewModelControlHost _host;
+
+        /// <summary>The <see cref="Content"/> subscription.</summary>
+        private readonly IDisposable _contentSubscription;
+
+        /// <summary>The <see cref="DefaultContent"/> subscription.</summary>
+        private readonly IDisposable _defaultContentSubscription;
+
+        /// <summary>The view-model/contract combine that drives content resolution.</summary>
+        private readonly CombineLatestSink<object?, string> _viewModelContract;
+
+        /// <summary>Initializes a new instance of the <see cref="BindingSink"/> class and wires every source.</summary>
+        /// <param name="host">The host to drive.</param>
+        public BindingSink(ViewModelControlHost host)
+        {
+            _host = host;
+
+            // Content -> swap the hosted control (the type check replaces WhereNotNull().OfType<Control>()).
+            _contentSubscription = host.WhenAnyValue<ViewModelControlHost, object?>(nameof(Content))
+                .Subscribe(new DelegateObserver<object?>(OnContentChanged));
+
+            // DefaultContent -> show it as the current content once it is set.
+            _defaultContentSubscription = host.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent))
+                .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
+
+            host.ViewContractObservable = new ReturnObservable<string>(string.Empty);
+
+            // ViewModel + ViewContractObservable -> resolve and show the matching view.
+            _viewModelContract = new(
+                host.WhenAnyValue<ViewModelControlHost, object?>(nameof(ViewModel)),
+                host.WhenAnyObservable(x => x.ViewContractObservable!),
+                host.UpdateContentForViewModel,
+                RxState.DefaultExceptionHandler.OnNext);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _contentSubscription.Dispose();
+            _defaultContentSubscription.Dispose();
+            _viewModelContract.Dispose();
+        }
+
+        /// <summary>Swaps the hosted view when the content is a control.</summary>
+        /// <param name="content">The new content.</param>
+        private void OnContentChanged(object? content)
+        {
+            if (content is not Control control)
+            {
+                return;
+            }
+
+            _host.SwapHostedView(control);
+        }
+
+        /// <summary>Shows the default content once it is assigned.</summary>
+        /// <param name="defaultContent">The new default content.</param>
+        private void OnDefaultContentChanged(Control? defaultContent)
+        {
+            if (defaultContent is null)
+            {
+                return;
+            }
+
+            _host.Content = _host.DefaultContent;
+        }
     }
 }

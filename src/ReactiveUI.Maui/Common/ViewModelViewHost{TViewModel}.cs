@@ -1,9 +1,15 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Microsoft.UI.Xaml;
+using ReactiveUI.Internal;
+using ReactiveUI.Maui.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -14,7 +20,9 @@ namespace ReactiveUI;
 /// This generic version provides AOT-compatibility by using compile-time type information.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model. Must have a public parameterless constructor.</typeparam>
-public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : TransitioningContentControl, IViewFor<TViewModel>, IEnableLogger
+public partial class ViewModelViewHost<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel>
+    : TransitioningContentControl, IViewFor<TViewModel>, IEnableLogger
     where TViewModel : class
 {
     /// <summary>
@@ -33,7 +41,7 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
     /// The view contract observable dependency property.
     /// </summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost<TViewModel>), new PropertyMetadata(Observable<string>.Default));
+        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost<TViewModel>), new PropertyMetadata(new ReturnObservable<string?>(null)));
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -41,12 +49,16 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
     public static readonly DependencyProperty ContractFallbackByPassProperty =
         DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost<TViewModel>), new PropertyMetadata(false));
 
+    /// <summary>The subscriptions created during construction, disposed together.</summary>
     private readonly CompositeDisposable _subscriptions = [];
+
+    /// <summary>The most recently observed view contract.</summary>
     private string? _viewContract;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelViewHost{TViewModel}"/> class.
     /// </summary>
+    [SuppressMessage("Major Bug", "S3366:Do not call overridable methods in constructors", Justification = "Wires reactive bindings to this control's own dependency properties during construction.")]
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
@@ -56,27 +68,28 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
         {
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
-            this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+            this.Log().Error(
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest " +
+                "version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {
-            platformGetter = () => platform.GetOrientation();
+            platformGetter = platform.GetOrientation;
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? Observable<string?>.Never
-            : Observable.FromEvent<SizeChangedEventHandler, string?>(
-              eventHandler =>
-              {
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-                  void Handler(object? _, SizeChangedEventArgs __) => eventHandler(platformGetter());
-#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
-                  return Handler;
-              },
-              x => SizeChanged += x,
-              x => SizeChanged -= x)
-              .StartWith(platformGetter())
-              .DistinctUntilChanged();
+            ? NeverObservable<string>.Instance
+
+            // Replaces FromEvent(SizeChanged).StartWith(platformGetter()).DistinctUntilChanged().
+            : new DistinctUntilChangedObservable<string?>(
+                new StartWithObservable<string?>(
+                    new FromEventObservable<string?>(onNext =>
+                    {
+                        void Handler(object? sender, SizeChangedEventArgs args) => onNext(platformGetter());
+                        SizeChanged += Handler;
+                        return new ActionDisposable(() => SizeChanged -= Handler);
+                    }),
+                    platformGetter()));
 
         // Observe ViewModel property changes without expression trees (AOT-friendly)
         var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
@@ -85,20 +98,20 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
             ViewModelProperty,
             () => ViewModel);
 
-        // Combine contract observable with ViewModel changes
-        var vmAndContract = ViewContractObservable
-            .Do(x => _viewContract = x)
-            .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
+        // Combine contract observable (recording the latest contract) with ViewModel changes.
+        var vmAndContract = new CombineLatestObservable<string?, TViewModel?, (TViewModel? ViewModel, string? Contract)>(
+            new DoObservable<string?>(ViewContractObservable, x => _viewContract = x),
+            viewModelChanged,
+            static (contract, vm) => (vm, contract));
 
         // Subscribe directly without WhenActivated
-        ViewContractObservable
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Subscribe(x => _viewContract = x ?? string.Empty)
+        new ObserveOnObservable<string?>(ViewContractObservable, RxSchedulers.MainThreadScheduler)
+            .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty))
             .DisposeWith(_subscriptions);
 
-        vmAndContract
-            .DistinctUntilChanged()
-            .Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract))
+        new DistinctUntilChangedObservable<(TViewModel? ViewModel, string? Contract)>(vmAndContract)
+            .Subscribe(new DelegateObserver<(TViewModel? ViewModel, string? Contract)>(
+                x => ResolveViewForViewModel(x.ViewModel, x.Contract)))
             .DisposeWith(_subscriptions);
     }
 
@@ -141,10 +154,14 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
     /// <summary>
     /// Gets or sets the view contract.
     /// </summary>
+    [SuppressMessage(
+        "Critical Bug",
+        "S4275:Getters and setters should access the expected fields",
+        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>

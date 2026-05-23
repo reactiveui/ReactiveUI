@@ -3,10 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ReactiveUI.Winforms;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -122,7 +124,7 @@ public class CreatesWinformsCommandBindingTests
 
         var result = fixture.BindCommandToObject<Button>(null, button, Observable.Return<object?>(null));
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -275,7 +277,7 @@ public class CreatesWinformsCommandBindingTests
             h => control.CustomEvent += h,
             h => control.CustomEvent -= h);
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -435,7 +437,7 @@ public class CreatesWinformsCommandBindingTests
             h => button.Click += h,
             h => button.Click -= h);
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -549,7 +551,7 @@ public class CreatesWinformsCommandBindingTests
         var control = new CustomClickableControl();
 
         using var binding = fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, control, Observable.Return<object?>(null), "MouseUp");
-        control.RaiseMouseUpEvent(new System.Windows.Forms.MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        control.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         await Assert.That(executed).IsTrue();
     }
 

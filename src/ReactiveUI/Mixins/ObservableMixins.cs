@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,6 +6,7 @@
 using System.Reactive;
 
 using ReactiveUI.Builder;
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -227,6 +228,9 @@ public static class ObservableMixins
             /// <summary>Zero until the cancellation sources have been cleaned up.</summary>
             private int _disposed;
 
+            /// <summary>The linked token source passed to the factory; disposed before its source sources to avoid ObjectDisposedException.</summary>
+            private CancellationTokenSource? _linked;
+
             /// <summary>Initializes a new instance of the <see cref="Run"/> class.</summary>
             /// <param name="observer">The observer receiving the result.</param>
             /// <param name="factory">The asynchronous factory.</param>
@@ -250,6 +254,10 @@ public static class ObservableMixins
                 }
 
                 _subscriptionCancellation.Cancel();
+
+                // Dispose the linked source BEFORE its source sources: a linked token source deregisters from its
+                // sources on dispose, which throws ObjectDisposedException if the sources were disposed first.
+                Volatile.Read(ref _linked)?.Dispose();
                 _subscriptionCancellation.Dispose();
                 _outerCancellation.Dispose();
             }
@@ -258,9 +266,10 @@ public static class ObservableMixins
             /// <returns>A task that completes when the result has been forwarded.</returns>
             private async Task RunAsync()
             {
+                var linked = CancellationTokenSource.CreateLinkedTokenSource(_outerCancellation.Token, _subscriptionCancellation.Token);
+                Volatile.Write(ref _linked, linked);
                 try
                 {
-                    using var linked = CancellationTokenSource.CreateLinkedTokenSource(_outerCancellation.Token, _subscriptionCancellation.Token);
                     var value = await _factory(linked.Token).ConfigureAwait(false);
                     if (Interlocked.Exchange(ref _emitted, 1) == 0)
                     {

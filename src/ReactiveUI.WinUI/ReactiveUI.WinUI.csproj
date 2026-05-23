@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
@@ -8,52 +8,49 @@
     <UseWinUI>true</UseWinUI>
     <DefineConstants>IS_WINUI;WINUI_TARGET;</DefineConstants>
     <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
-    <EnableMsixTooling>true</EnableMsixTooling>
+    <!-- MSIX tooling (incl. the native MakePri.exe) only works on Windows; enabling it off-Windows breaks the build
+         under Wine. The managed assembly still compiles for reference/CI validation without it. -->
+    <EnableMsixTooling Condition="$([MSBuild]::IsOsPlatform('Windows'))">true</EnableMsixTooling>
     <WindowsSdkPackageVersion>10.0.19041.48</WindowsSdkPackageVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
   <!-- Packages only on Windows -->
-  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+  <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK"/>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
-    <PackageReference Include="System.Reactive"/>
-  </ItemGroup>
-  <ItemGroup>
-    <Using Include="ReactiveUI.Helpers"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
-  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+  <ItemGroup>
     <Compile Include="..\ReactiveUI.Maui\Internal\**\*.cs" LinkBase="internal"/>
     <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common"/>
     <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs"/>
     <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs"/>
     <Compile Include="..\ReactiveUI.Maui\Registrations.cs"/>
   </ItemGroup>
-
   <ItemGroup>
-    <Using Include="System"/>
-    <Using Include="System.ComponentModel"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Linq"/>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Concurrency"/>
-    <Using Include="System.Reactive.Disposables"/>
-    <Using Include="System.Reactive.Disposables.Fluent"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="System.Reactive.Subjects"/>
-    <Using Include="System.Threading.Tasks"/>
-    <Using Include="Splat"/>
-  </ItemGroup>
-
-  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
-    <Using Include="ReactiveUI.Maui.Internal"/>
-  </ItemGroup>
-
-  <!-- Strip all sources off Windows so the fallback TFM builds an empty assembly -->
-  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows')) != 'true'">
-    <Compile Remove="**\*.cs"/>
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
+    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
+    <Compile Include="..\Shared\OnceDisposable.cs" Link="Shared\OnceDisposable.cs"/>
+    <Compile Include="..\Shared\DisposableSlotHelper.cs" Link="Shared\DisposableSlotHelper.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\ReactiveUI\Internal\Disposables\MutableDisposable.cs" Link="Shared\MutableDisposable.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SelectObservable.cs" Link="Shared\Platform\SelectObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SelectManyObservable.cs" Link="Shared\Platform\SelectManyObservable.cs"/>
+    <Compile Include="..\Shared\Platform\WhereObservable.cs" Link="Shared\Platform\WhereObservable.cs"/>
+    <Compile Include="..\Shared\Platform\MergedObservable.cs" Link="Shared\Platform\MergedObservable.cs"/>
+    <Compile Include="..\Shared\Platform\DistinctUntilChangedObservable.cs" Link="Shared\Platform\DistinctUntilChangedObservable.cs"/>
+    <Compile Include="..\Shared\Platform\StartWithObservable.cs" Link="Shared\Platform\StartWithObservable.cs"/>
+    <Compile Include="..\Shared\Platform\DoObservable.cs" Link="Shared\Platform\DoObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SwitchObservable.cs" Link="Shared\Platform\SwitchObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SkipWhileObservable.cs" Link="Shared\Platform\SkipWhileObservable.cs"/>
+    <Compile Include="..\Shared\Platform\CombineLatestObservable.cs" Link="Shared\Platform\CombineLatestObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\NeverObservable.cs" Link="Shared\Platform\NeverObservable.cs"/>
   </ItemGroup>
 </Project>

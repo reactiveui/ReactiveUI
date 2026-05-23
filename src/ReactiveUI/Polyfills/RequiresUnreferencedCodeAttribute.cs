@@ -43,6 +43,7 @@ internal sealed class RequiresUnreferencedCodeAttribute : Attribute
 }
 
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly: TypeForwardedTo(typeof(RequiresUnreferencedCodeAttribute))]

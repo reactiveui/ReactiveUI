@@ -6,6 +6,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -22,7 +24,7 @@ public static class ChangeSetExtensions
     /// <typeparam name="T">The collection item type.</typeparam>
     /// <param name="collection">The collection to observe.</param>
     /// <returns>A change-set stream.</returns>
-    public static IObservable<IReactiveChangeSet<T>> ToObservableChangeSet<T>(this ObservableCollection<T> collection)
+    public static IObservable<IReactiveChangeSet<T>> ToReactiveChangeSet<T>(this ObservableCollection<T> collection)
     {
         ArgumentExceptionHelper.ThrowIfNull(collection);
         return new ChangeSetObservable<ObservableCollection<T>, T>(collection);
@@ -40,60 +42,11 @@ public static class ChangeSetExtensions
         "Major Code Smell",
         "S4018:Generic methods should provide type parameter",
         Justification = "T is the element type and is supplied explicitly by callers; it cannot be inferred from the collection parameter.")]
-    public static IObservable<IReactiveChangeSet<T>> ToObservableChangeSet<TCollection, T>(this TCollection collection)
+    public static IObservable<IReactiveChangeSet<T>> ToReactiveChangeSet<TCollection, T>(this TCollection collection)
         where TCollection : INotifyCollectionChanged, IEnumerable<T>
     {
         ArgumentExceptionHelper.ThrowIfNull(collection);
         return new ChangeSetObservable<TCollection, T>(collection);
-    }
-
-    /// <summary>A change set backed by a list of changes, exposing the add/remove counts.</summary>
-    /// <typeparam name="T">The collection item type.</typeparam>
-    internal sealed class ReactiveChangeSet<T> : IReactiveChangeSet<T>
-    {
-        /// <summary>The changes in this batch.</summary>
-        private readonly List<ReactiveChange<T>> _changes;
-
-        /// <summary>Initializes a new instance of the <see cref="ReactiveChangeSet{T}"/> class.</summary>
-        /// <param name="changes">The changes in this batch.</param>
-        public ReactiveChangeSet(List<ReactiveChange<T>> changes)
-        {
-            _changes = changes;
-            for (var i = 0; i < changes.Count; i++)
-            {
-                var reason = changes[i].Reason;
-                if (reason == ReactiveChangeReason.Add)
-                {
-                    Adds++;
-                }
-                else if (reason == ReactiveChangeReason.Remove)
-                {
-                    Removes++;
-                }
-            }
-        }
-
-        /// <inheritdoc/>
-        public int Count => _changes.Count;
-
-        /// <inheritdoc/>
-        public int Adds { get; }
-
-        /// <inheritdoc/>
-        public int Removes { get; }
-
-        /// <inheritdoc/>
-        public ReactiveChange<T> this[int index] => _changes[index];
-
-        /// <summary>Returns an enumerator over the changes.</summary>
-        /// <returns>An enumerator over the changes.</returns>
-        public List<ReactiveChange<T>>.Enumerator GetEnumerator() => _changes.GetEnumerator();
-
-        /// <inheritdoc/>
-        IEnumerator<ReactiveChange<T>> IEnumerable<ReactiveChange<T>>.GetEnumerator() => _changes.GetEnumerator();
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator() => _changes.GetEnumerator();
     }
 
     /// <summary>
@@ -133,7 +86,7 @@ public static class ChangeSetExtensions
                     var initial = new List<ReactiveChange<T>>(_shadow.Count);
                     for (var i = 0; i < _shadow.Count; i++)
                     {
-                        initial.Add(new ReactiveChange<T>(ReactiveChangeReason.Add, _shadow[i], default, i, -1));
+                        initial.Add(new(ReactiveChangeReason.Add, _shadow[i], default, i, -1));
                     }
 
                     observer.OnNext(new ReactiveChangeSet<T>(initial));
@@ -208,7 +161,7 @@ public static class ChangeSetExtensions
                     var item = (T)e.NewItems[i]!;
                     var index = start < 0 ? _shadow.Count : start + i;
                     _shadow.Insert(index, item);
-                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Add, item, default, index, -1));
+                    changes.Add(new(ReactiveChangeReason.Add, item, default, index, -1));
                 }
             }
 
@@ -228,7 +181,7 @@ public static class ChangeSetExtensions
                     var item = (T)e.OldItems[i]!;
                     var index = start < 0 ? -1 : start;
                     RemoveFromShadow(index, item);
-                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Remove, item, default, index, -1));
+                    changes.Add(new(ReactiveChangeReason.Remove, item, default, index, -1));
                 }
             }
 
@@ -253,7 +206,7 @@ public static class ChangeSetExtensions
                         _shadow[index] = current;
                     }
 
-                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Replace, current, previous, index, -1));
+                    changes.Add(new(ReactiveChangeReason.Replace, current, previous, index, -1));
                 }
             }
 
@@ -275,19 +228,29 @@ public static class ChangeSetExtensions
 
                 var index = e.NewStartingIndex < 0 ? _shadow.Count : e.NewStartingIndex;
                 _shadow.Insert(index, item);
-                changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Move, item, default, index, e.OldStartingIndex));
+                changes.Add(new(ReactiveChangeReason.Move, item, default, index, e.OldStartingIndex));
             }
 
-            /// <summary>Translates a reset into one remove per prior item and clears the shadow.</summary>
+            /// <summary>Re-syncs the shadow against the collection's current contents on a reset.</summary>
             /// <param name="changes">The change list being built.</param>
+            /// <remarks>A reset means "re-read the collection from scratch": some sources (e.g. DynamicData's
+            /// <c>ObservableCollectionExtended</c> resuming suspended notifications) raise a reset while the items
+            /// remain present. Emit a remove for every prior item, then an add for every item still present, so
+            /// surviving items are re-subscribed rather than dropped.</remarks>
             private void ApplyReset(List<ReactiveChange<T>> changes)
             {
                 for (var i = 0; i < _shadow.Count; i++)
                 {
-                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Remove, _shadow[i], default, i, -1));
+                    changes.Add(new(ReactiveChangeReason.Remove, _shadow[i], default, i, -1));
                 }
 
                 _shadow.Clear();
+                _shadow.AddRange(collection);
+
+                for (var i = 0; i < _shadow.Count; i++)
+                {
+                    changes.Add(new(ReactiveChangeReason.Add, _shadow[i], default, i, -1));
+                }
             }
 
             /// <summary>Removes an item from the shadow by index when valid, otherwise by value.</summary>

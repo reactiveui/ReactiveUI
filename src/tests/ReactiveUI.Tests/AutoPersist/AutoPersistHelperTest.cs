@@ -4,7 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Subjects;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.AutoPersist;
 
@@ -278,7 +284,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromSeconds(1));
 
@@ -315,7 +321,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
             TimeSpan.FromSeconds(1));
@@ -356,7 +362,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            obj.AutoPersist(_ => Observables.Unit);
+            obj.AutoPersist(_ => SingleValueObservable.Unit);
             await Task.CompletedTask;
         });
     }
@@ -378,7 +384,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromSeconds(1));
 
@@ -418,7 +424,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => Observables.Unit, null!, TimeSpan.FromSeconds(1));
+            fixture.AutoPersist(_ => SingleValueObservable.Unit, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -438,7 +444,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => Observables.Unit, null!, TimeSpan.FromSeconds(1));
+            fixture.AutoPersist(_ => SingleValueObservable.Unit, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -460,7 +466,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromSeconds(1));
 
@@ -489,7 +495,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromSeconds(ThrottleSeconds));
 
@@ -525,7 +531,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             metadata,
             TimeSpan.FromSeconds(1));
@@ -554,7 +560,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -581,7 +587,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.AutoPersistCollection(_ => Observables.Unit);
+            collection!.AutoPersistCollection(_ => SingleValueObservable.Unit);
             await Task.CompletedTask;
         });
     }
@@ -613,7 +619,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(_ => Observables.Unit, (AutoPersistHelper.AutoPersistMetadata)null!);
+            collection.AutoPersistCollection(_ => SingleValueObservable.Unit, (AutoPersistHelper.AutoPersistMetadata)null!);
             await Task.CompletedTask;
         });
     }
@@ -637,7 +643,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -672,7 +678,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -704,7 +710,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             metadata,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));

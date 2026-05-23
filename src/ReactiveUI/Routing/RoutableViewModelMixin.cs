@@ -1,10 +1,10 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -38,7 +38,7 @@ public static class RoutableViewModelMixin
         IDisposable? inner = null;
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
+        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
         return navigationStackChanged.Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ =>
         {
             if (router.GetCurrentViewModel() == item)
@@ -78,7 +78,7 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
+        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
 
         return new NavigatedToObservable(navigationStackChanged, router, item);
     }
@@ -106,7 +106,7 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
+        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
 
         return new NavigatingFromObservable(navigationStackChanged, router, item);
     }

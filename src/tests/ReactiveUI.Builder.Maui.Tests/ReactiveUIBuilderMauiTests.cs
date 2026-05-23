@@ -6,7 +6,9 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using ReactiveUI.Maui.Tests;
+using Splat;
 using Splat.Builder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Maui.Tests;
 

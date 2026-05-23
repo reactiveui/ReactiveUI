@@ -3,14 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Controls;
 
 using DynamicData;
 
 using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Wpf.Mocks;
 using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -21,6 +27,9 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfActivationForViewFetcherTest
 {
+    /// <summary>The number of <c>WhenActivated</c> overloads exercised by the overload tests.</summary>
+    private const int WhenActivatedOverloadCount = 5;
+
     private static readonly bool[] _expectedActivated = [true];
     private static readonly bool[] _expectedActivatedDeactivated = [true, false];
     private static readonly bool[] _expectedActivatedDeactivatedActivated = [true, false, true];
@@ -39,6 +48,10 @@ public class WpfActivationForViewFetcherTest
         await Assert.That(view.GetIsDesignMode()).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that a designer WPF view reports design mode as true.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task GetIsDesignModeReturnsTrueForDesignerWpfView()
@@ -48,6 +61,10 @@ public class WpfActivationForViewFetcherTest
         await Assert.That(view.GetIsDesignMode()).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that activating a view in designer mode without a registered fetcher does not throw.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task WhenActivatedInDesignerModeWithoutRegisteredFetcherDoesNotThrow()
@@ -66,8 +83,13 @@ public class WpfActivationForViewFetcherTest
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies that the <c>WhenActivated</c> overloads short-circuit in designer mode without a registered fetcher.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsShortCircuitInDesignerModeWithoutRegisteredFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -83,15 +105,20 @@ public class WpfActivationForViewFetcherTest
                 view.WhenActivated(static () => [Disposable.Empty], view),
                 view.WhenActivated(static (Action<IDisposable> _) => { }, view));
 
-            await Assert.That(disposables.Count).IsEqualTo(5);
+            await Assert.That(disposables.Count).IsEqualTo(WhenActivatedOverloadCount);
             disposables.Dispose();
         }
 
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies that the <c>WhenActivated</c> overloads delegate to the runtime activation fetcher.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsDelegateToRuntimeActivationFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -125,18 +152,22 @@ public class WpfActivationForViewFetcherTest
                     (Action<IDisposable> _) => activationCount++,
                     view));
 
-            view.RaiseEvent(new RoutedEventArgs
+            view.RaiseEvent(new()
             {
                 RoutedEvent = FrameworkElement.LoadedEvent
             });
 
-            await Assert.That(activationCount).IsEqualTo(5);
+            await Assert.That(activationCount).IsEqualTo(WhenActivatedOverloadCount);
             disposables.Dispose();
         }
 
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies a framework element raises activation on load and deactivation on unload.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task FrameworkElementIsActivatedAndDeactivated()
     {
@@ -276,6 +307,7 @@ public class WpfActivationForViewFetcherTest
         await _expectedActivatedDeactivatedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     private sealed class DesignModeActivatableUserControl : UserControl, IActivatableView
     {
         static DesignModeActivatableUserControl() =>
@@ -283,7 +315,7 @@ public class WpfActivationForViewFetcherTest
                 typeof(DesignModeActivatableUserControl),
                 new FrameworkPropertyMetadata(true));
 
-        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static _ => { });
+        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static (CompositeDisposable _) => { });
 
         public IDisposable ActivationDisposable { get; }
     }

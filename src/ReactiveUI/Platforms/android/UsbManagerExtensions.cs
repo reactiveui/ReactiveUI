@@ -4,10 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
-using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;

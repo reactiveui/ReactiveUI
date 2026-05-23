@@ -9,18 +9,10 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="System"/>
-    <Using Include="System.Collections.Generic"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Concurrency"/>
-    <Using Include="System.Reactive.Disposables"/>
-    <Using Include="System.Threading"/>
-    <Using Include="System.Threading.Tasks"/>
-    <Using Include="ReactiveUI.Helpers"/>
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Reactive"/>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 </Project>

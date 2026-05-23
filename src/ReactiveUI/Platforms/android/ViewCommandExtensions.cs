@@ -5,7 +5,7 @@
 
 using System.Windows.Input;
 using Android.Views;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;

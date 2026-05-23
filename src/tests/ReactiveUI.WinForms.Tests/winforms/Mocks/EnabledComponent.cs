@@ -26,5 +26,5 @@ public class EnabledComponent : Component
     /// <summary>
     /// Raises the custom event.
     /// </summary>
-    public void RaiseCustomEvent() => CustomEvent?.Invoke(this, new CustomEventArgs());
+    public void RaiseCustomEvent() => CustomEvent?.Invoke(this, new());
 }

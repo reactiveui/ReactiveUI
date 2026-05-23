@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using ReactiveUI.Builder;
+
 namespace ReactiveUI.Tests.Utilities.AppBuilder;
 
 /// <summary>

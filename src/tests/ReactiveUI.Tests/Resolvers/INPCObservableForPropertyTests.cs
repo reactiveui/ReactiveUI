@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Tests.Resolvers;
@@ -123,8 +125,11 @@ public class InpcObservableForPropertyTests
         instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
-        testClass.OnPropertyChanged();
-        testClass.OnPropertyChanged(string.Empty);
+
+        // Raise genuine whole-object notifications (null/empty name). A bare OnPropertyChanged() would capture the
+        // caller member name via [CallerMemberName] (the test method), which is not a whole-object change.
+        testClass.RaiseChanged(null);
+        testClass.RaiseChanged(string.Empty);
 
         await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
@@ -156,8 +161,11 @@ public class InpcObservableForPropertyTests
         instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
-        testClass.OnPropertyChanging();
-        testClass.OnPropertyChanging(string.Empty);
+
+        // Raise genuine whole-object notifications (null/empty name). A bare OnPropertyChanging() would capture the
+        // caller member name via [CallerMemberName] (the test method), which is not a whole-object change.
+        testClass.RaiseChanging(null);
+        testClass.RaiseChanging(string.Empty);
 
         await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
@@ -214,6 +222,11 @@ public class InpcObservableForPropertyTests
         /// <param name="propertyName">The name of the property that changed.</param>
         public void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             PropertyChanged?.Invoke(this, new(propertyName));
+
+        /// <summary>Raises <see cref="PropertyChanged"/> with an explicit name (null/empty means whole-object).</summary>
+        /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
+        public void RaiseChanged(string? propertyName) =>
+            PropertyChanged?.Invoke(this, new(propertyName));
     }
 
     /// <summary>
@@ -265,5 +278,10 @@ public class InpcObservableForPropertyTests
             var handler = PropertyChanging;
             handler?.Invoke(this, new(propertyName));
         }
+
+        /// <summary>Raises <see cref="PropertyChanging"/> with an explicit name (null/empty means whole-object).</summary>
+        /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
+        public void RaiseChanging(string? propertyName) =>
+            PropertyChanging?.Invoke(this, new(propertyName));
     }
 }

@@ -5,6 +5,14 @@
 
 using System.ComponentModel;
 
+#if !MONO
+using System.ComponentModel.DataAnnotations;
+#endif
+
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
 namespace ReactiveUI;
 
 /// <summary>

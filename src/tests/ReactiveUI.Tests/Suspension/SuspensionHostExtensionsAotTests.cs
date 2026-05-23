@@ -3,9 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Tests.Utilities.SuspensionHost;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Suspension;
 
@@ -119,6 +126,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(driver.LoadStateCallCount).IsEqualTo(1);
     }
 
+    /// <summary>
+    ///     Verifies that observing the typed app state emits the current value immediately on subscription.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveAppState_Typed_EmitsCurrentValueImmediately()
     {
@@ -334,6 +345,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(persistTokenDisposed).IsTrue();
     }
 
+    /// <summary>
+    ///     Verifies that the typed default suspend/resume persists created state when the launch signal was raised before setup.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldPersistCreatedState_WhenLaunchSignalWasRaisedBeforeSetup()
     {
@@ -370,6 +385,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(driver.LastSavedState).IsSameReferenceAs(createdState);
     }
 
+    /// <summary>
+    ///     Verifies that the typed default suspend/resume persists loaded state when persist occurs before the app state is fetched.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldPersistLoadedState_WhenPersistOccursBeforeGetAppState()
     {
@@ -380,7 +399,7 @@ public partial class SuspensionHostExtensionsAotTests
             CreateNewAppStateTyped = () =>
             {
                 createNewAppStateCallCount++;
-                return new TestAppState();
+                return new();
             },
             IsLaunchingNew = Observable.Never<Unit>(),
             IsResuming = Observable.Never<Unit>(),
@@ -402,6 +421,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(driver.LastSavedState).IsSameReferenceAs(loadedState);
     }
 
+    /// <summary>
+    ///     Verifies that the typed default suspend/resume disposes the persist token after saving.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldDisposePersistTokenAfterSave()
     {
@@ -428,6 +451,10 @@ public partial class SuspensionHostExtensionsAotTests
         await Assert.That(persistTokenDisposed).IsTrue();
     }
 
+    /// <summary>
+    ///     Verifies that the typed default suspend/resume invalidate-state path calls the driver's invalidate-state method.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetupDefaultSuspendResume_Typed_ShouldInvalidateState_CallsDriverInvalidateState()
     {

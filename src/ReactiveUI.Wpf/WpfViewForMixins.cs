@@ -1,9 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Windows;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -40,7 +45,7 @@ public static class WpfViewForMixins
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(block);
 
-        return item.GetIsDesignMode() ? Disposable.Empty : ViewForMixins.WhenActivated(item, block);
+        return item.GetIsDesignMode() ? EmptyDisposable.Instance : ViewForMixins.WhenActivated(item, block);
     }
 
     /// <summary>
@@ -58,7 +63,7 @@ public static class WpfViewForMixins
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(block);
 
-        return item.GetIsDesignMode() ? Disposable.Empty : ViewForMixins.WhenActivated(item, block, view);
+        return item.GetIsDesignMode() ? EmptyDisposable.Instance : ViewForMixins.WhenActivated(item, block, view);
     }
 
     /// <summary>
@@ -75,7 +80,7 @@ public static class WpfViewForMixins
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(block);
 
-        return item.GetIsDesignMode() ? Disposable.Empty : ViewForMixins.WhenActivated(item, block);
+        return item.GetIsDesignMode() ? EmptyDisposable.Instance : ViewForMixins.WhenActivated(item, block);
     }
 
     /// <summary>
@@ -93,8 +98,19 @@ public static class WpfViewForMixins
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(block);
 
-        return item.GetIsDesignMode() ? Disposable.Empty : ViewForMixins.WhenActivated(item, block, view);
+        return item.GetIsDesignMode() ? EmptyDisposable.Instance : ViewForMixins.WhenActivated(item, block, view);
     }
+
+    /// <summary>
+    /// Activates the specified WPF view and manages the provided disposables for the duration of the activation lifecycle.
+    /// </summary>
+    /// <typeparam name="TView">The view type.</typeparam>
+    /// <param name="item">The view to activate.</param>
+    /// <param name="block">An action that receives a composite disposable for activation-related resources.</param>
+    /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    public static IDisposable WhenActivated<TView>(this TView item, Action<CompositeDisposable> block)
+        where TView : FrameworkElement, IActivatableView => WhenActivated(item, block, null);
 
     /// <summary>
     /// Activates the specified WPF view and manages the provided disposables for the duration of the activation lifecycle.
@@ -105,12 +121,12 @@ public static class WpfViewForMixins
     /// <param name="view">An optional view instance to use for view model activation.</param>
     /// <returns>An <see cref="IDisposable"/> that unregisters the activation logic.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable WhenActivated<TView>(this TView item, Action<CompositeDisposable> block, IViewFor? view = null)
+    public static IDisposable WhenActivated<TView>(this TView item, Action<CompositeDisposable> block, IViewFor? view)
         where TView : FrameworkElement, IActivatableView
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(block);
 
-        return item.GetIsDesignMode() ? Disposable.Empty : ViewForMixins.WhenActivated(item, block, view);
+        return item.GetIsDesignMode() ? EmptyDisposable.Instance : ViewForMixins.WhenActivated(item, block, view);
     }
 }

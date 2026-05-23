@@ -9,6 +9,7 @@ using System.Threading;
 
 #endif
 using Microsoft.UI.Dispatching;
+using ReactiveUI.Internal;
 
 namespace System.Reactive.Concurrency;
 
@@ -30,7 +31,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
                 throw new InvalidOperationException("There is no current dispatcher thread");
             }
 
-            return new DispatcherQueueScheduler(dispatcher);
+            return new(dispatcher);
         }
     }
 
@@ -82,7 +83,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
             throw new ArgumentNullException(nameof(action));
         }
 
-        var d = new SingleAssignmentDisposable();
+        var d = new OnceDisposable();
 
         DispatcherQueue.TryEnqueue(Priority,
             () =>
@@ -123,7 +124,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
 
     private IDisposable ScheduleSlow<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
     {
-        var d = new MultipleAssignmentDisposable();
+        var d = new MutableDisposable();
 
         var timer = DispatcherQueue.CreateTimer();
 
@@ -139,7 +140,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
                 finally
                 {
                     t.Stop();
-                    action = static (s, t) => Disposable.Empty;
+                    action = static (s, t) => EmptyDisposable.Instance;
                 }
             }
         };
@@ -147,13 +148,13 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
         timer.Interval = dueTime;
         timer.Start();
 
-        d.Disposable = Disposable.Create(() =>
+        d.Disposable = new ActionDisposable(() =>
         {
             var t = System.Threading.Interlocked.Exchange(ref timer, null);
             if (t != null)
             {
                 t.Stop();
-                action = static (s, t) => Disposable.Empty;
+                action = static (s, t) => EmptyDisposable.Instance;
             }
         });
 
@@ -194,7 +195,7 @@ public partial class DispatcherQueueScheduler : LocalScheduler, ISchedulerPeriod
         timer.Interval = period;
         timer.Start();
 
-        return Disposable.Create(() =>
+        return new ActionDisposable(() =>
         {
             var t = System.Threading.Interlocked.Exchange(ref timer, null);
             if (t != null)

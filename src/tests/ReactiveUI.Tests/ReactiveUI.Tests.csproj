@@ -10,6 +10,9 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="DynamicData"/>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
@@ -18,27 +21,5 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <!-- Global usings -->
-  <ItemGroup>
-    <Using Include="ReactiveUI.Tests.Utilities.Schedulers"/>
-    <Using Include="TUnit.Core"/>
-    <Using Include="TUnit.Core.Executors"/>
-    <Using Include="TUnit.Core.Interfaces"/>
-    <Using Include="Splat"/>
-    <Using Include="System"/>
-    <Using Include="System.Collections.Generic"/>
-    <Using Include="System.ComponentModel"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Linq"/>
-    <Using Include="System.Linq.Expressions"/>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Concurrency"/>
-    <Using Include="System.Reactive.Disposables"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="System.Reactive.Subjects"/>
-    <Using Include="System.Reactive.Threading.Tasks"/>
-    <Using Include="System.Threading"/>
-    <Using Include="System.Threading.Tasks"/>
   </ItemGroup>
 </Project>

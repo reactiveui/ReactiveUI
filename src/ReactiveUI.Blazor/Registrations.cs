@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.PlatformServices;
-
 namespace ReactiveUI.Blazor;
 
 /// <summary>
@@ -16,14 +14,7 @@ public class Registrations : IWantsToRegisterStuff
     /// <inheritdoc/>
     public void Register(IRegistrar registrar)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(registrar);
-#else
-        if (registrar is null)
-        {
-            throw new ArgumentNullException(nameof(registrar));
-        }
-#endif
 
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new StringConverter());
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new ByteToStringTypeConverter());
@@ -41,12 +32,5 @@ public class Registrations : IWantsToRegisterStuff
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new DecimalToStringTypeConverter());
         registrar.RegisterConstant<IBindingTypeConverter>(static () => new NullableDecimalToStringTypeConverter());
         registrar.RegisterConstant<IPlatformOperations>(static () => new PlatformOperations());
-
-        if (Type.GetType("Mono.Runtime") is null)
-        {
-            return;
-        }
-
-        PlatformEnlightenmentProvider.Current.EnableWasm();
     }
 }

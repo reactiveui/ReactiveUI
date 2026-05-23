@@ -1,14 +1,17 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
-
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -749,7 +752,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                         var others = _latest
                             .Where(static x => x is not null and not string)
                             .SelectMany(static x => x!.OfType<object?>());
-                        aggregated = strings.Concat(others);
+
+                        // Materialize while holding the gate: _latest is mutated by later emissions, so a deferred
+                        // query would re-evaluate against the new state when a downstream consumer enumerates it.
+                        aggregated = strings.Concat(others).ToArray();
                     }
                 }
 

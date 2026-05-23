@@ -14,11 +14,6 @@
     <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.0</TargetPlatformMinVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Using Include="System"/>
-    <Using Include="ReactiveUI.Helpers"/>
-    <Using Include="Splat"/>
-  </ItemGroup>
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.57</WindowsSdkPackageVersion>
@@ -31,10 +26,14 @@
     <None Remove="Resources\**"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\ReactiveUI\Polyfills\CallerArgumentExpressionAttribute.cs" Link="Polyfills\CallerArgumentExpressionAttribute.cs"/>
+    <Compile Include="..\ReactiveUI\Polyfills\NotNullAttribute.cs" Link="Polyfills\NotNullAttribute.cs"/>
+    <Compile Include="..\ReactiveUI\Polyfills\DoesNotReturnIfAttribute.cs" Link="Polyfills\DoesNotReturnIfAttribute.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Splat.Drawing"/>
-    <PackageReference Include="System.Reactive"/>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
+    <!-- Short-term: project-reference local Splat.Drawing until a System.Reactive-free package is published. -->
+    <ProjectReference Include="..\..\..\splat\src\Splat.Drawing\Splat.Drawing.csproj"/>
   </ItemGroup>
 </Project>

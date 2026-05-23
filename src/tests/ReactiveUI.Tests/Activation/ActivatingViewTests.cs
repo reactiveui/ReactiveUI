@@ -3,7 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Disposables;
 using ReactiveUI.Builder;
+using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.Tests.Activation;
@@ -13,6 +16,10 @@ namespace ReactiveUI.Tests.Activation;
 /// </summary>
 public class ActivatingViewTests
 {
+    /// <summary>
+    ///     Verifies that a design-mode activatable view reports design mode as false by default.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetIsDesignModeReturnsFalseByDefault()
     {
@@ -21,6 +28,10 @@ public class ActivatingViewTests
         await Assert.That(fixture.GetIsDesignMode()).IsFalse();
     }
 
+    /// <summary>
+    ///     Verifies that <c>WhenActivated</c> throws when no activation fetcher is registered and the view is not in design mode.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenActivatedWithoutFetcherThrowsWhenDefaultDesignModeIsFalse()
     {
@@ -31,7 +42,7 @@ public class ActivatingViewTests
 
             var fixture = new DefaultDesignModeActivatableView();
 
-            var ex = await Assert.That(() => fixture.WhenActivated(static _ => { }))
+            var ex = await Assert.That(() => fixture.WhenActivated(static (CompositeDisposable _) => { }))
                 .Throws<ArgumentException>();
 
             await Assert.That(ex).IsNotNull();

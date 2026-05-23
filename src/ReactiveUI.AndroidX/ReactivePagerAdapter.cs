@@ -5,7 +5,9 @@
 
 using Android.Views;
 using AndroidX.ViewPager.Widget;
-using DynamicData;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidX;
@@ -18,8 +20,8 @@ namespace ReactiveUI.AndroidX;
 public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     where TViewModel : class
 {
-    /// <summary>The backing list of view models that drives the adapter.</summary>
-    private readonly SourceList<TViewModel> _list;
+    /// <summary>The materialized change-set binding that drives the adapter.</summary>
+    private readonly ChangeSetBinder<TViewModel> _binder;
 
     /// <summary>Creates the view for a given view model.</summary>
     private readonly Func<TViewModel, ViewGroup, View> _viewCreator;
@@ -27,16 +29,13 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     /// <summary>Optional initializer invoked for each created view.</summary>
     private readonly Action<TViewModel, View>? _viewInitializer;
 
-    /// <summary>Subscription that keeps the adapter in sync with the change set.</summary>
-    private readonly IDisposable _inner;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
     /// </summary>
     /// <param name="changeSet">The change set to page.</param>
     /// <param name="viewCreator">A function which will create the view.</param>
     public ReactivePagerAdapter(
-        IObservable<IChangeSet<TViewModel>> changeSet,
+        IObservable<IReactiveChangeSet<TViewModel>> changeSet,
         Func<TViewModel, ViewGroup, View> viewCreator)
         : this(changeSet, viewCreator, null)
     {
@@ -49,19 +48,17 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     /// <param name="viewCreator">A function which will create the view.</param>
     /// <param name="viewInitializer">A action which will initialize a view.</param>
     public ReactivePagerAdapter(
-        IObservable<IChangeSet<TViewModel>> changeSet,
+        IObservable<IReactiveChangeSet<TViewModel>> changeSet,
         Func<TViewModel, ViewGroup, View> viewCreator,
         Action<TViewModel, View>? viewInitializer)
     {
-        _list = new(changeSet);
         _viewCreator = viewCreator;
         _viewInitializer = viewInitializer;
-
-        _inner = _list.Connect().Subscribe(_ => NotifyDataSetChanged());
+        _binder = new(changeSet, onBatch: NotifyDataSetChanged);
     }
 
     /// <inheritdoc/>
-    public override int Count => _list.Count;
+    public override int Count => _binder.Count;
 
     /// <inheritdoc/>
     public override bool IsViewFromObject(View view, Object @object) => view.Equals(@object);
@@ -71,7 +68,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     {
         ArgumentExceptionHelper.ThrowIfNull(container);
 
-        var data = _list.Items[position];
+        var data = _binder[position];
 
         // NB: PagerAdapter does not recycle itself.
         var theView = _viewCreator(data, container);
@@ -107,8 +104,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     {
         if (disposing)
         {
-            _inner.Dispose();
-            _list.Dispose();
+            _binder.Dispose();
         }
 
         base.Dispose(disposing);

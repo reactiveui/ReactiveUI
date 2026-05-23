@@ -9,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using ReactiveUI.Builder.WpfApp.Models;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
@@ -145,6 +146,17 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the selected combo item used by the WPF binding regression surface.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
+    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
+    public ChatRoom? SelectedComboItem
+    {
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
 
     /// <summary>
     /// Gets the current list of rooms.

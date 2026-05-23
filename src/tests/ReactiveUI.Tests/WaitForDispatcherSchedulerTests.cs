@@ -3,6 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+
 namespace ReactiveUI.Tests;
 
 /// <summary>
@@ -99,7 +102,7 @@ public class WaitForDispatcherSchedulerTests
         IScheduler? firstCallScheduler = null;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 firstCallScheduler = scheduler;
                 return Disposable.Empty;
@@ -109,7 +112,7 @@ public class WaitForDispatcherSchedulerTests
         IScheduler? secondCallScheduler = null;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 secondCallScheduler = scheduler;
                 return Disposable.Empty;
@@ -119,7 +122,7 @@ public class WaitForDispatcherSchedulerTests
         var callsBeforeThird = schedulerFactoryCalls;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) => Disposable.Empty);
+            (_, _) => Disposable.Empty);
 
         await Assert.That(firstCallScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
         await Assert.That(secondCallScheduler).IsEqualTo(successScheduler);

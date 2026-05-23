@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 
 using Foundation;
 
+using ReactiveUI.Internal;
+
 using UIKit;
 
 using NSAction = System.Action;
@@ -71,7 +73,7 @@ public class AutoSuspendHelper<
     {
         ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
+        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
         RxSuspension.SuspensionHost.IsResuming = _finishedLaunching.Select(static _ => Unit.Default);
         RxSuspension.SuspensionHost.IsUnpausing = _activated.Select(static _ => Unit.Default);
 
@@ -89,7 +91,7 @@ public class AutoSuspendHelper<
             if (taskId == UIApplication.BackgroundTaskInvalid)
             {
                 _untimelyDeath.OnNext(Unit.Default);
-                return Observable<IDisposable>.Empty;
+                return EmptyObservable<IDisposable>.Instance;
             }
 
             return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));

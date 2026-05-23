@@ -3,7 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Microsoft.Maui.Controls;
+using ReactiveUI.Internal;
+using ReactiveUI.Maui.Internal;
+using Splat;
 
 namespace ReactiveUI.Maui;
 
@@ -46,7 +52,7 @@ public class ViewModelViewHost<
         nameof(ViewContractObservable),
         typeof(IObservable<string>),
         typeof(ViewModelViewHost<TViewModel>),
-        Observable<string>.Never);
+        NeverObservable<string>.Instance);
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -75,7 +81,7 @@ public class ViewModelViewHost<
         // NB: InUnitTestRunner also returns true in Design Mode
         if (ModeDetector.InUnitTestRunner())
         {
-            ViewContractObservable = Observable<string>.Never;
+            ViewContractObservable = NeverObservable<string>.Instance;
             return;
         }
 
@@ -129,7 +135,7 @@ public class ViewModelViewHost<
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>
@@ -204,7 +210,7 @@ public class ViewModelViewHost<
     [ExcludeFromCodeCoverage]
     private void InitializeViewResolution()
     {
-        ViewContractObservable = Observable<string>.Default;
+        ViewContractObservable = new ReturnObservable<string?>(null);
 
         // Observe ViewModel property changes without expression trees (AOT-friendly)
         var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
@@ -212,18 +218,15 @@ public class ViewModelViewHost<
             nameof(ViewModel),
             () => ViewModel);
 
-        // Combine ViewModel and ViewContractObservable streams
-        var vmAndContract = viewModelChanged.CombineLatest(
-            ViewContractObservable,
-            (vm, contract) => new { ViewModel = vm, Contract = contract });
-
-        // Subscribe directly without WhenActivated
-        vmAndContract
-            .Subscribe(x =>
-            {
-                _viewContract = x.Contract;
-                ResolveViewForViewModel(x.ViewModel, x.Contract);
-            })
+        // Combine ViewModel + ViewContractObservable and re-resolve the view, folded into one fused sink.
+        new CombineLatestSink<TViewModel?, string?>(
+                viewModelChanged,
+                ViewContractObservable,
+                (vm, contract) =>
+                {
+                    _viewContract = contract;
+                    ResolveViewForViewModel(vm, contract);
+                })
             .DisposeWith(_subscriptions);
     }
 }

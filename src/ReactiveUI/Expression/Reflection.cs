@@ -3,10 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using ReactiveUI.Helpers;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -618,7 +621,7 @@ public static class Reflection
     /// that may be trimmed; callers should preserve metadata for observed members.
     /// </remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-    internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(
+    public static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(
         TViewModel? viewModel,
         TView view,
         Expression? expression)

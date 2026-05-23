@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
@@ -7,7 +7,13 @@
   <ItemGroup>
     <PackageReference Include="Reactive.Wasm"/>
     <PackageReference Include="Microsoft.AspNetCore.Components"/>
-    <PackageReference Include="System.Reactive"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\Broadcaster.cs" Link="Shared\Broadcaster.cs"/>
+    <Compile Include="..\Shared\BroadcastSubject.cs" Link="Shared\BroadcastSubject.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>

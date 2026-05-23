@@ -275,7 +275,7 @@ public partial class PropertyBinderImplementation
                         ? new SelectObservable<TDontCare, bool>(signalViewUpdate, static _ => false)
                         : viewChanges;
 
-                    return new MergeObservable<bool>([viewModelSignal, initialUpdateSignal, signalObservable]);
+                    return new([viewModelSignal, initialUpdateSignal, signalObservable]);
                 }
 
             default:
@@ -288,7 +288,7 @@ public partial class PropertyBinderImplementation
                             new Take1Observable<bool>(viewModelSignal),
                         ]);
 
-                    return new MergeObservable<bool>([primary, initialUpdateSignal, viewChanges]);
+                    return new([primary, initialUpdateSignal, viewChanges]);
                 }
         }
     }

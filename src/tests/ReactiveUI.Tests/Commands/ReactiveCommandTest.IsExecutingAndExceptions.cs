@@ -3,8 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.Mocks;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Commands;
 
@@ -25,7 +32,7 @@ public partial class ReactiveCommandTest
         const int DelayMilliseconds = 500;
 
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = Observables.Unit.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
+        var execute = SingleValueObservable.Unit.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
         var command = ReactiveCommand.CreateFromObservable(
             () => execute,
             outputScheduler: scheduler);
@@ -90,7 +97,7 @@ public partial class ReactiveCommandTest
     public async Task IsExecuting_TicksWhileExecuting()
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = Observables.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
+        var execute = SingleValueObservable.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
         var command = ReactiveCommand.CreateFromObservable(
             () => execute,
             outputScheduler: scheduler);
@@ -194,7 +201,7 @@ public partial class ReactiveCommandTest
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var command = ReactiveCommand.CreateFromObservable(
-            () => Observables.Unit,
+            () => SingleValueObservable.Unit,
             outputScheduler: scheduler);
         var executed = false;
 

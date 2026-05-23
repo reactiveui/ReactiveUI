@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
 using TUnit.Core.Executors;
 
 [assembly: TestExecutor<AppBuilderTestExecutor>]

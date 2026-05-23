@@ -4,8 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Subjects;
 using DynamicData.Binding;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.AutoPersist;
 
@@ -51,7 +56,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -112,7 +117,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -150,7 +155,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -209,7 +214,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -242,9 +247,9 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
-            Observable<Unit>.Never,
+            NeverObservable<Unit>.Instance,
             metadataProvider,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -275,7 +280,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 

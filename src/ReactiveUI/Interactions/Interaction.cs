@@ -5,7 +5,7 @@
 
 using System.Reactive;
 using System.Reactive.Concurrency;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -181,7 +181,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     {
         ArgumentExceptionHelper.ThrowIfNull(contentHandler);
         AddHandler(contentHandler);
-        return new ActionDisposable(() => RemoveHandler(contentHandler));
+        return new(() => RemoveHandler(contentHandler));
     }
 
     /// <summary>

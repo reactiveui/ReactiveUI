@@ -5,6 +5,7 @@
 
 using System;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
 using TUnit.Core;
 using TUnit.Core.Executors;
 

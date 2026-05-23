@@ -5,7 +5,6 @@
 
 using System.Collections.Specialized;
 using Android.Views;
-using DynamicData.Binding;
 
 namespace ReactiveUI.AndroidX;
 
@@ -26,7 +25,7 @@ public class ReactivePagerAdapter<TViewModel, TCollection>(
     Func<TViewModel, ViewGroup, View> viewCreator,
     Action<TViewModel, View>? viewInitializer = null)
     : ReactivePagerAdapter<TViewModel>(
-        collection.ToObservableChangeSet<TCollection, TViewModel>(),
+        collection.ToReactiveChangeSet<TCollection, TViewModel>(),
         viewCreator,
         viewInitializer)
     where TViewModel : class

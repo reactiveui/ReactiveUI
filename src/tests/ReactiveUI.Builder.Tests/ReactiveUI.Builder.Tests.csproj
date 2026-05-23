@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
@@ -23,18 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Platforms\Drawing\**\*.cs"/>
-  </ItemGroup>
-  <ItemGroup>
-    <Using Include="Splat"/>
-    <Using Include="Splat.Builder"/>
-    <Using Include="System"/>
-    <Using Include="System.Collections.Generic"/>
-    <Using Include="System.Linq"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="System.Threading"/>
-    <Using Include="System.Threading.Tasks"/>
-    <Using Include="TUnit.Core.Executors"/>
-    <Using Include="TUnit.Core.Interfaces"/>
   </ItemGroup>
 
 </Project>

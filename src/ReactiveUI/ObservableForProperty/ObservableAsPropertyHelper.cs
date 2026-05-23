@@ -1,12 +1,14 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -59,6 +61,9 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
 
     /// <summary>Whether leading values equal to the initial value are skipped (deferred subscription).</summary>
     private readonly bool _skipInitial;
+
+    /// <summary>The raw source observable the helper subscribes to internally (without the initial-value seed).</summary>
+    private readonly IObservable<T?> _sourceObservable;
 
     /// <summary>Broadcasts exceptions thrown during property change handling.</summary>
     [SuppressMessage("Major Code Smell", "S3459:Unassigned members should be removed", Justification = "Mutated in place via Broadcaster methods.")]
@@ -308,7 +313,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _onChanged = onChanged;
         _getInitialValue = getInitialValue ?? GetDefault;
         _skipInitial = deferSubscription;
-        Source = observable;
+        _sourceObservable = observable;
 
         if (deferSubscription)
         {
@@ -321,7 +326,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _distinctPrevious = initial;
         _hasDistinctPrevious = true;
         ScheduleDeliver(initial);
-        _sourceSubscription = Source.Subscribe(new SourceObserver(this));
+        _sourceSubscription = _sourceObservable.Subscribe(new SourceObserver(this));
         _activated = 1;
     }
 
@@ -335,7 +340,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
             if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0 && !_disposed)
             {
                 _lastValue = _getInitialValue();
-                var subscription = Source.Subscribe(new SourceObserver(this));
+                var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
                 lock (_gate)
                 {
                     if (_disposed)
@@ -365,16 +370,20 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// Gets an observable which signals whenever an exception would normally terminate ReactiveUI
     /// internal state.
     /// </summary>
-    public IObservable<Exception> ThrownExceptions => _thrownExceptions ??= new ExceptionStream(this);
+    public IObservable<Exception> ThrownExceptions => _thrownExceptions ??= new(this);
 
-    /// <summary>Gets the source observable used to drive this property helper.</summary>
-    internal IObservable<T?> Source { get; }
+    /// <summary>
+    /// Gets the source observable. In eager mode it is seeded with the current value so a subscriber observes the
+    /// latest value immediately (StartWith semantics); in deferred mode it stays raw so no value is emitted (and the
+    /// initial-value factory is not accessed) until <see cref="Value"/> is first read.
+    /// </summary>
+    internal IObservable<T?> Source => _skipInitial ? _sourceObservable : _sourceObservable.StartWith(_lastValue);
 
     /// <summary>
     /// Constructs a default ObservableAsPropertyHelper with no initial value and no scheduler.
     /// </summary>
     /// <returns>A default property helper.</returns>
-    public static ObservableAsPropertyHelper<T> Default() => new(Observable<T>.Never, static _ => { }, default, false, null);
+    public static ObservableAsPropertyHelper<T> Default() => new(NeverObservable<T>.Instance, static _ => { }, default, false, null);
 
     /// <summary>
     /// Constructs a default ObservableAsPropertyHelper with the specified initial value and no scheduler.
@@ -382,7 +391,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <param name="initialValue">The initial (and only) value of the property.</param>
     /// <returns>A default property helper.</returns>
     public static ObservableAsPropertyHelper<T> Default(T? initialValue) =>
-        new(Observable<T>.Never, static _ => { }, initialValue!, false, null);
+        new(NeverObservable<T>.Instance, static _ => { }, initialValue!, false, null);
 
     /// <summary>
     /// Constructs a default ObservableAsPropertyHelper with the specified initial value and scheduler.
@@ -391,7 +400,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <param name="scheduler">The scheduler on which change notifications are delivered.</param>
     /// <returns>A default property helper.</returns>
     public static ObservableAsPropertyHelper<T> Default(T? initialValue, IScheduler? scheduler) =>
-        new(Observable<T>.Never, static _ => { }, initialValue!, false, scheduler);
+        new(NeverObservable<T>.Instance, static _ => { }, initialValue!, false, scheduler);
 
     /// <summary>
     /// Disposes this ObservableAsPropertyHelper.

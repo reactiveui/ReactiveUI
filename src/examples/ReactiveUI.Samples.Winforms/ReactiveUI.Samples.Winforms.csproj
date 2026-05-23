@@ -17,13 +17,4 @@
     <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Disposables"/>
-    <Using Include="System.Reactive.Disposables.Fluent"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="ReactiveUI"/>
-    <Using Include="ReactiveUI.Builder"/>
-  </ItemGroup>
-
 </Project>

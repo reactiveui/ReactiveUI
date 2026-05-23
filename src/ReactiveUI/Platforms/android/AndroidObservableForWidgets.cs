@@ -4,15 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Runtime.Versioning;
 using Android.OS;
 using Android.Text;
 using Android.Views;
-using Android.Widget;
-
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -217,14 +215,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
         if (beforeChanged)
         {
-            return Observable<IObservedChange<object, object?>>.Never;
+            return NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
         var senderType = sender.GetType();
 
         if (!TypesByPropertyName.TryGetValue(propertyName, out var candidates))
         {
-            return Observable<IObservedChange<object, object?>>.Never;
+            return NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
         for (var i = 0; i < candidates.Length; i++)
@@ -238,10 +236,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
             return DispatchTable.TryGetValue((candidateType, propertyName), out var factory)
                 ? factory(sender, expression)
-                : Observable<IObservedChange<object, object?>>.Never;
+                : NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
-        return Observable<IObservedChange<object, object?>>.Never;
+        return NeverObservable<IObservedChange<object, object?>>.Instance;
     }
 
     /// <summary>

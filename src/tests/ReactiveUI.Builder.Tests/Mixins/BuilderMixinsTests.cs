@@ -6,8 +6,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Text.Json.Serialization.Metadata;
 using ReactiveUI.Builder.Tests.Executors;
+using Splat;
+using Splat.Builder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 

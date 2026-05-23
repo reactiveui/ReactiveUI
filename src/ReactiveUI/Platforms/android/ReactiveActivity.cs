@@ -5,7 +5,6 @@
 
 using System.ComponentModel;
 using System.Reactive;
-using Android.App;
 using Android.Content;
 using Android.Runtime;
 

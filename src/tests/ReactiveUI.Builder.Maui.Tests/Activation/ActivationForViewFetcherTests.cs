@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using ReactiveUI.Maui;
+using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests.Activation;

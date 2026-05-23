@@ -1,10 +1,19 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+
+// System.Reactive pulls in WindowsBase (System.Windows.Input), so MouseEventArgs is ambiguous with WPF's; the
+// Windows Forms command binder always means the Forms type.
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace ReactiveUI.Winforms;
 
@@ -39,7 +48,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     private static readonly List<(string name, Type type)> _defaultEventsToBind =
     [
         ("Click", typeof(EventArgs)),
-        ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs))
+        ("MouseUp", typeof(MouseEventArgs))
     ];
 
     /// <inheritdoc/>
@@ -97,7 +106,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         // Preserve typical binding semantics: null command => no-op binding.
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         // Use direct type checking for known WinForms types first (AOT-friendly)
@@ -113,11 +122,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         }
 
         // Fall back to reflection-based event discovery for other types
-        const BindingFlags bf = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        const BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
         var type = typeof(T);
         var eventInfo = _defaultEventsToBind
-            .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
+            .Select(x => new { EventInfo = type.GetEvent(x.name, BindingFlags), Args = x.type })
             .FirstOrDefault(x => x.EventInfo is not null);
 
         if (eventInfo is null)
@@ -130,9 +139,9 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         {
             return BindCommandToObject<T, EventArgs>(command, target, commandParameter, eventInfo.EventInfo?.Name!);
         }
-        else if (eventInfo.Args == typeof(System.Windows.Forms.MouseEventArgs))
+        else if (eventInfo.Args == typeof(MouseEventArgs))
         {
-            return BindCommandToObject<T, System.Windows.Forms.MouseEventArgs>(
+            return BindCommandToObject<T, MouseEventArgs>(
                 command,
                 target,
                 commandParameter,
@@ -162,10 +171,10 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         object? latestParameter = null;
         var targetType = target.GetType();
 
-        ret.Add(commandParameter.Subscribe(x => latestParameter = x));
+        ret.Add(commandParameter.Subscribe(new DelegateObserver<object?>(x => latestParameter = x)));
 
-        var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
-        ret.Add(evt.Subscribe(_ =>
+        var evt = new EventPatternObservable<TEventArgs>(target, eventName);
+        ret.Add(evt.Subscribe(new DelegateObserver<TEventArgs>(_ =>
         {
             if (!command.CanExecute(latestParameter))
             {
@@ -173,7 +182,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             }
 
             command.Execute(latestParameter);
-        }));
+        })));
 
         // We initially only accepted Controls here, but this is too restrictive:
         // there are a number of Components that can trigger Commands and also
@@ -183,15 +192,21 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         {
             var enabledProperty = targetType.GetRuntimeProperty("Enabled");
 
-            if (enabledProperty is not null)
+            if (enabledProperty is null)
             {
-                ret.Add(Observable.FromEvent<EventHandler, bool>(
-                        eventHandler => (_, _) => eventHandler(command.CanExecute(latestParameter)),
-                        x => command.CanExecuteChanged += x,
-                        x => command.CanExecuteChanged -= x)
-                    .StartWith(command.CanExecute(latestParameter))
-                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                return ret;
             }
+
+            // Replaces FromEvent(CanExecuteChanged).StartWith(initial).Subscribe(...).
+            var canExecuteChanged = new FromEventObservable<bool>(onNext =>
+            {
+                void Handler(object? sender, EventArgs e) => onNext(command.CanExecute(latestParameter));
+                command.CanExecuteChanged += Handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            });
+
+            ret.Add(new StartWithObservable<bool>(canExecuteChanged, command.CanExecute(latestParameter))
+                .Subscribe(new DelegateObserver<bool>(x => enabledProperty.SetValue(target, x, null))));
         }
 
         return ret;
@@ -229,7 +244,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         object? latestParameter = null;
@@ -245,10 +260,10 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var ret = new CompositeDisposable { commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)) };
+        var ret = new CompositeDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
 
         addHandler(Handler);
-        ret.Add(Disposable.Create(() => removeHandler(Handler)));
+        ret.Add(new ActionDisposable(() => removeHandler(Handler)));
 
         // Handle Enabled property binding for Components
         var targetType = typeof(T);
@@ -256,15 +271,21 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         {
             var enabledProperty = targetType.GetRuntimeProperty("Enabled");
 
-            if (enabledProperty is not null)
+            if (enabledProperty is null)
             {
-                ret.Add(Observable.FromEvent<EventHandler, bool>(
-                        eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
-                        x => command.CanExecuteChanged += x,
-                        x => command.CanExecuteChanged -= x)
-                    .StartWith(command.CanExecute(latestParameter))
-                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                return ret;
             }
+
+            // Replaces FromEvent(CanExecuteChanged).StartWith(initial).Subscribe(...).
+            var canExecuteChanged = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? sender, EventArgs e) => onNext(command.CanExecute(Volatile.Read(ref latestParameter)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            });
+
+            ret.Add(new StartWithObservable<bool>(canExecuteChanged, command.CanExecute(latestParameter))
+                .Subscribe(new DelegateObserver<bool>(x => enabledProperty.SetValue(target, x, null))));
         }
 
         return ret;
@@ -300,7 +321,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         object? latestParameter = null;
@@ -316,10 +337,10 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var ret = new CompositeDisposable { commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)) };
+        var ret = new CompositeDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
 
         addHandler(Handler);
-        ret.Add(Disposable.Create(() => removeHandler(Handler)));
+        ret.Add(new ActionDisposable(() => removeHandler(Handler)));
 
         // Handle Enabled property binding for Components
         var targetType = typeof(T);
@@ -327,15 +348,21 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         {
             var enabledProperty = targetType.GetRuntimeProperty("Enabled");
 
-            if (enabledProperty is not null)
+            if (enabledProperty is null)
             {
-                ret.Add(Observable.FromEvent<EventHandler, bool>(
-                        eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
-                        x => command.CanExecuteChanged += x,
-                        x => command.CanExecuteChanged -= x)
-                    .StartWith(command.CanExecute(latestParameter))
-                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                return ret;
             }
+
+            // Replaces FromEvent(CanExecuteChanged).StartWith(initial).Subscribe(...).
+            var canExecuteChanged = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? sender, EventArgs e) => onNext(command.CanExecute(Volatile.Read(ref latestParameter)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            });
+
+            ret.Add(new StartWithObservable<bool>(canExecuteChanged, command.CanExecute(latestParameter))
+                .Subscribe(new DelegateObserver<bool>(x => enabledProperty.SetValue(target, x, null))));
         }
 
         return ret;

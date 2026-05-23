@@ -3,9 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -59,7 +58,7 @@ public class CommandBindingImplementationTests
     {
         var vm = new WinformCommandBindViewModel();
         var view = new WinformCommandBindView { ViewModel = vm };
-        ICommandBinderImplementation fixture = new CommandBinderImplementation();
+        var fixture = new CommandBinderImplementation();
 
         var invokeCount = 0;
         vm.Command3.Subscribe(_ => ++invokeCount);
@@ -112,7 +111,7 @@ public class CommandBindingImplementationTests
 
         var disp = fixture.BindCommand(vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
 
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        view.Command2.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         using (Assert.Multiple())
         {
             await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedSingleParameterResult);
@@ -120,7 +119,7 @@ public class CommandBindingImplementationTests
         }
 
         vm.Parameter = InitialParameter;
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        view.Command2.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         using (Assert.Multiple())
         {
             await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedDoubleParameterResult);
@@ -129,7 +128,7 @@ public class CommandBindingImplementationTests
 
         disp.Dispose();
 
-        view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+        view.Command2.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCountTwo);
     }
 }

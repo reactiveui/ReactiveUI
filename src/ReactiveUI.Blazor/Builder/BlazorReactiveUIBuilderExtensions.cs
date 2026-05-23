@@ -3,11 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+
 namespace ReactiveUI.Builder;
 
 /// <summary>
 /// Blazor-specific extensions for the ReactiveUI builder.
 /// </summary>
+[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "ReactiveUI is the name of the product.")]
 public static class BlazorReactiveUIBuilderExtensions
 {
     /// <summary>

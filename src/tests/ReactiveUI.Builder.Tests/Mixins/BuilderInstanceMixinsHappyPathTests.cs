@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
+using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
@@ -543,7 +544,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service1(), new Service2(), new Service3(), new Service4(), new Service5(), new Service6(),
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>
@@ -557,7 +558,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service1(), new Service2(), new Service3(), new Service4(), new Service5(), new Service6(),
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11(), new Service12()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>
@@ -572,7 +573,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11(), new Service12(),
             new Service13()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>
@@ -587,7 +588,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11(), new Service12(),
             new Service13(), new Service14()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>
@@ -602,7 +603,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11(), new Service12(),
             new Service13(), new Service14(), new Service15()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>
@@ -617,7 +618,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
             new Service7(), new Service8(), new Service9(), new Service10(), new Service11(), new Service12(),
             new Service13(), new Service14(), new Service15(), new Service16()
         ];
-        return (new MockReactiveUIInstance(services), services);
+        return (new(services), services);
     }
 
     /// <summary>

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Reactive;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using ReactiveUI.Blazor.Internal;
@@ -26,8 +28,8 @@ namespace ReactiveUI.Blazor;
 /// The <see cref="ViewModel"/> is provided via DI using <see cref="InjectAttribute"/>.
 /// </para>
 /// </remarks>
-public class ReactiveInjectableComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate,
-    IDisposable
+public class ReactiveInjectableComponentBase<T>
+    : ComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
     where T : class, INotifyPropertyChanged
 {
     /// <summary>

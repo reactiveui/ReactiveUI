@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;

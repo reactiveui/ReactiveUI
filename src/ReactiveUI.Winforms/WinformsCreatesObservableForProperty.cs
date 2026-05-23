@@ -1,9 +1,15 @@
-// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI.Winforms;
 
@@ -78,31 +84,22 @@ public class WinformsCreatesObservableForProperty : ICreatesObservableForPropert
 
         var ei = EventInfoCache.Get((sender.GetType(), propertyName)) ??
                  throw new InvalidOperationException("Could not find a valid event for expression.");
-        return Observable.Create<IObservedChange<object, object?>>(subj =>
+
+        return new FromEventObservable<IObservedChange<object, object?>>(onNext =>
         {
-            var completed = false;
             var handler = new EventHandler((_, _) =>
-            {
-                if (completed)
-                {
-                    return;
-                }
-
-                try
-                {
-                    subj.OnNext(new ObservedChange<object, object?>(sender, expression, null));
-                }
-                catch (Exception ex)
-                {
-                    subj.OnError(ex);
-                    completed = true;
-                }
-            });
-
-            var scheduler = RxSchedulers.MainThreadScheduler;
+                onNext(new ObservedChange<object, object?>(sender, expression, null)));
 
             ei.AddEventHandler(sender, handler);
-            return Disposable.Create(() => scheduler.Schedule(() => ei.RemoveEventHandler(sender, handler)));
+
+            return new ActionDisposable(() =>
+                RxSchedulers.MainThreadScheduler.Schedule(
+                    (EventInfo: ei, Sender: sender, Handler: handler),
+                    static (_, state) =>
+                    {
+                        state.EventInfo.RemoveEventHandler(state.Sender, state.Handler);
+                        return EmptyDisposable.Instance;
+                    }));
         });
     }
 }

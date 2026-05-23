@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
 /// <summary>
@@ -17,8 +15,8 @@ public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
     /// </summary>
     public WinformCommandBindView()
     {
-        Command1 = new Button();
-        Command2 = new CustomClickableControl();
+        Command1 = new();
+        Command2 = new();
     }
 
     /// <inheritdoc/>

@@ -3,9 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
-
+using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
@@ -32,7 +33,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         SingleInstanceWithContractExampleView.ResetInstances();
         NeverUsedView.ResetInstances();
 
-        _resolver = new ModernDependencyResolver();
+        _resolver = new();
         _resolver.InitializeSplat();
         _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()

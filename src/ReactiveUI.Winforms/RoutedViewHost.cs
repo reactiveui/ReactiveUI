@@ -3,6 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Reactive.Disposables;
+using ReactiveUI.Internal;
+
 namespace ReactiveUI.Winforms;
 
 /// <summary>
@@ -13,7 +17,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
 {
     /// <summary>Holds the subscriptions created during construction so they can be disposed together.</summary>
     private readonly CompositeDisposable _disposables = [];
-#pragma warning disable IDE0032 // Use auto property
+
     /// <summary>Backing field for the routing state.</summary>
     private RoutingState? _router;
 
@@ -22,7 +26,6 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
 
     /// <summary>Backing field for the view contract observable.</summary>
     private IObservable<string>? _viewContractObservable;
-#pragma warning restore IDE0032 // Use auto property
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
@@ -30,66 +33,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     public RoutedControlHost()
     {
         InitializeComponent();
-
-        _disposables.Add(this.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
-            .Subscribe(x =>
-            {
-                if (x is null || Controls.Count != 0)
-                {
-                    return;
-                }
-
-                Controls.Add(InitView(x));
-                components?.Add(DefaultContent);
-            }));
-
-        ViewContractObservable = Observable<string>.Default;
-
-        var vmAndContract =
-            this.WhenAnyObservable(x => x.Router!.CurrentViewModel)
-                .CombineLatest(
-                    this.WhenAnyObservable(x => x.ViewContractObservable!),
-                    (vm, contract) => new { ViewModel = vm, Contract = contract });
-
-        Control? viewLastAdded = null;
-        _disposables.Add(vmAndContract.Subscribe(
-            x =>
-            {
-                // clear all hosted controls (view or default content)
-                SuspendLayout();
-                Controls.Clear();
-
-                viewLastAdded?.Dispose();
-
-                if (x.ViewModel is null)
-                {
-                    if (DefaultContent is not null)
-                    {
-                        InitView(DefaultContent);
-                        Controls.Add(DefaultContent);
-                    }
-
-                    ResumeLayout();
-                    return;
-                }
-
-                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                if (view is not null)
-                {
-                    view.ViewModel = x.ViewModel;
-
-                    viewLastAdded = InitView((Control)view);
-                }
-
-                if (viewLastAdded is not null)
-                {
-                    Controls.Add(viewLastAdded);
-                }
-
-                ResumeLayout();
-            },
-            RxState.DefaultExceptionHandler.OnNext));
+        _disposables.Add(new BindingSink(this));
     }
 
     /// <inheritdoc/>
@@ -173,5 +117,117 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     {
         view.Dock = DockStyle.Fill;
         return view;
+    }
+
+    /// <summary>
+    /// A single fused sink that owns every subscription the host needs and drives routing directly. It folds the
+    /// <see cref="DefaultContent"/> source and the <see cref="RoutingState.CurrentViewModel"/>/
+    /// <see cref="ViewContractObservable"/> combine into one object, resolving and hosting the matching view inline
+    /// instead of allocating a separate combine operator and terminal observer.
+    /// </summary>
+    private sealed class BindingSink : IDisposable
+    {
+        /// <summary>The host whose routing this sink drives.</summary>
+        private readonly RoutedControlHost _host;
+
+        /// <summary>The <see cref="DefaultContent"/> subscription.</summary>
+        private readonly IDisposable _defaultContentSubscription;
+
+        /// <summary>The current view-model/contract combine that drives view resolution.</summary>
+        private readonly CombineLatestSink<IRoutableViewModel?, string> _viewModelContract;
+
+        /// <summary>Initializes a new instance of the <see cref="BindingSink"/> class and wires every source.</summary>
+        /// <param name="host">The host to drive.</param>
+        public BindingSink(RoutedControlHost host)
+        {
+            _host = host;
+
+            _defaultContentSubscription = host.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
+                .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
+
+            host.ViewContractObservable = new ReturnObservable<string>(null!);
+
+            // Router.CurrentViewModel + ViewContractObservable -> resolve and host the matching view.
+            _viewModelContract = new(
+                host.WhenAnyObservable(x => x.Router!.CurrentViewModel),
+                host.WhenAnyObservable(x => x.ViewContractObservable!),
+                OnViewModelContract,
+                RxState.DefaultExceptionHandler.OnNext);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _defaultContentSubscription.Dispose();
+            _viewModelContract.Dispose();
+        }
+
+        /// <summary>Hosts the default content the first time it is assigned while nothing else is shown.</summary>
+        /// <param name="defaultContent">The new default content.</param>
+        private void OnDefaultContentChanged(Control? defaultContent)
+        {
+            if (defaultContent is null || _host.Controls.Count != 0)
+            {
+                return;
+            }
+
+            _host.Controls.Add(InitView(defaultContent));
+            _host.components?.Add(_host.DefaultContent);
+        }
+
+        /// <summary>Resolves and hosts the view for the current view model/contract pair.</summary>
+        /// <param name="viewModel">The current view model, or null.</param>
+        /// <param name="contract">The view contract.</param>
+        private void OnViewModelContract(IRoutableViewModel? viewModel, string contract)
+        {
+            _host.SuspendLayout();
+
+            // Remove every hosted control, disposing the resolved views but preserving DefaultContent for reuse.
+            ClearHostedViews();
+
+            if (viewModel is null)
+            {
+                if (_host.DefaultContent is not null)
+                {
+                    InitView(_host.DefaultContent);
+                    _host.Controls.Add(_host.DefaultContent);
+                }
+
+                _host.ResumeLayout();
+                return;
+            }
+
+            var viewLocator = _host.ViewLocator ?? ReactiveUI.ViewLocator.Current;
+            var view = viewLocator.ResolveView(viewModel, contract);
+            if (view is not null)
+            {
+                view.ViewModel = viewModel;
+
+                _host.Controls.Add(InitView((Control)view));
+            }
+
+            _host.ResumeLayout();
+        }
+
+        /// <summary>
+        /// Removes every hosted control, disposing resolved views as they are removed while leaving the reusable
+        /// <see cref="DefaultContent"/> intact.
+        /// </summary>
+        private void ClearHostedViews()
+        {
+            // Iterate in reverse: disposing a control detaches it from the Controls collection.
+            for (var i = _host.Controls.Count - 1; i >= 0; i--)
+            {
+                var control = _host.Controls[i];
+                if (ReferenceEquals(control, _host.DefaultContent))
+                {
+                    _host.Controls.RemoveAt(i);
+                }
+                else
+                {
+                    control.Dispose();
+                }
+            }
+        }
     }
 }

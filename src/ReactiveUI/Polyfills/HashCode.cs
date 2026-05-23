@@ -8,6 +8,8 @@
 // own hash combination rather than reimplementing the xxHash32 accumulator.
 #if NETFRAMEWORK
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace System;
 
 /// <summary>

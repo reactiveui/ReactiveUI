@@ -5,6 +5,7 @@
 
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
+using Bunit;
 
 namespace ReactiveUI.Blazor.Tests;
 

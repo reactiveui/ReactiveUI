@@ -4,6 +4,8 @@
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Builder.Tests.Executors;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Drawing;
 

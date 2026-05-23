@@ -42,14 +42,5 @@
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="System.Reactive"/>
-    <Using Include="System.Reactive.Disposables"/>
-    <Using Include="System.Reactive.Disposables.Fluent"/>
-    <Using Include="System.Reactive.Linq"/>
-    <Using Include="ReactiveUI"/>
-    <Using Include="ReactiveUI.Builder"/>
-    <Using Include="ReactiveUI.Maui"/>
-  </ItemGroup>
 
 </Project>

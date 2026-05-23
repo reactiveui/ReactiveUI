@@ -5,13 +5,14 @@
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
+using System.Runtime.Serialization;
 using ReactiveUI.Builder;
+using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 namespace ReactiveUI;
@@ -103,7 +104,7 @@ public static class AutoPersistHelper
         Func<T, IObservable<Unit>> doPersist,
         TimeSpan? interval)
         where T : IReactiveObject
-        => @this.AutoPersist(doPersist, Observable<Unit>.Never, interval);
+        => @this.AutoPersist(doPersist, NeverObservable<Unit>.Instance, interval);
 
     /// <summary>
     /// AutoPersist automatically calls a method whenever the object changes or a manual save is signalled.
@@ -205,7 +206,8 @@ public static class AutoPersistHelper
                 doPersist,
                 persistablePropertyNames,
                 manualSaveSignal,
-                interval.Value);
+                interval.Value,
+                RxSchedulers.TaskpoolScheduler);
         });
 
         return ret;
@@ -242,7 +244,7 @@ public static class AutoPersistHelper
         AutoPersistMetadata metadata,
         TimeSpan? interval)
         where T : IReactiveObject
-        => @this.AutoPersist(doPersist, Observable<Unit>.Never, metadata, interval);
+        => @this.AutoPersist(doPersist, NeverObservable<Unit>.Instance, metadata, interval);
 
     /// <summary>
     /// AutoPersist overload that uses explicit metadata and a manual save signal, performing no runtime reflection.
@@ -316,7 +318,8 @@ public static class AutoPersistHelper
                 doPersist,
                 persistablePropertyNames,
                 manualSaveSignal,
-                interval.Value);
+                interval.Value,
+                RxSchedulers.TaskpoolScheduler);
         });
 
         return ret;
@@ -359,7 +362,7 @@ public static class AutoPersistHelper
         AutoPersistMetadata metadata,
         TimeSpan? interval)
         where TItem : IReactiveObject
-        => AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, metadata, interval);
+        => AutoPersistCollection(@this, doPersist, NeverObservable<Unit>.Instance, metadata, interval);
 
     /// <summary>
     /// Applies AutoPersistence to all objects in a collection using explicit persistence metadata.
@@ -683,7 +686,7 @@ public static class AutoPersistHelper
         Func<TItem, IObservable<Unit>> doPersist,
         TimeSpan? interval)
         where TItem : IReactiveObject
-        => AutoPersistCollection(@this, doPersist, Observable<Unit>.Never, interval);
+        => AutoPersistCollection(@this, doPersist, NeverObservable<Unit>.Instance, interval);
 
     /// <summary>
     /// Applies AutoPersistence to all objects in a collection.
@@ -996,7 +999,7 @@ public static class AutoPersistHelper
         ArgumentExceptionHelper.ThrowIfNull(collection);
 
         var changedDisposable =
-            ActOnEveryObject(collection.ToObservableChangeSet<TCollection, TItem>(), onAdd, onRemove);
+            ActOnEveryObject(collection.ToReactiveChangeSet<TCollection, TItem>(), onAdd, onRemove);
 
         return new ActionDisposable(() =>
         {
@@ -1261,8 +1264,11 @@ public static class AutoPersistHelper
         /// <summary>The quiet interval after which a save runs (debounce).</summary>
         private readonly TimeSpan _interval;
 
-        /// <summary>The debounce timer; (re)started on each save request.</summary>
-        private readonly Timer _timer;
+        /// <summary>The scheduler on which the debounce interval is measured and the save runs.</summary>
+        private readonly IScheduler _scheduler;
+
+        /// <summary>Holds the pending debounced save; assigning a new one cancels the prior pending save (debounce).</summary>
+        private readonly SwapDisposable _debounce = new();
 
         /// <summary>The subscription to the target's property-change stream.</summary>
         private readonly IDisposable _changeSubscription;
@@ -1282,18 +1288,20 @@ public static class AutoPersistHelper
         /// <param name="persistableNames">The property names whose changes trigger a save.</param>
         /// <param name="manualSaveSignal">A signal that forces a save regardless of changes.</param>
         /// <param name="interval">The quiet interval after which a save runs.</param>
+        /// <param name="scheduler">The scheduler on which the debounce interval is measured and the save runs.</param>
         public AutoPersistDriver(
             T target,
             Func<T, IObservable<Unit>> doPersist,
             ISet<string> persistableNames,
             IObservable<TDontCare> manualSaveSignal,
-            TimeSpan interval)
+            TimeSpan interval,
+            IScheduler scheduler)
         {
             _target = target;
             _doPersist = doPersist;
             _persistableNames = persistableNames;
             _interval = interval;
-            _timer = new Timer(OnElapsed, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            _scheduler = scheduler;
             _changeSubscription = target.GetChangedObservable()
                 .Subscribe(new DelegateObserver<IReactivePropertyChangedEventArgs<T>>(OnPropertyChanged));
             _manualSubscription = manualSaveSignal
@@ -1315,7 +1323,7 @@ public static class AutoPersistHelper
 
             _changeSubscription.Dispose();
             _manualSubscription.Dispose();
-            _timer.Dispose();
+            _debounce.Dispose();
             _persistSubscription?.Dispose();
         }
 
@@ -1341,13 +1349,14 @@ public static class AutoPersistHelper
                     return;
                 }
 
-                _timer.Change(_interval, Timeout.InfiniteTimeSpan);
+                // Debounce: assigning a new scheduled save cancels (disposes) any prior pending one. A single reused
+                // SwapDisposable slot keeps this allocation-light versus an operator pipeline.
+                _debounce.Disposable = _scheduler.Schedule(_interval, RunPersist);
             }
         }
 
         /// <summary>Runs the persist operation when the debounce interval elapses.</summary>
-        /// <param name="state">Unused timer state.</param>
-        private void OnElapsed(object? state)
+        private void RunPersist()
         {
             IObservable<Unit> persist;
             lock (_gate)

@@ -3,6 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Helpers;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -15,7 +17,7 @@ public static class ChangeSetMixin
     /// </summary>
     /// <param name="changeSet">The change set to evaluate.</param>
     /// <returns>If the change set is caused by the count being changed.</returns>
-    public static bool HasCountChanged(this IReactiveChangeSet changeSet)
+    public static bool CountHasChanged(this IReactiveChangeSet changeSet)
     {
         ArgumentExceptionHelper.ThrowIfNull(changeSet);
 
@@ -28,7 +30,7 @@ public static class ChangeSetMixin
     /// <typeparam name="T">The change set item type.</typeparam>
     /// <param name="changeSet">The change-set stream to evaluate.</param>
     /// <returns>An observable of change sets that only have count changes.</returns>
-    public static IObservable<IReactiveChangeSet<T>> CountChanged<T>(this IObservable<IReactiveChangeSet<T>> changeSet)
+    public static IObservable<IReactiveChangeSet<T>> WhenCountChanged<T>(this IObservable<IReactiveChangeSet<T>> changeSet)
     {
         ArgumentExceptionHelper.ThrowIfNull(changeSet);
 

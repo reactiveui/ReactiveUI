@@ -3,7 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Mocks;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -23,7 +26,7 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
     /// </summary>
     public WpfViewDependencyResolverTests()
     {
-        _resolver = new ModernDependencyResolver();
+        _resolver = new();
         _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithWpf()

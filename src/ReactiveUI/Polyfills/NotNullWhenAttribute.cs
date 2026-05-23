@@ -31,6 +31,7 @@ internal sealed class NotNullWhenAttribute :
 }
 
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 [assembly: TypeForwardedTo(typeof(NotNullWhenAttribute))]
