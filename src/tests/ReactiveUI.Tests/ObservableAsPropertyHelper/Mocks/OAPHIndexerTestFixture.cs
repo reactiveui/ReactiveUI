@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -8,34 +8,45 @@ namespace ReactiveUI.Tests.ObservableAsPropertyHelper.Mocks;
 /// <summary>
 ///     A test fixture for OAPH.
 /// </summary>
-internal class OAPHIndexerTestFixture : ReactiveObject
+internal sealed class OaphIndexerTestFixture : ReactiveObject
 {
+    private const int ObservableReturnScenario = 2;
+
     private string? _text;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="OAPHIndexerTestFixture" /> class.
+    ///     Initializes a new instance of the <see cref="OaphIndexerTestFixture" /> class.
     /// </summary>
-    public OAPHIndexerTestFixture(int test, IScheduler scheduler)
+    /// <param name="test">The test scenario selector.</param>
+    /// <param name="scheduler">The scheduler used for the property binding.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S3366:Make sure the use of this in constructors is safe here",
+        Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
+    public OaphIndexerTestFixture(int test, IScheduler scheduler)
     {
         switch (test)
         {
             case 0:
-                var temp = this.WhenAnyValue(static f => f.Text)
-                    .ToProperty(this, static f => f["Whatever"], scheduler: scheduler)
-                    .Value;
-                break;
+                {
+                    _ = this.WhenAnyValue(static f => f.Text).ToProperty(this, static f => f["Whatever"], scheduler: scheduler)
+                        .Value;
+                    break;
+                }
 
             case 1:
-                var temp1 = this.WhenAnyValue(static f => f.Text)
-                    .ToProperty(new ReactiveObject(), static f => f.ToString(), scheduler: scheduler)
-                    .Value;
-                break;
+                {
+                    _ = this.WhenAnyValue(static f => f.Text).ToProperty(new ReactiveObject(), static f => f.ToString(), scheduler: scheduler)
+                        .Value;
+                    break;
+                }
 
-            case 2:
-                var temp2 = Observable.Return("happy")
-                    .ToProperty(this, string.Empty, scheduler: scheduler)
-                    .Value;
-                break;
+            case ObservableReturnScenario:
+                {
+                    _ = Observable.Return("happy").ToProperty(this, string.Empty, scheduler: scheduler)
+                        .Value;
+                    break;
+                }
         }
     }
 

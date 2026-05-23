@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -24,7 +24,14 @@ public interface ICreatesCommandBinding
     /// <param name="hasEventTarget">Determines if the host intends to use a custom event target.</param>
     /// <typeparam name="T">The type of the object to query for compatibility with command binding.</typeparam>
     /// <returns>A positive integer if binding is supported, or zero/a negative value if not supported.</returns>
-    int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget);
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    int GetAffinityForObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        T>(bool hasEventTarget);
 
     /// <summary>
     /// Bind an ICommand to a UI object, in the "default" way. The meaning
@@ -43,10 +50,14 @@ public interface ICreatesCommandBinding
     ///     Observable.Empty.</param>
     /// <returns>An IDisposable which will disconnect the binding when disposed, or null if no binding was created.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
-            ICommand? command,
-            T? target,
-            IObservable<object?> commandParameter)
+    IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T>(
+        ICommand? command,
+        T? target,
+        IObservable<object?> commandParameter)
         where T : class;
 
     /// <summary>
@@ -66,11 +77,15 @@ public interface ICreatesCommandBinding
     /// <param name="eventName">The event to bind to.</param>
     /// <returns>An IDisposable which will disconnect the binding when disposed, or null if no binding was created.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IDisposable? BindCommandToObject<T, TEventArgs>(
-            ICommand? command,
-            T? target,
-            IObservable<object?> commandParameter,
-            string eventName)
+        ICommand? command,
+        T? target,
+        IObservable<object?> commandParameter,
+        string eventName)
         where T : class;
 
     /// <summary>
@@ -87,7 +102,11 @@ public interface ICreatesCommandBinding
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.
     /// </exception>
-    IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,

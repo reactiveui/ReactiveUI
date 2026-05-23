@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace ReactiveUI.Wpf;
 
@@ -38,23 +37,12 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
         var commandProperty = control.GetType().GetProperty("Command");
 
         // If the control has a writable Command property, update it directly
-        if (commandProperty?.CanWrite == true)
+        if (commandProperty?.CanWrite != true)
         {
-            if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
-            {
-                dispatcherObject.Dispatcher.BeginInvoke(
-                    new Action(() => commandProperty.SetValue(control, command)),
-                    DispatcherPriority.Normal);
-            }
-            else
-            {
-                commandProperty.SetValue(control, command);
-            }
-
-            return true;
+            return false;
         }
 
-        // Fall back to full rebind if Command property doesn't exist or isn't writable
-        return false;
+        commandProperty.SetValue(control, command);
+        return true;
     }
 }

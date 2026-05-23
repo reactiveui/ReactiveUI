@@ -1,15 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
+using System.ComponentModel;
 using System.Reflection;
-using System.Runtime.Serialization;
-
 using Android.Content;
 using Android.Views;
-
 using static ReactiveUI.ControlFetcherMixin;
 
 namespace ReactiveUI;
@@ -43,7 +40,10 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// This field is used by legacy reflection-based wiring. It is not initialized by default in AOT-safe construction
     /// paths to avoid reflection and allocations. If a derived type requires this, use the legacy constructor.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
+    [SuppressMessage(
+        "StyleCop.CSharp.MaintainabilityRules",
+        "SA1401: Field should be private",
+        Justification = "Legacy reasons")]
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
     [IgnoreDataMember]
     [JsonIgnore]
@@ -61,9 +61,21 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// This constructor performs no inflation or wiring and is AOT-safe.
     /// Derived types may assign <see cref="LayoutViewHost.View"/> manually.
     /// </remarks>
-    protected ReactiveViewHost()
+    protected ReactiveViewHost() => SetupRxObjAot();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource.
+    /// </summary>
+    /// <param name="ctx">The Android context.</param>
+    /// <param name="layoutId">The layout resource identifier.</param>
+    /// <param name="parent">The parent view group.</param>
+    /// <remarks>
+    /// This constructor is fully AOT- and trimming-safe and performs no reflection-based auto-wireup.
+    /// The inflated view is not attached to the parent.
+    /// </remarks>
+    protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent)
+        : this(ctx, layoutId, parent, false)
     {
-        SetupRxObjAot();
     }
 
     /// <summary>
@@ -76,11 +88,9 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// <remarks>
     /// This constructor is fully AOT- and trimming-safe and performs no reflection-based auto-wireup.
     /// </remarks>
-    protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false)
-        : base(ctx, layoutId, parent, attachToRoot)
-    {
+    protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot)
+        : base(ctx, layoutId, parent, attachToRoot) =>
         SetupRxObjAot();
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource
@@ -97,19 +107,20 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// This constructor is fully AOT-safe and avoids reflection entirely.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="bind"/> is <see langword="null"/>.</exception>
-    protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot, Action<ReactiveViewHost<TViewModel>, View> bind)
+    protected ReactiveViewHost(
+        Context ctx,
+        int layoutId,
+        ViewGroup parent,
+        bool attachToRoot,
+        Action<ReactiveViewHost<TViewModel>, View> bind)
         : base(
             ctx,
             layoutId,
             parent,
             attachToRoot,
-            (host, view) =>
-            {
-                // The base constructor guarantees 'host' is the derived instance.
-                bind((ReactiveViewHost<TViewModel>)host, view);
-            })
+            (host, view) => bind((ReactiveViewHost<TViewModel>)host, view))
     {
-        ArgumentNullException.ThrowIfNull(bind);
+        ArgumentExceptionHelper.ThrowIfNull(bind);
         SetupRxObjAot();
     }
 
@@ -140,10 +151,8 @@ public abstract class ReactiveViewHost<TViewModel> :
         bool attachToRoot,
         bool performAutoWireup,
         ResolveStrategy resolveStrategy)
-        : base(ctx, layoutId, parent, attachToRoot, performAutoWireup, resolveStrategy)
-    {
+        : base(ctx, layoutId, parent, attachToRoot, performAutoWireup, resolveStrategy) =>
         SetupRxObjLegacyReflection();
-    }
 
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -168,12 +177,14 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc />
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed =>
+        this.GetChangedObservable();
 
     /// <summary>
     /// Gets an observable of exceptions thrown during reactive operations on this instance.
@@ -214,11 +225,7 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// <remarks>
     /// This method intentionally does not touch <see cref="allPublicProperties"/> to avoid reflection and allocations.
     /// </remarks>
-    private void SetupRxObjAot()
-    {
-        // No reflection-based property caching in AOT-safe paths.
-        allPublicProperties = null;
-    }
+    private void SetupRxObjAot() => allPublicProperties = null;
 
     /// <summary>
     /// Initializes legacy reflection metadata used by older auto-wireup infrastructure.
@@ -228,9 +235,6 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// </remarks>
     [RequiresUnreferencedCode("This method uses reflection to enumerate public instance properties.")]
     [RequiresDynamicCode("This method uses reflection to enumerate public instance properties.")]
-    private void SetupRxObjLegacyReflection()
-    {
-        allPublicProperties = new Lazy<PropertyInfo[]>(
-            () => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
-    }
+    private void SetupRxObjLegacyReflection() =>
+        allPublicProperties = new(() => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
 }

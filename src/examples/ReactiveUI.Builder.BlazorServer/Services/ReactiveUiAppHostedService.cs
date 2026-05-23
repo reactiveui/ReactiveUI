@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,6 +15,9 @@ namespace ReactiveUI.Builder.BlazorServer.Services;
 /// </summary>
 public sealed class ReactiveUiAppHostedService : IHostedService
 {
+    /// <summary>
+    /// The suspension driver used to load and persist application state to disk.
+    /// </summary>
     private FileJsonSuspensionDriver? _driver;
 
     /// <summary>
@@ -39,7 +42,7 @@ public sealed class ReactiveUiAppHostedService : IHostedService
             "state.json");
         Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
-        _driver = new FileJsonSuspensionDriver(statePath);
+        _driver = new(statePath);
 
         // Set an initial state instantly to avoid blocking UI
         RxSuspension.SuspensionHost.AppState = new ChatState();
@@ -53,13 +56,13 @@ public sealed class ReactiveUiAppHostedService : IHostedService
                 {
                     RxSuspension.SuspensionHost.AppState = stateObj;
                     MessageBus.Current.SendMessage(new ChatStateChanged());
-                    Trace.WriteLine("[App] State loaded");
+                    Trace.TraceInformation("[App] State loaded");
                 },
-                static ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
+                static ex => Trace.TraceInformation($"[App] State load failed: {ex.Message}"));
 
         var lifetime = Locator.Current.GetService<AppLifetimeCoordinator>();
         var count = lifetime?.Increment() ?? 1;
-        Trace.WriteLine($"[Blazor] Instance started. Count={count} Id={AppInstance.Id}");
+        Trace.TraceInformation($"[Blazor] Instance started. Count={count} Id={AppInstance.Id}");
 
         return Task.CompletedTask;
     }
@@ -77,12 +80,14 @@ public sealed class ReactiveUiAppHostedService : IHostedService
     {
         var lifetime = Locator.Current.GetService<AppLifetimeCoordinator>();
         var remaining = lifetime?.Decrement() ?? 0;
-        Trace.WriteLine($"[Blazor] Instance exiting. Remaining={remaining} Id={AppInstance.Id}");
+        Trace.TraceInformation($"[Blazor] Instance exiting. Remaining={remaining} Id={AppInstance.Id}");
 
         // Only the last instance persists the final state to the central store
-        if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
+        if (remaining != 0 || _driver is null || RxSuspension.SuspensionHost.AppState is null)
         {
-            await _driver.SaveState(RxSuspension.SuspensionHost.AppState);
+            return;
         }
+
+        await _driver.SaveState(RxSuspension.SuspensionHost.AppState);
     }
 }

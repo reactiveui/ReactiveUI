@@ -1,9 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reflection;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -21,13 +26,20 @@ namespace ReactiveUI;
 /// </para>
 /// </remarks>
 [RequiresUnreferencedCode("Uses reflection over runtime types and expression graphs which may be trimmed.")]
-[RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
-public class PropertyBinderImplementation : IPropertyBinderImplementation
+[RequiresDynamicCode(
+    "Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+public partial class PropertyBinderImplementation : IPropertyBinderImplementation
 {
-    private static readonly IBindingConverterResolver _staticConverterResolver = new BindingConverterResolver();
+    /// <summary>Shared static converter resolver used for type-based binding lookups.</summary>
+    private static readonly BindingConverterResolver _staticConverterResolver = new();
 
+    /// <summary>Resolves binding type converters for this instance.</summary>
     private readonly IBindingConverterResolver _converterResolver;
+
+    /// <summary>Compiles property binding expressions to optimized accessors.</summary>
     private readonly IPropertyBindingExpressionCompiler _expressionCompiler;
+
+    /// <summary>Evaluates binding hooks before a binding is established.</summary>
     private readonly IBindingHookEvaluator _hookEvaluator;
 
     /// <summary>
@@ -64,7 +76,6 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     /// Initializes static members of the <see cref="PropertyBinderImplementation"/> class.
     /// Ensures ReactiveUI static initialization is performed before bindings are used.
     /// </summary>
-
     /// <summary>
     /// Represents a converter that attempts conversion and returns success via an <see langword="out"/> parameter.
     /// </summary>
@@ -76,362 +87,392 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     private delegate bool OutFunc<in T1, T2>(T1 t1, out T2 t2);
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        IObservable<TDontCare>? signalViewUpdate,
-        object? conversionHint,
-        IBindingTypeConverter? vmToViewConverterOverride = null,
-        IBindingTypeConverter? viewToVMConverterOverride = null,
-        TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            object? conversionHint)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            conversionHint,
+            null,
+            null,
+            TriggerUpdate.ViewToViewModel);
+
+    /// <inheritdoc />
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            object? conversionHint,
+            IBindingTypeConverter? viewModelToViewConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            conversionHint,
+            viewModelToViewConverterOverride,
+            null,
+            TriggerUpdate.ViewToViewModel);
+
+    /// <inheritdoc />
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload mirrors the public IPropertyBinderImplementation contract; the parameter count is part of the binding API surface.")]
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            object? conversionHint,
+            IBindingTypeConverter? viewModelToViewConverterOverride,
+            IBindingTypeConverter? viewToViewModelConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            conversionHint,
+            viewModelToViewConverterOverride,
+            viewToViewModelConverterOverride,
+            TriggerUpdate.ViewToViewModel);
+
+    /// <inheritdoc />
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload mirrors the public IPropertyBinderImplementation contract; the parameter count is part of the binding API surface.")]
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            object? conversionHint,
+            IBindingTypeConverter? viewModelToViewConverterOverride,
+            IBindingTypeConverter? viewToViewModelConverterOverride,
+            TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
+        ArgumentExceptionHelper.ThrowIfNull(viewModelProperty);
         ArgumentExceptionHelper.ThrowIfNull(viewProperty);
 
-        // First, try to find registered converters (prioritize user-registered converters)
-        // If an override is provided, use it; otherwise fall back to service locator
-        var vmToViewConverterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
+        var viewModelToViewConverterObj = viewModelToViewConverterOverride ?? GetConverterForTypes(typeof(TViewModelPropertyType), typeof(TViewPropertyType));
 
-        var viewToVMConverterObj = viewToVMConverterOverride ?? GetConverterForTypes(typeof(TVProp), typeof(TVMProp?));
+        var viewToViewModelConverterObj = viewToViewModelConverterOverride ?? GetConverterForTypes(typeof(TViewPropertyType), typeof(TViewModelPropertyType?));
 
-        // Check if we have converters or if types are assignable
-        var hasConverters = vmToViewConverterObj is not null && viewToVMConverterObj is not null;
-        var typesAreAssignable = typeof(TVProp).IsAssignableFrom(typeof(TVMProp)) || typeof(TVMProp).IsAssignableFrom(typeof(TVProp));
+        var hasConverters = viewModelToViewConverterObj is not null && viewToViewModelConverterObj is not null;
+        var typesAreAssignable = typeof(TViewPropertyType).IsAssignableFrom(typeof(TViewModelPropertyType)) ||
+                                 typeof(TViewModelPropertyType).IsAssignableFrom(typeof(TViewPropertyType));
 
         if (!hasConverters && !typesAreAssignable)
         {
             throw new ArgumentException(
-                $"Can't two-way convert between {typeof(TVMProp)} and {typeof(TVProp)}. To fix this, register a IBindingTypeConverter or call the version with the converter Func.");
+                $"Can't two-way convert between {typeof(TViewModelPropertyType)} and {typeof(TViewPropertyType)}. " +
+                "To fix this, register a IBindingTypeConverter or call the version with the converter Func.");
         }
 
-        bool VmToViewFunc(TVMProp? vmValue, out TVProp vValue)
+        return BindImpl(new TwoWayBindRequest<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>
         {
-            if (vmToViewConverterObj is not null)
-            {
-                bool result;
-                object? tmp;
-
-                // If an explicit override was provided, call it directly (bypassing type checks)
-                // Otherwise use the dispatch which validates types for auto-discovered converters
-                if (vmToViewConverterOverride is not null)
-                {
-                    // Trust the user's explicit converter choice
-                    if (vmToViewConverterObj is IBindingTypeConverter typedConverter)
-                    {
-                        result = typedConverter.TryConvertTyped(vmValue, conversionHint, out tmp);
-                    }
-                    else if (vmToViewConverterObj is IBindingFallbackConverter fallbackConverter)
-                    {
-                        // Fallback converters require non-null input
-                        if (vmValue is null)
-                        {
-                            tmp = null;
-                            result = false;
-                        }
-                        else
-                        {
-                            result = fallbackConverter.TryConvert(typeof(TVMProp), vmValue, typeof(TVProp), conversionHint, out tmp);
-                        }
-                    }
-                    else
-                    {
-                        tmp = null;
-                        result = false;
-                    }
-
-                    // If explicit override failed, try to find a better converter from registry
-                    if (!result)
-                    {
-                        var fallbackConverter = GetConverterForTypes(typeof(TVMProp), typeof(TVProp));
-                        if (fallbackConverter is not null && fallbackConverter != vmToViewConverterObj)
-                        {
-                            result = BindingTypeConverterDispatch.TryConvertAny(
-                                fallbackConverter,
-                                typeof(TVMProp),
-                                vmValue,
-                                typeof(TVProp),
-                                conversionHint,
-                                out tmp);
-
-                            if (result)
-                            {
-                                vValue = (TVProp)tmp!;
-                                return true;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // No override - use type-checked dispatch for auto-discovered converter
-                    result = BindingTypeConverterDispatch.TryConvertAny(
-                        vmToViewConverterObj,
-                        typeof(TVMProp),
-                        vmValue,
-                        typeof(TVProp),
-                        conversionHint,
-                        out tmp);
-
-                    // If auto-discovered converter failed, try direct assignment
-                    if (!result && typeof(TVProp).IsAssignableFrom(typeof(TVMProp)))
-                    {
-                        vValue = vmValue is TVProp fallbackValue ? fallbackValue : default!;
-                        return true;
-                    }
-                }
-
-                vValue = result ? (TVProp)tmp! : default!;
-                return result;
-            }
-
-            // No converter - direct assignment
-            vValue = vmValue is TVProp typedValue ? typedValue : default!;
-            return true;
-        }
-
-        bool ViewToVmFunc(TVProp vValue, out TVMProp? vmValue)
-        {
-            if (viewToVMConverterObj is not null)
-            {
-                bool result;
-                object? tmp;
-
-                // If an explicit override was provided, call it directly (bypassing type checks)
-                // Otherwise use the dispatch which validates types for auto-discovered converters
-                if (viewToVMConverterOverride is not null)
-                {
-                    // Trust the user's explicit converter choice
-                    if (viewToVMConverterObj is IBindingTypeConverter typedConverter)
-                    {
-                        result = typedConverter.TryConvertTyped(vValue, conversionHint, out tmp);
-                    }
-                    else if (viewToVMConverterObj is IBindingFallbackConverter fallbackConverter)
-                    {
-                        // Fallback converters require non-null input
-                        if (vValue is null)
-                        {
-                            tmp = null;
-                            result = false;
-                        }
-                        else
-                        {
-                            result = fallbackConverter.TryConvert(typeof(TVProp), vValue, typeof(TVMProp?), conversionHint, out tmp);
-                        }
-                    }
-                    else
-                    {
-                        tmp = null;
-                        result = false;
-                    }
-
-                    // If explicit override failed, try to find a better converter from registry
-                    if (!result)
-                    {
-                        var fallbackConverter = GetConverterForTypes(typeof(TVProp), typeof(TVMProp?));
-                        if (fallbackConverter is not null && fallbackConverter != viewToVMConverterObj)
-                        {
-                            result = BindingTypeConverterDispatch.TryConvertAny(
-                                fallbackConverter,
-                                typeof(TVProp),
-                                vValue,
-                                typeof(TVMProp?),
-                                conversionHint,
-                                out tmp);
-
-                            if (result)
-                            {
-                                vmValue = (TVMProp?)tmp;
-                                return true;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // No override - use type-checked dispatch for auto-discovered converter
-                    result = BindingTypeConverterDispatch.TryConvertAny(
-                        viewToVMConverterObj,
-                        typeof(TVProp),
-                        vValue,
-                        typeof(TVMProp?),
-                        conversionHint,
-                        out tmp);
-
-                    // If auto-discovered converter failed, try direct assignment
-                    if (!result && typeof(TVMProp).IsAssignableFrom(typeof(TVProp)))
-                    {
-                        vmValue = vValue is TVMProp fallbackValue ? fallbackValue : default;
-                        return true;
-                    }
-                }
-
-                vmValue = result ? (TVMProp?)tmp : default;
-                return result;
-            }
-
-            // No converter - direct assignment
-            vmValue = vValue is TVMProp typedValue ? typedValue : default;
-            return true;
-        }
-
-        return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc, triggerUpdate);
+            ViewModel = viewModel,
+            View = view,
+            ViewModelProperty = viewModelProperty,
+            ViewProperty = viewProperty,
+            SignalViewUpdate = signalViewUpdate,
+            ViewModelToViewConverter = (value, out converted) =>
+                TryConvertViewModelToView(viewModelToViewConverterObj, viewModelToViewConverterOverride, conversionHint, value, out converted),
+            ViewToViewModelConverter = (value, out converted) =>
+                TryConvertViewToViewModel(viewToViewModelConverterObj, viewToViewModelConverterOverride, conversionHint, value, out converted),
+            TriggerUpdate = triggerUpdate,
+        });
     }
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        IObservable<TDontCare>? signalViewUpdate,
-        Func<TVMProp?, TVProp> vmToViewConverter,
-        Func<TVProp, TVMProp?> viewToVmConverter,
-        TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
+            Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            viewModelToViewConverter,
+            viewToViewModelConverter,
+            TriggerUpdate.ViewToViewModel);
+
+    /// <inheritdoc />
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload mirrors the public IPropertyBinderImplementation contract; the parameter count is part of the binding API surface.")]
+    public IReactiveBinding<TView, (object? view, bool isViewModel)>
+        Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(
+            TViewModel? viewModel,
+            TView view,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
+            Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter,
+            TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
+        ArgumentExceptionHelper.ThrowIfNull(viewModelProperty);
         ArgumentExceptionHelper.ThrowIfNull(viewProperty);
-        ArgumentExceptionHelper.ThrowIfNull(vmToViewConverter);
-        ArgumentExceptionHelper.ThrowIfNull(viewToVmConverter);
+        ArgumentExceptionHelper.ThrowIfNull(viewModelToViewConverter);
+        ArgumentExceptionHelper.ThrowIfNull(viewToViewModelConverter);
 
-        bool VmToViewFunc(TVMProp? vmValue, out TVProp vValue)
+        return BindImpl(new TwoWayBindRequest<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>
         {
-            vValue = vmToViewConverter(vmValue);
-            return true;
-        }
-
-        bool ViewToVmFunc(TVProp vValue, out TVMProp? vmValue)
-        {
-            vmValue = viewToVmConverter(vValue);
-            return true;
-        }
-
-        return BindImpl(viewModel, view, vmProperty, viewProperty, signalViewUpdate, VmToViewFunc, ViewToVmFunc, triggerUpdate);
+            ViewModel = viewModel,
+            View = view,
+            ViewModelProperty = viewModelProperty,
+            ViewProperty = viewProperty,
+            SignalViewUpdate = signalViewUpdate,
+            ViewModelToViewConverter = (value, out converted) =>
+            {
+                converted = viewModelToViewConverter(value);
+                return true;
+            },
+            ViewToViewModelConverter = (value, out converted) =>
+            {
+                converted = viewToViewModelConverter(value);
+                return true;
+            },
+            TriggerUpdate = triggerUpdate,
+        });
     }
 
     /// <inheritdoc />
-    public IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+    public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         TViewModel? viewModel,
         TView view,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null)
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        OneWayBind(viewModel, view, viewModelProperty, viewProperty, null, null);
+
+    /// <inheritdoc />
+    public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        IBindingTypeConverter? vmToViewConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        OneWayBind(viewModel, view, viewModelProperty, viewProperty, null, vmToViewConverterOverride);
+
+    /// <inheritdoc />
+    public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        OneWayBind(viewModel, view, viewModelProperty, viewProperty, conversionHint, null);
+
+    /// <inheritdoc />
+    public IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
+        ArgumentExceptionHelper.ThrowIfNull(viewModelProperty);
         ArgumentExceptionHelper.ThrowIfNull(viewProperty);
 
-        var vmExpression = Reflection.Rewrite(vmProperty.Body);
+        var viewModelExpression = Reflection.Rewrite(viewModelProperty.Body);
         var viewExpression = Reflection.Rewrite(viewProperty.Body);
         var viewType = viewExpression.Type;
 
-        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(
+            viewModel,
+            view,
+            viewModelExpression,
+            viewExpression,
+            BindingDirection.OneWay);
         if (!ret)
         {
-            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, Observable.Empty<TVProp>(), BindingDirection.OneWay, Disposable.Empty);
+            return new ReactiveBinding<TView, TViewPropertyType>(
+                view,
+                viewExpression,
+                viewModelExpression,
+                Observable<TViewPropertyType>.Empty,
+                BindingDirection.OneWay,
+                EmptyDisposable.Instance);
         }
 
-        // First, try to find a registered converter (prioritize user-registered converters)
-        var converterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TVMProp?), viewType);
+        var converterObj = viewModelToViewConverterOverride ?? GetConverterForTypes(typeof(TViewModelPropertyType?), viewType);
 
         if (converterObj is not null)
         {
-            // Use the converter
-            var source =
-                Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression)
-                    .SelectMany(x =>
+            var source = new ChooseObservable<object, object?>(
+                Reflection.ViewModelWhenAnyValue(viewModel, view, viewModelExpression),
+                x =>
+                {
+                    var runtimeType = x?.GetType() ?? typeof(TViewModelPropertyType);
+
+                    var convertResult = BindingTypeConverterDispatch.TryConvertAny(
+                        converterObj,
+                        runtimeType,
+                        x,
+                        viewType,
+                        conversionHint,
+                        out var tmp);
+
+                    if (convertResult)
                     {
-                        var runtimeType = x?.GetType() ?? typeof(TVMProp);
+                        return (true, tmp);
+                    }
 
-                        // Try converter first
-                        var convertResult = BindingTypeConverterDispatch.TryConvertAny(
-                            converterObj,
-                            runtimeType,
-                            x,
-                            viewType,
-                            conversionHint,
-                            out var tmp);
+                    return viewModelToViewConverterOverride is null && viewType.IsAssignableFrom(typeof(TViewModelPropertyType))
+                        ? (true, (object?)x)
+                        : (false, null);
+                });
 
-                        if (convertResult)
-                        {
-                            return Observable.Return(tmp);
-                        }
-
-                        // Converter failed
-                        // If no override was provided (auto-discovered converter), try direct assignment
-                        if (vmToViewConverterOverride is null)
-                        {
-                            // For null values, use the actual TVMProp type for assignability check
-                            if (viewType.IsAssignableFrom(typeof(TVMProp)))
-                            {
-                                return Observable.Return((object?)x);
-                            }
-                        }
-
-                        // Cannot convert - skip this update
-                        return Observable<object>.Empty;
-                    });
-
-            var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
-            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            var (disposable, obs) = BindToDirect<TView, TViewPropertyType, object?>(source, view, viewExpression);
+            return new ReactiveBinding<TView, TViewPropertyType>(
+                view,
+                viewExpression,
+                viewModelExpression,
+                obs,
+                BindingDirection.OneWay,
+                disposable);
         }
 
-        // No converter found - check if types are directly assignable
-        if (viewType.IsAssignableFrom(typeof(TVMProp)))
+        if (viewType.IsAssignableFrom(typeof(TViewModelPropertyType)))
         {
-            // No conversion needed - direct assignment
-            var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(x => (object?)x);
-            var (disposable, obs) = BindToDirect<TView, TVProp, object?>(source, view, viewExpression);
-            return new ReactiveBinding<TView, TVProp>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+            var source = new SelectObservable<object, object?>(
+                Reflection.ViewModelWhenAnyValue(viewModel, view, viewModelExpression),
+                static x => x);
+            var (disposable, obs) = BindToDirect<TView, TViewPropertyType, object?>(source, view, viewExpression);
+            return new ReactiveBinding<TView, TViewPropertyType>(
+                view,
+                viewExpression,
+                viewModelExpression,
+                obs,
+                BindingDirection.OneWay,
+                disposable);
         }
 
-        // No converter and types not assignable - throw exception
-        throw new ArgumentException($"Can't convert {typeof(TVMProp)} to {viewType}. To fix this, register a IBindingTypeConverter");
+        throw new ArgumentException(
+            $"Can't convert {typeof(TViewModelPropertyType)} to {viewType}. To fix this, register a IBindingTypeConverter");
     }
 
     /// <inheritdoc />
     public IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         TViewModel? viewModel,
         TView view,
-        Expression<Func<TViewModel, TProp>> vmProperty,
+        Expression<Func<TViewModel, TProp>> viewModelProperty,
         Expression<Func<TView, TOut>> viewProperty,
         Func<TProp, TOut> selector)
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
+        ArgumentExceptionHelper.ThrowIfNull(viewModelProperty);
         ArgumentExceptionHelper.ThrowIfNull(viewProperty);
 
-        var vmExpression = Reflection.Rewrite(vmProperty.Body);
+        var viewModelExpression = Reflection.Rewrite(viewModelProperty.Body);
         var viewExpression = Reflection.Rewrite(viewProperty.Body);
 
-        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.OneWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(
+            viewModel,
+            view,
+            viewModelExpression,
+            viewExpression,
+            BindingDirection.OneWay);
         if (!ret)
         {
-            return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, Observable.Empty<TOut>(), BindingDirection.OneWay, Disposable.Empty);
+            return new ReactiveBinding<TView, TOut>(
+                view,
+                viewExpression,
+                viewModelExpression,
+                Observable<TOut>.Empty,
+                BindingDirection.OneWay,
+                EmptyDisposable.Instance);
         }
 
-        var source = Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Cast<TProp>().Select(selector);
+        var source = new SelectObservable<object, TOut>(
+            Reflection.ViewModelWhenAnyValue(viewModel, view, viewModelExpression),
+            x => selector((TProp)x!));
 
         var (disposable, obs) = BindToDirect<TView, TOut, TOut>(source, view, viewExpression);
 
-        return new ReactiveBinding<TView, TOut>(view, viewExpression, vmExpression, obs, BindingDirection.OneWay, disposable);
+        return new ReactiveBinding<TView, TOut>(
+            view,
+            viewExpression,
+            viewModelExpression,
+            obs,
+            BindingDirection.OneWay,
+            disposable);
     }
 
     /// <inheritdoc />
-    public IDisposable BindTo<TValue, TTarget, TTValue>(
+    public IDisposable BindTo<TValue, TTarget, TTargetValue>(
         IObservable<TValue> observedChange,
         TTarget? target,
-        Expression<Func<TTarget, TTValue?>> propertyExpression,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null)
+        Expression<Func<TTarget, TTargetValue?>> propertyExpression)
+        where TTarget : class =>
+        BindTo(observedChange, target, propertyExpression, null, null);
+
+    /// <inheritdoc />
+    public IDisposable BindTo<TValue, TTarget, TTargetValue>(
+        IObservable<TValue> observedChange,
+        TTarget? target,
+        Expression<Func<TTarget, TTargetValue?>> propertyExpression,
+        object? conversionHint)
+        where TTarget : class =>
+        BindTo(observedChange, target, propertyExpression, conversionHint, null);
+
+    /// <inheritdoc />
+    public IDisposable BindTo<TValue, TTarget, TTargetValue>(
+        IObservable<TValue> observedChange,
+        TTarget? target,
+        Expression<Func<TTarget, TTargetValue?>> propertyExpression,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
         where TTarget : class
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -439,61 +480,60 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
 
         var viewExpression = Reflection.Rewrite(propertyExpression.Body);
 
-        var shouldBind = target is not IViewFor viewFor || _hookEvaluator.EvaluateBindingHooks<object, IViewFor>(null, viewFor, null!, viewExpression, BindingDirection.OneWay);
+        var shouldBind = target is not IViewFor viewFor ||
+                         _hookEvaluator.EvaluateBindingHooks<object, IViewFor>(
+                             null,
+                             viewFor,
+                             null!,
+                             viewExpression,
+                             BindingDirection.OneWay);
         if (!shouldBind)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        // First, try to find a registered converter (prioritize user-registered converters)
-        var converterObj = vmToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTValue?));
+        var converterObj = viewModelToViewConverterOverride ?? GetConverterForTypes(typeof(TValue), typeof(TTargetValue?));
 
         if (converterObj is not null)
         {
-            // Use the converter
-            var source =
-                observedChange.SelectMany(x =>
+            var source = new ChooseObservable<TValue, object?>(
+                observedChange,
+                x =>
                 {
-                    // Try converter first
                     var convertResult = BindingTypeConverterDispatch.TryConvertAny(
                         converterObj,
                         typeof(TValue),
                         x,
-                        typeof(TTValue?),
+                        typeof(TTargetValue?),
                         conversionHint,
                         out var tmp);
 
                     if (convertResult)
                     {
-                        return Observable.Return(tmp);
+                        return (true, tmp);
                     }
 
-                    // Converter failed
-                    // If no override was provided (auto-discovered converter), try direct assignment
-                    if (vmToViewConverterOverride is null && typeof(TTValue).IsAssignableFrom(typeof(TValue)))
+                    if (viewModelToViewConverterOverride is null && typeof(TTargetValue).IsAssignableFrom(typeof(TValue)))
                     {
-                        return Observable.Return((object?)x);
+                        return (true, (object?)x);
                     }
 
-                    // Cannot convert - skip this update
-                    return Observable<object>.Empty;
+                    return (false, null);
                 });
 
-            var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
+            var (disposable, _) = BindToDirect<TTarget, TTargetValue?, object?>(source, target, viewExpression);
             return disposable;
         }
 
-        // No converter found - check if types are directly assignable (includes same type and compatible reference types)
-        if (typeof(TTValue).IsAssignableFrom(typeof(TValue)))
+        if (typeof(TTargetValue).IsAssignableFrom(typeof(TValue)))
         {
-            // No conversion needed - direct assignment
-            var source = observedChange.Select(x => (object?)x);
-            var (disposable, _) = BindToDirect<TTarget, TTValue?, object?>(source, target!, viewExpression);
+            var source = new SelectObservable<TValue, object?>(observedChange, static x => x);
+            var (disposable, _) = BindToDirect<TTarget, TTargetValue?, object?>(source, target, viewExpression);
             return disposable;
         }
 
-        // No converter and types not assignable - throw exception
-        throw new ArgumentException($"Can't convert {typeof(TValue)} to {typeof(TTValue)}. To fix this, register a IBindingTypeConverter");
+        throw new ArgumentException(
+            $"Can't convert {typeof(TValue)} to {typeof(TTargetValue)}. To fix this, register a IBindingTypeConverter");
     }
 
     /// <summary>
@@ -518,31 +558,6 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         _staticConverterResolver.GetBindingConverter(lhs, rhs);
 
     /// <summary>
-    /// Schedules a binding notification before a view value is read or written.
-    /// </summary>
-    /// <typeparam name="TView">The view type.</typeparam>
-    /// <param name="view">The view participating in the binding.</param>
-    /// <param name="value">The binding notification value.</param>
-    /// <returns>An observable that emits <paramref name="value"/> when the binding should continue.</returns>
-    internal virtual IObservable<bool> ScheduleForBinding<TView>(TView view, bool value)
-        where TView : class =>
-        Observable.Return(value);
-
-    /// <summary>
-    /// Sets a value on the view.
-    /// </summary>
-    /// <typeparam name="TView">The view type.</typeparam>
-    /// <param name="view">The view being updated.</param>
-    /// <param name="setter">The value setter to invoke.</param>
-    internal virtual void SetViewValue<TView>(TView view, Action setter)
-        where TView : class
-    {
-        ArgumentExceptionHelper.ThrowIfNull(setter);
-
-        setter();
-    }
-
-    /// <summary>
     /// Binds an observable to a target member directly using compiled accessors.
     /// </summary>
     /// <typeparam name="TTarget">The target object type.</typeparam>
@@ -555,6 +570,10 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     /// A tuple containing the subscription <see cref="IDisposable"/> and an observable sequence of values that were effectively set.
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown when a required getter cannot be resolved.</exception>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private (IDisposable disposable, IObservable<TValue> value) BindToDirect<TTarget, TValue, TObs>(
         IObservable<TObs> changeObservable,
         TTarget target,
@@ -568,14 +587,27 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
         var memberInfo = viewExpression.GetMemberInfo();
 
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("getter was not found.");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException("getter was not found.");
 
         var setObservableWithEmit =
             _expressionCompiler.IsDirectMemberAccess(viewExpression)
-                ? _expressionCompiler.CreateDirectSetObservable<TTarget, TValue, TObs>(target, changeObservable, viewExpression, getter, setter, _converterResolver.GetSetMethodConverter)
-                : _expressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(target, changeObservable, viewExpression, _expressionCompiler.GetExpressionChainArray(viewExpression.GetParent()!) ?? [], getter, setter, _converterResolver.GetSetMethodConverter);
+                ? _expressionCompiler.CreateDirectSetObservable<TTarget, TValue, TObs>(
+                    target,
+                    changeObservable,
+                    viewExpression,
+                    getter,
+                    setter,
+                    _converterResolver.GetSetMethodConverter) : _expressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(
+                    target,
+                    changeObservable,
+                    viewExpression,
+                    _expressionCompiler.GetExpressionChainArray(viewExpression.GetParent()!) ?? [],
+                    getter,
+                    setter,
+                    _converterResolver.GetSetMethodConverter);
 
-        var setObservable = setObservableWithEmit.Select(x => x.Value);
+        var setObservable = new SelectObservable<(bool ShouldEmit, TValue Value), TValue>(setObservableWithEmit, static x => x.Value);
         var subscription = SubscribeWithBindingErrorHandling(setObservable, viewExpression);
 
         return (subscription, setObservable);
@@ -591,13 +623,15 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
     /// <exception cref="TargetInvocationException">
     /// Thrown when the binding receives an exception with an inner exception, matching legacy behavior.
     /// </exception>
-    private IDisposable SubscribeWithBindingErrorHandling<TValue>(IObservable<TValue> setObservable, Expression viewExpression)
+    private IDisposable SubscribeWithBindingErrorHandling<TValue>(
+        IObservable<TValue> setObservable,
+        Expression viewExpression)
     {
         ArgumentExceptionHelper.ThrowIfNull(setObservable);
         ArgumentExceptionHelper.ThrowIfNull(viewExpression);
 
-        return setObservable.Subscribe(
-            _ => { },
+        return setObservable.Subscribe(new DelegateObserver<TValue>(
+            static _ => { },
             ex =>
             {
                 this.Log().Error(ex, $"{viewExpression} Binding received an Exception!");
@@ -606,128 +640,400 @@ public class PropertyBinderImplementation : IPropertyBinderImplementation
                     return;
                 }
 
-                throw new TargetInvocationException($"{viewExpression} Binding received an Exception!", ex.InnerException);
-            });
+                throw new TargetInvocationException(
+                    $"{viewExpression} Binding received an Exception!",
+                    ex.InnerException);
+            }));
     }
 
-    private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<TViewModel, TView, TVMProp, TVProp, TDontCare>(
-        TViewModel? viewModel,
-        TView view,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        IObservable<TDontCare>? signalViewUpdate,
-        OutFunc<TVMProp?, TVProp> vmToViewConverter,
-        OutFunc<TVProp, TVMProp?> viewToVmConverter,
-        TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
+    /// <summary>
+    /// Core two-way binding implementation that wires up view-model-to-view and view-to-view-model change pipelines.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the view model property.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the view property.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type used only to signal view updates.</typeparam>
+    /// <param name="request">The bundled inputs describing the two-way binding to create.</param>
+    /// <returns>The configured two-way reactive binding, or null if hooks blocked the binding.</returns>
+    private ReactiveBinding<TView, (object? view, bool isViewModel)> BindImpl<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(in TwoWayBindRequest<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare> request)
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(vmProperty);
-        ArgumentExceptionHelper.ThrowIfNull(viewProperty);
+        ArgumentExceptionHelper.ThrowIfNull(request.ViewModelProperty);
+        ArgumentExceptionHelper.ThrowIfNull(request.ViewProperty);
 
-        var signalInitialUpdate = new Subject<bool>();
-        var vmExpression = Reflection.Rewrite(vmProperty.Body);
-        var viewExpression = Reflection.Rewrite(viewProperty.Body);
+        var view = request.View;
+        BroadcastSubject<bool> signalInitialUpdate = new();
+        var viewModelExpression = Reflection.Rewrite(request.ViewModelProperty.Body);
+        var viewExpression = Reflection.Rewrite(request.ViewProperty.Body);
 
-        // Pre-compile expression chains ONCE at binding setup time.
-        // This is the "reflection boundary".
-        Expression[] vmExpressionChainArray = [.. vmExpression.GetExpressionChain()];
+        Expression[] viewModelExpressionChainArray = [.. viewModelExpression.GetExpressionChain()];
         Expression[] viewExpressionChainArray = [.. viewExpression.GetExpressionChain()];
 
-        // VM chain expects root = view.ViewModel (object?).
-        var vmChainGetter = new Reflection.CompiledPropertyChain<object?, TVMProp>(vmExpressionChainArray);
+        Reflection.CompiledPropertyChain<object?, TViewModelPropertyType> viewModelChainGetter = new(viewModelExpressionChainArray);
+        Reflection.CompiledPropertyChain<TView, TViewPropertyType> viewChainGetter = new(viewExpressionChainArray);
+        Reflection.CompiledPropertyChainSetter<TView, object?> viewChainSetter = new(viewExpressionChainArray);
+        Reflection.CompiledPropertyChainSetter<object?, object?> viewModelChainSetter = new(viewModelExpressionChainArray);
 
-        // View chain expects root = view (TView).
-        var viewChainGetter = new Reflection.CompiledPropertyChain<TView, TVProp>(viewExpressionChainArray);
+        var viewModelToViewConverter = request.ViewModelToViewConverter;
+        var viewToViewModelConverter = request.ViewToViewModelConverter;
 
-        // Setters for two-way binding.
-        var viewChainSetter = new Reflection.CompiledPropertyChainSetter<TView, object?>(viewExpressionChainArray);
-        var vmChainSetter = new Reflection.CompiledPropertyChainSetter<object?, object?>(vmExpressionChainArray);
+        var viewChanges = new SelectObservable<TViewPropertyType?, bool>(
+            view.WhenAnyDynamic(viewExpression, x => (TViewPropertyType?)x.Value),
+            static _ => false);
 
-        IObservable<(bool isValid, object? view, bool isViewModel)>? changeWithValues = null;
+        var somethingChanged = BuildChangeSource(
+            request.TriggerUpdate,
+            request.SignalViewUpdate,
+            request.ViewModel,
+            view,
+            viewModelExpression,
+            viewChanges,
+            signalInitialUpdate);
 
-        if (triggerUpdate == TriggerUpdate.ViewToViewModel)
-        {
-            var signalObservable = signalViewUpdate is not null
-                ? signalViewUpdate.Select(_ => false)
-                : view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false);
+        var changeWithValues = new SelectObservable<bool, (bool isValid, object? view, bool isViewModel)>(
+            somethingChanged,
+            isViewModelChange =>
+                ProjectChange(isViewModelChange, view, viewModelChainGetter, viewChainGetter, viewModelToViewConverter, viewToViewModelConverter));
 
-            var somethingChanged = Observable.Merge(
-                Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true),
-                signalInitialUpdate.Select(_ => true),
-                signalObservable)
-                .SelectMany(value => ScheduleForBinding(view, value));
-
-            changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
-                !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
-                !viewChainGetter.TryGetValue(view, out TVProp vValue)
-                    ? (false, null, false)
-                    : isVm
-                        ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
-                            ? (false, null, false)
-                            : (true, vmAsView, isVm)
-                        : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
-                            ? (false, null, false)
-                            : (true, vAsViewModel, isVm));
-        }
-        else
-        {
-            var somethingChanged = Observable.Merge(
-                signalViewUpdate is null
-                    ? Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true)
-                    : signalViewUpdate.Select(_ => true)
-                        .Merge(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression).Select(_ => true).Take(1)),
-                signalInitialUpdate.Select(_ => true),
-                view.WhenAnyDynamic(viewExpression, x => (TVProp?)x.Value).Select(_ => false))
-                .SelectMany(value => ScheduleForBinding(view, value));
-
-            changeWithValues = somethingChanged.Select<bool, (bool isValid, object? view, bool isViewModel)>(isVm =>
-                !vmChainGetter.TryGetValue(view.ViewModel, out TVMProp vmValue) ||
-                !viewChainGetter.TryGetValue(view, out TVProp vValue)
-                    ? (false, null, false)
-                    : isVm
-                        ? !vmToViewConverter(vmValue, out var vmAsView) || EqualityComparer<TVProp>.Default.Equals(vValue, vmAsView)
-                            ? (false, null, false)
-                            : (true, vmAsView, isVm)
-                        : !viewToVmConverter(vValue, out var vAsViewModel) || EqualityComparer<TVMProp?>.Default.Equals(vmValue, vAsViewModel)
-                            ? (false, null, false)
-                            : (true, vAsViewModel, isVm));
-        }
-
-        var ret = _hookEvaluator.EvaluateBindingHooks(viewModel, view, vmExpression, viewExpression, BindingDirection.TwoWay);
+        var ret = _hookEvaluator.EvaluateBindingHooks(
+            request.ViewModel,
+            view,
+            viewModelExpression,
+            viewExpression,
+            BindingDirection.TwoWay);
         if (!ret)
         {
             return null!;
         }
 
-        var changes =
-            changeWithValues
-                .Where(value => value.isValid)
-                .Select(value => (value.view, value.isViewModel))
-                .Publish()
-                .RefCount();
+        // Filter to valid changes and project to the (view, isViewModel) pair, then multicast through a shared subject
+        // (Publish + RefCount) so the internal setter and external subscribers share one upstream subscription.
+        var projected = new ChooseObservable<(bool isValid, object? view, bool isViewModel), (object? view, bool isViewModel)>(
+            changeWithValues,
+            value => value.isValid ? (true, (value.view, value.isViewModel)) : (false, default));
 
-        var disposable = changes.Subscribe(isVmWithLatestValue =>
+        var changes = new BroadcastSubject<(object? view, bool isViewModel)>();
+        var upstreamConnection = projected.Subscribe(changes);
+
+        var setterSubscription = changes.Subscribe(new DelegateObserver<(object? view, bool isViewModel)>(latestValue =>
         {
-            if (isVmWithLatestValue.isViewModel)
+            if (latestValue.isViewModel)
             {
-                SetViewValue(view, () => viewChainSetter.TrySetValue(view, isVmWithLatestValue.view, false));
+                viewChainSetter.TrySetValue(view, latestValue.view, false);
             }
             else
             {
-                vmChainSetter.TrySetValue(view.ViewModel, isVmWithLatestValue.view, false);
+                viewModelChainSetter.TrySetValue(view.ViewModel, latestValue.view, false);
             }
-        });
+        }));
 
-        // NB: Even though it's technically a two-way bind, most people want the ViewModel to win at first.
         signalInitialUpdate.OnNext(true);
 
-        return new ReactiveBinding<TView, (object? view, bool isViewModel)>(
+        return new(
             view,
             viewExpression,
-            vmExpression,
+            viewModelExpression,
             changes,
             BindingDirection.TwoWay,
-            disposable);
+            new CompositeDisposable(upstreamConnection, setterSubscription));
+    }
+
+    /// <summary>Projects each value of a source through a selector. Specialised binding projection; no generic operator.</summary>
+    /// <typeparam name="TIn">The source element type.</typeparam>
+    /// <typeparam name="TOut">The projected element type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    /// <param name="selector">Projects a source value into a result.</param>
+    private sealed class SelectObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, TOut> selector) : IObservable<TOut>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TOut> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer, selector));
+        }
+
+        /// <summary>Applies the selector to each value and forwards the result.</summary>
+        /// <param name="downstream">The observer receiving projected values.</param>
+        /// <param name="selector">Projects a source value into a result.</param>
+        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, TOut> selector) : IObserver<TIn>
+        {
+            /// <inheritdoc/>
+            public void OnNext(TIn value)
+            {
+                TOut result;
+                try
+                {
+                    result = selector(value);
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                downstream.OnNext(result);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// For each source value, applies a chooser that either yields a value to forward or signals "skip". Fuses the
+    /// binding's convert-or-skip and filter-then-project pipelines into one specialised sink.
+    /// </summary>
+    /// <typeparam name="TIn">The source element type.</typeparam>
+    /// <typeparam name="TOut">The forwarded element type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    /// <param name="chooser">Maps a source value to (forward, value); when forward is false the value is skipped.</param>
+    private sealed class ChooseObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, (bool HasValue, TOut Value)> chooser) : IObservable<TOut>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TOut> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer, chooser));
+        }
+
+        /// <summary>Applies the chooser to each value and forwards only the chosen ones.</summary>
+        /// <param name="downstream">The observer receiving chosen values.</param>
+        /// <param name="chooser">Maps a source value to (forward, value).</param>
+        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, (bool HasValue, TOut Value)> chooser) : IObserver<TIn>
+        {
+            /// <inheritdoc/>
+            public void OnNext(TIn value)
+            {
+                (bool HasValue, TOut Value) result;
+                try
+                {
+                    result = chooser(value);
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                if (!result.HasValue)
+                {
+                    return;
+                }
+
+                downstream.OnNext(result.Value);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>Forwards the values of every source and completes once all of them have completed. Specialised binding merge.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="sources">The sources to merge.</param>
+    private sealed class MergeObservable<T>(IObservable<T>[] sources) : IObservable<T>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return new Sink(observer, sources);
+        }
+
+        /// <summary>Forwards every source value under a gate and completes once all sources complete.</summary>
+        private sealed class Sink : IDisposable
+        {
+            /// <summary>Guards downstream delivery and the completion counter.</summary>
+            #if NET9_0_OR_GREATER
+            private readonly Lock _gate = new();
+            #else
+            private readonly object _gate = new();
+            #endif
+
+            /// <summary>The observer receiving the merged values.</summary>
+            private readonly IObserver<T> _downstream;
+
+            /// <summary>The subscriptions to each source.</summary>
+            private readonly IDisposable?[] _subscriptions;
+
+            /// <summary>The number of sources.</summary>
+            private readonly int _count;
+
+            /// <summary>The number of sources that have completed.</summary>
+            private int _doneCount;
+
+            /// <summary>Whether the downstream has terminated.</summary>
+            private bool _stopped;
+
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every source.</summary>
+            /// <param name="downstream">The observer receiving the merged values.</param>
+            /// <param name="sources">The sources to merge.</param>
+            public Sink(IObserver<T> downstream, IObservable<T>[] sources)
+            {
+                _downstream = downstream;
+                _count = sources.Length;
+                _subscriptions = new IDisposable?[sources.Length];
+                for (var i = 0; i < sources.Length; i++)
+                {
+                    _subscriptions[i] = sources[i].Subscribe(new Element(this));
+                }
+            }
+
+            /// <inheritdoc/>
+            public void Dispose()
+            {
+                for (var i = 0; i < _subscriptions.Length; i++)
+                {
+                    _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Forwards one source value to the downstream.</summary>
+            /// <param name="value">The value to forward.</param>
+            private void OnNextAt(T value)
+            {
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _downstream.OnNext(value);
+                }
+            }
+
+            /// <summary>Forwards an error from any source.</summary>
+            /// <param name="error">The error to forward.</param>
+            private void OnErrorAt(Exception error)
+            {
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                }
+
+                _downstream.OnError(error);
+            }
+
+            /// <summary>Completes the downstream once every source has completed.</summary>
+            private void OnCompletedAt()
+            {
+                lock (_gate)
+                {
+                    if (_stopped || ++_doneCount < _count)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                }
+
+                _downstream.OnCompleted();
+            }
+
+            /// <summary>Routes one source's notifications to the parent sink.</summary>
+            /// <param name="parent">The owning sink.</param>
+            private sealed class Element(Sink parent) : IObserver<T>
+            {
+                /// <inheritdoc/>
+                public void OnNext(T value) => parent.OnNextAt(value);
+
+                /// <inheritdoc/>
+                public void OnError(Exception error) => parent.OnErrorAt(error);
+
+                /// <inheritdoc/>
+                public void OnCompleted() => parent.OnCompletedAt();
+            }
+        }
+    }
+
+    /// <summary>Forwards the first value of a source then completes and unsubscribes. Specialised binding <c>Take(1)</c>.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    private sealed class Take1Observable<T>(IObservable<T> source) : IObservable<T>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            var sink = new Sink(observer);
+            return sink.Run(source);
+        }
+
+        /// <summary>Forwards the first value, then completes the downstream and disposes the subscription.</summary>
+        private sealed class Sink(IObserver<T> downstream) : IObserver<T>, IDisposable
+        {
+            /// <summary>The subscription to the source.</summary>
+            private IDisposable? _subscription;
+
+            /// <summary>Whether the first value has been delivered.</summary>
+            private bool _done;
+
+            /// <summary>Subscribes to the source.</summary>
+            /// <param name="source">The source observable.</param>
+            /// <returns>The sink, which disposes the run.</returns>
+            public Sink Run(IObservable<T> source)
+            {
+                _subscription = source.Subscribe(this);
+                return this;
+            }
+
+            /// <inheritdoc/>
+            public void OnNext(T value)
+            {
+                if (_done)
+                {
+                    return;
+                }
+
+                _done = true;
+                downstream.OnNext(value);
+                downstream.OnCompleted();
+                Dispose();
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error)
+            {
+                if (_done)
+                {
+                    return;
+                }
+
+                downstream.OnError(error);
+            }
+
+            /// <inheritdoc/>
+            public void OnCompleted()
+            {
+                if (_done)
+                {
+                    return;
+                }
+
+                downstream.OnCompleted();
+            }
+
+            /// <inheritdoc/>
+            public void Dispose() => _subscription?.Dispose();
+        }
     }
 }

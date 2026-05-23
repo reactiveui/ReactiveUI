@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,7 +13,7 @@ namespace ReactiveUI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This locator uses explicit view-to-viewmodel mappings registered via <see cref="Map{TViewModel, TView}"/>.
+/// This locator uses explicit view-to-viewmodel mappings registered via <c>Map</c>.
 /// When no mapping is found, it falls back to querying the service locator for <c>IViewFor&lt;TViewModel&gt;</c>.
 /// </para>
 /// <para>
@@ -37,21 +37,25 @@ namespace ReactiveUI;
 /// </example>
 public sealed class DefaultViewLocator : IViewLocator
 {
-    // Lock object for synchronizing writes to _mappings.
+    /// <summary>Lock object for synchronizing writes to _mappings.</summary>
 #if NET9_0_OR_GREATER
-    private readonly System.Threading.Lock _gate = new();
+    private readonly Lock _gate = new();
 #else
     private readonly object _gate = new();
 #endif
 
-    // Cache for MakeGenericType calls in ResolveView(object).
-    // Key: ViewModelType, Value: IViewFor<ViewModelType> interface type.
+    /// <summary>
+    /// Cache for MakeGenericType calls in ResolveView(object).
+    /// Key: ViewModelType, Value: IViewFor&lt;ViewModelType&gt; interface type.
+    /// </summary>
     private readonly ConcurrentDictionary<Type, Type> _viewForTypeCache = new();
 
-    // Snapshot pattern: Readers access this volatile reference without locking.
-    // Writers lock, clone, mutate, and swap the reference.
-    // Keyed by (ViewModelType, Contract). Empty string represents default contract.
-    private Dictionary<(Type ViewModelType, string Contract), Func<IViewFor>> _mappings = new();
+    /// <summary>
+    /// Snapshot pattern: Readers access this volatile reference without locking.
+    /// Writers lock, clone, mutate, and swap the reference.
+    /// Keyed by (ViewModelType, Contract). Empty string represents default contract.
+    /// </summary>
+    private Dictionary<(Type ViewModelType, string Contract), Func<IViewFor>> _mappings = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultViewLocator"/> class.
@@ -59,6 +63,22 @@ public sealed class DefaultViewLocator : IViewLocator
     internal DefaultViewLocator()
     {
     }
+
+    /// <summary>
+    /// Registers a direct mapping from a view model type to a view factory using the default contract.
+    /// </summary>
+    /// <typeparam name="TViewModel">View model type.</typeparam>
+    /// <typeparam name="TView">View type that implements IViewFor&lt;TViewModel&gt;.</typeparam>
+    /// <param name="factory">Factory function that creates the view instance.</param>
+    /// <returns>The locator for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory)
+        where TViewModel : class
+        where TView : class, IViewFor<TViewModel> =>
+        Map<TViewModel, TView>(factory, null);
 
     /// <summary>
     /// Registers a direct mapping from a view model type to a view factory.
@@ -69,15 +89,11 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <param name="factory">Factory function that creates the view instance.</param>
     /// <param name="contract">Optional contract used to disambiguate multiple views for the same view model.</param>
     /// <returns>The locator for chaining.</returns>
-    /// <example>
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// locator.Map<LoginViewModel, LoginView>(() => new LoginView())
-    ///        .Map<MainViewModel, MainView>(() => new MainView());
-    /// ]]>
-    /// </code>
-    /// </example>
-    public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory, string? contract = null)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory, string? contract)
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>
     {
@@ -88,10 +104,9 @@ public sealed class DefaultViewLocator : IViewLocator
         lock (_gate)
         {
             var current = Volatile.Read(ref _mappings);
-            var newMappings = new Dictionary<(Type, string), Func<IViewFor>>(current)
+            Dictionary<(Type, string), Func<IViewFor>> newMappings = new(current)
             {
-                // Covariance of delegates allows Func<TView> to be assigned to Func<IViewFor>
-                [key] = factory
+            [key] = factory
             };
 
             Interlocked.Exchange(ref _mappings, newMappings);
@@ -101,12 +116,29 @@ public sealed class DefaultViewLocator : IViewLocator
     }
 
     /// <summary>
+    /// Removes the default view mapping for the given view model type.
+    /// </summary>
+    /// <typeparam name="TViewModel">View model type to unmap.</typeparam>
+    /// <returns>The locator for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public DefaultViewLocator Unmap<TViewModel>()
+        where TViewModel : class =>
+        Unmap<TViewModel>(null);
+
+    /// <summary>
     /// Removes a previously registered view mapping.
     /// </summary>
     /// <typeparam name="TViewModel">View model type to unmap.</typeparam>
     /// <param name="contract">Optional contract to unmap. If null, removes the default mapping.</param>
     /// <returns>The locator for chaining.</returns>
-    public DefaultViewLocator Unmap<TViewModel>(string? contract = null)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public DefaultViewLocator Unmap<TViewModel>(string? contract)
         where TViewModel : class
     {
         var key = (typeof(TViewModel), contract ?? string.Empty);
@@ -114,65 +146,103 @@ public sealed class DefaultViewLocator : IViewLocator
         lock (_gate)
         {
             var current = Volatile.Read(ref _mappings);
-            if (current.ContainsKey(key))
+            if (!current.ContainsKey(key))
             {
-                var newMappings = new Dictionary<(Type, string), Func<IViewFor>>(current);
-                newMappings.Remove(key);
-                Interlocked.Exchange(ref _mappings, newMappings);
+                return this;
             }
+
+            Dictionary<(Type, string), Func<IViewFor>> newMappings = new(current);
+            newMappings.Remove(key);
+            Interlocked.Exchange(ref _mappings, newMappings);
         }
 
         return this;
     }
 
     /// <summary>
+    /// Resolves a view for a view model type using the default contract. Fully AOT-compatible.
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public IViewFor<TViewModel>? ResolveView<TViewModel>()
+        where TViewModel : class =>
+        ResolveView<TViewModel>(null);
+
+    /// <summary>
     /// Resolves a view for a view model type known at compile time. Fully AOT-compatible.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <param name="contract">Optional contract to disambiguate between multiple views for the same view model.</param>
-    /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
+    /// <returns>The resolved view or null when no registration is available.</returns>
     /// <remarks>
     /// <para>
     /// Resolution strategy:
     /// <list type="number">
-    /// <item>Check for explicit mapping registered via <see cref="Map{TViewModel, TView}"/> with the specified contract.</item>
+    /// <item>Check for explicit mapping registered via <c>Map</c> with the specified contract.</item>
     /// <item>Query the service locator for <c>IViewFor&lt;TViewModel&gt;</c> with the specified contract.</item>
     /// </list>
     /// </para>
     /// </remarks>
-    public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
         where TViewModel : class
     {
-        // Snapshot read - lock-free
-        // Volatile.Read ensures we get the latest published dictionary reference.
-        // The dictionary itself is immutable (copy-on-write), so no further locking is needed.
-        var mappings = Volatile.Read(ref _mappings);
-        var vmType = typeof(TViewModel);
-        var contractKey = contract ?? string.Empty;
-
-        // 1. Check explicit AOT mappings
-        if (mappings.TryGetValue((vmType, contractKey), out var factory))
+    var mappings = Volatile.Read(ref _mappings);
+    var vmType = typeof(TViewModel);
+    var contractKey = contract ?? string.Empty;
+    if (mappings.TryGetValue((vmType, contractKey), out var factory))
         {
-            this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> from explicit mapping", typeof(TViewModel).Name);
+            this.Log().Debug(
+                CultureInfo.InvariantCulture,
+                "Resolved IViewFor<{0}> from explicit mapping",
+                typeof(TViewModel).Name);
             return (IViewFor<TViewModel>)factory();
         }
 
-        // 2. Fallback to service locator
-        var view = AppLocator.Current?.GetService<IViewFor<TViewModel>>(contract);
-        if (view is not null)
+    var view = AppLocator.Current?.GetService<IViewFor<TViewModel>>(contract);
+    if (view is not null)
         {
-            this.Log().Debug(CultureInfo.InvariantCulture, "Resolved IViewFor<{0}> via service locator", typeof(TViewModel).Name);
+            this.Log().Debug(
+                CultureInfo.InvariantCulture,
+                "Resolved IViewFor<{0}> via service locator",
+                typeof(TViewModel).Name);
             return view;
         }
 
-        this.Log().Warn(CultureInfo.InvariantCulture, "Failed to resolve view for {0}. Use Map<TViewModel, TView>() or register IViewFor<TViewModel> in the service locator.", typeof(TViewModel).Name);
-        return null;
+    this.Log().Warn(
+            CultureInfo.InvariantCulture,
+            "Failed to resolve view for {0}. Use Map<TViewModel, TView>() or register IViewFor<TViewModel> in the service locator.",
+            typeof(TViewModel).Name);
+    return null;
     }
 
+    /// <summary>
+    /// Resolves a view for a view model instance using runtime type information and the default contract.
+    /// </summary>
+    /// <param name="instance">The view model instance to resolve a view for.</param>
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    public IViewFor? ResolveView(object? instance) =>
+        ResolveView(instance, null);
+
     /// <inheritdoc/>
-    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    public IViewFor? ResolveView(object? instance, string? contract = null)
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    public IViewFor? ResolveView(object? instance, string? contract)
     {
         if (instance is null)
         {
@@ -181,34 +251,28 @@ public sealed class DefaultViewLocator : IViewLocator
 
         var vmType = instance.GetType();
         var contractKey = contract ?? string.Empty;
-
-        // Snapshot read - lock-free
         var mappings = Volatile.Read(ref _mappings);
-
-        // 1) Explicit AOT mappings first (fastest, no reflection beyond GetType and Dictionary lookup)
         if (mappings.TryGetValue((vmType, contractKey), out var factory))
         {
             var view = factory();
-            if (view is { } viewFor)
+            if (view is not { } viewFor)
             {
-                viewFor.ViewModel = instance;
-                return viewFor;
+                return null;
             }
 
-            return null;
+            viewFor.ViewModel = instance;
+            return viewFor;
         }
 
-        // 2) Fallback to service locator via runtime-constructed service type.
-        // We cache the MakeGenericType result to avoid reflection overhead on subsequent calls.
         var serviceType = _viewForTypeCache.GetOrAdd(vmType, static t => typeof(IViewFor<>).MakeGenericType(t));
 
         var resolved = AppLocator.Current.GetService(serviceType, contract);
-        if (resolved is IViewFor resolvedViewFor)
+        if (resolved is not IViewFor resolvedViewFor)
         {
-            resolvedViewFor.ViewModel = instance;
-            return resolvedViewFor;
+            return null;
         }
 
-        return null;
+        resolvedViewFor.ViewModel = instance;
+        return resolvedViewFor;
     }
 }

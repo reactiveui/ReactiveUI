@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,6 +9,10 @@ namespace ReactiveUI;
 /// Enum that hints at the visibility of a ui element.
 /// </summary>
 [Flags]
+[SuppressMessage(
+    "Minor Code Smell",
+    "S2342:Enumeration types should comply with a naming convention",
+    Justification = "Established public API; renaming is breaking.")]
 public enum BooleanToVisibilityHint
 {
     /// <summary>
@@ -24,5 +28,5 @@ public enum BooleanToVisibilityHint
     /// <summary>
     /// Use the hidden version rather than the Collapsed.
     /// </summary>
-    UseHidden = 1 << 2,
+    UseHidden = 1 << 2
 }

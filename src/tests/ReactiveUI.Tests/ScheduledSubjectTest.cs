@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -23,11 +23,13 @@ public class ScheduledSubjectTest
         var results = new List<int>();
         var defaultObserver = Observer.Create<int>(results.Add);
 
+        const int SecondValue = 2;
+        const int ExpectedCount = 2;
         var subject = new ScheduledSubject<int>(scheduler, defaultObserver);
         subject.OnNext(1);
-        subject.OnNext(2);
+        subject.OnNext(SecondValue);
 
-        await Assert.That(results).Count().IsEqualTo(2);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCount);
     }
 
     /// <summary>
@@ -35,7 +37,6 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task Dispose_CleansUpResources()
     {
@@ -52,7 +53,6 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task OnCompleted_CompletesObservable()
     {
@@ -72,7 +72,6 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task OnError_SendsErrorToObservers()
     {
@@ -93,7 +92,6 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task OnNext_EmitsValues()
     {
@@ -101,14 +99,16 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 
+        const int SecondValue = 2;
+        const int ExpectedCount = 2;
         subject.Subscribe(results.Add);
         subject.OnNext(1);
-        subject.OnNext(2);
+        subject.OnNext(SecondValue);
         scheduler.Start();
 
-        await Assert.That(results).Count().IsEqualTo(2);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCount);
         await Assert.That(results[0]).IsEqualTo(1);
-        await Assert.That(results[1]).IsEqualTo(2);
+        await Assert.That(results[1]).IsEqualTo(SecondValue);
     }
 
     /// <summary>
@@ -116,7 +116,6 @@ public class ScheduledSubjectTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
-
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task Subscribe_ReturnsDisposable()
     {
@@ -161,10 +160,11 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 
+        const int ValueAfterDispose = 2;
         var subscription = subject.Subscribe(results.Add);
         subject.OnNext(1);
         subscription.Dispose();
-        subject.OnNext(2);
+        subject.OnNext(ValueAfterDispose);
 
         await Assert.That(results).Count().IsEqualTo(1);
     }

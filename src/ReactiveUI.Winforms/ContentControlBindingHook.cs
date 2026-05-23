@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,7 +13,12 @@ namespace ReactiveUI.Winforms;
 public class ContentControlBindingHook : IPropertyBindingHook
 {
     /// <inheritdoc/>
-    public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
+    public bool ExecuteHook(
+        object? source,
+        object target,
+        Func<IObservedChange<object, object>[]> getCurrentViewModelProperties,
+        Func<IObservedChange<object, object>[]> getCurrentViewProperties,
+        BindingDirection direction)
     {
         ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
 
@@ -25,11 +30,11 @@ public class ContentControlBindingHook : IPropertyBindingHook
             return true;
         }
 
-        if (viewProperties.Last().GetPropertyName() != "Controls")
+        if (viewProperties[^1].GetPropertyName() != "Controls")
         {
             return true;
         }
 
-        return true;
+        return false;
     }
 }

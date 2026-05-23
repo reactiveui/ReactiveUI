@@ -1,16 +1,22 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Builder.Tests.Executors;
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests;
 
+/// <summary>
+/// Tests for the core ReactiveUIBuilder creation and service-registration behaviour.
+/// </summary>
 [NotInParallel]
 public class ReactiveUIBuilderCoreTests
 {
+    /// <summary>
+    /// Verifies that creating a builder returns a non-null <see cref="ReactiveUIBuilder"/> instance.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task CreateBuilder_Should_Return_Builder_Instance()
     {
@@ -19,6 +25,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(builder).IsTypeOf<ReactiveUIBuilder>();
     }
 
+    /// <summary>
+    /// Verifies that core services register an observable-for-property and a binding type converter.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithCoreServices_Should_Register_Core_Services()
     {
@@ -29,6 +39,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(typeConverter).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that platform services register at least one binding type converter.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithPlatformServicesExecutor>]
     public async Task WithPlatformServices_Should_Register_Platform_Services()
@@ -38,6 +52,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(services.Any()).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that a custom registration action runs and registers its service.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithCustomRegistrationExecutor>]
     public async Task WithCustomRegistration_Should_Execute_Custom_Action()
@@ -47,6 +65,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(service).IsEqualTo("TestValue");
     }
 
+    /// <summary>
+    /// Verifies that building always registers core services.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Build_Should_Always_Register_Core_Services()
     {
@@ -54,6 +76,9 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(observableProperty).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that a null custom registration action throws <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void WithCustomRegistration_With_Null_Action_Should_Throw()
     {
@@ -61,6 +86,10 @@ public class ReactiveUIBuilderCoreTests
         Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
     }
 
+    /// <summary>
+    /// Verifies that registering views from an assembly completes without error.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithViewsFromAssemblyExecutor>]
     public async Task WithViewsFromAssembly_Should_Register_Views()
@@ -70,6 +99,9 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(builder).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that registering views from a null assembly throws <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void WithViewsFromAssembly_With_Null_Assembly_Should_Throw()
     {
@@ -77,6 +109,10 @@ public class ReactiveUIBuilderCoreTests
         Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
+    /// <summary>
+    /// Verifies that calling core services multiple times does not duplicate registrations.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithCoreServices_Called_Multiple_Times_Should_Not_Register_Twice()
     {
@@ -85,6 +121,10 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(services.Any()).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that the builder supports fluent chaining of registration calls.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<FluentChainingExecutor>]
     public async Task Builder_Should_Support_Fluent_Chaining()
@@ -97,12 +137,18 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(observableProperty).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that creating a builder from a null resolver throws <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
-    public void CreateReactiveUIBuilder_With_Null_Resolver_Should_Throw()
-    {
-        Assert.Throws<ArgumentNullException>(() => RxAppBuilder.CreateReactiveUIBuilder((IMutableDependencyResolver)null!));
-    }
+    public void CreateReactiveUIBuilder_With_Null_Resolver_Should_Throw() =>
+        Assert.Throws<ArgumentNullException>(() =>
+            ((IMutableDependencyResolver)null!).CreateReactiveUIBuilder());
 
+    /// <summary>
+    /// Verifies that building the app produces a valid current locator.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task BuildApp_Should_Return_ReactiveInstance()
     {
@@ -111,6 +157,9 @@ public class ReactiveUIBuilderCoreTests
         await Assert.That(current).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that passing a null platform array throws <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public async Task Build_Should_Return_ReactiveInstance_And_Initialize_ReactiveUI()
     {
@@ -150,18 +199,29 @@ public class ReactiveUIBuilderCoreTests
         Assert.Throws<ArgumentNullException>(() => builder.ForPlatforms(null!));
     }
 
+    /// <summary>
+    /// Executor that builds the app with platform services registered.
+    /// </summary>
     internal sealed class WithPlatformServicesExecutor : BuilderTestExecutorBase
     {
+        /// <inheritdoc/>
         protected override void ConfigureBuilder() =>
             RxAppBuilder.CreateReactiveUIBuilder()
                 .WithPlatformServices()
                 .BuildApp();
     }
 
+    /// <summary>
+    /// Executor that builds the app with a custom registration action.
+    /// </summary>
     internal sealed class WithCustomRegistrationExecutor : BuilderTestExecutorBase
     {
+        /// <summary>
+        /// Gets a value indicating whether the custom service was registered.
+        /// </summary>
         public static bool CustomServiceRegistered { get; private set; }
 
+        /// <inheritdoc/>
         protected override void ConfigureBuilder()
         {
             CustomServiceRegistered = false;
@@ -176,8 +236,12 @@ public class ReactiveUIBuilderCoreTests
         }
     }
 
+    /// <summary>
+    /// Executor that builds the app while registering views from the test assembly.
+    /// </summary>
     internal sealed class WithViewsFromAssemblyExecutor : BuilderTestExecutorBase
     {
+        /// <inheritdoc/>
         protected override void ConfigureBuilder() =>
             RxAppBuilder.CreateReactiveUIBuilder()
                 .WithViewsFromAssembly(typeof(ReactiveUIBuilderCoreTests).Assembly)
@@ -185,10 +249,17 @@ public class ReactiveUIBuilderCoreTests
                 .BuildApp();
     }
 
+    /// <summary>
+    /// Executor that builds the app using a fluent chain of registration calls.
+    /// </summary>
     internal sealed class FluentChainingExecutor : BuilderTestExecutorBase
     {
+        /// <summary>
+        /// Gets a value indicating whether the custom service was registered.
+        /// </summary>
         public static bool CustomServiceRegistered { get; private set; }
 
+        /// <inheritdoc/>
         protected override void ConfigureBuilder()
         {
             CustomServiceRegistered = false;

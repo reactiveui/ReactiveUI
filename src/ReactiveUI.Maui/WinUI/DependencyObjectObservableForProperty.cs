@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,11 +21,21 @@ namespace ReactiveUI;
 /// </summary>
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
+    /// <summary>
+    /// The binding affinity returned for objects that expose a matching DependencyProperty.
+    /// </summary>
+    private const int DependencyPropertyAffinity = 6;
+
     /// <inheritdoc/>
     [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    public int GetAffinityForObject(Type type, string propertyName) =>
+        GetAffinityForObject(type, propertyName, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("GetAffinityForObject uses methods that may require unreferenced code")]
+    public int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged)
     {
-        if (!typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+        if (type is null || !typeof(DependencyObject).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
         {
             return 0;
         }
@@ -35,12 +45,22 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return 0;
         }
 
-        return 6;
+        return DependencyPropertyAffinity;
     }
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
-    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false)
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName) =>
+        GetNotificationForProperty(sender, expression, propertyName, false, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged) =>
+        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("GetNotificationForProperty uses methods that may require unreferenced code")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(object sender, Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings)
     {
         ArgumentNullException.ThrowIfNull(sender);
 
@@ -87,6 +107,12 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         });
     }
 
+    /// <summary>
+    /// Walks the type hierarchy to find a static property with the specified name.
+    /// </summary>
+    /// <param name="typeInfo">The type to start searching from.</param>
+    /// <param name="propertyName">The name of the property to locate.</param>
+    /// <returns>The matching static <see cref="PropertyInfo"/>, or <see langword="null"/> if none is found.</returns>
     [RequiresUnreferencedCode("ActuallyGetProperty uses methods that may require unreferenced code")]
     private static PropertyInfo? ActuallyGetProperty(TypeInfo typeInfo, string propertyName)
     {
@@ -105,6 +131,12 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
+    /// <summary>
+    /// Walks the type hierarchy to find a static field with the specified name.
+    /// </summary>
+    /// <param name="typeInfo">The type to start searching from.</param>
+    /// <param name="propertyName">The name of the field to locate.</param>
+    /// <returns>The matching static <see cref="FieldInfo"/>, or <see langword="null"/> if none is found.</returns>
     [RequiresUnreferencedCode("ActuallyGetField uses methods that may require unreferenced code")]
     private static FieldInfo? ActuallyGetField(TypeInfo typeInfo, string propertyName)
     {
@@ -123,6 +155,12 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
+    /// <summary>
+    /// Builds a fetcher that resolves the <see cref="DependencyProperty"/> backing the named property.
+    /// </summary>
+    /// <param name="type">The type that declares the property.</param>
+    /// <param name="propertyName">The name of the property whose backing DependencyProperty is required.</param>
+    /// <returns>A function that returns the <see cref="DependencyProperty"/>, or <see langword="null"/> if it cannot be resolved.</returns>
     [RequiresUnreferencedCode("GetDependencyPropertyFetcher uses methods that may require unreferenced code")]
     private static Func<DependencyProperty>? GetDependencyPropertyFetcher(Type type, string propertyName)
     {

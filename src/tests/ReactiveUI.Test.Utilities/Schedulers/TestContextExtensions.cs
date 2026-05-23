@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -32,6 +32,7 @@ public static class TestContextExtensions
     {
         ArgumentNullException.ThrowIfNull(context);
         return (VirtualTimeScheduler)(context.StateBag.Items["VirtualTimeScheduler"]
-            ?? throw new InvalidOperationException("VirtualTimeScheduler not configured. Use [TestExecutor<WithVirtualTimeSchedulerExecutor>] on the test method or class."));
+                                      ?? throw new InvalidOperationException(
+                                          "VirtualTimeScheduler not configured. Use [TestExecutor<WithVirtualTimeSchedulerExecutor>] on the test method or class."));
     }
 }

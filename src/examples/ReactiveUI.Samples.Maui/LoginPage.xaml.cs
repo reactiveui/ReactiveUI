@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,7 +9,7 @@ namespace ReactiveUI.Samples.Maui;
 /// A reactive login page demonstrating WhenActivated, Bind, BindCommand,
 /// and DisplayAlert for user feedback in MAUI.
 /// </summary>
-public partial class LoginPage : ReactiveUI.Maui.ReactiveContentPage<LoginViewModel>
+public partial class LoginPage : ReactiveContentPage<LoginViewModel>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LoginPage"/> class.
@@ -17,7 +17,7 @@ public partial class LoginPage : ReactiveUI.Maui.ReactiveContentPage<LoginViewMo
     public LoginPage()
     {
         InitializeComponent();
-        ViewModel = new LoginViewModel(RxSchedulers.MainThreadScheduler);
+        ViewModel = new(RxSchedulers.MainThreadScheduler);
 
         this.WhenActivated(d =>
         {

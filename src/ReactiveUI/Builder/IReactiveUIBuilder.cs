@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Reflection;
-
 using Splat.Builder;
 
 namespace ReactiveUI.Builder;
@@ -78,7 +78,9 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <param name="mainThreadScheduler">The main thread scheduler.</param>
     /// <param name="platformServices">The platform services.</param>
     /// <returns>The builder instance for chaining.</returns>
-    IReactiveUIBuilder ForCustomPlatform(IScheduler mainThreadScheduler, Action<IMutableDependencyResolver> platformServices);
+    IReactiveUIBuilder ForCustomPlatform(
+        IScheduler mainThreadScheduler,
+        Action<IMutableDependencyResolver> platformServices);
 
     /// <summary>
     /// Fors the platforms.
@@ -93,6 +95,10 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TView">The type of the view.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject;
@@ -102,8 +108,13 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
 #if NET6_0_OR_GREATER
-    IReactiveUIBuilder RegisterSingletonViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
+    IReactiveUIBuilder RegisterSingletonViewModel<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
 #else
     IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
 #endif
@@ -115,6 +126,10 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TView">The type of the view.</typeparam>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject;
@@ -124,6 +139,10 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
 
@@ -136,8 +155,21 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a reference type that implements IReactiveObject and has a
     /// parameterless constructor.</typeparam>
     /// <returns>The current instance of the reactive UI builder, enabling method chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new();
+
+    /// <summary>
+    /// Withes the main thread scheduler.
+    /// </summary>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler);
 
     /// <summary>
     /// Withes the main thread scheduler.
@@ -147,13 +179,17 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
-    IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp = true);
+    IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp);
 
     /// <summary>
     /// Withes the platform module.
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new();
 
@@ -181,11 +217,20 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// Withes the task pool scheduler.
     /// </summary>
     /// <param name="scheduler">The scheduler.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler);
+
+    /// <summary>
+    /// Withes the task pool scheduler.
+    /// </summary>
+    /// <param name="scheduler">The scheduler.</param>
     /// <param name="setRxApp">if set to <c>true</c> [set rx application].</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
-    IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true);
+    IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp);
 
     /// <summary>
     /// Configures a custom exception handler for unhandled errors in ReactiveUI observables.
@@ -208,6 +253,10 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IReactiveUIBuilder WithSuspensionHost<TAppState>();
 
     /// <summary>
@@ -291,7 +340,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// </summary>
     /// <param name="assembly">The assembly.</param>
     /// <returns>The builder instance for chaining.</returns>
-    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
+    [RequiresUnreferencedCode(
+        "Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly);
 
     /// <summary>
@@ -409,7 +459,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action);
 
     /// <summary>
     /// Resolves nine instances and passes them to the action.
@@ -425,7 +476,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action);
 
     /// <summary>
     /// Resolves ten instances and passes them to the action.
@@ -442,7 +494,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action);
 
     /// <summary>
     /// Resolves eleven instances and passes them to the action.
@@ -460,7 +513,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action);
 
     /// <summary>
     /// Resolves twelve instances and passes them to the action.
@@ -479,7 +533,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action);
 
     /// <summary>
     /// Resolves thirteen instances and passes them to the action.
@@ -499,7 +554,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action);
 
     /// <summary>
     /// Resolves fourteen instances and passes them to the action.
@@ -520,7 +576,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action);
 
     /// <summary>
     /// Resolves fifteen instances and passes them to the action.
@@ -542,7 +599,8 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action);
 
     /// <summary>
     /// Resolves sixteen instances and passes them to the action.
@@ -565,5 +623,6 @@ public interface IReactiveUIBuilder : IAppBuilder
     /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action);
+    IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action);
 }

@@ -1,13 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
-
 using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -16,6 +17,9 @@ namespace ReactiveUI;
 /// </summary>
 public static class UsbManagerExtensions
 {
+    /// <summary>
+    /// The intent action used when requesting USB permission.
+    /// </summary>
     private const string ActionUsbPermission = "com.reactiveui.USB_PERMISSION";
 
     /// <summary>
@@ -26,17 +30,9 @@ public static class UsbManagerExtensions
     /// <param name="manager">The UsbManager system service.</param>
     /// <param name="context">The Context to request the permission from.</param>
     /// <param name="device">The UsbDevice to request permission for.</param>
-    public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbDevice device) => // TODO: Create Test
-        Observable.Create<bool>(observer =>
-        {
-            var usbPermissionReceiver = new UsbDevicePermissionReceiver(observer, device);
-            context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
-
-            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
-            manager.RequestPermission(device, intent);
-
-            return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
-        });
+    public static IObservable<bool>
+        PermissionRequested(this UsbManager manager, Context context, UsbDevice device) =>
+        new DevicePermissionObservable(manager, context, device);
 
     /// <summary>
     /// Requests temporary permission for the given package to access the accessory.
@@ -46,24 +42,73 @@ public static class UsbManagerExtensions
     /// <param name="manager">The UsbManager system service.</param>
     /// <param name="context">The Context to request the permission from.</param>
     /// <param name="accessory">The UsbAccessory to request permission for.</param>
-    public static IObservable<bool> PermissionRequested(this UsbManager manager, Context context, UsbAccessory accessory) => // TODO: Create Test
-        Observable.Create<bool>(observer =>
-        {
-            var usbPermissionReceiver = new UsbAccessoryPermissionReceiver(observer, accessory);
-            context.RegisterReceiver(usbPermissionReceiver, new IntentFilter(ActionUsbPermission));
+    public static IObservable<bool> PermissionRequested(
+        this UsbManager manager,
+        Context context,
+        UsbAccessory accessory) =>
+        new AccessoryPermissionObservable(manager, context, accessory);
 
-            var intent = PendingIntent.GetBroadcast(context, 0, new Intent(ActionUsbPermission), 0);
+    /// <summary>
+    /// Requests USB device permission on subscribe and surfaces the granted result — replacing <c>Observable.Create</c>.
+    /// The broadcast receiver is unregistered when the subscription is disposed.
+    /// </summary>
+    /// <param name="manager">The USB manager system service.</param>
+    /// <param name="context">The context to request the permission from.</param>
+    /// <param name="device">The USB device to request permission for.</param>
+    private sealed class DevicePermissionObservable(UsbManager manager, Context context, UsbDevice device)
+        : IObservable<bool>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<bool> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            UsbDevicePermissionReceiver usbPermissionReceiver = new(observer, device);
+            context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
+
+            var intent = PendingIntent.GetBroadcast(context, 0, new(ActionUsbPermission), 0);
+            manager.RequestPermission(device, intent);
+
+            return new ActionDisposable(() => context.UnregisterReceiver(usbPermissionReceiver));
+        }
+    }
+
+    /// <summary>
+    /// Requests USB accessory permission on subscribe and surfaces the granted result — replacing <c>Observable.Create</c>.
+    /// The broadcast receiver is unregistered when the subscription is disposed.
+    /// </summary>
+    /// <param name="manager">The USB manager system service.</param>
+    /// <param name="context">The context to request the permission from.</param>
+    /// <param name="accessory">The USB accessory to request permission for.</param>
+    private sealed class AccessoryPermissionObservable(UsbManager manager, Context context, UsbAccessory accessory)
+        : IObservable<bool>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<bool> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            UsbAccessoryPermissionReceiver usbPermissionReceiver = new(observer, accessory);
+            context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
+
+            var intent = PendingIntent.GetBroadcast(context, 0, new(ActionUsbPermission), 0);
             manager.RequestPermission(accessory, intent);
 
-            return Disposable.Create(() => context.UnregisterReceiver(usbPermissionReceiver));
-        });
+            return new ActionDisposable(() => context.UnregisterReceiver(usbPermissionReceiver));
+        }
+    }
 
     /// <summary>
     /// Private implementation of BroadcastReceiver to handle device permission requests.
     /// </summary>
-    private class UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
-                : BroadcastReceiver
+    private sealed class UsbDevicePermissionReceiver(IObserver<bool> observer, UsbDevice device)
+        : BroadcastReceiver
     {
+        /// <summary>
+        /// Handles the broadcast for a USB device permission result.
+        /// </summary>
+        /// <param name="context">The context in which the receiver is running.</param>
+        /// <param name="intent">The intent containing the permission result.</param>
         [ObsoletedOSPlatform("android33.0")]
         public override void OnReceive(Context? context, Intent? intent)
         {
@@ -87,9 +132,14 @@ public static class UsbManagerExtensions
     /// <summary>
     /// Private implementation of BroadcastReceiver to handle accessory permission requests.
     /// </summary>
-    private class UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
-                : BroadcastReceiver
+    private sealed class UsbAccessoryPermissionReceiver(IObserver<bool> observer, UsbAccessory accessory)
+        : BroadcastReceiver
     {
+        /// <summary>
+        /// Handles the broadcast for a USB accessory permission result.
+        /// </summary>
+        /// <param name="context">The context in which the receiver is running.</param>
+        /// <param name="intent">The intent containing the permission result.</param>
         [ObsoletedOSPlatform("android33.0")]
         public override void OnReceive(Context? context, Intent? intent)
         {

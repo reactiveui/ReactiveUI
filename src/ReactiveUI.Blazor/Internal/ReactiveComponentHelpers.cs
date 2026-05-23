@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -69,7 +69,7 @@ internal static class ReactiveComponentHelpers
     /// When the component is deactivated, the view model's activator is deactivated.
     /// </para>
     /// <para>
-    /// The activation subscription is added to <see cref="ReactiveComponentState{T}.LifetimeDisposables"/> to ensure
+    /// The activation subscription is added to <see cref="ReactiveComponentState.LifetimeDisposables"/> to ensure
     /// it is disposed when the component is disposed. The deactivation subscription does not require explicit disposal
     /// as it is a fire-and-forget operation that completes when the component is disposed.
     /// </para>
@@ -81,7 +81,7 @@ internal static class ReactiveComponentHelpers
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="viewModel"/> or <paramref name="state"/> is <see langword="null"/>.
     /// </exception>
-    public static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState<T> state)
+    public static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState state)
         where T : class, INotifyPropertyChanged
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -150,35 +150,36 @@ internal static class ReactiveComponentHelpers
         ArgumentNullException.ThrowIfNull(removePropertyChangedHandler);
         ArgumentNullException.ThrowIfNull(viewModelPropertyName);
 
-        return Observable.Create<T>(
-            observer =>
+        return Observable.Create<T>(observer =>
+        {
+            // Emit current value once to preserve the original "Skip(1)" behavior in consumers
+            var current = getCurrentViewModel();
+            if (current is not null)
             {
-                // Emit current value once to preserve the original "Skip(1)" behavior in consumers
-                var current = getCurrentViewModel();
-                if (current is not null)
+                observer.OnNext(current);
+            }
+
+            // Handler for subsequent changes
+            void Handler(object? sender, PropertyChangedEventArgs e)
+            {
+                // Use ordinal comparison for best performance; nameof() produces ordinal strings
+                if (!string.Equals(e.PropertyName, viewModelPropertyName, StringComparison.Ordinal))
                 {
-                    observer.OnNext(current);
+                    return;
                 }
 
-                // Handler for subsequent changes
-                void Handler(object? sender, PropertyChangedEventArgs e)
+                var vm = getCurrentViewModel();
+                if (vm is null)
                 {
-                    // Use ordinal comparison for best performance; nameof() produces ordinal strings
-                    if (!string.Equals(e.PropertyName, viewModelPropertyName, StringComparison.Ordinal))
-                    {
-                        return;
-                    }
-
-                    var vm = getCurrentViewModel();
-                    if (vm is not null)
-                    {
-                        observer.OnNext(vm);
-                    }
+                    return;
                 }
 
-                addPropertyChangedHandler(Handler);
-                return Disposable.Create(() => removePropertyChangedHandler(Handler));
-            });
+                observer.OnNext(vm);
+            }
+
+            addPropertyChangedHandler(Handler);
+            return Disposable.Create(() => removePropertyChangedHandler(Handler));
+        });
     }
 
     /// <summary>
@@ -202,7 +203,7 @@ internal static class ReactiveComponentHelpers
     /// </param>
     /// <returns>
     /// A disposable that tears down all subscriptions when disposed. Should be assigned to
-    /// <see cref="ReactiveComponentState{T}.FirstRenderSubscriptions"/>.
+    /// <see cref="ReactiveComponentState.FirstRenderSubscriptions"/>.
     /// </returns>
     /// <remarks>
     /// <para>

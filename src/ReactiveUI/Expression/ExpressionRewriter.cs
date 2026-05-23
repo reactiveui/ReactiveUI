@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -68,10 +70,18 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// <param name="node">The binary expression node to visit. Must represent an array or indexer access with a constant index.</param>
     /// <returns>An <see cref="Expression"/> that represents the rewritten array or indexer access.</returns>
     /// <exception cref="NotSupportedException">Thrown if the right side of the binary expression is not a constant expression.</exception>
-    [RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [RequiresUnreferencedCode(
+        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+    [RequiresDynamicCode(
+        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+    [SuppressMessage(
+        "AOT",
+        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
+    [SuppressMessage(
+        "Trimming",
+        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
     protected override Expression VisitBinary(BinaryExpression node)
     {
         if (node.Right is not ConstantExpression)
@@ -87,7 +97,6 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
             return Expression.ArrayAccess(instance, index);
         }
 
-        // Translate arrayindex into a normal index expression using the indexer property.
         return Expression.MakeIndex(instance, GetItemProperty(instance.Type), [index]);
     }
 
@@ -101,10 +110,18 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>An <see cref="Expression"/> representing the rewritten unary expression, or the original node if no rewriting is
     /// required.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="node"/> does not have a valid operand.</exception>
-    [RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [RequiresUnreferencedCode(
+        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+    [RequiresDynamicCode(
+        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+    [SuppressMessage(
+        "AOT",
+        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
+    [SuppressMessage(
+        "Trimming",
+        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
     protected override Expression VisitUnary(UnaryExpression node)
     {
         if (node.Operand is null)
@@ -112,21 +129,21 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
             throw new ArgumentException("Could not find a valid operand for the node.", nameof(node));
         }
 
-        if (node.NodeType == ExpressionType.Convert)
+        switch (node.NodeType)
         {
-            // Strip conversion nodes to keep expression chains stable.
-            return Visit(node.Operand);
+            case ExpressionType.Convert:
+                return Visit(node.Operand);
+            case ExpressionType.ArrayLength:
+                {
+                    var operand = Visit(node.Operand);
+                    var lengthProperty = GetLengthProperty(operand.Type);
+
+                    return Expression.MakeMemberAccess(operand, lengthProperty);
+                }
+
+            default:
+                return node.Update(Visit(node.Operand));
         }
-
-        if (node.NodeType == ExpressionType.ArrayLength)
-        {
-            var operand = Visit(node.Operand);
-            var lengthProperty = GetLengthProperty(operand.Type);
-
-            return Expression.MakeMemberAccess(operand, lengthProperty);
-        }
-
-        return node.Update(Visit(node.Operand));
     }
 
     /// <summary>
@@ -142,10 +159,18 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>An expression representing the rewritten indexer access.</returns>
     /// <exception cref="NotSupportedException">Thrown if the method call does not represent an indexer access with all constant arguments.</exception>
     /// <exception cref="ArgumentException">Thrown if the method call does not target a valid object instance.</exception>
-    [RequiresUnreferencedCode("Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
-    [RequiresDynamicCode("Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "Third Party Code")]
+    [RequiresUnreferencedCode(
+        "Expression rewriting uses reflection over runtime types (e.g., Item/Length) which may be removed by trimming.")]
+    [RequiresDynamicCode(
+        "Expression rewriting uses reflection over runtime types and may not be compatible with AOT compilation.")]
+    [SuppressMessage(
+        "AOT",
+        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
+    [SuppressMessage(
+        "Trimming",
+        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "Third Party Code")]
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
         if (!node.Method.IsSpecialName || !AllConstant(node.Arguments))
@@ -160,7 +185,6 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
 
         var instance = Visit(node.Object);
 
-        // Visit arguments explicitly to avoid LINQ allocations.
         var args = VisitArgumentList(node.Arguments);
 
         return Expression.MakeIndex(instance, GetItemProperty(instance.Type), args);
@@ -187,23 +211,22 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// </summary>
     /// <param name="node">The unsupported node.</param>
     /// <returns>An exception to throw.</returns>
-    private static Exception CreateUnsupportedNodeException(Expression node)
+    private static NotSupportedException CreateUnsupportedNodeException(Expression node)
     {
-        // Preserve prior behavior: include helpful guidance for binary expressions.
-        var sb = new StringBuilder(96);
+        StringBuilder sb = new(96);
         sb.Append("Unsupported expression of type '")
-          .Append(node.NodeType)
-          .Append("' ")
-          .Append(node)
-          .Append('.');
+            .Append(node.NodeType)
+            .Append("' ")
+            .Append(node)
+            .Append('.');
 
         if (node is BinaryExpression be)
         {
             sb.Append(" Did you meant to use expressions '")
-              .Append(be.Left)
-              .Append("' and '")
-              .Append(be.Right)
-              .Append("'?");
+                .Append(be.Left)
+                .Append("' and '")
+                .Append(be.Right)
+                .Append("'?");
         }
 
         return new NotSupportedException(sb.ToString());
@@ -216,10 +239,10 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>The resolved indexer property.</returns>
     /// <exception cref="InvalidOperationException">Thrown when no indexer property can be found.</exception>
     private static PropertyInfo GetItemProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
         Type type)
     {
-        // NOTE: Using the Type instance preserves trimming annotations; do not reconstruct Type from RuntimeTypeHandle.
         var property = type.GetRuntimeProperty("Item");
         return property ?? throw new InvalidOperationException("Could not find a valid indexer property named 'Item'.");
     }
@@ -231,12 +254,13 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>The resolved length property.</returns>
     /// <exception cref="InvalidOperationException">Thrown when no length property can be found.</exception>
     private static PropertyInfo GetLengthProperty(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.NonPublicProperties)]
         Type type)
     {
-        // NOTE: Using the Type instance preserves trimming annotations; do not reconstruct Type from RuntimeTypeHandle.
         var property = type.GetRuntimeProperty("Length");
-        return property ?? throw new InvalidOperationException("Could not find valid information for the array length operator.");
+        return property ??
+               throw new InvalidOperationException("Could not find valid information for the array length operator.");
     }
 
     /// <summary>
@@ -267,7 +291,7 @@ internal sealed class ExpressionRewriter : ExpressionVisitor
         var count = arguments.Count;
         if (count == 0)
         {
-            return Array.Empty<Expression>();
+            return [];
         }
 
         var visited = new Expression[count];

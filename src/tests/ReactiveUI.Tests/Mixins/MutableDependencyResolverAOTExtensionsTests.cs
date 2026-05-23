@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,7 +9,7 @@ namespace ReactiveUI.Tests.Mixins;
 ///     Tests for the <see cref="MutableDependencyResolverAOTExtensions" /> class.
 ///     These tests verify the AOT-friendly registration helpers.
 /// </summary>
-public class MutableDependencyResolverAOTExtensionsTests
+public class MutableDependencyResolverAotExtensionsTests
 {
     /// <summary>
     ///     Verifies that RegisterSingletonViewForViewModelAOT registers a singleton view.
@@ -155,10 +155,17 @@ public class MutableDependencyResolverAOTExtensionsTests
         }
     }
 
-    private class TestView : IViewFor<TestViewModel>
+    /// <summary>
+    ///     A test view used to verify AOT view registration.
+    /// </summary>
+    private sealed class TestView : IViewFor<TestViewModel>
     {
+        /// <summary>
+        ///     Gets or sets the strongly typed view model.
+        /// </summary>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -166,7 +173,12 @@ public class MutableDependencyResolverAOTExtensionsTests
         }
     }
 
-    private class TestViewModel : ReactiveObject
-    {
-    }
+    /// <summary>
+    ///     A test view model used to verify AOT view registration.
+    /// </summary>
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    private sealed class TestViewModel : ReactiveObject;
 }

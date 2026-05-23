@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,8 +15,15 @@ namespace ReactiveUI;
 /// access to lifecycle events. Most applications interact with the suspension host through higher-level APIs.</remarks>
 public static class RxSuspension
 {
+    /// <summary>
+    /// The current suspension host instance.
+    /// </summary>
     private static ISuspensionHost? _suspensionHost;
-    private static int _suspensionHostInitialized; // 0 = false, 1 = true
+
+    /// <summary>
+    /// Tracks whether the suspension host has been initialized; 0 means false, 1 means true.
+    /// </summary>
+    private static int _suspensionHostInitialized;
 
     /// <summary>
     /// Gets the suspension host for application lifecycle management.
@@ -42,10 +49,12 @@ public static class RxSuspension
     /// <param name="suspensionHost">The custom suspension host to use.</param>
     internal static void InitializeSuspensionHost(ISuspensionHost suspensionHost)
     {
-        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
         {
-            _suspensionHost = suspensionHost ?? throw new ArgumentNullException(nameof(suspensionHost));
+            return;
         }
+
+        _suspensionHost = suspensionHost ?? throw new ArgumentNullException(nameof(suspensionHost));
     }
 
     /// <summary>
@@ -67,9 +76,11 @@ public static class RxSuspension
     /// </summary>
     private static void InitializeDefaultSuspensionHost()
     {
-        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
         {
-            _suspensionHost = new SuspensionHost();
+            return;
         }
+
+        _suspensionHost = new SuspensionHost();
     }
 }

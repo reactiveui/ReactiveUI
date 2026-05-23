@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,8 +13,13 @@ namespace ReactiveUI.Tests.Wpf;
 /// </summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
-public class VisibilityToBooleanTypeConverterTests
+public sealed class VisibilityToBooleanTypeConverterTests
 {
+    /// <summary>
+    /// The expected affinity returned for supported conversions.
+    /// </summary>
+    private const int ExpectedAffinity = 2;
+
     /// <summary>
     /// Tests that GetAffinityForObjects returns correct affinity.
     /// </summary>
@@ -26,7 +31,7 @@ public class VisibilityToBooleanTypeConverterTests
 
         var affinity = converter.GetAffinityForObjects();
 
-        await Assert.That(affinity).IsEqualTo(2);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>

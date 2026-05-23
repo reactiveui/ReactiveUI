@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,8 +9,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup.Primitives;
 using System.Windows.Media;
-
-using DynamicData;
 
 namespace ReactiveUI.Wpf.Binding;
 
@@ -27,12 +25,43 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     where TView : class, IViewFor
     where TViewModel : class
 {
+    /// <summary>
+    /// The WPF control that the binding targets.
+    /// </summary>
     private readonly FrameworkElement _control;
+
+    /// <summary>
+    /// The dependency property on the control that is bound.
+    /// </summary>
     private readonly DependencyProperty _dpPropertyName;
+
+    /// <summary>
+    /// The view model that supplies the bound value.
+    /// </summary>
     private readonly TViewModel _viewModel;
+
+    /// <summary>
+    /// The dotted property path on the view model that is bound.
+    /// </summary>
     private readonly string _vmPropertyName;
+
+    /// <summary>
+    /// The disposable that tears down the active binding.
+    /// </summary>
     private IDisposable? _inner;
 
+    /// <summary>
+    /// Tracks whether this instance has already been disposed.
+    /// </summary>
+    private bool _disposed;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ValidationBindingWpf{TView, TViewModel, TVProp, TVMProp}"/> class.
+    /// </summary>
+    /// <param name="view">The view that owns the binding.</param>
+    /// <param name="viewModel">The view model that supplies the bound value.</param>
+    /// <param name="vmProperty">An expression selecting the view model property to bind.</param>
+    /// <param name="viewProperty">An expression selecting the view property to bind.</param>
     public ValidationBindingWpf(
         TView view,
         TViewModel viewModel,
@@ -51,11 +80,15 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
 
         var controlName = ExtractControlName(viewExpressionChain, typeof(TView));
         _control = FindControlByName(view as DependencyObject, controlName)
-            ?? throw new ArgumentException($"Control '{controlName}' not found in view {typeof(TView).Name}", nameof(viewProperty));
+                   ?? throw new ArgumentException(
+                       $"Control '{controlName}' not found in view {typeof(TView).Name}",
+                       nameof(viewProperty));
 
         var propertyName = viewExpressionChain.LastOrDefault()?.GetMemberInfo()?.Name;
         _dpPropertyName = GetDependencyProperty(_control, propertyName)
-            ?? throw new ArgumentException($"Dependency property '{propertyName}' not found on {typeof(TVProp).Name}", nameof(viewProperty));
+                          ?? throw new ArgumentException(
+                              $"Dependency property '{propertyName}' not found on {typeof(TVProp).Name}",
+                              nameof(viewProperty));
 
         Changed = Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression)
             .Select(static tvm => (TVMProp?)tvm)
@@ -96,13 +129,15 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <returns>A disposable that can be used to remove the binding.</returns>
     public IDisposable Bind()
     {
-        _control.SetBinding(_dpPropertyName, new System.Windows.Data.Binding
-        {
-            Source = _viewModel,
-            Path = new(_vmPropertyName),
-            Mode = BindingMode.TwoWay,
-            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-        });
+        _control.SetBinding(
+            _dpPropertyName,
+            new System.Windows.Data.Binding
+            {
+                Source = _viewModel,
+                Path = new(_vmPropertyName),
+                Mode = BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
 
         _inner = Disposable.Create(() => BindingOperations.ClearBinding(_control, _dpPropertyName));
 
@@ -114,7 +149,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// </summary>
     public void Dispose()
     {
-        _inner?.Dispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
@@ -146,14 +181,17 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     {
         if (expressionChain.Length < 2)
         {
-            throw new ArgumentException($"Expression chain too short to contain a control reference on {viewType.Name}", nameof(expressionChain));
+            throw new ArgumentException(
+                $"Expression chain too short to contain a control reference on {viewType.Name}",
+                nameof(expressionChain));
         }
 
         var lastIndex = expressionChain.Length - 1;
         var controlExpression = expressionChain[lastIndex - 1];
         var controlName = controlExpression.GetMemberInfo()?.Name;
 
-        return controlName ?? throw new ArgumentException($"Control name not found on {viewType.Name}", nameof(expressionChain));
+        return controlName ??
+               throw new ArgumentException($"Control name not found on {viewType.Name}", nameof(expressionChain));
     }
 
     /// <summary>
@@ -259,6 +297,25 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         }
 
         return FindControlsByNameIterator(parent, name).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Releases the resources used by the binding.
+    /// </summary>
+    /// <param name="disposing">True to release managed resources; otherwise, false.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            _inner?.Dispose();
+        }
+
+        _disposed = true;
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -18,6 +18,16 @@ namespace ReactiveUI.AOT.Tests;
 public class ComprehensiveAOTTests
 {
     /// <summary>
+    /// The initial value used when seeding reactive properties and subjects.
+    /// </summary>
+    private const string InitialValue = "initial";
+
+    /// <summary>
+    /// The expected number of operations performed in the count-based assertions.
+    /// </summary>
+    private const int ExpectedCount = 2;
+
+    /// <summary>
     /// Tests that demonstrate AOT-compatible patterns that work well in AOT scenarios.
     /// These tests use string-based property names and explicit schedulers.
     /// </summary>
@@ -34,13 +44,13 @@ public class ComprehensiveAOTTests
 
         // Direct property observation works well in AOT
         var changes = new List<string?>();
-        obj.PropertyChanged += (s, e) => changes.Add(e.PropertyName);
+        obj.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
 
         obj.TestProperty = "test1";
         obj.TestProperty = "test2";
 
         await Assert.That(changes).Contains(nameof(TestReactiveObject.TestProperty));
-        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(2);
+        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedCount);
     }
 
     /// <summary>
@@ -53,10 +63,7 @@ public class ComprehensiveAOTTests
         var interaction = new Interaction<string, bool>();
         var result = false;
 
-        interaction.RegisterHandler(static context =>
-        {
-            context.SetOutput(context.Input == "test");
-        });
+        interaction.RegisterHandler(static context => context.SetOutput(context.Input == "test"));
 
         result = interaction.Handle("test").Wait();
         await Assert.That(result).IsTrue();
@@ -75,12 +82,12 @@ public class ComprehensiveAOTTests
         var messageBus = new MessageBus();
         var receivedMessages = new List<string>();
 
-        messageBus.Listen<string>().ObserveOn(ImmediateScheduler.Instance).Subscribe(msg => receivedMessages.Add(msg));
+        messageBus.Listen<string>().ObserveOn(ImmediateScheduler.Instance).Subscribe(receivedMessages.Add);
 
         messageBus.SendMessage("Message1");
         messageBus.SendMessage("Message2");
 
-        await Assert.That(receivedMessages).Count().IsEqualTo(2);
+        await Assert.That(receivedMessages).Count().IsEqualTo(ExpectedCount);
         await Assert.That(receivedMessages).Contains("Message1");
         await Assert.That(receivedMessages).Contains("Message2");
     }
@@ -115,14 +122,14 @@ public class ComprehensiveAOTTests
     {
         // Use explicit scheduler to avoid RxApp dependency (AOT-friendly)
         var scheduler = CurrentThreadScheduler.Instance;
-        var property = new ReactiveProperty<string>("initial", scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
 
         var values = new List<string>();
         property.ObserveOn(ImmediateScheduler.Instance).Subscribe(value => values.Add(value ?? string.Empty));
 
         property.Value = "changed";
 
-        await Assert.That(values).Contains("initial");
+        await Assert.That(values).Contains(InitialValue);
         using (Assert.Multiple())
         {
             await Assert.That(values).Contains("changed");
@@ -141,12 +148,12 @@ public class ComprehensiveAOTTests
         var scheduler = CurrentThreadScheduler.Instance;
 
         // String-based property binding is AOT-compatible
-        var source = new BehaviorSubject<string>("initial");
+        var source = new BehaviorSubject<string>(InitialValue);
         var helper = source
             .ObserveOn(scheduler)
             .ToProperty(obj, nameof(TestReactiveObject.ComputedProperty));
 
-        await Assert.That(helper.Value).IsEqualTo("initial");
+        await Assert.That(helper.Value).IsEqualTo(InitialValue);
 
         source.OnNext("updated");
         await Assert.That(helper.Value).IsEqualTo("updated");
@@ -218,8 +225,8 @@ public class ComprehensiveAOTTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(activationCount).IsEqualTo(2);
-            await Assert.That(deactivationCount).IsEqualTo(2);
+            await Assert.That(activationCount).IsEqualTo(ExpectedCount);
+            await Assert.That(deactivationCount).IsEqualTo(ExpectedCount);
         }
     }
 }

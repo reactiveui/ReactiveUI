@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,9 +9,17 @@ namespace ReactiveUI.AndroidX;
 /// This is a Fragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragment, IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
+public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragment,
+    IReactiveNotifyPropertyChanged<ReactiveDialogFragment>, IReactiveObject, IHandleObservableErrors
 {
+    /// <summary>
+    /// The subject that signals when the fragment is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>
+    /// The subject that signals when the fragment is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -41,10 +49,12 @@ public class ReactiveDialogFragment : global::AndroidX.Fragment.App.DialogFragme
     public IObservable<Unit> Deactivated => _deactivated.AsObservable();
 
     /// <inheritdoc />
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc/>
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveDialogFragment>> Changed =>
+        this.GetChangedObservable();
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);

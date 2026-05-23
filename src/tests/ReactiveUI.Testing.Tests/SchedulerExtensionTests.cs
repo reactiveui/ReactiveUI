@@ -1,12 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Threading;
-
 using Microsoft.Reactive.Testing;
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
@@ -18,6 +15,9 @@ namespace ReactiveUI.Testing.Tests;
 [TestExecutor<AppBuilderTestExecutor>]
 public sealed class SchedulerExtensionTests
 {
+    private const string SchedulerNotSetMessage = "Scheduler not set correctly";
+    private const int ExpectedValue = 42;
+
     /// <summary>
     /// Tests that WithScheduler sets both RxApp and RxSchedulers schedulers.
     /// </summary>
@@ -121,13 +121,13 @@ public sealed class SchedulerExtensionTests
             // Inside the block, scheduler should be active
             if (RxSchedulers.MainThreadScheduler != s)
             {
-                throw new InvalidOperationException("Scheduler not set correctly");
+                throw new InvalidOperationException(SchedulerNotSetMessage);
             }
 
-            return 42;
+            return ExpectedValue;
         });
 
-        await Assert.That(result).IsEqualTo(42);
+        await Assert.That(result).IsEqualTo(ExpectedValue);
 
         // After the block, original scheduler should be restored
         await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
@@ -149,10 +149,12 @@ public sealed class SchedulerExtensionTests
             executed = true;
 
             // Inside the block, scheduler should be active
-            if (RxSchedulers.MainThreadScheduler != s)
+            if (RxSchedulers.MainThreadScheduler == s)
             {
-                throw new InvalidOperationException("Scheduler not set correctly");
+                return;
             }
+
+            throw new InvalidOperationException(SchedulerNotSetMessage);
         });
 
         await Assert.That(executed).IsTrue();
@@ -174,13 +176,13 @@ public sealed class SchedulerExtensionTests
             // Inside the block, scheduler should be active
             if (RxSchedulers.MainThreadScheduler != s)
             {
-                throw new InvalidOperationException("Scheduler not set correctly");
+                throw new InvalidOperationException(SchedulerNotSetMessage);
             }
 
-            return Task.FromResult(42);
+            return Task.FromResult(ExpectedValue);
         });
 
-        await Assert.That(result).IsEqualTo(42);
+        await Assert.That(result).IsEqualTo(ExpectedValue);
         await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
     }
 
@@ -202,7 +204,7 @@ public sealed class SchedulerExtensionTests
             // Inside the block, scheduler should be active
             if (RxSchedulers.MainThreadScheduler != s)
             {
-                throw new InvalidOperationException("Scheduler not set correctly");
+                throw new InvalidOperationException(SchedulerNotSetMessage);
             }
 
             return Task.CompletedTask;
@@ -241,10 +243,11 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task AdvanceToMs_ShouldAdvanceToSpecifiedTime()
     {
+        const double advanceToMilliseconds = 1000;
         var scheduler = new TestScheduler();
-        scheduler.AdvanceToMs(1000);
+        scheduler.AdvanceToMs(advanceToMilliseconds);
 
-        var expectedTicks = TimeSpan.FromMilliseconds(1000).Ticks;
+        var expectedTicks = TimeSpan.FromMilliseconds(advanceToMilliseconds).Ticks;
         await Assert.That(scheduler.Clock).IsEqualTo(expectedTicks);
     }
 
@@ -255,12 +258,13 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task AdvanceByMs_ShouldAdvanceBySpecifiedTime()
     {
+        const double advanceByMilliseconds = 500;
         var scheduler = new TestScheduler();
         var initialTime = scheduler.Clock;
 
-        scheduler.AdvanceByMs(500);
+        scheduler.AdvanceByMs(advanceByMilliseconds);
 
-        var expectedTime = initialTime + TimeSpan.FromMilliseconds(500).Ticks;
+        var expectedTime = initialTime + TimeSpan.FromMilliseconds(advanceByMilliseconds).Ticks;
         await Assert.That(scheduler.Clock).IsEqualTo(expectedTime);
     }
 
@@ -271,16 +275,17 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task OnNextAt_ShouldCreateNotificationAtSpecifiedTime()
     {
+        const double notificationMilliseconds = 100;
         var scheduler = new TestScheduler();
-        var recorded = scheduler.OnNextAt(100, 42);
+        var recorded = scheduler.OnNextAt(notificationMilliseconds, ExpectedValue);
 
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(100));
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(notificationMilliseconds));
 
         using (Assert.Multiple())
         {
             await Assert.That(recorded.Time).IsEqualTo(expectedTime);
             await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnNext);
-            await Assert.That(recorded.Value.Value).IsEqualTo(42);
+            await Assert.That(recorded.Value.Value).IsEqualTo(ExpectedValue);
         }
     }
 
@@ -291,11 +296,12 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task OnErrorAt_ShouldCreateErrorNotificationAtSpecifiedTime()
     {
+        const double errorMilliseconds = 200;
         var scheduler = new TestScheduler();
         var exception = new InvalidOperationException("Test error");
-        var recorded = scheduler.OnErrorAt<int>(200, exception);
+        var recorded = scheduler.OnErrorAt<int>(errorMilliseconds, exception);
 
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(200));
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(errorMilliseconds));
 
         using (Assert.Multiple())
         {
@@ -312,10 +318,11 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task OnCompletedAt_ShouldCreateCompletionNotificationAtSpecifiedTime()
     {
+        const double completedMilliseconds = 300;
         var scheduler = new TestScheduler();
-        var recorded = scheduler.OnCompletedAt<int>(300);
+        var recorded = scheduler.OnCompletedAt<int>(completedMilliseconds);
 
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(300));
+        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(completedMilliseconds));
 
         using (Assert.Multiple())
         {
@@ -331,8 +338,9 @@ public sealed class SchedulerExtensionTests
     [Test]
     public async Task FromTimeSpan_ShouldConvertToTicks()
     {
+        const double timeSpanMilliseconds = 250;
         var scheduler = new TestScheduler();
-        var timeSpan = TimeSpan.FromMilliseconds(250);
+        var timeSpan = TimeSpan.FromMilliseconds(timeSpanMilliseconds);
         var ticks = scheduler.FromTimeSpan(timeSpan);
 
         await Assert.That(ticks).IsEqualTo(timeSpan.Ticks);

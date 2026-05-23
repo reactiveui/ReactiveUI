@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,10 +11,16 @@ namespace ReactiveUI.Winforms;
 [DefaultProperty("ViewModel")]
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
+    /// <summary>Holds the subscriptions created during construction so they can be disposed together.</summary>
     private readonly CompositeDisposable _disposables = [];
 #pragma warning disable IDE0032 // Use auto property
+    /// <summary>Backing field for the routing state.</summary>
     private RoutingState? _router;
+
+    /// <summary>Backing field for the default content shown when no view model is set.</summary>
     private Control? _defaultContent;
+
+    /// <summary>Backing field for the view contract observable.</summary>
     private IObservable<string>? _viewContractObservable;
 #pragma warning restore IDE0032 // Use auto property
 
@@ -28,60 +34,62 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
         _disposables.Add(this.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
             .Subscribe(x =>
             {
-                if (x is not null && Controls.Count == 0)
+                if (x is null || Controls.Count != 0)
                 {
-                    Controls.Add(InitView(x));
-                    components?.Add(DefaultContent);
+                    return;
                 }
+
+                Controls.Add(InitView(x));
+                components?.Add(DefaultContent);
             }));
 
         ViewContractObservable = Observable<string>.Default;
 
         var vmAndContract =
-            this.WhenAnyObservable(x => x.Router!.CurrentViewModel!)
+            this.WhenAnyObservable(x => x.Router!.CurrentViewModel)
                 .CombineLatest(
-                               this.WhenAnyObservable(x => x.ViewContractObservable!),
-                               (vm, contract) => new { ViewModel = vm, Contract = contract });
+                    this.WhenAnyObservable(x => x.ViewContractObservable!),
+                    (vm, contract) => new { ViewModel = vm, Contract = contract });
 
         Control? viewLastAdded = null;
         _disposables.Add(vmAndContract.Subscribe(
-                                                 x =>
-                                                 {
-                                                     // clear all hosted controls (view or default content)
-                                                     SuspendLayout();
-                                                     Controls.Clear();
+            x =>
+            {
+                // clear all hosted controls (view or default content)
+                SuspendLayout();
+                Controls.Clear();
 
-                                                     viewLastAdded?.Dispose();
+                viewLastAdded?.Dispose();
 
-                                                     if (x.ViewModel is null)
-                                                     {
-                                                         if (DefaultContent is not null)
-                                                         {
-                                                             InitView(DefaultContent);
-                                                             Controls.Add(DefaultContent);
-                                                         }
+                if (x.ViewModel is null)
+                {
+                    if (DefaultContent is not null)
+                    {
+                        InitView(DefaultContent);
+                        Controls.Add(DefaultContent);
+                    }
 
-                                                         ResumeLayout();
-                                                         return;
-                                                     }
+                    ResumeLayout();
+                    return;
+                }
 
-                                                     var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                                                     var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                                                     if (view is not null)
-                                                     {
-                                                         view.ViewModel = x.ViewModel;
+                var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+                var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
+                if (view is not null)
+                {
+                    view.ViewModel = x.ViewModel;
 
-                                                         viewLastAdded = InitView((Control)view);
-                                                     }
+                    viewLastAdded = InitView((Control)view);
+                }
 
-                                                     if (viewLastAdded is not null)
-                                                     {
-                                                         Controls.Add(viewLastAdded);
-                                                     }
+                if (viewLastAdded is not null)
+                {
+                    Controls.Add(viewLastAdded);
+                }
 
-                                                     ResumeLayout();
-                                                 },
-                                                 RxState.DefaultExceptionHandler!.OnNext));
+                ResumeLayout();
+            },
+            RxState.DefaultExceptionHandler.OnNext));
     }
 
     /// <inheritdoc/>
@@ -156,6 +164,11 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Prepares a control for hosting by docking it to fill the host.
+    /// </summary>
+    /// <param name="view">The control to initialize.</param>
+    /// <returns>The same control, docked to fill.</returns>
     private static Control InitView(Control view)
     {
         view.Dock = DockStyle.Fill;

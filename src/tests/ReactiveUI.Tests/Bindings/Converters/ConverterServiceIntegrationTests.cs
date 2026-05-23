@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -160,7 +160,7 @@ public class ConverterServiceIntegrationTests
         await Assert.That(result).IsEqualTo(converter);
 
         // Cleanup - reset to default
-        RxConverters.SetService(new ConverterService());
+        RxConverters.SetService(new());
     }
 
     /// <summary>
@@ -227,19 +227,30 @@ public class ConverterServiceIntegrationTests
         await Assert.That(result).IsEqualTo(validAffinity);
     }
 
+    /// <summary>
+    /// Test fallback converter that reports a configurable affinity.
+    /// </summary>
     private sealed class TestFallbackConverter : IBindingFallbackConverter
     {
         private readonly int _baseAffinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFallbackConverter"/> class.
+        /// </summary>
+        /// <param name="baseAffinity">The affinity value to report.</param>
         public TestFallbackConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+            Type fromType,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
             Type toType) => _baseAffinity;
 
+        /// <inheritdoc/>
         public bool TryConvert(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+            Type fromType,
             object from,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
             Type toType,
@@ -251,25 +262,45 @@ public class ConverterServiceIntegrationTests
         }
     }
 
+    /// <summary>
+    /// Test set-method converter that reports a configurable affinity.
+    /// </summary>
     private sealed class TestSetMethodConverter : ISetMethodBindingConverter
     {
         private readonly int _baseAffinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestSetMethodConverter"/> class.
+        /// </summary>
+        /// <param name="baseAffinity">The affinity value to report.</param>
         public TestSetMethodConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(Type? fromType, Type? toType) => _baseAffinity;
 
+        /// <inheritdoc/>
         public object? PerformSet(object? toTarget, object? newValue, object?[]? arguments) => newValue;
     }
 
+    /// <summary>
+    /// Test typed converter that reports a configurable affinity.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
     private sealed class TestTypedConverter<TFrom, TTo> : BindingTypeConverter<TFrom, TTo>
     {
         private readonly int _affinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestTypedConverter{TFrom, TTo}"/> class.
+        /// </summary>
+        /// <param name="affinity">The affinity value to report.</param>
         public TestTypedConverter(int affinity) => _affinity = affinity;
 
+        /// <inheritdoc/>
         public override int GetAffinityForObjects() => _affinity;
 
+        /// <inheritdoc/>
         public override bool TryConvert(TFrom? from, object? conversionHint, [NotNullWhen(true)] out TTo? result)
         {
             result = default;

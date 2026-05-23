@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,17 +13,27 @@ namespace ReactiveUI.Winforms;
 /// For AOT-compatible scenarios, use ViewModelControlHost&lt;TViewModel&gt; instead.
 /// </remarks>
 [DefaultProperty("ViewModel")]
-[RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+[RequiresUnreferencedCode(
+    "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
 [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
+    /// <summary>Holds the subscriptions created during setup so they can be disposed together.</summary>
     private readonly CompositeDisposable _disposables = [];
 #pragma warning disable IDE0032 // Use auto property
+    /// <summary>Backing field for the default content shown when no view model is set.</summary>
     private Control? _defaultContent;
+
+    /// <summary>Backing field for the view contract observable.</summary>
     private IObservable<string>? _viewContractObservable;
+
+    /// <summary>Backing field for the hosted view model.</summary>
     private object? _viewModel;
+
+    /// <summary>Backing field for the currently displayed content.</summary>
     private object? _content;
 #pragma warning restore IDE0032 // Use auto property
+    /// <summary>Backing field indicating whether resolved views are cached and reused.</summary>
     private bool _cacheViews;
 
     /// <summary>
@@ -143,37 +153,28 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Creates the subscriptions that keep the hosted view in sync with the view model and content.
+    /// </summary>
+    /// <returns>The disposables representing the active subscriptions.</returns>
     private IEnumerable<IDisposable> SetupBindings()
     {
         var viewChanges =
             this.WhenAnyValue<ViewModelControlHost, object?>(nameof(Content))
                 .WhereNotNull()
                 .OfType<Control>()
-                .Subscribe(x =>
-                {
-                    // change the view in the ui
-                    SuspendLayout();
+                .Subscribe(SwapHostedView);
 
-                    // clear out existing visible control view
-                    foreach (Control? c in Controls)
-                    {
-                        c?.Dispose();
-                        Controls.Remove(c);
-                    }
-
-                    x!.Dock = DockStyle.Fill;
-                    Controls.Add(x);
-                    ResumeLayout();
-                });
-
-        yield return viewChanges!;
+        yield return viewChanges;
 
         yield return this.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent)).Subscribe(x =>
         {
-            if (x is not null)
+            if (x is null)
             {
-                Content = DefaultContent;
+                return;
             }
+
+            Content = DefaultContent;
         });
 
         ViewContractObservable = Observable.Return(string.Empty);
@@ -181,46 +182,91 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         var vmAndContract =
             this.WhenAnyValue<ViewModelControlHost, object?>(nameof(ViewModel))
                 .CombineLatest(
-                               this.WhenAnyObservable(x => x.ViewContractObservable!),
-                               (vm, contract) => new { ViewModel = vm, Contract = contract });
+                    this.WhenAnyObservable(x => x.ViewContractObservable!),
+                    (vm, contract) => new { ViewModel = vm, Contract = contract });
 
         yield return vmAndContract.Subscribe(
-                                             x =>
-                                             {
-                                                 // set content to default when viewmodel is null
-                                                 if (ViewModel is null)
-                                                 {
-                                                     if (DefaultContent is not null)
-                                                     {
-                                                         Content = DefaultContent;
-                                                     }
+            x => UpdateContentForViewModel(x.ViewModel, x.Contract),
+            RxState.DefaultExceptionHandler.OnNext);
+    }
 
-                                                     return;
-                                                 }
+    /// <summary>
+    /// Replaces the currently visible control with the supplied view, docked to fill the host.
+    /// </summary>
+    /// <param name="view">The control to display.</param>
+    private void SwapHostedView(Control view)
+    {
+        // change the view in the ui
+        SuspendLayout();
 
-                                                 if (CacheViews)
-                                                 {
-                                                     // when caching views, check the current viewmodel and type
-                                                     var c = _content as IViewFor;
+        // clear out existing visible control view
+        foreach (Control? c in Controls)
+        {
+            c?.Dispose();
+            Controls.Remove(c);
+        }
 
-                                                     if (c?.ViewModel is not null && c.ViewModel.GetType() == x.ViewModel!.GetType())
-                                                     {
-                                                         c.ViewModel = x.ViewModel;
+        view.Dock = DockStyle.Fill;
+        Controls.Add(view);
+        ResumeLayout();
+    }
 
-                                                         // return early here after setting the viewmodel
-                                                         // allowing the view to update it's bindings
-                                                         return;
-                                                     }
-                                                 }
+    /// <summary>
+    /// Resolves and displays the content for the supplied view model and contract.
+    /// </summary>
+    /// <param name="viewModel">The current view model, or null.</param>
+    /// <param name="contract">The view contract.</param>
+    private void UpdateContentForViewModel(object? viewModel, string contract)
+    {
+        // set content to default when viewmodel is null
+        if (viewModel is null)
+        {
+            if (DefaultContent is not null)
+            {
+                Content = DefaultContent;
+            }
 
-                                                 var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-                                                 var view = viewLocator.ResolveView(x.ViewModel, x.Contract);
-                                                 if (view is not null)
-                                                 {
-                                                     view.ViewModel = x.ViewModel;
-                                                     Content = view;
-                                                 }
-                                             },
-                                             RxState.DefaultExceptionHandler!.OnNext);
+            return;
+        }
+
+        if (TryReuseCachedView(viewModel))
+        {
+            return;
+        }
+
+        var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
+        var view = viewLocator.ResolveView(viewModel, contract);
+        if (view is null)
+        {
+            return;
+        }
+
+        view.ViewModel = viewModel;
+        Content = view;
+    }
+
+    /// <summary>
+    /// Reuses the cached view for the supplied view model when caching is enabled and the types match.
+    /// </summary>
+    /// <param name="viewModel">The current view model.</param>
+    /// <returns>true if the cached view was reused; otherwise, false.</returns>
+    private bool TryReuseCachedView(object viewModel)
+    {
+        if (!CacheViews)
+        {
+            return false;
+        }
+
+        // when caching views, check the current viewmodel and type
+        var c = _content as IViewFor;
+
+        if (c?.ViewModel is null || c.ViewModel.GetType() != viewModel.GetType())
+        {
+            return false;
+        }
+
+        // setting the viewmodel allows the view to update its bindings
+        c.ViewModel = viewModel;
+        return true;
     }
 }

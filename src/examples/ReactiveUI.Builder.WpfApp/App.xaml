@@ -1,7 +1,6 @@
-﻿<Application
+<Application
     x:Class="ReactiveUI.Builder.WpfApp.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:ReactiveUI.Builder.WpfApp">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Resources />
 </Application>

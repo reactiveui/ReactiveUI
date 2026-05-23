@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,7 +15,10 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ReactiveContentView{TViewModel}" />
-public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : ReactiveContentView<TViewModel>
+public class ReactiveTextItemView<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
+        .PublicParameterlessConstructor)]
+    TViewModel> : ReactiveContentView<TViewModel>
     where TViewModel : class
 {
     /// <summary>
@@ -25,7 +28,7 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
         nameof(Text),
         typeof(string),
         typeof(ReactiveTextItemView<TViewModel>),
-        default(string));
+        propertyChanged: OnTextChanged);
 
     /// <summary>
     /// The detail bindable property for the secondary text.
@@ -34,7 +37,7 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
         nameof(Detail),
         typeof(string),
         typeof(ReactiveTextItemView<TViewModel>),
-        default(string));
+        propertyChanged: OnDetailChanged);
 
     /// <summary>
     /// The text color bindable property.
@@ -43,7 +46,7 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
         nameof(TextColor),
         typeof(Color),
         typeof(ReactiveTextItemView<TViewModel>),
-        default(Color));
+        propertyChanged: OnTextColorChanged);
 
     /// <summary>
     /// The detail color bindable property.
@@ -52,10 +55,36 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
         nameof(DetailColor),
         typeof(Color),
         typeof(ReactiveTextItemView<TViewModel>),
-        default(Color));
+        propertyChanged: OnDetailColorChanged);
 
-    private readonly CompositeDisposable _propertyBindings = [];
+    /// <summary>
+    /// The font size of the primary text label.
+    /// </summary>
+    private const double PrimaryFontSize = 16;
+
+    /// <summary>
+    /// The font size of the detail text label.
+    /// </summary>
+    private const double DetailFontSize = 12;
+
+    /// <summary>
+    /// The opacity applied to the detail text label.
+    /// </summary>
+    private const double DetailOpacity = 0.7;
+
+    /// <summary>
+    /// The padding around the content layout.
+    /// </summary>
+    private const double ContentPadding = 16;
+
+    /// <summary>
+    /// The label that displays the primary text.
+    /// </summary>
     private readonly Label _textLabel;
+
+    /// <summary>
+    /// The label that displays the detail text.
+    /// </summary>
     private readonly Label _detailLabel;
 
     /// <summary>
@@ -63,47 +92,23 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     public ReactiveTextItemView()
     {
-        _textLabel = new Label
+        _textLabel = new()
         {
-            FontSize = 16,
-            VerticalOptions = LayoutOptions.Center,
-            Text = Text // Set initial value
+            FontSize = PrimaryFontSize, VerticalOptions = LayoutOptions.Center, Text = Text // Set initial value
         };
 
-        _detailLabel = new Label
+        _detailLabel = new()
         {
-            FontSize = 12,
-            VerticalOptions = LayoutOptions.Center,
-            Opacity = 0.7,
-            Text = Detail // Set initial value
+            FontSize = DetailFontSize, VerticalOptions = LayoutOptions.Center, Opacity = DetailOpacity, Text = Detail // Set initial value
         };
 
-        var stackLayout = new StackLayout
+        Content = new StackLayout
         {
             Orientation = StackOrientation.Vertical,
             VerticalOptions = LayoutOptions.Center,
-            Padding = 16,
+            Padding = ContentPadding,
             Children = { _textLabel, _detailLabel }
         };
-
-        Content = stackLayout;
-
-        // Use expression-based property observation instead of string-based bindings (AOT-safe)
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Text), () => Text)
-            .Subscribe(value => _textLabel.Text = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(TextColor), () => TextColor)
-            .Subscribe(value => _textLabel.TextColor = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Detail), () => Detail)
-            .Subscribe(value => _detailLabel.Text = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(DetailColor), () => DetailColor)
-            .Subscribe(value => _detailLabel.TextColor = value)
-            .DisposeWith(_propertyBindings);
     }
 
     /// <summary>
@@ -140,5 +145,69 @@ public partial class ReactiveTextItemView<[DynamicallyAccessedMembers(Dynamicall
     {
         get => (Color)GetValue(DetailColorProperty);
         set => SetValue(DetailColorProperty, value);
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="Text"/> property by updating the primary text label.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnTextChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveTextItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._textLabel.Text = (string?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="Detail"/> property by updating the detail text label.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnDetailChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveTextItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._detailLabel.Text = (string?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="TextColor"/> property by updating the primary text label color.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnTextColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveTextItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._textLabel.TextColor = (Color?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="DetailColor"/> property by updating the detail text label color.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnDetailColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveTextItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._detailLabel.TextColor = (Color?)newValue;
     }
 }

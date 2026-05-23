@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveMauiTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui</PackageDescription>
@@ -21,43 +21,43 @@
     <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Builder.Maui.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Builder.Maui.Tests"/>
   </ItemGroup>
   <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.ComponentModel" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Reactive" />
-    <Using Include="System.Reactive.Concurrency" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Reactive.Subjects" />
-    <Using Include="System.Threading.Tasks" />
-    <Using Include="Splat" />
-    <Using Include="ReactiveUI.Maui.Internal" />
+    <Using Include="System"/>
+    <Using Include="System.ComponentModel"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="System.Linq"/>
+    <Using Include="System.Reactive"/>
+    <Using Include="System.Reactive.Concurrency"/>
+    <Using Include="System.Reactive.Disposables"/>
+    <Using Include="System.Reactive.Disposables.Fluent"/>
+    <Using Include="System.Reactive.Linq"/>
+    <Using Include="System.Reactive.Subjects"/>
+    <Using Include="System.Threading.Tasks"/>
+    <Using Include="Splat"/>
+    <Using Include="ReactiveUI.Maui.Internal"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::IsOsPlatform('OSX')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <PackageReference Include="Microsoft.Windows.CsWinRT" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
-    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="Microsoft.Maui.Controls"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
+    <PackageReference Include="System.Reactive"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Common\RoutedViewHost.cs" />
-    <Compile Remove="Common\RoutedViewHost{TViewModel}.cs" />
-    <Compile Remove="Common\ViewModelViewHost.cs" />
-    <Compile Remove="Common\ViewModelViewHost{TViewModel}.cs" />
-    <Compile Remove="WinUI\TransitioningContentControl.Empty.cs" />
+    <Compile Remove="Common\RoutedViewHost.cs"/>
+    <Compile Remove="Common\RoutedViewHost{TViewModel}.cs"/>
+    <Compile Remove="Common\ViewModelViewHost.cs"/>
+    <Compile Remove="Common\ViewModelViewHost{TViewModel}.cs"/>
+    <Compile Remove="WinUI\TransitioningContentControl.Empty.cs"/>
   </ItemGroup>
 </Project>

@@ -1,10 +1,15 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections;
+using System.ComponentModel;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -39,12 +44,12 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>
     /// Publishes value changes to the validation pipeline.
     /// </summary>
-    private readonly Subject<T?> _checkValidation = new();
+    private readonly BroadcastSubject<T?> _checkValidation = new();
 
     /// <summary>
     /// Publishes "refresh" signals for the current value (used to force emission even when the value is unchanged).
     /// </summary>
-    private readonly Subject<T?> _valueRefereshed = new();
+    private readonly BroadcastSubject<T?> _valueRefereshed = new();
 
     /// <summary>
     /// Publishes <see cref="Value"/> changes without relying on reflection-based property observation.
@@ -58,22 +63,23 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// The subject is disposed with the instance; emission sites guard against disposal using <see cref="IsDisposed"/>.
     /// </para>
     /// </remarks>
-    private readonly BehaviorSubject<T?> _valueChanged;
+    private readonly BehaviorBroadcastSubject<T?> _valueChanged;
 
     /// <summary>
     /// Holds the active validation subscription, if any.
     /// </summary>
-    private readonly SerialDisposable _validationDisposable = new();
+    private readonly SwapDisposable _validationDisposable = new();
 
     /// <summary>
     /// Lazily created subject that publishes the current error sequence.
     /// </summary>
-    private readonly Lazy<BehaviorSubject<IEnumerable?>> _errorChanged;
+    private readonly Lazy<BehaviorBroadcastSubject<IEnumerable?>> _errorChanged;
 
     /// <summary>
     /// Stores validators registered via <see cref="AddValidationError(Func{IObservable{T}, IObservable{IEnumerable}}, bool)"/>.
     /// </summary>
-    private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>> _validatorStore = new(static () => []);
+    private readonly Lazy<List<Func<IObservable<T?>, IObservable<IEnumerable?>>>>
+        _validatorStore = new(static () => []);
 
     /// <summary>
     /// The number of initial values to skip for subscriptions created by <see cref="GetSubscription"/>.
@@ -88,7 +94,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <summary>
     /// The shared observable backing <see cref="Subscribe(IObserver{T})"/>.
     /// </summary>
-    private IObservable<T?>? _observable;
+    private ReplayBroadcastSubject<T?>? _observable;
 
     /// <summary>
     /// The current value backing <see cref="Value"/>.
@@ -147,15 +153,19 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="skipCurrentValueOnSubscribe">true to prevent the current value from being emitted to new subscribers upon subscription; otherwise, false.</param>
     /// <param name="allowDuplicateValues">true to allow consecutive duplicate values to be published to subscribers; otherwise, false to suppress
     /// duplicate notifications.</param>
-    public ReactiveProperty(T? initialValue, IScheduler? scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
+    public ReactiveProperty(
+        T? initialValue,
+        IScheduler? scheduler,
+        bool skipCurrentValueOnSubscribe,
+        bool allowDuplicateValues)
     {
         _skipCurrentValue = skipCurrentValueOnSubscribe ? 1 : 0;
         _isDistinctUntilChanged = !allowDuplicateValues;
         _value = initialValue;
         _scheduler = scheduler ?? RxSchedulers.TaskpoolScheduler;
 
-        _valueChanged = new BehaviorSubject<T?>(initialValue);
-        _errorChanged = new Lazy<BehaviorSubject<IEnumerable?>>(() => new BehaviorSubject<IEnumerable?>(GetErrors(null)));
+        _valueChanged = new(initialValue);
+        _errorChanged = new(() => new(GetErrors(null)));
 
         GetSubscription();
     }
@@ -176,6 +186,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// notification.</remarks>
     [DataMember]
     [JsonInclude]
+    [SuppressMessage(
+        "Critical Bug",
+        "S4275:Getters and setters should access the expected fields",
+        Justification = "Setter writes _value via SetValue().")]
     public T? Value
     {
         get => _value;
@@ -185,7 +199,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             {
                 if (!_isDistinctUntilChanged)
                 {
-                    // Preserve existing semantics: identical assignment produces a "refresh" emission when duplicates are allowed.
                     _valueRefereshed.OnNext(_value);
                 }
 
@@ -208,7 +221,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <remarks>Subscribers receive notifications whenever the set of errors is updated. The sequence emits
     /// the current collection of errors after each change. The observable completes when the owning object is disposed,
     /// if applicable.</remarks>
-    public IObservable<IEnumerable?> ObserveErrorChanged => _errorChanged.Value.AsObservable();
+    public IObservable<IEnumerable?> ObserveErrorChanged => _errorChanged.Value;
 
     /// <summary>
     /// Gets an observable sequence that signals whether the object currently has validation errors.
@@ -216,7 +229,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <remarks>The returned observable emits a new value each time the error state changes. Subscribers
     /// receive the current error state immediately upon subscription, followed by updates as errors are added or
     /// cleared.</remarks>
-    public IObservable<bool> ObserveHasErrors => ObserveErrorChanged.Select(_ => HasErrors);
+    public IObservable<bool> ObserveHasErrors => new SyncProjectObservable<IEnumerable?, bool>(ObserveErrorChanged, _ => HasErrors);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty without requiring RequiresUnreferencedCode attributes.
@@ -243,8 +256,10 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="skipCurrentValueOnSubscribe">if set to <c>true</c> [skip current value on subscribe].</param>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
     /// <returns>A new ReactiveProperty instance.</returns>
-    public static ReactiveProperty<T> Create(T? initialValue, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
-        => new(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+    public static ReactiveProperty<T> Create(
+        T? initialValue,
+        bool skipCurrentValueOnSubscribe,
+        bool allowDuplicateValues) => new(initialValue, RxSchedulers.TaskpoolScheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty with a custom scheduler without requiring RequiresUnreferencedCode attributes.
@@ -255,8 +270,20 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="allowDuplicateValues">if set to <c>true</c> [allow duplicate concurrent values].</param>
     /// <returns>A new ReactiveProperty instance.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="scheduler"/> is <see langword="null"/>.</exception>
-    public static ReactiveProperty<T> Create(T? initialValue, IScheduler scheduler, bool skipCurrentValueOnSubscribe, bool allowDuplicateValues)
-        => new(initialValue, scheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+    public static ReactiveProperty<T> Create(
+        T? initialValue,
+        IScheduler scheduler,
+        bool skipCurrentValueOnSubscribe,
+        bool allowDuplicateValues) => new(initialValue, scheduler, skipCurrentValueOnSubscribe, allowDuplicateValues);
+
+    /// <summary>
+    /// Adds a validation rule to the current ReactiveProperty instance using the specified validator function.
+    /// </summary>
+    /// <param name="validator">A function that takes an observable sequence of property values and returns an observable sequence of validation errors.</param>
+    /// <returns>The current ReactiveProperty instance with the added validation rule.</returns>
+    public ReactiveProperty<T> AddValidationError(
+        Func<IObservable<T?>, IObservable<IEnumerable?>> validator) =>
+        AddValidationError(validator, false);
 
     /// <summary>
     /// Adds a validation rule to the current ReactiveProperty instance using the specified validator function.
@@ -269,33 +296,17 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="ignoreInitialError">true to ignore validation for the initial value of the property; otherwise, false. If true, validation will only
     /// occur on subsequent value changes.</param>
     /// <returns>The current ReactiveProperty instance with the added validation rule.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<IEnumerable?>> validator, bool ignoreInitialError = false)
+    public ReactiveProperty<T> AddValidationError(
+        Func<IObservable<T?>, IObservable<IEnumerable?>> validator,
+        bool ignoreInitialError)
     {
         _validatorStore.Value.Add(validator);
         var validators = _validatorStore.Value
-            .Select(x => x(ignoreInitialError ? _checkValidation : _checkValidation.StartWith(_value)))
+            .Select(x => x(ignoreInitialError ? _checkValidation : new PrependObservable(_checkValidation, _value)))
             .ToArray();
 
-        _validationDisposable.Disposable = Observable
-            .CombineLatest(validators)
-            .ObserveOn(_scheduler)
-            .Select(xs =>
-            {
-                if (xs.Count == 0 || xs.All(x => x == null))
-                {
-                    return null;
-                }
-
-                var strings = xs
-                    .Where(x => x != null)
-                    .OfType<string>();
-                var others = xs
-                    .Where(x => x is not null and not string)
-                    .SelectMany(x => x!.OfType<object?>());
-
-                return strings.Concat(others);
-            })
-            .Subscribe(x =>
+        _validationDisposable.Disposable = new ValidationStream(validators, _scheduler)
+            .Subscribe(new DelegateObserver<IEnumerable?>(x =>
             {
                 var lastHasErrors = HasErrors;
                 _currentErrors = x;
@@ -308,13 +319,23 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
 
                 if (lastHasErrors != currentHasErrors)
                 {
-                    _scheduler.Schedule(() => this.RaisePropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName));
+                    _scheduler.Schedule(() =>
+                        this.RaisePropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName));
                 }
 
                 _errorChanged.Value.OnNext(x);
-            }).DisposeWith(_disposables);
+            }));
         return this;
     }
+
+    /// <summary>
+    /// Adds a validation rule to the property using the specified validator function.
+    /// </summary>
+    /// <param name="validator">A function that receives an observable sequence of property values and returns an observable sequence of validation error messages.</param>
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(
+        Func<IObservable<T?>, IObservable<string?>> validator) =>
+        AddValidationError(validator, false);
 
     /// <summary>
     /// Adds a validation rule to the property using the specified validator function.
@@ -326,23 +347,44 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// validation error messages. The returned string is interpreted as the error message; a null value indicates no
     /// error.</param>
     /// <param name="ignoreInitialError">true to suppress the initial validation error until the property value changes; otherwise, false.</param>
-    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<IObservable<T?>, IObservable<string?>> validator, bool ignoreInitialError = false) =>
-        AddValidationError(xs => validator(xs).Select(x => (IEnumerable?)x), ignoreInitialError);
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(
+        Func<IObservable<T?>, IObservable<string?>> validator,
+        bool ignoreInitialError) =>
+        AddValidationError(xs => new SyncProjectObservable<string?, IEnumerable?>(validator(xs), static x => (IEnumerable?)x), ignoreInitialError);
 
     /// <summary>
     /// Adds asynchronous validation logic to the reactive property using the specified validator function.
     /// </summary>
-    /// <remarks>This method enables chaining of multiple validation rules on a <see cref="ReactiveProperty{T}"/>.
+    /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors.</param>
+    /// <returns>The current ReactiveProperty instance with the specified validation logic applied.</returns>
+    public ReactiveProperty<T> AddValidationError(
+        Func<T?, Task<IEnumerable?>> validator) =>
+        AddValidationError(validator, false);
+
+    /// <summary>
+    /// Adds asynchronous validation logic to the reactive property using the specified validator function.
+    /// </summary>
+    /// <remarks>This method enables chaining of multiple validation rules on a ReactiveProperty.
     /// Validation is triggered whenever the property's value changes. The validator function can perform asynchronous
     /// operations, such as remote checks or complex computations.</remarks>
     /// <param name="validator">A function that asynchronously validates the current value and returns a collection of validation errors. The
     /// function receives the current value as input and returns a task that produces an enumerable of validation error
     /// objects. If the collection is empty or null, the value is considered valid.</param>
     /// <param name="ignoreInitialError">true to suppress validation errors for the initial value; otherwise, false.</param>
-    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the specified validation logic applied.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<T?, Task<IEnumerable?>> validator, bool ignoreInitialError = false) =>
-        AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
+    /// <returns>The current ReactiveProperty instance with the specified validation logic applied.</returns>
+    public ReactiveProperty<T> AddValidationError(
+        Func<T?, Task<IEnumerable?>> validator,
+        bool ignoreInitialError) =>
+        AddValidationError(xs => new AsyncProjectObservable<T?, IEnumerable?>(xs, x => validator(x)), ignoreInitialError);
+
+    /// <summary>
+    /// Adds an asynchronous validation rule to the property using the specified validator function.
+    /// </summary>
+    /// <param name="validator">A function that asynchronously validates the property's value and returns an error message or null.</param>
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator) =>
+        AddValidationError(validator, false);
 
     /// <summary>
     /// Adds an asynchronous validation rule to the property using the specified validator function.
@@ -352,9 +394,17 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that asynchronously validates the property's value and returns an error message if validation fails,
     /// or null if the value is valid.</param>
     /// <param name="ignoreInitialError">true to suppress the initial validation error until the value changes; otherwise, false.</param>
-    /// <returns>A <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError = false) =>
-        AddValidationError(xs => xs.SelectMany(x => validator(x)), ignoreInitialError);
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, Task<string?>> validator, bool ignoreInitialError) =>
+        AddValidationError(xs => new AsyncProjectObservable<T?, string?>(xs, x => validator(x)), ignoreInitialError);
+
+    /// <summary>
+    /// Adds a validation rule to the reactive property using the specified validator function.
+    /// </summary>
+    /// <param name="validator">A function that takes the current value and returns a collection of validation errors.</param>
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator) =>
+        AddValidationError(validator, false);
 
     /// <summary>
     /// Adds a validation rule to the reactive property using the specified validator function.
@@ -364,9 +414,17 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that takes the current value and returns a collection of validation errors. Returns null or an empty
     /// collection if the value is valid.</param>
     /// <param name="ignoreInitialError">true to ignore validation errors for the initial value; otherwise, false.</param>
-    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError = false) =>
-        AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError) =>
+        AddValidationError(xs => new SyncProjectObservable<T?, IEnumerable?>(xs, x => validator(x)), ignoreInitialError);
+
+    /// <summary>
+    /// Adds a validation rule to the property using the specified validator function.
+    /// </summary>
+    /// <param name="validator">A function that returns a validation error message or null if the value is valid.</param>
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator) =>
+        AddValidationError(validator, false);
 
     /// <summary>
     /// Adds a validation rule to the property using the specified validator function.
@@ -377,9 +435,9 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="validator">A function that takes the current value of the property and returns a validation error message if the value is
     /// invalid; otherwise, returns null or an empty string if the value is valid.</param>
     /// <param name="ignoreInitialError">true to suppress validation errors for the initial value of the property; otherwise, false.</param>
-    /// <returns>The current <see cref="ReactiveProperty{T}"/> instance with the validation rule applied.</returns>
-    public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError = false) =>
-        AddValidationError(xs => xs.Select(x => validator(x)), ignoreInitialError);
+    /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
+    public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError) =>
+        AddValidationError(xs => new SyncProjectObservable<T?, string?>(xs, x => validator(x)), ignoreInitialError);
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -450,16 +508,18 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     {
         if (observer == null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         if (IsDisposed)
         {
             observer.OnCompleted();
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        return _observable!.Subscribe(observer).DisposeWith(_disposables);
+        var subscription = _observable!.Subscribe(new SchedulingObserver<T?>(observer, _scheduler));
+        _disposables.Add(subscription);
+        return subscription;
     }
 
     /// <summary>
@@ -468,23 +528,29 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposables?.IsDisposed == false && disposing)
+        if (_disposables?.IsDisposed != false || !disposing)
         {
-            _disposables?.Dispose();
-
-            _checkValidation.Dispose();
-            _valueRefereshed.Dispose();
-            _validationDisposable.Dispose();
-
-            _valueChanged.OnCompleted();
-            _valueChanged.Dispose();
-
-            if (_errorChanged.IsValueCreated)
-            {
-                _errorChanged.Value.OnCompleted();
-                _errorChanged.Value.Dispose();
-            }
+            return;
         }
+
+        _disposables?.Dispose();
+
+        _checkValidation.Dispose();
+        _valueRefereshed.Dispose();
+        _validationDisposable.Dispose();
+
+        _valueChanged.OnCompleted();
+        _valueChanged.Dispose();
+
+        _observable?.Dispose();
+
+        if (!_errorChanged.IsValueCreated)
+        {
+            return;
+        }
+
+        _errorChanged.Value.OnCompleted();
+        _errorChanged.Value.Dispose();
     }
 
     /// <summary>
@@ -500,11 +566,13 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     {
         _value = value;
 
-        if (!IsDisposed)
+        if (IsDisposed)
         {
-            _checkValidation.OnNext(value);
-            _valueChanged.OnNext(value);
+            return;
         }
+
+        _checkValidation.OnNext(value);
+        _valueChanged.OnNext(value);
     }
 
     /// <summary>
@@ -521,19 +589,433 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// </remarks>
     private void GetSubscription()
     {
-        IObservable<T?> source = _valueChanged;
+        // A replay-1 relay multicasts to all subscribers (Replay(1) + RefCount). Value changes pass through the
+        // skip-initial and distinct gates; refresh emissions always flow. Per-subscriber scheduler delivery is applied
+        // in Subscribe via SchedulingObserver, so the relay itself is the shared source.
+        var relay = new ReplayBroadcastSubject<T?>(1);
 
-        source = source.Skip(_skipCurrentValue);
+        _disposables.Add(_valueChanged
+            .Subscribe(new ValueChangeRelay(relay, _skipCurrentValue, _isDistinctUntilChanged, _checkIf)));
+        _disposables.Add(_valueRefereshed
+            .Subscribe(new DelegateObserver<T?>(relay.OnNext)));
 
-        if (_isDistinctUntilChanged)
+        _observable = relay;
+    }
+
+    /// <summary>Applies skip-initial and optional distinct-until-changed to value changes before forwarding them to the shared relay.</summary>
+    /// <param name="relay">The shared replay relay that multicasts to subscribers.</param>
+    /// <param name="skipCount">The number of initial values to skip.</param>
+    /// <param name="isDistinct">Whether consecutive equal values are suppressed.</param>
+    /// <param name="comparer">The equality comparer used by the distinct gate.</param>
+    private sealed class ValueChangeRelay(IObserver<T?> relay, int skipCount, bool isDistinct, EqualityComparer<T?> comparer) : IObserver<T?>
+    {
+        /// <summary>The remaining number of initial values to skip.</summary>
+        private int _toSkip = skipCount;
+
+        /// <summary>The last forwarded value, used by the distinct gate.</summary>
+        private T? _last;
+
+        /// <summary>Whether <see cref="_last"/> holds a value yet.</summary>
+        private bool _hasLast;
+
+        /// <inheritdoc/>
+        public void OnNext(T? value)
         {
-            source = source.DistinctUntilChanged();
+            if (_toSkip > 0)
+            {
+                _toSkip--;
+                return;
+            }
+
+            if (isDistinct && _hasLast && comparer.Equals(value, _last))
+            {
+                return;
+            }
+
+            _last = value;
+            _hasLast = true;
+            relay.OnNext(value);
         }
 
-        _observable = source
-            .Merge(_valueRefereshed)
-            .Replay(1)
-            .RefCount()
-            .ObserveOn(_scheduler);
+        /// <inheritdoc/>
+        public void OnError(Exception error) => relay.OnError(error);
+
+        /// <inheritdoc/>
+        public void OnCompleted() => relay.OnCompleted();
+    }
+
+    /// <summary>
+    /// Combines the latest error sequence of every validator, aggregates them, and delivers the result on the
+    /// property's scheduler. Fuses the validator combine-latest, aggregation, and scheduling into one sink.
+    /// </summary>
+    /// <param name="validators">The per-validator error streams.</param>
+    /// <param name="scheduler">The scheduler aggregated results are delivered on.</param>
+    private sealed class ValidationStream(IObservable<IEnumerable?>[] validators, IScheduler scheduler) : IObservable<IEnumerable?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IEnumerable?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return new Sink(new SchedulingObserver<IEnumerable?>(observer, scheduler), validators);
+        }
+
+        /// <summary>Tracks the latest error sequence of each validator and emits their aggregate once all have reported.</summary>
+        private sealed class Sink : IDisposable
+        {
+            /// <summary>Guards the latest values and the arrival/completion counters.</summary>
+            #if NET9_0_OR_GREATER
+            private readonly Lock _gate = new();
+            #else
+            private readonly object _gate = new();
+            #endif
+
+            /// <summary>The observer receiving the aggregated errors (already scheduled).</summary>
+            private readonly IObserver<IEnumerable?> _downstream;
+
+            /// <summary>The latest error sequence reported by each validator.</summary>
+            private readonly IEnumerable?[] _latest;
+
+            /// <summary>Whether each validator has reported at least once.</summary>
+            private readonly bool[] _has;
+
+            /// <summary>The subscriptions to each validator stream.</summary>
+            private readonly IDisposable?[] _subscriptions;
+
+            /// <summary>The number of validators that have reported at least once.</summary>
+            private int _haveCount;
+
+            /// <summary>The number of validators that have completed.</summary>
+            private int _doneCount;
+
+            /// <summary>Whether the downstream has terminated.</summary>
+            private bool _stopped;
+
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class and subscribes to every validator.</summary>
+            /// <param name="downstream">The observer receiving the aggregated errors.</param>
+            /// <param name="validators">The per-validator error streams.</param>
+            public Sink(IObserver<IEnumerable?> downstream, IObservable<IEnumerable?>[] validators)
+            {
+                _downstream = downstream;
+                _latest = new IEnumerable?[validators.Length];
+                _has = new bool[validators.Length];
+                _subscriptions = new IDisposable?[validators.Length];
+                for (var i = 0; i < validators.Length; i++)
+                {
+                    _subscriptions[i] = validators[i].Subscribe(new Element(this, i));
+                }
+            }
+
+            /// <inheritdoc/>
+            public void Dispose()
+            {
+                for (var i = 0; i < _subscriptions.Length; i++)
+                {
+                    _subscriptions[i]?.Dispose();
+                }
+            }
+
+            /// <summary>Records a validator's latest errors and emits the aggregate once every validator has reported.</summary>
+            /// <param name="index">The validator index.</param>
+            /// <param name="value">The validator's latest error sequence.</param>
+            private void OnNextAt(int index, IEnumerable? value)
+            {
+                IEnumerable? aggregated;
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    if (!_has[index])
+                    {
+                        _has[index] = true;
+                        _haveCount++;
+                    }
+
+                    _latest[index] = value;
+                    if (_haveCount < _latest.Length)
+                    {
+                        return;
+                    }
+
+                    if (Array.TrueForAll(_latest, static x => x is null))
+                    {
+                        aggregated = null;
+                    }
+                    else
+                    {
+                        var strings = _latest.Where(static x => x is not null).OfType<string>();
+                        var others = _latest
+                            .Where(static x => x is not null and not string)
+                            .SelectMany(static x => x!.OfType<object?>());
+                        aggregated = strings.Concat(others);
+                    }
+                }
+
+                _downstream.OnNext(aggregated);
+            }
+
+            /// <summary>Forwards an error from any validator.</summary>
+            /// <param name="error">The error to forward.</param>
+            private void OnErrorAt(Exception error)
+            {
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                }
+
+                _downstream.OnError(error);
+            }
+
+            /// <summary>Completes the downstream once every validator has completed.</summary>
+            private void OnCompletedAt()
+            {
+                lock (_gate)
+                {
+                    if (_stopped || ++_doneCount < _latest.Length)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                }
+
+                _downstream.OnCompleted();
+            }
+
+            /// <summary>Routes one validator's notifications to the parent sink, tagged with its index.</summary>
+            /// <param name="parent">The owning sink.</param>
+            /// <param name="index">The validator index.</param>
+            private sealed class Element(Sink parent, int index) : IObserver<IEnumerable?>
+            {
+                /// <inheritdoc/>
+                public void OnNext(IEnumerable? value) => parent.OnNextAt(index, value);
+
+                /// <inheritdoc/>
+                public void OnError(Exception error) => parent.OnErrorAt(error);
+
+                /// <inheritdoc/>
+                public void OnCompleted() => parent.OnCompletedAt();
+            }
+        }
+    }
+
+    /// <summary>Projects each value of a validator input through a synchronous selector. Specialised to the validator adapters.</summary>
+    /// <typeparam name="TIn">The source element type.</typeparam>
+    /// <typeparam name="TOut">The projected element type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    /// <param name="selector">Projects a source value into a result.</param>
+    private sealed class SyncProjectObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, TOut> selector) : IObservable<TOut>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TOut> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer, selector));
+        }
+
+        /// <summary>Applies the selector to each value and forwards the result.</summary>
+        /// <param name="downstream">The observer receiving projected values.</param>
+        /// <param name="selector">Projects a source value into a result.</param>
+        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, TOut> selector) : IObserver<TIn>
+        {
+            /// <inheritdoc/>
+            public void OnNext(TIn value)
+            {
+                TOut result;
+                try
+                {
+                    result = selector(value);
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                downstream.OnNext(result);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// For each value of a validator input, runs an asynchronous selector and emits its result when the task completes,
+    /// merging concurrent results. Specialised to the asynchronous validator adapters.
+    /// </summary>
+    /// <typeparam name="TIn">The source element type.</typeparam>
+    /// <typeparam name="TOut">The result element type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    /// <param name="selector">Produces a task for each source value.</param>
+    private sealed class AsyncProjectObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, Task<TOut>> selector) : IObservable<TOut>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TOut> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            var sink = new Sink(observer, selector);
+            return sink.Run(source);
+        }
+
+        /// <summary>Runs the selector per source value and merges the task results under a gate.</summary>
+        private sealed class Sink : IObserver<TIn>, IDisposable
+        {
+            /// <summary>Serializes downstream delivery and the active-task accounting.</summary>
+            #if NET9_0_OR_GREATER
+            private readonly Lock _gate = new();
+            #else
+            private readonly object _gate = new();
+            #endif
+
+            /// <summary>The observer receiving merged task results.</summary>
+            private readonly IObserver<TOut> _downstream;
+
+            /// <summary>Produces a task for each source value.</summary>
+            private readonly Func<TIn, Task<TOut>> _selector;
+
+            /// <summary>The subscription to the source.</summary>
+            private IDisposable? _sourceSubscription;
+
+            /// <summary>The number of in-flight tasks plus one while the source is still active.</summary>
+            private int _active = 1;
+
+            /// <summary>Whether the downstream has been terminated.</summary>
+            private bool _stopped;
+
+            /// <summary>Initializes a new instance of the <see cref="Sink"/> class.</summary>
+            /// <param name="downstream">The observer receiving merged task results.</param>
+            /// <param name="selector">Produces a task for each source value.</param>
+            public Sink(IObserver<TOut> downstream, Func<TIn, Task<TOut>> selector)
+            {
+                _downstream = downstream;
+                _selector = selector;
+            }
+
+            /// <summary>Subscribes to the source after construction so <c>this</c> is not exposed during construction.</summary>
+            /// <param name="source">The source observable.</param>
+            /// <returns>The sink, which disposes the run.</returns>
+            public Sink Run(IObservable<TIn> source)
+            {
+                _sourceSubscription = source.Subscribe(this);
+                return this;
+            }
+
+            /// <inheritdoc/>
+            public void OnNext(TIn value)
+            {
+                Task<TOut> task;
+                try
+                {
+                    task = _selector(value);
+                }
+                catch (Exception ex)
+                {
+                    Fail(ex);
+                    return;
+                }
+
+                Interlocked.Increment(ref _active);
+                _ = ForwardAsync(task);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => Fail(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => Done();
+
+            /// <inheritdoc/>
+            public void Dispose() => _sourceSubscription?.Dispose();
+
+            /// <summary>Awaits the selector task, forwarding its result or error, and completes the run once everything is done.</summary>
+            /// <param name="task">The selector task.</param>
+            /// <returns>A task that completes when the result has been forwarded.</returns>
+            private async Task ForwardAsync(Task<TOut> task)
+            {
+                TOut result;
+                try
+                {
+                    result = await task.ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Fail(ex);
+                    return;
+                }
+
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _downstream.OnNext(result);
+                }
+
+                Done();
+            }
+
+            /// <summary>Decrements the active count and completes the downstream when the source and all tasks are finished.</summary>
+            private void Done()
+            {
+                if (Interlocked.Decrement(ref _active) != 0)
+                {
+                    return;
+                }
+
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                    _downstream.OnCompleted();
+                }
+            }
+
+            /// <summary>Forwards an error to the downstream exactly once.</summary>
+            /// <param name="error">The error to forward.</param>
+            private void Fail(Exception error)
+            {
+                lock (_gate)
+                {
+                    if (_stopped)
+                    {
+                        return;
+                    }
+
+                    _stopped = true;
+                    _downstream.OnError(error);
+                }
+            }
+        }
+    }
+
+    /// <summary>Emits a leading value before forwarding the source, so a validator sees the current value first. Specialised to the validation input.</summary>
+    /// <param name="source">The source observable.</param>
+    /// <param name="value">The value emitted before the source.</param>
+    private sealed class PrependObservable(IObservable<T?> source, T? value) : IObservable<T?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<T?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            observer.OnNext(value);
+            return source.Subscribe(observer);
+        }
     }
 }

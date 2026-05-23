@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -19,14 +19,23 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// The state observable dependency property.
     /// </summary>
     public static readonly DependencyProperty StateObservableProperty =
-        DependencyProperty.Register("StateObservable", typeof(IObservable<string>), typeof(FollowObservableStateBehavior), new PropertyMetadata(null, OnStateObservableChanged));
+        DependencyProperty.Register(
+            "StateObservable",
+            typeof(IObservable<string>),
+            typeof(FollowObservableStateBehavior),
+            new(null, OnStateObservableChanged));
 
     /// <summary>
     /// The target object dependency property.
     /// </summary>
     public static readonly DependencyProperty TargetObjectProperty =
-        DependencyProperty.Register("TargetObject", typeof(FrameworkElement), typeof(FollowObservableStateBehavior), new PropertyMetadata(null));
+        DependencyProperty.Register(
+            "TargetObject",
+            typeof(FrameworkElement),
+            typeof(FollowObservableStateBehavior),
+            new(null));
 
+    /// <summary>The current subscription watching the state observable.</summary>
     private IDisposable? _watcher;
 
     /// <summary>
@@ -63,7 +72,9 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
-    internal static void InternalOnStateObservableChangedForTesting(DependencyObject? sender, DependencyPropertyChangedEventArgs e) =>
+    internal static void InternalOnStateObservableChangedForTesting(
+        DependencyObject? sender,
+        DependencyPropertyChangedEventArgs e) =>
         OnStateObservableChanged(sender, e);
 
     /// <summary>

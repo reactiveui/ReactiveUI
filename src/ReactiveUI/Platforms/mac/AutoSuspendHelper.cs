@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 using AppKit;
@@ -89,7 +87,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// </exception>
     public AutoSuspendHelper(T appDelegate)
     {
-        ArgumentNullException.ThrowIfNull(appDelegate);
+        ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
         // Developer-time guard. Cache the result per delegate runtime type to avoid repeated reflection.
         EnsureMethodsNotOverloadedCached();

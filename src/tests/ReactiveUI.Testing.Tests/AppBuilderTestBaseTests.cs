@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.Utilities.AppBuilder;
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
@@ -51,10 +50,7 @@ public class AppBuilderTestBaseTests
         var executed = false;
 
         // Act
-        await TestHelper.RunAppBuilderTestAsync(() =>
-        {
-            executed = true;
-        });
+        await TestHelper.RunAppBuilderTestAsync(() => executed = true);
 
         // Assert
         await Assert.That(executed).IsTrue();
@@ -66,8 +62,8 @@ public class AppBuilderTestBaseTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task RunAppBuilderTestAsync_WithAsyncTestBody_PropagatesExceptions()
-    {
+    public async Task RunAppBuilderTestAsync_WithAsyncTestBody_PropagatesExceptions() =>
+
         // Act & Assert
         await Assert.That(async () =>
         {
@@ -77,7 +73,6 @@ public class AppBuilderTestBaseTests
                 throw new InvalidOperationException("Test exception");
             });
         }).Throws<InvalidOperationException>();
-    }
 
     /// <summary>
     /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
@@ -85,17 +80,10 @@ public class AppBuilderTestBaseTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task RunAppBuilderTestAsync_WithSyncTestBody_PropagatesExceptions()
-    {
+    public async Task RunAppBuilderTestAsync_WithSyncTestBody_PropagatesExceptions() =>
+
         // Act & Assert
-        await Assert.That(async () =>
-        {
-            await TestHelper.RunAppBuilderTestAsync(() =>
-            {
-                throw new InvalidOperationException("Test exception");
-            });
-        }).Throws<InvalidOperationException>();
-    }
+        await Assert.That(async () => await TestHelper.RunAppBuilderTestAsync(() => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
     /// <summary>
     /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
@@ -106,6 +94,7 @@ public class AppBuilderTestBaseTests
     public async Task RunAppBuilderTestAsync_AllowsMultipleSequentialCalls()
     {
         // Arrange
+        const int expectedExecutionCount = 3;
         var executionCount = 0;
 
         // Act
@@ -114,7 +103,7 @@ public class AppBuilderTestBaseTests
         await TestHelper.RunAppBuilderTestAsync(() => executionCount++);
 
         // Assert
-        await Assert.That(executionCount).IsEqualTo(3);
+        await Assert.That(executionCount).IsEqualTo(expectedExecutionCount);
     }
 
     /// <summary>
@@ -122,9 +111,19 @@ public class AppBuilderTestBaseTests
     /// </summary>
     private sealed class TestHelper : AppBuilderTestBase
     {
+        /// <summary>
+        /// Exposes the protected asynchronous app builder test runner for testing.
+        /// </summary>
+        /// <param name="testBody">The asynchronous test body to execute.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Func<Task> testBody) =>
             AppBuilderTestBase.RunAppBuilderTestAsync(testBody);
 
+        /// <summary>
+        /// Exposes the protected synchronous app builder test runner for testing.
+        /// </summary>
+        /// <param name="testBody">The synchronous test body to execute.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Action testBody) =>
             AppBuilderTestBase.RunAppBuilderTestAsync(testBody);
     }

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,91 +15,95 @@ public class ConverterAffinityTests
     ///     Data source for standard converters (affinity = 2).
     /// </summary>
     /// <returns>A sequence of converter test data with expected affinity values.</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1024:Use properties where appropriate",
+        Justification = "Data source must be a method for TUnit MethodDataSource.")]
     public static IEnumerable<Func<(IBindingTypeConverter converter, int expectedAffinity)>> GetStandardConverters()
     {
         // String identity converter
-        yield return () => (new StringConverter(), 2);
+        yield return () => (new StringConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // Numeric → String converters
-        yield return () => (new ByteToStringTypeConverter(), 2);
-        yield return () => (new NullableByteToStringTypeConverter(), 2);
-        yield return () => (new ShortToStringTypeConverter(), 2);
-        yield return () => (new NullableShortToStringTypeConverter(), 2);
-        yield return () => (new IntegerToStringTypeConverter(), 2);
-        yield return () => (new NullableIntegerToStringTypeConverter(), 2);
-        yield return () => (new LongToStringTypeConverter(), 2);
-        yield return () => (new NullableLongToStringTypeConverter(), 2);
-        yield return () => (new SingleToStringTypeConverter(), 2);
-        yield return () => (new NullableSingleToStringTypeConverter(), 2);
-        yield return () => (new DoubleToStringTypeConverter(), 2);
-        yield return () => (new NullableDoubleToStringTypeConverter(), 2);
-        yield return () => (new DecimalToStringTypeConverter(), 2);
-        yield return () => (new NullableDecimalToStringTypeConverter(), 2);
+        yield return () => (new ByteToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableByteToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new ShortToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableShortToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new IntegerToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableIntegerToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new LongToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableLongToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new SingleToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableSingleToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new DoubleToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableDoubleToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new DecimalToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableDecimalToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // String → Numeric converters
-        yield return () => (new StringToByteTypeConverter(), 2);
-        yield return () => (new StringToNullableByteTypeConverter(), 2);
-        yield return () => (new StringToShortTypeConverter(), 2);
-        yield return () => (new StringToNullableShortTypeConverter(), 2);
-        yield return () => (new StringToIntegerTypeConverter(), 2);
-        yield return () => (new StringToNullableIntegerTypeConverter(), 2);
-        yield return () => (new StringToLongTypeConverter(), 2);
-        yield return () => (new StringToNullableLongTypeConverter(), 2);
-        yield return () => (new StringToSingleTypeConverter(), 2);
-        yield return () => (new StringToNullableSingleTypeConverter(), 2);
-        yield return () => (new StringToDoubleTypeConverter(), 2);
-        yield return () => (new StringToNullableDoubleTypeConverter(), 2);
-        yield return () => (new StringToDecimalTypeConverter(), 2);
-        yield return () => (new StringToNullableDecimalTypeConverter(), 2);
+        yield return () => (new StringToByteTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableByteTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToShortTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableShortTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToIntegerTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableIntegerTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToLongTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableLongTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToSingleTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableSingleTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToDoubleTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableDoubleTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToDecimalTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableDecimalTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // Boolean ↔ String converters
-        yield return () => (new BooleanToStringTypeConverter(), 2);
-        yield return () => (new NullableBooleanToStringTypeConverter(), 2);
-        yield return () => (new StringToBooleanTypeConverter(), 2);
-        yield return () => (new StringToNullableBooleanTypeConverter(), 2);
+        yield return () => (new BooleanToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableBooleanToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToBooleanTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableBooleanTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // Guid ↔ String converters
-        yield return () => (new GuidToStringTypeConverter(), 2);
-        yield return () => (new NullableGuidToStringTypeConverter(), 2);
-        yield return () => (new StringToGuidTypeConverter(), 2);
-        yield return () => (new StringToNullableGuidTypeConverter(), 2);
+        yield return () => (new GuidToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableGuidToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToGuidTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableGuidTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // DateTime ↔ String converters
-        yield return () => (new DateTimeToStringTypeConverter(), 2);
-        yield return () => (new NullableDateTimeToStringTypeConverter(), 2);
-        yield return () => (new StringToDateTimeTypeConverter(), 2);
-        yield return () => (new StringToNullableDateTimeTypeConverter(), 2);
+        yield return () => (new DateTimeToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableDateTimeToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToDateTimeTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableDateTimeTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // DateTimeOffset ↔ String converters
-        yield return () => (new DateTimeOffsetToStringTypeConverter(), 2);
-        yield return () => (new NullableDateTimeOffsetToStringTypeConverter(), 2);
-        yield return () => (new StringToDateTimeOffsetTypeConverter(), 2);
-        yield return () => (new StringToNullableDateTimeOffsetTypeConverter(), 2);
+        yield return () => (new DateTimeOffsetToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableDateTimeOffsetToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToDateTimeOffsetTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableDateTimeOffsetTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // TimeSpan ↔ String converters
-        yield return () => (new TimeSpanToStringTypeConverter(), 2);
-        yield return () => (new NullableTimeSpanToStringTypeConverter(), 2);
-        yield return () => (new StringToTimeSpanTypeConverter(), 2);
-        yield return () => (new StringToNullableTimeSpanTypeConverter(), 2);
+        yield return () => (new TimeSpanToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableTimeSpanToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToTimeSpanTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableTimeSpanTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
 #if NET6_0_OR_GREATER
 
         // DateOnly ↔ String converters (.NET 6+)
-        yield return () => (new DateOnlyToStringTypeConverter(), 2);
-        yield return () => (new NullableDateOnlyToStringTypeConverter(), 2);
-        yield return () => (new StringToDateOnlyTypeConverter(), 2);
-        yield return () => (new StringToNullableDateOnlyTypeConverter(), 2);
+        yield return () => (new DateOnlyToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableDateOnlyToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToDateOnlyTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableDateOnlyTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 
         // TimeOnly ↔ String converters (.NET 6+)
-        yield return () => (new TimeOnlyToStringTypeConverter(), 2);
-        yield return () => (new NullableTimeOnlyToStringTypeConverter(), 2);
-        yield return () => (new StringToTimeOnlyTypeConverter(), 2);
-        yield return () => (new StringToNullableTimeOnlyTypeConverter(), 2);
+        yield return () => (new TimeOnlyToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new NullableTimeOnlyToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToTimeOnlyTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToNullableTimeOnlyTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
 #endif
 
         // Uri ↔ String converters
-        yield return () => (new UriToStringTypeConverter(), 2);
-        yield return () => (new StringToUriTypeConverter(), 2);
+        yield return () => (new UriToStringTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
+        yield return () => (new StringToUriTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
     }
 
     /// <summary>

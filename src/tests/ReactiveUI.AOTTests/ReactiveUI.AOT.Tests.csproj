@@ -11,24 +11,23 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <TrimMode>full</TrimMode>
-    <NoWarn>$(NoWarn);IL2026;IL3050;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
-    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Splat" />
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Threading.Tasks" />
+    <Using Include="Splat"/>
+    <Using Include="System"/>
+    <Using Include="System.Collections.Generic"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="System.Linq"/>
+    <Using Include="System.Reactive.Disposables.Fluent"/>
+    <Using Include="System.Reactive.Linq"/>
+    <Using Include="System.Threading"/>
+    <Using Include="System.Threading.Tasks"/>
   </ItemGroup>
 
 </Project>

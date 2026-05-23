@@ -19,10 +19,15 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    public int GetAffinityForObject(Type type, string propertyName) =>
+        GetAffinityForObject(type, propertyName, false);
+
+    /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (!typeof(NSObject).IsAssignableFrom(type))
         {
@@ -37,13 +42,30 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
+        string propertyName) =>
+        GetNotificationForProperty(sender, expression, propertyName, false, false);
+
+    /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
         string propertyName,
-        bool beforeChanged = false,
-        bool suppressWarnings = false)
+        bool beforeChanged) =>
+        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
+
+    /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged,
+        bool suppressWarnings)
     {
-        ArgumentNullException.ThrowIfNull(sender);
-        ArgumentNullException.ThrowIfNull(expression);
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(sender);
+        ArgumentExceptionHelper.ThrowIfNull(expression);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (sender is not NSObject)
         {
@@ -101,10 +123,10 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         bool beforeChanged = false,
         bool suppressWarnings = false)
     {
-        ArgumentNullException.ThrowIfNull(sender);
-        ArgumentNullException.ThrowIfNull(expression);
-        ArgumentNullException.ThrowIfNull(propertyName);
-        ArgumentNullException.ThrowIfNull(observationKey);
+        ArgumentExceptionHelper.ThrowIfNull(sender);
+        ArgumentExceptionHelper.ThrowIfNull(expression);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(observationKey);
 
         if (sender is not NSObject obj)
         {
@@ -113,7 +135,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
         return Observable.Create<IObservedChange<object?, object?>>(observer =>
         {
-            ArgumentNullException.ThrowIfNull(observer);
+            ArgumentExceptionHelper.ThrowIfNull(observer);
 
             // Create a single stable delegate instance; KVO removal requires the same observer instance.
             var callback = new BlockObserveValueDelegate((unusedKeyPath, observedObject, unusedChange) =>

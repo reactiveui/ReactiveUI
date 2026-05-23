@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,6 +15,21 @@ namespace ReactiveUI.Blazor.Tests;
 public class ReactiveInjectableComponentBaseTests : BunitContext
 {
     /// <summary>
+    /// The expected number of renders after the initial render of the component.
+    /// </summary>
+    private const int ExpectedRenderCount = 2;
+
+    /// <summary>
+    /// The delay in milliseconds allowed for the asynchronous UI update to settle.
+    /// </summary>
+    private const int RenderDelayMilliseconds = 100;
+
+    /// <summary>
+    /// The delay in milliseconds used to confirm that no asynchronous re-render occurred.
+    /// </summary>
+    private const int NoRenderDelayMilliseconds = 50;
+
+    /// <summary>
     /// Verifies that a ViewModel registered in the service container is correctly injected into the component
     /// and that property changes on that ViewModel trigger a re-render.
     /// </summary>
@@ -29,13 +44,13 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
 
         // Verify injection was successful.
         await Assert.That(cut.Instance.ViewModel).IsEqualTo(viewModel);
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 
         // Trigger a change to verify the component is listening.
         viewModel.SomeProperty = "Changed";
 
-        await Task.Delay(100);
-        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(2);
+        await Task.Delay(RenderDelayMilliseconds);
+        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(ExpectedRenderCount);
     }
 
     /// <summary>
@@ -55,7 +70,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         // Set the same ViewModel again
         cut.Instance.ViewModel = viewModel;
 
-        await Task.Delay(50);
+        await Task.Delay(NoRenderDelayMilliseconds);
 
         // Should not have triggered a re-render
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(renderCount);
@@ -96,7 +111,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         Services.AddSingleton(viewModel);
 
         var cut = Render<TestInjectableComponent>();
-        ICanActivate activatable = cut.Instance;
+        var activatable = cut.Instance;
 
         await Assert.That(activatable.Activated).IsNotNull();
         await Assert.That(activatable.Deactivated).IsNotNull();
@@ -114,7 +129,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
 
         var cut = Render<TestActivatableInjectableComponent>();
 
-        await Task.Delay(100);
+        await Task.Delay(RenderDelayMilliseconds);
 
         // Verify that the ViewModel was activated
         await Assert.That(viewModel.IsActivated).IsTrue();
@@ -122,7 +137,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         // Dispose to trigger deactivation
         cut.Instance.Dispose();
 
-        await Task.Delay(100);
+        await Task.Delay(RenderDelayMilliseconds);
 
         // Verify that the ViewModel was deactivated
         await Assert.That(viewModel.IsActivated).IsFalse();
@@ -133,6 +148,9 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     /// </summary>
     public class TestViewModel : ReactiveObject
     {
+        /// <summary>
+        /// The backing field for the <see cref="SomeProperty"/> property.
+        /// </summary>
         private string? _someProperty;
 
         /// <summary>
@@ -153,19 +171,17 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         /// <summary>
         /// Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.
         /// </summary>
-        public TestActivatableViewModel()
-        {
+        public TestActivatableViewModel() =>
             this.WhenActivated(disposables =>
             {
                 IsActivated = true;
                 System.Reactive.Disposables.Disposable.Create(() => IsActivated = false).DisposeWith(disposables);
             });
-        }
 
         /// <summary>
         /// Gets the ViewModelActivator for this ViewModel.
         /// </summary>
-        public ViewModelActivator Activator { get; } = new ViewModelActivator();
+        public ViewModelActivator Activator { get; } = new();
 
         /// <summary>
         /// Gets a value indicating whether the ViewModel is currently activated.

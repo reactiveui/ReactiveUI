@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,16 +10,18 @@ namespace ReactiveUI.Testing.Tests;
 /// </summary>
 public sealed class TestFixtureBuilderExtensionTests
 {
+    private const string TestingValue = "testing";
+
     /// <summary>
     /// Gets the data.
     /// </summary>
     /// <returns>The data.</returns>
     public static IEnumerable<(string test1, string test2, string test3)> Data()
     {
-        yield return ("testing", string.Empty, string.Empty);
-        yield return ("testing", "testing", string.Empty);
-        yield return ("testing", "testing", "one");
-        yield return ("testing", "one", "two");
+        yield return (TestingValue, string.Empty, string.Empty);
+        yield return (TestingValue, TestingValue, string.Empty);
+        yield return (TestingValue, TestingValue, "one");
+        yield return (TestingValue, "one", "two");
     }
 
     /// <summary>
@@ -28,10 +30,10 @@ public sealed class TestFixtureBuilderExtensionTests
     /// <returns>The key values.</returns>
     public static IEnumerable<(string key, string value)> KeyValues()
     {
-        yield return ("testing", string.Empty);
-        yield return ("testing", "one");
-        yield return ("testing", "two");
-        yield return ("testing", "one two");
+        yield return (TestingValue, string.Empty);
+        yield return (TestingValue, "one");
+        yield return (TestingValue, "two");
+        yield return (TestingValue, "one two");
     }
 
     /// <summary>
@@ -40,10 +42,10 @@ public sealed class TestFixtureBuilderExtensionTests
     /// <returns>The values.</returns>
     public static IEnumerable<KeyValuePair<string, string>> KeyValuePairs()
     {
-        yield return new KeyValuePair<string, string>("latch", "key");
-        yield return new KeyValuePair<string, string>("skeleton", "key");
-        yield return new KeyValuePair<string, string>("electronic", "key");
-        yield return new KeyValuePair<string, string>("rsa", "key");
+        yield return new("latch", "key");
+        yield return new("skeleton", "key");
+        yield return new("electronic", "key");
+        yield return new("rsa", "key");
     }
 
     /// <summary>
@@ -54,11 +56,7 @@ public sealed class TestFixtureBuilderExtensionTests
     public async Task Should_Add_Dictionary()
     {
         // Given, When
-        var dictionary = new Dictionary<string, string>
-        {
-            { "check", "one" },
-            { "testing", "two" },
-        };
+        var dictionary = new Dictionary<string, string> { { "check", "one" }, { TestingValue, "two" } };
 
         TestFixture builder = new TestFixtureBuilder()
             .WithDictionary(dictionary);
@@ -131,10 +129,10 @@ public sealed class TestFixtureBuilderExtensionTests
     public async Task Should_Add_Value_To_List()
     {
         // Given, When
-        TestFixture builder = new TestFixtureBuilder().WithTest("testing");
+        TestFixture builder = new TestFixtureBuilder().WithTest(TestingValue);
 
         // Then
-        await Assert.That(builder.Tests).IsEquivalentTo(["testing"]);
+        await Assert.That(builder.Tests).IsEquivalentTo([TestingValue]);
     }
 
     /// <summary>

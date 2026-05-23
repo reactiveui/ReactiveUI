@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using ReactiveUI.Interfaces;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -30,37 +32,37 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <summary>
     /// Holds the observable that signals when the application is launching new.
     /// </summary>
-    private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isLaunchingNew = new(1);
 
     /// <summary>
     /// Holds the observable that signals when the application is resuming from a suspended state.
     /// </summary>
-    private readonly ReplaySubject<IObservable<Unit>> _isResuming = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isResuming = new(1);
 
     /// <summary>
     /// Holds the observable that signals when the application is activated / unpausing.
     /// </summary>
-    private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isUnpausing = new(1);
 
     /// <summary>
     /// Holds the observable that signals when the application should persist its state.
     /// </summary>
-    private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<IDisposable>> _shouldPersistState = new(1);
 
     /// <summary>
     /// Holds the observable that signals when persisted state should be invalidated.
     /// </summary>
-    private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _shouldInvalidateState = new(1);
 
     /// <summary>
     /// Holds the observable that signals when the application is continuing from a temporarily paused state.
     /// </summary>
-    private readonly ReplaySubject<IObservable<Unit>> _isContinuing = new(1);
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isContinuing = new(1);
 
     /// <summary>
     /// Publishes changes to <see cref="AppStateValue"/> when assigned.
     /// </summary>
-    private readonly Subject<TAppState?> _appStateValueChanged = new();
+    private readonly BroadcastSubject<TAppState?> _appStateValueChanged = new();
 
     /// <summary>
     /// Stores the typed application state factory.
@@ -82,17 +84,20 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     public SuspensionHost()
     {
 #if COCOA
-        const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
+        const string? Message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
-        const string? message = "You need to create an App class and use AutoSuspendHelper";
+        const string? Message = "You need to create an App class and use AutoSuspendHelper";
 #else
-        const string? message = "Your App class needs to use AutoSuspendHelper";
+        const string? Message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
-        IsLaunchingNew = IsResuming = IsUnpausing = IsContinuing = ShouldInvalidateState =
-            Observable.Throw<Unit>(new Exception(message));
+        ShouldInvalidateState = new ThrowObservable<Unit>(new InvalidOperationException(Message));
+        IsContinuing = ShouldInvalidateState;
+        IsUnpausing = IsContinuing;
+        IsResuming = IsUnpausing;
+        IsLaunchingNew = IsResuming;
 
-        ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
+        ShouldPersistState = new ThrowObservable<IDisposable>(new InvalidOperationException(Message));
     }
 
     /// <summary>
@@ -104,7 +109,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<Unit> IsLaunchingNew
     {
-        get => _isLaunchingNew.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isLaunchingNew);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -121,7 +126,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<Unit> IsResuming
     {
-        get => _isResuming.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isResuming);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -138,7 +143,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<Unit> IsUnpausing
     {
-        get => _isUnpausing.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isUnpausing);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -156,7 +161,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<Unit> IsContinuing
     {
-        get => _isContinuing.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isContinuing);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -173,7 +178,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<IDisposable> ShouldPersistState
     {
-        get => _shouldPersistState.Switch();
+        get => new WhenAnyObservableSwitchSink<IDisposable>(_shouldPersistState);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -190,7 +195,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
     /// <exception cref="ArgumentNullException">Thrown when the value is <see langword="null"/>.</exception>
     public IObservable<Unit> ShouldInvalidateState
     {
-        get => _shouldInvalidateState.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_shouldInvalidateState);
         set
         {
             ArgumentExceptionHelper.ThrowIfNull(value);
@@ -222,10 +227,8 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
         get => _appState;
         set
         {
-            // Keep ReactiveObject semantics for existing consumers.
             this.RaiseAndSetIfChanged(ref _appState, value);
 
-            // Publish change notification for trimming/AOT-friendly observation.
             _appStateValueChanged.OnNext(value);
         }
     }
@@ -252,9 +255,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
         get
         {
             var typedFactory = _createNewAppStateTyped;
-            Func<object>? returnFunc = typedFactory is null ? null : () => typedFactory.Invoke()!;
-
-            return returnFunc;
+            return typedFactory is null ? null : () => typedFactory.Invoke()!;
         }
 
         set
@@ -270,7 +271,8 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
                 var created = value();
                 return created is TAppState typed
                     ? typed
-                    : throw new InvalidCastException($"Created app state is not assignable to {typeof(TAppState).FullName}.");
+                    : throw new InvalidCastException(
+                        $"Created app state is not assignable to {typeof(TAppState).FullName}.");
             };
         }
     }

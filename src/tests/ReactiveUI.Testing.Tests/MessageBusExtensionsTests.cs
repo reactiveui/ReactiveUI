@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.Utilities.MessageBus;
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
@@ -17,6 +16,8 @@ namespace ReactiveUI.Testing.Tests;
 [TestExecutor<WithMessageBusExecutor>]
 public class MessageBusExtensionsTests
 {
+    private const int ExpectedFunctionResult = 42;
+
     /// <summary>
     /// Verifies that <see cref="MessageBusExtensions.WithMessageBus"/> restores the original MessageBus instance
     /// after the returned IDisposable is disposed.
@@ -102,7 +103,10 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        testBus.With(() => { /* Do nothing */ });
+        testBus.With(() =>
+        {
+            /* Do nothing */
+        });
 
         // Assert
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
@@ -140,11 +144,11 @@ public class MessageBusExtensionsTests
         var result = testBus.With(() =>
         {
             capturedBus = MessageBus.Current;
-            return 42;
+            return ExpectedFunctionResult;
         });
 
         // Assert
-        await Assert.That(result).IsEqualTo(42);
+        await Assert.That(result).IsEqualTo(ExpectedFunctionResult);
         await Assert.That(capturedBus).IsSameReferenceAs(testBus);
     }
 
@@ -161,7 +165,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        testBus.With(() => 42);
+        testBus.With(() => ExpectedFunctionResult);
 
         // Assert
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
@@ -243,9 +247,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act & Assert
-        await Assert.That(() => testBus.With(() =>
-        {
-            throw new InvalidOperationException("Test exception");
-        })).Throws<InvalidOperationException>();
+        await Assert.That(() => testBus.With(() => throw new InvalidOperationException("Test exception")))
+            .Throws<InvalidOperationException>();
     }
 }

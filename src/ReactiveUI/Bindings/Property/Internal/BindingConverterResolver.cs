@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -18,7 +18,10 @@ namespace ReactiveUI;
 [RequiresUnreferencedCode("Uses RxConverters and Splat which may require dynamic type resolution")]
 internal class BindingConverterResolver : IBindingConverterResolver
 {
-    private static readonly ConcurrentDictionary<(Type fromType, Type? toType), Func<object?, object?, object?[]?, object?>?> _setMethodCache = new();
+    /// <summary>Cache of resolved set-method converter delegates, keyed by (fromType, toType) pair.</summary>
+    private static readonly
+        ConcurrentDictionary<(Type fromType, Type? toType), Func<object?, object?, object?[]?, object?>?>
+        _setMethodCache = new();
 
     /// <inheritdoc/>
     public object? GetBindingConverter(Type fromType, Type toType) =>
@@ -42,9 +45,8 @@ internal class BindingConverterResolver : IBindingConverterResolver
                     return null;
                 }
 
-                // Adapt the converter's contract to the local call shape expected by SetThenGet.
-                // Cache the delegate to ensure reference equality for repeated calls.
-                return (currentValue, newValue, indexParameters) => converter.PerformSet(currentValue, newValue, indexParameters);
+                return (currentValue, newValue, indexParameters) =>
+                    converter.PerformSet(currentValue, newValue, indexParameters);
             });
     }
 
@@ -70,69 +72,62 @@ internal class BindingConverterResolver : IBindingConverterResolver
     /// </list>
     /// </para>
     /// </remarks>
-    private static object? ResolveBestConverter(Type fromType, Type toType)
+    private static object? ResolveBestConverter(Type fromType, Type toType) =>
+        TryResolveFromConverterService(fromType, toType)
+        ?? (object?)SelectByHighestAffinity(
+            AppLocator.Current.GetServices<IBindingTypeConverter>(),
+            candidate => candidate.FromType == fromType && candidate.ToType == toType ? candidate.GetAffinityForObjects() : 0)
+        ?? SelectByHighestAffinity(
+            AppLocator.Current.GetServices<IBindingFallbackConverter>(),
+            candidate => candidate.GetAffinityForObjects(fromType, toType));
+
+    /// <summary>
+    /// Resolves a converter via <see cref="RxConverters.Current"/>, returning null if it is unavailable or throws.
+    /// </summary>
+    /// <param name="fromType">The source type.</param>
+    /// <param name="toType">The target type.</param>
+    /// <returns>The resolved converter, or <see langword="null"/>.</returns>
+    private static object? TryResolveFromConverterService(Type fromType, Type toType)
     {
-        // Try to use the new ConverterService first (lock-free, optimized)
         try
         {
-            var converter = RxConverters.Current.ResolveConverter(fromType, toType);
-            if (converter is not null)
-            {
-                return converter;
-            }
+            return RxConverters.Current.ResolveConverter(fromType, toType);
         }
         catch
         {
-            // ConverterService not available, fall back to Splat
+            return null;
         }
+    }
 
-        // Fallback to Splat-based resolution for backward compatibility
-        // Phase 1: exact-pair typed converters by affinity.
-        var typed = AppLocator.Current.GetServices<IBindingTypeConverter>();
-        var bestTypedScore = -1;
-        IBindingTypeConverter? bestTyped = null;
+    /// <summary>
+    /// Selects the candidate with the highest positive affinity score.
+    /// </summary>
+    /// <typeparam name="T">The candidate type.</typeparam>
+    /// <param name="candidates">The candidates to evaluate.</param>
+    /// <param name="scoreSelector">Returns the affinity score for a candidate.</param>
+    /// <returns>The highest-scoring candidate, or <see langword="null"/> when none has a positive score.</returns>
+    private static T? SelectByHighestAffinity<T>(IEnumerable<T> candidates, Func<T, int> scoreSelector)
+        where T : class
+    {
+        var bestScore = -1;
+        T? best = null;
 
-        foreach (var c in typed)
+        foreach (var candidate in candidates)
         {
-            if (c is null || c.FromType != fromType || c.ToType != toType)
+            if (candidate is null)
             {
                 continue;
             }
 
-            var score = c.GetAffinityForObjects();
-            if (score > bestTypedScore && score > 0)
+            var score = scoreSelector(candidate);
+            if (score > bestScore && score > 0)
             {
-                bestTypedScore = score;
-                bestTyped = c;
+                bestScore = score;
+                best = candidate;
             }
         }
 
-        if (bestTyped is not null)
-        {
-            return bestTyped;
-        }
-
-        // Phase 2: fallback converters by affinity.
-        var fallbacks = AppLocator.Current.GetServices<IBindingFallbackConverter>();
-        var bestFallbackScore = -1;
-        IBindingFallbackConverter? bestFallback = null;
-
-        foreach (var c in fallbacks)
-        {
-            if (c is null)
-            {
-                continue;
-            }
-
-            var score = c.GetAffinityForObjects(fromType, toType);
-            if (score > bestFallbackScore && score > 0)
-            {
-                bestFallbackScore = score;
-                bestFallback = c;
-            }
-        }
-
-        return bestFallback;
+        return best;
     }
 
     /// <summary>
@@ -141,28 +136,8 @@ internal class BindingConverterResolver : IBindingConverterResolver
     /// <param name="fromType">The inbound runtime type.</param>
     /// <param name="toType">The target type.</param>
     /// <returns>The selected converter, or <see langword="null"/> if none matches.</returns>
-    private static ISetMethodBindingConverter? ResolveBestSetMethodConverter(Type fromType, Type? toType)
-    {
-        var converters = AppLocator.Current.GetServices<ISetMethodBindingConverter>();
-
-        var bestScore = -1;
-        ISetMethodBindingConverter? best = null;
-
-        foreach (var c in converters)
-        {
-            if (c is null)
-            {
-                continue;
-            }
-
-            var score = c.GetAffinityForObjects(fromType, toType);
-            if (score > bestScore && score > 0)
-            {
-                bestScore = score;
-                best = c;
-            }
-        }
-
-        return best;
-    }
+    private static ISetMethodBindingConverter? ResolveBestSetMethodConverter(Type fromType, Type? toType) =>
+        SelectByHighestAffinity(
+            AppLocator.Current.GetServices<ISetMethodBindingConverter>(),
+            candidate => candidate.GetAffinityForObjects(fromType, toType));
 }

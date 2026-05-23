@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Reflection;
-
 using Splat.Builder;
 
 namespace ReactiveUI.Builder;
@@ -44,6 +44,10 @@ public static class BuilderMixins
     /// ]]>
     /// </code>
     /// </example>
+    [SuppressMessage(
+        "Critical Code Smell",
+        "S3215:Interface instances should not be cast to concrete types",
+        Justification = "DefaultViewLocator exposes view-registration APIs not present on IViewLocator.")]
     public static IReactiveUIBuilder RegisterViews(
         this IReactiveUIBuilder builder,
         Action<ViewMappingBuilder> configure)
@@ -52,11 +56,11 @@ public static class BuilderMixins
         ArgumentExceptionHelper.ThrowIfNull(configure);
 
         var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
-            ?? throw new InvalidOperationException(
-                "DefaultViewLocator must be registered before calling RegisterViews. " +
-                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+                          ?? throw new InvalidOperationException(
+                              "DefaultViewLocator must be registered before calling RegisterViews. " +
+                              "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
 
-        var mappingBuilder = new ViewMappingBuilder(viewLocator);
+        ViewMappingBuilder mappingBuilder = new(viewLocator);
         configure(mappingBuilder);
         return builder;
     }
@@ -89,20 +93,42 @@ public static class BuilderMixins
     /// ]]>
     /// </code>
     /// </example>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [SuppressMessage(
+        "Critical Code Smell",
+        "S3215:Interface instances should not be cast to concrete types",
+        Justification = "DefaultViewLocator exposes view-registration APIs not present on IViewLocator.")]
     public static IReactiveUIBuilder WithViewModule<TModule>(this IReactiveUIBuilder builder)
         where TModule : IViewModule, new()
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
         var viewLocator = AppLocator.Current.GetService<IViewLocator>() as DefaultViewLocator
-            ?? throw new InvalidOperationException(
-                "DefaultViewLocator must be registered before calling WithViewModule. " +
-                "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
+                          ?? throw new InvalidOperationException(
+                              "DefaultViewLocator must be registered before calling WithViewModule. " +
+                              "Ensure you've called WithPlatformModule() or manually registered DefaultViewLocator.");
 
-        var module = new TModule();
+        TModule module = new();
         module.RegisterViews(viewLocator);
         return builder;
     }
+
+    /// <summary>
+    /// Configures the task pool scheduler, also setting the RxApp scheduler.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">scheduler.</exception>
+    public static IReactiveUIBuilder WithTaskPoolScheduler(
+        this IReactiveUIBuilder builder,
+        IScheduler scheduler) =>
+        WithTaskPoolScheduler(builder, scheduler, true);
 
     /// <summary>
     /// Configures the task pool scheduler.
@@ -114,7 +140,10 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">scheduler.</exception>
-    public static IReactiveUIBuilder WithTaskPoolScheduler(this IReactiveUIBuilder builder, IScheduler scheduler, bool setRxApp = true)
+    public static IReactiveUIBuilder WithTaskPoolScheduler(
+        this IReactiveUIBuilder builder,
+        IScheduler scheduler,
+        bool setRxApp)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
@@ -144,6 +173,20 @@ public static class BuilderMixins
     }
 
     /// <summary>
+    /// Configures the main thread scheduler, also setting the RxApp scheduler.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <param name="scheduler">The scheduler.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">builder.</exception>
+    public static IReactiveUIBuilder WithMainThreadScheduler(
+        this IReactiveUIBuilder builder,
+        IScheduler scheduler) =>
+        WithMainThreadScheduler(builder, scheduler, true);
+
+    /// <summary>
     /// Configures the main thread scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -153,7 +196,10 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-    public static IReactiveUIBuilder WithMainThreadScheduler(this IReactiveUIBuilder builder, IScheduler scheduler, bool setRxApp = true)
+    public static IReactiveUIBuilder WithMainThreadScheduler(
+        this IReactiveUIBuilder builder,
+        IScheduler scheduler,
+        bool setRxApp)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
@@ -170,7 +216,9 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-    public static IReactiveUIBuilder WithRegistrationOnBuild(this IReactiveUIBuilder builder, Action<IMutableDependencyResolver> configureAction)
+    public static IReactiveUIBuilder WithRegistrationOnBuild(
+        this IReactiveUIBuilder builder,
+        Action<IMutableDependencyResolver> configureAction)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
@@ -187,7 +235,9 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-    public static IReactiveUIBuilder WithRegistration(this IReactiveUIBuilder builder, Action<IMutableDependencyResolver> configureAction)
+    public static IReactiveUIBuilder WithRegistration(
+        this IReactiveUIBuilder builder,
+        Action<IMutableDependencyResolver> configureAction)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
 
@@ -204,7 +254,8 @@ public static class BuilderMixins
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
+    [RequiresUnreferencedCode(
+        "Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public static IReactiveUIBuilder WithViewsFromAssembly(this IReactiveUIBuilder builder, Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(builder);
@@ -222,6 +273,10 @@ public static class BuilderMixins
     /// The builder instance for method chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IReactiveUIBuilder WithPlatformModule<T>(this IReactiveUIBuilder builder)
         where T : IWantsToRegisterStuff, new()
     {
@@ -253,23 +308,25 @@ public static class BuilderMixins
     /// <summary>
     /// Uses the splat builder.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="appBuilder">The application builder.</param>
     /// <returns>
     /// The builder instance for method chaining.
     /// </returns>
-    public static IReactiveUIBuilder UsingSplatBuilder(this IReactiveUIBuilder reactiveUIBuilder, Action<IAppBuilder>? appBuilder)
+    public static IReactiveUIBuilder UsingSplatBuilder(
+        this IReactiveUIBuilder reactiveUiBuilder,
+        Action<IAppBuilder>? appBuilder)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        appBuilder?.Invoke(reactiveUIBuilder);
-        return reactiveUIBuilder;
+        appBuilder?.Invoke(reactiveUiBuilder);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures a custom platform implementation for ReactiveUI.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="mainThreadScheduler">The main thread scheduler for the platform.</param>
     /// <param name="platformServices">The platform-specific service registrations.</param>
     /// <returns>
@@ -277,135 +334,147 @@ public static class BuilderMixins
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
     public static IReactiveUIBuilder ForCustomPlatform(
-        this IReactiveUIBuilder reactiveUIBuilder,
+        this IReactiveUIBuilder reactiveUiBuilder,
         IScheduler mainThreadScheduler,
         Action<IMutableDependencyResolver> platformServices)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder
+        reactiveUiBuilder
             .WithMainThreadScheduler(mainThreadScheduler)
             .WithRegistration(platformServices);
-        return reactiveUIBuilder;
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures ReactiveUI for multiple platforms simultaneously.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="platformConfigurations">The platform configuration actions.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder ForPlatforms(this IReactiveUIBuilder reactiveUIBuilder, params Action<IReactiveUIBuilder>[] platformConfigurations)
+    public static IReactiveUIBuilder ForPlatforms(
+        this IReactiveUIBuilder reactiveUiBuilder,
+        params Action<IReactiveUIBuilder>[] platformConfigurations)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.ForPlatforms(platformConfigurations);
-        return reactiveUIBuilder;
+        reactiveUiBuilder.ForPlatforms(platformConfigurations);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures the ReactiveUI message bus.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder)
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUiBuilder)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.WithMessageBus();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.WithMessageBus();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures the ReactiveUI message bus.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="configure">The configuration action.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder, Action<IMessageBus> configure)
+    public static IReactiveUIBuilder WithMessageBus(
+        this IReactiveUIBuilder reactiveUiBuilder,
+        Action<IMessageBus> configure)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.WithMessageBus(configure);
-        return reactiveUIBuilder;
+        reactiveUiBuilder.WithMessageBus(configure);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Registers a custom message bus instance.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="messageBus">The message bus instance to use.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUIBuilder, IMessageBus messageBus)
+    public static IReactiveUIBuilder WithMessageBus(this IReactiveUIBuilder reactiveUiBuilder, IMessageBus messageBus)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.WithMessageBus(messageBus);
-        return reactiveUIBuilder;
+        reactiveUiBuilder.WithMessageBus(messageBus);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures the ReactiveUI view locator.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="configure">The configuration action.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder ConfigureViewLocator(this IReactiveUIBuilder reactiveUIBuilder, Action<DefaultViewLocator> configure)
+    public static IReactiveUIBuilder ConfigureViewLocator(
+        this IReactiveUIBuilder reactiveUiBuilder,
+        Action<DefaultViewLocator> configure)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.ConfigureViewLocator(configure);
-        return reactiveUIBuilder;
+        reactiveUiBuilder.ConfigureViewLocator(configure);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Configures the ReactiveUI suspension driver.
     /// </summary>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <param name="configure">The configuration action.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder ConfigureSuspensionDriver(this IReactiveUIBuilder reactiveUIBuilder, Action<ISuspensionDriver> configure)
+    public static IReactiveUIBuilder ConfigureSuspensionDriver(
+        this IReactiveUIBuilder reactiveUiBuilder,
+        Action<ISuspensionDriver> configure)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.ConfigureSuspensionDriver(configure);
-        return reactiveUIBuilder;
+        reactiveUiBuilder.ConfigureSuspensionDriver(configure);
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder RegisterViewModel<TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IReactiveUIBuilder RegisterViewModel<TViewModel>(this IReactiveUIBuilder reactiveUiBuilder)
         where TViewModel : class, IReactiveObject, new()
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.RegisterViewModel<TViewModel>();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.RegisterViewModel<TViewModel>();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
@@ -413,37 +482,48 @@ public static class BuilderMixins
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
     /// constructor.</typeparam>
-    /// <param name="reactiveUIBuilder">The ReactiveUI builder to configure. Cannot be null.</param>
+    /// <param name="reactiveUiBuilder">The ReactiveUI builder to configure. Cannot be null.</param>
     /// <returns>The same ReactiveUI builder instance, to allow for method chaining.</returns>
-    public static IReactiveUIBuilder RegisterConstantViewModel<TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IReactiveUIBuilder RegisterConstantViewModel<TViewModel>(this IReactiveUIBuilder reactiveUiBuilder)
         where TViewModel : class, IReactiveObject, new()
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.RegisterConstantViewModel<TViewModel>();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.RegisterConstantViewModel<TViewModel>();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
 #if NET6_0_OR_GREATER
-    public static IReactiveUIBuilder RegisterSingletonViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    public static IReactiveUIBuilder RegisterSingletonViewModel<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        TViewModel>(
+        this IReactiveUIBuilder reactiveUiBuilder)
 #else
-    public static IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    public static IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>(this IReactiveUIBuilder reactiveUiBuilder)
 #endif
         where TViewModel : class, IReactiveObject, new()
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.RegisterSingletonViewModel<TViewModel>();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.RegisterSingletonViewModel<TViewModel>();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
@@ -451,19 +531,23 @@ public static class BuilderMixins
     /// </summary>
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder RegisterView<TView, TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IReactiveUIBuilder RegisterView<TView, TViewModel>(this IReactiveUIBuilder reactiveUiBuilder)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.RegisterView<TView, TViewModel>();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.RegisterView<TView, TViewModel>();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
@@ -471,42 +555,46 @@ public static class BuilderMixins
     /// </summary>
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
-    /// <param name="reactiveUIBuilder">The reactive UI builder.</param>
+    /// <param name="reactiveUiBuilder">The reactive UI builder.</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIBuilder.</exception>
-    public static IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this IReactiveUIBuilder reactiveUIBuilder)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>(this IReactiveUIBuilder reactiveUiBuilder)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIBuilder);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiBuilder);
 
-        reactiveUIBuilder.RegisterSingletonView<TView, TViewModel>();
-        return reactiveUIBuilder;
+        reactiveUiBuilder.RegisterSingletonView<TView, TViewModel>();
+        return reactiveUiBuilder;
     }
 
     /// <summary>
     /// Resolves a single instance and passes it to the action.
     /// </summary>
     /// <typeparam name="T">The type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T>(this IReactiveUIInstance reactiveUIInstance, Action<T?> action)
+    public static IReactiveUIInstance WithInstance<T>(this IReactiveUIInstance reactiveUiInstance, Action<T?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        action?.Invoke(reactiveUIInstance.Current.GetService<T>());
-        return reactiveUIInstance;
+        action?.Invoke(reactiveUiInstance.Current.GetService<T>());
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -514,28 +602,27 @@ public static class BuilderMixins
     /// </summary>
     /// <typeparam name="T1">The first type to resolve.</typeparam>
     /// <typeparam name="T2">The second type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(current.GetService<T1>(), current.GetService<T2>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -544,28 +631,27 @@ public static class BuilderMixins
     /// <typeparam name="T1">The first type to resolve.</typeparam>
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -575,28 +661,31 @@ public static class BuilderMixins
     /// <typeparam name="T2">The second type to resolve.</typeparam>
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -607,28 +696,32 @@ public static class BuilderMixins
     /// <typeparam name="T3">The third type to resolve.</typeparam>
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
     /// <typeparam name="T5">The fifth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>(), current.GetService<T5>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -640,34 +733,33 @@ public static class BuilderMixins
     /// <typeparam name="T4">The fourth type to resolve.</typeparam>
     /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -680,35 +772,34 @@ public static class BuilderMixins
     /// <typeparam name="T5">The fifth type to resolve.</typeparam>
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -722,36 +813,35 @@ public static class BuilderMixins
     /// <typeparam name="T6">The sixth type to resolve.</typeparam>
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -766,37 +856,36 @@ public static class BuilderMixins
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -812,38 +901,37 @@ public static class BuilderMixins
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -860,39 +948,38 @@ public static class BuilderMixins
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -910,40 +997,39 @@ public static class BuilderMixins
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>(),
+            current.GetService<T12>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -962,41 +1048,40 @@ public static class BuilderMixins
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>(),
+            current.GetService<T12>(),
+            current.GetService<T13>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -1016,42 +1101,41 @@ public static class BuilderMixins
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>(),
-                   current.GetService<T14>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>(),
+            current.GetService<T12>(),
+            current.GetService<T13>(),
+            current.GetService<T14>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -1072,43 +1156,42 @@ public static class BuilderMixins
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
     /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
+    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(
+        this IReactiveUIInstance reactiveUiInstance,
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current is null)
+        if (reactiveUiInstance.Current is null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>(),
-                   current.GetService<T14>(),
-                   current.GetService<T15>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>(),
+            current.GetService<T12>(),
+            current.GetService<T13>(),
+            current.GetService<T14>(),
+            current.GetService<T15>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>
@@ -1130,44 +1213,44 @@ public static class BuilderMixins
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
     /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
-    /// <param name="reactiveUIInstance">The reactive UI instance.</param>
+    /// <param name="reactiveUiInstance">The reactive UI instance.</param>
     /// <param name="action">The action.</param>
     /// <returns>
     /// IReactiveUIInstance instance for chaining.
     /// </returns>
     /// <exception cref="ArgumentNullException">reactiveUIInstance.</exception>
-    public static IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(this IReactiveUIInstance reactiveUIInstance, Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
+    public static IReactiveUIInstance
+        WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(
+            this IReactiveUIInstance reactiveUiInstance,
+            Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
     {
-        ArgumentExceptionHelper.ThrowIfNull(reactiveUIInstance);
+        ArgumentExceptionHelper.ThrowIfNull(reactiveUiInstance);
 
-        if (reactiveUIInstance.Current == null)
+        if (reactiveUiInstance.Current == null || action is null)
         {
-            return reactiveUIInstance;
+            return reactiveUiInstance;
         }
 
-        if (action is not null)
-        {
-            var current = reactiveUIInstance.Current;
-            action(
-                current.GetService<T1>(),
-                current.GetService<T2>(),
-                current.GetService<T3>(),
-                current.GetService<T4>(),
-                current.GetService<T5>(),
-                current.GetService<T6>(),
-                current.GetService<T7>(),
-                current.GetService<T8>(),
-                current.GetService<T9>(),
-                current.GetService<T10>(),
-                current.GetService<T11>(),
-                current.GetService<T12>(),
-                current.GetService<T13>(),
-                current.GetService<T14>(),
-                current.GetService<T15>(),
-                current.GetService<T16>());
-        }
+        var current = reactiveUiInstance.Current;
+        action(
+            current.GetService<T1>(),
+            current.GetService<T2>(),
+            current.GetService<T3>(),
+            current.GetService<T4>(),
+            current.GetService<T5>(),
+            current.GetService<T6>(),
+            current.GetService<T7>(),
+            current.GetService<T8>(),
+            current.GetService<T9>(),
+            current.GetService<T10>(),
+            current.GetService<T11>(),
+            current.GetService<T12>(),
+            current.GetService<T13>(),
+            current.GetService<T14>(),
+            current.GetService<T15>(),
+            current.GetService<T16>());
 
-        return reactiveUIInstance;
+        return reactiveUiInstance;
     }
 
     /// <summary>

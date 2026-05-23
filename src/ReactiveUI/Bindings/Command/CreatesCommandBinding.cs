@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -26,13 +26,16 @@ internal static class CreatesCommandBinding
     /// <returns>An IDisposable that can be used to unbind the command from the target object.</returns>
     /// <exception cref="Exception">Thrown if a suitable command binder cannot be found for the specified target type.</exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public static IDisposable BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl>(ICommand? command, TControl? target, IObservable<object?> commandParameter)
+    public static IDisposable BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        TControl>(ICommand? command, TControl? target, IObservable<object?> commandParameter)
         where TControl : class
     {
-        var binder = GetBinder<TControl>(hasEventTarget: false);
-        var ret = binder.BindCommandToObject(command, target, commandParameter)
-            ?? throw new Exception($"Couldn't bind Command Binder for {typeof(TControl).FullName}");
-        return ret;
+        var binder = GetBinder<TControl>(false);
+        return binder.BindCommandToObject(command, target, commandParameter)
+               ?? throw new InvalidOperationException($"Couldn't bind Command Binder for {typeof(TControl).FullName}");
     }
 
     /// <summary>
@@ -53,17 +56,24 @@ internal static class CreatesCommandBinding
     /// <returns>An IDisposable that can be used to unbind the command from the event.</returns>
     /// <exception cref="Exception">Thrown if a suitable command binder cannot be found for the specified target type and event name.</exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public static IDisposable BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TEventArgs>(
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IDisposable BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        TControl, TEventArgs>(
         ICommand? command,
         TControl? target,
         IObservable<object?> commandParameter,
         string eventName)
         where TControl : class
     {
-        var binder = GetBinder<TControl>(hasEventTarget: true);
-        var ret = binder.BindCommandToObject<TControl, TEventArgs>(command, target, commandParameter, eventName)
-            ?? throw new Exception($"Couldn't bind Command Binder for {typeof(TControl).FullName} and event {eventName}");
-        return ret;
+        var binder = GetBinder<TControl>(true);
+        return binder.BindCommandToObject<TControl, TEventArgs>(command, target, commandParameter, eventName)
+               ?? throw new InvalidOperationException($"Couldn't bind Command Binder for {typeof(TControl).FullName} and event {eventName}");
     }
 
     /// <summary>
@@ -74,15 +84,23 @@ internal static class CreatesCommandBinding
     /// <param name="hasEventTarget">true if the target object exposes an event to bind to; otherwise, false.</param>
     /// <returns>An instance of ICreatesCommandBinding that is best suited for the specified target type.</returns>
     /// <exception cref="Exception">Thrown if no suitable command binding provider can be found for the specified target type.</exception>
-    private static ICreatesCommandBinding GetBinder<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    private static ICreatesCommandBinding GetBinder<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        T>(bool hasEventTarget)
     {
         var binder = AppLocator.Current.GetServices<ICreatesCommandBinding>()
             .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
             {
                 var score = x.GetAffinityForObject<T>(hasEventTarget);
-                return (score > acc.score) ? (score, x) : acc;
+                return score > acc.score ? (score, x) : acc;
             }).binding;
 
-        return binder ?? throw new Exception($"Couldn't find a Command Binder for {typeof(T).FullName}");
+        return binder ?? throw new InvalidOperationException($"Couldn't find a Command Binder for {typeof(T).FullName}");
     }
 }

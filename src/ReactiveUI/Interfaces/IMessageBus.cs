@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive.Concurrency;
 
 namespace ReactiveUI;
 
@@ -31,10 +33,43 @@ public interface IMessageBus : IEnableLogger
     /// <param name="scheduler">The scheduler on which to post the
     /// notifications for the specified type and contract.
     /// CurrentThreadScheduler by default.</param>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    void RegisterScheduler<T>(IScheduler scheduler);
+
+    /// <summary>
+    /// Registers a scheduler for the type, which may be specified at
+    /// runtime, and the contract.
+    /// </summary>
+    /// <remarks>If a scheduler is already registered for the specified
+    /// runtime and contract, this will overwrite the existing
+    /// registration.</remarks>
+    /// <typeparam name="T">The type of the message to listen to.</typeparam>
+    /// <param name="scheduler">The scheduler on which to post the
+    /// notifications for the specified type and contract.
+    /// CurrentThreadScheduler by default.</param>
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
-    void RegisterScheduler<T>(IScheduler scheduler, string? contract = null);
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    void RegisterScheduler<T>(IScheduler scheduler, string? contract);
+
+    /// <summary>
+    /// Listen provides an Observable that will fire whenever a Message is
+    /// provided for this object via RegisterMessageSource or SendMessage.
+    /// </summary>
+    /// <typeparam name="T">The type of the message to listen to.</typeparam>
+    /// <returns>An observable sequence.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IObservable<T> Listen<T>();
 
     /// <summary>
     /// Listen provides an Observable that will fire whenever a Message is
@@ -45,7 +80,25 @@ public interface IMessageBus : IEnableLogger
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An observable sequence.</returns>
-    IObservable<T> Listen<T>(string? contract = null);
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IObservable<T> Listen<T>(string? contract);
+
+    /// <summary>
+    /// ListenIncludeLatest provides an Observable that will fire whenever a Message is
+    /// provided for this object via RegisterMessageSource or SendMessage and fire the
+    /// last provided Message immediately if applicable, or null.
+    /// </summary>
+    /// <typeparam name="T">The type of the message to listen to.</typeparam>
+    /// <returns>An Observable representing the notifications posted to the
+    /// message bus.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IObservable<T> ListenIncludeLatest<T>();
 
     /// <summary>
     /// ListenIncludeLatest provides an Observable that will fire whenever a Message is
@@ -58,7 +111,18 @@ public interface IMessageBus : IEnableLogger
     /// only used for one purpose, leave this as null.</param>
     /// <returns>An Observable representing the notifications posted to the
     /// message bus.</returns>
-    IObservable<T> ListenIncludeLatest<T>(string? contract = null);
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IObservable<T> ListenIncludeLatest<T>(string? contract);
+
+    /// <summary>
+    /// Determines if a particular message Type is registered.
+    /// </summary>
+    /// <param name="type">The type of the message.</param>
+    /// <returns>True if messages have been posted for this message Type.</returns>
+    bool IsRegistered(Type type);
 
     /// <summary>
     /// Determines if a particular message Type is registered.
@@ -68,7 +132,18 @@ public interface IMessageBus : IEnableLogger
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
     /// <returns>True if messages have been posted for this message Type.</returns>
-    bool IsRegistered(Type type, string? contract = null);
+    bool IsRegistered(Type type, string? contract);
+
+    /// <summary>
+    /// Registers an Observable representing the stream of messages to send.
+    /// Another part of the code can then call Listen to retrieve this
+    /// Observable.
+    /// </summary>
+    /// <typeparam name="T">The type of the message to listen to.</typeparam>
+    /// <param name="source">An Observable that will be subscribed to, and a
+    /// message sent out for each value provided.</param>
+    /// <returns>A disposable.</returns>
+    IDisposable RegisterMessageSource<T>(IObservable<T> source);
 
     /// <summary>
     /// Registers an Observable representing the stream of messages to send.
@@ -82,7 +157,17 @@ public interface IMessageBus : IEnableLogger
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
     /// <returns>A disposable.</returns>
-    IDisposable RegisterMessageSource<T>(IObservable<T> source, string? contract = null);
+    IDisposable RegisterMessageSource<T>(IObservable<T> source, string? contract);
+
+    /// <summary>
+    /// Sends a single message using the specified Type and contract.
+    /// Consider using RegisterMessageSource instead if you will be sending
+    /// messages in response to other changes such as property changes
+    /// or events.
+    /// </summary>
+    /// <typeparam name="T">The type of the message to send.</typeparam>
+    /// <param name="message">The actual message to send.</param>
+    void SendMessage<T>(T message);
 
     /// <summary>
     /// Sends a single message using the specified Type and contract.
@@ -95,5 +180,5 @@ public interface IMessageBus : IEnableLogger
     /// <param name="contract">A unique string to distinguish messages with
     /// identical types (i.e. "MyCoolViewModel") - if the message type is
     /// only used for one purpose, leave this as null.</param>
-    void SendMessage<T>(T message, string? contract = null);
+    void SendMessage<T>(T message, string? contract);
 }

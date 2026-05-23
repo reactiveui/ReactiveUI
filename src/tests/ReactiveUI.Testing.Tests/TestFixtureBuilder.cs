@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,9 +10,24 @@ namespace ReactiveUI.Testing.Tests;
 /// </summary>
 public class TestFixtureBuilder : IBuilder
 {
+    /// <summary>
+    /// The count value to assign to the fixture.
+    /// </summary>
     private int _count;
+
+    /// <summary>
+    /// The name to assign to the fixture.
+    /// </summary>
     private string? _name;
+
+    /// <summary>
+    /// The collection of tests to assign to the fixture.
+    /// </summary>
     private List<string>? _tests = [];
+
+    /// <summary>
+    /// The collection of variables to assign to the fixture.
+    /// </summary>
     private Dictionary<string, string> _variables = [];
 
     /// <summary>
@@ -49,14 +64,16 @@ public class TestFixtureBuilder : IBuilder
     /// </summary>
     /// <param name="variables">The dictionary.</param>
     /// <returns>The builder.</returns>
-    public TestFixtureBuilder WithDictionary(Dictionary<string, string> variables) => this.With(ref _variables, variables);
+    public TestFixtureBuilder WithDictionary(Dictionary<string, string> variables) =>
+        this.With(ref _variables, variables);
 
     /// <summary>
     /// Adds the key value pair to the builder.
     /// </summary>
     /// <param name="keyValuePair">The key value pair.</param>
     /// <returns>The builder.</returns>
-    public TestFixtureBuilder WithKeyValue(KeyValuePair<string, string> keyValuePair) => this.With(ref _variables, keyValuePair);
+    public TestFixtureBuilder WithKeyValue(KeyValuePair<string, string> keyValuePair) =>
+        this.With(ref _variables, keyValuePair);
 
     /// <summary>
     /// Adds a key value pair to the builder.
@@ -87,11 +104,9 @@ public class TestFixtureBuilder : IBuilder
     /// <returns>The builder.</returns>
     public TestFixtureBuilder WithTests(IEnumerable<string> tests) => this.With(ref _tests, tests);
 
-    private TestFixture Build() => new()
-    {
-        Name = _name,
-        Count = _count,
-        Tests = _tests,
-        Variables = _variables
-    };
+    /// <summary>
+    /// Builds the <see cref="TestFixture"/> from the configured values.
+    /// </summary>
+    /// <returns>The constructed test fixture.</returns>
+    private TestFixture Build() => new() { Name = _name, Count = _count, Tests = _tests, Variables = _variables };
 }

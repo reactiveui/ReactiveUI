@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Android.Content;
 using Android.Views;
-
 using static ReactiveUI.ControlFetcherMixin;
 
 namespace ReactiveUI;
@@ -23,6 +22,9 @@ namespace ReactiveUI;
 /// </summary>
 public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
+    /// <summary>
+    /// The backing view instance owned by this host.
+    /// </summary>
     private View? _view;
 
     /// <summary>
@@ -36,7 +38,7 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     {
     }
 
-   /// <summary>
+    /// <summary>
     /// Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating
     /// a layout resource.
     /// </summary>
@@ -59,8 +61,8 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         ViewGroup parent,
         bool attachToRoot)
     {
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentExceptionHelper.ThrowIfNull(context);
+        ArgumentExceptionHelper.ThrowIfNull(parent);
 
         View = Inflate(context, layoutId, parent, attachToRoot);
     }
@@ -92,12 +94,14 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         Action<LayoutViewHost, View> bind)
         : this(context, layoutId, parent, attachToRoot)
     {
-        ArgumentNullException.ThrowIfNull(bind);
+        ArgumentExceptionHelper.ThrowIfNull(bind);
 
-        if (View is not null)
+        if (View is null)
         {
-            bind(this, View);
+            return;
         }
+
+        bind(this, View);
     }
 
     /// <summary>
@@ -132,15 +136,17 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         bool performAutoWireup,
         ResolveStrategy resolveStrategy)
     {
-        ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentExceptionHelper.ThrowIfNull(context);
+        ArgumentExceptionHelper.ThrowIfNull(parent);
 
         View = Inflate(context, layoutId, parent, attachToRoot);
 
-        if (performAutoWireup)
+        if (!performAutoWireup)
         {
-            this.WireUpControls(resolveStrategy);
+            return;
         }
+
+        this.WireUpControls(resolveStrategy);
     }
 
     /// <inheritdoc />
@@ -156,7 +162,6 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 
             _view = value;
 
-            // Associate the host with the view for retrieval via ViewMixins.
             _view?.SetTag(ViewMixins.ViewHostTag, this.ToJavaObject());
         }
     }
@@ -170,6 +175,12 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         ArgumentExceptionHelper.ThrowIfNull(host);
         return host._view;
     }
+
+    /// <summary>
+    /// Gets the backing <see cref="View"/> for this host as a friendly alternate to the implicit operator.
+    /// </summary>
+    /// <returns>The backing <see cref="View"/> instance, or <see langword="null"/> if none has been assigned.</returns>
+    public View? ToView() => _view;
 
     /// <summary>
     /// Inflates an Android layout resource into a <see cref="View"/> using the provided context.

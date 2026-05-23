@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Winforms</AssemblyName>
@@ -7,43 +7,42 @@
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
-    <NoWarn>$(NoWarn);IDE1006;</NoWarn>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <IsAotCompatible>false</IsAotCompatible>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.ComponentModel" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Linq.Expressions" />
-    <Using Include="System.Reactive.Concurrency" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Windows.Forms" />
-    <Using Include="ReactiveUI.Helpers" />
-    <Using Include="Splat" />
+    <Using Include="System"/>
+    <Using Include="System.Collections.Generic"/>
+    <Using Include="System.ComponentModel"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="System.Linq"/>
+    <Using Include="System.Linq.Expressions"/>
+    <Using Include="System.Reactive.Concurrency"/>
+    <Using Include="System.Reactive.Disposables"/>
+    <Using Include="System.Reactive.Linq"/>
+    <Using Include="System.Threading"/>
+    <Using Include="System.Windows.Forms"/>
+    <Using Include="ReactiveUI.Helpers"/>
+    <Using Include="Splat"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-    <PackageReference Include="System.Reactive" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
+    <PackageReference Include="System.Reactive"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs;..\ReactiveUI.Wpf\Rx\Linq\ControlObservable.cs" />
+    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs;..\ReactiveUI.Wpf\Rx\Linq\ControlObservable.cs"/>
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency" />
+    <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency"/>
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests"/>
   </ItemGroup>
 </Project>

@@ -76,6 +76,11 @@ namespace ReactiveUI.Tests
             await Assert.That(formattedOutputUpdates).IsEqualTo(expectedOutputUpdatesString);
         }
 
+        /// <summary>
+        /// Formats a sequence of updates into a colon-delimited string.
+        /// </summary>
+        /// <param name="updates">The updates to format.</param>
+        /// <returns>The formatted string representation of the updates.</returns>
         private string FormatUpdates(IEnumerable<Update> updates)
         {
             return updates.Aggregate(
@@ -92,6 +97,11 @@ namespace ReactiveUI.Tests
                 x => x.ToString());
         }
 
+        /// <summary>
+        /// Parses a single update token into an <see cref="Update"/>.
+        /// </summary>
+        /// <param name="input">The update token to parse.</param>
+        /// <returns>The parsed <see cref="Update"/>.</returns>
         private Update ParseUpdate(string input)
         {
             var index = int.Parse(input.Substring(1));

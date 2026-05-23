@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -149,8 +149,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         where TEventArgs : EventArgs
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
         // Match existing binder behavior: null command means "no binding".
         if (command is null)
@@ -211,8 +211,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
         commandParameter ??= Observable.Return((object?)target);
@@ -287,8 +287,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
         commandParameter ??= Observable.Return((object?)target);
@@ -473,8 +473,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="createBinding"/> is null.</exception>
     protected void Register(Type type, int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(createBinding);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(createBinding);
 
         lock (_gate)
         {

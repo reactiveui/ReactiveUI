@@ -1,11 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text.Json.Serialization.Metadata;
-
 using ReactiveUI.Interfaces;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -34,7 +37,14 @@ public static class SuspensionHostExtensions
     /// <summary>
     /// Gets or sets the ensure load app state function. Internal for testing purposes only.
     /// </summary>
-    [SuppressMessage("Roslynator", "RCS1085:Use auto-implemented property", Justification = "Need explicit backing field for Interlocked.Exchange")]
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2292:Trivial properties should be auto-implemented",
+        Justification = "Backing field required for Interlocked.Exchange(ref).")]
+    [SuppressMessage(
+        "Roslynator",
+        "RCS1085:Use auto-implemented property",
+        Justification = "Need explicit backing field for Interlocked.Exchange")]
     internal static Func<IObservable<Unit>>? EnsureLoadAppStateFunc
     {
         get => _ensureLoadAppStateFunc;
@@ -44,7 +54,14 @@ public static class SuspensionHostExtensions
     /// <summary>
     /// Gets or sets the suspension driver. Internal for testing purposes only.
     /// </summary>
-    [SuppressMessage("Roslynator", "RCS1085:Use auto-implemented property", Justification = "Need explicit backing field for Interlocked.Exchange")]
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2292:Trivial properties should be auto-implemented",
+        Justification = "Backing field required for Interlocked.Exchange(ref).")]
+    [SuppressMessage(
+        "Roslynator",
+        "RCS1085:Use auto-implemented property",
+        Justification = "Need explicit backing field for Interlocked.Exchange")]
     internal static ISuspensionDriver? SuspensionDriver
     {
         get => _suspensionDriver;
@@ -67,6 +84,10 @@ public static class SuspensionHostExtensions
     [RequiresDynamicCode(
         "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
         "Prefer GetAppState<TAppState>(ISuspensionHost<TAppState>) used with SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static T GetAppState<T>(this ISuspensionHost item)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
@@ -112,14 +133,18 @@ public static class SuspensionHostExtensions
     [RequiresDynamicCode(
         "This overload uses WhenAny, which can require unreferenced/dynamic code in trimming/AOT scenarios. " +
         "Prefer ObserveAppState<TAppState>(ISuspensionHost<TAppState>) for trimming/AOT scenarios.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<T> ObserveAppState<T>(this ISuspensionHost item)
         where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
-        return item.WhenAny<ISuspensionHost, object?, object?>(nameof(item.AppState), static observedChange => observedChange.Value)
-                   .WhereNotNull()
-                   .Cast<T>();
+        return new NonNullCastObservable<T>(item.WhenAny<ISuspensionHost, object?, object?>(
+            nameof(item.AppState),
+            static observedChange => observedChange.Value));
     }
 
     /// <summary>
@@ -136,20 +161,22 @@ public static class SuspensionHostExtensions
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
-        return Observable.Create<TAppState>(
-            observer =>
-            {
-                var current = item.AppStateValue;
-                if (current is not null)
-                {
-                    observer.OnNext(current);
-                }
-
-                return item.AppStateValueChanged
-                    .WhereNotNull()
-                    .Subscribe(observer);
-            });
+        return new AppStateValueObservable<TAppState>(item);
     }
+
+    /// <summary>
+    /// Setup our suspension driver for a class derived off ISuspensionHost interface using a resolved driver.
+    /// </summary>
+    /// <param name="item">The suspension host.</param>
+    /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+    [RequiresUnreferencedCode(
+        "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
+        "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+    [RequiresDynamicCode(
+        "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
+        "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
+    public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item) =>
+        SetupDefaultSuspendResume(item, null);
 
     /// <summary>
     /// Setup our suspension driver for a class derived off ISuspensionHost interface.
@@ -160,9 +187,9 @@ public static class SuspensionHostExtensions
     /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
     /// <remarks>
     /// <para>
-    /// Registers handlers for <see cref="ISuspensionHost.ShouldPersistState"/>, <see cref="ISuspensionHost.ShouldInvalidateState"/>,
-    /// and resume notifications, delegating serialization to the provided <paramref name="driver"/> (or a resolved
-    /// instance from <see cref="AppLocator"/>).
+    /// Registers handlers for ISuspensionHost.ShouldPersistState, ISuspensionHost.ShouldInvalidateState,
+    /// and resume notifications, delegating serialization to the provided driver (or a resolved
+    /// instance from AppLocator).
     /// </para>
     /// </remarks>
     /// <example>
@@ -179,84 +206,116 @@ public static class SuspensionHostExtensions
     [RequiresDynamicCode(
         "This overload may invoke ISuspensionDriver.LoadState()/SaveState<T>(T), which are commonly reflection-based. " +
         "Prefer SetupDefaultSuspendResume<TAppState>(..., JsonTypeInfo<TAppState>, ...) for trimming/AOT scenarios.")]
-    public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver = null)
+    public static IDisposable SetupDefaultSuspendResume(this ISuspensionHost item, ISuspensionDriver? driver)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
-        var ret = new CompositeDisposable();
+        CompositeDisposable ret = [];
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         _ensureLoadAppStateFunc = () => EnsureLoadAppState(item, _suspensionDriver);
 
-        ret.Add(item.ShouldInvalidateState
-                    .SelectMany(_ => _suspensionDriver.InvalidateState())
-                    .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
-                    .Subscribe(_ => item.Log().Info("Invalidated app state")));
+        var resolvedDriver = _suspensionDriver!;
+        ret.Add(item.ShouldInvalidateState.Subscribe(new DriverOperationObserver<Unit>(
+            item,
+            _ => resolvedDriver.InvalidateState(),
+            static _ => { },
+            "Invalidated app state",
+            "Tried to invalidate app state")));
 
-        ret.Add(item.ShouldPersistState
-                    .SelectMany(x => EnsureLoadAppStateOnce(item, _suspensionDriver)
-                        .SelectMany(_ => _suspensionDriver!.SaveState(item.AppState!))
-                        .Finally(x.Dispose))
-                    .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
-                    .Subscribe(_ => item.Log().Info("Persisted application state")));
+        ret.Add(item.ShouldPersistState.Subscribe(new DriverOperationObserver<IDisposable>(
+            item,
+            _ =>
+            {
+                // Materialize app state (one-time load) before saving, so a shutdown that races ahead of
+                // the resume/launch load still persists real state rather than null (see #4353).
+                RunPendingLoad();
+                return resolvedDriver.SaveState(item.AppState!);
+            },
+            static token => token.Dispose(),
+            "Persisted application state",
+            "Tried to persist app state")));
 
-        ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                    .Do(_ => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke())
-                    .Subscribe());
+        ret.Add(item.IsResuming.Subscribe(new DelegateObserver<Unit>(static _ => RunPendingLoad())));
+        ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<Unit>(static _ => RunPendingLoad())));
 
         return ret;
     }
+
+    /// <summary>
+    /// Sets up suspend/resume using a strongly-typed host and source-generated JSON metadata, using a resolved driver.
+    /// </summary>
+    /// <typeparam name="TAppState">The application state type.</typeparam>
+    /// <param name="item">The typed suspension host.</param>
+    /// <param name="typeInfo">Source-generated metadata for TAppState.</param>
+    /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
+    public static IDisposable SetupDefaultSuspendResume<TAppState>(
+        this ISuspensionHost<TAppState> item,
+        JsonTypeInfo<TAppState> typeInfo)
+        where TAppState : class =>
+        SetupDefaultSuspendResume(item, typeInfo, null);
 
     /// <summary>
     /// Sets up suspend/resume using a strongly-typed host and source-generated JSON metadata (trimming/AOT friendly).
     /// </summary>
     /// <typeparam name="TAppState">The application state type.</typeparam>
     /// <param name="item">The typed suspension host.</param>
-    /// <param name="typeInfo">Source-generated metadata for <typeparamref name="TAppState"/>.</param>
+    /// <param name="typeInfo">Source-generated metadata for TAppState.</param>
     /// <param name="driver">The suspension driver.</param>
     /// <returns>A disposable which will stop responding to Suspend and Resume requests.</returns>
     /// <remarks>
-    /// This overload persists and restores state using <see cref="ISuspensionDriver.LoadState{T}(JsonTypeInfo{T})"/> and
-    /// <see cref="ISuspensionDriver.SaveState{T}(T, JsonTypeInfo{T})"/> to avoid reflection-based serialization.
+    /// This overload persists and restores state using ISuspensionDriver.LoadState and ISuspensionDriver.SaveState
+    /// to avoid reflection-based serialization.
     /// </remarks>
-    public static IDisposable SetupDefaultSuspendResume<TAppState>(this ISuspensionHost<TAppState> item, JsonTypeInfo<TAppState> typeInfo, ISuspensionDriver? driver = null)
+    public static IDisposable SetupDefaultSuspendResume<TAppState>(
+        this ISuspensionHost<TAppState> item,
+        JsonTypeInfo<TAppState> typeInfo,
+        ISuspensionDriver? driver)
         where TAppState : class
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
-        var ret = new CompositeDisposable();
+        CompositeDisposable ret = [];
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
 
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot setup Suspend/Resume.");
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         _ensureLoadAppStateFunc = () => EnsureLoadAppState(item, _suspensionDriver, typeInfo);
 
-        ret.Add(item.ShouldInvalidateState
-                    .SelectMany(_ => _suspensionDriver.InvalidateState())
-                    .LoggedCatch(item, Observables.Unit, "Tried to invalidate app state")
-                    .Subscribe(_ => item.Log().Info("Invalidated app state")));
+        var resolvedDriver = _suspensionDriver!;
+        ret.Add(item.ShouldInvalidateState.Subscribe(new DriverOperationObserver<Unit>(
+            item,
+            _ => resolvedDriver.InvalidateState(),
+            static _ => { },
+            "Invalidated app state",
+            "Tried to invalidate app state")));
 
-        ret.Add(item.ShouldPersistState
-                    .SelectMany(x => EnsureLoadAppStateOnce(item, _suspensionDriver, typeInfo)
-                        .SelectMany(_ => _suspensionDriver!.SaveState(item.AppStateValue!, typeInfo))
-                        .Finally(x.Dispose))
-                    .LoggedCatch(item, Observables.Unit, "Tried to persist app state")
-                    .Subscribe(_ => item.Log().Info("Persisted application state")));
+        ret.Add(item.ShouldPersistState.Subscribe(new DriverOperationObserver<IDisposable>(
+            item,
+            _ =>
+            {
+                // Materialize app state (one-time load) before saving, so a shutdown that races ahead of
+                // the resume/launch load still persists real state rather than null (see #4353).
+                RunPendingLoad();
+                return resolvedDriver.SaveState(item.AppStateValue!, typeInfo);
+            },
+            static token => token.Dispose(),
+            "Persisted application state",
+            "Tried to persist app state")));
 
-        ret.Add(item.IsResuming.Merge(item.IsLaunchingNew)
-                    .Do(_ => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke())
-                    .Subscribe());
+        ret.Add(item.IsResuming.Subscribe(new DelegateObserver<Unit>(static _ => RunPendingLoad())));
+        ret.Add(item.IsLaunchingNew.Subscribe(new DelegateObserver<Unit>(static _ => RunPendingLoad())));
 
         return ret;
     }
@@ -277,7 +336,7 @@ public static class SuspensionHostExtensions
     {
         if (item.AppState is not null)
         {
-            return Observable.Return(Unit.Default);
+            return Observable<Unit>.Default;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -285,43 +344,21 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return Observable.Return(Unit.Default);
+            return Observable<Unit>.Default;
         }
-
-        object? loadedState;
 
         try
         {
-            loadedState = _suspensionDriver.LoadState().Wait();
+            // Fall back to a freshly created state when the driver yields no persisted state (see #4349).
+            item.AppState = WaitForResult(_suspensionDriver.LoadState()) ?? item.CreateNewAppState?.Invoke();
         }
         catch (Exception ex)
         {
             item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
-            loadedState = null;
+            item.AppState = item.CreateNewAppState?.Invoke();
         }
 
-        item.AppState = loadedState ?? item.CreateNewAppState?.Invoke();
-
-        return Observable.Return(Unit.Default);
-    }
-
-    /// <summary>
-    /// Runs the pending one-time untyped app-state load, or materializes state directly if the pending loader has already been consumed.
-    /// </summary>
-    /// <param name="item">The suspension host.</param>
-    /// <param name="driver">The suspension driver.</param>
-    /// <returns>A completed observable.</returns>
-    [RequiresUnreferencedCode(
-        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-        "Prefer EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
-    [RequiresDynamicCode(
-        "This overload may invoke ISuspensionDriver.LoadState(), which is commonly reflection-based. " +
-        "Prefer EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState>, ISuspensionDriver?, JsonTypeInfo<TAppState>) for trimming/AOT scenarios.")]
-    private static IObservable<Unit> EnsureLoadAppStateOnce(ISuspensionHost item, ISuspensionDriver? driver)
-    {
-        var ensureLoadAppState = Interlocked.Exchange(ref _ensureLoadAppStateFunc, null);
-
-        return ensureLoadAppState?.Invoke() ?? item.EnsureLoadAppState(driver);
+        return Observable<Unit>.Default;
     }
 
     /// <summary>
@@ -332,12 +369,15 @@ public static class SuspensionHostExtensions
     /// <param name="driver">The suspension driver.</param>
     /// <param name="typeInfo">Source-generated metadata for <typeparamref name="TAppState"/>.</param>
     /// <returns>A completed observable.</returns>
-    private static IObservable<Unit> EnsureLoadAppState<TAppState>(this ISuspensionHost<TAppState> item, ISuspensionDriver? driver, JsonTypeInfo<TAppState> typeInfo)
+    private static IObservable<Unit> EnsureLoadAppState<TAppState>(
+        this ISuspensionHost<TAppState> item,
+        ISuspensionDriver? driver,
+        JsonTypeInfo<TAppState> typeInfo)
         where TAppState : class
     {
         if (item.AppStateValue is not null)
         {
-            return Observable.Return(Unit.Default);
+            return Observable<Unit>.Default;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -345,39 +385,240 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return Observable.Return(Unit.Default);
+            return Observable<Unit>.Default;
         }
-
-        TAppState? loadedState;
 
         try
         {
-            loadedState = _suspensionDriver.LoadState(typeInfo).Wait();
+            // Fall back to a freshly created state when the driver yields no persisted state (see #4349).
+            item.AppStateValue = WaitForResult(_suspensionDriver.LoadState(typeInfo)) ?? item.CreateNewAppStateTyped?.Invoke();
         }
         catch (Exception ex)
         {
             item.Log().Warn(ex, "Failed to restore app state from storage, creating from scratch");
-            loadedState = null;
+            item.AppStateValue = item.CreateNewAppStateTyped?.Invoke();
         }
 
-        item.AppStateValue = loadedState ?? item.CreateNewAppStateTyped?.Invoke();
+        return Observable<Unit>.Default;
+    }
 
-        return Observable.Return(Unit.Default);
+    /// <summary>Runs the pending one-time app-state load exactly once, if one is registered.</summary>
+    private static void RunPendingLoad() => Interlocked.Exchange(ref _ensureLoadAppStateFunc, null)?.Invoke();
+
+    /// <summary>Subscribes to a single-value observable and blocks until it terminates, returning its last value.</summary>
+    /// <typeparam name="T">The value type.</typeparam>
+    /// <param name="source">The source observable.</param>
+    /// <returns>The last value produced by the source, or default if none was produced.</returns>
+    private static T? WaitForResult<T>(IObservable<T> source)
+    {
+        using var signal = new ManualResetEventSlim(false);
+        var observer = new BlockingObserver<T>(signal);
+        using (source.Subscribe(observer))
+        {
+            signal.Wait();
+        }
+
+        return observer.GetResult();
     }
 
     /// <summary>
-    /// Runs the pending one-time typed app-state load, or materializes state directly if the pending loader has already been consumed.
+    /// Emits only the non-null values of a <c>WhenAny</c> stream, cast to the requested type. Specialised to
+    /// <see cref="ObserveAppState{T}(ISuspensionHost)"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The requested app-state type.</typeparam>
+    /// <param name="source">The source app-state value stream.</param>
+    private sealed class NonNullCastObservable<TResult>(IObservable<object?> source) : IObservable<TResult>
+        where TResult : class
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TResult> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Forwards each non-null value cast to the requested type.</summary>
+        /// <param name="downstream">The observer receiving the cast values.</param>
+        private sealed class Sink(IObserver<TResult> downstream) : IObserver<object?>
+        {
+            /// <inheritdoc/>
+            public void OnNext(object? value)
+            {
+                if (value is not TResult typed)
+                {
+                    return;
+                }
+
+                downstream.OnNext(typed);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// Emits the current typed app state (when present) followed by every non-null assignment. Specialised to
+    /// <see cref="ObserveAppState{TAppState}(ISuspensionHost{TAppState})"/>.
     /// </summary>
     /// <typeparam name="TAppState">The application state type.</typeparam>
     /// <param name="item">The typed suspension host.</param>
-    /// <param name="driver">The suspension driver.</param>
-    /// <param name="typeInfo">Source-generated metadata for <typeparamref name="TAppState"/>.</param>
-    /// <returns>A completed observable.</returns>
-    private static IObservable<Unit> EnsureLoadAppStateOnce<TAppState>(ISuspensionHost<TAppState> item, ISuspensionDriver? driver, JsonTypeInfo<TAppState> typeInfo)
+    private sealed class AppStateValueObservable<TAppState>(ISuspensionHost<TAppState> item) : IObservable<TAppState>
         where TAppState : class
     {
-        var ensureLoadAppState = Interlocked.Exchange(ref _ensureLoadAppStateFunc, null);
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TAppState> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
 
-        return ensureLoadAppState?.Invoke() ?? item.EnsureLoadAppState(driver, typeInfo);
+            var current = item.AppStateValue;
+            if (current is not null)
+            {
+                observer.OnNext(current);
+            }
+
+            return item.AppStateValueChanged.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Forwards each non-null app-state assignment.</summary>
+        /// <param name="downstream">The observer receiving the app state.</param>
+        private sealed class Sink(IObserver<TAppState> downstream) : IObserver<TAppState?>
+        {
+            /// <inheritdoc/>
+            public void OnNext(TAppState? value)
+            {
+                if (value is null)
+                {
+                    return;
+                }
+
+                downstream.OnNext(value);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+
+    /// <summary>
+    /// For each lifecycle signal, runs a suspension-driver operation, logging success and swallowing/logging failures,
+    /// and runs a finalizer afterwards. Fuses the prior <c>SelectMany</c> + <c>Finally</c> + <c>LoggedCatch</c> +
+    /// <c>Subscribe</c> pipeline into one observer.
+    /// </summary>
+    /// <typeparam name="TArg">The lifecycle signal type.</typeparam>
+    /// <param name="logHost">The object used for logging.</param>
+    /// <param name="operation">Produces the driver operation for a signal.</param>
+    /// <param name="onFinally">Runs after the operation terminates (for example, disposing the persist token).</param>
+    /// <param name="successMessage">Logged when the operation succeeds.</param>
+    /// <param name="errorMessage">Logged when the operation (or its creation) fails.</param>
+    private sealed class DriverOperationObserver<TArg>(
+        IEnableLogger logHost,
+        Func<TArg, IObservable<Unit>> operation,
+        Action<TArg> onFinally,
+        string successMessage,
+        string errorMessage) : IObserver<TArg>
+    {
+        /// <inheritdoc/>
+        public void OnNext(TArg value)
+        {
+            IObservable<Unit> op;
+            try
+            {
+                op = operation(value);
+            }
+            catch (Exception ex)
+            {
+                logHost.Log().Warn(ex, errorMessage);
+                onFinally(value);
+                return;
+            }
+
+            op.Subscribe(new ResultObserver(logHost, value, onFinally, successMessage, errorMessage));
+        }
+
+        /// <inheritdoc/>
+        public void OnError(Exception error) => logHost.Log().Warn(error, errorMessage);
+
+        /// <inheritdoc/>
+        public void OnCompleted()
+        {
+        }
+
+        /// <summary>Logs the result of a single driver operation and runs the finalizer exactly once.</summary>
+        /// <param name="logHost">The object used for logging.</param>
+        /// <param name="arg">The signal the operation was run for.</param>
+        /// <param name="onFinally">Runs after the operation terminates.</param>
+        /// <param name="successMessage">Logged when the operation succeeds.</param>
+        /// <param name="errorMessage">Logged when the operation fails.</param>
+        private sealed class ResultObserver(
+            IEnableLogger logHost,
+            TArg arg,
+            Action<TArg> onFinally,
+            string successMessage,
+            string errorMessage) : IObserver<Unit>
+        {
+            /// <summary>Whether the finalizer has run.</summary>
+            private bool _finished;
+
+            /// <inheritdoc/>
+            public void OnNext(Unit value) => logHost.Log().Info(successMessage);
+
+            /// <inheritdoc/>
+            public void OnError(Exception error)
+            {
+                logHost.Log().Warn(error, errorMessage);
+                Finish();
+            }
+
+            /// <inheritdoc/>
+            public void OnCompleted() => Finish();
+
+            /// <summary>Runs the finalizer exactly once.</summary>
+            private void Finish()
+            {
+                if (_finished)
+                {
+                    return;
+                }
+
+                _finished = true;
+                onFinally(arg);
+            }
+        }
+    }
+
+    /// <summary>Captures the last value (or terminal error) of a blocking subscription and signals on termination.</summary>
+    /// <typeparam name="T">The value type.</typeparam>
+    /// <param name="signal">Set when the source terminates.</param>
+    private sealed class BlockingObserver<T>(ManualResetEventSlim signal) : IObserver<T>
+    {
+        /// <summary>The last value produced by the source.</summary>
+        private T? _value;
+
+        /// <summary>The terminal error, if the source errored.</summary>
+        private Exception? _error;
+
+        /// <inheritdoc/>
+        public void OnNext(T value) => _value = value;
+
+        /// <inheritdoc/>
+        public void OnError(Exception error)
+        {
+            _error = error;
+            signal.Set();
+        }
+
+        /// <inheritdoc/>
+        public void OnCompleted() => signal.Set();
+
+        /// <summary>Returns the captured value, rethrowing any terminal error.</summary>
+        /// <returns>The last value produced by the source.</returns>
+        public T? GetResult() => _error is not null ? throw _error : _value;
     }
 }

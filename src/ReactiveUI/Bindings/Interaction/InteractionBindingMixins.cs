@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Linq.Expressions;
 
 namespace ReactiveUI;
 
@@ -28,6 +30,9 @@ namespace ReactiveUI;
 /// </example>
 public static class InteractionBindingMixins
 {
+    /// <summary>
+    /// The binder implementation that handles interaction registrations.
+    /// </summary>
     private static readonly InteractionBinderImplementation _binderImplementation = new();
 
     /// <summary>
@@ -55,13 +60,13 @@ public static class InteractionBindingMixins
         TViewModel? viewModel,
         Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
         Func<IInteractionContext<TInput, TOutput>, Task> handler)
-            where TViewModel : class
-            where TView : class, IViewFor =>
+        where TViewModel : class
+        where TView : class, IViewFor =>
         _binderImplementation.BindInteraction(
-                viewModel,
-                view,
-                propertyName,
-                handler);
+            viewModel,
+            view,
+            propertyName,
+            handler);
 
     /// <summary>
     /// Binds an interaction from a view model to a view, allowing the view to handle interaction requests using the
@@ -89,8 +94,8 @@ public static class InteractionBindingMixins
         TViewModel? viewModel,
         Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
         Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
-            where TViewModel : class
-            where TView : class, IViewFor =>
+        where TViewModel : class
+        where TView : class, IViewFor =>
         _binderImplementation.BindInteraction(
             viewModel,
             view,

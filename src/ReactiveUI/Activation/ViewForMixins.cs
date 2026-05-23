@@ -1,9 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using System.Reactive.Disposables;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -21,16 +24,19 @@ namespace ReactiveUI;
 /// method; this should not be used in production code.</remarks>
 public static class ViewForMixins
 {
+    /// <summary>
+    /// Cache mapping view types to their resolved activation fetcher, to avoid repeated service locator lookups.
+    /// </summary>
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
         new(
             (t, _) =>
                 AppLocator.Current
-                       .GetServices<IActivationForViewFetcher?>()
-                       .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
-                       {
-                           var score = x?.GetAffinityForView(t) ?? 0;
-                           return score > acc.count ? (score, x) : acc;
-                       }).viewFetcher,
+                    .GetServices<IActivationForViewFetcher?>()
+                    .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
+                    {
+                        var score = x?.GetAffinityForView(t) ?? 0;
+                        return score > acc.count ? (score, x) : acc;
+                    }).viewFetcher,
             RxCacheSize.SmallCacheLimit);
 
     /// <summary>
@@ -42,7 +48,8 @@ public static class ViewForMixins
     /// deactivated.</remarks>
     /// <param name="item">The view model whose activation lifecycle will manage the disposables. Cannot be null.</param>
     /// <param name="block">A function that returns the disposables to be created when the view model is activated. Cannot be null.</param>
-    public static void WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
+    public static void
+        WhenActivated(this IActivatableViewModel item, Func<IEnumerable<IDisposable>> block)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
@@ -65,7 +72,7 @@ public static class ViewForMixins
 
         item.Activator.AddActivationBlock(() =>
         {
-            var ret = new List<IDisposable>();
+            List<IDisposable> ret = [];
             block(ret.Add);
             return ret;
         });
@@ -81,13 +88,14 @@ public static class ViewForMixins
     /// <param name="item">The view model that supports activation and deactivation. Cannot be null.</param>
     /// <param name="block">An action that receives a <see cref="System.Reactive.Disposables.CompositeDisposable"/> to which disposables can be added for automatic
     /// cleanup upon deactivation. Cannot be null.</param>
-    public static void WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block) // TODO: Create Test
+    public static void
+        WhenActivated(this IActivatableViewModel item, Action<CompositeDisposable> block)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         item.Activator.AddActivationBlock(() =>
         {
-            var d = new CompositeDisposable();
+            CompositeDisposable d = [];
             block(d);
             return [d];
         });
@@ -101,7 +109,8 @@ public static class ViewForMixins
     /// deactivated. Cannot be null.</param>
     /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes the registered disposables when disposed.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block) // TODO: Create Test
+    public static IDisposable
+        WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
@@ -125,26 +134,31 @@ public static class ViewForMixins
     /// this object will also unsubscribe from the activation lifecycle.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="item"/> is null or if activation cannot be determined for the specified type.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable WhenActivated(this IActivatableView item, Func<IEnumerable<IDisposable>> block, IViewFor? view) // TODO: Create Test
+    public static IDisposable WhenActivated(
+        this IActivatableView item,
+        Func<IEnumerable<IDisposable>> block,
+        IViewFor? view)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var activationFetcher = _activationFetcherCache.Get(item.GetType());
         if (activationFetcher is null)
         {
+            // In design mode there is no activation fetcher; drop the cache and no-op rather than throwing (see #4358).
             if (item.GetIsDesignMode())
             {
                 _activationFetcherCache.InvalidateAll();
-                return Disposable.Empty;
+                return EmptyDisposable.Instance;
             }
 
-            const string msg = "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
-            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, msg, item.GetType().FullName));
+            const string Msg =
+                "Don't know how to detect when {0} is activated/deactivated, you may need to implement IActivationForViewFetcher";
+            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, Msg, item.GetType().FullName));
         }
 
         var activationEvents = activationFetcher.GetActivationForView(item);
 
-        var vmDisposable = Disposable.Empty;
+        IDisposable vmDisposable = EmptyDisposable.Instance;
         if ((view ?? item) is IViewFor v)
         {
             vmDisposable = HandleViewModelActivation(v, activationEvents);
@@ -183,41 +197,53 @@ public static class ViewForMixins
     /// <param name="view">The view instance associated with the activation. Cannot be null.</param>
     /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes all registered resources when disposed.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable WhenActivated(this IActivatableView item, Action<Action<IDisposable>> block, IViewFor view) => // TODO: Create Test
+    public static IDisposable WhenActivated(
+        this IActivatableView item,
+        Action<Action<IDisposable>> block,
+        IViewFor view) =>
         item.WhenActivated(
-                           () =>
-                           {
-                               var ret = new List<IDisposable>();
-                               block(ret.Add);
-                               return ret;
-                           },
-                           view);
+            () =>
+            {
+                List<IDisposable> ret = [];
+                block(ret.Add);
+                return ret;
+            },
+            view);
 
     /// <summary>
     /// Activates the specified view and executes the provided block when the view is activated, managing disposables
     /// for the activation lifecycle.
     /// </summary>
-    /// <remarks>Use this method to manage subscriptions and other disposables that should be tied to the
-    /// activation and deactivation of the view. All disposables added to the provided <see cref="System.Reactive.Disposables.CompositeDisposable"/>
-    /// will be disposed when the returned <see cref="IDisposable"/> is disposed, typically when the view is
-    /// deactivated.</remarks>
-    /// <param name="item">The view that implements <see cref="IActivatableView"/> to be activated.</param>
-    /// <param name="block">An action that receives a <see cref="System.Reactive.Disposables.CompositeDisposable"/> to which activation-related disposables should be
-    /// added. This block is executed when the view is activated.</param>
-    /// <param name="view">An optional <see cref="IViewFor"/> instance representing the view context. If not specified, the method uses the
-    /// <paramref name="item"/> as the view.</param>
-    /// <returns>An <see cref="IDisposable"/> that deactivates the view and disposes of all disposables added to the <see
-    /// cref="System.Reactive.Disposables.CompositeDisposable"/> when disposed.</returns>
+    /// <param name="item">The view that implements IActivatableView to be activated.</param>
+    /// <param name="block">An action that receives a CompositeDisposable to which activation-related disposables should be added.</param>
+    /// <returns>An IDisposable that deactivates the view and disposes of all registered disposables when disposed.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null) =>
-            item.WhenActivated(
-                               () =>
-                               {
-                                   var d = new CompositeDisposable();
-                                   block(d);
-                                   return [d];
-                               },
-                               view);
+    public static IDisposable WhenActivated(
+        this IActivatableView item,
+        Action<CompositeDisposable> block) =>
+        item.WhenActivated(block, null);
+
+    /// <summary>
+    /// Activates the specified view and executes the provided block when the view is activated, managing disposables
+    /// for the activation lifecycle.
+    /// </summary>
+    /// <param name="item">The view that implements IActivatableView to be activated.</param>
+    /// <param name="block">An action that receives a CompositeDisposable to which activation-related disposables should be added.</param>
+    /// <param name="view">An optional IViewFor instance representing the view context. If null, the item itself is used as the view.</param>
+    /// <returns>An IDisposable that deactivates the view and disposes of all registered disposables when disposed.</returns>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    public static IDisposable WhenActivated(
+        this IActivatableView item,
+        Action<CompositeDisposable> block,
+        IViewFor? view) =>
+        item.WhenActivated(
+            () =>
+            {
+                CompositeDisposable d = [];
+                block(d);
+                return [d];
+            },
+            view);
 
     /// <summary>
     /// Gets a value indicating whether the view is currently being loaded by a designer surface.
@@ -255,22 +281,24 @@ public static class ViewForMixins
     /// activation and <see langword="false"/> to indicate deactivation.</param>
     /// <returns>A <see cref="System.Reactive.Disposables.CompositeDisposable"/> that manages the subscription to the activation observable and the
     /// disposables created by the block. Disposing this object cleans up all associated resources.</returns>
-    private static CompositeDisposable HandleViewActivation(Func<IEnumerable<IDisposable>> block, IObservable<bool> activation)
+    private static CompositeDisposable HandleViewActivation(
+        Func<IEnumerable<IDisposable>> block,
+        IObservable<bool> activation)
     {
-        var viewDisposable = new SerialDisposable();
+        SwapDisposable viewDisposable = new();
 
-        return new CompositeDisposable(
-                                       activation.Subscribe(activated =>
-                                       {
-                                           // NB: We need to make sure to respect ordering so that the clean up
-                                           // happens before we invoke block again
-                                           viewDisposable.Disposable = Disposable.Empty;
-                                           if (activated)
-                                           {
-                                               viewDisposable.Disposable = new CompositeDisposable(block());
-                                           }
-                                       }),
-                                       viewDisposable);
+        return new(
+            activation.Subscribe(new DelegateObserver<bool>(activated =>
+            {
+                viewDisposable.Disposable = EmptyDisposable.Instance;
+                if (!activated)
+                {
+                    return;
+                }
+
+                viewDisposable.Disposable = new CompositeDisposable(block());
+            })),
+            viewDisposable);
     }
 
     /// <summary>
@@ -289,34 +317,33 @@ public static class ViewForMixins
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     private static CompositeDisposable HandleViewModelActivation(IViewFor view, IObservable<bool> activation)
     {
-        var vmDisposable = new SerialDisposable();
-        var viewVmDisposable = new SerialDisposable();
+        SwapDisposable vmDisposable = new();
+        SwapDisposable viewVmDisposable = new();
 
-        return new CompositeDisposable(
-                                       activation.Subscribe(activated =>
-                                       {
-                                           if (activated)
-                                           {
-                                               viewVmDisposable.Disposable = view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel))
-                                                   .Select(x => x as IActivatableViewModel)
-                                                   .Subscribe(x =>
-                                                   {
-                                                       // NB: We need to make sure to respect ordering so that the clean up
-                                                       // happens before we activate again
-                                                       vmDisposable.Disposable = Disposable.Empty;
-                                                       if (x is not null)
-                                                       {
-                                                           vmDisposable.Disposable = x.Activator.Activate();
-                                                       }
-                                                   });
-                                           }
-                                           else
-                                           {
-                                               viewVmDisposable.Disposable = Disposable.Empty;
-                                               vmDisposable.Disposable = Disposable.Empty;
-                                           }
-                                       }),
-                                       vmDisposable,
-                                       viewVmDisposable);
+        return new(
+            activation.Subscribe(new DelegateObserver<bool>(activated =>
+            {
+                if (activated)
+                {
+                    viewVmDisposable.Disposable = view.WhenAnyValue<IViewFor, object?>(nameof(view.ViewModel))
+                        .Subscribe(new DelegateObserver<object?>(value =>
+                        {
+                            vmDisposable.Disposable = EmptyDisposable.Instance;
+                            if (value is not IActivatableViewModel activatable)
+                            {
+                                return;
+                            }
+
+                            vmDisposable.Disposable = activatable.Activator.Activate();
+                        }));
+                }
+                else
+                {
+                    viewVmDisposable.Disposable = EmptyDisposable.Instance;
+                    vmDisposable.Disposable = EmptyDisposable.Instance;
+                }
+            })),
+            vmDisposable,
+            viewVmDisposable);
     }
 }

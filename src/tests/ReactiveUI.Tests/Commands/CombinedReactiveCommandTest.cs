@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,6 +12,11 @@ namespace ReactiveUI.Tests.Commands;
 /// </summary>
 public class CombinedReactiveCommandTest
 {
+    private const int ExpectedExecutionEmissions = 3;
+    private const int SecondChildResult = 2;
+    private const int ExpectedChildResultCount = 2;
+    private const int SecondResultIndex = 2;
+
     /// <summary>
     ///     Tests that determines whether this instance [can execute is false if any child cannot execute].
     /// </summary>
@@ -73,8 +78,7 @@ public class CombinedReactiveCommandTest
             ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
-        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
-            .Subscribe();
+        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
@@ -98,8 +102,7 @@ public class CombinedReactiveCommandTest
             outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, canExecuteSubject, ImmediateScheduler.Instance);
-        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
-            .Subscribe();
+        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
         canExecuteSubject.OnError(new InvalidOperationException("oops"));
 
@@ -148,48 +151,45 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
 
         fixture.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
-        child1.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child1IsExecuting)
-            .Subscribe();
-        child2.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child2IsExecuting)
-            .Subscribe();
-        child3.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child3IsExecuting)
-            .Subscribe();
+        child1.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child1IsExecuting).Subscribe();
+        child2.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child2IsExecuting).Subscribe();
+        child3.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var child3IsExecuting).Subscribe();
 
         fixture.Execute().Subscribe();
 
-        await Assert.That(isExecuting).Count().IsEqualTo(3);
+        await Assert.That(isExecuting).Count().IsEqualTo(ExpectedExecutionEmissions);
         using (Assert.Multiple())
         {
             await Assert.That(isExecuting[0]).IsFalse();
             await Assert.That(isExecuting[1]).IsTrue();
-            await Assert.That(isExecuting[2]).IsFalse();
+            await Assert.That(isExecuting[SecondResultIndex]).IsFalse();
 
-            await Assert.That(child1IsExecuting).Count().IsEqualTo(3);
+            await Assert.That(child1IsExecuting).Count().IsEqualTo(ExpectedExecutionEmissions);
         }
 
         using (Assert.Multiple())
         {
             await Assert.That(child1IsExecuting[0]).IsFalse();
             await Assert.That(child1IsExecuting[1]).IsTrue();
-            await Assert.That(child1IsExecuting[2]).IsFalse();
+            await Assert.That(child1IsExecuting[SecondResultIndex]).IsFalse();
 
-            await Assert.That(child2IsExecuting).Count().IsEqualTo(3);
+            await Assert.That(child2IsExecuting).Count().IsEqualTo(ExpectedExecutionEmissions);
         }
 
         using (Assert.Multiple())
         {
             await Assert.That(child2IsExecuting[0]).IsFalse();
             await Assert.That(child2IsExecuting[1]).IsTrue();
-            await Assert.That(child2IsExecuting[2]).IsFalse();
+            await Assert.That(child2IsExecuting[SecondResultIndex]).IsFalse();
 
-            await Assert.That(child3IsExecuting).Count().IsEqualTo(3);
+            await Assert.That(child3IsExecuting).Count().IsEqualTo(ExpectedExecutionEmissions);
         }
 
         using (Assert.Multiple())
         {
             await Assert.That(child3IsExecuting[0]).IsFalse();
             await Assert.That(child3IsExecuting[1]).IsTrue();
-            await Assert.That(child3IsExecuting[2]).IsFalse();
+            await Assert.That(child3IsExecuting[SecondResultIndex]).IsFalse();
         }
     }
 
@@ -208,8 +208,7 @@ public class CombinedReactiveCommandTest
             outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
-        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions)
-            .Subscribe();
+        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var thrownExceptions).Subscribe();
 
         fixture.Execute().Subscribe(static _ => { }, static _ => { });
 
@@ -228,7 +227,7 @@ public class CombinedReactiveCommandTest
             static () => Observable.Return(1),
             outputScheduler: ImmediateScheduler.Instance);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => Observable.Return(2),
+            static () => Observable.Return(SecondChildResult),
             outputScheduler: ImmediateScheduler.Instance);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: ImmediateScheduler.Instance);
@@ -238,11 +237,11 @@ public class CombinedReactiveCommandTest
         fixture.Execute().Subscribe();
 
         await Assert.That(results).Count().IsEqualTo(1);
-        await Assert.That(results[0]).Count().IsEqualTo(2);
+        await Assert.That(results[0]).Count().IsEqualTo(ExpectedChildResultCount);
         using (Assert.Multiple())
         {
             await Assert.That(results[0][0]).IsEqualTo(1);
-            await Assert.That(results[0][1]).IsEqualTo(2);
+            await Assert.That(results[0][1]).IsEqualTo(SecondChildResult);
         }
     }
 
@@ -256,7 +255,7 @@ public class CombinedReactiveCommandTest
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var child1 = ReactiveCommand.Create(static () => Observable.Return(1));
-        var child2 = ReactiveCommand.CreateRunInBackground(static () => Observable.Return(2));
+        var child2 = ReactiveCommand.CreateRunInBackground(static () => Observable.Return(SecondChildResult));
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
         fixture.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var results).Subscribe();

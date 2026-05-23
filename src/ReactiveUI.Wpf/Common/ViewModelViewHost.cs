@@ -1,15 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if HAS_WINUI
-
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 #elif HAS_UNO
-
 using System.Windows;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,7 +19,6 @@ using System.Windows;
 #endif
 
 #if HAS_UNO
-
 namespace ReactiveUI.Uno
 #else
 
@@ -43,26 +40,33 @@ public
     /// The default content dependency property.
     /// </summary>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(DefaultContent), typeof(object), typeof(ViewModelViewHost), new(null));
 
     /// <summary>
     /// The view model dependency property.
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(ViewModel), typeof(object), typeof(ViewModelViewHost), new(null));
 
     /// <summary>
     /// The view contract observable dependency property.
     /// </summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register(nameof(ViewContractObservable), typeof(IObservable<string>), typeof(ViewModelViewHost), new PropertyMetadata(Observable<string>.Default));
+        DependencyProperty.Register(
+            nameof(ViewContractObservable),
+            typeof(IObservable<string>),
+            typeof(ViewModelViewHost),
+            new(Observable<string>.Default));
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
     /// </summary>
     public static readonly DependencyProperty ContractFallbackByPassProperty =
-        DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost), new PropertyMetadata(false));
+        DependencyProperty.Register("ContractFallbackByPass", typeof(bool), typeof(ViewModelViewHost), new(false));
 
+    /// <summary>
+    /// Stores the most recently observed view contract.
+    /// </summary>
     private string? _viewContract;
 
     /// <summary>
@@ -71,33 +75,37 @@ public
     public ViewModelViewHost()
     {
         var platform = AppLocator.Current.GetService<IPlatformOperations>();
-        Func<string?> platformGetter = () => default;
+        Func<string?> platformGetter = () => null;
 
         if (platform is null)
         {
             // NB: This used to be an error but WPF design mode can't read
             // good or do other stuff good.
-            this.Log().Error("Couldn't find an IPlatformOperations implementation. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+            this.Log().Error(
+                "Couldn't find an IPlatformOperations implementation. Please make sure you have installed " +
+                "the latest version of the ReactiveUI packages for your platform. " +
+                "See https://reactiveui.net/docs/getting-started/installation for guidance.");
         }
         else
         {
-            platformGetter = () => platform.GetOrientation();
+            platformGetter = platform.GetOrientation;
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
             ? Observable<string?>.Never
             : Observable.FromEvent<SizeChangedEventHandler, string?>(
-              eventHandler =>
-              {
-                  void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
-                  return Handler;
-              },
-              x => SizeChanged += x,
-              x => SizeChanged -= x)
-              .StartWith(platformGetter())
-              .DistinctUntilChanged();
+                    eventHandler =>
+                    {
+                        void Handler(object? sender, SizeChangedEventArgs e) => eventHandler(platformGetter());
+                        return Handler;
+                    },
+                    x => SizeChanged += x,
+                    x => SizeChanged -= x)
+                .StartWith(platformGetter())
+                .DistinctUntilChanged();
 
-        var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x).StartWith(ViewContract);
+        var contractChanged = this.WhenAnyObservable(x => x.ViewContractObservable).Do(x => _viewContract = x)
+            .StartWith(ViewContract);
         var viewModelChanged = this.WhenAnyValue<ViewModelViewHost, object?>(nameof(ViewModel)).StartWith(ViewModel);
         var vmAndContract = contractChanged
             .CombineLatest(viewModelChanged, (contract, vm) => (ViewModel: vm, Contract: contract));
@@ -105,8 +113,8 @@ public
         this.WhenActivated(d =>
         {
             d(contractChanged
-            .ObserveOn(RxSchedulers.MainThreadScheduler)
-            .Subscribe(x => _viewContract = x ?? string.Empty));
+                .ObserveOn(RxSchedulers.MainThreadScheduler)
+                .Subscribe(x => _viewContract = x ?? string.Empty));
 
             d(vmAndContract.DistinctUntilChanged().Subscribe(x => ResolveViewForViewModel(x.ViewModel, x.Contract)));
         });
@@ -142,6 +150,10 @@ public
     /// <summary>
     /// Gets or sets the view contract.
     /// </summary>
+    [SuppressMessage(
+        "Critical Bug",
+        "S4275:Getters and setters should access the expected fields",
+        Justification = "Setter intentionally routes through ViewContractObservable rather than the field.")]
     public string? ViewContract
     {
         get => _viewContract;
@@ -186,7 +198,8 @@ public
         if (viewInstance is null)
         {
             Content = DefaultContent;
-            this.Log().Warn($"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
+            this.Log().Warn(
+                $"The {nameof(ViewModelViewHost)} could not find a valid view for the view model of type {viewModel.GetType()} and value {viewModel}.");
             return;
         }
 

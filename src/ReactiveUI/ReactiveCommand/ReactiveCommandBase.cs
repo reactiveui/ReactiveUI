@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -25,7 +27,7 @@ namespace ReactiveUI;
 /// </para>
 /// <para>
 /// To create an instance of <c>ReactiveCommand</c>, call one of the static creation methods defined by this class.
-/// <see cref="ReactiveCommand.Create"/> can be used when your execution logic is synchronous.
+/// <c>ReactiveCommand.Create</c> can be used when your execution logic is synchronous.
 /// ReactiveCommand.CreateFromObservable and
 /// ReactiveCommand.CreateFromTask (and overloads) can be used for asynchronous
 /// execution logic. Optionally, you can provide an observable that governs the availability of the command for execution,
@@ -69,7 +71,14 @@ namespace ReactiveUI;
 /// </typeparam>
 public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TParam, TResult>, ICommand
 {
+    /// <summary>
+    /// Backing field for the CanExecuteChanged event.
+    /// </summary>
     private EventHandler? _canExecuteChanged;
+
+    /// <summary>
+    /// Tracks the most recent CanExecute value for ICommand compatibility.
+    /// </summary>
     private bool _canExecuteValue;
 
     /// <inheritdoc/>
@@ -80,22 +89,13 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
     }
 
     /// <inheritdoc />
-    public abstract IObservable<bool> CanExecute
-    {
-        get;
-    }
+    public abstract IObservable<bool> CanExecute { get; }
 
     /// <inheritdoc />
-    public abstract IObservable<bool> IsExecuting
-    {
-        get;
-    }
+    public abstract IObservable<bool> IsExecuting { get; }
 
     /// <inheritdoc />
-    public abstract IObservable<Exception> ThrownExceptions
-    {
-        get;
-    }
+    public abstract IObservable<Exception> ThrownExceptions { get; }
 
     /// <inheritdoc />
     public void Dispose()
@@ -158,19 +158,18 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
     /// <param name="parameter">The parameter being passed to the ICommand.</param>
     protected virtual void ICommandExecute(object? parameter)
     {
-        // ensure that null is coerced to default(TParam) so that commands taking value types will use a sensible default if no parameter is supplied
         parameter ??= default(TParam);
 
-        if (parameter is not null && parameter is not TParam)
+        if (parameter is not null and not TParam)
         {
             throw new InvalidOperationException(
-                                                $"Command requires parameters of type {typeof(TParam).FullName}, but received parameter of type {parameter.GetType().FullName}.");
+                $"Command requires parameters of type {typeof(TParam).FullName}, but received {nameof(parameter)} of type {parameter.GetType().FullName}.");
         }
 
         var result = parameter is null ? Execute() : Execute((TParam)parameter);
 
-        result
-            .Catch(Observable<TResult>.Empty)
-            .Subscribe();
+        // Fire-and-forget: drive the execution to completion and swallow any error here
+        // (errors are surfaced through ThrownExceptions). Replaces .Catch(Empty).Subscribe().
+        result.Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
     }
 }

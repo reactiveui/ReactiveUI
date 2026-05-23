@@ -34,22 +34,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Maui\ReactiveUI.Maui.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" />
-    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" />
+    <PackageReference Include="Microsoft.Maui.Controls"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="System.Reactive" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="ReactiveUI" />
-    <Using Include="ReactiveUI.Builder" />
-    <Using Include="ReactiveUI.Maui" />
+    <Using Include="System.Reactive"/>
+    <Using Include="System.Reactive.Disposables"/>
+    <Using Include="System.Reactive.Disposables.Fluent"/>
+    <Using Include="System.Reactive.Linq"/>
+    <Using Include="ReactiveUI"/>
+    <Using Include="ReactiveUI.Builder"/>
+    <Using Include="ReactiveUI.Maui"/>
   </ItemGroup>
 
 </Project>

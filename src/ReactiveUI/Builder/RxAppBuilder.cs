@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,12 +15,15 @@ namespace ReactiveUI.Builder;
 public static class RxAppBuilder
 {
 #if NET9_0_OR_GREATER
-    private static readonly System.Threading.Lock _resetLock = new();
+    /// <summary>Synchronizes access to initialization state across threads.</summary>
+    private static readonly Lock _resetLock = new();
 #else
+    /// <summary>Synchronizes access to initialization state across threads.</summary>
     private static readonly object _resetLock = new();
 #endif
 
-    private static int _hasBeenInitialized; // 0 = false, 1 = true
+    /// <summary>Initialization flag: 0 means not initialized, 1 means initialized.</summary>
+    private static int _hasBeenInitialized;
 
     /// <summary>
     /// Creates a ReactiveUI builder with the Splat Locator instance.
@@ -95,24 +98,14 @@ public static class RxAppBuilder
     {
         lock (_resetLock)
         {
-            // Reset schedulers back to defaults
             RxSchedulers.ResetForTesting();
 
-            // Reset Splat builder state first
             Splat.Builder.AppBuilder.ResetBuilderStateForTests();
 
-            // Reset the locator to a clean ModernDependencyResolver.
-            // Using ModernDependencyResolver (which implements IMutableDependencyResolver) ensures
-            // that AppLocator.CurrentMutable returns a valid, non-disposed mutable resolver after reset.
-            // InstanceGenericFirstDependencyResolver is read-only and does not implement
-            // IMutableDependencyResolver, which causes AppLocator.CurrentMutable to still return
-            // the old (now disposed) ModernDependencyResolver after SetLocator is called with it.
             AppLocator.SetLocator(new ModernDependencyResolver());
 
-            // Clear activation fetcher cache since it queries the AppLocator
             ViewForMixins.ResetActivationFetcherCacheForTesting();
 
-            // Finally, reset the initialization flag
             _hasBeenInitialized = 0;
         }
     }

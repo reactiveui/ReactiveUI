@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,9 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows;
-
 using ReactiveUI.Builder.WpfApp.Models;
-
 using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;
@@ -16,11 +14,35 @@ namespace ReactiveUI.Builder.WpfApp;
 /// <summary>
 /// Interaction logic for App.xaml.
 /// </summary>
-[SuppressMessage("Design", "CA1001:Types that own disposable fields should be disposable", Justification = "Disposed on application exit in OnExit")]
+[SuppressMessage(
+    "Design",
+    "CA1001:Types that own disposable fields should be disposable",
+    Justification = "Disposed on application exit in OnExit")]
 public partial class App : Application
 {
+    /// <summary>
+    /// The small object cache size configured for ReactiveUI.
+    /// </summary>
+    private const int SmallCacheSize = 100;
+
+    /// <summary>
+    /// The large object cache size configured for ReactiveUI.
+    /// </summary>
+    private const int LargeCacheSize = 400;
+
+    /// <summary>
+    /// The suspension driver that persists and restores the chat state to a JSON file on disk.
+    /// </summary>
     private Services.FileJsonSuspensionDriver? _driver;
+
+    /// <summary>
+    /// The service that relays chat messages and room events between running app instances.
+    /// </summary>
     private Services.ChatNetworkService? _networkService;
+
+    /// <summary>
+    /// The coordinator that tracks how many app instances are running so the last one can save state.
+    /// </summary>
     private Services.AppLifetimeCoordinator? _lifetime;
 
     /// <summary>
@@ -32,22 +54,24 @@ public partial class App : Application
         base.OnStartup(e);
 
         // Initialize ReactiveUI via the Builder only
-        var app = RxAppBuilder.CreateReactiveUIBuilder()
+        RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
             ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
             ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
             ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
             .WithSuspensionHost<ChatState>() // Configure typed suspension host
-            .WithCacheSizes(smallCacheLimit: 100, bigCacheLimit: 400) // Customize cache sizes
+            .WithCacheSizes(SmallCacheSize, LargeCacheSize) // Customize cache sizes
             .WithExceptionHandler(Observer.Create<Exception>(static ex =>
             {
                 // Custom exception handler - log unhandled reactive errors
-                Trace.WriteLine($"[ReactiveUI] Unhandled exception: {ex}");
-                if (Debugger.IsAttached)
+                Trace.TraceInformation($"[ReactiveUI] Unhandled exception: {ex}");
+                if (!Debugger.IsAttached)
                 {
-                    Debugger.Break();
+                    return;
                 }
+
+                Debugger.Break();
             }))
             .WithMessageBus()
             .WithRegistration(static r =>
@@ -72,7 +96,7 @@ public partial class App : Application
             "state.json");
         Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
-        _driver = new Services.FileJsonSuspensionDriver(statePath);
+        _driver = new(statePath);
 
         // Set an initial state instantly to avoid blocking UI
         RxSuspension.SuspensionHost.AppState = new ChatState();
@@ -86,14 +110,14 @@ public partial class App : Application
                 {
                     RxSuspension.SuspensionHost.AppState = stateObj;
                     MessageBus.Current.SendMessage(new ChatStateChanged());
-                    Trace.WriteLine("[App] State loaded");
+                    Trace.TraceInformation("[App] State loaded");
                 },
-                static ex => Trace.WriteLine($"[App] State load failed: {ex.Message}"));
+                static ex => Trace.TraceInformation($"[App] State load failed: {ex.Message}"));
 
         // Resolve coordinator + network service
         _lifetime = Locator.Current.GetService<Services.AppLifetimeCoordinator>();
         var count = _lifetime?.Increment() ?? 1;
-        Trace.WriteLine($"[App] Instance started. Count={count} Id={Services.AppInstance.Id}");
+        Trace.TraceInformation($"[App] Instance started. Count={count} Id={Services.AppInstance.Id}");
 
         _networkService = Locator.Current.GetService<Services.ChatNetworkService>();
         _networkService?.Start(); // starts background receive loop, no UI blocking
@@ -102,10 +126,7 @@ public partial class App : Application
         var appBoot = (ViewModels.AppBootstrapper)Locator.Current.GetService<IScreen>()!;
 
         // Create and show the shell
-        var mainWindow = new MainWindow
-        {
-            ViewModel = appBoot,
-        };
+        var mainWindow = new MainWindow { ViewModel = appBoot };
 
         // Replace RoutedViewHost router to ensure it uses the same singleton instance
         if (mainWindow.Content is RoutedViewHost host)
@@ -126,7 +147,7 @@ public partial class App : Application
         try
         {
             var remaining = _lifetime?.Decrement() ?? 0;
-            Trace.WriteLine($"[App] Instance exiting. Remaining={remaining} Id={Services.AppInstance.Id}");
+            Trace.TraceInformation($"[App] Instance exiting. Remaining={remaining} Id={Services.AppInstance.Id}");
 
             // Only the last instance persists the final state to the central store
             if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)

@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Android.Runtime;
-
 using AndroidX.Preference;
 
 namespace ReactiveUI.AndroidX;
@@ -13,9 +12,17 @@ namespace ReactiveUI.AndroidX;
 /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
+public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
+    IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
 {
+    /// <summary>
+    /// The subject that signals when the fragment is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>
+    /// The subject that signals when the fragment is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -42,10 +49,12 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat, IRe
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc />
-    public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc />
-    public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactivePreferenceFragment>> Changed =>
+        this.GetChangedObservable();
 
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();

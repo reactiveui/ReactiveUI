@@ -1,9 +1,7 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
-using System.Windows;
 
 using Splat.Builder;
 
@@ -20,13 +18,8 @@ public static class WpfReactiveUIBuilderExtensions
     /// <value>
     /// The WPF main thread scheduler.
     /// </value>
-    public static IScheduler WpfMainThreadScheduler { get; } = new WaitForDispatcherScheduler(
-        static () =>
-        {
-            var dispatcher = Application.Current?.Dispatcher
-                ?? throw new InvalidOperationException("WPF Application has not been initialized yet.");
-            return new DispatcherScheduler(dispatcher);
-        });
+    public static IScheduler WpfMainThreadScheduler { get; } =
+        new WaitForDispatcherScheduler(static () => DispatcherScheduler.Current);
 
     /// <summary>
     /// Configures ReactiveUI for WPF platform with appropriate schedulers.

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,7 +11,6 @@ namespace ReactiveUI.Blazor.Internal;
 /// Internal state container for reactive Blazor components.
 /// Manages activation lifecycle, subscriptions, and disposal semantics.
 /// </summary>
-/// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
 /// <remarks>
 /// <para>
 /// This class encapsulates the common reactive infrastructure shared across all reactive Blazor component base classes,
@@ -22,8 +21,7 @@ namespace ReactiveUI.Blazor.Internal;
 /// created once per component and reused throughout the component's lifetime.
 /// </para>
 /// </remarks>
-internal sealed class ReactiveComponentState<T> : IDisposable
-    where T : class, INotifyPropertyChanged
+internal sealed class ReactiveComponentState : IDisposable
 {
     /// <summary>
     /// Signals component activation. Emits <see cref="Unit.Default"/> when <see cref="NotifyActivated"/> is called.
@@ -36,7 +34,10 @@ internal sealed class ReactiveComponentState<T> : IDisposable
     /// <remarks>
     /// Suppressed CA2213 because this subject is used for signaling only and is disposed explicitly in <see cref="Dispose"/>.
     /// </remarks>
-    [SuppressMessage("Design", "CA2213:Disposable fields should be disposed", Justification = "Disposed explicitly in Dispose method.")]
+    [SuppressMessage(
+        "Design",
+        "CA2213:Disposable fields should be disposed",
+        Justification = "Disposed explicitly in Dispose method.")]
     private readonly Subject<Unit> _deactivateSubject = new();
 
     /// <summary>
@@ -84,7 +85,10 @@ internal sealed class ReactiveComponentState<T> : IDisposable
     /// Use this to register subscriptions that should live for the entire component lifetime.
     /// All subscriptions added here will be disposed when the component is disposed.
     /// </remarks>
-    [SuppressMessage("Style", "RCS1085:Use auto-implemented property", Justification = "Explicit field backing provides clarity and follows established pattern in this class.")]
+    [SuppressMessage(
+        "Style",
+        "RCS1085:Use auto-implemented property",
+        Justification = "Explicit field backing provides clarity and follows established pattern in this class.")]
     public CompositeDisposable LifetimeDisposables => _lifetimeDisposables;
 
     /// <summary>
@@ -101,7 +105,10 @@ internal sealed class ReactiveComponentState<T> : IDisposable
     /// ensuring proper disposal semantics.
     /// </para>
     /// </remarks>
-    [SuppressMessage("Style", "RCS1085:Use auto-implemented property", Justification = "Intentional wrapper for SerialDisposable.Disposable property to ensure proper disposal semantics.")]
+    [SuppressMessage(
+        "Style",
+        "RCS1085:Use auto-implemented property",
+        Justification = "Intentional wrapper for SerialDisposable.Disposable property to ensure proper disposal semantics.")]
     public IDisposable? FirstRenderSubscriptions
     {
         get => _firstRenderSubscriptions.Disposable;

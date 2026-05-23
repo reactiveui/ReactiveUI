@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -14,6 +14,8 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class RoutableViewModelMixinTests
 {
+    private const int ExpectedCountTwo = 2;
+
     /// <summary>
     /// Whens the navigated to calls on navigated to when view model is first added.
     /// </summary>
@@ -62,7 +64,7 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm2).Subscribe();
         screen.Router.Navigate.Execute(vm).Subscribe();
 
-        await Assert.That(count).IsEqualTo(2);
+        await Assert.That(count).IsEqualTo(ExpectedCountTwo);
     }
 
     /// <summary>
@@ -151,7 +153,7 @@ public class RoutableViewModelMixinTests
         screen.Router.Navigate.Execute(vm2).Subscribe();
         screen.Router.Navigate.Execute(vm).Subscribe();
 
-        await Assert.That(count).IsEqualTo(2);
+        await Assert.That(count).IsEqualTo(ExpectedCountTwo);
     }
 
     /// <summary>
@@ -264,15 +266,25 @@ public class RoutableViewModelMixinTests
         await Assert.That(count).IsEqualTo(1);
     }
 
-    private class TestScreen : IScreen
+    /// <summary>
+    /// A mock screen used to host routable view models in the tests.
+    /// </summary>
+    private sealed class TestScreen : IScreen
     {
+        /// <inheritdoc/>
         public RoutingState Router { get; } = new(ImmediateScheduler.Instance);
     }
 
-    private class RoutableViewModel(IScreen screen) : ReactiveUI.ReactiveObject, IRoutableViewModel
+    /// <summary>
+    /// A mock routable view model used by the mixin tests.
+    /// </summary>
+    /// <param name="screen">The host screen for the view model.</param>
+    private sealed class RoutableViewModel(IScreen screen) : ReactiveUI.ReactiveObject, IRoutableViewModel
     {
+        /// <inheritdoc/>
         public string UrlPathSegment => "Test";
 
+        /// <inheritdoc/>
         public IScreen HostScreen { get; } = screen;
     }
 }

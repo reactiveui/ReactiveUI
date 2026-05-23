@@ -1,10 +1,17 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
+
 namespace ReactiveUI;
 
+/// <summary>
+/// Represents an active binding between a view and a view model property, tracking direction and change notifications.
+/// </summary>
+/// <typeparam name="TView">The type of the view.</typeparam>
+/// <typeparam name="TValue">The type of the bound value.</typeparam>
 internal class ReactiveBinding<TView, TValue>(
     TView view,
     Expression viewExpression,
@@ -42,9 +49,11 @@ internal class ReactiveBinding<TView, TValue>(
     /// <param name="isDisposing">If we are disposing managed resources.</param>
     protected virtual void Dispose(bool isDisposing)
     {
-        if (isDisposing)
+        if (!isDisposing)
         {
-            bindingDisposable.Dispose();
+            return;
         }
+
+        bindingDisposable.Dispose();
     }
 }

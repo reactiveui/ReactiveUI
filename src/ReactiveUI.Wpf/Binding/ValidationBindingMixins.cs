@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-
 using ReactiveUI.Wpf.Binding;
 
 namespace ReactiveUI;
@@ -29,14 +28,22 @@ public static class ValidationBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TView, TVProp, TType>(this TView view, TViewModel viewModel, Expression<Func<TViewModel, TType?>> viewModelPropertySelector, Expression<Func<TView, TVProp>> frameworkElementSelector)
-        where TView : class, IViewFor
+    public static IReactiveBinding<TView, TType> BindWithValidation<TViewModel, TView, TVProp, TType>(
+        this TView view,
+        TViewModel viewModel,
+        Expression<Func<TViewModel, TType?>> viewModelPropertySelector,
+        Expression<Func<TView, TVProp>> frameworkElementSelector)
         where TViewModel : class
+        where TView : class, IViewFor
     {
         ArgumentExceptionHelper.ThrowIfNull(viewModelPropertySelector);
 
         ArgumentExceptionHelper.ThrowIfNull(frameworkElementSelector);
 
-        return new ValidationBindingWpf<TView, TViewModel, TVProp, TType>(view, viewModel, viewModelPropertySelector, frameworkElementSelector);
+        return new ValidationBindingWpf<TView, TViewModel, TVProp, TType>(
+            view,
+            viewModel,
+            viewModelPropertySelector,
+            frameworkElementSelector);
     }
 }

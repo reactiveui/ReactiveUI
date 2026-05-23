@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -26,6 +26,21 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public class DefaultPropertyBindingTests
 {
+    /// <summary>
+    /// The timeout in seconds used when waiting for binding propagation.
+    /// </summary>
+    private const int TimeoutSeconds = 5;
+
+    /// <summary>
+    /// A sample double value used for binding tests.
+    /// </summary>
+    private const double SampleDouble = 123.4;
+
+    /// <summary>
+    /// The expected affinity for a matching panel binding converter.
+    /// </summary>
+    private const int ExpectedAffinity = 10;
+
     /// <summary>
     /// Tests Winforms creates observable for property works for textboxes.
     /// </summary>
@@ -134,7 +149,7 @@ public class DefaultPropertyBindingTests
         vm.SomeText = "Foo";
         await Assert.That(view.Property3.Text).IsNotEqualTo(vm.SomeText);
 
-        var disp = view.Bind(vm, static x => x.SomeText, static x => x.Property3.Text);
+        _ = view.Bind(vm, static x => x.SomeText, static x => x.Property3.Text);
         vm.SomeText = "Bar";
         await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeText);
 
@@ -142,7 +157,7 @@ public class DefaultPropertyBindingTests
         var vmPropertyUpdated = vm.WhenAnyValue(static x => x.SomeText)
             .Where(x => x == "Bar2")
             .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(5));
+            .Timeout(TimeSpan.FromSeconds(TimeoutSeconds));
 
         view.Property3.Text = "Bar2";
 
@@ -150,8 +165,8 @@ public class DefaultPropertyBindingTests
         await vmPropertyUpdated;
         await Assert.That(vm.SomeText).IsEqualTo("Bar2");
 
-        var disp2 = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
-        vm.SomeDouble = 123.4;
+        _ = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
+        vm.SomeDouble = SampleDouble;
 
         await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeDouble.ToString(CultureInfo.CurrentCulture));
     }
@@ -167,12 +182,11 @@ public class DefaultPropertyBindingTests
         var view = new FakeWinformsView { ViewModel = vm };
 
         var disp = new CompositeDisposable(
-        [
             view.Bind(vm, static x => x.Property1, static x => x.Property1.Text),
             view.Bind(vm, static x => x.Property2, static x => x.Property2.Text),
             view.Bind(vm, static x => x.Property3, static x => x.Property3.Text),
             view.Bind(vm, static x => x.Property4, static x => x.Property4.Text),
-            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked)]);
+            view.Bind(vm, static x => x.BooleanProperty, static x => x.BooleanProperty.Checked));
 
         vm.Property1 = "FOOO";
         await Assert.That(view.Property1.Text).IsEqualTo(vm.Property1);
@@ -194,6 +208,10 @@ public class DefaultPropertyBindingTests
         disp.Dispose();
     }
 
+    /// <summary>
+    /// Tests that PanelSetMethodBindingConverter returns the expected affinity for various object types.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PanelSetMethodBindingConverter_GetAffinityForObjects()
     {
@@ -206,12 +224,16 @@ public class DefaultPropertyBindingTests
         using (Assert.Multiple())
         {
             await Assert.That(test1).IsEqualTo(0);
-            await Assert.That(test2).IsEqualTo(10);
-            await Assert.That(test3).IsEqualTo(10);
+            await Assert.That(test2).IsEqualTo(ExpectedAffinity);
+            await Assert.That(test3).IsEqualTo(ExpectedAffinity);
             await Assert.That(test4).IsEqualTo(0);
         }
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObject returns zero when beforeChanged is requested.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_BeforeChanged()
     {
@@ -221,6 +243,10 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObject returns zero for a non-Component type.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonComponent()
     {
@@ -230,6 +256,10 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObject returns zero for a property with no corresponding event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonExistent_Event()
     {
@@ -239,6 +269,10 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that GetNotificationForProperty throws for a property with no corresponding event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetNotificationForProperty_Throws_For_NonExistent_Event()
     {
@@ -246,7 +280,7 @@ public class DefaultPropertyBindingTests
         var fixture = new WinformsCreatesObservableForProperty();
 
         Expression<Func<TextBox, string>> expression = static x => x.Text;
-        var propertyName = "NonExistentProperty"; // Property with no corresponding event
+        const string? propertyName = "NonExistentProperty"; // Property with no corresponding event
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
         {

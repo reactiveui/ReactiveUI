@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,13 +11,25 @@ namespace ReactiveUI.Testing;
 /// <seealso cref="IDisposable" />
 public class TestSequencer : IDisposable
 {
+    /// <summary>
+    /// The number of participants that must reach the barrier before a phase advances.
+    /// </summary>
+    private const int ParticipantCount = 2;
+
+    /// <summary>
+    /// The barrier used to synchronize the test phases between participants.
+    /// </summary>
     private readonly Barrier _phaseSync;
+
+    /// <summary>
+    /// A value indicating whether this instance has already been disposed.
+    /// </summary>
     private bool _disposedValue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestSequencer"/> class.
     /// </summary>
-    public TestSequencer() => _phaseSync = new(2);
+    public TestSequencer() => _phaseSync = new(ParticipantCount);
 
     /// <summary>
     /// Gets the number of completed phases.
@@ -38,11 +50,19 @@ public class TestSequencer : IDisposable
     /// <summary>
     /// Advances this phase instance.
     /// </summary>
+    /// <returns>
+    /// A <see cref="Task" /> representing the asynchronous operation.
+    /// </returns>
+    public Task AdvancePhaseAsync() => AdvancePhaseAsync(string.Empty);
+
+    /// <summary>
+    /// Advances this phase instance.
+    /// </summary>
     /// <param name="comment">The comment for Test visual identification Purposes only.</param>
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
-    public async Task AdvancePhaseAsync(string comment = "")
+    public async Task AdvancePhaseAsync(string comment)
     {
         if (_phaseSync.ParticipantCount == _phaseSync.ParticipantsRemaining)
         {
@@ -62,7 +82,7 @@ public class TestSequencer : IDisposable
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
@@ -72,14 +92,16 @@ public class TestSequencer : IDisposable
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (_disposedValue)
         {
-            if (disposing)
-            {
-                _phaseSync.Dispose();
-            }
-
-            _disposedValue = true;
+            return;
         }
+
+        if (disposing)
+        {
+            _phaseSync.Dispose();
+        }
+
+        _disposedValue = true;
     }
 }

@@ -6,7 +6,6 @@
 #nullable enable
 
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -251,8 +250,8 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         where TEventArgs : EventArgs
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
         if (command is null)
         {

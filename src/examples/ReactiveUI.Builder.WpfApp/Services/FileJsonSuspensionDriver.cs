@@ -1,11 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.IO;
 using System.Text.Json.Serialization.Metadata;
-
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
@@ -20,6 +19,9 @@ namespace ReactiveUI.Builder.WpfApp.Services;
 /// <param name="path">The path.</param>
 public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
 {
+    /// <summary>
+    /// The serializer options used when writing state, configured to produce indented (human-readable) JSON.
+    /// </summary>
     private readonly JsonSerializerOptions _options = new() { WriteIndented = true };
 
     /// <summary>
@@ -29,14 +31,16 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// A completed observable.
     /// </returns>
     public IObservable<Unit> InvalidateState() => Observable.Start(
-    () =>
-    {
-        if (File.Exists(path))
+        () =>
         {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
             File.Delete(path);
-        }
-    },
-    RxSchedulers.TaskpoolScheduler);
+        },
+        RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
     /// Loads the application state from persistent storage.
@@ -45,17 +49,17 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// An object observable.
     /// </returns>
     public IObservable<object?> LoadState() => Observable.Start<object?>(
-    () =>
-    {
-        if (!File.Exists(path))
+        () =>
         {
-            return new ChatState();
-        }
+            if (!File.Exists(path))
+            {
+                return new ChatState();
+            }
 
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<ChatState>(json) ?? new ChatState();
-    },
-    RxSchedulers.TaskpoolScheduler);
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<ChatState>(json) ?? new ChatState();
+        },
+        RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
     /// Loads the application state from persistent storage using source-generated JSON metadata.
@@ -64,17 +68,17 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <param name="typeInfo">The source-generated JSON type info.</param>
     /// <returns>An observable that produces the deserialized state.</returns>
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => Observable.Start(
-    () =>
-    {
-        if (!File.Exists(path))
+        () =>
         {
-            return default(T);
-        }
+            if (!File.Exists(path))
+            {
+                return default;
+            }
 
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize(json, typeInfo);
-    },
-    RxSchedulers.TaskpoolScheduler);
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize(json, typeInfo);
+        },
+        RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
     /// Saves the application state to disk.
@@ -85,12 +89,12 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// A completed observable.
     /// </returns>
     public IObservable<Unit> SaveState<T>(T state) => Observable.Start(
-    () =>
-    {
-        var json = JsonSerializer.Serialize(state, _options);
-        File.WriteAllText(path, json);
-    },
-    RxSchedulers.TaskpoolScheduler);
+        () =>
+        {
+            var json = JsonSerializer.Serialize(state, _options);
+            File.WriteAllText(path, json);
+        },
+        RxSchedulers.TaskpoolScheduler);
 
     /// <summary>
     /// Saves the application state to disk using source-generated JSON metadata.
@@ -100,10 +104,10 @@ public sealed class FileJsonSuspensionDriver(string path) : ISuspensionDriver
     /// <param name="typeInfo">The source-generated JSON type info.</param>
     /// <returns>A completed observable.</returns>
     public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => Observable.Start(
-    () =>
-    {
-        var json = JsonSerializer.Serialize(state, typeInfo);
-        File.WriteAllText(path, json);
-    },
-    RxSchedulers.TaskpoolScheduler);
+        () =>
+        {
+            var json = JsonSerializer.Serialize(state, typeInfo);
+            File.WriteAllText(path, json);
+        },
+        RxSchedulers.TaskpoolScheduler);
 }

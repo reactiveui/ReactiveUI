@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -25,6 +25,12 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class RoutedViewHostTests
 {
+    private static readonly bool[] _expectedActivated = [true];
+
+    /// <summary>
+    /// Verifies that the routed view host shows its default content when activated with no route.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task RoutedViewHostDefaultContentNotNull()
     {
@@ -43,11 +49,15 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(controlActivated);
+        await _expectedActivated.AssertAreEqual(controlActivated);
 
         await Assert.That(uc.Content).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies the routed view host resolves the routed view after activation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
@@ -71,7 +81,7 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(controlActivated);
+        await _expectedActivated.AssertAreEqual(controlActivated);
 
         // Default Content
         await Assert.That(uc.Content).IsAssignableTo<System.Windows.Controls.Label>();
@@ -81,6 +91,10 @@ public class RoutedViewHostTests
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
     }
 
+    /// <summary>
+    /// Verifies the routed view host resolves a view navigated to before activation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
@@ -107,7 +121,7 @@ public class RoutedViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(controlActivated);
+        await _expectedActivated.AssertAreEqual(controlActivated);
 
         // Test Navigation before activated
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
@@ -118,6 +132,9 @@ public class RoutedViewHostTests
     /// </summary>
     public class WpfWithViewAndRoutingExecutor : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>

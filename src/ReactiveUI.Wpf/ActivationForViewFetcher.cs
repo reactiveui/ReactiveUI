@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,8 +15,12 @@ namespace ReactiveUI;
 /// </summary>
 public class ActivationForViewFetcher : IActivationForViewFetcher
 {
+    /// <summary>The affinity returned when the view is not supported.</summary>
+    private const int NoAffinity = 0;
+
     /// <inheritdoc/>
-    public int GetAffinityForView(Type view) => typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? 10 : 0;
+    public int GetAffinityForView(Type view) =>
+        typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ? BindingAffinity.ExactType : NoAffinity;
 
     /// <inheritdoc/>
     public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -36,13 +40,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             x => fe.Loaded -= x);
 
         var hitTestVisible = Observable.FromEvent<DependencyPropertyChangedEventHandler, bool>(
-         eventHandler =>
-         {
-             void Handler(object sender, DependencyPropertyChangedEventArgs e) => eventHandler((bool)e.NewValue);
-             return Handler;
-         },
-         x => fe.IsHitTestVisibleChanged += x,
-         x => fe.IsHitTestVisibleChanged -= x);
+            eventHandler =>
+            {
+                void Handler(object sender, DependencyPropertyChangedEventArgs e) => eventHandler((bool)e.NewValue);
+                return Handler;
+            },
+            x => fe.IsHitTestVisibleChanged += x,
+            x => fe.IsHitTestVisibleChanged -= x);
 
         var viewUnloaded = Observable.FromEvent<RoutedEventHandler, bool>(
             eventHandler =>
@@ -56,12 +60,15 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         var windowActivation = GetActivationForWindow(view);
 
         return viewLoaded
-               .Merge(viewUnloaded)
-               .Merge(hitTestVisible)
-               .Merge(windowActivation)
-               .DistinctUntilChanged();
+            .Merge(viewUnloaded)
+            .Merge(hitTestVisible)
+            .Merge(windowActivation)
+            .DistinctUntilChanged();
     }
 
+    /// <summary>Gets the activation observable for a Window, signalling false when it closes.</summary>
+    /// <param name="view">The view to observe.</param>
+    /// <returns>An observable that emits activation state for the window.</returns>
     private static IObservable<bool> GetActivationForWindow(IActivatableView view)
     {
         if (view is not Window window)

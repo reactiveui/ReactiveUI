@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -46,18 +46,47 @@ public interface IViewLocator : IEnableLogger
     /// Resolves a view for a view model type known at compile time. Fully AOT-compatible.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IViewFor<TViewModel>? ResolveView<TViewModel>()
+        where TViewModel : class;
+
+    /// <summary>
+    /// Resolves a view for a view model type known at compile time. Fully AOT-compatible.
+    /// </summary>
+    /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
-    /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
-    IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
         where TViewModel : class;
 
     /// <summary>
     /// Resolves a view for a view model instance using runtime type information.
     /// </summary>
     /// <param name="instance">The view model instance to resolve a view for.</param>
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "Trimming can't validate that the requirements of those annotations are met.")]
+    IViewFor? ResolveView(object? instance);
+
+    /// <summary>
+    /// Resolves a view for a view model instance using runtime type information.
+    /// </summary>
+    /// <param name="instance">The view model instance to resolve a view for.</param>
     /// <param name="contract">Optional contract allowing multiple view registrations per view model.</param>
-    /// <returns>The resolved view or <see langword="null"/> when no registration is available.</returns>
-    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-    IViewFor? ResolveView(object? instance, string? contract = null);
+    /// <returns>The resolved view or null when no registration is available.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "Trimming can't validate that the requirements of those annotations are met.")]
+    IViewFor? ResolveView(object? instance, string? contract);
 }

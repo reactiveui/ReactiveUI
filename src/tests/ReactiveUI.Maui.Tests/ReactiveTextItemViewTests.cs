@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -34,9 +34,7 @@ public class ReactiveTextItemViewTests
     [Test]
     public async Task Text_SetAndGet_WorksCorrectly()
     {
-        var view = new ReactiveTextItemView<TestViewModel>();
-
-        view.Text = "Test Text";
+        var view = new ReactiveTextItemView<TestViewModel> { Text = "Test Text" };
 
         await Assert.That(view.Text).IsEqualTo("Test Text");
     }
@@ -48,9 +46,7 @@ public class ReactiveTextItemViewTests
     [Test]
     public async Task Detail_SetAndGet_WorksCorrectly()
     {
-        var view = new ReactiveTextItemView<TestViewModel>();
-
-        view.Detail = "Test Detail";
+        var view = new ReactiveTextItemView<TestViewModel> { Detail = "Test Detail" };
 
         await Assert.That(view.Detail).IsEqualTo("Test Detail");
     }
@@ -73,7 +69,7 @@ public class ReactiveTextItemViewTests
     /// <summary>
     /// Test view model.
     /// </summary>
-    private class TestViewModel
+    private sealed class TestViewModel
     {
         /// <summary>
         /// Gets or sets the name.

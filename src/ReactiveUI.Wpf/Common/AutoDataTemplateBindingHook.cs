@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,19 +21,24 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     /// </summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
-        const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                 "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
-             "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
-         "</DataTemplate>";
+        const string Template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
+                                "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
+                                "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
+                                "</DataTemplate>";
 
         var assemblyName = typeof(AutoDataTemplateBindingHook).Assembly.FullName;
-        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(','));
+        assemblyName = assemblyName?.Substring(0, assemblyName.IndexOf(",", StringComparison.Ordinal));
 
-        return (DataTemplate)XamlReader.Parse(template.Replace("__ASSEMBLYNAME__", assemblyName));
+        return (DataTemplate)XamlReader.Parse(Template.Replace("__ASSEMBLYNAME__", assemblyName, StringComparison.Ordinal));
     });
 
     /// <inheritdoc/>
-    public bool ExecuteHook(object? source, object target, Func<IObservedChange<object, object>[]> getCurrentViewModelProperties, Func<IObservedChange<object, object>[]> getCurrentViewProperties, BindingDirection direction)
+    public bool ExecuteHook(
+        object? source,
+        object target,
+        Func<IObservedChange<object, object>[]> getCurrentViewModelProperties,
+        Func<IObservedChange<object, object>[]> getCurrentViewProperties,
+        BindingDirection direction)
     {
         ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
 
@@ -50,7 +55,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
             return true;
         }
 
-        if (viewProperties.Last().GetPropertyName() != "ItemsSource")
+        if (viewProperties[^1].GetPropertyName() != "ItemsSource")
         {
             return true;
         }

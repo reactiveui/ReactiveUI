@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
-
 using Android.Widget;
 
 namespace ReactiveUI;
@@ -17,37 +16,43 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
+    /// <summary>
+    /// Preserves the following Android UI types and their members.
+    /// </summary>
     [ObsoletedOSPlatform("android30.0")]
     [SupportedOSPlatform("android23.0")]
-#pragma warning disable CA1822 // Mark members as static
-#pragma warning disable IDE0051 // Remove unused private members
+    [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Used by linker.")]
+    [SuppressMessage("Major Bug", "S1656:Variables should not be self-assigned", Justification = "Used by linker.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
+    [SuppressMessage(
+        "Style",
+        "IDE0051:Private member is unused",
+        Justification = "Linker preservation member.")]
     private void KeepMe()
-#pragma warning restore IDE0051 // Remove unused private members
-#pragma warning restore CA1822 // Mark members as static
     {
-        var txt = new TextView(null);
+        TextView txt = new(null);
         txt.Text = txt.Text;
 
-        var iv = new ImageView(null);
+        ImageView iv = new(null);
         _ = iv.Drawable;
 
-        var prog = new ProgressBar(null);
+        ProgressBar prog = new(null);
         prog.Progress = prog.Progress;
 
-        var cb = new RadioButton(null);
+        RadioButton cb = new(null);
         cb.Checked = cb.Checked;
 
-        var np = new NumberPicker(null);
+        NumberPicker np = new(null);
         np.Value = np.Value;
 
-        var rb = new RatingBar(null);
+        RatingBar rb = new(null);
         rb.Rating = rb.Rating;
 
-        var cv = new CalendarView(null!);
+        CalendarView cv = new(null!);
         cv.Date = cv.Date;
-        var th = new TabHost(null);
+        TabHost th = new(null);
         th.CurrentTab = th.CurrentTab;
-        var tp = new TimePicker(null);
+        TimePicker tp = new(null);
         tp.Hour = tp.Hour;
         tp.Minute = tp.Minute;
     }

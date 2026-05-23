@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,11 +11,19 @@ namespace ReactiveUI.Tests;
 /// </summary>
 public class PropertyBinderImplementationTests
 {
+    private const string TestText = "Test";
+    private const string ChangedText = "Changed";
+
+    /// <summary>
+    ///     Verifies that Bind with the default trigger update creates a binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Bind_WithDefaultTriggerUpdate_CreatesBinding()
     {
         // This test verifies the default ViewToViewModel trigger path
-        var viewModel = new TestViewModel { Count = 5 };
+        const int CountValue = 5;
+        var viewModel = new TestViewModel { Count = CountValue };
         var view = new TestView { ViewModel = viewModel };
         var fixture = new PropertyBinderImplementation();
         var signal = new Subject<bool>();
@@ -32,13 +40,17 @@ public class PropertyBinderImplementationTests
         // Just verify binding was created
         await Assert.That(binding).IsNotNull();
 
-        signal?.Dispose();
+        signal.Dispose();
     }
 
+    /// <summary>
+    ///     Verifies that Bind handles a converter that returns a null value.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Bind_WithNullReturningConverter_HandlesNullTmpValue()
     {
-        var viewModel = new TestViewModel { Name = "Test" };
+        var viewModel = new TestViewModel { Name = TestText };
         var view = new TestView { ViewModel = viewModel };
         var fixture = new PropertyBinderImplementation();
 
@@ -57,11 +69,16 @@ public class PropertyBinderImplementationTests
         await Assert.That(view.NameText).IsNull();
     }
 
+    /// <summary>
+    ///     Verifies that Bind with TriggerUpdate.ViewModelToView creates a binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Bind_WithTriggerUpdateViewModelToView_ExercisesCodePath()
     {
         // This test exercises the TriggerUpdate.ViewModelToView code path
-        var viewModel = new TestViewModel { Count = 10 };
+        const int CountValue = 10;
+        var viewModel = new TestViewModel { Count = CountValue };
         var view = new TestView { ViewModel = viewModel };
         var fixture = new PropertyBinderImplementation();
         var signal = new Subject<Unit>();
@@ -80,9 +97,13 @@ public class PropertyBinderImplementationTests
         // Verify binding was created successfully
         await Assert.That(binding).IsNotNull();
 
-        signal?.Dispose();
+        signal.Dispose();
     }
 
+    /// <summary>
+    ///     Verifies that Bind returns null when a binding hook rejects the binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindImpl_WithBindingHookReturningFalse_ReturnsNull()
     {
@@ -116,10 +137,14 @@ public class PropertyBinderImplementationTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that BindTo returns an empty disposable and does not update when a hook rejects the binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindTo_WithBindingHookReturningFalse_ReturnsDisposableEmpty()
     {
-        var view = new TestView { ViewModel = new TestViewModel() };
+        var view = new TestView { ViewModel = new() };
         var fixture = new PropertyBinderImplementation();
         var source = new Subject<string>();
 
@@ -135,7 +160,7 @@ public class PropertyBinderImplementationTests
             // Value should not be set since binding was rejected
             await Assert.That(view.NameText).IsNotEqualTo("Test Value");
 
-            disposable?.Dispose();
+            disposable.Dispose();
         }
         finally
         {
@@ -146,14 +171,20 @@ public class PropertyBinderImplementationTests
             }
         }
 
-        source?.Dispose();
+        source.Dispose();
     }
 
+    /// <summary>
+    ///     Verifies that BindTo uses a type converter to convert the source value.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindTo_WithTypeConversion_UsesConverter()
     {
+        const int InitialValue = 42;
+        const int UpdatedValue = 100;
         var target = new TestViewModel();
-        var source = new BehaviorSubject<int>(42);
+        var source = new BehaviorSubject<int>(InitialValue);
         var fixture = new PropertyBinderImplementation();
 
         using var binding = fixture.BindTo(source, target, t => t.Name);
@@ -161,12 +192,16 @@ public class PropertyBinderImplementationTests
         // Should convert int to string
         await Assert.That(target.Name).IsEqualTo("42");
 
-        source.OnNext(100);
+        source.OnNext(UpdatedValue);
         await Assert.That(target.Name).IsEqualTo("100");
 
-        source?.Dispose();
+        source.Dispose();
     }
 
+    /// <summary>
+    ///     Verifies that GetConverterForTypes handles a null registered converter gracefully.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetConverterForTypes_WithNullConverter_HandlesGracefully()
     {
@@ -190,10 +225,14 @@ public class PropertyBinderImplementationTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that OneWayBind produces no values when a binding hook rejects the binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBind_WithBindingHookReturningFalse_ReturnsEmptyObservable()
     {
-        var viewModel = new TestViewModel { Name = "Test" };
+        var viewModel = new TestViewModel { Name = TestText };
         var view = new TestView { ViewModel = viewModel };
         var fixture = new PropertyBinderImplementation();
 
@@ -205,8 +244,8 @@ public class PropertyBinderImplementationTests
             using var binding = fixture.OneWayBind(viewModel, view, vm => vm.Name, v => v.NameText);
 
             // Binding should be created but produce no values
-            viewModel.Name = "Changed";
-            await Assert.That(view.NameText).IsNotEqualTo("Changed");
+            viewModel.Name = ChangedText;
+            await Assert.That(view.NameText).IsNotEqualTo(ChangedText);
         }
         finally
         {
@@ -218,6 +257,10 @@ public class PropertyBinderImplementationTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that OneWayBind does not update the view when the converter fails.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBind_WithFailingConverter_DoesNotUpdateView()
     {
@@ -235,16 +278,20 @@ public class PropertyBinderImplementationTests
 
         var initialText = view.NameText;
 
-        viewModel.Name = "Changed";
+        viewModel.Name = ChangedText;
 
         // View should not update when converter fails
         await Assert.That(view.NameText).IsEqualTo(initialText);
     }
 
+    /// <summary>
+    ///     Verifies that OneWayBind with a selector produces no values when a binding hook rejects the binding.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBind_WithSelector_AndBindingHookReturningFalse_ReturnsEmptyObservable()
     {
-        var viewModel = new TestViewModel { Name = "Test" };
+        var viewModel = new TestViewModel { Name = TestText };
         var view = new TestView { ViewModel = viewModel };
         var fixture = new PropertyBinderImplementation();
 
@@ -261,7 +308,7 @@ public class PropertyBinderImplementationTests
                 x => x?.ToUpper() ?? string.Empty);
 
             // Binding should be created but produce no values
-            viewModel.Name = "Changed";
+            viewModel.Name = ChangedText;
             await Assert.That(view.NameText).IsNotEqualTo("CHANGED");
         }
         finally
@@ -274,14 +321,23 @@ public class PropertyBinderImplementationTests
         }
     }
 
-    private class FailingConverter : IBindingTypeConverter
+    /// <summary>
+    ///     A test converter that always fails to convert.
+    /// </summary>
+    private sealed class FailingConverter : IBindingTypeConverter
     {
+        private const int HighAffinity = 100;
+
+        /// <inheritdoc/>
         public Type FromType => typeof(object);
 
+        /// <inheritdoc/>
         public Type ToType => typeof(object);
 
-        public int GetAffinityForObjects() => 100;
+        /// <inheritdoc/>
+        public int GetAffinityForObjects() => HighAffinity;
 
+        /// <inheritdoc/>
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = null;
@@ -289,14 +345,23 @@ public class PropertyBinderImplementationTests
         }
     }
 
-    private class NullReturningConverter : IBindingTypeConverter
+    /// <summary>
+    ///     A test converter that reports success but produces a null result.
+    /// </summary>
+    private sealed class NullReturningConverter : IBindingTypeConverter
     {
+        private const int HighAffinity = 100;
+
+        /// <inheritdoc/>
         public Type FromType => typeof(object);
 
+        /// <inheritdoc/>
         public Type ToType => typeof(object);
 
-        public int GetAffinityForObjects() => 100;
+        /// <inheritdoc/>
+        public int GetAffinityForObjects() => HighAffinity;
 
+        /// <inheritdoc/>
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = null;
@@ -304,8 +369,12 @@ public class PropertyBinderImplementationTests
         }
     }
 
-    private class RejectingBindingHook : IPropertyBindingHook
+    /// <summary>
+    ///     A test binding hook that always rejects bindings.
+    /// </summary>
+    private sealed class RejectingBindingHook : IPropertyBindingHook
     {
+        /// <inheritdoc/>
         public bool ExecuteHook(
             object? source,
             object target,
@@ -315,37 +384,66 @@ public class PropertyBinderImplementationTests
             false; // Always rejects bindings
     }
 
-    private class TestView : ReactiveObject, IViewFor<TestViewModel>
+    /// <summary>
+    ///     A test view used to exercise binding scenarios.
+    /// </summary>
+    private sealed class TestView : ReactiveObject, IViewFor<TestViewModel>
     {
+        /// <summary>
+        ///     The backing field for the <see cref="Count" /> property.
+        /// </summary>
         private int _count;
+
+        /// <summary>
+        ///     The backing field for the <see cref="CountText" /> property.
+        /// </summary>
         private string? _countText;
+
+        /// <summary>
+        ///     The backing field for the <see cref="NameText" /> property.
+        /// </summary>
         private string? _nameText;
+
+        /// <summary>
+        ///     The backing field for the <see cref="ViewModel" /> property.
+        /// </summary>
         private TestViewModel? _viewModel;
 
+        /// <summary>
+        ///     Gets or sets the count.
+        /// </summary>
         public int Count
         {
             get => _count;
             set => this.RaiseAndSetIfChanged(ref _count, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the text representing a count.
+        /// </summary>
         public string? CountText
         {
             get => _countText;
             set => this.RaiseAndSetIfChanged(ref _countText, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the text representing a name.
+        /// </summary>
         public string? NameText
         {
             get => _nameText;
             set => this.RaiseAndSetIfChanged(ref _nameText, value);
         }
 
+        /// <inheritdoc/>
         public TestViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -353,17 +451,33 @@ public class PropertyBinderImplementationTests
         }
     }
 
-    private class TestViewModel : ReactiveObject
+    /// <summary>
+    ///     A test view model used to exercise binding scenarios.
+    /// </summary>
+    private sealed class TestViewModel : ReactiveObject
     {
+        /// <summary>
+        ///     The backing field for the <see cref="Count" /> property.
+        /// </summary>
         private int _count;
+
+        /// <summary>
+        ///     The backing field for the <see cref="Name" /> property.
+        /// </summary>
         private string? _name;
 
+        /// <summary>
+        ///     Gets or sets the count.
+        /// </summary>
         public int Count
         {
             get => _count;
             set => this.RaiseAndSetIfChanged(ref _count, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the name.
+        /// </summary>
         public string? Name
         {
             get => _name;

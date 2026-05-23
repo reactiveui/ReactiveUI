@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -20,22 +20,26 @@ public class ConverterRegistryTests
     public async Task ConcurrentReads_DuringRegistration_ShouldBeThreadSafe()
     {
         // Arrange
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        const int IterationCount = 100;
+        const int WriteIteration = 50;
         var registry = new BindingTypeConverterRegistry();
-        var converter1 = new TestConverter<int, string>(5);
-        var converter2 = new TestConverter<double, bool>(3);
+        var converter1 = new TestConverter<int, string>(FirstAffinity);
+        var converter2 = new TestConverter<double, bool>(SecondAffinity);
         registry.Register(converter1);
 
         var readTasks = new List<Task<IBindingTypeConverter?>>();
         var writeTasks = new List<Task>();
 
         // Act - Start concurrent reads and writes
-        for (var i = 0; i < 100; i++)
+        for (var i = 0; i < IterationCount; i++)
         {
             // Concurrent reads
             readTasks.Add(Task.Run(() => registry.TryGetConverter(typeof(int), typeof(string))));
 
             // Concurrent write
-            if (i == 50)
+            if (i == WriteIteration)
             {
                 writeTasks.Add(Task.Run(() => registry.Register(converter2)));
             }
@@ -66,9 +70,11 @@ public class ConverterRegistryTests
     public async Task ConverterWithNegativeAffinity_ShouldBeIgnored()
     {
         // Arrange
+        const int NegativeAffinity = -5;
+        const int ValidAffinity = 2;
         var registry = new BindingTypeConverterRegistry();
-        var negativeAffinity = new TestConverter<int, string>(-5);
-        var validAffinity = new TestConverter<int, string>(2);
+        var negativeAffinity = new TestConverter<int, string>(NegativeAffinity);
+        var validAffinity = new TestConverter<int, string>(ValidAffinity);
 
         // Act
         registry.Register(negativeAffinity);
@@ -88,9 +94,10 @@ public class ConverterRegistryTests
     public async Task ConverterWithZeroAffinity_ShouldBeIgnored()
     {
         // Arrange
+        const int ValidAffinity = 2;
         var registry = new BindingTypeConverterRegistry();
         var zeroAffinity = new TestConverter<int, string>(0);
-        var validAffinity = new TestConverter<int, string>(2);
+        var validAffinity = new TestConverter<int, string>(ValidAffinity);
 
         // Act
         registry.Register(zeroAffinity);
@@ -127,9 +134,11 @@ public class ConverterRegistryTests
     public async Task FallbackRegistry_ShouldSelectHighestAffinity()
     {
         // Arrange
+        const int LowAffinity = 2;
+        const int HighAffinity = 10;
         var registry = new BindingFallbackConverterRegistry();
-        var lowAffinity = new TestFallbackConverter(2);
-        var highAffinity = new TestFallbackConverter(10);
+        var lowAffinity = new TestFallbackConverter(LowAffinity);
+        var highAffinity = new TestFallbackConverter(HighAffinity);
 
         // Act
         registry.Register(lowAffinity);
@@ -149,10 +158,14 @@ public class ConverterRegistryTests
     public async Task GetAllConverters_ShouldReturnAllRegistered()
     {
         // Arrange
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        const int ThirdAffinity = 2;
+        const int ExpectedConverterCount = 3;
         var registry = new BindingTypeConverterRegistry();
-        var converter1 = new TestConverter<int, string>(5);
-        var converter2 = new TestConverter<double, bool>(3);
-        var converter3 = new TestConverter<string, int>(2);
+        var converter1 = new TestConverter<int, string>(FirstAffinity);
+        var converter2 = new TestConverter<double, bool>(SecondAffinity);
+        var converter3 = new TestConverter<string, int>(ThirdAffinity);
 
         // Act
         registry.Register(converter1);
@@ -162,7 +175,7 @@ public class ConverterRegistryTests
         var allConverters = registry.GetAllConverters().ToList();
 
         // Assert
-        await Assert.That(allConverters.Count).IsEqualTo(3);
+        await Assert.That(allConverters.Count).IsEqualTo(ExpectedConverterCount);
         await Assert.That(allConverters).Contains(converter1);
         await Assert.That(allConverters).Contains(converter2);
         await Assert.That(allConverters).Contains(converter3);
@@ -177,10 +190,13 @@ public class ConverterRegistryTests
     public async Task MultipleConverters_ShouldSelectHighestAffinity()
     {
         // Arrange
+        const int LowAffinity = 2;
+        const int MediumAffinity = 5;
+        const int HighAffinity = 10;
         var registry = new BindingTypeConverterRegistry();
-        var lowAffinity = new TestConverter<int, string>(2);
-        var mediumAffinity = new TestConverter<int, string>(5);
-        var highAffinity = new TestConverter<int, string>(10);
+        var lowAffinity = new TestConverter<int, string>(LowAffinity);
+        var mediumAffinity = new TestConverter<int, string>(MediumAffinity);
+        var highAffinity = new TestConverter<int, string>(HighAffinity);
 
         // Act - register in random order
         registry.Register(mediumAffinity);
@@ -201,8 +217,9 @@ public class ConverterRegistryTests
     public async Task NonExistentTypePair_ShouldReturnNull()
     {
         // Arrange
+        const int ConverterAffinity = 5;
         var registry = new BindingTypeConverterRegistry();
-        var converter = new TestConverter<int, string>(5);
+        var converter = new TestConverter<int, string>(ConverterAffinity);
         registry.Register(converter);
 
         // Act
@@ -220,8 +237,9 @@ public class ConverterRegistryTests
     public async Task Register_AndRetrieve_ShouldReturnConverter()
     {
         // Arrange
+        const int ConverterAffinity = 5;
         var registry = new BindingTypeConverterRegistry();
-        var converter = new TestConverter<int, string>(5);
+        var converter = new TestConverter<int, string>(ConverterAffinity);
 
         // Act
         registry.Register(converter);
@@ -240,9 +258,11 @@ public class ConverterRegistryTests
     public async Task SetMethodRegistry_ShouldSelectHighestAffinity()
     {
         // Arrange
+        const int LowAffinity = 2;
+        const int HighAffinity = 8;
         var registry = new SetMethodBindingConverterRegistry();
-        var lowAffinity = new TestSetMethodConverter(2);
-        var highAffinity = new TestSetMethodConverter(8);
+        var lowAffinity = new TestSetMethodConverter(LowAffinity);
+        var highAffinity = new TestSetMethodConverter(HighAffinity);
 
         // Act
         registry.Register(lowAffinity);
@@ -254,14 +274,25 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(highAffinity);
     }
 
+    /// <summary>
+    /// Test typed converter that reports a configurable affinity.
+    /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
     private sealed class TestConverter<TFrom, TTo> : BindingTypeConverter<TFrom, TTo>
     {
         private readonly int _affinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestConverter{TFrom, TTo}"/> class.
+        /// </summary>
+        /// <param name="affinity">The affinity value to report.</param>
         public TestConverter(int affinity) => _affinity = affinity;
 
+        /// <inheritdoc/>
         public override int GetAffinityForObjects() => _affinity;
 
+        /// <inheritdoc/>
         public override bool TryConvert(TFrom? from, object? conversionHint, [NotNullWhen(true)] out TTo? result)
         {
             result = default;
@@ -269,19 +300,30 @@ public class ConverterRegistryTests
         }
     }
 
+    /// <summary>
+    /// Test fallback converter that reports a configurable affinity.
+    /// </summary>
     private sealed class TestFallbackConverter : IBindingFallbackConverter
     {
         private readonly int _baseAffinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFallbackConverter"/> class.
+        /// </summary>
+        /// <param name="baseAffinity">The affinity value to report.</param>
         public TestFallbackConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+            Type fromType,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
             Type toType) => _baseAffinity;
 
+        /// <inheritdoc/>
         public bool TryConvert(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+            Type fromType,
             object from,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
             Type toType,
@@ -293,14 +335,23 @@ public class ConverterRegistryTests
         }
     }
 
+    /// <summary>
+    /// Test set-method converter that reports a configurable affinity.
+    /// </summary>
     private sealed class TestSetMethodConverter : ISetMethodBindingConverter
     {
         private readonly int _baseAffinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestSetMethodConverter"/> class.
+        /// </summary>
+        /// <param name="baseAffinity">The affinity value to report.</param>
         public TestSetMethodConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(Type? fromType, Type? toType) => _baseAffinity;
 
+        /// <inheritdoc/>
         public object? PerformSet(object? toTarget, object? newValue, object?[]? arguments) => newValue;
     }
 }

@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Android.App;
 using Android.Content;
-
 using AndroidX.Fragment.App;
 
 namespace ReactiveUI.AndroidX;
@@ -14,10 +13,22 @@ namespace ReactiveUI.AndroidX;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
+public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
+    IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
 {
+    /// <summary>
+    /// The subject that signals when the activity is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>
+    /// The subject that signals when the activity is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
+
+    /// <summary>
+    /// The subject that signals activity results.
+    /// </summary>
     private readonly Subject<(int requestCode, Result result, Intent intent)> _activityResult = new();
 
     /// <inheritdoc/>
@@ -27,10 +38,12 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc />
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc />
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragmentActivity>> Changed =>
+        this.GetChangedObservable();
 
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -48,7 +61,8 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
     /// <summary>
     /// Gets the activity result.
     /// </summary>
-    public IObservable<(int requestCode, Result result, Intent intent)> ActivityResult => _activityResult.AsObservable();
+    public IObservable<(int requestCode, Result result, Intent intent)> ActivityResult =>
+        _activityResult.AsObservable();
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -70,10 +84,10 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
         // NB: It's important that we set up the subscription *before* we
         // call ActivityForResult
         var ret = ActivityResult
-                  .Where(x => x.requestCode == requestCode)
-                  .Select(x => (x.result, x.intent))
-                  .FirstAsync()
-                  .ToTask();
+            .Where(x => x.requestCode == requestCode)
+            .Select(x => (x.result, x.intent))
+            .FirstAsync()
+            .ToTask();
 
         StartActivityForResult(intent, requestCode);
         return ret;
@@ -90,10 +104,10 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject, IReac
         // NB: It's important that we set up the subscription *before* we
         // call ActivityForResult
         var ret = ActivityResult
-                  .Where(x => x.requestCode == requestCode)
-                  .Select(x => (x.result, x.intent))
-                  .FirstAsync()
-                  .ToTask();
+            .Where(x => x.requestCode == requestCode)
+            .Select(x => (x.result, x.intent))
+            .FirstAsync()
+            .ToTask();
 
         StartActivityForResult(type, requestCode);
         return ret;

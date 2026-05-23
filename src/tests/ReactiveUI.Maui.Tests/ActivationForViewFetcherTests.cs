@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -14,6 +14,10 @@ namespace ReactiveUI.Maui.Tests;
 /// </summary>
 public class ActivationForViewFetcherTests
 {
+    private const int ExpectedMauiAffinity = 10;
+    private const int ExpectedNonMauiAffinity = 0;
+    private const int ExpectedEmissionCount = 3;
+
     /// <summary>
     /// Tests that GetAffinityForView returns correct affinity for Page types.
     /// </summary>
@@ -24,7 +28,7 @@ public class ActivationForViewFetcherTests
         var fetcher = new ActivationForViewFetcher();
         var affinity = fetcher.GetAffinityForView(typeof(ContentPage));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -37,7 +41,7 @@ public class ActivationForViewFetcherTests
         var fetcher = new ActivationForViewFetcher();
         var affinity = fetcher.GetAffinityForView(typeof(ContentView));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -50,7 +54,7 @@ public class ActivationForViewFetcherTests
         var fetcher = new ActivationForViewFetcher();
         var affinity = fetcher.GetAffinityForView(typeof(string));
 
-        await Assert.That(affinity).IsEqualTo(0);
+        await Assert.That(affinity).IsEqualTo(ExpectedNonMauiAffinity);
     }
 
     /// <summary>
@@ -80,7 +84,7 @@ public class ActivationForViewFetcherTests
         var affinity = fetcher.GetAffinityForView(typeof(TextCell));
 #pragma warning restore CS0618 // Type or member is obsolete
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -148,16 +152,17 @@ public class ActivationForViewFetcherTests
         deactivatedSubject.OnNext(Unit.Default);
         activatedSubject.OnNext(Unit.Default);
 
-        await Assert.That(values).Count().IsEqualTo(3);
+        const int thirdEmissionIndex = 2;
+        await Assert.That(values).Count().IsEqualTo(ExpectedEmissionCount);
         await Assert.That(values[0]).IsTrue();
         await Assert.That(values[1]).IsFalse();
-        await Assert.That(values[2]).IsTrue();
+        await Assert.That(values[thirdEmissionIndex]).IsTrue();
     }
 
     /// <summary>
     /// Test view that implements ICanActivate.
     /// </summary>
-    private class TestActivatableView : IViewFor, IActivatableView, ICanActivate
+    private sealed class TestActivatableView : IViewFor, ICanActivate
     {
         /// <inheritdoc/>
         public IObservable<Unit> Activated { get; } = Observable.Never<Unit>();
@@ -172,8 +177,13 @@ public class ActivationForViewFetcherTests
     /// <summary>
     /// Test view that implements ICanActivate with controllable subjects.
     /// </summary>
-    private class TestCanActivateView : IViewFor, IActivatableView, ICanActivate
+    private sealed class TestCanActivateView : IViewFor, ICanActivate
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestCanActivateView"/> class.
+        /// </summary>
+        /// <param name="activated">The observable that signals activation.</param>
+        /// <param name="deactivated">The observable that signals deactivation.</param>
         public TestCanActivateView(IObservable<Unit> activated, IObservable<Unit> deactivated)
         {
             Activated = activated;
@@ -193,23 +203,20 @@ public class ActivationForViewFetcherTests
     /// <summary>
     /// Test page that implements IActivatableView.
     /// </summary>
-    private class TestPage : ContentPage, IActivatableView
-    {
-    }
+    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    private sealed class TestPage : ContentPage, IActivatableView;
 
     /// <summary>
     /// Test view that implements IActivatableView.
     /// </summary>
-    private class TestView : ContentView, IActivatableView
-    {
-    }
+    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    private sealed class TestView : ContentView, IActivatableView;
 
     /// <summary>
     /// Test cell that implements IActivatableView.
     /// </summary>
+    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
 #pragma warning disable CS0618 // Type or member is obsolete
-    private class TestCell : TextCell, IActivatableView
+    private sealed class TestCell : TextCell, IActivatableView;
 #pragma warning restore CS0618 // Type or member is obsolete
-    {
-    }
 }

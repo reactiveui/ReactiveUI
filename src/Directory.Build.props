@@ -16,8 +16,9 @@
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <NoWarn>$(NoWarn);IDE0060;IDE1006;IDE0130;VSSpell001;CA1510</NoWarn>
-
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
+    
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -27,9 +28,14 @@
     <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Nullable>enable</Nullable>
-    <LangVersion>preview</LangVersion>
-    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+
+    <LangVersion>latest</LangVersion>
+
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
     <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
@@ -44,7 +50,6 @@
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <TUnitImplicitUsings>true</TUnitImplicitUsings>
     <TUnitAssertionsImplicitUsings>true</TUnitAssertionsImplicitUsings>
-    <NoWarn>$(NoWarn);CS4014</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -52,7 +57,7 @@
     <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
-    <ReactiveUIFrameworkTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net462;net472;net481</ReactiveUIFrameworkTargets>
+    <ReactiveUIFrameworkTargets>net462;net472;net481</ReactiveUIFrameworkTargets>
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
@@ -64,7 +69,7 @@
     <ReactiveUIWindowsOnlyTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
-    <ReactiveUITestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestTargets>
+    <ReactiveUITestTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestTargets>
 
     <!--    <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveUIMauiTestTargets>-->
     <ReactiveUIMauiTestTargets>$(ReactiveUIMauiTestTargets);net9.0;net10.0</ReactiveUIMauiTestTargets>
@@ -81,7 +86,7 @@
 
     <!-- Testing target frameworks for UI platform tests (.NET Framework + Windows-specific TFMs) -->
     <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
-    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
+    <ReactiveUITestingUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
@@ -89,8 +94,8 @@
     <!-- Add Android targets (available on all platforms with Android SDK) -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAndroidTargets)</ReactiveUIFinalTargetFrameworks>
 
-    <!-- Add Windows-specific targets (.NET Framework and Windows-specific TFMs) on Windows -->
-    <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalTargetFrameworks>
+    <!-- Add Windows-specific targets (.NET Framework and Windows-specific TFMs) on Windows, or anywhere EnableWindowsTargeting is set (reference-only compile on Linux/macOS). -->
+    <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or '$(EnableWindowsTargeting)' == 'true'">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIFinalTargetFrameworks>
 
     <!-- Add Apple targets on macOS and Windows -->
     <ReactiveUIFinalTargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveUIFinalTargetFrameworks);$(ReactiveUIAppleTargets)</ReactiveUIFinalTargetFrameworks>
@@ -144,10 +149,21 @@
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE"/>
     <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
+  <!-- MinVer (versioning) — replaces Nerdbank.GitVersioning. ReactiveUI release tags are unprefixed
+       (e.g. 23.2.1), so no tag prefix is configured. Floor at the current 23.2 baseline so untagged
+       builds produce 23.2.x-alpha.0.<height> until a 23.2.0 (or later) tag is cut. -->
+  <PropertyGroup>
+    <MinVerAutoIncrement>minor</MinVerAutoIncrement>
+    <MinVerDefaultPreReleaseIdentifiers>alpha.0</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerMinimumMajorMinor>23.2</MinVerMinimumMajorMinor>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all"/>
+    <PackageReference Include="MinVer" PrivateAssets="all"/>
     <PackageReference Include="stylecop.analyzers" PrivateAssets="all"/>
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All"/>
+    <PackageReference Include="Blazor.Common.Analyzers" PrivateAssets="All"/>
+    <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json"/>

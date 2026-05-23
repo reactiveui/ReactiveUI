@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -22,7 +22,7 @@ namespace ReactiveUI;
 /// are known at compile time.
 /// </para>
 /// </remarks>
-public interface IBindingTypeConverter<TFrom, TTo> : IBindingTypeConverter
+public interface IBindingTypeConverter<in TFrom, TTo> : IBindingTypeConverter
 {
     /// <summary>
     /// Convert a value to the target type in a type-safe manner.
@@ -42,5 +42,5 @@ public interface IBindingTypeConverter<TFrom, TTo> : IBindingTypeConverter
     /// to nullable targets.
     /// </para>
     /// </remarks>
-    bool TryConvert(TFrom? from, object? conversionHint, [MaybeNullWhen(true)] out TTo? result);
+    bool TryConvert(TFrom? from, object? conversionHint, out TTo? result);
 }

@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
+using System.Reactive.Linq;
 using System.Windows.Input;
 
 namespace ReactiveUI;
@@ -38,16 +40,23 @@ internal static class CommandBinderImplementationMixins
     /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
     /// It will remain active until disposed.</returns>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-    public static IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl>(
+    public static IReactiveBinding<TView, TProp> BindCommand<
+        TView,
+        TViewModel,
+        TProp,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        TControl>(
         this ICommandBinderImplementation @this,
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> propertyName,
         Expression<Func<TView, TControl>> controlName,
         string? toEvent = null)
-            where TView : class, IViewFor
-            where TViewModel : class
-            where TProp : ICommand
-            where TControl : class =>
+        where TView : class, IViewFor
+        where TViewModel : class
+        where TProp : ICommand
+        where TControl : class =>
         @this.BindCommand(viewModel, view, propertyName, controlName, Observable<object>.Empty, toEvent);
 }

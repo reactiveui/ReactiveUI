@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -47,13 +47,11 @@ public abstract class BindingTypeConverter<TFrom, TTo> : IBindingTypeConverter<T
     public abstract int GetAffinityForObjects();
 
     /// <inheritdoc/>
-    public abstract bool TryConvert(TFrom? from, object? conversionHint, [MaybeNullWhen(true)] out TTo? result);
+    public abstract bool TryConvert(TFrom? from, object? conversionHint, out TTo? result);
 
     /// <inheritdoc/>
     public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
     {
-        // Allow null inputs for converters whose source type can represent null, and
-        // permit null outputs when the target type is nullable/reference.
         TTo? typedResult;
         if (from is null)
         {

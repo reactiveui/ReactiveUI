@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Linq.Expressions;
 
 using ReactiveUI.Builder;
 
@@ -49,12 +51,14 @@ public static class ObservedChangedMixin
     /// <exception cref="ArgumentNullException">Thrown if the item parameter is null.</exception>
     /// <exception cref="Exception">Thrown if any property in the observed property chain is null, preventing the value from being retrieved.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item) =>
-        item is null
-            ? throw new ArgumentNullException(nameof(item))
-            : !item.TryGetValue(out var returnValue)
-                ? throw new Exception($"One of the properties in the expression '{item.GetPropertyName()}' was null")
-                : returnValue;
+    public static TValue GetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(item);
+        return item.TryGetValue(out var returnValue)
+            ? returnValue
+            : throw new InvalidOperationException(
+            $"One of the properties in the expression '{item.GetPropertyName()}' was null");
+    }
 
     /// <summary>
     /// Gets the current value from the observed change, or the default value for the type if the value cannot be
@@ -67,8 +71,13 @@ public static class ObservedChangedMixin
     /// <typeparamref name="TValue"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="item"/> is null.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static TValue? GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item) => // TODO: Create Test
-        item is null ? throw new ArgumentNullException(nameof(item)) : !item.TryGetValue(out var returnValue) ? default : returnValue;
+    public static TValue?
+        GetValueOrDefault<TSender, TValue>(this IObservedChange<TSender, TValue> item)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(item);
+
+        return !item.TryGetValue(out var returnValue) ? default : returnValue;
+    }
 
     /// <summary>
     /// Projects each observed change notification to the current value of the observed property or member chain.
@@ -82,8 +91,9 @@ public static class ObservedChangedMixin
     /// <returns>An observable sequence that emits the current value of the observed property or member chain each time a change
     /// notification is received.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IObservable<TValue> Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> item) => // TODO: Create Test
-        item.Select(GetValue);
+    public static IObservable<TValue>
+        Value<TSender, TValue>(this IObservable<IObservedChange<TSender, TValue>> item) =>
+        new ValueObservable<TSender, TValue>(item);
 
     /// <summary>
     /// Attempts to retrieve the value associated with the observed change, using the value directly if available or
@@ -99,7 +109,9 @@ public static class ObservedChangedMixin
     /// otherwise, the default value for the type.</param>
     /// <returns>true if the value was successfully retrieved; otherwise, false.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    internal static bool TryGetValue<TSender, TValue>(this IObservedChange<TSender, TValue> item, out TValue changeValue)
+    internal static bool TryGetValue<TSender, TValue>(
+        this IObservedChange<TSender, TValue> item,
+        out TValue changeValue)
     {
         if (!Equals(item.Value, default(TValue)))
         {
@@ -107,7 +119,10 @@ public static class ObservedChangedMixin
             return true;
         }
 
-        return Reflection.TryGetValueForPropertyChain(out changeValue, item.Sender, item.Expression!.GetExpressionChain());
+        return Reflection.TryGetValueForPropertyChain(
+            out changeValue,
+            item.Sender,
+            item.Expression!.GetExpressionChain());
     }
 
     /// <summary>
@@ -129,9 +144,61 @@ public static class ObservedChangedMixin
         TTarget target,
         Expression<Func<TTarget, TValue>> property)
     {
-        if (target is not null)
+        if (target is null)
         {
-            Reflection.TrySetValueToPropertyChain(target, Reflection.Rewrite(property.Body).GetExpressionChain(), item.GetValue());
+            return;
+        }
+
+        Reflection.TrySetValueToPropertyChain(
+            target,
+            Reflection.Rewrite(property.Body).GetExpressionChain(),
+            item.GetValue());
+    }
+
+    /// <summary>
+    /// A fused sink that projects each observed change to its current value via <see cref="GetValue{TSender, TValue}"/> —
+    /// replacing the <c>Select(GetValue)</c> used by <see cref="Value{TSender, TValue}"/>.
+    /// </summary>
+    /// <typeparam name="TSender">The type of the object that owns the observed member.</typeparam>
+    /// <typeparam name="TValue">The observed value type.</typeparam>
+    /// <param name="source">The source stream of observed changes.</param>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    private sealed class ValueObservable<TSender, TValue>(IObservable<IObservedChange<TSender, TValue>> source)
+        : IObservable<TValue>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<TValue> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Reads the current value from each observed change and forwards it.</summary>
+        [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+        private sealed class Sink(IObserver<TValue> downstream) : IObserver<IObservedChange<TSender, TValue>>
+        {
+            /// <inheritdoc/>
+            public void OnNext(IObservedChange<TSender, TValue> value)
+            {
+                TValue projected;
+                try
+                {
+                    projected = value.GetValue();
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                downstream.OnNext(projected);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
         }
     }
 }

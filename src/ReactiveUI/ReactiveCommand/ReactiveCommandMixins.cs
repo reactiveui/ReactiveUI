@@ -1,9 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
 using System.Windows.Input;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -14,188 +17,317 @@ namespace ReactiveUI;
 /// <para>
 /// <c>InvokeCommand</c> is typically chained after an <see cref="IObservable{T}"/> that represents user intent. It
 /// forwards each value into an <see cref="ICommand"/> once <see cref="ICommand.CanExecute(object?)"/> returns true,
-/// keeping the observable and command lifetimes aligned via the returned disposable.
+/// keeping the observable and command lifetimes aligned via the returned disposable. Each overload is implemented as a
+/// small tailored sink that tracks the current command / can-execute state and invokes on each source value when the
+/// command is currently able to execute; there is no operator chain.
 /// </para>
 /// </remarks>
-/// <example>
-/// <code language="csharp">
-/// <![CDATA[
-/// this.WhenAnyValue(x => x.ViewModel.SaveCommand)
-///     .Select(_ => Unit.Default)
-///     .InvokeCommand(ViewModel.SaveCommand)
-///     .DisposeWith(disposables);
-/// ]]>
-/// </code>
-/// </example>
 public static class ReactiveCommandMixins
 {
     /// <summary>
     /// Subscribes to the observable sequence and invokes the specified command for each element, if the command can
     /// execute with the element as its parameter.
     /// </summary>
-    /// <remarks>The command's CanExecuteChanged event is monitored to ensure that the command is only
-    /// executed when it is able to do so. If the command is null, no action is taken for elements in the sequence.
-    /// Disposing the returned IDisposable will unsubscribe from the sequence and stop further command
-    /// invocations.</remarks>
     /// <typeparam name="T">The type of the elements in the observable sequence and the parameter type for the command.</typeparam>
     /// <param name="item">The observable sequence whose elements are passed to the command as parameters.</param>
-    /// <param name="command">The command to invoke for each element in the sequence. The command is executed only if its CanExecute method
-    /// returns true for the element. This parameter can be null.</param>
-    /// <returns>An IDisposable object that can be used to unsubscribe from the observable sequence and stop invoking the
-    /// command.</returns>
-    public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand? command)
-    {
-        var canExecuteChanged = Observable.FromEvent<EventHandler, Unit>(
-                                            eventHandler =>
-                                            {
-                                                void Handler(object? sender, EventArgs e) => eventHandler(Unit.Default);
-                                                return Handler;
-                                            },
-                                            h => command!.CanExecuteChanged += h,
-                                            h => command!.CanExecuteChanged -= h)
-                                          .StartWith(Unit.Default);
+    /// <param name="command">The command to invoke for each element. Executed only if its <see cref="ICommand.CanExecute(object?)"/> returns true. May be null.</param>
+    /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
+    public static IDisposable InvokeCommand<T>(this IObservable<T> item, ICommand? command) =>
+        item.Subscribe(new DelegateObserver<T>(value =>
+        {
+            if (command?.CanExecute(value) != true)
+            {
+                return;
+            }
 
-        return WithLatestFromFixed(item, canExecuteChanged, (value, _) => new InvokeCommandInfo<ICommand?, T>(command, command!.CanExecute(value), value))
-               .Where(ii => ii.CanExecute)
-               .Do(ii => command?.Execute(ii.Value))
-               .Subscribe();
-    }
+            command.Execute(value);
+        }));
 
     /// <summary>
     /// Subscribes to the observable sequence and invokes the specified reactive command for each element, if the
     /// command can execute.
     /// </summary>
-    /// <remarks>The command is only executed for elements where its CanExecute observable returns true. If
-    /// the command's execution results in an error, the error is suppressed and processing continues with subsequent
-    /// elements.</remarks>
     /// <typeparam name="T">The type of the elements in the source observable sequence.</typeparam>
     /// <typeparam name="TResult">The type of the result produced by the reactive command.</typeparam>
     /// <param name="item">The source observable sequence whose elements are used as input to the command.</param>
-    /// <param name="command">The reactive command to invoke for each element in the sequence. Cannot be null.</param>
-    /// <returns>An IDisposable that can be disposed to unsubscribe from the sequence and stop invoking the command.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if the command parameter is null.</exception>
-    public static IDisposable InvokeCommand<T, TResult>(this IObservable<T> item, ReactiveCommandBase<T, TResult>? command) =>
+    /// <param name="command">The reactive command to invoke for each element. Cannot be null.</param>
+    /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="command"/> is null.</exception>
+    public static IDisposable InvokeCommand<T, TResult>(
+        this IObservable<T> item,
+        ReactiveCommandBase<T, TResult>? command) =>
         command is null
             ? throw new ArgumentNullException(nameof(command))
-            : WithLatestFromFixed(item, command.CanExecute, (value, canExecute) => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(command, canExecute, value))
-              .Where(ii => ii.CanExecute)
-              .SelectMany(ii => command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
-              .Subscribe();
+            : new ReactiveCommandInvoker<T, TResult>(command).Run(item);
 
     /// <summary>
-    /// Subscribes to the observable sequence and invokes the specified command on the target object whenever a new
-    /// value is emitted, if the command can execute with that value.
+    /// Subscribes to the observable sequence and invokes the command found on the target object for each element, if
+    /// the command can execute with that element.
     /// </summary>
-    /// <remarks>The command is only executed if it is not null and its CanExecute method returns true for the
-    /// emitted value. The subscription listens for changes to the command property and to the command's
-    /// CanExecuteChanged event. This method uses reflection to evaluate the command property expression, which may be
-    /// affected by trimming in some deployment scenarios.</remarks>
     /// <typeparam name="T">The type of the values emitted by the observable sequence.</typeparam>
-    /// <typeparam name="TTarget">The type of the target object that contains the command property. Must be a reference type.</typeparam>
-    /// <param name="item">The observable sequence whose emitted values will be passed to the command as parameters.</param>
+    /// <typeparam name="TTarget">The type of the target object that contains the command property.</typeparam>
+    /// <param name="item">The observable sequence whose emitted values are passed to the command as parameters.</param>
     /// <param name="target">The target object that contains the command property. Can be null.</param>
-    /// <param name="commandProperty">An expression that identifies the command property on the target object to be invoked. The expression should
-    /// return an object implementing ICommand.</param>
-    /// <returns>An IDisposable that can be used to unsubscribe from the observable sequence and stop invoking the command.</returns>
+    /// <param name="commandProperty">An expression identifying the command property on the target object.</param>
+    /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable InvokeCommand<T, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ICommand?>> commandProperty)
-        where TTarget : class
-    {
-        var commandObs = target.WhenAnyValue(commandProperty);
-        var commandCanExecuteChanged = commandObs
-                                       .Select(command => command is null ?
-                                            Observable<ICommand>.Empty :
-                                            Observable.FromEvent<EventHandler, ICommand>(
-                                                eventHandler => (_, _) => eventHandler(command),
-                                                h => command.CanExecuteChanged += h,
-                                                h => command.CanExecuteChanged -= h)
-                                                .StartWith(command))
-                                       .Switch();
-
-        return WithLatestFromFixed(item, commandCanExecuteChanged, (value, cmd) => new InvokeCommandInfo<ICommand, T>(cmd, cmd.CanExecute(value), value))
-               .Where(ii => ii.CanExecute)
-               .Do(ii => ii.Command.Execute(ii.Value))
-               .Subscribe();
-    }
+    public static IDisposable InvokeCommand<T, TTarget>(
+        this IObservable<T> item,
+        TTarget? target,
+        Expression<Func<TTarget, ICommand?>> commandProperty)
+        where TTarget : class =>
+        new CommandPropertyInvoker<T>(target.WhenAnyValue(commandProperty)).Run(item);
 
     /// <summary>
-    /// Subscribes to the specified observable and invokes a reactive command on the target object whenever a new value
-    /// is emitted.
+    /// Subscribes to the observable sequence and invokes the reactive command found on the target object for each
+    /// element, if the command can execute.
     /// </summary>
-    /// <remarks>The command is only executed if it is not null and its CanExecute observable returns <see
-    /// langword="true"/> for the current value. If the command is null or cannot execute, no action is taken for that
-    /// value. This method uses reflection to evaluate the command property expression, which may be affected by
-    /// trimming in some deployment scenarios.</remarks>
     /// <typeparam name="T">The type of the values emitted by the source observable.</typeparam>
     /// <typeparam name="TResult">The type of the result produced by the reactive command.</typeparam>
     /// <typeparam name="TTarget">The type of the target object that contains the reactive command.</typeparam>
-    /// <param name="item">The observable sequence whose emitted values will be passed to the command for execution.</param>
-    /// <param name="target">The target object that contains the reactive command to be invoked. Can be null.</param>
-    /// <param name="commandProperty">An expression that identifies the reactive command property on the target object to be invoked.</param>
-    /// <returns>An IDisposable that can be disposed to unsubscribe from the observable and stop invoking the command.</returns>
+    /// <param name="item">The observable sequence whose emitted values are passed to the command for execution.</param>
+    /// <param name="target">The target object that contains the reactive command. Can be null.</param>
+    /// <param name="commandProperty">An expression identifying the reactive command property on the target object.</param>
+    /// <returns>An <see cref="IDisposable"/> that unsubscribes from the sequence and stops invoking the command.</returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static IDisposable InvokeCommand<T, TResult, TTarget>(this IObservable<T> item, TTarget? target, Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
-        where TTarget : class
-    {
-        var command = target.WhenAnyValue(commandProperty);
-        var invocationInfo = command
-                             .Select(cmd => cmd is null ?
-                                Observable<InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>>.Empty :
-                                cmd
-                                    .CanExecute
-                                    .Select(canExecute => new InvokeCommandInfo<ReactiveCommandBase<T, TResult>, T>(cmd, canExecute)))
-                             .Switch();
-
-        return WithLatestFromFixed(item, invocationInfo, (value, ii) => ii.WithValue(value))
-               .Where(ii => ii.CanExecute)
-               .SelectMany(ii => ii.Command.Execute(ii.Value).Catch(Observable<TResult>.Empty))
-               .Subscribe();
-    }
-
-    // See https://github.com/Reactive-Extensions/Rx.NET/issues/444
-    private static IObservable<TResult> WithLatestFromFixed<TLeft, TRight, TResult>(
-        IObservable<TLeft> item,
-        IObservable<TRight> other,
-        Func<TLeft, TRight, TResult> resultSelector) =>
-        item
-            .Publish(
-                     os =>
-                         other
-                             .Select(
-                                     a =>
-                                         os
-                                             .Select(b => resultSelector(b, a)))
-                             .Switch());
+    public static IDisposable InvokeCommand<T, TResult, TTarget>(
+        this IObservable<T> item,
+        TTarget? target,
+        Expression<Func<TTarget, ReactiveCommandBase<T, TResult>?>> commandProperty)
+        where TTarget : class =>
+        new ReactiveCommandPropertyInvoker<T, TResult>(target.WhenAnyValue(commandProperty)).Run(item);
 
     /// <summary>
-    /// Represents the result of invoking a command, including the command instance, whether it can be executed, and an
-    /// associated value.
+    /// Tracks the latest can-execute state of a reactive command and executes it for each source value while it can.
     /// </summary>
-    /// <typeparam name="TCommand">The type of the command being invoked.</typeparam>
-    /// <typeparam name="TValue">The type of the value associated with the command invocation.</typeparam>
-    private readonly struct InvokeCommandInfo<TCommand, TValue>
+    /// <typeparam name="T">The command parameter type.</typeparam>
+    /// <typeparam name="TResult">The command result type.</typeparam>
+    /// <param name="command">The command to invoke.</param>
+    private sealed class ReactiveCommandInvoker<T, TResult>(ReactiveCommandBase<T, TResult> command) : IDisposable
     {
-        public InvokeCommandInfo(TCommand command, bool canExecute, TValue value)
+        /// <summary>Guards the latest can-execute value.</summary>
+        #if NET9_0_OR_GREATER
+        private readonly Lock _gate = new();
+        #else
+        private readonly object _gate = new();
+        #endif
+
+        /// <summary>Subscription to the command's can-execute observable.</summary>
+        private IDisposable? _canExecuteSubscription;
+
+        /// <summary>Subscription to the source sequence.</summary>
+        private IDisposable? _itemSubscription;
+
+        /// <summary>The latest can-execute value.</summary>
+        private bool _canExecute;
+
+        /// <summary>Starts tracking can-execute and the source sequence.</summary>
+        /// <param name="item">The source sequence.</param>
+        /// <returns>A disposable stopping both subscriptions.</returns>
+        public ReactiveCommandInvoker<T, TResult> Run(IObservable<T> item)
         {
-            Command = command;
-            CanExecute = canExecute;
-            Value = value!;
+            _canExecuteSubscription = command.CanExecute.Subscribe(new DelegateObserver<bool>(OnCanExecute));
+            _itemSubscription = item.Subscribe(new DelegateObserver<T>(OnItem));
+            return this;
         }
 
-        public InvokeCommandInfo(TCommand command, bool canExecute)
+        /// <inheritdoc/>
+        public void Dispose()
         {
-            Command = command;
-            CanExecute = canExecute;
-            Value = default!;
+            _canExecuteSubscription?.Dispose();
+            _itemSubscription?.Dispose();
         }
 
-        public TCommand Command { get; }
+        /// <summary>Records the latest can-execute value.</summary>
+        /// <param name="value">The can-execute value.</param>
+        private void OnCanExecute(bool value)
+        {
+            lock (_gate)
+            {
+                _canExecute = value;
+            }
+        }
 
-        public bool CanExecute { get; }
+        /// <summary>Executes the command for a source value when it can currently execute.</summary>
+        /// <param name="value">The source value passed to the command.</param>
+        private void OnItem(T value)
+        {
+            bool canExecute;
+            lock (_gate)
+            {
+                canExecute = _canExecute;
+            }
 
-        public TValue Value { get; }
+            if (!canExecute)
+            {
+                return;
+            }
 
-        public InvokeCommandInfo<TCommand, TValue> WithValue(TValue value) =>
-            new(Command, CanExecute, value);
+            command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
+        }
+    }
+
+    /// <summary>
+    /// Tracks the latest <see cref="ICommand"/> exposed by a target property and invokes it for each source value
+    /// when it can execute with that value.
+    /// </summary>
+    /// <typeparam name="T">The command parameter type.</typeparam>
+    /// <param name="commands">The stream of current commands.</param>
+    private sealed class CommandPropertyInvoker<T>(IObservable<ICommand?> commands) : IDisposable
+    {
+        /// <summary>Guards the latest command reference.</summary>
+        #if NET9_0_OR_GREATER
+        private readonly Lock _gate = new();
+        #else
+        private readonly object _gate = new();
+        #endif
+
+        /// <summary>Subscription to the command-property stream.</summary>
+        private IDisposable? _commandSubscription;
+
+        /// <summary>Subscription to the source sequence.</summary>
+        private IDisposable? _itemSubscription;
+
+        /// <summary>The latest command exposed by the property.</summary>
+        private ICommand? _command;
+
+        /// <summary>Starts tracking the command property and the source sequence.</summary>
+        /// <param name="item">The source sequence.</param>
+        /// <returns>A disposable stopping both subscriptions.</returns>
+        public CommandPropertyInvoker<T> Run(IObservable<T> item)
+        {
+            _commandSubscription = commands.Subscribe(new DelegateObserver<ICommand?>(OnCommand));
+            _itemSubscription = item.Subscribe(new DelegateObserver<T>(OnItem));
+            return this;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _commandSubscription?.Dispose();
+            _itemSubscription?.Dispose();
+        }
+
+        /// <summary>Records the latest command exposed by the property.</summary>
+        /// <param name="command">The current command.</param>
+        private void OnCommand(ICommand? command)
+        {
+            lock (_gate)
+            {
+                _command = command;
+            }
+        }
+
+        /// <summary>Executes the current command for a source value when it can execute with that value.</summary>
+        /// <param name="value">The source value passed to the command.</param>
+        private void OnItem(T value)
+        {
+            ICommand? command;
+            lock (_gate)
+            {
+                command = _command;
+            }
+
+            if (command?.CanExecute(value) != true)
+            {
+                return;
+            }
+
+            command.Execute(value);
+        }
+    }
+
+    /// <summary>
+    /// Tracks the latest reactive command exposed by a target property and its can-execute state, invoking it for
+    /// each source value while it can.
+    /// </summary>
+    /// <typeparam name="T">The command parameter type.</typeparam>
+    /// <typeparam name="TResult">The command result type.</typeparam>
+    /// <param name="commands">The stream of current commands.</param>
+    private sealed class ReactiveCommandPropertyInvoker<T, TResult>(IObservable<ReactiveCommandBase<T, TResult>?> commands) : IDisposable
+    {
+        /// <summary>Guards the latest command reference and its can-execute value.</summary>
+        #if NET9_0_OR_GREATER
+        private readonly Lock _gate = new();
+        #else
+        private readonly object _gate = new();
+        #endif
+
+        /// <summary>The current command's can-execute subscription; swapped when the command changes.</summary>
+        private readonly SwapDisposable _canExecuteSubscription = new();
+
+        /// <summary>Subscription to the command-property stream.</summary>
+        private IDisposable? _commandSubscription;
+
+        /// <summary>Subscription to the source sequence.</summary>
+        private IDisposable? _itemSubscription;
+
+        /// <summary>The latest command exposed by the property.</summary>
+        private ReactiveCommandBase<T, TResult>? _command;
+
+        /// <summary>The latest can-execute value of the current command.</summary>
+        private bool _canExecute;
+
+        /// <summary>Starts tracking the command property and the source sequence.</summary>
+        /// <param name="item">The source sequence.</param>
+        /// <returns>A disposable stopping every subscription.</returns>
+        public ReactiveCommandPropertyInvoker<T, TResult> Run(IObservable<T> item)
+        {
+            _commandSubscription = commands.Subscribe(new DelegateObserver<ReactiveCommandBase<T, TResult>?>(OnCommand));
+            _itemSubscription = item.Subscribe(new DelegateObserver<T>(OnItem));
+            return this;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _commandSubscription?.Dispose();
+            _itemSubscription?.Dispose();
+            _canExecuteSubscription.Dispose();
+        }
+
+        /// <summary>Tracks the latest command and switches the can-execute subscription to it.</summary>
+        /// <param name="command">The current command.</param>
+        private void OnCommand(ReactiveCommandBase<T, TResult>? command)
+        {
+            lock (_gate)
+            {
+                _command = command;
+                _canExecute = false;
+            }
+
+            _canExecuteSubscription.Disposable =
+                command?.CanExecute.Subscribe(new DelegateObserver<bool>(OnCanExecute));
+        }
+
+        /// <summary>Records the latest can-execute value of the current command.</summary>
+        /// <param name="value">The can-execute value.</param>
+        private void OnCanExecute(bool value)
+        {
+            lock (_gate)
+            {
+                _canExecute = value;
+            }
+        }
+
+        /// <summary>Executes the current command for a source value when it can currently execute.</summary>
+        /// <param name="value">The source value passed to the command.</param>
+        private void OnItem(T value)
+        {
+            ReactiveCommandBase<T, TResult>? command;
+            bool canExecute;
+            lock (_gate)
+            {
+                command = _command;
+                canExecute = _canExecute;
+            }
+
+            if (command is null || !canExecute)
+            {
+                return;
+            }
+
+            command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
+        }
     }
 }

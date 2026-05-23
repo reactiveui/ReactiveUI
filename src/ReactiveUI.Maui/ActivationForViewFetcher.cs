@@ -1,17 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Reflection;
-
-#if WINUI_TARGET
-using Microsoft.UI.Xaml;
-
-using ReactiveUI.Maui.Internal;
-
-using Windows.Foundation;
-#endif
 
 #if IS_WINUI
 namespace ReactiveUI.WinUI;
@@ -34,11 +26,12 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
        typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
 #endif
 #if IS_MAUI
-       typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-       typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-       typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+        typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+        typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
+        typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
 #endif
-            ? 10 : 0;
+            ? BindingAffinity.ExactType
+            : 0;
 
     /// <inheritdoc/>
     public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -58,10 +51,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         return activation.DistinctUntilChanged();
     }
 
+    /// <summary>Gets the activation stream for an <see cref="ICanActivate"/>, or null when not applicable.</summary>
+    /// <param name="canActivate">The view to observe, or null.</param>
+    /// <returns>The activation stream, or null when <paramref name="canActivate"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate) =>
         canActivate?.Activated.Select(static _ => true).Merge(canActivate.Deactivated.Select(static _ => false));
 
 #if IS_MAUI
+    /// <summary>Gets the activation stream for a <see cref="Page"/>, or null when not applicable.</summary>
+    /// <param name="page">The page to observe, or null.</param>
+    /// <returns>The activation stream, or null when <paramref name="page"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(Page? page)
     {
         if (page is null)
@@ -70,28 +69,31 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         var appearing = Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler =>
-                                                                 {
-                                                                     void Handler(object? sender, EventArgs e) => eventHandler(true);
-                                                                     return Handler;
-                                                                 },
-                                                                 x => page.Appearing += x,
-                                                                 x => page.Appearing -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(true);
+                return Handler;
+            },
+            x => page.Appearing += x,
+            x => page.Appearing -= x);
 
         var disappearing = Observable.FromEvent<EventHandler, bool>(
-                                                                    eventHandler =>
-                                                                    {
-                                                                        void Handler(object? sender, EventArgs e) => eventHandler(false);
-                                                                        return Handler;
-                                                                    },
-                                                                    x => page.Disappearing += x,
-                                                                    x => page.Disappearing -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(false);
+                return Handler;
+            },
+            x => page.Disappearing += x,
+            x => page.Disappearing -= x);
 
         return appearing.Merge(disappearing);
     }
 #endif
 
 #if IS_MAUI
+    /// <summary>Gets the activation stream for a <see cref="View"/>, or null when not applicable.</summary>
+    /// <param name="view">The view to observe, or null.</param>
+    /// <returns>The activation stream, or null when <paramref name="view"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(View? view)
     {
         if (view is null)
@@ -100,29 +102,32 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         var loaded = Observable.FromEvent<EventHandler, bool>(
-                                                                eventHandler =>
-                                                                {
-                                                                    void Handler(object? sender, EventArgs e) => eventHandler(true);
-                                                                    return Handler;
-                                                                },
-                                                                x => view.Loaded += x,
-                                                                x => view.Loaded -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(true);
+                return Handler;
+            },
+            x => view.Loaded += x,
+            x => view.Loaded -= x);
 
         var unloaded = Observable.FromEvent<EventHandler, bool>(
-                                                                  eventHandler =>
-                                                                  {
-                                                                      void Handler(object? sender, EventArgs e) => eventHandler(false);
-                                                                      return Handler;
-                                                                  },
-                                                                  x => view.Unloaded += x,
-                                                                  x => view.Unloaded -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(false);
+                return Handler;
+            },
+            x => view.Unloaded += x,
+            x => view.Unloaded -= x);
 
         return loaded
-               .Merge(unloaded)
-               .StartWith(view.IsLoaded)
-               .DistinctUntilChanged();
+            .Merge(unloaded)
+            .StartWith(view.IsLoaded)
+            .DistinctUntilChanged();
     }
 
+    /// <summary>Gets the activation stream for a <see cref="Cell"/>, or null when not applicable.</summary>
+    /// <param name="cell">The cell to observe, or null.</param>
+    /// <returns>The activation stream, or null when <paramref name="cell"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(Cell? cell)
     {
         if (cell is null)
@@ -131,26 +136,29 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         var appearing = Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler =>
-                                                                 {
-                                                                     void Handler(object? sender, EventArgs e) => eventHandler(true);
-                                                                     return Handler;
-                                                                 },
-                                                                 x => cell.Appearing += x,
-                                                                 x => cell.Appearing -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(true);
+                return Handler;
+            },
+            x => cell.Appearing += x,
+            x => cell.Appearing -= x);
 
         var disappearing = Observable.FromEvent<EventHandler, bool>(
-                                                                    eventHandler =>
-                                                                    {
-                                                                        void Handler(object? sender, EventArgs e) => eventHandler(false);
-                                                                        return Handler;
-                                                                    },
-                                                                    x => cell.Disappearing += x,
-                                                                    x => cell.Disappearing -= x);
+            eventHandler =>
+            {
+                void Handler(object? sender, EventArgs e) => eventHandler(false);
+                return Handler;
+            },
+            x => cell.Disappearing += x,
+            x => cell.Disappearing -= x);
 
         return appearing.Merge(disappearing);
     }
 #else
+    /// <summary>Gets the activation stream for a <see cref="FrameworkElement"/>, or null when not applicable.</summary>
+    /// <param name="view">The framework element to observe, or null.</param>
+    /// <returns>The activation stream, or null when <paramref name="view"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)

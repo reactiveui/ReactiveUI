@@ -1,9 +1,7 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
-using System.Threading;
 
 namespace ReactiveUI.Testing;
 
@@ -63,6 +61,21 @@ public static class SchedulerExtensions
 
     /// <summary>
     /// With is an extension method that uses the given scheduler as the
+    /// default Deferred and Taskpool schedulers for the given Action.
+    /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
+    /// <param name="scheduler">The scheduler to use.</param>
+    /// <param name="block">The action to execute.</param>
+    public static void With<T>(this T scheduler, Action<T> block)
+        where T : IScheduler =>
+        scheduler.With(x =>
+        {
+            block(x);
+            return 0;
+        });
+
+    /// <summary>
+    /// With is an extension method that uses the given scheduler as the
     /// default Deferred and Taskpool schedulers for the given Func. Use
     /// this to initialize objects that store the default scheduler (most
     /// RxXaml objects).
@@ -85,21 +98,6 @@ public static class SchedulerExtensions
 
         return ret;
     }
-
-    /// <summary>
-    /// With is an extension method that uses the given scheduler as the
-    /// default Deferred and Taskpool schedulers for the given Action.
-    /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    /// <param name="scheduler">The scheduler to use.</param>
-    /// <param name="block">The action to execute.</param>
-    public static void With<T>(this T scheduler, Action<T> block)
-        where T : IScheduler =>
-        scheduler.With(x =>
-        {
-            block(x);
-            return 0;
-        });
 
     /// <summary>
     /// With is an extension method that uses the given scheduler as the

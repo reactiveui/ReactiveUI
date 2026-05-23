@@ -1,0 +1,308 @@
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+
+namespace ReactiveUI;
+
+/// <summary>
+/// Extensions that turn observable collections into a stream of <see cref="IReactiveChangeSet{T}"/> batches, replacing
+/// the DynamicData change-set surface used inside ReactiveUI with a tailored, allocation-light layer.
+/// </summary>
+public static class ChangeSetExtensions
+{
+    /// <summary>
+    /// Observes an <see cref="ObservableCollection{T}"/> as a change-set stream, emitting an initial batch for the
+    /// current items and then one batch per collection change.
+    /// </summary>
+    /// <typeparam name="T">The collection item type.</typeparam>
+    /// <param name="collection">The collection to observe.</param>
+    /// <returns>A change-set stream.</returns>
+    public static IObservable<IReactiveChangeSet<T>> ToObservableChangeSet<T>(this ObservableCollection<T> collection)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(collection);
+        return new ChangeSetObservable<ObservableCollection<T>, T>(collection);
+    }
+
+    /// <summary>
+    /// Observes a collection that raises <see cref="INotifyCollectionChanged"/> as a change-set stream, emitting an
+    /// initial batch for the current items and then one batch per collection change.
+    /// </summary>
+    /// <typeparam name="TCollection">The collection type.</typeparam>
+    /// <typeparam name="T">The collection item type.</typeparam>
+    /// <param name="collection">The collection to observe.</param>
+    /// <returns>A change-set stream.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "T is the element type and is supplied explicitly by callers; it cannot be inferred from the collection parameter.")]
+    public static IObservable<IReactiveChangeSet<T>> ToObservableChangeSet<TCollection, T>(this TCollection collection)
+        where TCollection : INotifyCollectionChanged, IEnumerable<T>
+    {
+        ArgumentExceptionHelper.ThrowIfNull(collection);
+        return new ChangeSetObservable<TCollection, T>(collection);
+    }
+
+    /// <summary>A change set backed by a list of changes, exposing the add/remove counts.</summary>
+    /// <typeparam name="T">The collection item type.</typeparam>
+    internal sealed class ReactiveChangeSet<T> : IReactiveChangeSet<T>
+    {
+        /// <summary>The changes in this batch.</summary>
+        private readonly List<ReactiveChange<T>> _changes;
+
+        /// <summary>Initializes a new instance of the <see cref="ReactiveChangeSet{T}"/> class.</summary>
+        /// <param name="changes">The changes in this batch.</param>
+        public ReactiveChangeSet(List<ReactiveChange<T>> changes)
+        {
+            _changes = changes;
+            for (var i = 0; i < changes.Count; i++)
+            {
+                var reason = changes[i].Reason;
+                if (reason == ReactiveChangeReason.Add)
+                {
+                    Adds++;
+                }
+                else if (reason == ReactiveChangeReason.Remove)
+                {
+                    Removes++;
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        public int Count => _changes.Count;
+
+        /// <inheritdoc/>
+        public int Adds { get; }
+
+        /// <inheritdoc/>
+        public int Removes { get; }
+
+        /// <inheritdoc/>
+        public ReactiveChange<T> this[int index] => _changes[index];
+
+        /// <summary>Returns an enumerator over the changes.</summary>
+        /// <returns>An enumerator over the changes.</returns>
+        public List<ReactiveChange<T>>.Enumerator GetEnumerator() => _changes.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator<ReactiveChange<T>> IEnumerable<ReactiveChange<T>>.GetEnumerator() => _changes.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => _changes.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Observes a notifying collection and translates each <see cref="NotifyCollectionChangedEventArgs"/> into a
+    /// flattened per-item change set, maintaining a shadow copy to service the initial batch and reset translation.
+    /// </summary>
+    /// <typeparam name="TCollection">The collection type.</typeparam>
+    /// <typeparam name="T">The collection item type.</typeparam>
+    /// <param name="collection">The collection to observe.</param>
+    private sealed class ChangeSetObservable<TCollection, T>(TCollection collection) : IObservable<IReactiveChangeSet<T>>
+        where TCollection : INotifyCollectionChanged, IEnumerable<T>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IReactiveChangeSet<T>> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            var subscription = new Subscription(collection, observer);
+            subscription.Start();
+            return subscription;
+        }
+
+        /// <summary>Hooks the collection, emits the initial batch, and translates subsequent changes.</summary>
+        /// <param name="collection">The collection to observe.</param>
+        /// <param name="observer">The observer receiving change sets.</param>
+        private sealed class Subscription(TCollection collection, IObserver<IReactiveChangeSet<T>> observer) : IDisposable
+        {
+            /// <summary>Shadow copy of the collection, kept in sync to service resets and indices.</summary>
+            private readonly List<T> _shadow = [];
+
+            /// <summary>Emits the initial batch for the current items and begins observing changes.</summary>
+            public void Start()
+            {
+                _shadow.AddRange(collection);
+
+                if (_shadow.Count > 0)
+                {
+                    var initial = new List<ReactiveChange<T>>(_shadow.Count);
+                    for (var i = 0; i < _shadow.Count; i++)
+                    {
+                        initial.Add(new ReactiveChange<T>(ReactiveChangeReason.Add, _shadow[i], default, i, -1));
+                    }
+
+                    observer.OnNext(new ReactiveChangeSet<T>(initial));
+                }
+
+                collection.CollectionChanged += OnCollectionChanged;
+            }
+
+            /// <inheritdoc/>
+            public void Dispose() => collection.CollectionChanged -= OnCollectionChanged;
+
+            /// <summary>Translates a collection-changed event into a change set and forwards it.</summary>
+            /// <param name="sender">The collection.</param>
+            /// <param name="e">The collection-changed event arguments.</param>
+            private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+            {
+                var changes = new List<ReactiveChange<T>>();
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    {
+                        ApplyAdd(e, changes);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Remove:
+                    {
+                        ApplyRemove(e, changes);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Replace:
+                    {
+                        ApplyReplace(e, changes);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Move:
+                    {
+                        ApplyMove(e, changes);
+                        break;
+                    }
+
+                    case NotifyCollectionChangedAction.Reset:
+                    {
+                        ApplyReset(changes);
+                        break;
+                    }
+                }
+
+                if (changes.Count == 0)
+                {
+                    return;
+                }
+
+                observer.OnNext(new ReactiveChangeSet<T>(changes));
+            }
+
+            /// <summary>Records added items into the shadow and the change list.</summary>
+            /// <param name="e">The collection-changed event arguments.</param>
+            /// <param name="changes">The change list being built.</param>
+            private void ApplyAdd(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
+            {
+                if (e.NewItems is null)
+                {
+                    return;
+                }
+
+                var start = e.NewStartingIndex;
+                for (var i = 0; i < e.NewItems.Count; i++)
+                {
+                    var item = (T)e.NewItems[i]!;
+                    var index = start < 0 ? _shadow.Count : start + i;
+                    _shadow.Insert(index, item);
+                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Add, item, default, index, -1));
+                }
+            }
+
+            /// <summary>Records removed items out of the shadow and into the change list.</summary>
+            /// <param name="e">The collection-changed event arguments.</param>
+            /// <param name="changes">The change list being built.</param>
+            private void ApplyRemove(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
+            {
+                if (e.OldItems is null)
+                {
+                    return;
+                }
+
+                var start = e.OldStartingIndex;
+                for (var i = 0; i < e.OldItems.Count; i++)
+                {
+                    var item = (T)e.OldItems[i]!;
+                    var index = start < 0 ? -1 : start;
+                    RemoveFromShadow(index, item);
+                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Remove, item, default, index, -1));
+                }
+            }
+
+            /// <summary>Records replaced items in the shadow and the change list.</summary>
+            /// <param name="e">The collection-changed event arguments.</param>
+            /// <param name="changes">The change list being built.</param>
+            private void ApplyReplace(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
+            {
+                if (e.NewItems is null || e.OldItems is null)
+                {
+                    return;
+                }
+
+                var start = e.NewStartingIndex;
+                for (var i = 0; i < e.NewItems.Count; i++)
+                {
+                    var current = (T)e.NewItems[i]!;
+                    var previous = (T)e.OldItems[i]!;
+                    var index = start < 0 ? -1 : start + i;
+                    if (index >= 0 && index < _shadow.Count)
+                    {
+                        _shadow[index] = current;
+                    }
+
+                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Replace, current, previous, index, -1));
+                }
+            }
+
+            /// <summary>Records a moved item in the shadow and the change list.</summary>
+            /// <param name="e">The collection-changed event arguments.</param>
+            /// <param name="changes">The change list being built.</param>
+            private void ApplyMove(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
+            {
+                if (e.NewItems is null)
+                {
+                    return;
+                }
+
+                var item = (T)e.NewItems[0]!;
+                if (e.OldStartingIndex >= 0 && e.OldStartingIndex < _shadow.Count)
+                {
+                    _shadow.RemoveAt(e.OldStartingIndex);
+                }
+
+                var index = e.NewStartingIndex < 0 ? _shadow.Count : e.NewStartingIndex;
+                _shadow.Insert(index, item);
+                changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Move, item, default, index, e.OldStartingIndex));
+            }
+
+            /// <summary>Translates a reset into one remove per prior item and clears the shadow.</summary>
+            /// <param name="changes">The change list being built.</param>
+            private void ApplyReset(List<ReactiveChange<T>> changes)
+            {
+                for (var i = 0; i < _shadow.Count; i++)
+                {
+                    changes.Add(new ReactiveChange<T>(ReactiveChangeReason.Remove, _shadow[i], default, i, -1));
+                }
+
+                _shadow.Clear();
+            }
+
+            /// <summary>Removes an item from the shadow by index when valid, otherwise by value.</summary>
+            /// <param name="index">The index to remove at, or -1 to remove by value.</param>
+            /// <param name="item">The item to remove by value when the index is unusable.</param>
+            private void RemoveFromShadow(int index, T item)
+            {
+                if (index >= 0 && index < _shadow.Count)
+                {
+                    _shadow.RemoveAt(index);
+                    return;
+                }
+
+                _shadow.Remove(item);
+            }
+        }
+    }
+}

@@ -1,13 +1,13 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 [assembly: NotInParallel]
 [assembly: TestExecutor<AppBuilderTestExecutor>]
+[assembly: System.Resources.NeutralResourcesLanguage("en-US")]
 
 namespace ReactiveUI.Tests;
 
@@ -20,12 +20,11 @@ public static class AssemblyHooks
     ///     Called before any tests in this assembly start.
     /// </summary>
     [Before(Assembly)]
-    public static void AssemblySetup()
-    {
+    public static void AssemblySetup() =>
+
         // Override ModeDetector to ensure we're detected as being in a unit test runner.
         // App builder initialization is handled per-test via AppBuilderTestExecutor.
         ModeDetector.OverrideModeDetector(new TestModeDetector());
-    }
 
     /// <summary>
     ///     Called after all tests in this assembly complete.
@@ -44,6 +43,7 @@ public static class AssemblyHooks
     /// </summary>
     private sealed class TestModeDetector : IModeDetector
     {
+        /// <inheritdoc/>
         public bool? InUnitTestRunner() => true;
     }
 }

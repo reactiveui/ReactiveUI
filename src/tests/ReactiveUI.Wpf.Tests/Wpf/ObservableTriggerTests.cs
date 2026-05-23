@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -20,6 +20,13 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class ObservableTriggerTests
 {
+    private const int InvokeSettleDelayMs = 100;
+    private const int DisposeSettleDelayMs = 50;
+    private const int MultiEmitSettleDelayMs = 150;
+    private const int MaxErrorsBeforeComplete = 3;
+    private const int ExpectedSubscriptionCount = 4;
+    private const int ExpectedInvokeCount = 3;
+
     /// <summary>
     /// Tests that the trigger invokes actions when the observable emits.
     /// </summary>
@@ -52,7 +59,7 @@ public class ObservableTriggerTests
         // Emit a value
         subject.OnNext(new object());
 
-        await Task.Delay(100);
+        await Task.Delay(InvokeSettleDelayMs);
 
         await Assert.That(actionInvoked).IsTrue();
     }
@@ -155,11 +162,11 @@ public class ObservableTriggerTests
 
         // Set first observable
         trigger.Observable = observable1;
-        await Task.Delay(50);
+        await Task.Delay(DisposeSettleDelayMs);
 
         // Set second observable (should dispose first)
         trigger.Observable = observable2;
-        await Task.Delay(50);
+        await Task.Delay(DisposeSettleDelayMs);
 
         await Assert.That(disposed1).IsTrue();
     }
@@ -185,7 +192,7 @@ public class ObservableTriggerTests
         trigger.Observable = Observable.Create<object>(observer =>
         {
             errorCount++;
-            if (errorCount <= 3)
+            if (errorCount <= MaxErrorsBeforeComplete)
             {
                 observer.OnError(new InvalidOperationException("Test error"));
             }
@@ -200,7 +207,7 @@ public class ObservableTriggerTests
         scheduler.Start();
 
         // Should have resubscribed 3 times (errored 3 times, then completed on 4th)
-        await Assert.That(errorCount).IsEqualTo(4);
+        await Assert.That(errorCount).IsEqualTo(ExpectedSubscriptionCount);
     }
 
     /// <summary>
@@ -265,15 +272,15 @@ public class ObservableTriggerTests
         subject.OnNext(new object());
         subject.OnNext(new object());
 
-        await Task.Delay(150);
+        await Task.Delay(MultiEmitSettleDelayMs);
 
-        await Assert.That(invokeCount).IsEqualTo(3);
+        await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCount);
     }
 
     /// <summary>
     /// Test action that can be customized.
     /// </summary>
-    private class TestAction : TriggerAction<DependencyObject>
+    private sealed class TestAction : TriggerAction<DependencyObject>
     {
         /// <summary>
         /// Gets or sets the action to invoke.

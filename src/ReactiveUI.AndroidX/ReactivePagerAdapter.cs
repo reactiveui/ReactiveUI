@@ -1,14 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using Android.Views;
-
 using AndroidX.ViewPager.Widget;
-
 using DynamicData;
-
 using Object = Java.Lang.Object;
 
 namespace ReactiveUI.AndroidX;
@@ -21,10 +18,29 @@ namespace ReactiveUI.AndroidX;
 public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     where TViewModel : class
 {
+    /// <summary>The backing list of view models that drives the adapter.</summary>
     private readonly SourceList<TViewModel> _list;
+
+    /// <summary>Creates the view for a given view model.</summary>
     private readonly Func<TViewModel, ViewGroup, View> _viewCreator;
+
+    /// <summary>Optional initializer invoked for each created view.</summary>
     private readonly Action<TViewModel, View>? _viewInitializer;
+
+    /// <summary>Subscription that keeps the adapter in sync with the change set.</summary>
     private readonly IDisposable _inner;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
+    /// </summary>
+    /// <param name="changeSet">The change set to page.</param>
+    /// <param name="viewCreator">A function which will create the view.</param>
+    public ReactivePagerAdapter(
+        IObservable<IChangeSet<TViewModel>> changeSet,
+        Func<TViewModel, ViewGroup, View> viewCreator)
+        : this(changeSet, viewCreator, null)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
@@ -35,9 +51,9 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     public ReactivePagerAdapter(
         IObservable<IChangeSet<TViewModel>> changeSet,
         Func<TViewModel, ViewGroup, View> viewCreator,
-        Action<TViewModel, View>? viewInitializer = null)
+        Action<TViewModel, View>? viewInitializer)
     {
-        _list = new SourceList<TViewModel>(changeSet);
+        _list = new(changeSet);
         _viewCreator = viewCreator;
         _viewInitializer = viewInitializer;
 
@@ -48,7 +64,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     public override int Count => _list.Count;
 
     /// <inheritdoc/>
-    public override bool IsViewFromObject(View view, Object @object) => (View)@object == view;
+    public override bool IsViewFromObject(View view, Object @object) => view.Equals(@object);
 
     /// <inheritdoc/>
     public override Object InstantiateItem(ViewGroup container, int position)

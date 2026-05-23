@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,6 +16,12 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class CommandBindingImplementationTests
 {
+    private const int InitialParameter = 2;
+    private const int ExpectedSingleParameterResult = 10;
+    private const int ExpectedDoubleParameterResult = 20;
+    private const int ExpectedRebindParameterResult = 4;
+    private const int ExpectedInvokeCountTwo = 2;
+
     /// <summary>
     /// Tests the command bind by name wireup.
     /// </summary>
@@ -44,6 +50,10 @@ public class CommandBindingImplementationTests
         disp.Dispose();
     }
 
+    /// <summary>
+    /// Tests the command bind by name wireup with a parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindByNameWireupWithParameter()
     {
@@ -60,32 +70,36 @@ public class CommandBindingImplementationTests
         using (Assert.Multiple())
         {
             await Assert.That(invokeCount).IsEqualTo(1);
-            await Assert.That(vm.ParameterResult).IsEqualTo(10);
+            await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedSingleParameterResult);
         }
 
         // update the parameter to ensure its updated when the command is executed
-        vm.Parameter = 2;
+        vm.Parameter = InitialParameter;
         view.Command1.PerformClick();
         using (Assert.Multiple())
         {
-            await Assert.That(invokeCount).IsEqualTo(2);
-            await Assert.That(vm.ParameterResult).IsEqualTo(20);
+            await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCountTwo);
+            await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedDoubleParameterResult);
         }
 
         // break the Command3 subscription
-        vm.Command3 = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * 2);
+        vm.Command3 = ReactiveCommand.Create<int>(i => vm.ParameterResult = i * InitialParameter);
 
         // ensure that the invoke count does not update and that the Command3 is now using the new math
         view.Command1.PerformClick();
         using (Assert.Multiple())
         {
-            await Assert.That(invokeCount).IsEqualTo(2);
-            await Assert.That(vm.ParameterResult).IsEqualTo(4);
+            await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCountTwo);
+            await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedRebindParameterResult);
         }
 
         disp.Dispose();
     }
 
+    /// <summary>
+    /// Tests the command bind to an explicit event wireup with a parameter.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindToExplicitEventWireupWithParameter()
     {
@@ -101,21 +115,21 @@ public class CommandBindingImplementationTests
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
         using (Assert.Multiple())
         {
-            await Assert.That(vm.ParameterResult).IsEqualTo(10);
+            await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedSingleParameterResult);
             await Assert.That(invokeCount).IsEqualTo(1);
         }
 
-        vm.Parameter = 2;
+        vm.Parameter = InitialParameter;
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
         using (Assert.Multiple())
         {
-            await Assert.That(vm.ParameterResult).IsEqualTo(20);
-            await Assert.That(invokeCount).IsEqualTo(2);
+            await Assert.That(vm.ParameterResult).IsEqualTo(ExpectedDoubleParameterResult);
+            await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCountTwo);
         }
 
         disp.Dispose();
 
         view.Command2.RaiseMouseUpEvent(new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-        await Assert.That(invokeCount).IsEqualTo(2);
+        await Assert.That(invokeCount).IsEqualTo(ExpectedInvokeCountTwo);
     }
 }

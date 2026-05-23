@@ -354,7 +354,9 @@
 
                                 <VisualState x:Name="Transition_BounceLeftIn">
                                     <Storyboard x:Name="BounceLeftIn">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
@@ -364,12 +366,15 @@
                                             </EasingDoubleKeyFrame>
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0" />
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite"
+                                                                       Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -389,7 +394,9 @@
                                             To="-90"
                                             Duration="00:00:00.2" />
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -401,7 +408,9 @@
 
                                 <VisualState x:Name="Transition_BounceRightIn">
                                     <Storyboard x:Name="BounceRightIn">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.X)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
@@ -411,12 +420,15 @@
                                             </EasingDoubleKeyFrame>
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0" />
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite"
+                                                                       Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -436,7 +448,9 @@
                                             To="-90"
                                             Duration="00:00:00.2" />
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -448,7 +462,9 @@
 
                                 <VisualState x:Name="Transition_BounceUpIn">
                                     <Storyboard x:Name="BounceUpIn">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
@@ -458,12 +474,15 @@
                                             </EasingDoubleKeyFrame>
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0" />
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite"
+                                                                       Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -483,7 +502,9 @@
                                             To="-90"
                                             Duration="00:00:00.2" />
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -495,7 +516,9 @@
 
                                 <VisualState x:Name="Transition_BounceDownIn">
                                     <Storyboard x:Name="BounceDownIn">
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[1].(TranslateTransform.Y)">
                                             <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.4" Value="-90" />
                                             <EasingDoubleKeyFrame KeyTime="00:00:00.7" Value="0">
@@ -505,12 +528,15 @@
                                             </EasingDoubleKeyFrame>
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Opacity)">
+                                        <DoubleAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Opacity)">
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00" Value="0" />
                                             <DiscreteDoubleKeyFrame KeyTime="00:00:00.4" Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_PreviousImageSite"
+                                                                       Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>
@@ -530,7 +556,9 @@
                                             To="-90"
                                             Duration="00:00:00.2" />
 
-                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_CurrentContentPresentationSite" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                        <ObjectAnimationUsingKeyFrames
+                                            Storyboard.TargetName="PART_CurrentContentPresentationSite"
+                                            Storyboard.TargetProperty="(UIElement.Visibility)">
                                             <DiscreteObjectKeyFrame KeyTime="00:00:00">
                                                 <DiscreteObjectKeyFrame.Value>
                                                     <Visibility>Collapsed</Visibility>

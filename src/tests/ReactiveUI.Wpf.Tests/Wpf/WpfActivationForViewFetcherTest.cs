@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -14,10 +14,22 @@ using Splat;
 
 namespace ReactiveUI.Tests.Wpf;
 
+/// <summary>
+/// Tests for the WPF activation-for-view fetcher.
+/// </summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class WpfActivationForViewFetcherTest
 {
+    private static readonly bool[] _expectedActivated = [true];
+    private static readonly bool[] _expectedActivatedDeactivated = [true, false];
+    private static readonly bool[] _expectedActivatedDeactivatedActivated = [true, false, true];
+    private static readonly bool[] _expectedActivatedDeactivatedActivatedDeactivated = [true, false, true, false];
+
+    /// <summary>
+    /// Verifies a framework element is activated on load and deactivated on unload.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task GetIsDesignModeReturnsFalseForRuntimeWpfView()
@@ -141,7 +153,7 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -150,9 +162,13 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies that making a loaded element hit-test visible does not re-raise activation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsHitTestVisibleActivatesFrameworkElement()
     {
@@ -173,12 +189,12 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(loaded);
 
         // Loaded has happened.
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = true;
 
         // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -188,9 +204,13 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(unloaded);
 
         // We had both a loaded/hit test visible change/unloaded happen.
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies that clearing hit-test visibility deactivates a loaded element.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsHitTestVisibleDeactivatesFrameworkElement()
     {
@@ -207,13 +227,17 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = false;
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies activation and deactivation toggle correctly as hit-test visibility changes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task FrameworkElementIsActivatedAndDeactivatedWithHitTest()
     {
@@ -230,17 +254,17 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         // this should deactivate it
         uc.IsHitTestVisible = false;
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
 
         // this should activate it
         uc.IsHitTestVisible = true;
 
-        await new[] { true, false, true }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivatedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -249,7 +273,7 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        await new[] { true, false, true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivatedActivatedDeactivated.AssertAreEqual(activated);
     }
 
     private sealed class DesignModeActivatableUserControl : UserControl, IActivatableView

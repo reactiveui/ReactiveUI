@@ -1,10 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using AndroidX.RecyclerView.Widget;
-
 using DynamicData;
 
 namespace ReactiveUI.AndroidX;
@@ -16,8 +15,14 @@ namespace ReactiveUI.AndroidX;
 public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
     where TViewModel : class, IReactiveObject
 {
+    /// <summary>
+    /// The source list that backs the adapter.
+    /// </summary>
     private readonly SourceList<TViewModel> _list;
 
+    /// <summary>
+    /// The subscription that keeps the bindings in sync with the source list.
+    /// </summary>
     private readonly IDisposable _inner;
 
     /// <summary>
@@ -26,12 +31,12 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     /// <param name="backingList">The backing list.</param>
     protected ReactiveRecyclerViewAdapter(IObservable<IChangeSet<TViewModel>> backingList)
     {
-        _list = new SourceList<TViewModel>(backingList);
+        _list = new(backingList);
 
         _inner = _list
-                 .Connect()
-                 .ForEachChange(UpdateBindings)
-                 .Subscribe();
+            .Connect()
+            .ForEachChange(UpdateBindings)
+            .Subscribe();
     }
 
     /// <inheritdoc/>
@@ -74,32 +79,58 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Gets the view model at the specified position, or null if the position is out of range.
+    /// </summary>
+    /// <param name="position">The position in the list.</param>
+    /// <returns>The view model at the position, or null.</returns>
     private TViewModel? GetViewModelByPosition(int position) => position >= _list.Count ? null : _list.Items[position];
 
+    /// <summary>
+    /// Updates the adapter bindings in response to a change in the source list.
+    /// </summary>
+    /// <param name="change">The change to apply.</param>
     private void UpdateBindings(Change<TViewModel> change)
     {
         switch (change.Reason)
         {
             case ListChangeReason.Add:
-                NotifyItemInserted(change.Item.CurrentIndex);
-                break;
+                {
+                    NotifyItemInserted(change.Item.CurrentIndex);
+                    break;
+                }
+
             case ListChangeReason.Remove:
-                NotifyItemRemoved(change.Item.CurrentIndex);
-                break;
+                {
+                    NotifyItemRemoved(change.Item.CurrentIndex);
+                    break;
+                }
+
             case ListChangeReason.Moved:
-                NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
-                break;
+                {
+                    NotifyItemMoved(change.Item.PreviousIndex, change.Item.CurrentIndex);
+                    break;
+                }
+
             case ListChangeReason.Replace:
             case ListChangeReason.Refresh:
-                NotifyItemChanged(change.Item.CurrentIndex);
-                break;
+                {
+                    NotifyItemChanged(change.Item.CurrentIndex);
+                    break;
+                }
+
             case ListChangeReason.AddRange:
-                NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
-                break;
+                {
+                    NotifyItemRangeInserted(change.Range.Index, change.Range.Count);
+                    break;
+                }
+
             case ListChangeReason.RemoveRange:
             case ListChangeReason.Clear:
-                NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
-                break;
+                {
+                    NotifyItemRangeRemoved(change.Range.Index, change.Range.Count);
+                    break;
+                }
         }
     }
 }

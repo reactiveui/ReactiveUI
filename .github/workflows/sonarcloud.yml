@@ -1,0 +1,35 @@
+name: SonarCloud
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
+
+permissions:
+    contents: read
+
+jobs:
+    sonarcloud:
+        uses: reactiveui/actions-common/.github/workflows/workflow-common-sonarcloud.yml@main
+        with:
+            productNamespacePrefix: ReactiveUI
+            installWorkloads: true
+            versioningTool: minver
+            minverMinimumMajorMinor: '23.2'
+            sonarProjectKey: reactiveui_ReactiveUI
+            sonarOrganization: reactiveui
+            sonarExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/TestResults/**'
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
+            # WhenAny{Value,Change}Sink.Arity{N}.cs, WhenAnyMixin.Arity{N}.cs and
+            # WhenAnyObservableMixin.Arity{N}.cs are template-style arity-specific files: the
+            # residual duplication is the irreducible per-arity typed surface (N typed fields,
+            # N constructor params, N switch arms). Compressing further would need source
+            # generators or boxing-based erasure; suppressing CPD here keeps the metric honest
+            # while every other Sonar rule still runs on them. Sonar path matchers only support
+            # *, **, ? — use ? twice to cover 1- and 2-digit arities.
+            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/*.Arity?.cs,**/*.Arity??.cs'
+            sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**'
+            testTimeout: '15m'
+        secrets:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

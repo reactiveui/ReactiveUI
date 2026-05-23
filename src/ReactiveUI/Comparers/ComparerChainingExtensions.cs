@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -25,7 +25,8 @@ public static class ComparerChainingExtensions
     /// A function supplying the values for the comparer.
     /// </param>
     /// <returns>A comparer.</returns>
-    public static IComparer<T> ThenBy<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector) => ThenBy(parent, selector, Comparer<TValue>.Default);
+    public static IComparer<T> ThenBy<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector) =>
+        ThenBy(parent, selector, Comparer<TValue>.Default);
 
     /// <summary>
     /// Creates a derived comparer based on the given parent comparer. The returned comparer will sort elements
@@ -46,7 +47,11 @@ public static class ComparerChainingExtensions
     /// The comparer to use when comparing the values returned by the selector.
     /// </param>
     /// <returns>A comparer.</returns>
-    public static IComparer<T> ThenBy<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector, IComparer<TValue> comparer) => new ChainedComparer<T>(parent, (x, y) => comparer.Compare(selector(x), selector(y)));
+    public static IComparer<T> ThenBy<T, TValue>(
+        this IComparer<T>? parent,
+        Func<T, TValue> selector,
+        IComparer<TValue> comparer) =>
+        new ChainedComparer<T>(parent, (x, y) => comparer.Compare(selector(x), selector(y)));
 
     /// <summary>
     /// Creates a derived comparer based on the given parent comparer. The returned comparer will sort elements
@@ -63,7 +68,8 @@ public static class ComparerChainingExtensions
     /// A function supplying the values for the comparer.
     /// </param>
     /// <returns>A comparer.</returns>
-    public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector) => ThenByDescending(parent, selector, Comparer<TValue>.Default);
+    public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector) =>
+        ThenByDescending(parent, selector, Comparer<TValue>.Default);
 
     /// <summary>
     /// Creates a derived comparer based on the given parent comparer. The returned comparer will sort elements
@@ -84,5 +90,9 @@ public static class ComparerChainingExtensions
     /// The comparer to use when comparing the values returned by the selector.
     /// </param>
     /// <returns>A comparer.</returns>
-    public static IComparer<T> ThenByDescending<T, TValue>(this IComparer<T>? parent, Func<T, TValue> selector, IComparer<TValue> comparer) => new ChainedComparer<T>(parent, (x, y) => -comparer.Compare(selector(x), selector(y)));
+    public static IComparer<T> ThenByDescending<T, TValue>(
+        this IComparer<T>? parent,
+        Func<T, TValue> selector,
+        IComparer<TValue> comparer) =>
+        new ChainedComparer<T>(parent, (x, y) => -comparer.Compare(selector(x), selector(y)));
 }

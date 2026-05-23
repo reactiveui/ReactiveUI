@@ -1,16 +1,21 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
-
 namespace ReactiveUI.Tests.Resolvers;
 
+/// <summary>
+/// Tests for <see cref="POCOObservableForProperty"/>.
+/// </summary>
 [NotInParallel]
 [TestExecutor<WithSchedulerExecutor>]
 public class PocoObservableForPropertyTests
 {
+    /// <summary>
+    /// Verifies that the affinity value returned for POCO and INPC types is correct.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task CheckGetAffinityForObjectValues()
     {
@@ -24,11 +29,15 @@ public class PocoObservableForPropertyTests
                     nameof(PocoType.Property1))).IsEqualTo(1);
             await Assert.That(
                 instance.GetAffinityForObject(
-                    typeof(INPCClass),
+                    typeof(InpcClass),
                     "SomeProperty")).IsEqualTo(1);
         }
     }
 
+    /// <summary>
+    /// Verifies that the observable emits a single value for a POCO and then completes via timeout.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task GetNotificationForPropertyNeverCompletes()
@@ -50,11 +59,9 @@ public class PocoObservableForPropertyTests
         var results = new List<IObservedChange<object, object?>>();
         var completed = false;
 
-        observable
-            .Take(TimeSpan.FromMilliseconds(100), scheduler)
-            .Subscribe(
-                results.Add,
-                () => completed = true);
+        observable.Take(TimeSpan.FromMilliseconds(100), scheduler).Subscribe(
+            results.Add,
+            () => completed = true);
 
         // Advance virtual time to trigger the Take timeout
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
@@ -67,6 +74,10 @@ public class PocoObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that the POCO warning is only emitted once per type and property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForPropertyOnlyWarnsOnce()
     {
@@ -90,6 +101,10 @@ public class PocoObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that a non-null observable is returned for a POCO property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForPropertyReturnsObservable()
     {
@@ -102,6 +117,10 @@ public class PocoObservableForPropertyTests
         await Assert.That(observable).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that the observable emits a single value whose sender is the POCO instance.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForPropertyReturnsSingleValue()
     {
@@ -119,6 +138,9 @@ public class PocoObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that a null sender causes an <see cref="ArgumentNullException"/> to be thrown.
+    /// </summary>
     [Test]
     public void GetNotificationForPropertyThrowsOnNullSender()
     {
@@ -129,6 +151,10 @@ public class PocoObservableForPropertyTests
             instance.GetNotificationForProperty(null!, expr.Body, nameof(PocoType.Property1), false, true));
     }
 
+    /// <summary>
+    /// Verifies that a value is emitted when the before-changed parameter is set.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForPropertyWithBeforeChangedParameter()
     {
@@ -142,6 +168,10 @@ public class PocoObservableForPropertyTests
         await Assert.That(result).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that notifications can be obtained independently for different properties of the same POCO.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetNotificationForPropertyWithDifferentProperties()
     {
@@ -175,19 +205,37 @@ public class PocoObservableForPropertyTests
         }
     }
 
-    private class INPCClass : INotifyPropertyChanged
+    /// <summary>
+    /// A test fixture implementing <see cref="INotifyPropertyChanged"/> used to verify affinity handling.
+    /// </summary>
+    private sealed class InpcClass : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
+        /// </summary>
         public void NotifyPropertyChanged() => PropertyChanged?.Invoke(
             this,
-            new PropertyChangedEventArgs(string.Empty));
+            new(string.Empty));
     }
 
-    private class PocoType
+    /// <summary>
+    /// A plain-old CLR object test fixture with no change notification support.
+    /// </summary>
+    private sealed class PocoType
     {
+        /// <summary>
+        /// Gets or sets the first test property.
+        /// </summary>
         public string? Property1 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the second test property.
+        /// </summary>
         public string? Property2 { get; set; }
     }
 }

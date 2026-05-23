@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -78,21 +78,37 @@ public class ValidationBindingMixinsTest
         }
     }
 
-    private class TestView : Control, IViewFor<TestViewModel>
+    /// <summary>
+    /// A mock view used by the validation binding mixin tests.
+    /// </summary>
+    private sealed class TestView : Control, IViewFor<TestViewModel>
     {
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = value as TestViewModel;
         }
 
+        /// <summary>
+        /// Gets the control used as a binding target.
+        /// </summary>
         public Control TestControl { get; } = new();
     }
 
-    private class TestViewModel
+    /// <summary>
+    /// A mock view model used by the validation binding mixin tests.
+    /// </summary>
+    private sealed class TestViewModel
     {
+        /// <summary>
+        /// Gets or sets a sample property.
+        /// </summary>
         public string? TestProperty { get; set; }
     }
 }

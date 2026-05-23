@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -17,6 +17,15 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public class ObservableCollectionChangedToListChangedTransformerTest
 {
+    private const int ResetIndex = -1;
+    private const int Two = 2;
+    private const int Three = 3;
+    private const int Four = 4;
+    private const int Five = 5;
+    private const int Six = 6;
+    private const int Seven = 7;
+    private const int Eight = 8;
+
     /// <summary>
     /// Tests that Reset action produces ListChangedType.Reset.
     /// </summary>
@@ -30,7 +39,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0].ListChangedType).IsEqualTo(ListChangedType.Reset);
-        await Assert.That(results[0].NewIndex).IsEqualTo(-1);
+        await Assert.That(results[0].NewIndex).IsEqualTo(ResetIndex);
     }
 
     /// <summary>
@@ -44,13 +53,13 @@ public class ObservableCollectionChangedToListChangedTransformerTest
             NotifyCollectionChangedAction.Replace,
             newItem: "new",
             oldItem: "old",
-            index: 2);
+            index: Two);
 
         var results = eventArgs.AsListChangedEventArgs().ToList();
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0].ListChangedType).IsEqualTo(ListChangedType.ItemChanged);
-        await Assert.That(results[0].NewIndex).IsEqualTo(2);
+        await Assert.That(results[0].NewIndex).IsEqualTo(Two);
     }
 
     /// <summary>
@@ -64,15 +73,15 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         var eventArgs = new NotifyCollectionChangedEventArgs(
             NotifyCollectionChangedAction.Remove,
             removedItems,
-            startingIndex: 5);
+            startingIndex: Five);
 
         var results = eventArgs.AsListChangedEventArgs().ToList();
 
-        await Assert.That(results).Count().IsEqualTo(3);
+        await Assert.That(results).Count().IsEqualTo(Three);
         await Assert.That(results[0].ListChangedType).IsEqualTo(ListChangedType.ItemDeleted);
-        await Assert.That(results[0].NewIndex).IsEqualTo(5);
-        await Assert.That(results[1].NewIndex).IsEqualTo(6);
-        await Assert.That(results[2].NewIndex).IsEqualTo(7);
+        await Assert.That(results[0].NewIndex).IsEqualTo(Five);
+        await Assert.That(results[1].NewIndex).IsEqualTo(Six);
+        await Assert.That(results[Two].NewIndex).IsEqualTo(Seven);
     }
 
     /// <summary>
@@ -86,14 +95,14 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         var eventArgs = new NotifyCollectionChangedEventArgs(
             NotifyCollectionChangedAction.Add,
             addedItems,
-            startingIndex: 3);
+            startingIndex: Three);
 
         var results = eventArgs.AsListChangedEventArgs().ToList();
 
-        await Assert.That(results).Count().IsEqualTo(2);
+        await Assert.That(results).Count().IsEqualTo(Two);
         await Assert.That(results[0].ListChangedType).IsEqualTo(ListChangedType.ItemAdded);
-        await Assert.That(results[0].NewIndex).IsEqualTo(3);
-        await Assert.That(results[1].NewIndex).IsEqualTo(4);
+        await Assert.That(results[0].NewIndex).IsEqualTo(Three);
+        await Assert.That(results[1].NewIndex).IsEqualTo(Four);
     }
 
     /// <summary>
@@ -107,15 +116,15 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         var eventArgs = new NotifyCollectionChangedEventArgs(
             NotifyCollectionChangedAction.Move,
             movedItems,
-            index: 8,
-            oldIndex: 2);
+            index: Eight,
+            oldIndex: Two);
 
         var results = eventArgs.AsListChangedEventArgs().ToList();
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0].ListChangedType).IsEqualTo(ListChangedType.ItemMoved);
-        await Assert.That(results[0].NewIndex).IsEqualTo(8);
-        await Assert.That(results[0].OldIndex).IsEqualTo(2);
+        await Assert.That(results[0].NewIndex).IsEqualTo(Eight);
+        await Assert.That(results[0].OldIndex).IsEqualTo(Two);
     }
 
     /// <summary>
@@ -128,7 +137,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         // Create a NotifyCollectionChangedEventArgs with Remove action but empty list
         var eventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, Array.Empty<string>(), 0);
 
-        var results = ObservableCollectionChangedToListChangedTransformer.AsListChangedEventArgs(eventArgs).ToList();
+        var results = eventArgs.AsListChangedEventArgs().ToList();
 
         await Assert.That(results).IsEmpty();
     }
@@ -143,7 +152,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         // Create a NotifyCollectionChangedEventArgs with Add action but empty list
         var eventArgs = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, Array.Empty<string>(), 0);
 
-        var results = ObservableCollectionChangedToListChangedTransformer.AsListChangedEventArgs(eventArgs).ToList();
+        var results = eventArgs.AsListChangedEventArgs().ToList();
 
         await Assert.That(results).IsEmpty();
     }

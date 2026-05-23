@@ -1,7 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Linq.Expressions;
 
 namespace ReactiveUI;
 
@@ -28,14 +30,13 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
         var hooks = AppLocator.Current.GetServices<IPropertyBindingHook>();
         ArgumentExceptionHelper.ThrowIfNull(view);
 
-        // Compile chains once for hook evaluation.
         var vmChainGetter = vmExpression != null
             ? new Reflection.CompiledPropertyChain<object?, object?>([.. vmExpression.GetExpressionChain()])
             : null;
-        var viewChainGetter = new Reflection.CompiledPropertyChain<TView, object?>([.. viewExpression.GetExpressionChain()]);
+        Reflection.CompiledPropertyChain<TView, object?> viewChainGetter = new([.. viewExpression.GetExpressionChain()]);
 
         Func<IObservedChange<object, object?>[]> vmFetcher = vmExpression is not null
-            ? (() =>
+            ? () =>
             {
                 if (viewModel is null)
                 {
@@ -44,16 +45,15 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
 
                 vmChainGetter!.TryGetAllValues(viewModel, out var fetchedValues);
                 return fetchedValues;
-            })
-            : (() => [new ObservedChange<object, object?>(null!, null, viewModel)]);
+            }
+            : () => [new ObservedChange<object, object?>(null!, null, viewModel)];
 
-        Func<IObservedChange<object, object?>[]> vFetcher = () =>
+        var vFetcher = () =>
         {
             viewChainGetter.TryGetAllValues(view, out var fetchedValues);
             return fetchedValues;
         };
 
-        // Replace Aggregate with a loop to avoid enumerator overhead and closures.
         var shouldBind = true;
         foreach (var hook in hooks)
         {
@@ -62,7 +62,7 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
                 continue;
             }
 
-            if (!hook.ExecuteHook(viewModel, view!, vmFetcher!, vFetcher!, direction))
+            if (!hook.ExecuteHook(viewModel, view, vmFetcher!, vFetcher!, direction))
             {
                 shouldBind = false;
                 break;

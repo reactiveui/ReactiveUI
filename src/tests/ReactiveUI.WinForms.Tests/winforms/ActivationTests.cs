@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,6 +16,9 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class ActivationTests
 {
+    private const int ExpectedAffinity = 10;
+    private const int ExpectedSecondCount = 2;
+
     /// <summary>
     /// Tests activations for view fetcher supports default winforms components.
     /// </summary>
@@ -26,7 +29,7 @@ public class ActivationTests
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
         foreach (var c in new[] { typeof(Control), typeof(UserControl), typeof(Form) })
         {
-            await Assert.That(target.GetAffinityForView(c)).IsEqualTo(10);
+            await Assert.That(target.GetAffinityForView(c)).IsEqualTo(ExpectedAffinity);
         }
     }
 
@@ -66,45 +69,44 @@ public class ActivationTests
     public async Task SmokeTestWindowsForm()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
-        using (var form = new TestForm())
+        using var form = new TestForm();
+        var formActivator = target.GetActivationForView(form);
+
+        var formActivateCount = 0;
+        var formDeActivateCount = 0;
+        formActivator.Subscribe(activated =>
         {
-            var formActivator = target.GetActivationForView(form);
-
-            int formActivateCount = 0, formDeActivateCount = 0;
-            formActivator.Subscribe(activated =>
+            if (activated)
             {
-                if (activated)
-                {
-                    formActivateCount++;
-                }
-                else
-                {
-                    formDeActivateCount++;
-                }
-            });
-
-            using (Assert.Multiple())
-            {
-                await Assert.That(formActivateCount).IsEqualTo(0);
-                await Assert.That(formDeActivateCount).IsEqualTo(0);
+                formActivateCount++;
             }
-
-            form.Visible = true;
-            await Assert.That(formActivateCount).IsEqualTo(1);
-
-            form.Visible = false;
-            using (Assert.Multiple())
+            else
             {
-                await Assert.That(formActivateCount).IsEqualTo(1);
-                await Assert.That(formDeActivateCount).IsEqualTo(1);
+                formDeActivateCount++;
             }
+        });
 
-            form.Visible = true;
-            await Assert.That(formActivateCount).IsEqualTo(2);
-
-            form.Close();
-            await Assert.That(formDeActivateCount).IsEqualTo(2);
+        using (Assert.Multiple())
+        {
+            await Assert.That(formActivateCount).IsEqualTo(0);
+            await Assert.That(formDeActivateCount).IsEqualTo(0);
         }
+
+        form.Visible = true;
+        await Assert.That(formActivateCount).IsEqualTo(1);
+
+        form.Visible = false;
+        using (Assert.Multiple())
+        {
+            await Assert.That(formActivateCount).IsEqualTo(1);
+            await Assert.That(formDeActivateCount).IsEqualTo(1);
+        }
+
+        form.Visible = true;
+        await Assert.That(formActivateCount).IsEqualTo(ExpectedSecondCount);
+
+        form.Close();
+        await Assert.That(formDeActivateCount).IsEqualTo(ExpectedSecondCount);
     }
 
     /// <summary>
@@ -115,38 +117,37 @@ public class ActivationTests
     public async Task SmokeTestUserControl()
     {
         var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
-        using (var userControl = new TestControl())
-        using (var parent = new TestForm())
+        using var userControl = new TestControl();
+        using var parent = new TestForm();
+        var userControlActivator = target.GetActivationForView(userControl);
+
+        var userControlActivateCount = 0;
+        var userControlDeActivateCount = 0;
+        userControlActivator.Subscribe(activated =>
         {
-            var userControlActivator = target.GetActivationForView(userControl);
-
-            int userControlActivateCount = 0, userControlDeActivateCount = 0;
-            userControlActivator.Subscribe(activated =>
+            if (activated)
             {
-                if (activated)
-                {
-                    userControlActivateCount++;
-                }
-                else
-                {
-                    userControlDeActivateCount++;
-                }
-            });
+                userControlActivateCount++;
+            }
+            else
+            {
+                userControlDeActivateCount++;
+            }
+        });
 
-            parent.Visible = true;
-            parent.Controls.Add(userControl);
+        parent.Visible = true;
+        parent.Controls.Add(userControl);
 
-            userControl.Visible = true;
-            await Assert.That(userControlActivateCount).IsEqualTo(1);
-            userControl.Visible = false;
-            await Assert.That(userControlDeActivateCount).IsEqualTo(1);
+        userControl.Visible = true;
+        await Assert.That(userControlActivateCount).IsEqualTo(1);
+        userControl.Visible = false;
+        await Assert.That(userControlDeActivateCount).IsEqualTo(1);
 
-            userControl.Visible = true;
-            await Assert.That(userControlActivateCount).IsEqualTo(2);
+        userControl.Visible = true;
+        await Assert.That(userControlActivateCount).IsEqualTo(ExpectedSecondCount);
 
-            // closing the form deactivated the usercontrol
-            parent.Close();
-            await Assert.That(userControlDeActivateCount).IsEqualTo(2);
-        }
+        // closing the form deactivated the usercontrol
+        parent.Close();
+        await Assert.That(userControlDeActivateCount).IsEqualTo(ExpectedSecondCount);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -19,6 +19,10 @@ namespace ReactiveUI.Tests.Wpf;
 [NotInParallel]
 public class WpfActiveContentTests
 {
+    private const int TwoItems = 2;
+    private const int ThreeItems = 3;
+    private const int SaveResultValue = 2;
+    private const int InvalidateResultValue = 3;
 
     /// <summary>
     /// Validates binding logic for a list-backed view.
@@ -49,9 +53,9 @@ public class WpfActiveContentTests
         vm.ActiveListItem.Add(test2);
         using (Assert.Multiple())
         {
-            await Assert.That(vm.ListItems.Count).IsEqualTo(2);
+            await Assert.That(vm.ListItems.Count).IsEqualTo(TwoItems);
             await Assert.That(vm.ActiveItem).IsEqualTo(test2);
-            await Assert.That(view.ItemList.Items.Count).IsEqualTo(2);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(TwoItems);
         }
 
         // Test 3: Add third item
@@ -59,9 +63,9 @@ public class WpfActiveContentTests
         vm.ActiveListItem.Add(test3);
         using (Assert.Multiple())
         {
-            await Assert.That(vm.ListItems.Count).IsEqualTo(3);
+            await Assert.That(vm.ListItems.Count).IsEqualTo(ThreeItems);
             await Assert.That(vm.ActiveItem).IsEqualTo(test3);
-            await Assert.That(view.ItemList.Items.Count).IsEqualTo(3);
+            await Assert.That(view.ItemList.Items.Count).IsEqualTo(ThreeItems);
         }
 
         // Test 4: Select first item (should trigger command that removes items after it)
@@ -156,17 +160,24 @@ public class WpfActiveContentTests
         int? saveResult = null;
         int? invalidateResult = null;
         dsd.LoadState().Select(static _ => 1).Subscribe(v => loadResult = v);
-        dsd.SaveState("Save Me").Select(static _ => 2).Subscribe(v => saveResult = v);
-        dsd.InvalidateState().Select(static _ => 3).Subscribe(v => invalidateResult = v);
+        dsd.SaveState("Save Me").Select(static _ => SaveResultValue).Subscribe(v => saveResult = v);
+        dsd.InvalidateState().Select(static _ => InvalidateResultValue).Subscribe(v => invalidateResult = v);
         await Assert.That(loadResult).IsEqualTo(1);
-        await Assert.That(saveResult).IsEqualTo(2);
-        await Assert.That(invalidateResult).IsEqualTo(3);
+        await Assert.That(saveResult).IsEqualTo(SaveResultValue);
+        await Assert.That(invalidateResult).IsEqualTo(InvalidateResultValue);
     }
 
+    /// <summary>
+    /// A test executor that registers the default, ContractA and ContractB views.
+    /// </summary>
     public class ViewBRegisteredExecutor : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
+        /// <inheritdoc/>
         protected override void Initialize()
         {
             base.Initialize();
@@ -184,6 +195,7 @@ public class WpfActiveContentTests
             });
         }
 
+        /// <inheritdoc/>
         protected override void CleanUp()
         {
             _helper.CleanUp();
@@ -191,10 +203,17 @@ public class WpfActiveContentTests
         }
     }
 
+    /// <summary>
+    /// A test executor that registers the default and ContractA views to test fallback resolution.
+    /// </summary>
     public class View0FallbackExecutor : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
+        /// <inheritdoc/>
         protected override void Initialize()
         {
             base.Initialize();
@@ -211,6 +230,7 @@ public class WpfActiveContentTests
             });
         }
 
+        /// <inheritdoc/>
         protected override void CleanUp()
         {
             _helper.CleanUp();
@@ -218,10 +238,17 @@ public class WpfActiveContentTests
         }
     }
 
+    /// <summary>
+    /// A test executor that registers the default and ContractA views for bypass-resolution tests.
+    /// </summary>
     public class NoneWithBypassExecutor : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
+        /// <inheritdoc/>
         protected override void Initialize()
         {
             base.Initialize();
@@ -238,6 +265,7 @@ public class WpfActiveContentTests
             });
         }
 
+        /// <inheritdoc/>
         protected override void CleanUp()
         {
             _helper.CleanUp();
@@ -245,10 +273,17 @@ public class WpfActiveContentTests
         }
     }
 
+    /// <summary>
+    /// A test executor that registers the default, ContractA and ContractB views.
+    /// </summary>
     public class ExecutorBIfViewBIsRegistered : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
+        /// <inheritdoc/>
         protected override void Initialize()
         {
             base.Initialize();
@@ -266,6 +301,7 @@ public class WpfActiveContentTests
             });
         }
 
+        /// <inheritdoc/>
         protected override void CleanUp()
         {
             _helper.CleanUp();

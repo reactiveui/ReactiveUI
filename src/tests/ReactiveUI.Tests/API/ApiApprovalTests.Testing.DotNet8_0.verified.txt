@@ -1,4 +1,4 @@
-﻿namespace ReactiveUI.Testing
+namespace ReactiveUI.Testing
 {
     public abstract class AppBuilderTestBase
     {

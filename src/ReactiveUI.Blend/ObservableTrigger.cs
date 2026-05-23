@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
 using System.Windows;
-
 using Microsoft.Xaml.Behaviors;
 
 namespace ReactiveUI.Blend;
@@ -19,8 +18,13 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// The dependency property registration for the Observable property.
     /// </summary>
     public static readonly DependencyProperty ObservableProperty =
-        DependencyProperty.Register("Observable", typeof(IObservable<object>), typeof(ObservableTrigger), new PropertyMetadata(OnObservableChanged));
+        DependencyProperty.Register(
+            "Observable",
+            typeof(IObservable<object>),
+            typeof(ObservableTrigger),
+            new(OnObservableChanged));
 
+    /// <summary>The current subscription watching the trigger observable.</summary>
     private IDisposable? _watcher;
 
     /// <summary>
@@ -48,7 +52,9 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
-    internal static void InternalOnObservableChangedForTesting(DependencyObject sender, DependencyPropertyChangedEventArgs e) =>
+    internal static void InternalOnObservableChangedForTesting(
+        DependencyObject sender,
+        DependencyPropertyChangedEventArgs e) =>
         OnObservableChanged(sender, e);
 
     /// <summary>
@@ -58,7 +64,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        ArgumentExceptionHelper.ThrowIfNotOfType<ObservableTrigger>(sender, nameof(sender));
+        ArgumentExceptionHelper.ThrowIfNotOfType<ObservableTrigger>(sender);
         var triggerItem = (ObservableTrigger)sender;
 
         if (triggerItem._watcher is not null)
@@ -75,15 +81,15 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
         var newValue = (IObservable<object>)e.NewValue;
         var scheduler = triggerItem.SchedulerOverride ?? RxSchedulers.MainThreadScheduler;
         triggerItem._watcher = newValue.ObserveOn(scheduler).Subscribe(
-         triggerItem.InvokeActions,
-         _ =>
-         {
-             if (!triggerItem.AutoResubscribeOnError)
-             {
-                 return;
-             }
+            triggerItem.InvokeActions,
+            _ =>
+            {
+                if (!triggerItem.AutoResubscribeOnError)
+                {
+                    return;
+                }
 
-             OnObservableChanged(triggerItem, e);
-         });
+                OnObservableChanged(triggerItem, e);
+            });
     }
 }

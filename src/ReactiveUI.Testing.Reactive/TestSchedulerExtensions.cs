@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -70,7 +70,11 @@ public static class TestSchedulerExtensions
     /// with.</param>
     /// <returns>A recorded notification that can be provided to
     /// TestScheduler.CreateHotObservable.</returns>
-    public static Recorded<Notification<T>> OnErrorAt<T>(this TestScheduler scheduler, double milliseconds, Exception ex) =>
+    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is the notification element type and cannot appear in the parameter list.")]
+    public static Recorded<Notification<T>> OnErrorAt<T>(
+        this TestScheduler scheduler,
+        double milliseconds,
+        Exception ex) =>
         new(
             scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),
             Notification.CreateOnError<T>(ex));
@@ -85,6 +89,7 @@ public static class TestSchedulerExtensions
     /// on the recorded notification.</param>
     /// <returns>A recorded notification that can be provided to
     /// TestScheduler.CreateHotObservable.</returns>
+    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is the notification element type and cannot appear in the parameter list.")]
     public static Recorded<Notification<T>> OnCompletedAt<T>(this TestScheduler scheduler, double milliseconds) =>
         new(
             scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(milliseconds)),

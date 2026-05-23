@@ -1,9 +1,7 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
-using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Tests.Bindings.Converters;
 
@@ -13,14 +11,21 @@ namespace ReactiveUI.Tests.Bindings.Converters;
 /// </summary>
 public class ConverterMigrationHelperTests
 {
+    /// <summary>
+    /// Verifies that ExtractConverters throws when the resolver is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task ExtractConverters_ShouldThrowArgumentNullException_WhenResolverIsNull()
-    {
+    public async Task ExtractConverters_ShouldThrowArgumentNullException_WhenResolverIsNull() =>
+
         // Act & Assert
         await Assert.That(() => ConverterMigrationHelper.ExtractConverters(null!))
             .Throws<ArgumentException>();
-    }
 
+    /// <summary>
+    /// Verifies that ExtractConverters returns empty lists when no converters are registered.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldReturnEmptyLists_WhenNoConvertersRegistered()
     {
@@ -36,12 +41,19 @@ public class ConverterMigrationHelperTests
         await Assert.That(setMethod).IsEmpty();
     }
 
+    /// <summary>
+    /// Verifies that ExtractConverters extracts registered typed converters.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldExtractTypedConverters()
     {
         // Arrange
-        var converter1 = new TestTypedConverter<int, string>(5);
-        var converter2 = new TestTypedConverter<double, bool>(3);
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        const int ExpectedCount = 2;
+        var converter1 = new TestTypedConverter<int, string>(FirstAffinity);
+        var converter2 = new TestTypedConverter<double, bool>(SecondAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(converter1);
         resolver.RegisterService<IBindingTypeConverter>(converter2);
@@ -50,19 +62,26 @@ public class ConverterMigrationHelperTests
         var (typed, fallback, setMethod) = ConverterMigrationHelper.ExtractConverters(resolver);
 
         // Assert
-        await Assert.That(typed).Count().IsEqualTo(2);
+        await Assert.That(typed).Count().IsEqualTo(ExpectedCount);
         await Assert.That(typed).Contains(converter1);
         await Assert.That(typed).Contains(converter2);
         await Assert.That(fallback).IsEmpty();
         await Assert.That(setMethod).IsEmpty();
     }
 
+    /// <summary>
+    /// Verifies that ExtractConverters extracts registered fallback converters.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldExtractFallbackConverters()
     {
         // Arrange
-        var converter1 = new TestFallbackConverter(5);
-        var converter2 = new TestFallbackConverter(3);
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        const int ExpectedCount = 2;
+        var converter1 = new TestFallbackConverter(FirstAffinity);
+        var converter2 = new TestFallbackConverter(SecondAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingFallbackConverter>(converter1);
         resolver.RegisterService<IBindingFallbackConverter>(converter2);
@@ -72,18 +91,25 @@ public class ConverterMigrationHelperTests
 
         // Assert
         await Assert.That(typed).IsEmpty();
-        await Assert.That(fallback).Count().IsEqualTo(2);
+        await Assert.That(fallback).Count().IsEqualTo(ExpectedCount);
         await Assert.That(fallback).Contains(converter1);
         await Assert.That(fallback).Contains(converter2);
         await Assert.That(setMethod).IsEmpty();
     }
 
+    /// <summary>
+    /// Verifies that ExtractConverters extracts registered set-method converters.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldExtractSetMethodConverters()
     {
         // Arrange
-        var converter1 = new TestSetMethodConverter(5);
-        var converter2 = new TestSetMethodConverter(3);
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        const int ExpectedCount = 2;
+        var converter1 = new TestSetMethodConverter(FirstAffinity);
+        var converter2 = new TestSetMethodConverter(SecondAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<ISetMethodBindingConverter>(converter1);
         resolver.RegisterService<ISetMethodBindingConverter>(converter2);
@@ -94,18 +120,25 @@ public class ConverterMigrationHelperTests
         // Assert
         await Assert.That(typed).IsEmpty();
         await Assert.That(fallback).IsEmpty();
-        await Assert.That(setMethod).Count().IsEqualTo(2);
+        await Assert.That(setMethod).Count().IsEqualTo(ExpectedCount);
         await Assert.That(setMethod).Contains(converter1);
         await Assert.That(setMethod).Contains(converter2);
     }
 
+    /// <summary>
+    /// Verifies that ExtractConverters extracts typed, fallback, and set-method converters together.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldExtractAllConverterTypes()
     {
         // Arrange
-        var typedConverter = new TestTypedConverter<int, string>(5);
-        var fallbackConverter = new TestFallbackConverter(3);
-        var setMethodConverter = new TestSetMethodConverter(2);
+        const int TypedAffinity = 5;
+        const int FallbackAffinity = 3;
+        const int SetMethodAffinity = 2;
+        var typedConverter = new TestTypedConverter<int, string>(TypedAffinity);
+        var fallbackConverter = new TestFallbackConverter(FallbackAffinity);
+        var setMethodConverter = new TestSetMethodConverter(SetMethodAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(typedConverter);
         resolver.RegisterService<IBindingFallbackConverter>(fallbackConverter);
@@ -123,23 +156,32 @@ public class ConverterMigrationHelperTests
         await Assert.That(setMethod).Contains(setMethodConverter);
     }
 
+    /// <summary>
+    /// Verifies that ExtractConverters filters out null converter entries.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ExtractConverters_ShouldFilterOutNullConverters()
     {
         // Arrange
-        var converter = new TestTypedConverter<int, string>(5);
+        const int ConverterAffinity = 5;
+        var converter = new TestTypedConverter<int, string>(ConverterAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(converter);
         resolver.RegisterService<IBindingTypeConverter>(null!);
 
         // Act
-        var (typed, fallback, setMethod) = ConverterMigrationHelper.ExtractConverters(resolver);
+        var (typed, _, _) = ConverterMigrationHelper.ExtractConverters(resolver);
 
         // Assert - Should only contain the non-null converter
         await Assert.That(typed).Count().IsEqualTo(1);
         await Assert.That(typed).Contains(converter);
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom throws when the converter service is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldThrowArgumentNullException_WhenConverterServiceIsNull()
     {
@@ -151,6 +193,10 @@ public class ConverterMigrationHelperTests
             .Throws<ArgumentException>();
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom throws when the resolver is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldThrowArgumentNullException_WhenResolverIsNull()
     {
@@ -162,12 +208,18 @@ public class ConverterMigrationHelperTests
             .Throws<ArgumentException>();
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom imports typed converters into the converter service.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldImportTypedConverters()
     {
         // Arrange
-        var converter1 = new TestTypedConverter<int, string>(5);
-        var converter2 = new TestTypedConverter<double, bool>(3);
+        const int FirstAffinity = 5;
+        const int SecondAffinity = 3;
+        var converter1 = new TestTypedConverter<int, string>(FirstAffinity);
+        var converter2 = new TestTypedConverter<double, bool>(SecondAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(converter1);
         resolver.RegisterService<IBindingTypeConverter>(converter2);
@@ -183,11 +235,16 @@ public class ConverterMigrationHelperTests
         await Assert.That(result2).IsEqualTo(converter2);
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom imports fallback converters into the converter service.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldImportFallbackConverters()
     {
         // Arrange
-        var converter = new TestFallbackConverter(5);
+        const int ConverterAffinity = 5;
+        var converter = new TestFallbackConverter(ConverterAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingFallbackConverter>(converter);
         var service = new ConverterService();
@@ -200,11 +257,16 @@ public class ConverterMigrationHelperTests
         await Assert.That(result).IsEqualTo(converter);
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom imports set-method converters into the converter service.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldImportSetMethodConverters()
     {
         // Arrange
-        var converter = new TestSetMethodConverter(5);
+        const int ConverterAffinity = 5;
+        var converter = new TestSetMethodConverter(ConverterAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<ISetMethodBindingConverter>(converter);
         var service = new ConverterService();
@@ -217,13 +279,20 @@ public class ConverterMigrationHelperTests
         await Assert.That(result).IsEqualTo(converter);
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom imports typed, fallback, and set-method converters together.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldImportAllConverterTypes()
     {
         // Arrange
-        var typedConverter = new TestTypedConverter<int, string>(5);
-        var fallbackConverter = new TestFallbackConverter(3);
-        var setMethodConverter = new TestSetMethodConverter(2);
+        const int TypedAffinity = 5;
+        const int FallbackAffinity = 3;
+        const int SetMethodAffinity = 2;
+        var typedConverter = new TestTypedConverter<int, string>(TypedAffinity);
+        var fallbackConverter = new TestFallbackConverter(FallbackAffinity);
+        var setMethodConverter = new TestSetMethodConverter(SetMethodAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(typedConverter);
         resolver.RegisterService<IBindingFallbackConverter>(fallbackConverter);
@@ -241,11 +310,16 @@ public class ConverterMigrationHelperTests
         await Assert.That(setMethodResult).IsEqualTo(setMethodConverter);
     }
 
+    /// <summary>
+    /// Verifies that ImportFrom does not import null converter entries.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ImportFrom_ShouldNotImportNullConverters()
     {
         // Arrange
-        var converter = new TestTypedConverter<int, string>(5);
+        const int ConverterAffinity = 5;
+        var converter = new TestTypedConverter<int, string>(ConverterAffinity);
         var resolver = new TestDependencyResolver();
         resolver.RegisterService<IBindingTypeConverter>(converter);
         resolver.RegisterService<IBindingTypeConverter>(null!);
@@ -262,43 +336,63 @@ public class ConverterMigrationHelperTests
     /// <summary>
     /// Test dependency resolver for testing converter extraction.
     /// </summary>
+    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
     private sealed class TestDependencyResolver : IReadonlyDependencyResolver
     {
         private readonly List<object> _services = [];
 
-        public void RegisterService<T>(T? service)
-        {
-            _services.Add(service!);
-        }
+        /// <summary>
+        /// Registers a service instance for later resolution.
+        /// </summary>
+        /// <typeparam name="T">The service type.</typeparam>
+        /// <param name="service">The service instance to register.</param>
+        public void RegisterService<T>(T? service) => _services.Add(service!);
 
+        /// <inheritdoc/>
         public object? GetService(Type? serviceType) => _services.FirstOrDefault();
 
+        /// <inheritdoc/>
         public object? GetService(Type? serviceType, string? contract) => _services.FirstOrDefault();
 
+        /// <inheritdoc/>
         public T? GetService<T>() => _services.OfType<T>().FirstOrDefault();
 
+        /// <inheritdoc/>
         public T? GetService<T>(string? contract) => _services.OfType<T>().FirstOrDefault();
 
-        public IEnumerable<object> GetServices(Type? serviceType) => _services.Where(s => s is not null)!;
+        /// <inheritdoc/>
+        public IEnumerable<object> GetServices(Type? serviceType) => _services.Where(s => s is not null);
 
-        public IEnumerable<object> GetServices(Type? serviceType, string? contract) => _services.Where(s => s is not null)!;
+        /// <inheritdoc/>
+        public IEnumerable<object> GetServices(Type? serviceType, string? contract) =>
+            _services.Where(s => s is not null);
 
+        /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>() => _services.OfType<T>();
 
+        /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>(string? contract) => _services.OfType<T>();
     }
 
     /// <summary>
     /// Test typed converter for testing purposes.
     /// </summary>
+    /// <typeparam name="TFrom">The source type.</typeparam>
+    /// <typeparam name="TTo">The target type.</typeparam>
     private sealed class TestTypedConverter<TFrom, TTo> : BindingTypeConverter<TFrom, TTo>
     {
         private readonly int _affinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestTypedConverter{TFrom, TTo}"/> class.
+        /// </summary>
+        /// <param name="affinity">The affinity value to report.</param>
         public TestTypedConverter(int affinity) => _affinity = affinity;
 
+        /// <inheritdoc/>
         public override int GetAffinityForObjects() => _affinity;
 
+        /// <inheritdoc/>
         public override bool TryConvert(TFrom? from, object? conversionHint, [NotNullWhen(true)] out TTo result)
         {
             result = default!;
@@ -313,11 +407,22 @@ public class ConverterMigrationHelperTests
     {
         private readonly int _affinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestFallbackConverter"/> class.
+        /// </summary>
+        /// <param name="affinity">The affinity value to report.</param>
         public TestFallbackConverter(int affinity) => _affinity = affinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(Type fromType, Type toType) => _affinity;
 
-        public bool TryConvert(Type fromType, object from, Type toType, object? conversionHint, [NotNullWhen(true)] out object? result)
+        /// <inheritdoc/>
+        public bool TryConvert(
+            Type fromType,
+            object from,
+            Type toType,
+            object? conversionHint,
+            [NotNullWhen(true)] out object? result)
         {
             result = null;
             return false;
@@ -331,10 +436,16 @@ public class ConverterMigrationHelperTests
     {
         private readonly int _affinity;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestSetMethodConverter"/> class.
+        /// </summary>
+        /// <param name="affinity">The affinity value to report.</param>
         public TestSetMethodConverter(int affinity) => _affinity = affinity;
 
+        /// <inheritdoc/>
         public int GetAffinityForObjects(Type? fromType, Type? toType) => _affinity;
 
+        /// <inheritdoc/>
         public object? PerformSet(object? toTarget, object? newValue, object?[]? arguments) => null;
     }
 }

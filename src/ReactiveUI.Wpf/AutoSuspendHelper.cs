@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -53,44 +53,44 @@ public class AutoSuspendHelper : IEnableLogger
 
         RxSuspension.SuspensionHost.IsLaunchingNew =
             Observable.FromEvent<StartupEventHandler, Unit>(
-                                                            eventHandler =>
-                                                            {
-                                                                void Handler(object sender, StartupEventArgs e) => eventHandler(Unit.Default);
-                                                                return Handler;
-                                                            },
-                                                            x => app.Startup += x,
-                                                            x => app.Startup -= x);
+                eventHandler =>
+                {
+                    void Handler(object sender, StartupEventArgs e) => eventHandler(Unit.Default);
+                    return Handler;
+                },
+                x => app.Startup += x,
+                x => app.Startup -= x);
 
         RxSuspension.SuspensionHost.IsUnpausing =
             Observable.FromEvent<EventHandler, Unit>(
-                                                     eventHandler => (_, _) => eventHandler(Unit.Default),
-                                                     x => app.Activated += x,
-                                                     x => app.Activated -= x);
+                eventHandler => (_, _) => eventHandler(Unit.Default),
+                x => app.Activated += x,
+                x => app.Activated -= x);
 
         RxSuspension.SuspensionHost.IsResuming = Observable<Unit>.Never;
 
         // NB: No way to tell OS that we need time to suspend, we have to
         // do it in-process
         var deactivated = Observable.FromEvent<EventHandler, Unit>(
-                                                                   eventHandler => (_, _) => eventHandler(Unit.Default),
-                                                                   x => app.Deactivated += x,
-                                                                   x => app.Deactivated -= x);
+            eventHandler => (_, _) => eventHandler(Unit.Default),
+            x => app.Deactivated += x,
+            x => app.Deactivated -= x);
 
         var exit = Observable.FromEvent<ExitEventHandler, IDisposable>(
-                                                                       eventHandler =>
-                                                                       {
-                                                                           void Handler(object sender, ExitEventArgs e) => eventHandler(Disposable.Empty);
-                                                                           return Handler;
-                                                                       },
-                                                                       x => app.Exit += x,
-                                                                       x => app.Exit -= x);
+            eventHandler =>
+            {
+                void Handler(object sender, ExitEventArgs e) => eventHandler(Disposable.Empty);
+                return Handler;
+            },
+            x => app.Exit += x,
+            x => app.Exit -= x);
 
         RxSuspension.SuspensionHost.ShouldPersistState = exit.Merge(
-                                                             deactivated
-                                                                 .SelectMany(_ => Observable.Timer(IdleTimeout, RxSchedulers.TaskpoolScheduler))
-                                                                 .TakeUntil(RxSuspension.SuspensionHost.IsUnpausing)
-                                                                 .Repeat()
-                                                                 .Select(_ => Disposable.Empty));
+            deactivated
+                .SelectMany(_ => Observable.Timer(IdleTimeout, RxSchedulers.TaskpoolScheduler))
+                .TakeUntil(RxSuspension.SuspensionHost.IsUnpausing)
+                .Repeat()
+                .Select(_ => Disposable.Empty));
 
         var untimelyDeath = new Subject<Unit>();
         AppDomain.CurrentDomain.UnhandledException += (_, _) => untimelyDeath.OnNext(Unit.Default);

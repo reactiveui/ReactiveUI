@@ -1,14 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 
 using Foundation;
 
@@ -47,7 +42,11 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     /// <summary>
     /// Synchronization gate protecting <see cref="_config"/> and <see cref="_version"/>.
     /// </summary>
+    #if NET9_0_OR_GREATER
+    private readonly Lock _gate = new();
+    #else
     private readonly object _gate = new();
+    #endif
 
     /// <summary>
     /// Configuration map keyed by registered type and then by property name.
@@ -70,10 +69,15 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    public int GetAffinityForObject(Type type, string propertyName) =>
+        GetAffinityForObject(type, propertyName, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (beforeChanged)
         {
@@ -89,9 +93,26 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
+        string propertyName) =>
+        GetNotificationForProperty(sender, expression, propertyName, false, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
         string propertyName,
-        bool beforeChanged = false,
-        bool suppressWarnings = false)
+        bool beforeChanged) =>
+        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
+
+    /// <inheritdoc/>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged,
+        bool suppressWarnings)
     {
         ArgumentExceptionHelper.ThrowIfNull(sender);
         ArgumentExceptionHelper.ThrowIfNull(expression);
@@ -253,9 +274,9 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         int affinity,
         Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(property);
-        ArgumentNullException.ThrowIfNull(createObservable);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(property);
+        ArgumentExceptionHelper.ThrowIfNull(createObservable);
 
         lock (_gate)
         {

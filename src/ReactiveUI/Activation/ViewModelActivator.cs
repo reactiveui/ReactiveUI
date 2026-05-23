@@ -1,7 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive;
+using System.Reactive.Disposables;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -34,10 +39,19 @@ namespace ReactiveUI;
 /// </summary>
 public sealed class ViewModelActivator : IDisposable
 {
+    /// <summary>List of registered activation blocks run when the view model is activated.</summary>
     private readonly List<Func<IEnumerable<IDisposable>>> _blocks;
-    private readonly Subject<Unit> _activated;
-    private readonly Subject<Unit> _deactivated;
-    private IDisposable _activationHandle = Disposable.Empty;
+
+    /// <summary>Subject that emits each time the view model is activated.</summary>
+    private readonly BroadcastSubject<Unit> _activated;
+
+    /// <summary>Subject that emits each time the view model is deactivated.</summary>
+    private readonly BroadcastSubject<Unit> _deactivated;
+
+    /// <summary>Composite disposable that is replaced on each activation cycle.</summary>
+    private IDisposable _activationHandle = EmptyDisposable.Instance;
+
+    /// <summary>Reference count tracking how many times Activate has been called without a matching Deactivate.</summary>
     private int _refCount;
 
     /// <summary>
@@ -72,13 +86,19 @@ public sealed class ViewModelActivator : IDisposable
     {
         if (Interlocked.Increment(ref _refCount) == 1)
         {
-            var disposable = new CompositeDisposable(_blocks.SelectMany(x => x()));
+            CompositeDisposable disposable = [.. _blocks.SelectMany(x => x())];
             Interlocked.Exchange(ref _activationHandle, disposable).Dispose();
             _activated.OnNext(Unit.Default);
         }
 
-        return Disposable.Create(() => Deactivate());
+        return new ActionDisposable(Deactivate);
     }
+
+    /// <summary>
+    /// This method is called by the framework when the corresponding View
+    /// is deactivated. Respects the activation reference count.
+    /// </summary>
+    public void Deactivate() => Deactivate(false);
 
     /// <summary>
     /// This method is called by the framework when the corresponding View
@@ -88,17 +108,16 @@ public sealed class ViewModelActivator : IDisposable
     /// Force the VM to be deactivated, even
     /// if more than one person called Activate.
     /// </param>
-    public void Deactivate(bool ignoreRefCount = false)
+    public void Deactivate(bool ignoreRefCount)
     {
         if (ignoreRefCount)
         {
             Interlocked.Exchange(ref _refCount, 0);
-            Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
+            Interlocked.Exchange(ref _activationHandle, EmptyDisposable.Instance).Dispose();
             _deactivated.OnNext(Unit.Default);
             return;
         }
 
-        // Guard against going negative — only decrement if current value is > 0
         int current;
         int next;
         do
@@ -113,11 +132,13 @@ public sealed class ViewModelActivator : IDisposable
         }
         while (Interlocked.CompareExchange(ref _refCount, next, current) != current);
 
-        if (next == 0)
+        if (next != 0)
         {
-            Interlocked.Exchange(ref _activationHandle, Disposable.Empty).Dispose();
-            _deactivated.OnNext(Unit.Default);
+            return;
         }
+
+        Interlocked.Exchange(ref _activationHandle, EmptyDisposable.Instance).Dispose();
+        _deactivated.OnNext(Unit.Default);
     }
 
     /// <inheritdoc/>

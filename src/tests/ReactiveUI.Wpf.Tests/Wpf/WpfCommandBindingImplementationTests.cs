@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 using ReactiveUI.Tests.Utilities.Logging;
@@ -26,6 +25,9 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfCommandBindingImplementationTests
 {
+    private const int ExpectedSecondInvocation = 2;
+    private const string MouseUpEventName = "MouseUp";
+
     /// <summary>
     /// Commands the bind to explicit event wireup.
     /// </summary>
@@ -39,7 +41,7 @@ public class WpfCommandBindingImplementationTests
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
 
-        var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
+        var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
 
@@ -57,12 +59,10 @@ public class WpfCommandBindingImplementationTests
     public async Task BindCommandToObjectWithEventTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
-        var view = new CommandBindingView { ViewModel = vm };
+        _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
-
-        var sub = new Subject<object>();
 
         // Test that binding with null target throws
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -73,15 +73,14 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectTargetIsNull()
     {
         var vm = new CommandBindingViewModel();
-        var view = new CommandBindingView { ViewModel = vm };
+        _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
-
-        var sub = new Subject<object>();
 
         // Test that binding with null target throws when target is required
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -92,15 +91,14 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectEventIsNull()
     {
         var vm = new CommandBindingViewModel();
-        var view = new CommandBindingView { ViewModel = vm };
+        _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
-
-        var sub = new Subject<object>();
 
         // Test that binding with non-existent event name throws
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -111,16 +109,14 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectWithEventCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
-        var view = new CommandBindingView { ViewModel = vm };
+        _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
-        var btn = new Button();
-        var cmd = (btn as ICommand)!;
-        var sub = new Subject<object>();
 
         // Test that binding with null command throws appropriate exception
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -131,16 +127,14 @@ public class WpfCommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
     public async Task BindCommandToObjectCommandIsArgumentNull()
     {
         var vm = new CommandBindingViewModel();
-        var view = new CommandBindingView { ViewModel = vm };
+        _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
         vm.Command2.Subscribe(_ => invokeCount++);
-        var btn = new Button();
-        var cmd = (btn as ICommand)!;
-        var sub = new Subject<object>();
 
         // Test that binding with null command throws exception
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -158,10 +152,10 @@ public class WpfCommandBindingImplementationTests
 
         // Create a paramenter feed
         vm.Command2.Subscribe(_ => vm.Value++);
-        view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
+        view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
         // Bind the command and the IObservable parameter.
-        var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.WhenAnyValue(vm => vm.Value), "MouseUp");
+        _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.WhenAnyValue(vm => vm.Value), MouseUpEventName);
         await Assert.That(vm.Value).IsEqualTo(0);
 
         // Confirm that the values update as expected.
@@ -180,15 +174,15 @@ public class WpfCommandBindingImplementationTests
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
-            await Assert.That(vm.Value).IsEqualTo(2);
+            await Assert.That(vm.Value).IsEqualTo(ExpectedSecondInvocation);
             await Assert.That(parameter).IsEqualTo(1);
         }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
-            await Assert.That(parameter).IsEqualTo(2);
-            await Assert.That(vm.Value).IsEqualTo(2);
+            await Assert.That(parameter).IsEqualTo(ExpectedSecondInvocation);
+            await Assert.That(vm.Value).IsEqualTo(ExpectedSecondInvocation);
         }
     }
 
@@ -204,10 +198,10 @@ public class WpfCommandBindingImplementationTests
 
         // Create a paramenter feed
         vm.Command2.Subscribe(_ => vm.Value++);
-        view.BindCommand(vm, x => x.Command2, x => x.Command2, "MouseUp");
+        view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
         // Bind the command and the Func<T> parameter.
-        var fixture = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm => vm.Value, "MouseUp");
+        _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm => vm.Value, MouseUpEventName);
         await Assert.That(vm.Value).IsEqualTo(0);
 
         // Confirm that the values update as expected.
@@ -226,18 +220,22 @@ public class WpfCommandBindingImplementationTests
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
-            await Assert.That(vm.Value).IsEqualTo(2);
+            await Assert.That(vm.Value).IsEqualTo(ExpectedSecondInvocation);
             await Assert.That(parameter).IsEqualTo(1);
         }
 
         view.Command3.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
-            await Assert.That(parameter).IsEqualTo(2);
-            await Assert.That(vm.Value).IsEqualTo(2);
+            await Assert.That(parameter).IsEqualTo(ExpectedSecondInvocation);
+            await Assert.That(vm.Value).IsEqualTo(ExpectedSecondInvocation);
         }
     }
 
+    /// <summary>
+    /// Verifies that binding a command to a XAML-declared field does not log a warning.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
     {
@@ -247,12 +245,16 @@ public class WpfCommandBindingImplementationTests
         var vm = new CommandBindingViewModel();
         var view = new FakeXamlCommandBindingView { ViewModel = vm };
 
-        await Assert.That(testLogger.Messages.Any(t =>
-                t.message.Contains(nameof(POCOObservableForProperty)) &&
-                t.message.Contains(view.NameOfButtonDeclaredInXaml) &&
+        await Assert.That(testLogger.Messages.Exists(t =>
+                t.message.Contains(nameof(POCOObservableForProperty), StringComparison.Ordinal) &&
+                t.message.Contains(view.NameOfButtonDeclaredInXaml, StringComparison.Ordinal) &&
                 t.logLevel == LogLevel.Warn)).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that an overwritten view model is garbage collected after a command binding.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
@@ -261,7 +263,7 @@ public class WpfCommandBindingImplementationTests
             var vm = new CommandBindingViewModel();
             var view = new CommandBindingView { ViewModel = vm };
             var weakRef = new WeakReference(vm);
-            var disp = view.BindCommand(vm, static x => x.Command2, static x => x.Command2, "MouseUp");
+            var disp = view.BindCommand(vm, static x => x.Command2, static x => x.Command2, MouseUpEventName);
             view.ViewModel = new CommandBindingViewModel();
 
             return (disp, weakRef);

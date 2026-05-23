@@ -1,13 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-
 using Android.Views;
-
-using DynamicData;
 using DynamicData.Binding;
 
 namespace ReactiveUI.AndroidX;
@@ -27,6 +24,10 @@ namespace ReactiveUI.AndroidX;
 public class ReactivePagerAdapter<TViewModel, TCollection>(
     TCollection collection,
     Func<TViewModel, ViewGroup, View> viewCreator,
-    Action<TViewModel, View>? viewInitializer = null) : ReactivePagerAdapter<TViewModel>(collection.ToObservableChangeSet<TCollection, TViewModel>(), viewCreator, viewInitializer)
+    Action<TViewModel, View>? viewInitializer = null)
+    : ReactivePagerAdapter<TViewModel>(
+        collection.ToObservableChangeSet<TCollection, TViewModel>(),
+        viewCreator,
+        viewInitializer)
     where TViewModel : class
     where TCollection : INotifyCollectionChanged, IEnumerable<TViewModel>;

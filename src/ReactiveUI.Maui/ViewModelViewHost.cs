@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,35 +12,38 @@ namespace ReactiveUI.Maui;
 /// to be displayed should be assigned to the <see cref="ViewModel"/> property. Optionally, the chosen view can be
 /// customized by specifying a contract via <see cref="ViewContractObservable"/> or <see cref="ViewContract"/>.
 /// </summary>
-[RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-public partial class ViewModelViewHost : ContentView, IViewFor
+[RequiresUnreferencedCode(
+    "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+[RequiresDynamicCode(
+    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic " +
+    "constraints), trimming can't validate that the requirements of those annotations are met.")]
+public class ViewModelViewHost : ContentView, IViewFor
 {
     /// <summary>
     /// Identifies the <see cref="ViewModel"/> property.
     /// </summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
-     nameof(ViewModel),
-     typeof(object),
-     typeof(ViewModelViewHost));
+        nameof(ViewModel),
+        typeof(object),
+        typeof(ViewModelViewHost),
+        propertyChanged: OnViewModelPropertyChanged);
 
     /// <summary>
     /// Identifies the <see cref="DefaultContent"/> property.
     /// </summary>
     public static readonly BindableProperty DefaultContentProperty = BindableProperty.Create(
-     nameof(DefaultContent),
-     typeof(View),
-     typeof(ViewModelViewHost),
-     default(View));
+        nameof(DefaultContent),
+        typeof(View),
+        typeof(ViewModelViewHost));
 
     /// <summary>
     /// Identifies the <see cref="ViewContractObservable"/> property.
     /// </summary>
     public static readonly BindableProperty ViewContractObservableProperty = BindableProperty.Create(
-     nameof(ViewContractObservable),
-     typeof(IObservable<string>),
-     typeof(ViewModelViewHost),
-     Observable<string>.Never);
+        nameof(ViewContractObservable),
+        typeof(IObservable<string>),
+        typeof(ViewModelViewHost),
+        Observable<string>.Never);
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -51,7 +54,14 @@ public partial class ViewModelViewHost : ContentView, IViewFor
         typeof(ViewModelViewHost),
         false);
 
+    /// <summary>
+    /// The disposables for the view resolution subscriptions.
+    /// </summary>
     private readonly CompositeDisposable _subscriptions = [];
+
+    /// <summary>
+    /// The most recently observed view contract.
+    /// </summary>
     private string? _viewContract;
 
     /// <summary>
@@ -68,23 +78,12 @@ public partial class ViewModelViewHost : ContentView, IViewFor
 
         ViewContractObservable = Observable<string>.Default;
 
-        // Observe ViewModel property changes without expression trees (AOT-friendly)
-        var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
-            this,
-            nameof(ViewModel),
-            () => ViewModel);
-
-        // Combine ViewModel and ViewContractObservable streams
-        var vmAndContract = viewModelChanged.CombineLatest(
-            ViewContractObservable,
-            (vm, contract) => new { ViewModel = vm, Contract = contract });
-
-        // Subscribe directly without WhenActivated
-        vmAndContract
-            .Subscribe(x =>
+        // Re-resolve when the contract changes; ViewModel changes are handled by OnViewModelPropertyChanged.
+        ViewContractObservable
+            .Subscribe(contract =>
             {
-                _viewContract = x.Contract;
-                ResolveViewForViewModel(x.ViewModel, x.Contract);
+                _viewContract = contract;
+                ResolveViewForViewModel(ViewModel, contract);
             })
             .DisposeWith(_subscriptions);
     }
@@ -122,6 +121,10 @@ public partial class ViewModelViewHost : ContentView, IViewFor
     /// <remarks>
     /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
     /// </remarks>
+    [SuppressMessage(
+        "Critical Bug",
+        "S4275:Getters and setters should access the expected fields",
+        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
@@ -147,8 +150,11 @@ public partial class ViewModelViewHost : ContentView, IViewFor
     /// </summary>
     /// <param name="viewModel">ViewModel.</param>
     /// <param name="contract">contract used by ViewLocator.</param>
-    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic " +
+        "constraints), trimming can't validate that the requirements of those annotations are met.")]
     protected virtual void ResolveViewForViewModel(object? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -172,11 +178,28 @@ public partial class ViewModelViewHost : ContentView, IViewFor
 
         if (viewInstance is not View castView)
         {
-            throw new InvalidOperationException($"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
+            throw new InvalidOperationException(
+                $"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
         }
 
         viewInstance.ViewModel = viewModel;
 
         Content = castView;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="ViewModel"/> property by re-resolving the view for the new value.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnViewModelPropertyChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ViewModelViewHost host || ModeDetector.InUnitTestRunner())
+        {
+            return;
+        }
+
+        host.ResolveViewForViewModel(newValue, host._viewContract);
     }
 }

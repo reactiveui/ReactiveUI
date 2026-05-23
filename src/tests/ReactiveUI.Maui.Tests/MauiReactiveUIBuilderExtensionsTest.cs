@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -19,10 +19,8 @@ public class MauiReactiveUIBuilderExtensionsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task MauiMainThreadScheduler_IsNotNull()
-    {
+    public async Task MauiMainThreadScheduler_IsNotNull() =>
         await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler).IsNotNull();
-    }
 
 #if ANDROID
     /// <summary>
@@ -82,7 +80,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_NullBuilder_Throws()
     {
-        Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
+        const Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
 
         await Assert.That(() => builder.UseReactiveUI(rxBuilder => { }))
             .Throws<ArgumentNullException>();
@@ -95,7 +93,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task WithMauiScheduler_NullBuilder_Throws()
     {
-        IReactiveUIBuilder builder = null!;
+        const IReactiveUIBuilder builder = null!;
 
         await Assert.That(() => builder.WithMauiScheduler())
             .Throws<ArgumentNullException>();
@@ -108,7 +106,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task WithMaui_NullBuilder_Throws()
     {
-        IReactiveUIBuilder builder = null!;
+        const IReactiveUIBuilder builder = null!;
 
         await Assert.That(() => builder.WithMaui())
             .Throws<ArgumentNullException>();
@@ -137,7 +135,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_WithDispatcher_NullBuilder_Throws()
     {
-        Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
+        const Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
         var dispatcher = new MockDispatcher();
 
         await Assert.That(() => builder.UseReactiveUI(dispatcher))
@@ -174,7 +172,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
-        bool executed = false;
+        var executed = false;
         scheduler.Schedule(() => executed = true);
 
         // MockDispatcher executes immediately if Dispatch is called
@@ -195,7 +193,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
-        bool executed = false;
+        var executed = false;
         scheduler.Schedule(TimeSpan.FromMilliseconds(100), () => executed = true);
 
         await Assert.That(dispatcher.CreatedTimers.Count).IsEqualTo(1);
@@ -212,14 +210,25 @@ public class MauiReactiveUIBuilderExtensionsTest
         await Assert.That(timer.IsStarted).IsFalse(); // Should stop after tick
     }
 
-    private class MockDispatcher : Microsoft.Maui.Dispatching.IDispatcher
+    /// <summary>
+    /// Mock dispatcher that records dispatch calls and created timers for testing.
+    /// </summary>
+    private sealed class MockDispatcher : Microsoft.Maui.Dispatching.IDispatcher
     {
+        /// <summary>
+        /// Gets the number of times <see cref="Dispatch"/> has been called.
+        /// </summary>
         public int DispatchCount { get; private set; }
 
-        public List<MockDispatcherTimer> CreatedTimers { get; } = new();
+        /// <summary>
+        /// Gets the timers created by this dispatcher.
+        /// </summary>
+        public List<MockDispatcherTimer> CreatedTimers { get; } = [];
 
+        /// <inheritdoc/>
         public bool IsDispatchRequired => true; // Force Dispatch call
 
+        /// <inheritdoc/>
         public bool Dispatch(Action action)
         {
             DispatchCount++;
@@ -227,11 +236,10 @@ public class MauiReactiveUIBuilderExtensionsTest
             return true;
         }
 
-        public bool DispatchDelayed(TimeSpan delay, Action action)
-        {
-            throw new NotImplementedException();
-        }
+        /// <inheritdoc/>
+        public bool DispatchDelayed(TimeSpan delay, Action action) => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer()
         {
             var timer = new MockDispatcherTimer();
@@ -240,33 +248,45 @@ public class MauiReactiveUIBuilderExtensionsTest
         }
     }
 
-    private class MockDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
+    /// <summary>
+    /// Mock dispatcher timer that allows manual tick firing for testing.
+    /// </summary>
+    private sealed class MockDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
     {
+        /// <inheritdoc/>
         public event EventHandler? Tick;
 
+        /// <inheritdoc/>
         public TimeSpan Interval { get; set; }
 
+        /// <inheritdoc/>
         public bool IsRepeating { get; set; }
 
+        /// <inheritdoc/>
         public bool IsRunning { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the timer has been started.
+        /// </summary>
         public bool IsStarted { get; private set; }
 
+        /// <inheritdoc/>
         public void Start()
         {
             IsStarted = true;
             IsRunning = true;
         }
 
+        /// <inheritdoc/>
         public void Stop()
         {
             IsRunning = false;
             IsStarted = false;
         }
 
-        public void FireTick()
-        {
-            Tick?.Invoke(this, EventArgs.Empty);
-        }
+        /// <summary>
+        /// Manually fires the <see cref="Tick"/> event.
+        /// </summary>
+        public void FireTick() => Tick?.Invoke(this, EventArgs.Empty);
     }
 }

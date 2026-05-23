@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,28 +11,34 @@ namespace ReactiveUI.Tests.Utilities.Sequencing;
 /// <seealso cref="IDisposable" />
 public class TestSequencer : IDisposable
 {
+    /// <summary>
+    ///     The number of participants synchronized by the phase barrier.
+    /// </summary>
+    private const int ParticipantCount = 2;
+
+    /// <summary>
+    ///     The barrier used to synchronize the two participants across test phases.
+    /// </summary>
     private readonly Barrier _phaseSync;
+
+    /// <summary>
+    ///     Tracks whether this instance has already been disposed.
+    /// </summary>
     private bool _disposedValue;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="TestSequencer" /> class.
     /// </summary>
-    public TestSequencer() => _phaseSync = new Barrier(2);
+    public TestSequencer() => _phaseSync = new(ParticipantCount);
 
     /// <summary>
     ///     Gets the number of completed phases.
     /// </summary>
-    /// <value>
-    ///     The completed phases.
-    /// </value>
     public long CompletedPhases => _phaseSync.CurrentPhaseNumber;
 
     /// <summary>
     ///     Gets the current phase.
     /// </summary>
-    /// <value>
-    ///     The current phase.
-    /// </value>
     public long CurrentPhase { get; private set; }
 
     /// <summary>
@@ -48,11 +54,19 @@ public class TestSequencer : IDisposable
     /// <summary>
     ///     Advances this phase instance.
     /// </summary>
+    /// <returns>
+    ///     A <see cref="Task" /> representing the asynchronous operation.
+    /// </returns>
+    public Task AdvancePhaseAsync() => AdvancePhaseAsync(string.Empty);
+
+    /// <summary>
+    ///     Advances this phase instance.
+    /// </summary>
     /// <param name="comment">The comment for Test visual identification Purposes only.</param>
     /// <returns>
     ///     A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
-    public async Task AdvancePhaseAsync(string comment = "")
+    public async Task AdvancePhaseAsync(string comment)
     {
         if (_phaseSync.ParticipantCount == _phaseSync.ParticipantsRemaining)
         {
@@ -75,14 +89,16 @@ public class TestSequencer : IDisposable
     /// </param>
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (_disposedValue)
         {
-            if (disposing)
-            {
-                _phaseSync.Dispose();
-            }
-
-            _disposedValue = true;
+            return;
         }
+
+        if (disposing)
+        {
+            _phaseSync.Dispose();
+        }
+
+        _disposedValue = true;
     }
 }

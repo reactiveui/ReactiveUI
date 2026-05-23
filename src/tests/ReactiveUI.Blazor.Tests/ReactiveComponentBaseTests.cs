@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,6 +15,16 @@ namespace ReactiveUI.Blazor.Tests;
 public class ReactiveComponentBaseTests : BunitContext
 {
     /// <summary>
+    /// The expected number of renders after the initial render of the component.
+    /// </summary>
+    private const int ExpectedRenderCount = 2;
+
+    /// <summary>
+    /// The delay in milliseconds allowed for the asynchronous UI update to settle.
+    /// </summary>
+    private const int RenderDelayMilliseconds = 100;
+
+    /// <summary>
     /// Verifies that changing a property on the bound ViewModel triggers the component to re-render.
     /// This ensures that the component is correctly observing ViewModel property changes.
     /// </summary>
@@ -26,15 +36,15 @@ public class ReactiveComponentBaseTests : BunitContext
         var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 
         // Initial render should have occurred once.
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 
         // Change a property on the ViewModel to trigger a notification.
         viewModel.SomeProperty = "Changed";
 
         // ReactiveComponentBase uses throttled/debounced logic for StateHasChanged.
         // Waiting briefly allows the asynchronous UI update to complete.
-        await Task.Delay(100);
-        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(2);
+        await Task.Delay(RenderDelayMilliseconds);
+        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(ExpectedRenderCount);
     }
 
     /// <summary>
@@ -48,14 +58,14 @@ public class ReactiveComponentBaseTests : BunitContext
         var viewModel1 = new TestViewModel();
         var cut = Render<TestComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel1));
 
-        await Assert.That(cut.Instance.RenderCount).IsEqualTo(2);
+        await Assert.That(cut.Instance.RenderCount).IsEqualTo(ExpectedRenderCount);
 
         var viewModel2 = new TestViewModel();
         cut.Render(parameters => parameters.Add(p => p.ViewModel, viewModel2));
 
         // Wait for the asynchronous update triggered by the property setter.
-        await Task.Delay(100);
-        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(2);
+        await Task.Delay(RenderDelayMilliseconds);
+        await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(ExpectedRenderCount);
     }
 
     /// <summary>
@@ -82,6 +92,9 @@ public class ReactiveComponentBaseTests : BunitContext
     /// </summary>
     public class TestViewModel : ReactiveObject
     {
+        /// <summary>
+        /// The backing field for the <see cref="SomeProperty"/> property.
+        /// </summary>
         private string? _someProperty;
 
         /// <summary>

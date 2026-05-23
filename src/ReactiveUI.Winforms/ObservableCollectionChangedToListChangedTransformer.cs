@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 
 namespace ReactiveUI.Winforms;
 
+/// <summary>Provides conversions from collection-changed notifications to list-changed notifications.</summary>
 internal static class ObservableCollectionChangedToListChangedTransformer
 {
     /// <summary>
@@ -19,12 +20,16 @@ internal static class ObservableCollectionChangedToListChangedTransformer
         switch (ea.Action)
         {
             case NotifyCollectionChangedAction.Reset:
-                yield return new(ListChangedType.Reset, -1);
-                break;
+                {
+                    yield return new(ListChangedType.Reset, -1);
+                    break;
+                }
 
             case NotifyCollectionChangedAction.Replace:
-                yield return new(ListChangedType.ItemChanged, ea.NewStartingIndex);
-                break;
+                {
+                    yield return new(ListChangedType.ItemChanged, ea.NewStartingIndex);
+                    break;
+                }
 
             case NotifyCollectionChangedAction.Remove when ea.OldItems is not null:
                 {
@@ -47,12 +52,14 @@ internal static class ObservableCollectionChangedToListChangedTransformer
                 }
 
             case NotifyCollectionChangedAction.Move:
-                // https://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
-                yield return new(
-                                ListChangedType.ItemMoved,
-                                ea.NewStartingIndex,
-                                ea.OldStartingIndex);
-                break;
+                {
+                    // https://msdn.microsoft.com/en-us/library/acskc6xz(v=vs.110).aspx
+                    yield return new(
+                        ListChangedType.ItemMoved,
+                        ea.NewStartingIndex,
+                        ea.OldStartingIndex);
+                    break;
+                }
         }
     }
 }

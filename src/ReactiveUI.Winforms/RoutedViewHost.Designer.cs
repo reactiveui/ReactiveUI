@@ -1,4 +1,4 @@
-﻿namespace ReactiveUI.Winforms;
+namespace ReactiveUI.Winforms;
 
 partial class RoutedControlHost
 {

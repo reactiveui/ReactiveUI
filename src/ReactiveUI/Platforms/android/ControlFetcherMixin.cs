@@ -1,19 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#nullable enable
-
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
 using Android.App;
 using Android.Views;
-
-using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -53,7 +47,11 @@ public static partial class ControlFetcherMixin
     /// to avoid race conditions if called from multiple threads (e.g., during tests or unusual scheduling).
     /// </para>
     /// </remarks>
+#if NET8_0_OR_GREATER
+    private static readonly ConditionalWeakTable<object, ConcurrentDictionary<string, View?>> ViewCache = [];
+#else
     private static readonly ConditionalWeakTable<object, ConcurrentDictionary<string, View?>> ViewCache = new();
+#endif
 
     /// <summary>
     /// Cache of wire-up property lists per runtime type and resolve strategy.
@@ -61,7 +59,8 @@ public static partial class ControlFetcherMixin
     /// <remarks>
     /// This avoids repeated reflection over properties when wiring up controls multiple times.
     /// </remarks>
-    private static readonly ConcurrentDictionary<(Type Type, ResolveStrategy Strategy), PropertyInfo[]> WireUpMembersCache = new();
+    private static readonly ConcurrentDictionary<(Type Type, ResolveStrategy Strategy), PropertyInfo[]>
+        WireUpMembersCache = new();
 
     /// <summary>
     /// Gets a control from an <see cref="Activity"/> using the calling member name as the default resource name.
@@ -71,7 +70,8 @@ public static partial class ControlFetcherMixin
     /// The property name to use as the resource identifier. Defaults to the calling member name.
     /// </param>
     /// <returns>The resolved view if found; otherwise <see langword="null"/>.</returns>
-    [RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
     public static View? GetControl(this Activity activity, [CallerMemberName] string? propertyName = null) =>
         GetCachedControl(
@@ -93,7 +93,8 @@ public static partial class ControlFetcherMixin
     /// The property name to use as the resource identifier. Defaults to the calling member name.
     /// </param>
     /// <returns>The resolved view if found; otherwise <see langword="null"/>.</returns>
-    [RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
     public static View? GetControl(this View view, Assembly assembly, [CallerMemberName] string? propertyName = null) =>
         GetCachedControl(
@@ -108,6 +109,20 @@ public static partial class ControlFetcherMixin
             assembly);
 
     /// <summary>
+    /// Wires view controls to properties on an <see cref="ILayoutViewHost"/> using the implicit resolve strategy.
+    /// </summary>
+    /// <param name="layoutHost">The layout host that exposes a <see cref="ILayoutViewHost.View"/>.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="layoutHost"/> is null.</exception>
+    /// <exception cref="MissingFieldException">
+    /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
+    /// </exception>
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+    public static void WireUpControls(this ILayoutViewHost layoutHost) =>
+        WireUpControls(layoutHost, ResolveStrategy.Implicit);
+
+    /// <summary>
     /// Wires view controls to properties on an <see cref="ILayoutViewHost"/>.
     /// </summary>
     /// <param name="layoutHost">The layout host that exposes a <see cref="ILayoutViewHost.View"/>.</param>
@@ -116,9 +131,12 @@ public static partial class ControlFetcherMixin
     /// <exception cref="MissingFieldException">
     /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
     /// </exception>
-    [RequiresUnreferencedCode("WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
     [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
-    public static void WireUpControls(this ILayoutViewHost layoutHost, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+    public static void WireUpControls(
+        this ILayoutViewHost layoutHost,
+        ResolveStrategy resolveMembers)
     {
         ArgumentExceptionHelper.ThrowIfNull(layoutHost);
 
@@ -134,21 +152,32 @@ public static partial class ControlFetcherMixin
                 var root = layoutHost.View;
                 var resourceName = member.GetResourceName();
 
-                var resolved = root is null
-                    ? null
-                    : root.GetControl(hostType.Assembly, resourceName);
+                var resolved = root?.GetControl(hostType.Assembly, resourceName);
 
                 member.SetValue(layoutHost, resolved);
             }
             catch (Exception ex)
             {
                 throw new MissingFieldException(
-                    "Failed to wire up the Property " + member.Name +
-                    " to a View in your layout with a corresponding identifier.",
+                    $"Failed to wire up the Property {member.Name} to a View in your layout with a corresponding identifier.",
                     ex);
             }
         }
     }
+
+    /// <summary>
+    /// Wires view controls to properties on an Android <see cref="View"/> using the implicit resolve strategy.
+    /// </summary>
+    /// <param name="view">The view whose properties should be wired.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="view"/> is null.</exception>
+    /// <exception cref="MissingFieldException">
+    /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
+    /// </exception>
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+    public static void WireUpControls(this View view) =>
+        WireUpControls(view, ResolveStrategy.Implicit);
 
     /// <summary>
     /// Wires view controls to properties on an Android <see cref="View"/>.
@@ -159,9 +188,10 @@ public static partial class ControlFetcherMixin
     /// <exception cref="MissingFieldException">
     /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
     /// </exception>
-    [RequiresUnreferencedCode("WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
     [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
-    public static void WireUpControls(this View view, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+    public static void WireUpControls(this View view, ResolveStrategy resolveMembers)
     {
         ArgumentExceptionHelper.ThrowIfNull(view);
 
@@ -190,6 +220,23 @@ public static partial class ControlFetcherMixin
     }
 
     /// <summary>
+    /// Wires view controls to properties on an Android <see cref="Fragment"/> using the implicit resolve strategy.
+    /// </summary>
+    /// <param name="fragment">The fragment whose properties should be wired.</param>
+    /// <param name="inflatedView">The inflated view returned from <c>OnCreateView</c>.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="fragment"/> or <paramref name="inflatedView"/> is null.
+    /// </exception>
+    /// <exception cref="MissingFieldException">
+    /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
+    /// </exception>
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+    public static void WireUpControls(this Fragment fragment, View inflatedView) =>
+        WireUpControls(fragment, inflatedView, ResolveStrategy.Implicit);
+
+    /// <summary>
     /// Wires view controls to properties on an Android <see cref="Fragment"/>.
     /// </summary>
     /// <param name="fragment">The fragment whose properties should be wired.</param>
@@ -201,9 +248,13 @@ public static partial class ControlFetcherMixin
     /// <exception cref="MissingFieldException">
     /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
     /// </exception>
-    [RequiresUnreferencedCode("WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
     [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
-    public static void WireUpControls(this Fragment fragment, View inflatedView, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+    public static void WireUpControls(
+        this Fragment fragment,
+        View inflatedView,
+        ResolveStrategy resolveMembers)
     {
         ArgumentExceptionHelper.ThrowIfNull(fragment);
         ArgumentExceptionHelper.ThrowIfNull(inflatedView);
@@ -233,6 +284,20 @@ public static partial class ControlFetcherMixin
     }
 
     /// <summary>
+    /// Wires view controls to properties on an <see cref="Activity"/> using the implicit resolve strategy.
+    /// </summary>
+    /// <param name="activity">The activity whose properties should be wired.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="activity"/> is null.</exception>
+    /// <exception cref="MissingFieldException">
+    /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
+    /// </exception>
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
+    public static void WireUpControls(this Activity activity) =>
+        WireUpControls(activity, ResolveStrategy.Implicit);
+
+    /// <summary>
     /// Wires view controls to properties on an <see cref="Activity"/>.
     /// </summary>
     /// <param name="activity">The activity whose properties should be wired.</param>
@@ -241,9 +306,10 @@ public static partial class ControlFetcherMixin
     /// <exception cref="MissingFieldException">
     /// Thrown when a property cannot be wired to a view with a corresponding resource identifier.
     /// </exception>
-    [RequiresUnreferencedCode("WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "WireUpControls uses reflection to discover properties and attributes that may be trimmed.")]
     [RequiresDynamicCode("WireUpControls uses reflection that may require dynamic code generation.")]
-    public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers = ResolveStrategy.Implicit)
+    public static void WireUpControls(this Activity activity, ResolveStrategy resolveMembers)
     {
         ArgumentExceptionHelper.ThrowIfNull(activity);
 
@@ -283,6 +349,10 @@ public static partial class ControlFetcherMixin
     /// The collection is empty if no matching properties are found.</returns>
     [RequiresUnreferencedCode("Property discovery uses reflection and may require members removed by trimming.")]
     [RequiresDynamicCode("Property discovery uses reflection that may require dynamic code generation.")]
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S4225:Extension methods should not extend object",
+        Justification = "Receiver is intentionally polymorphic across Android and AndroidX Fragment types.")]
     internal static PropertyInfo[] GetWireUpMembers(this object @this, ResolveStrategy resolveStrategy)
     {
         var type = @this.GetType();
@@ -303,48 +373,17 @@ public static partial class ControlFetcherMixin
         {
             var members = key.Type.GetRuntimeProperties();
 
-            // Materialize once into a list then to array; no LINQ in per-wire loops.
-            var list = new List<PropertyInfo>();
+            List<PropertyInfo> list = [];
 
             foreach (var member in members)
             {
-                if (!member.CanWrite)
+                if (member.CanWrite && ShouldWireUpMember(member, key.Strategy))
                 {
-                    continue;
-                }
-
-                switch (key.Strategy)
-                {
-                    case ResolveStrategy.ExplicitOptIn:
-                        if (member.GetCustomAttribute<WireUpResourceAttribute>(inherit: true) is not null)
-                        {
-                            list.Add(member);
-                        }
-
-                        break;
-
-                    case ResolveStrategy.ExplicitOptOut:
-                        if (typeof(View).IsAssignableFrom(member.PropertyType) &&
-                            member.GetCustomAttribute<IgnoreResourceAttribute>(inherit: true) is null)
-                        {
-                            list.Add(member);
-                        }
-
-                        break;
-
-                    default:
-                        // Implicit: either a View-typed property or explicitly marked with WireUpResource.
-                        if (member.PropertyType.IsSubclassOf(typeof(View)) ||
-                            member.GetCustomAttribute<WireUpResourceAttribute>(inherit: true) is not null)
-                        {
-                            list.Add(member);
-                        }
-
-                        break;
+                    list.Add(member);
                 }
             }
 
-            return list.ToArray();
+            return [.. list];
         });
 
     /// <summary>
@@ -359,6 +398,27 @@ public static partial class ControlFetcherMixin
         var attr = member.GetCustomAttribute<WireUpResourceAttribute>();
         return attr?.ResourceNameOverride ?? member.Name;
     }
+
+    /// <summary>
+    /// Determines whether a property should be wired up for the given resolve strategy.
+    /// </summary>
+    /// <param name="member">The candidate property.</param>
+    /// <param name="strategy">The resolve strategy.</param>
+    /// <returns><see langword="true"/> if the property should be wired up; otherwise <see langword="false"/>.</returns>
+    [RequiresUnreferencedCode("Attribute lookup uses reflection and may require members removed by trimming.")]
+    [RequiresDynamicCode("Attribute lookup uses reflection that may require dynamic code generation.")]
+    private static bool ShouldWireUpMember(PropertyInfo member, ResolveStrategy strategy) =>
+        strategy switch
+        {
+            ResolveStrategy.ExplicitOptIn =>
+                member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
+            ResolveStrategy.ExplicitOptOut =>
+                typeof(View).IsAssignableFrom(member.PropertyType) &&
+                member.GetCustomAttribute<IgnoreResourceAttribute>(true) is null,
+            _ =>
+                member.PropertyType.IsSubclassOf(typeof(View)) ||
+                member.GetCustomAttribute<WireUpResourceAttribute>(true) is not null,
+        };
 
     /// <summary>
     /// Gets a cached control for a root view and property name, fetching it if absent.
@@ -384,7 +444,6 @@ public static partial class ControlFetcherMixin
 
         var created = fetchControlFromView(rootView, propertyName);
 
-        // ConcurrentDictionary indexer is safe; last write wins in a race.
         cache[propertyName] = created;
         return created;
     }
@@ -427,7 +486,8 @@ public static partial class ControlFetcherMixin
     /// <returns>The resolved integer resource ID.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="name"/> is null or empty.</exception>
     /// <exception cref="MissingFieldException">Thrown when the name cannot be resolved to an ID.</exception>
-    [RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
     private static int GetControlIdByName(Assembly assembly, string name)
     {
@@ -443,101 +503,126 @@ public static partial class ControlFetcherMixin
             return id;
         }
 
-        throw new MissingFieldException($"No Android resource id named '{name}' was found for assembly '{assembly.FullName}'.");
+        throw new MissingFieldException(
+            $"No Android resource id named '{name}' was found for {nameof(assembly)} '{assembly.FullName}'.");
     }
 
     /// <summary>
-    /// Builds an immutable mapping of resource name to integer ID for an assembly.
+    /// Builds a mapping of resource name to integer ID for an assembly.
     /// </summary>
     /// <param name="assembly">The assembly to inspect.</param>
     /// <returns>A case-insensitive mapping of resource name to ID.</returns>
-    [RequiresUnreferencedCode("Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
     [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
-    private static IReadOnlyDictionary<string, int> BuildIdMap(Assembly assembly)
+    private static Dictionary<string, int> BuildIdMap(Assembly assembly)
+    {
+        var resources = LocateResourceType(assembly);
+
+        var idType = resources.GetNestedType("Id")
+            ?? throw new InvalidOperationException("Id is not a valid nested type in the generated resources.");
+
+        return BuildIdMapFromFields(idType);
+    }
+
+    /// <summary>
+    /// Locates the generated Android resource type for the specified assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to inspect.</param>
+    /// <returns>The generated resource type.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the resource type cannot be located.</exception>
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    [RequiresDynamicCode("Android resource discovery uses reflection that may require dynamic code generation.")]
+    private static Type LocateResourceType(Assembly assembly)
     {
 #if NET8_0_OR_GREATER
-        // Android .NET 8+ generates a resource designer in a referenced assembly.
+        var designerName = FindDesignerAssemblyName(assembly)
+            ?? throw new InvalidOperationException(
+                $"Could not locate the Android resource designer {nameof(assembly)}.");
+
+        var resourcesAssembly = Assembly.Load(designerName);
+
+        return FindResourceType(resourcesAssembly.GetModules(), "ResourceConstant")
+            ?? throw new InvalidOperationException("Could not locate generated resource type 'ResourceConstant'.");
+#else
+        return FindResourceType(assembly.GetModules(), "Resource")
+            ?? throw new InvalidOperationException("Could not locate generated resource type 'Resource'.");
+#endif
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Finds the name of the referenced Android resource designer assembly, if present.
+    /// </summary>
+    /// <param name="assembly">The assembly whose references should be inspected.</param>
+    /// <returns>The designer assembly name, or <see langword="null"/> if not found.</returns>
+    [RequiresUnreferencedCode("Inspects referenced assemblies via reflection.")]
+    private static AssemblyName? FindDesignerAssemblyName(Assembly assembly)
+    {
         var referenced = assembly.GetReferencedAssemblies();
-        AssemblyName? designerName = null;
 
         for (var i = 0; i < referenced.Length; i++)
         {
             var an = referenced[i];
-            if (an.FullName is not null && an.FullName.StartsWith("_Microsoft.Android.Resource.Designer", StringComparison.Ordinal))
+            if (an.FullName?.StartsWith("_Microsoft.Android.Resource.Designer", StringComparison.Ordinal) == true)
             {
-                designerName = an;
-                break;
+                return an;
             }
         }
 
-        if (designerName is null)
-        {
-            throw new InvalidOperationException("Could not locate the Android resource designer assembly.");
-        }
-
-        var resourcesAssembly = Assembly.Load(designerName);
-        var modules = resourcesAssembly.GetModules();
-
-        Type? resources = null;
-        for (var i = 0; i < modules.Length && resources is null; i++)
-        {
-            var types = modules[i].GetTypes();
-            for (var j = 0; j < types.Length; j++)
-            {
-                if (types[j].Name == "ResourceConstant")
-                {
-                    resources = types[j];
-                    break;
-                }
-            }
-        }
-
-        if (resources is null)
-        {
-            throw new InvalidOperationException("Could not locate generated resource type 'ResourceConstant'.");
-        }
-#else
-        var modules = assembly.GetModules();
-        Type? resources = null;
-
-        for (var i = 0; i < modules.Length && resources is null; i++)
-        {
-            var types = modules[i].GetTypes();
-            for (var j = 0; j < types.Length; j++)
-            {
-                if (types[j].Name == "Resource")
-                {
-                    resources = types[j];
-                    break;
-                }
-            }
-        }
-
-        if (resources is null)
-        {
-            throw new InvalidOperationException("Could not locate generated resource type 'Resource'.");
-        }
+        return null;
+    }
 #endif
 
-        var idType = resources.GetNestedType("Id");
-        if (idType is null)
+    /// <summary>
+    /// Searches the supplied modules for a type with the given name.
+    /// </summary>
+    /// <param name="modules">The modules to search.</param>
+    /// <param name="typeName">The simple type name to match.</param>
+    /// <returns>The matching type, or <see langword="null"/> if not found.</returns>
+    [RequiresUnreferencedCode(
+        "Android resource discovery uses reflection over generated resource types that may be trimmed.")]
+    private static Type? FindResourceType(Module[] modules, string typeName)
+    {
+        for (var i = 0; i < modules.Length; i++)
         {
-            throw new InvalidOperationException("Id is not a valid nested type in the generated resources.");
+            var types = modules[i].GetTypes();
+            for (var j = 0; j < types.Length; j++)
+            {
+                if (types[j].Name == typeName)
+                {
+                    return types[j];
+                }
+            }
         }
 
+        return null;
+    }
+
+    /// <summary>
+    /// Builds a case-insensitive name-to-id map from the integer constant fields of the supplied type.
+    /// </summary>
+    /// <param name="idType">The nested <c>Id</c> type containing resource id constants.</param>
+    /// <returns>A case-insensitive mapping of resource name to ID.</returns>
+    [SuppressMessage(
+        "Security Hotspot",
+        "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
+        Justification = "Intentional reflection to wire up the view's own controls.")]
+    [UnconditionalSuppressMessage(
+        "Trimming",
+        "IL2070:UnrecognizedReflectionPattern",
+        Justification = "Reflects over the Android-preserved resource designer type; flow is already RequiresUnreferencedCode.")]
+    private static Dictionary<string, int> BuildIdMapFromFields(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] Type idType)
+    {
         var fields = idType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-        var dict = new Dictionary<string, int>(fields.Length, StringComparer.InvariantCultureIgnoreCase);
+        Dictionary<string, int> dict = new(fields.Length, StringComparer.InvariantCultureIgnoreCase);
 
         for (var i = 0; i < fields.Length; i++)
         {
             var f = fields[i];
-            if (f.FieldType != typeof(int))
-            {
-                continue;
-            }
-
-            // Generated constants use raw constant values.
-            if (f.GetRawConstantValue() is int value)
+            if (f.FieldType == typeof(int) && f.GetRawConstantValue() is int value)
             {
                 dict[f.Name] = value;
             }

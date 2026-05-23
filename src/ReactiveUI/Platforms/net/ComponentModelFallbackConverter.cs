@@ -1,9 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace ReactiveUI;
 
@@ -41,21 +42,17 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
         "ReflectionAnalysis",
         "IL2026:RequiresUnreferencedCode",
         Justification = "The callers of this method ensure getting the converter is trim compatible - i.e. the type is not Nullable<T>.")]
-    public int GetAffinityForObjects([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
+    public int GetAffinityForObjects(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
     {
         ArgumentExceptionHelper.ThrowIfNull(fromType);
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
-        // Return cached capability or compute and cache
         var canConvert = _capabilityCache.GetOrAdd((fromType, toType), static key =>
         {
             try
             {
-                // Check if component model can convert this pair.
-                // String is a special case: for string→T conversions, use the target type's converter
-                // and check CanConvertFrom(string) rather than CanConvertTo(string).
-                // CanConvertTo(string) returns true for nearly all TypeConverters, causing false
-                // positives that lead to NotSupportedException at conversion time.
                 var (lookupFrom, lookupTo) = key.From == typeof(string) ? (key.To, key.From) : (key.From, key.To);
                 var converter = TypeDescriptor.GetConverter(lookupFrom);
                 return key.From == typeof(string)
@@ -64,17 +61,20 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
             }
             catch
             {
-                // Component model threw - assume cannot convert
                 return false;
             }
         });
 
-        // Affinity 1 = last resort (only when nothing else works)
         return canConvert ? 1 : 0;
     }
 
     /// <inheritdoc/>
-    public bool TryConvert([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType, object from, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType, object? conversionHint, [NotNullWhen(true)] out object? result)
+    public bool TryConvert(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+        object from,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType,
+        object? conversionHint,
+        [NotNullWhen(true)] out object? result)
     {
         ArgumentExceptionHelper.ThrowIfNull(fromType);
         ArgumentExceptionHelper.ThrowIfNull(from);
@@ -82,7 +82,6 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
 
         try
         {
-            // Get or create cached converter for this pair
             var converter = GetConverter(fromType, toType);
             if (converter is null)
             {
@@ -91,8 +90,6 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
                 return false;
             }
 
-            // Perform conversion
-            // String is a special case: use ConvertFrom for string→T conversions
             var converted = (fromType == typeof(string))
                 ? converter.ConvertFrom(from)
                 : converter.ConvertTo(from, toType);
@@ -103,28 +100,36 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
                 return true;
             }
 
-            // Conversion returned null - treat as failure
             result = null;
             return false;
         }
         catch (FormatException ex)
         {
-            // Format exception = conversion failed (expected for invalid input)
-            this.Log().Debug(ex, "Component model conversion failed (FormatException) for {0} -> {1}", fromType, toType);
+            this.Log().Debug(
+                ex,
+                "Component model conversion failed (FormatException) for {0} -> {1}",
+                fromType,
+                toType);
             result = null;
             return false;
         }
         catch (Exception ex) when (ex.InnerException is FormatException or IndexOutOfRangeException)
         {
-            // Component model often wraps format exceptions
-            this.Log().Debug(ex, "Component model conversion failed (wrapped exception) for {0} -> {1}", fromType, toType);
+            this.Log().Debug(
+                ex,
+                "Component model conversion failed (wrapped exception) for {0} -> {1}",
+                fromType,
+                toType);
             result = null;
             return false;
         }
         catch (Exception ex)
         {
-            // Unexpected exception - log as warning and treat as failure
-            this.Log().Warn(ex, "Component model conversion threw unexpected exception for {0} -> {1}", fromType, toType);
+            this.Log().Warn(
+                ex,
+                "Component model conversion threw unexpected exception for {0} -> {1}",
+                fromType,
+                toType);
             result = null;
             return false;
         }
@@ -142,19 +147,21 @@ public sealed class ComponentModelFallbackConverter : IBindingFallbackConverter
         "ReflectionAnalysis",
         "IL2026:RequiresUnreferencedCode",
         Justification = "The callers of this method ensure getting the converter is trim compatible - i.e. the type is not Nullable<T>.")]
-    private static TypeConverter? GetConverter([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
+    private static TypeConverter? GetConverter(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
     {
-        // String is a special case: for string→T conversions use the target's converter and ConvertFrom.
-        // Check CanConvertFrom(string) to avoid false positives from CanConvertTo(string),
-        // which is true for nearly all TypeConverters and would cause NotSupportedException.
         var lookupFrom = fromType == typeof(string) ? toType : fromType;
 
         return _converterCache.GetOrAdd((fromType, toType), _ =>
         {
             var converter = TypeDescriptor.GetConverter(lookupFrom);
-            return fromType == typeof(string)
-                ? (converter?.CanConvertFrom(typeof(string)) == true ? converter : null)
-                : (converter?.CanConvertTo(toType) == true ? converter : null);
+            if (fromType == typeof(string))
+            {
+                return converter.CanConvertFrom(typeof(string)) ? converter : null;
+            }
+
+            return converter.CanConvertTo(toType) ? converter : null;
         });
     }
 }

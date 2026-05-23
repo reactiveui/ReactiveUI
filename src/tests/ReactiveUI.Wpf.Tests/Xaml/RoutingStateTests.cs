@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,10 +10,22 @@ using ReactiveUI.Tests.Xaml.Mocks;
 
 namespace ReactiveUI.Tests.Xaml;
 
+/// <summary>
+/// Tests for <see cref="RoutingState"/>.
+/// </summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class RoutingStateTests
 {
+    private const int ExpectedCountTwo = 2;
+    private const int ExpectedCountThree = 3;
+    private const int ExpectedCountFour = 4;
+    private const int ExpectedCountFive = 5;
+    private const int ExpectedCountSix = 6;
+    private const int ExpectedCountSeven = 7;
+    private const int ExpectedCountEight = 8;
+    private const int ExpectedCountNine = 9;
+    private const int ThrownExceptionTimeoutSeconds = 5;
 
     /// <summary>
     /// Navigations the push pop test.
@@ -38,7 +50,7 @@ public class RoutingStateTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.NavigationStack).Count().IsEqualTo(2);
+            await Assert.That(fixture.NavigationStack).Count().IsEqualTo(ExpectedCountTwo);
             await Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync()).IsTrue();
         }
 
@@ -65,67 +77,18 @@ public class RoutingStateTests
         await Assert.That(output).Count().IsEqualTo(1);
 
         fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
-        await Assert.That(output).Count().IsEqualTo(2);
+        await Assert.That(output).Count().IsEqualTo(ExpectedCountTwo);
 
-        fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output).Count().IsEqualTo(3);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("B");
-        }
+        await NavigateForwardAndAssert(fixture, output, "B", ExpectedCountThree);
 
-        var navigatedTo = await fixture.NavigateBack.Execute();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output.Last()?.GetType()).IsEqualTo(navigatedTo?.GetType());
-            await Assert.That(output).Count().IsEqualTo(4);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("A");
-        }
+        await NavigateBackAndAssert(fixture, output, ExpectedCountFour, "A");
 
-        await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo((navigatedTo as TestViewModel)?.SomeProp);
+        await NavigateForwardAndAssert(fixture, output, "B", ExpectedCountFive);
+        await NavigateForwardAndAssert(fixture, output, "C", ExpectedCountSix);
 
-        fixture.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output).Count().IsEqualTo(5);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("B");
-        }
-
-        fixture.Navigate.Execute(new TestViewModel { SomeProp = "C" }).Subscribe();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output).Count().IsEqualTo(6);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("C");
-        }
-
-        navigatedTo = await fixture.NavigateBack.Execute();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output.Last()?.GetType()).IsEqualTo(navigatedTo?.GetType());
-            await Assert.That(output).Count().IsEqualTo(7);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("B");
-        }
-
-        await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo((navigatedTo as TestViewModel)?.SomeProp);
-
-        navigatedTo = await fixture.NavigateBack.Execute();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output.Last()?.GetType()).IsEqualTo(navigatedTo?.GetType());
-            await Assert.That(output).Count().IsEqualTo(8);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("A");
-        }
-
-        await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo((navigatedTo as TestViewModel)?.SomeProp);
-
-        navigatedTo = await fixture.NavigateBack.Execute();
-        using (Assert.Multiple())
-        {
-            await Assert.That(output.Last()?.GetType()).IsEqualTo(navigatedTo?.GetType());
-            await Assert.That(output).Count().IsEqualTo(9);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsNull();
-            await Assert.That(navigatedTo as TestViewModel).IsNull();
-        }
+        await NavigateBackAndAssert(fixture, output, ExpectedCountSeven, "B");
+        await NavigateBackAndAssert(fixture, output, ExpectedCountEight, "A");
+        await NavigateBackAndAssert(fixture, output, ExpectedCountNine, null);
     }
 
     /// <summary>
@@ -145,20 +108,20 @@ public class RoutingStateTests
         await Assert.That(output).Count().IsEqualTo(1);
 
         fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
-        await Assert.That(output).Count().IsEqualTo(2);
+        await Assert.That(output).Count().IsEqualTo(ExpectedCountTwo);
 
         fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
         using (Assert.Multiple())
         {
-            await Assert.That(output).Count().IsEqualTo(3);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("B");
+            await Assert.That(output).Count().IsEqualTo(ExpectedCountThree);
+            await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo("B");
         }
 
         fixture.Router.NavigateBack.Execute().Subscribe();
         using (Assert.Multiple())
         {
-            await Assert.That(output).Count().IsEqualTo(4);
-            await Assert.That((output.Last() as TestViewModel)?.SomeProp).IsEqualTo("A");
+            await Assert.That(output).Count().IsEqualTo(ExpectedCountFour);
+            await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo("A");
         }
     }
 
@@ -182,7 +145,7 @@ public class RoutingStateTests
         using (Assert.Multiple())
         {
             await Assert.That(fixture.Router.NavigationStack).Count().IsEqualTo(1);
-            await Assert.That(ReferenceEquals(fixture.Router.NavigationStack.First(), viewModel)).IsTrue();
+            await Assert.That(ReferenceEquals(fixture.Router.NavigationStack[0], viewModel)).IsTrue();
         }
     }
 
@@ -203,7 +166,7 @@ public class RoutingStateTests
 
         // Navigate again
         fixture.Navigate.Execute(new TestViewModel()).Subscribe();
-        await Assert.That(fixture.NavigationStack).Count().IsEqualTo(2);
+        await Assert.That(fixture.NavigationStack).Count().IsEqualTo(ExpectedCountTwo);
 
         // NavigateBack should execute synchronously on ImmediateScheduler
         fixture.NavigateBack.Execute().Subscribe();
@@ -214,6 +177,10 @@ public class RoutingStateTests
         await Assert.That(fixture.NavigationStack).Count().IsEqualTo(1);
     }
 
+    /// <summary>
+    /// Verifies that navigation exceptions are surfaced through <c>ThrownExceptions</c>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
     public async Task RoutingStateThrows()
@@ -224,7 +191,7 @@ public class RoutingStateTests
         // Set up observable to capture the thrown exception
         var exceptionTask = fixture.Navigate.ThrownExceptions
             .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(5))
+            .Timeout(TimeSpan.FromSeconds(ThrownExceptionTimeoutSeconds))
             .ToTask();
 
         // Execute with null to trigger the exception - subscribe with error handler to catch it
@@ -458,12 +425,62 @@ public class RoutingStateTests
     }
 
     /// <summary>
+    /// Navigates forward to a new <see cref="TestViewModel"/> and asserts the observed
+    /// output count and the top-of-stack property value.
+    /// </summary>
+    /// <param name="fixture">The routing state under test.</param>
+    /// <param name="output">The captured sequence of current view models.</param>
+    /// <param name="someProp">The property value to navigate to and expect on top.</param>
+    /// <param name="expectedCount">The expected number of observed view models.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    private static async Task NavigateForwardAndAssert(RoutingState fixture, List<IRoutableViewModel?> output, string someProp, int expectedCount)
+    {
+        fixture.Navigate.Execute(new TestViewModel { SomeProp = someProp }).Subscribe();
+        using (Assert.Multiple())
+        {
+            await Assert.That(output).Count().IsEqualTo(expectedCount);
+            await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo(someProp);
+        }
+    }
+
+    /// <summary>
+    /// Navigates back and asserts the observed output count, that the top-of-stack type
+    /// matches the navigated-to view model, and the expected top property value.
+    /// </summary>
+    /// <param name="fixture">The routing state under test.</param>
+    /// <param name="output">The captured sequence of current view models.</param>
+    /// <param name="expectedCount">The expected number of observed view models.</param>
+    /// <param name="expectedProp">The expected top property value, or <see langword="null"/> when the stack is empty.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    private static async Task NavigateBackAndAssert(RoutingState fixture, List<IRoutableViewModel?> output, int expectedCount, string? expectedProp)
+    {
+        var navigatedTo = await fixture.NavigateBack.Execute();
+        using (Assert.Multiple())
+        {
+            await Assert.That(output[^1]?.GetType()).IsEqualTo(navigatedTo?.GetType());
+            await Assert.That(output).Count().IsEqualTo(expectedCount);
+            await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo(expectedProp);
+        }
+
+        await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo((navigatedTo as TestViewModel)?.SomeProp);
+
+        if (expectedProp is not null)
+        {
+            return;
+        }
+
+        await Assert.That(navigatedTo as TestViewModel).IsNull();
+    }
+
+    /// <summary>
     /// Alternate view model for testing.
     /// </summary>
-    private class AlternateViewModel : ReactiveUI.ReactiveObject, IRoutableViewModel
+    private sealed class AlternateViewModel : ReactiveUI.ReactiveObject, IRoutableViewModel
     {
+        /// <inheritdoc/>
         public string? UrlPathSegment { get; set; }
 
+        /// <inheritdoc/>
         public IScreen HostScreen { get; set; } = null!;
     }
 }

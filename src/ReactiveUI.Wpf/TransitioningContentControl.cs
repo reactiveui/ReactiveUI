@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-
 using ReactiveUI.Helpers;
 
 // This control is gratefully borrowed from http://blog.landdolphin.net/?p=17
@@ -152,10 +151,10 @@ public class TransitioningContentControl : ContentControl
     /// The default value is <see cref="TransitionType.Fade"/>.
     /// </remarks>
     public static readonly DependencyProperty TransitionProperty = DependencyProperty.RegisterAttached(
-     nameof(Transition),
-     typeof(TransitionType),
-     typeof(TransitioningContentControl),
-     new PropertyMetadata(TransitionType.Fade));
+        nameof(Transition),
+        typeof(TransitionType),
+        typeof(TransitioningContentControl),
+        new(TransitionType.Fade));
 
     /// <summary>
     /// Identifies the <see cref="Direction"/> dependency property.
@@ -164,10 +163,10 @@ public class TransitioningContentControl : ContentControl
     /// The default value is <see cref="TransitionDirection.Left"/>.
     /// </remarks>
     public static readonly DependencyProperty TransitionDirectionProperty = DependencyProperty.RegisterAttached(
-     nameof(TransitionDirection),
-     typeof(TransitionDirection),
-     typeof(TransitioningContentControl),
-     new PropertyMetadata(TransitionDirection.Left));
+        nameof(TransitionDirection),
+        typeof(TransitionDirection),
+        typeof(TransitioningContentControl),
+        new(TransitionDirection.Left));
 
     /// <summary>
     /// Identifies the <see cref="Duration"/> dependency property.
@@ -176,15 +175,54 @@ public class TransitioningContentControl : ContentControl
     /// The default value is 0.3 seconds.
     /// </remarks>
     public static readonly DependencyProperty TransitionDurationProperty = DependencyProperty.RegisterAttached(
-     nameof(Duration),
-     typeof(TimeSpan),
-     typeof(TransitioningContentControl),
-     new PropertyMetadata(TimeSpan.FromSeconds(0.3)));
+        nameof(Duration),
+        typeof(TimeSpan),
+        typeof(TransitioningContentControl),
+        new(TimeSpan.FromSeconds(DefaultDurationSeconds)));
 
+    /// <summary>
+    /// The name of the visual state group that contains the transition states.
+    /// </summary>
     private const string PresentationGroup = "PresentationStates";
+
+    /// <summary>
+    /// The name of the resting (non-transitioning) visual state.
+    /// </summary>
     private const string NormalState = "Normal";
+
+    /// <summary>
+    /// The default transition duration, in seconds.
+    /// </summary>
+    private const double DefaultDurationSeconds = 0.3;
+
+    /// <summary>
+    /// The DPI scale used when DPI scaling is overridden for testing.
+    /// </summary>
+    private const double OverrideDpiScale = 1.25;
+
+    /// <summary>
+    /// The minimum pixel dimension used when creating a render target bitmap.
+    /// </summary>
+    private const double MinimumPixelDimension = 1.0;
+
+    /// <summary>
+    /// The number of states the bounce transition waits for before completing.
+    /// </summary>
+    private const int BounceTransitionStateCount = 2;
+
+    /// <summary>
+    /// A value indicating whether a transition is currently in progress.
+    /// </summary>
     private bool _isTransitioning;
+
+    /// <summary>
+    /// The storyboard used for the starting (outgoing) phase of a transition.
+    /// </summary>
     private Storyboard? _startingTransition;
+
+    /// <summary>
+    /// The storyboard used for the completing (incoming) phase of a transition.
+    /// </summary>
     private Storyboard? _completingTransition;
 
     /// <summary>
@@ -203,7 +241,14 @@ public class TransitioningContentControl : ContentControl
     /// The event is raised after the control returns to the <c>Normal</c> visual state and after the previous content
     /// snapshot has been released.
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RCS1159:Use EventHandler<T>", Justification = "Using WPF's RoutedEventHandler pattern.")]
+    [SuppressMessage(
+        "Design",
+        "RCS1159:Use EventHandler<T>",
+        Justification = "Using WPF's RoutedEventHandler pattern.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S3908:Use EventHandler<TEventArgs>",
+        Justification = "Public WPF RoutedEventHandler event; matches the RCS1159 suppression.")]
     public event RoutedEventHandler? TransitionCompleted;
 
     /// <summary>
@@ -213,7 +258,14 @@ public class TransitioningContentControl : ContentControl
     /// The event is raised when a transition is about to begin (after the control has prepared the outgoing snapshot and
     /// set the new content), but before the first visual state is entered.
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "RCS1159:Use EventHandler<T>", Justification = "Using WPF's RoutedEventHandler pattern.")]
+    [SuppressMessage(
+        "Design",
+        "RCS1159:Use EventHandler<T>",
+        Justification = "Using WPF's RoutedEventHandler pattern.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S3908:Use EventHandler<TEventArgs>",
+        Justification = "Public WPF RoutedEventHandler event; matches the RCS1159 suppression.")]
     public event RoutedEventHandler? TransitionStarted;
 
     /// <summary>
@@ -315,7 +367,11 @@ public class TransitioningContentControl : ContentControl
     /// Gets or sets the transition duration.
     /// </summary>
     /// <value>The duration.</value>
-    public TimeSpan Duration { get => (TimeSpan)GetValue(TransitionDurationProperty); set => SetValue(TransitionDurationProperty, value); }
+    public TimeSpan Duration
+    {
+        get => (TimeSpan)GetValue(TransitionDurationProperty);
+        set => SetValue(TransitionDurationProperty, value);
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether to override DPI scaling for testing.
@@ -331,10 +387,12 @@ public class TransitioningContentControl : ContentControl
         set
         {
             _startingTransition = value;
-            if (_startingTransition is not null)
+            if (_startingTransition is null)
             {
-                SetTransitionDefaultValues();
+                return;
             }
+
+            SetTransitionDefaultValues();
         }
     }
 
@@ -354,11 +412,13 @@ public class TransitioningContentControl : ContentControl
 
             _completingTransition = value;
 
-            if (_completingTransition is not null)
+            if (_completingTransition is null)
             {
-                CompletingTransition!.Completed += OnTransitionCompleted;
-                SetTransitionDefaultValues();
+                return;
             }
+
+            CompletingTransition!.Completed += OnTransitionCompleted;
+            SetTransitionDefaultValues();
         }
     }
 
@@ -441,7 +501,7 @@ public class TransitioningContentControl : ContentControl
 
         if (OverrideDpi)
         {
-            dpiScale = new DpiScale(1.25, 1.25);
+            dpiScale = new(OverrideDpiScale, OverrideDpiScale);
         }
 
         return dpiScale;
@@ -458,21 +518,21 @@ public class TransitioningContentControl : ContentControl
     /// </remarks>
     internal static RenderTargetBitmap GetRenderTargetBitmapFromUiElement(UIElement uiElement)
     {
-        if (uiElement.RenderSize.Height == 0 || uiElement.RenderSize.Width == 0)
+        if (uiElement.RenderSize.Height <= 0 || uiElement.RenderSize.Width <= 0)
         {
-            return default!;
+            return null!;
         }
 
         var dpiScale = GetDpiScaleForElement(uiElement);
 
-        var pixelWidth = Math.Max(1.0, uiElement.RenderSize.Width * dpiScale.DpiScaleX);
-        var pixelHeight = Math.Max(1.0, uiElement.RenderSize.Height * dpiScale.DpiScaleY);
+        var pixelWidth = Math.Max(MinimumPixelDimension, uiElement.RenderSize.Width * dpiScale.DpiScaleX);
+        var pixelHeight = Math.Max(MinimumPixelDimension, uiElement.RenderSize.Height * dpiScale.DpiScaleY);
         var renderTargetBitmap = new RenderTargetBitmap(
-                                                        Convert.ToInt32(pixelWidth),
-                                                        Convert.ToInt32(pixelHeight),
-                                                        dpiScale.PixelsPerInchX,
-                                                        dpiScale.PixelsPerInchY,
-                                                        PixelFormats.Pbgra32);
+            Convert.ToInt32(pixelWidth),
+            Convert.ToInt32(pixelHeight),
+            dpiScale.PixelsPerInchX,
+            dpiScale.PixelsPerInchY,
+            PixelFormats.Pbgra32);
 
         renderTargetBitmap.Render(uiElement);
         renderTargetBitmap.Freeze();
@@ -631,7 +691,8 @@ public class TransitioningContentControl : ContentControl
 
         if (PresentationStateGroup?.States is not IEnumerable<VisualState> states)
         {
-            throw new InvalidOperationException("Visual state group is not initialized or states collection is invalid.");
+            throw new InvalidOperationException(
+                "Visual state group is not initialized or states collection is invalid.");
         }
 
         var transition = states
@@ -639,7 +700,8 @@ public class TransitioningContentControl : ContentControl
             .Select(o => o.Storyboard)
             .FirstOrDefault();
 
-        return transition ?? throw new InvalidOperationException($"Transition '{transitionName}' not found in visual state group.");
+        return transition ??
+               throw new InvalidOperationException($"Transition '{transitionName}' not found in visual state group.");
     }
 
     /// <summary>
@@ -651,20 +713,28 @@ public class TransitioningContentControl : ContentControl
         switch (Transition)
         {
             case TransitionType.Fade:
-                SetFadeTransitionDefaults();
-                break;
+                {
+                    SetFadeTransitionDefaults();
+                    break;
+                }
 
             case TransitionType.Slide:
-                SetSlideTransitionDefaults();
-                break;
+                {
+                    SetSlideTransitionDefaults();
+                    break;
+                }
 
             case TransitionType.Move:
-                SetMoveTransitionDefaults();
-                break;
+                {
+                    SetMoveTransitionDefaults();
+                    break;
+                }
 
             case TransitionType.Bounce:
-                SetBounceTransitionDefaults();
-                break;
+                {
+                    SetBounceTransitionDefaults();
+                    break;
+                }
 
             case TransitionType.Drop:
                 break;
@@ -699,17 +769,19 @@ public class TransitioningContentControl : ContentControl
         VisualStateManager.GoToState(this, NormalState, false);
         _isTransitioning = false;
 
-        if (PreviousImageSite is not null)
+        if (PreviousImageSite is null)
         {
-            if (PreviousImageSite.Source is RenderTargetBitmap renderTargetBitmap)
-            {
-                renderTargetBitmap.Clear();
-            }
-
-            // https://github.com/dotnet/wpf/issues/2397
-            PreviousImageSite.Source = null;
-            PreviousImageSite.UpdateLayout();
+            return;
         }
+
+        if (PreviousImageSite.Source is RenderTargetBitmap renderTargetBitmap)
+        {
+            renderTargetBitmap.Clear();
+        }
+
+        // https://github.com/dotnet/wpf/issues/2397
+        PreviousImageSite.Source = null;
+        PreviousImageSite.UpdateLayout();
     }
 
     /// <summary>
@@ -721,13 +793,13 @@ public class TransitioningContentControl : ContentControl
     {
         AbortTransition();
 
-        TransitionCompleted?.Invoke(this, new RoutedEventArgs());
+        TransitionCompleted?.Invoke(this, new());
     }
 
     /// <summary>
     /// Raises the TransitionStarted event to signal that a transition has begun.
     /// </summary>
-    private void RaiseTransitionStarted() => TransitionStarted?.Invoke(this, new RoutedEventArgs());
+    private void RaiseTransitionStarted() => TransitionStarted?.Invoke(this, new());
 
     /// <summary>
     /// Queues a visual transition to display the specified content, applying the configured transition effect if
@@ -760,7 +832,7 @@ public class TransitioningContentControl : ContentControl
         if (Transition == TransitionType.Bounce)
         {
             (startingTransitionName, transitionInName) = ConfigureBounceTransition();
-            statesRemaining = 2;
+            statesRemaining = BounceTransitionStateCount;
             StartingTransition!.Completed += NextState;
         }
         else
@@ -784,11 +856,13 @@ public class TransitioningContentControl : ContentControl
         void NextState(object? o, EventArgs e)
         {
             StartingTransition!.Completed -= NextState;
-            if (statesRemaining == 1)
+            if (statesRemaining != 1)
             {
-                statesRemaining--;
-                VisualStateManager.GoToState(this, transitionInName, false);
+                return;
             }
+
+            statesRemaining--;
+            VisualStateManager.GoToState(this, transitionInName, false);
         }
     }
 }

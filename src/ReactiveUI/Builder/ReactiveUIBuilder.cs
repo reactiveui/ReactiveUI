@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Reflection;
-
 using Splat.Builder;
 
 namespace ReactiveUI.Builder;
@@ -15,16 +15,46 @@ namespace ReactiveUI.Builder;
 /// </summary>
 public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiveUIInstance
 {
+#if ANDROID || IOS
+    /// <summary>The default small cache limit for mobile platforms.</summary>
+    private const int DefaultSmallCacheLimit = 32;
+
+    /// <summary>The default big cache limit for mobile platforms.</summary>
+    private const int DefaultBigCacheLimit = 64;
+#else
+    /// <summary>The default small cache limit for desktop platforms.</summary>
+    private const int DefaultSmallCacheLimit = 64;
+
+    /// <summary>The default big cache limit for desktop platforms.</summary>
+    private const int DefaultBigCacheLimit = 256;
+#endif
+
+    /// <summary>Tracks whether platform registrations have been applied.</summary>
     private bool _platformRegistered;
+
+    /// <summary>Tracks whether core registrations have been applied.</summary>
     private bool _coreRegistered;
+
+    /// <summary>Whether to assign the main-thread scheduler to RxApp after build.</summary>
     private bool _setRxAppMainScheduler;
+
+    /// <summary>Whether to assign the task-pool scheduler to RxApp after build.</summary>
     private bool _setRxAppTaskPoolScheduler;
+
+    /// <summary>Optional custom exception handler for unhandled ReactiveUI errors.</summary>
     private IObserver<Exception>? _exceptionHandler;
+
+    /// <summary>Optional suspension host for application lifecycle management.</summary>
     private ISuspensionHost? _suspensionHost;
+
+    /// <summary>Optional override for the small memoizing-cache capacity.</summary>
     private int? _smallCacheLimit;
+
+    /// <summary>Optional override for the big memoizing-cache capacity.</summary>
     private int? _bigCacheLimit;
+
+    /// <summary>Optional message bus instance registered during build.</summary>
     private IMessageBus? _messageBus;
-    private bool _reactiveUiInitialized;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUIBuilder" /> class.
@@ -37,7 +67,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     {
         CurrentMutable.InitializeSplat();
 
-        // Register the ConverterService instance so it's accessible to registrations
         CurrentMutable.RegisterConstant(() => ConverterService);
     }
 
@@ -74,11 +103,21 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Configures the main thread scheduler for ReactiveUI.
     /// </summary>
     /// <param name="scheduler">The main thread scheduler to use.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler) =>
+        WithMainThreadScheduler(scheduler, true);
+
+    /// <summary>
+    /// Configures the main thread scheduler for ReactiveUI.
+    /// </summary>
+    /// <param name="scheduler">The main thread scheduler to use.</param>
     /// <param name="setRxApp">if set to <c>true</c> [set rx application].</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
-    public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp = true)
+    public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp)
     {
         _setRxAppMainScheduler = setRxApp;
         MainThreadScheduler = scheduler;
@@ -89,11 +128,21 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Configures the task pool scheduler for ReactiveUI.
     /// </summary>
     /// <param name="scheduler">The task pool scheduler to use.</param>
+    /// <returns>
+    /// The builder instance for chaining.
+    /// </returns>
+    public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler) =>
+        WithTaskPoolScheduler(scheduler, true);
+
+    /// <summary>
+    /// Configures the task pool scheduler for ReactiveUI.
+    /// </summary>
+    /// <param name="scheduler">The task pool scheduler to use.</param>
     /// <param name="setRxApp">if set to <c>true</c> [set rx application].</param>
     /// <returns>
     /// The builder instance for chaining.
     /// </returns>
-    public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp = true)
+    public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp)
     {
         _setRxAppTaskPoolScheduler = setRxApp;
         TaskpoolScheduler = scheduler;
@@ -138,7 +187,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     {
         ArgumentExceptionHelper.ThrowIfNull(registration);
 
-        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        DependencyResolverRegistrar registrar = new(CurrentMutable);
         registration.Register(registrar);
 
         return this;
@@ -155,7 +204,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             return this;
         }
 
-        // Immediately register the platform ReactiveUI services into the provided resolver.
         WithPlatformModule<PlatformRegistrations>();
 
         _platformRegistered = true;
@@ -170,15 +218,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     {
         if (!_coreRegistered)
         {
-            // Register all standard converters to the ConverterService
             RegisterStandardConverters();
 
-            // Immediately register the core ReactiveUI services into the provided resolver (Splat).
             WithPlatformModule<Registrations>();
             _coreRegistered = true;
         }
 
-        // Configure schedulers if specified
         ConfigureSchedulers();
 
         return this;
@@ -189,12 +234,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <param name="assembly">The assembly to scan for views.</param>
     /// <returns>The builder instance for method chaining.</returns>
-    [RequiresUnreferencedCode("Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
+    [RequiresUnreferencedCode(
+        "Scans assembly for IViewFor implementations using reflection. For AOT compatibility, use the ReactiveUIBuilder pattern to RegisterView explicitly.")]
     public IReactiveUIBuilder WithViewsFromAssembly(Assembly assembly)
     {
         ArgumentExceptionHelper.ThrowIfNull(assembly);
 
-        // Register views immediately against the builder's resolver
         CurrentMutable.RegisterViewsForViewModels(assembly);
         return this;
     }
@@ -204,11 +249,15 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="T">The type of the registration module that implements IWantsToRegisterStuff.</typeparam>
     /// <returns>The builder instance for method chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder WithPlatformModule<T>()
         where T : IWantsToRegisterStuff, new()
     {
-        var registration = new T();
-        var registrar = new DependencyResolverRegistrar(CurrentMutable);
+        T registration = new();
+        DependencyResolverRegistrar registrar = new(CurrentMutable);
         registration.Register(registrar);
         return this;
     }
@@ -250,7 +299,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder ForCustomPlatform(
         IScheduler mainThreadScheduler,
         Action<IMutableDependencyResolver> platformServices) =>
-            WithMainThreadScheduler(mainThreadScheduler)
+        WithMainThreadScheduler(mainThreadScheduler)
             .WithRegistrationOnBuild(platformServices);
 
     /// <summary>
@@ -319,7 +368,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         WithRegistrationOnBuild(resolver =>
             resolver.Register<IViewLocator>(() =>
             {
-                var viewLocator = new DefaultViewLocator();
+                DefaultViewLocator viewLocator = new();
                 configure(viewLocator);
                 return viewLocator;
             }));
@@ -333,10 +382,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         WithRegistrationOnBuild(resolver =>
         {
             var currentDriver = Current?.GetService<ISuspensionDriver>();
-            if (currentDriver != null)
+            if (currentDriver == null)
             {
-                configure(currentDriver);
+                return;
             }
+
+            configure(currentDriver);
         });
 
     /// <summary>
@@ -544,9 +595,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
 
-        // Import typed converters
-        var typedConverters = resolver.GetServices<IBindingTypeConverter>();
-        foreach (var converter in typedConverters)
+        foreach (var converter in resolver.GetServices<IBindingTypeConverter>())
         {
             if (converter is not null)
             {
@@ -554,9 +603,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             }
         }
 
-        // Import fallback converters
-        var fallbackConverters = resolver.GetServices<IBindingFallbackConverter>();
-        foreach (var converter in fallbackConverters)
+        foreach (var converter in resolver.GetServices<IBindingFallbackConverter>())
         {
             if (converter is not null)
             {
@@ -564,9 +611,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             }
         }
 
-        // Import set-method converters
-        var setMethodConverters = resolver.GetServices<ISetMethodBindingConverter>();
-        foreach (var converter in setMethodConverters)
+        foreach (var converter in resolver.GetServices<ISetMethodBindingConverter>())
         {
             if (converter is not null)
             {
@@ -604,6 +649,10 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="TAppState">The type of the application state to manage.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder WithSuspensionHost<TAppState>()
     {
         _suspensionHost = new SuspensionHost<TAppState>();
@@ -639,9 +688,13 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
-            WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
+        WithRegistration(static resolver => resolver.Register<TViewModel>(static () => new()));
 
     /// <summary>
     /// Registers a constant instance of the specified view model type in the dependency resolver.
@@ -651,22 +704,31 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TViewModel">The type of the view model to register. Must be a class that implements IReactiveObject and has a parameterless
     /// constructor.</typeparam>
     /// <returns>The current builder instance, enabling further configuration of the dependency resolver.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterConstantViewModel<TViewModel>()
         where TViewModel : class, IReactiveObject, new() =>
-            WithRegistration(static resolver => resolver.RegisterConstant(new TViewModel()));
+        WithRegistration(static resolver => resolver.RegisterConstant(new TViewModel()));
 
     /// <summary>
     /// Registers a custom view model with the dependency resolver.
     /// </summary>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
 #if NET6_0_OR_GREATER
-    public IReactiveUIBuilder RegisterSingletonViewModel<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
+    public IReactiveUIBuilder RegisterSingletonViewModel<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TViewModel>()
 #else
     public IReactiveUIBuilder RegisterSingletonViewModel<TViewModel>()
 #endif
         where TViewModel : class, IReactiveObject, new() =>
-            WithRegistration(static resolver => resolver.RegisterLazySingleton<TViewModel>(static () => new()));
+        WithRegistration(static resolver => resolver.RegisterLazySingleton<TViewModel>(static () => new()));
 
     /// <summary>
     /// Registers a custom view for a specific view model.
@@ -674,10 +736,14 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
-            WithRegistration(static resolver => resolver.Register<IViewFor<TViewModel>>(static () => new TView()));
+        WithRegistration(static resolver => resolver.Register<IViewFor<TViewModel>>(static () => new TView()));
 
     /// <summary>
     /// Registers a custom view for a specific view model.
@@ -685,10 +751,15 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="TView">The view type.</typeparam>
     /// <typeparam name="TViewModel">The view model type.</typeparam>
     /// <returns>The builder instance for chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IReactiveUIBuilder RegisterSingletonView<TView, TViewModel>()
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject =>
-            WithRegistration(static resolver => resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView()));
+        WithRegistration(static resolver =>
+            resolver.RegisterLazySingleton<IViewFor<TViewModel>>(static () => new TView()));
 
     /// <summary>
     /// Builds the application and returns the ReactiveUI instance wrapper.
@@ -702,7 +773,16 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             throw new InvalidOperationException("Failed to create ReactiveUIInstance instance");
         }
 
-        InitializeReactiveUI();
+        InitializeStaticState();
+
+        RxConverters.SetService(ConverterService);
+
+        if (_messageBus is not null)
+        {
+            MessageBus.Current = _messageBus;
+        }
+
+        RxAppBuilder.MarkAsInitialized();
 
         return appInstance;
     }
@@ -797,7 +877,11 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>());
+            action(
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>());
         }
 
         return this;
@@ -823,7 +907,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         if (action is not null)
         {
             var current = Current;
-            action(current.GetService<T1>(), current.GetService<T2>(), current.GetService<T3>(), current.GetService<T4>(), current.GetService<T5>());
+            action(
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>());
         }
 
         return this;
@@ -851,12 +940,12 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>());
         }
 
         return this;
@@ -874,7 +963,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T7">The seventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?> action)
     {
         if (Current is null)
         {
@@ -885,13 +975,13 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>());
         }
 
         return this;
@@ -910,7 +1000,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T8">The eighth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?> action)
     {
         if (Current is null)
         {
@@ -921,14 +1012,14 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>());
         }
 
         return this;
@@ -948,7 +1039,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T9">The ninth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?> action)
     {
         if (Current is null)
         {
@@ -959,15 +1051,15 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>());
         }
 
         return this;
@@ -988,7 +1080,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T10">The tenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?> action)
     {
         if (Current is null)
         {
@@ -999,16 +1092,16 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>());
         }
 
         return this;
@@ -1030,7 +1123,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T11">The eleventh type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?> action)
     {
         if (Current is null)
         {
@@ -1041,17 +1135,17 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>());
         }
 
         return this;
@@ -1074,7 +1168,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T12">The twelfth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?> action)
     {
         if (Current is null)
         {
@@ -1085,18 +1180,18 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>(),
+                current.GetService<T12>());
         }
 
         return this;
@@ -1120,7 +1215,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T13">The thirteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?> action)
     {
         if (Current is null)
         {
@@ -1131,19 +1227,19 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>(),
+                current.GetService<T12>(),
+                current.GetService<T13>());
         }
 
         return this;
@@ -1168,7 +1264,8 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T14">The fourteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
+    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?> action)
     {
         if (Current is null)
         {
@@ -1179,20 +1276,20 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>(),
-                   current.GetService<T14>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>(),
+                current.GetService<T12>(),
+                current.GetService<T13>(),
+                current.GetService<T14>());
         }
 
         return this;
@@ -1218,7 +1315,23 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T15">The fifteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
+    public IReactiveUIInstance WithInstance<
+        T1,
+        T2,
+        T3,
+        T4,
+        T5,
+        T6,
+        T7,
+        T8,
+        T9,
+        T10,
+        T11,
+        T12,
+        T13,
+        T14,
+        T15>(
+        Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?> action)
     {
         if (Current is null)
         {
@@ -1229,21 +1342,21 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             var current = Current;
             action(
-                   current.GetService<T1>(),
-                   current.GetService<T2>(),
-                   current.GetService<T3>(),
-                   current.GetService<T4>(),
-                   current.GetService<T5>(),
-                   current.GetService<T6>(),
-                   current.GetService<T7>(),
-                   current.GetService<T8>(),
-                   current.GetService<T9>(),
-                   current.GetService<T10>(),
-                   current.GetService<T11>(),
-                   current.GetService<T12>(),
-                   current.GetService<T13>(),
-                   current.GetService<T14>(),
-                   current.GetService<T15>());
+                current.GetService<T1>(),
+                current.GetService<T2>(),
+                current.GetService<T3>(),
+                current.GetService<T4>(),
+                current.GetService<T5>(),
+                current.GetService<T6>(),
+                current.GetService<T7>(),
+                current.GetService<T8>(),
+                current.GetService<T9>(),
+                current.GetService<T10>(),
+                current.GetService<T11>(),
+                current.GetService<T12>(),
+                current.GetService<T13>(),
+                current.GetService<T14>(),
+                current.GetService<T15>());
         }
 
         return this;
@@ -1270,7 +1383,23 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <typeparam name="T16">The sixteenth type to resolve.</typeparam>
     /// <param name="action">The action.</param>
     /// <returns>IReactiveUIInstance instance for chaining.</returns>
-    public IReactiveUIInstance WithInstance<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
+    public IReactiveUIInstance WithInstance<
+        T1,
+        T2,
+        T3,
+        T4,
+        T5,
+        T6,
+        T7,
+        T8,
+        T9,
+        T10,
+        T11,
+        T12,
+        T13,
+        T14,
+        T15,
+        T16>(Action<T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?, T10?, T11?, T12?, T13?, T14?, T15?, T16?> action)
     {
         if (Current is null)
         {
@@ -1306,49 +1435,13 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// Gets the platform-specific default small cache limit.
     /// </summary>
     /// <returns>The default small cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultSmallCacheLimit() =>
-#if ANDROID || IOS
-        32;
-#else
-        64;
-#endif
+    private static int GetPlatformDefaultSmallCacheLimit() => DefaultSmallCacheLimit;
 
     /// <summary>
     /// Gets the platform-specific default big cache limit.
     /// </summary>
     /// <returns>The default big cache limit for the current platform.</returns>
-    private static int GetPlatformDefaultBigCacheLimit() =>
-#if ANDROID || IOS
-        64;
-#else
-        256;
-#endif
-
-    /// <summary>
-    /// Initializes ReactiveUI global state after the Splat build has completed.
-    /// </summary>
-    private void InitializeReactiveUI()
-    {
-        if (_reactiveUiInitialized)
-        {
-            return;
-        }
-
-        // Initialize static state (cache sizes, exception handler, suspension host)
-        InitializeStaticState();
-
-        // Set the global converter service
-        RxConverters.SetService(ConverterService);
-
-        if (_messageBus is not null)
-        {
-            MessageBus.Current = _messageBus;
-        }
-
-        // Mark ReactiveUI as initialized via builder pattern
-        RxAppBuilder.MarkAsInitialized();
-        _reactiveUiInitialized = true;
-    }
+    private static int GetPlatformDefaultBigCacheLimit() => DefaultBigCacheLimit;
 
     /// <summary>
     /// Registers all standard ReactiveUI converters to the ConverterService.
@@ -1356,11 +1449,9 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     private void RegisterStandardConverters()
     {
-        // General converters
         ConverterService.TypedConverters.Register(new EqualityTypeConverter());
         ConverterService.TypedConverters.Register(new StringConverter());
 
-        // Numeric → String converters
         ConverterService.TypedConverters.Register(new ByteToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableByteToStringTypeConverter());
         ConverterService.TypedConverters.Register(new ShortToStringTypeConverter());
@@ -1376,7 +1467,6 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         ConverterService.TypedConverters.Register(new DecimalToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableDecimalToStringTypeConverter());
 
-        // String → Numeric converters
         ConverterService.TypedConverters.Register(new StringToByteTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableByteTypeConverter());
         ConverterService.TypedConverters.Register(new StringToShortTypeConverter());
@@ -1392,55 +1482,46 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         ConverterService.TypedConverters.Register(new StringToDecimalTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableDecimalTypeConverter());
 
-        // Boolean ↔ String converters
         ConverterService.TypedConverters.Register(new BooleanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableBooleanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToBooleanTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableBooleanTypeConverter());
 
-        // Guid ↔ String converters
         ConverterService.TypedConverters.Register(new GuidToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableGuidToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToGuidTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableGuidTypeConverter());
 
-        // DateTime ↔ String converters
         ConverterService.TypedConverters.Register(new DateTimeToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableDateTimeToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToDateTimeTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableDateTimeTypeConverter());
 
-        // DateTimeOffset ↔ String converters
         ConverterService.TypedConverters.Register(new DateTimeOffsetToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableDateTimeOffsetToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToDateTimeOffsetTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableDateTimeOffsetTypeConverter());
 
-        // TimeSpan ↔ String converters
         ConverterService.TypedConverters.Register(new TimeSpanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableTimeSpanToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToTimeSpanTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableTimeSpanTypeConverter());
 
 #if NET6_0_OR_GREATER
-        // DateOnly ↔ String converters (.NET 6+)
         ConverterService.TypedConverters.Register(new DateOnlyToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableDateOnlyToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToDateOnlyTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableDateOnlyTypeConverter());
 
-        // TimeOnly ↔ String converters (.NET 6+)
         ConverterService.TypedConverters.Register(new TimeOnlyToStringTypeConverter());
         ConverterService.TypedConverters.Register(new NullableTimeOnlyToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToTimeOnlyTypeConverter());
         ConverterService.TypedConverters.Register(new StringToNullableTimeOnlyTypeConverter());
 #endif
 
-        // Uri ↔ String converters
         ConverterService.TypedConverters.Register(new UriToStringTypeConverter());
         ConverterService.TypedConverters.Register(new StringToUriTypeConverter());
 
-        // Nullable ↔ Non-Nullable converters
         ConverterService.TypedConverters.Register(new ByteToNullableByteTypeConverter());
         ConverterService.TypedConverters.Register(new NullableByteToByteTypeConverter());
         ConverterService.TypedConverters.Register(new ShortToNullableShortTypeConverter());
@@ -1463,35 +1544,37 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// </summary>
     private void InitializeStaticState()
     {
-        // Initialize cache sizes - use configured values or platform defaults
         var smallCache = _smallCacheLimit ?? GetPlatformDefaultSmallCacheLimit();
         var bigCache = _bigCacheLimit ?? GetPlatformDefaultBigCacheLimit();
         RxCacheSize.Initialize(smallCache, bigCache);
 
-        // Initialize exception handler if configured
         if (_exceptionHandler is not null)
         {
             RxState.InitializeExceptionHandler(_exceptionHandler);
         }
 
-        // Initialize suspension host if configured
-        if (_suspensionHost is not null)
+        if (_suspensionHost is null)
         {
-            RxSuspension.InitializeSuspensionHost(_suspensionHost);
+            return;
         }
+
+        RxSuspension.InitializeSuspensionHost(_suspensionHost);
     }
 
+    /// <summary>Registers a deferred action that applies configured schedulers to RxApp during build.</summary>
     private void ConfigureSchedulers() =>
-            WithCustomRegistration(_ =>
+        WithCustomRegistration(_ =>
+        {
+            if (MainThreadScheduler != null && _setRxAppMainScheduler)
             {
-                if (MainThreadScheduler != null && _setRxAppMainScheduler)
-                {
-                    RxSchedulers.MainThreadScheduler = MainThreadScheduler;
-                }
+                RxSchedulers.MainThreadScheduler = MainThreadScheduler;
+            }
 
-                if (TaskpoolScheduler != null && _setRxAppTaskPoolScheduler)
-                {
-                    RxSchedulers.TaskpoolScheduler = TaskpoolScheduler;
-                }
-            });
+            if (TaskpoolScheduler == null || !_setRxAppTaskPoolScheduler)
+            {
+                return;
+            }
+
+            RxSchedulers.TaskpoolScheduler = TaskpoolScheduler;
+        });
 }

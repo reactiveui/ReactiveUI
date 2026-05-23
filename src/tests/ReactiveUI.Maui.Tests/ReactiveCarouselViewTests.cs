@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -65,10 +65,7 @@ public class ReactiveCarouselViewTests
     [Test]
     public async Task ViewModel_SetToNull_WorksCorrectly()
     {
-        var view = new ReactiveCarouselView<TestViewModel>();
-        var viewModel = new TestViewModel { Name = "Test" };
-
-        view.ViewModel = viewModel;
+        var view = new ReactiveCarouselView<TestViewModel> { ViewModel = new() { Name = "Test" } };
         view.ViewModel = null;
 
         await Assert.That(view.ViewModel).IsNull();
@@ -78,7 +75,7 @@ public class ReactiveCarouselViewTests
     /// <summary>
     /// Test view model.
     /// </summary>
-    private class TestViewModel
+    private sealed class TestViewModel
     {
         /// <summary>
         /// Gets or sets the name.

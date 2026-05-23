@@ -59,5 +59,8 @@ else
             });
     }
 
-    public void Dispose() => _subscription?.Dispose();
+    public void Dispose()
+    {
+        _subscription?.Dispose();
+    }
 }

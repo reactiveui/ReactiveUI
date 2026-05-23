@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,12 +21,13 @@ public class EnumTests
         Justification = "Verifying enum values remain constant for backwards compatibility")]
     public async Task BindingDirection_EnumValues_AreConstant()
     {
+        const int AsyncOneWayValue = 2;
         using (Assert.Multiple())
         {
             // Assert
             await Assert.That((int)BindingDirection.OneWay).IsEqualTo(0);
             await Assert.That((int)BindingDirection.TwoWay).IsEqualTo(1);
-            await Assert.That((int)BindingDirection.AsyncOneWay).IsEqualTo(2);
+            await Assert.That((int)BindingDirection.AsyncOneWay).IsEqualTo(AsyncOneWayValue);
         }
     }
 

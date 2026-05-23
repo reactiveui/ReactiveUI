@@ -1,7 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.ComponentModel;
 
 namespace ReactiveUI;
 
@@ -13,15 +15,11 @@ namespace ReactiveUI;
 [DataContract]
 public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
+    /// <summary>Tracks whether property-changing event subscriptions have been set up.</summary>
     private bool _propertyChangingEventsSubscribed;
-    private bool _propertyChangedEventsSubscribed;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveRecord"/> class.
-    /// </summary>
-    public ReactiveRecord()
-    {
-    }
+    /// <summary>Tracks whether property-changed event subscriptions have been set up.</summary>
+    private bool _propertyChangedEventsSubscribed;
 
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging
@@ -55,10 +53,20 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
         remove => PropertyChangedHandler -= value;
     }
 
+    /// <summary>Backing event store for property-changing notifications.</summary>
     [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S3908:Generic event handlers should be used",
+        Justification = "Backs the INotifyPropertyChanging.PropertyChanging interface event.")]
     private event PropertyChangingEventHandler? PropertyChangingHandler;
 
+    /// <summary>Backing event store for property-changed notifications.</summary>
     [SuppressMessage("Roslynator", "RCS1159:Use EventHandler<T>", Justification = "Long term design.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S3908:Generic event handlers should be used",
+        Justification = "Backs the INotifyPropertyChanged.PropertyChanged interface event.")]
     private event PropertyChangedEventHandler? PropertyChangedHandler;
 
     /// <inheritdoc />
@@ -68,8 +76,9 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing => // TODO: Create Test
-        Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
+    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing =>
+        Volatile.Read(ref field) ??
+        Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangingObservable(), null) ?? field;
 
     /// <inheritdoc />
     [IgnoreDataMember]
@@ -78,8 +87,9 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed => // TODO: Create Test
-        Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
+    public IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed =>
+        Volatile.Read(ref field) ??
+        Interlocked.CompareExchange(ref field, ((IReactiveObject)this).GetChangedObservable(), null) ?? field;
 
     /// <inheritdoc/>
     [IgnoreDataMember]
@@ -88,29 +98,32 @@ public record ReactiveRecord : IReactiveNotifyPropertyChanged<IReactiveObject>, 
     [Browsable(false)]
     [Display(Order = -1, AutoGenerateField = false, AutoGenerateFilter = false)]
 #endif
-    public IObservable<Exception> ThrownExceptions => Volatile.Read(ref field) ?? Interlocked.CompareExchange(ref field, this.GetThrownExceptionsObservable(), null) ?? field;
+    public IObservable<Exception> ThrownExceptions => Volatile.Read(ref field) ??
+                                                      Interlocked.CompareExchange(
+                                                          ref field,
+                                                          this.GetThrownExceptionsObservable(),
+                                                          null) ?? field;
 
     /// <inheritdoc/>
-    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChangingHandler?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) =>
+        PropertyChangingHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
-    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChangedHandler?.Invoke(this, args);
+    void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) =>
+        PropertyChangedHandler?.Invoke(this, args);
 
     /// <inheritdoc/>
-    public IDisposable SuppressChangeNotifications() => // TODO: Create Test
-        IReactiveObjectExtensions.SuppressChangeNotifications(this);
+    public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
     /// <summary>
     /// Determines if change notifications are enabled or not.
     /// </summary>
     /// <returns>A value indicating whether change notifications are enabled.</returns>
-    public bool AreChangeNotificationsEnabled() => // TODO: Create Test
-            IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
+    public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
     /// <summary>
     /// Delays notifications until the return IDisposable is disposed.
     /// </summary>
     /// <returns>A disposable which when disposed will send delayed notifications.</returns>
-    public IDisposable DelayChangeNotifications() => // TODO: Create Test
-            IReactiveObjectExtensions.DelayChangeNotifications(this);
+    public IDisposable DelayChangeNotifications() => IReactiveObjectExtensions.DelayChangeNotifications(this);
 }

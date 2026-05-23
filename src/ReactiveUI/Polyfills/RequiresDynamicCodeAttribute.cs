@@ -1,12 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-// Polyfill implementation adapted from Simon Cropp's Polyfill library
-// https://github.com/SimonCropp/Polyfill
 #if !NET7_0_OR_GREATER
-
 #nullable enable
 
 using Targets = System.AttributeTargets;
@@ -31,6 +28,7 @@ internal sealed class RequiresDynamicCodeAttribute :
     /// Initializes a new instance of the <see cref="RequiresDynamicCodeAttribute"/> class
     /// with the specified message.
     /// </summary>
+    /// <param name="message">A message that contains information about the usage of dynamic code.</param>
     public RequiresDynamicCodeAttribute(string message) =>
         Message = message;
 
@@ -53,5 +51,5 @@ internal sealed class RequiresDynamicCodeAttribute :
 #else
 using System.Runtime.CompilerServices;
 
-[assembly: TypeForwardedTo(typeof(System.Diagnostics.CodeAnalysis.RequiresDynamicCodeAttribute))]
+[assembly: TypeForwardedTo(typeof(RequiresDynamicCodeAttribute))]
 #endif

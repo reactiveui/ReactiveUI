@@ -1,9 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -14,8 +17,10 @@ namespace ReactiveUI;
 public static class IReactiveObjectExtensions
 {
 #if NETSTANDARD || NETFRAMEWORK
+    /// <summary>Stores per-instance extension state keyed by reactive object.</summary>
     private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = new();
 #else
+    /// <summary>Stores per-instance extension state keyed by reactive object.</summary>
     private static readonly ConditionalWeakTable<IReactiveObject, IExtensionState<IReactiveObject>> state = [];
 #endif
 
@@ -45,37 +50,37 @@ public static class IReactiveObjectExtensions
         /// Subscribe raise property changing events to a property changing
         /// observable. Must be called before raising property changing events.
         /// </summary>
-        void SubscribePropertyChangingEvents();
+        void SubscribeChanging();
 
         /// <summary>
         /// Raises a property changing event.
         /// </summary>
         /// <param name="propertyName">The name of the property that is changing.</param>
-        void RaisePropertyChanging(string propertyName);
+        void RaiseChanging(string propertyName);
 
         /// <summary>
         /// Subscribe raise property changed events to a property changed
         /// observable. Must be called before raising property changed events.
         /// </summary>
-        void SubscribePropertyChangedEvents();
+        void SubscribeChanged();
 
         /// <summary>
         /// Raises a property changed event.
         /// </summary>
         /// <param name="propertyName">The name of the property that has changed.</param>
-        void RaisePropertyChanged(string propertyName);
+        void RaiseChanged(string propertyName);
 
         /// <summary>
         /// Indicates if we are currently sending change notifications.
         /// </summary>
         /// <returns>If change notifications are being sent.</returns>
-        bool AreChangeNotificationsEnabled();
+        bool NotificationsEnabled();
 
         /// <summary>
         /// Suppress change notifications until the return value is disposed.
         /// </summary>
         /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
-        IDisposable SuppressChangeNotifications();
+        IDisposable Suppress();
 
         /// <summary>
         /// Are change notifications currently delayed. Used for Observables change notifications only.
@@ -87,7 +92,7 @@ public static class IReactiveObjectExtensions
         /// Delay change notifications until the return value is disposed.
         /// </summary>
         /// <returns>A IDisposable which when disposed will re-enable change notifications.</returns>
-        IDisposable DelayChangeNotifications();
+        IDisposable Delay();
     }
 
     /// <summary>
@@ -104,6 +109,7 @@ public static class IReactiveObjectExtensions
     /// <param name="propertyName">The name of the property, usually
     /// automatically provided through the CallerMemberName attribute.</param>
     /// <returns>The newly set value, normally discarded.</returns>
+    [SuppressMessage("Design", "CA1045:Do not pass types by reference", Justification = "By default for this operator.")]
     public static TRet RaiseAndSetIfChanged<TObj, TRet>(
         this TObj reactiveObject,
         ref TRet backingField,
@@ -118,9 +124,9 @@ public static class IReactiveObjectExtensions
             return newValue;
         }
 
-        reactiveObject.RaisingPropertyChanging(propertyName!);
+        reactiveObject.RaisingPropertyChanging(propertyName);
         backingField = newValue;
-        reactiveObject.RaisingPropertyChanged(propertyName!);
+        reactiveObject.RaisingPropertyChanged(propertyName);
         return newValue;
     }
 
@@ -134,13 +140,17 @@ public static class IReactiveObjectExtensions
     /// A string representing the name of the property that has been changed.
     /// Leave <c>null</c> to let the runtime set to caller member name.
     /// </param>
-    public static void RaisePropertyChanged<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
+    public static void RaisePropertyChanged<TSender>(
+        this TSender reactiveObject,
+        [CallerMemberName] string? propertyName = null)
         where TSender : IReactiveObject
     {
-        if (propertyName is not null)
+        if (propertyName is null)
         {
-            reactiveObject.RaisingPropertyChanged(propertyName);
+            return;
         }
+
+        reactiveObject.RaisingPropertyChanged(propertyName);
     }
 
     /// <summary>
@@ -153,13 +163,17 @@ public static class IReactiveObjectExtensions
     /// A string representing the name of the property that has been changed.
     /// Leave <c>null</c> to let the runtime set to caller member name.
     /// </param>
-    public static void RaisePropertyChanging<TSender>(this TSender reactiveObject, [CallerMemberName] string? propertyName = null)
+    public static void RaisePropertyChanging<TSender>(
+        this TSender reactiveObject,
+        [CallerMemberName] string? propertyName = null)
         where TSender : IReactiveObject
     {
-        if (propertyName is not null)
+        if (propertyName is null)
         {
-            reactiveObject.RaisingPropertyChanging(propertyName);
+            return;
         }
+
+        reactiveObject.RaisingPropertyChanging(propertyName);
     }
 
     /// <summary>
@@ -171,9 +185,11 @@ public static class IReactiveObjectExtensions
     public static void SubscribePropertyChangingEvents<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        s.SubscribePropertyChangingEvents();
+        s.SubscribeChanging();
     }
 
     /// <summary>
@@ -185,9 +201,11 @@ public static class IReactiveObjectExtensions
     public static void SubscribePropertyChangedEvents<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        s.SubscribePropertyChangedEvents();
+        s.SubscribeChanged();
     }
 
     /// <summary>
@@ -200,11 +218,14 @@ public static class IReactiveObjectExtensions
     /// <param name="reactiveObject">The reactive object to observe for property change notifications. Cannot be null.</param>
     /// <returns>An observable sequence of property change event arguments for the specified reactive object. The sequence emits
     /// a value each time a property changes.</returns>
-    internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(this TSender reactiveObject)
+    internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangedObservable<TSender>(
+        this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var val = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
-        return val.Changed.Cast<IReactivePropertyChangedEventArgs<TSender>>();
+        var val = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
+        return new ChangeArgsCastObservable<TSender>(val.Changed);
     }
 
     /// <summary>
@@ -217,11 +238,14 @@ public static class IReactiveObjectExtensions
     /// <param name="reactiveObject">The reactive object to observe for property changing notifications. Must implement IReactiveObject.</param>
     /// <returns>An observable sequence of IReactivePropertyChangedEventArgs{TSender} that emits a value each time a property on
     /// the reactive object is about to change.</returns>
-    internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable<TSender>(this TSender reactiveObject)
+    internal static IObservable<IReactivePropertyChangedEventArgs<TSender>> GetChangingObservable<TSender>(
+        this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var val = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
-        return val.Changing.Cast<IReactivePropertyChangedEventArgs<TSender>>();
+        var val = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
+        return new ChangeArgsCastObservable<TSender>(val.Changing);
     }
 
     /// <summary>
@@ -238,7 +262,9 @@ public static class IReactiveObjectExtensions
     internal static IObservable<Exception> GetThrownExceptionsObservable<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
         return s.ThrownExceptions;
     }
 
@@ -253,9 +279,11 @@ public static class IReactiveObjectExtensions
     {
         ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        s.RaisePropertyChanging(propertyName);
+        s.RaiseChanging(propertyName);
     }
 
     /// <summary>
@@ -269,9 +297,11 @@ public static class IReactiveObjectExtensions
     {
         ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        s.RaisePropertyChanged(propertyName);
+        s.RaiseChanged(propertyName);
     }
 
     /// <summary>
@@ -287,9 +317,11 @@ public static class IReactiveObjectExtensions
     internal static IDisposable SuppressChangeNotifications<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        return s.SuppressChangeNotifications();
+        return s.Suppress();
     }
 
     /// <summary>
@@ -301,9 +333,11 @@ public static class IReactiveObjectExtensions
     internal static bool AreChangeNotificationsEnabled<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        return s.AreChangeNotificationsEnabled();
+        return s.NotificationsEnabled();
     }
 
     /// <summary>
@@ -321,9 +355,11 @@ public static class IReactiveObjectExtensions
     internal static IDisposable DelayChangeNotifications<TSender>(this TSender reactiveObject)
         where TSender : IReactiveObject
     {
-        var s = state.GetValue(reactiveObject, _ => (IExtensionState<IReactiveObject>)new ExtensionState<TSender>(reactiveObject));
+        var s = state.GetValue(
+            reactiveObject,
+            _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
 
-        return s.DelayChangeNotifications();
+        return s.Delay();
     }
 
     /// <summary>
@@ -336,18 +372,32 @@ public static class IReactiveObjectExtensions
     /// handling.</remarks>
     /// <typeparam name="TSender">The type of the reactive object that this extension state is associated with. Must implement <see
     /// cref="IReactiveObject"/>.</typeparam>
-    private class ExtensionState<TSender> : IExtensionState<TSender>
+    private sealed class ExtensionState<TSender> : IExtensionState<TSender>
         where TSender : IReactiveObject
     {
-        private readonly Lazy<ISubject<Exception>> _thrownExceptions = new(static () => new ScheduledSubject<Exception>(Scheduler.Immediate, RxState.DefaultExceptionHandler));
-        private readonly Lazy<Subject<Unit>> _startOrStopDelayingChangeNotifications = new();
-        private readonly TSender _sender;
-        private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changing;
-        private readonly Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> subject, IObservable<IReactivePropertyChangedEventArgs<TSender>> observable)> _changed;
-        private readonly Lazy<ISubject<ReactivePropertyChangingEventArgs<TSender>>> _propertyChanging;
-        private readonly Lazy<ISubject<ReactivePropertyChangedEventArgs<TSender>>> _propertyChanged;
+        /// <summary>Lazily initialized subject for routing thrown exceptions to subscribers.</summary>
+        private readonly Lazy<IReactiveSubject<Exception>> _thrownExceptions = new(static () =>
+            new ScheduledSubject<Exception>(Scheduler.Immediate, RxState.DefaultExceptionHandler));
 
+        /// <summary>The reactive object that owns this extension state.</summary>
+        private readonly TSender _sender;
+
+        /// <summary>Lazily initialized delayable sink for property changing notifications (also the Changing observable).</summary>
+        private readonly Lazy<DelayableNotificationSubject<IReactivePropertyChangedEventArgs<TSender>>> _changing;
+
+        /// <summary>Lazily initialized delayable sink for property changed notifications (also the Changed observable).</summary>
+        private readonly Lazy<DelayableNotificationSubject<IReactivePropertyChangedEventArgs<TSender>>> _changed;
+
+        /// <summary>Lazily initialized delayable sink that raises PropertyChanging events.</summary>
+        private readonly Lazy<DelayableNotificationSubject<ReactivePropertyChangingEventArgs<TSender>>> _propertyChanging;
+
+        /// <summary>Lazily initialized delayable sink that raises PropertyChanged events.</summary>
+        private readonly Lazy<DelayableNotificationSubject<ReactivePropertyChangedEventArgs<TSender>>> _propertyChanged;
+
+        /// <summary>Reference count of active change notification suppressions; zero means notifications are enabled.</summary>
         private long _changeNotificationsSuppressed;
+
+        /// <summary>Reference count of active change notification delays; greater than zero means notifications are buffered.</summary>
         private long _changeNotificationsDelayed;
 
         /// <summary>
@@ -359,8 +409,12 @@ public static class IReactiveObjectExtensions
             _sender = sender;
             _changing = CreateLazyDelayableSubjectAndObservable();
             _changed = CreateLazyDelayableSubjectAndObservable();
-            _propertyChanging = CreateLazyDelayableEventSubject<ReactivePropertyChangingEventArgs<TSender>>(_sender.RaisePropertyChanging);
-            _propertyChanged = CreateLazyDelayableEventSubject<ReactivePropertyChangedEventArgs<TSender>>(_sender.RaisePropertyChanged);
+            _propertyChanging =
+                CreateLazyDelayableEventSubject<ReactivePropertyChangingEventArgs<TSender>>(
+                    _sender.RaisePropertyChanging);
+            _propertyChanged =
+                CreateLazyDelayableEventSubject<ReactivePropertyChangedEventArgs<TSender>>(
+                    _sender.RaisePropertyChanged);
         }
 
         /// <summary>
@@ -370,7 +424,7 @@ public static class IReactiveObjectExtensions
         /// change. This can be used to react to impending changes or to perform validation or cancellation logic. The
         /// sequence emits an event for each property change, providing information about the sender and the property
         /// being changed.</remarks>
-        public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing => _changing.Value.observable;
+        public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changing => _changing.Value;
 
         /// <summary>
         /// Gets an observable sequence that signals when a property value on the object has changed.
@@ -378,7 +432,7 @@ public static class IReactiveObjectExtensions
         /// <remarks>Subscribers receive notifications each time a property on the object changes. The
         /// event arguments provide details about the sender and the property that changed. This observable does not
         /// emit notifications for changes that do not affect property values.</remarks>
-        public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed => _changed.Value.observable;
+        public IObservable<IReactivePropertyChangedEventArgs<TSender>> Changed => _changed.Value;
 
         /// <summary>
         /// Gets an observable sequence of exceptions that have been thrown by the component.
@@ -392,7 +446,7 @@ public static class IReactiveObjectExtensions
         /// Determines whether change notifications are currently enabled.
         /// </summary>
         /// <returns><see langword="true"/> if change notifications are enabled; otherwise, <see langword="false"/>.</returns>
-        public bool AreChangeNotificationsEnabled() => Interlocked.Read(ref _changeNotificationsSuppressed) == 0;
+        public bool NotificationsEnabled() => Interlocked.Read(ref _changeNotificationsSuppressed) == 0;
 
         /// <summary>
         /// Determines whether change notifications are currently delayed.
@@ -411,10 +465,10 @@ public static class IReactiveObjectExtensions
         /// </summary>
         /// <returns>An object that, when disposed, reenables change
         /// notifications.</returns>
-        public IDisposable SuppressChangeNotifications()
+        public IDisposable Suppress()
         {
             Interlocked.Increment(ref _changeNotificationsSuppressed);
-            return Disposable.Create(() => Interlocked.Decrement(ref _changeNotificationsSuppressed));
+            return new ActionDisposable(() => Interlocked.Decrement(ref _changeNotificationsSuppressed));
         }
 
         /// <summary>
@@ -426,25 +480,21 @@ public static class IReactiveObjectExtensions
         /// </summary>
         /// <returns>An object that, when disposed, re-enables Observable change
         /// notifications.</returns>
-        public IDisposable DelayChangeNotifications()
+        public IDisposable Delay()
         {
             if (Interlocked.Increment(ref _changeNotificationsDelayed) == 1)
             {
-                if (_startOrStopDelayingChangeNotifications.IsValueCreated)
-                {
-                    _startOrStopDelayingChangeNotifications.Value.OnNext(Unit.Default);
-                }
+                FlushDelayed();
             }
 
-            return Disposable.Create(() =>
+            return new ActionDisposable(() =>
             {
-                if (Interlocked.Decrement(ref _changeNotificationsDelayed) == 0)
+                if (Interlocked.Decrement(ref _changeNotificationsDelayed) != 0)
                 {
-                    if (_startOrStopDelayingChangeNotifications.IsValueCreated)
-                    {
-                        _startOrStopDelayingChangeNotifications.Value.OnNext(Unit.Default);
-                    }
+                    return;
                 }
+
+                FlushDelayed();
             });
         }
 
@@ -454,7 +504,7 @@ public static class IReactiveObjectExtensions
         /// <remarks>Calling this method ensures that property changing notifications are initialized and
         /// will be raised when applicable. This is typically used to enable change tracking or to allow external
         /// handlers to respond to property changes.</remarks>
-        public void SubscribePropertyChangingEvents() => _ = _propertyChanging.Value;
+        public void SubscribeChanging() => _ = _propertyChanging.Value;
 
         /// <summary>
         /// Raises a property changing notification for the specified property.
@@ -463,24 +513,25 @@ public static class IReactiveObjectExtensions
         /// notifications are only raised if change notifications are currently enabled. Use this method to support data
         /// binding or other scenarios where consumers need to react before a property value changes.</remarks>
         /// <param name="propertyName">The name of the property for which the change notification is raised. Cannot be null or empty.</param>
-        public void RaisePropertyChanging(string propertyName)
+        public void RaiseChanging(string propertyName)
         {
-            if (!AreChangeNotificationsEnabled())
+            if (!NotificationsEnabled())
             {
                 return;
             }
 
-            var changing = new ReactivePropertyChangingEventArgs<TSender>(_sender, propertyName);
+            ReactivePropertyChangingEventArgs<TSender> changing = new(_sender, propertyName);
             if (_propertyChanging.IsValueCreated)
             {
-                // Do not use NotifyObservable because event exceptions shouldn't be put in ThrownExceptions
                 _propertyChanging.Value.OnNext(changing);
             }
 
-            if (_changing.IsValueCreated)
+            if (!_changing.IsValueCreated)
             {
-                NotifyObservable(_sender, changing, _changing.Value.subject);
+                return;
             }
+
+            NotifyObservable(_sender, changing, _changing.Value);
         }
 
         /// <summary>
@@ -489,7 +540,7 @@ public static class IReactiveObjectExtensions
         /// <remarks>Call this method to ensure that property change notifications are set up. This is
         /// typically required before observing property changes through event handlers or data binding
         /// mechanisms.</remarks>
-        public void SubscribePropertyChangedEvents() => _ = _propertyChanged.Value;
+        public void SubscribeChanged() => _ = _propertyChanged.Value;
 
         /// <summary>
         /// Notifies subscribers that the value of a specified property has changed.
@@ -498,29 +549,31 @@ public static class IReactiveObjectExtensions
         /// are currently enabled. Use this method to inform listeners that a property value has been updated, typically
         /// within property setters.</remarks>
         /// <param name="propertyName">The name of the property that changed. Cannot be null or empty.</param>
-        public void RaisePropertyChanged(string propertyName)
+        public void RaiseChanged(string propertyName)
         {
-            if (!AreChangeNotificationsEnabled())
+            if (!NotificationsEnabled())
             {
                 return;
             }
 
-            var changed = new ReactivePropertyChangedEventArgs<TSender>(_sender, propertyName);
+            ReactivePropertyChangedEventArgs<TSender> changed = new(_sender, propertyName);
             if (_propertyChanged.IsValueCreated)
             {
-                // Do not use NotifyObservable because event exceptions shouldn't be put in ThrownExceptions
                 _propertyChanged.Value.OnNext(changed);
             }
 
-            if (_changed.IsValueCreated)
+            if (!_changed.IsValueCreated)
             {
-                NotifyObservable(_sender, changed, _changed.Value.subject);
+                return;
             }
+
+            NotifyObservable(_sender, changed, _changed.Value);
         }
 
-        /// <summary>
-        /// Filter a list of change notifications, returning the last change for each PropertyName in original order.
-        /// </summary>
+        /// <summary>Filters a list of change notifications, returning the last change for each PropertyName in original order.</summary>
+        /// <typeparam name="TEventArgs">The type of the change notification arguments.</typeparam>
+        /// <param name="events">The change notifications to filter.</param>
+        /// <returns>The last change notification for each property name, in original order.</returns>
         private static IEnumerable<TEventArgs> DistinctEvents<TEventArgs>(IList<TEventArgs> events)
             where TEventArgs : IReactivePropertyChangedEventArgs<TSender>
         {
@@ -529,8 +582,8 @@ public static class IReactiveObjectExtensions
                 return events;
             }
 
-            var seen = new HashSet<string>();
-            var uniqueEvents = new Stack<TEventArgs>(events.Count);
+            HashSet<string> seen = [];
+            Stack<TEventArgs> uniqueEvents = new(events.Count);
 
             for (var i = events.Count - 1; i >= 0; i--)
             {
@@ -541,8 +594,29 @@ public static class IReactiveObjectExtensions
                 }
             }
 
-            // Stack enumerates in LIFO order
             return uniqueEvents;
+        }
+
+        /// <summary>Flushes a lazily-created delayable sink if it has been created.</summary>
+        /// <typeparam name="T">The sink's notification type.</typeparam>
+        /// <param name="sink">The lazily-created sink.</param>
+        private static void FlushIfCreated<T>(Lazy<DelayableNotificationSubject<T>> sink)
+        {
+            if (!sink.IsValueCreated)
+            {
+                return;
+            }
+
+            sink.Value.Flush();
+        }
+
+        /// <summary>Flushes any notifications buffered while change notifications were delayed.</summary>
+        private void FlushDelayed()
+        {
+            FlushIfCreated(_propertyChanging);
+            FlushIfCreated(_propertyChanged);
+            FlushIfCreated(_changing);
+            FlushIfCreated(_changed);
         }
 
         /// <summary>
@@ -556,7 +630,7 @@ public static class IReactiveObjectExtensions
         /// <param name="rxObj">The sender object associated with the notification. Used for logging if an exception occurs.</param>
         /// <param name="item">The item to send to the subject's observers.</param>
         /// <param name="subject">The subject to be notified. If null, no notification is sent.</param>
-        private void NotifyObservable<T>(TSender rxObj, T item, ISubject<T>? subject)
+        private void NotifyObservable<T>(TSender rxObj, T item, DelayableNotificationSubject<T>? subject)
         {
             try
             {
@@ -581,22 +655,14 @@ public static class IReactiveObjectExtensions
         /// <remarks>The returned observable buffers and emits change events based on the current delay
         /// settings. Subscribers receive only distinct change events. The subject and observable are created only when
         /// first accessed.</remarks>
-        /// <returns>A lazy-initialized tuple consisting of an <see cref="ISubject{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
+        /// <returns>A lazy-initialized tuple consisting of an <see cref="DelayableNotificationSubject{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
         /// for publishing change notifications and an <see cref="IObservable{T}"/> for <c>IReactivePropertyChangedEventArgs&lt;TSender&gt;</c>
         /// that emits distinct change events, respecting any configured delay in change notifications.</returns>
-        private Lazy<(ISubject<IReactivePropertyChangedEventArgs<TSender>> changeSubject, IObservable<IReactivePropertyChangedEventArgs<TSender>> changeObservable)> CreateLazyDelayableSubjectAndObservable() =>
-            new(() =>
-            {
-                var changeSubject = new Subject<IReactivePropertyChangedEventArgs<TSender>>();
-                var changeObservable = changeSubject
-                                       .Buffer(changeSubject.Where(_ => !AreChangeNotificationsDelayed()).Select(_ => Unit.Default)
-                                                            .Merge(_startOrStopDelayingChangeNotifications.Value))
-                                       .SelectMany(DistinctEvents)
-                                       .Publish()
-                                       .RefCount();
-
-                return (changeSubject, changeObservable);
-            });
+        private Lazy<DelayableNotificationSubject<IReactivePropertyChangedEventArgs<TSender>>>
+            CreateLazyDelayableSubjectAndObservable() =>
+            new(() => new DelayableNotificationSubject<IReactivePropertyChangedEventArgs<TSender>>(
+                AreChangeNotificationsDelayed,
+                DistinctEvents));
 
         /// <summary>
         /// Creates a lazily initialized subject for event notifications that supports delayed change notification
@@ -610,18 +676,48 @@ public static class IReactiveObjectExtensions
         /// <param name="raiseEvent">An action to invoke for each event notification emitted by the subject.</param>
         /// <returns>A Lazy object that initializes an ISubject{TEventArgs} for publishing event notifications when first
         /// accessed.</returns>
-        private Lazy<ISubject<TEventArgs>> CreateLazyDelayableEventSubject<TEventArgs>(Action<TEventArgs> raiseEvent)
+        private Lazy<DelayableNotificationSubject<TEventArgs>> CreateLazyDelayableEventSubject<TEventArgs>(Action<TEventArgs> raiseEvent)
             where TEventArgs : IReactivePropertyChangedEventArgs<TSender> =>
             new(() =>
             {
-                var changeSubject = new Subject<TEventArgs>();
-                changeSubject
-                    .Buffer(changeSubject.Where(_ => !AreChangeNotificationsDelayed()).Select(_ => Unit.Default)
-                                         .Merge(_startOrStopDelayingChangeNotifications.Value))
-                    .SelectMany(DistinctEvents)
-                    .Subscribe(raiseEvent);
-
+                var changeSubject = new DelayableNotificationSubject<TEventArgs>(AreChangeNotificationsDelayed, DistinctEvents);
+                changeSubject.Subscribe(new DelegateObserver<TEventArgs>(raiseEvent));
                 return changeSubject;
             });
+    }
+
+    /// <summary>
+    /// Re-types the reactive object's change-argument stream from the non-generic <see cref="IReactiveObject"/> form to
+    /// the caller's <typeparamref name="TSender"/>. Specialised to <see cref="GetChangedObservable{TSender}"/> and
+    /// <see cref="GetChangingObservable{TSender}"/>.
+    /// </summary>
+    /// <typeparam name="TSender">The reactive object type observed.</typeparam>
+    /// <param name="source">The source change-argument stream.</param>
+    private sealed class ChangeArgsCastObservable<TSender>(IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> source)
+        : IObservable<IReactivePropertyChangedEventArgs<TSender>>
+        where TSender : IReactiveObject
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IReactivePropertyChangedEventArgs<TSender>> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Re-types each change-argument value to the caller's sender type.</summary>
+        /// <param name="downstream">The observer receiving re-typed change arguments.</param>
+        private sealed class Sink(IObserver<IReactivePropertyChangedEventArgs<TSender>> downstream)
+            : IObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>
+        {
+            /// <inheritdoc/>
+            public void OnNext(IReactivePropertyChangedEventArgs<IReactiveObject> value) =>
+                downstream.OnNext((IReactivePropertyChangedEventArgs<TSender>)(object)value);
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
     }
 }

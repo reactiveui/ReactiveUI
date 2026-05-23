@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,8 +11,18 @@ using ReactiveUI.Tests.Utilities;
 
 namespace ReactiveUI.Tests.ReactiveObjects;
 
+/// <summary>
+///     Tests for <see cref="ReactiveObject" /> change notification behavior.
+/// </summary>
 public class ReactiveObjectTests
 {
+    private const string FooText = "Foo";
+    private const string BarText = "Bar";
+    private const string BazText = "Baz";
+    private const string IsNotNullStringName = "IsNotNullString";
+    private const string IsOnlyOneWordName = "IsOnlyOneWord";
+    private const string NullableIntName = "NullableInt";
+
     /// <summary>
     ///     Test that changing values should always arrive before changed.
     /// </summary>
@@ -20,10 +30,10 @@ public class ReactiveObjectTests
     [Test]
     public async Task ChangingShouldAlwaysArriveBeforeChanged()
     {
-        const string beforeSet = "Foo";
-        const string afterSet = "Bar";
+        const string BeforeSet = FooText;
+        const string AfterSet = BarText;
 
-        var fixture = new TestFixture { IsOnlyOneWord = beforeSet };
+        var fixture = new TestFixture { IsOnlyOneWord = BeforeSet };
 
         var beforeFired = false;
         string? changingPropertyName = null;
@@ -45,16 +55,16 @@ public class ReactiveObjectTests
             afterFired = true;
         });
 
-        fixture.IsOnlyOneWord = afterSet;
+        fixture.IsOnlyOneWord = AfterSet;
 
         using (Assert.Multiple())
         {
             await Assert.That(beforeFired).IsTrue();
             await Assert.That(afterFired).IsTrue();
-            await Assert.That(changingPropertyName).IsEqualTo("IsOnlyOneWord");
-            await Assert.That(changingValue).IsEqualTo(beforeSet);
-            await Assert.That(changedPropertyName).IsEqualTo("IsOnlyOneWord");
-            await Assert.That(changedValue).IsEqualTo(afterSet);
+            await Assert.That(changingPropertyName).IsEqualTo(IsOnlyOneWordName);
+            await Assert.That(changingValue).IsEqualTo(BeforeSet);
+            await Assert.That(changedPropertyName).IsEqualTo(IsOnlyOneWordName);
+            await Assert.That(changedValue).IsEqualTo(AfterSet);
         }
     }
 
@@ -65,30 +75,34 @@ public class ReactiveObjectTests
     [Test]
     public async Task DeferredNotificationsDontShowUpUntilUndeferred()
     {
+        const int FirstInt = 4;
+        const int SecondInt = 5;
+        const int ThirdInt = 6;
+        const int ExpectedCountAfterUndefer = 3;
         var fixture = new TestFixture();
         fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
         fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
         var propertyChangingEvents = new List<PropertyChangingEventArgs>();
-        fixture.PropertyChanging += (sender, args) => propertyChangingEvents.Add(args);
+        fixture.PropertyChanging += (_, args) => propertyChangingEvents.Add(args);
         var propertyChangedEvents = new List<PropertyChangedEventArgs>();
-        fixture.PropertyChanged += (sender, args) => propertyChangedEvents.Add(args);
+        fixture.PropertyChanged += (_, args) => propertyChangedEvents.Add(args);
 
         await AssertCount(0, changing, changed, propertyChangingEvents, propertyChangedEvents);
-        fixture.NullableInt = 4;
+        fixture.NullableInt = FirstInt;
         await AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
         var stopDelaying = fixture.DelayChangeNotifications();
 
-        fixture.NullableInt = 5;
+        fixture.NullableInt = SecondInt;
         await AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
-        fixture.IsNotNullString = "Bar";
+        fixture.IsNotNullString = BarText;
         await AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
-        fixture.NullableInt = 6;
+        fixture.NullableInt = ThirdInt;
         await AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
-        fixture.IsNotNullString = "Baz";
+        fixture.IsNotNullString = BazText;
         await AssertCount(1, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
         var stopDelayingMore = fixture.DelayChangeNotifications();
@@ -106,17 +120,15 @@ public class ReactiveObjectTests
         // IsNotNullableString
         stopDelayingMore.Dispose();
 
-        await AssertCount(3, changing, changed, propertyChangingEvents, propertyChangedEvents);
+        await AssertCount(ExpectedCountAfterUndefer, changing, changed, propertyChangingEvents, propertyChangedEvents);
 
-        var expectedEventProperties = new[] { "NullableInt", "NullableInt", "IsNotNullString" };
+        var expectedEventProperties = new[] { NullableIntName, NullableIntName, IsNotNullStringName };
         using (Assert.Multiple())
         {
             await Assert.That(changing.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
             await Assert.That(changed.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
-            await Assert.That(propertyChangingEvents.Select(e => e.PropertyName!))
-                .IsEquivalentTo(expectedEventProperties);
-            await Assert.That(propertyChangedEvents.Select(e => e.PropertyName!))
-                .IsEquivalentTo(expectedEventProperties);
+            await Assert.That(propertyChangingEvents.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
+            await Assert.That(propertyChangedEvents.Select(e => e.PropertyName!)).IsEquivalentTo(expectedEventProperties);
         }
     }
 
@@ -127,13 +139,12 @@ public class ReactiveObjectTests
     [Test]
     public async Task ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
     {
-        var fixture = new TestFixture { IsOnlyOneWord = "Foo" };
+        var fixture = new TestFixture { IsOnlyOneWord = FooText };
 
-        fixture.Changed.Subscribe(static _ => throw new Exception("Die!"));
-        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList)
-            .Subscribe();
+        fixture.Changed.Subscribe(static _ => throw new InvalidOperationException("Die!"));
+        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
 
-        fixture.IsOnlyOneWord = "Bar";
+        fixture.IsOnlyOneWord = BarText;
         await Assert.That(exceptionList).Count().IsEqualTo(1);
     }
 
@@ -144,29 +155,28 @@ public class ReactiveObjectTests
     [Test]
     public async Task ObservableForPropertyUsingExpression()
     {
-        var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+        const int ExpectedCount = 2;
+        var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<IObservedChange<TestFixture, string?>>();
-        fixture.ObservableForProperty(x => x.IsNotNullString)
-            .WhereNotNull()
-            .Subscribe(x => output.Add(x));
+        fixture.ObservableForProperty(x => x.IsNotNullString).WhereNotNull().Subscribe(output.Add);
 
-        fixture.IsNotNullString = "Bar";
-        fixture.IsNotNullString = "Baz";
-        fixture.IsNotNullString = "Baz";
+        fixture.IsNotNullString = BarText;
+        fixture.IsNotNullString = BazText;
+        fixture.IsNotNullString = BazText;
 
         fixture.IsOnlyOneWord = "Bamf";
 
-        await Assert.That(output).Count().IsEqualTo(2);
+        await Assert.That(output).Count().IsEqualTo(ExpectedCount);
 
         using (Assert.Multiple())
         {
             await Assert.That(output[0].Sender).IsEqualTo(fixture);
-            await Assert.That(output[0].GetPropertyName()).IsEqualTo("IsNotNullString");
-            await Assert.That(output[0].Value).IsEqualTo("Bar");
+            await Assert.That(output[0].GetPropertyName()).IsEqualTo(IsNotNullStringName);
+            await Assert.That(output[0].Value).IsEqualTo(BarText);
 
             await Assert.That(output[1].Sender).IsEqualTo(fixture);
-            await Assert.That(output[1].GetPropertyName()).IsEqualTo("IsNotNullString");
-            await Assert.That(output[1].Value).IsEqualTo("Baz");
+            await Assert.That(output[1].GetPropertyName()).IsEqualTo(IsNotNullStringName);
+            await Assert.That(output[1].Value).IsEqualTo(BazText);
         }
     }
 
@@ -177,25 +187,26 @@ public class ReactiveObjectTests
     [Test]
     public async Task RaiseAndSetUsingExpression()
     {
-        var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
+        var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<string>();
-        fixture.Changed
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => output.Add(x));
+        fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
 
-        fixture.UsesExprRaiseSet = "Foo";
-        fixture.UsesExprRaiseSet = "Foo"; // This one shouldn't raise a change notification
+        fixture.UsesExprRaiseSet = FooText;
+        fixture.UsesExprRaiseSet = FooText; // This one shouldn't raise a change notification
 
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.UsesExprRaiseSet).IsEqualTo("Foo");
+            await Assert.That(fixture.UsesExprRaiseSet).IsEqualTo(FooText);
             await Assert.That(output).Count().IsEqualTo(1);
         }
 
         await Assert.That(output[0]).IsEqualTo("UsesExprRaiseSet");
     }
 
+    /// <summary>
+    ///     Test that change notifications can be suppressed and re-enabled, including after serialization.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactiveObjectCanSuppressChangeNotifications()
     {
@@ -214,10 +225,10 @@ public class ReactiveObjectTests
 
         using (deser.SuppressChangeNotifications())
         {
-            await Assert.That(deser!.AreChangeNotificationsEnabled()).IsFalse();
+            await Assert.That(deser.AreChangeNotificationsEnabled()).IsFalse();
         }
 
-        await Assert.That(deser!.AreChangeNotificationsEnabled()).IsTrue();
+        await Assert.That(deser.AreChangeNotificationsEnabled()).IsTrue();
     }
 
     /// <summary>
@@ -227,18 +238,21 @@ public class ReactiveObjectTests
     [Test]
     public async Task ReactiveObjectShouldntSerializeAnythingExtra()
     {
-        var fixture = new TestFixture { IsNotNullString = "Foo", IsOnlyOneWord = "Baz" };
-        var json = JSONHelper.Serialize(fixture) ??
+        var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
+        var json = JsonHelper.Serialize(fixture) ??
                    throw new InvalidOperationException("JSON string should not be null");
 
         using (Assert.Multiple())
         {
             // Should look something like:
-            // {"IsNotNullString":"Foo","IsOnlyOneWord":"Baz","NullableInt":null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
+            // {IsNotNullStringName:FooText,IsOnlyOneWordName:BazText,NullableIntName:null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
             // PocoProperty is excluded because it lacks [DataMember] attribute
-            await Assert.That(json.Count(static x => x == ',')).IsEqualTo(5);
-            await Assert.That(json.Count(static x => x == ':')).IsEqualTo(6);
-            await Assert.That(json.Count(static x => x == '"')).IsEqualTo(16);
+            const int ExpectedCommaCount = 5;
+            const int ExpectedColonCount = 6;
+            const int ExpectedQuoteCount = 16;
+            await Assert.That(json.Count(static x => x == ',')).IsEqualTo(ExpectedCommaCount);
+            await Assert.That(json.Count(static x => x == ':')).IsEqualTo(ExpectedColonCount);
+            await Assert.That(json.Count(static x => x == '"')).IsEqualTo(ExpectedQuoteCount);
         }
     }
 
@@ -250,7 +264,7 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture();
         var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
-        observable.Subscribe(_ => throw new Exception("This is a test."));
+        observable.Subscribe(_ => throw new InvalidOperationException("This is a test."));
 
         Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
     }
@@ -266,22 +280,16 @@ public class ReactiveObjectTests
         var output = new List<string>();
         var fixture = new TestFixture();
 
-        fixture.Changing
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => outputChanging.Add(x));
-        fixture.Changed
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => output.Add(x));
+        fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(outputChanging.Add);
+        fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
 
         fixture.IsNotNullString = "Foo Bar Baz";
-        fixture.IsOnlyOneWord = "Foo";
-        fixture.IsOnlyOneWord = "Bar";
+        fixture.IsOnlyOneWord = FooText;
+        fixture.IsOnlyOneWord = BarText;
         fixture.IsNotNullString = null; // Sorry.
         fixture.IsNotNullString = null;
 
-        var results = new[] { "IsNotNullString", "IsOnlyOneWord", "IsOnlyOneWord", "IsNotNullString" };
+        var results = new[] { IsNotNullStringName, IsOnlyOneWordName, IsOnlyOneWordName, IsNotNullStringName };
 
         await Assert.That(output).Count().IsEqualTo(results.Length);
 
@@ -289,6 +297,12 @@ public class ReactiveObjectTests
         await results.AssertAreEqual(output);
     }
 
+    /// <summary>
+    ///     Asserts that every supplied collection has the expected element count.
+    /// </summary>
+    /// <param name="expected">The expected count.</param>
+    /// <param name="collections">The collections to check.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     private static async Task AssertCount(int expected, params ICollection[] collections)
     {
         foreach (var collection in collections)

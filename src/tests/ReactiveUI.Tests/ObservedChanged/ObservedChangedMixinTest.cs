@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -22,9 +22,8 @@ public class ObservedChangedMixinTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task BindToIsNotFooledByIntermediateObjectSwitching()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
         var input = new Subject<string>();
-        var fixture = new HostTestFixture { Child = new TestFixture() };
+        var fixture = new HostTestFixture { Child = new() };
 
         input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
@@ -35,7 +34,7 @@ public class ObservedChangedMixinTest
         // ImmediateScheduler executes synchronously
         await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Foo");
 
-        fixture.Child = new TestFixture();
+        fixture.Child = new();
 
         // ImmediateScheduler executes synchronously
         await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Foo");
@@ -54,9 +53,8 @@ public class ObservedChangedMixinTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task BindToSmokeTest()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
         var input = new Subject<string>();
-        var fixture = new HostTestFixture { Child = new TestFixture() };
+        var fixture = new HostTestFixture { Child = new() };
 
         input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
@@ -88,7 +86,6 @@ public class ObservedChangedMixinTest
         // If this test executes through without hanging then
         // the problem has been fixed.
         var fixtureA = new TestFixture();
-        var fixtureB = new TestFixture();
 
         var source = new BehaviorSubject<List<string>>([]);
 
@@ -103,9 +100,8 @@ public class ObservedChangedMixinTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task DisposingDisconnectsTheBindTo()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
         var input = new Subject<string>();
-        var fixture = new HostTestFixture { Child = new TestFixture() };
+        var fixture = new HostTestFixture { Child = new() };
 
         var subscription = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
@@ -131,7 +127,7 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task GetPropertyName_NullItem_Throws()
     {
-        IObservedChange<TestFixture, string?> item = null!;
+        const IObservedChange<TestFixture, string?> item = null!;
 
         await Assert.That(() => item.GetPropertyName())
             .Throws<ArgumentNullException>();
@@ -158,7 +154,7 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task GetValue_NullItem_Throws()
     {
-        IObservedChange<TestFixture, string?> item = null!;
+        const IObservedChange<TestFixture, string?> item = null!;
 
         await Assert.That(() => item.GetValue())
             .Throws<ArgumentNullException>();
@@ -171,7 +167,7 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task GetValueOrDefault_NullItem_Throws()
     {
-        IObservedChange<TestFixture, string?> item = null!;
+        const IObservedChange<TestFixture, string?> item = null!;
 
         await Assert.That(() => item.GetValueOrDefault())
             .Throws<ArgumentNullException>();
@@ -186,7 +182,7 @@ public class ObservedChangedMixinTest
     {
         var input = new HostTestFixture { Child = null };
 
-        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        Expression<Func<HostTestFixture, string>> expression = static x => x.Child!.IsNotNullString!;
         var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
         await Assert.That(fixture.GetValueOrDefault()).IsNull();
@@ -199,9 +195,9 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task GetValueOrDefault_WithValue_ReturnsValue()
     {
-        var input = new HostTestFixture { Child = new TestFixture { IsNotNullString = "Foo" } };
+        var input = new HostTestFixture { Child = new() { IsNotNullString = "Foo" } };
 
-        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        Expression<Func<HostTestFixture, string>> expression = static x => x.Child!.IsNotNullString!;
         var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
         await Assert.That(fixture.GetValueOrDefault()).IsEqualTo("Foo");
@@ -215,17 +211,13 @@ public class ObservedChangedMixinTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task GetValueShouldActuallyReturnTheValue()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
         var input = new[] { "Foo", "Bar", "Baz" };
         var output = new List<string>();
 
         var fixture = new TestFixture();
 
         // ...whereas ObservableForProperty *is* guaranteed to.
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord)
-            .Select(x => x.GetValue())
-            .WhereNotNull()
-            .Subscribe(x => output.Add(x));
+        fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue()).WhereNotNull().Subscribe(output.Add);
 
         foreach (var v in input)
         {
@@ -243,9 +235,9 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task GetValueShouldReturnTheValueFromAPath()
     {
-        var input = new HostTestFixture { Child = new TestFixture { IsNotNullString = "Foo" } };
+        var input = new HostTestFixture { Child = new() { IsNotNullString = "Foo" } };
 
-        Expression<Func<HostTestFixture, string>> expression = static x => x!.Child!.IsNotNullString!;
+        Expression<Func<HostTestFixture, string>> expression = static x => x.Child!.IsNotNullString!;
         var fixture = new ObservedChange<HostTestFixture, string?>(input, expression.Body, null);
 
         await Assert.That(fixture.GetValue()).IsEqualTo("Foo");
@@ -258,11 +250,11 @@ public class ObservedChangedMixinTest
     [Test]
     public async Task SetValuePathSmokeTest()
     {
-        var output = new HostTestFixture { Child = new TestFixture { IsNotNullString = "Foo" } };
+        var output = new HostTestFixture { Child = new() { IsNotNullString = "Foo" } };
 
         Expression<Func<TestFixture, string>> expression = static x => x.IsOnlyOneWord!;
         var fixture = new ObservedChange<TestFixture, string?>(
-            new TestFixture { IsOnlyOneWord = "Bar" },
+            new() { IsOnlyOneWord = "Bar" },
             expression.Body,
             null);
 
@@ -278,16 +270,12 @@ public class ObservedChangedMixinTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task Value_ConvertsChangesToValues()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
         var input = new[] { "Foo", "Bar", "Baz" };
         var output = new List<string>();
 
         var fixture = new TestFixture();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord)
-            .Value()
-            .WhereNotNull()
-            .Subscribe(x => output.Add(x));
+        fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value().WhereNotNull().Subscribe(output.Add);
 
         foreach (var v in input)
         {

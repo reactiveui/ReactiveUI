@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,7 +6,6 @@
 using Android.App;
 using Android.Content;
 using Android.Runtime;
-
 using AndroidX.AppCompat.App;
 
 namespace ReactiveUI.AndroidX;
@@ -15,10 +14,22 @@ namespace ReactiveUI.AndroidX;
 /// This is an Activity that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
-public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
+public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
+    IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
 {
+    /// <summary>
+    /// The subject that signals when the activity is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>
+    /// The subject that signals when the activity is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
+
+    /// <summary>
+    /// The subject that signals activity results.
+    /// </summary>
     private readonly Subject<(int requestCode, Result result, Intent? intent)> _activityResult = new();
 
     /// <summary>
@@ -45,10 +56,12 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc/>
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc/>
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveAppCompatActivity>> Changed =>
+        this.GetChangedObservable();
 
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -75,7 +88,8 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
     /// <value>
     /// The activity result.
     /// </value>
-    public IObservable<(int requestCode, Result result, Intent? intent)> ActivityResult => _activityResult.AsObservable();
+    public IObservable<(int requestCode, Result result, Intent? intent)> ActivityResult =>
+        _activityResult.AsObservable();
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -97,10 +111,10 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
         // NB: It's important that we set up the subscription *before* we
         // call ActivityForResult
         var ret = ActivityResult
-                  .Where(x => x.requestCode == requestCode)
-                  .Select(x => (x.result, x.intent))
-                  .FirstAsync()
-                  .ToTask();
+            .Where(x => x.requestCode == requestCode)
+            .Select(x => (x.result, x.intent))
+            .FirstAsync()
+            .ToTask();
 
         StartActivityForResult(intent, requestCode);
         return ret;
@@ -117,10 +131,10 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject, IRe
         // NB: It's important that we set up the subscription *before* we
         // call ActivityForResult
         var ret = ActivityResult
-                  .Where(x => x.requestCode == requestCode)
-                  .Select(x => (x.result, x.intent))
-                  .FirstAsync()
-                  .ToTask();
+            .Where(x => x.requestCode == requestCode)
+            .Select(x => (x.result, x.intent))
+            .FirstAsync()
+            .ToTask();
 
         StartActivityForResult(type, requestCode);
         return ret;

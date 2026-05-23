@@ -1,13 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-
 using Microsoft.AspNetCore.Components;
-
 using ReactiveUI.Blazor.Internal;
 
 namespace ReactiveUI.Blazor;
@@ -30,13 +27,14 @@ namespace ReactiveUI.Blazor;
 /// managed by the base class.
 /// </para>
 /// </remarks>
+[SuppressMessage("Usage", "BL0007:Component parameters should be auto properties", Justification = "Needed for design of the properties")]
 public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
     where T : class, INotifyPropertyChanged
 {
     /// <summary>
     /// Encapsulates reactive state and lifecycle management for this component.
     /// </summary>
-    private readonly ReactiveComponentState<T> _state = new();
+    private readonly ReactiveComponentState _state = new();
 
     /// <summary>
     /// Backing field for <see cref="ViewModel"/>.
@@ -88,9 +86,16 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
 
     /// <inheritdoc/>
 #if NET6_0_OR_GREATER
-    [RequiresUnreferencedCode("OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
-    [SuppressMessage("AOT", "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
-    [SuppressMessage("Trimming", "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.", Justification = "ComponentBase is an external reference")]
+    [RequiresUnreferencedCode(
+        "OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
+    [SuppressMessage(
+        "AOT",
+        "IL3051:'RequiresDynamicCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "ComponentBase is an external reference")]
+    [SuppressMessage(
+        "Trimming",
+        "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
+        Justification = "ComponentBase is an external reference")]
 #endif
     protected override void OnAfterRender(bool firstRender)
     {
@@ -117,7 +122,7 @@ public class ReactiveOwningComponentBase<T> : OwningComponentBase<T>, IViewFor<T
     /// </summary>
     /// <param name="propertyName">The name of the changed property.</param>
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(this, new(propertyName));
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)

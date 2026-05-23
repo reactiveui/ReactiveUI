@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using System.Text.Json.Serialization.Metadata;
 
 namespace ReactiveUI;
@@ -24,25 +25,6 @@ namespace ReactiveUI;
 public interface ISuspensionDriver
 {
     /// <summary>
-    /// Loads the application state from persistent storage.
-    /// </summary>
-    /// <returns>
-    /// An observable that produces the deserialized application state
-    /// (or <see langword="null"/>).
-    /// </returns>
-    /// <remarks>
-    /// This member typically relies on reflection-based serialization and is not
-    /// trimming or AOT friendly.
-    /// </remarks>
-    [RequiresUnreferencedCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    [RequiresDynamicCode(
-        "Implementations commonly use reflection-based serialization. " +
-        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    IObservable<object?> LoadState();
-
-    /// <summary>
     /// Saves the application state to persistent storage.
     /// </summary>
     /// <typeparam name="T">The type of the application state.</typeparam>
@@ -63,6 +45,20 @@ public interface ISuspensionDriver
     IObservable<Unit> SaveState<T>(T state);
 
     /// <summary>
+    /// Saves application state to persistent storage using
+    /// source-generated System.Text.Json metadata.
+    /// </summary>
+    /// <typeparam name="T">The state type.</typeparam>
+    /// <param name="state">The state to persist.</param>
+    /// <param name="typeInfo">
+    /// The source-generated metadata for <typeparamref name="T"/>.
+    /// </param>
+    /// <returns>
+    /// An observable that completes when persistence succeeds.
+    /// </returns>
+    IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo);
+
+    /// <summary>
     /// Loads application state from persistent storage using
     /// source-generated System.Text.Json metadata.
     /// </summary>
@@ -77,18 +73,23 @@ public interface ISuspensionDriver
     IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo);
 
     /// <summary>
-    /// Saves application state to persistent storage using
-    /// source-generated System.Text.Json metadata.
+    /// Loads the application state from persistent storage.
     /// </summary>
-    /// <typeparam name="T">The state type.</typeparam>
-    /// <param name="state">The state to persist.</param>
-    /// <param name="typeInfo">
-    /// The source-generated metadata for <typeparamref name="T"/>.
-    /// </param>
     /// <returns>
-    /// An observable that completes when persistence succeeds.
+    /// An observable that produces the deserialized application state
+    /// (or <see langword="null"/>).
     /// </returns>
-    IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo);
+    /// <remarks>
+    /// This member typically relies on reflection-based serialization and is not
+    /// trimming or AOT friendly.
+    /// </remarks>
+    [RequiresUnreferencedCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    [RequiresDynamicCode(
+        "Implementations commonly use reflection-based serialization. " +
+        "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
+    IObservable<object?> LoadState();
 
     /// <summary>
     /// Invalidates the persisted application state

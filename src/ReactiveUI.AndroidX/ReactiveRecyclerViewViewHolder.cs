@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,9 +6,7 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-
 using Android.Views;
-
 using AndroidX.RecyclerView.Widget;
 
 namespace ReactiveUI.AndroidX;
@@ -17,24 +15,39 @@ namespace ReactiveUI.AndroidX;
 /// A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
-[RequiresUnreferencedCode("Android property discovery uses reflection over generated resource types that may be trimmed.")]
+[RequiresUnreferencedCode(
+    "Android property discovery uses reflection over generated resource types that may be trimmed.")]
 [RequiresDynamicCode("Android property discovery discovery uses reflection that may require dynamic code generation.")]
-public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost, IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject, ICanActivate
+public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolder, ILayoutViewHost,
+    IViewFor<TViewModel>, IReactiveNotifyPropertyChanged<ReactiveRecyclerViewViewHolder<TViewModel>>, IReactiveObject,
+    ICanActivate
     where TViewModel : class, IReactiveObject
 {
     /// <summary>
     /// Gets all public accessible properties.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401: Field should be private", Justification = "Legacy reasons")]
+    [SuppressMessage(
+        "StyleCop.CSharp.MaintainabilityRules",
+        "SA1401: Field should be private",
+        Justification = "Legacy reasons")]
     [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
     [IgnoreDataMember]
     [JsonIgnore]
     protected Lazy<PropertyInfo[]>? AllPublicProperties;
 
+    /// <summary>
+    /// The subject that signals when the view is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
 
+    /// <summary>
+    /// The subject that signals when the view is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
 
+    /// <summary>
+    /// The backing field for the view model.
+    /// </summary>
     private TViewModel? _viewModel;
 
     /// <summary>
@@ -159,12 +172,14 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     /// <inheritdoc/>
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing => this.GetChangingObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changing =>
+        this.GetChangingObservable();
 
     /// <inheritdoc/>
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed => this.GetChangedObservable();
+    public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed =>
+        this.GetChangedObservable();
 
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
@@ -196,13 +211,32 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Sets up the reactive object after deserialization.
+    /// </summary>
+    /// <param name="sc">The streaming context.</param>
     [OnDeserialized]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
+    /// <summary>
+    /// Sets up the reactive object by initializing the public property cache.
+    /// </summary>
     private void SetupRxObj() =>
-        AllPublicProperties = new Lazy<PropertyInfo[]>(() => [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);
+        AllPublicProperties = new(() => [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);
 
-    private void OnViewAttachedToWindow(object? sender, View.ViewAttachedToWindowEventArgs args) => _activated.OnNext(Unit.Default);
+    /// <summary>
+    /// Handles the view being attached to the window and signals activation.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">The event arguments.</param>
+    private void OnViewAttachedToWindow(object? sender, View.ViewAttachedToWindowEventArgs args) =>
+        _activated.OnNext(Unit.Default);
 
-    private void OnViewDetachedFromWindow(object? sender, View.ViewDetachedFromWindowEventArgs args) => _deactivated.OnNext(Unit.Default);
+    /// <summary>
+    /// Handles the view being detached from the window and signals deactivation.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="args">The event arguments.</param>
+    private void OnViewDetachedFromWindow(object? sender, View.ViewDetachedFromWindowEventArgs args) =>
+        _deactivated.OnNext(Unit.Default);
 }

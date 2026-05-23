@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -164,7 +164,6 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
 public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
     where TViewModel : class
 {

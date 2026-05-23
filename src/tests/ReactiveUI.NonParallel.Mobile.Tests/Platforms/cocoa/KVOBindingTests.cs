@@ -13,6 +13,9 @@ namespace ReactiveUI.Tests
     /// </summary>
     public class FooController : ReactiveViewController, IViewFor<PropertyBindViewModel>
     {
+        /// <summary>
+        /// The backing field for the view model.
+        /// </summary>
         private PropertyBindViewModel _viewModel;
 
         /// <summary>

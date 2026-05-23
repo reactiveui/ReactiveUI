@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -23,32 +23,56 @@ namespace ReactiveUI.Winforms;
 /// </remarks>
 public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 {
-    // NB: These are in priority order
+    /// <summary>
+    /// The affinity returned when the target is a known Windows Forms control with an event target.
+    /// </summary>
+    private const int EventTargetAffinity = 6;
+
+    /// <summary>
+    /// The affinity returned when the target exposes one of the conventional default events.
+    /// </summary>
+    private const int DefaultEventAffinity = 4;
+
+    /// <summary>
+    /// The conventional default events to bind to, listed in priority order.
+    /// </summary>
     private static readonly List<(string name, Type type)> _defaultEventsToBind =
     [
         ("Click", typeof(EventArgs)),
-        ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs))];
+        ("MouseUp", typeof(System.Windows.Forms.MouseEventArgs))
+    ];
 
     /// <inheritdoc/>
-    public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public int GetAffinityForObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        T>(bool hasEventTarget)
     {
         var isWinformControl = typeof(Control).IsAssignableFrom(typeof(T));
 
         if (isWinformControl)
         {
-            return 10;
+            return BindingAffinity.ExactType;
         }
 
         if (hasEventTarget)
         {
-            return 6;
+            return EventTargetAffinity;
         }
 
-        return _defaultEventsToBind.Any(static x =>
+        return _defaultEventsToBind.Exists(static x =>
         {
-            var ei = typeof(T).GetEvent(x.name, BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
+            var ei = typeof(T).GetEvent(
+                x.name,
+                BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance);
             return ei is not null;
-        }) ? 4 : 0;
+        })
+            ? DefaultEventAffinity
+            : 0;
     }
 
     /// <summary>
@@ -61,7 +85,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <param name="commandParameter">An observable that supplies command parameter values.</param>
     /// <returns>A disposable that unbinds the command, or null if no default event was found.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/> is <see langword="null"/>.</exception>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(ICommand? command, T? target, IObservable<object?> commandParameter)
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T>(ICommand? command, T? target, IObservable<object?> commandParameter)
         where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -89,8 +117,8 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 
         var type = typeof(T);
         var eventInfo = _defaultEventsToBind
-                        .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
-                        .FirstOrDefault(x => x.EventInfo is not null);
+            .Select(x => new { EventInfo = type.GetEvent(x.name, bf), Args = x.type })
+            .FirstOrDefault(x => x.EventInfo is not null);
 
         if (eventInfo is null)
         {
@@ -104,14 +132,26 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         }
         else if (eventInfo.Args == typeof(System.Windows.Forms.MouseEventArgs))
         {
-            return BindCommandToObject<T, System.Windows.Forms.MouseEventArgs>(command, target, commandParameter, eventInfo.EventInfo?.Name!);
+            return BindCommandToObject<T, System.Windows.Forms.MouseEventArgs>(
+                command,
+                target,
+                commandParameter,
+                eventInfo.EventInfo?.Name!);
         }
 
         return null;
     }
 
     /// <inheritdoc/>
-    public IDisposable? BindCommandToObject<T, TEventArgs>(ICommand? command, T? target, IObservable<object?> commandParameter, string eventName)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public IDisposable? BindCommandToObject<T, TEventArgs>(
+        ICommand? command,
+        T? target,
+        IObservable<object?> commandParameter,
+        string eventName)
         where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
@@ -127,10 +167,12 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
         ret.Add(evt.Subscribe(_ =>
         {
-            if (command.CanExecute(latestParameter))
+            if (!command.CanExecute(latestParameter))
             {
-                command.Execute(latestParameter);
+                return;
             }
+
+            command.Execute(latestParameter);
         }));
 
         // We initially only accepted Controls here, but this is too restrictive:
@@ -144,11 +186,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             if (enabledProperty is not null)
             {
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(latestParameter)),
-                                                                 x => command.CanExecuteChanged += x,
-                                                                 x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParameter))
-                                  .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                        eventHandler => (_, _) => eventHandler(command.CanExecute(latestParameter)),
+                        x => command.CanExecuteChanged += x,
+                        x => command.CanExecuteChanged -= x)
+                    .StartWith(command.CanExecute(latestParameter))
+                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }
 
@@ -168,7 +210,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <param name="removeHandler">Action that unsubscribes an event handler from the target event.</param>
     /// <returns>A disposable that unbinds the command.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.</exception>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -191,16 +237,15 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         void Handler(object? s, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParameter);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
-        var ret = new CompositeDisposable
-        {
-            commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x))
-        };
+        var ret = new CompositeDisposable { commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)) };
 
         addHandler(Handler);
         ret.Add(Disposable.Create(() => removeHandler(Handler)));
@@ -214,11 +259,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             if (enabledProperty is not null)
             {
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
-                                                                 x => command.CanExecuteChanged += x,
-                                                                 x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParameter))
-                                  .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                        eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
+                        x => command.CanExecuteChanged += x,
+                        x => command.CanExecuteChanged -= x)
+                    .StartWith(command.CanExecute(latestParameter))
+                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }
 
@@ -237,7 +282,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     /// <param name="removeHandler">Action that unsubscribes an event handler from the target event.</param>
     /// <returns>A disposable that unbinds the command.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.</exception>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -259,16 +308,15 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         void Handler(object? s, EventArgs e)
         {
             var param = Volatile.Read(ref latestParameter);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
-        var ret = new CompositeDisposable
-        {
-            commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x))
-        };
+        var ret = new CompositeDisposable { commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)) };
 
         addHandler(Handler);
         ret.Add(Disposable.Create(() => removeHandler(Handler)));
@@ -282,11 +330,11 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             if (enabledProperty is not null)
             {
                 ret.Add(Observable.FromEvent<EventHandler, bool>(
-                                                                 eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
-                                                                 x => command.CanExecuteChanged += x,
-                                                                 x => command.CanExecuteChanged -= x)
-                                  .StartWith(command.CanExecute(latestParameter))
-                                  .Subscribe(x => enabledProperty.SetValue(target, x, null)));
+                        eventHandler => (_, _) => eventHandler(command.CanExecute(Volatile.Read(ref latestParameter))),
+                        x => command.CanExecuteChanged += x,
+                        x => command.CanExecuteChanged -= x)
+                    .StartWith(command.CanExecute(latestParameter))
+                    .Subscribe(x => enabledProperty.SetValue(target, x, null)));
             }
         }
 

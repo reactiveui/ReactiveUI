@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,9 +10,17 @@ namespace ReactiveUI.AndroidX;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class ReactiveFragment : global::AndroidX.Fragment.App.Fragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
+public class ReactiveFragment : global::AndroidX.Fragment.App.Fragment,
+    IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
 {
+    /// <summary>
+    /// The subject that signals when the fragment is activated.
+    /// </summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>
+    /// The subject that signals when the fragment is deactivated.
+    /// </summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>

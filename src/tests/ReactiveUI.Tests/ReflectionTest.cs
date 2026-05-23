@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,6 +15,9 @@ namespace ReactiveUI.Tests;
 [NotInParallel]
 public class ReflectionTest
 {
+    private const string TestText = "Test";
+    private const string NewValueText = "NewValue";
+
     /// <summary>
     ///     Tests that ExpressionToPropertyNames converts deeply nested property access.
     /// </summary>
@@ -34,6 +37,10 @@ public class ReflectionTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task ExpressionToPropertyNames_NestedProperty_ReturnsPropertyPath()
     {
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
@@ -131,14 +138,14 @@ public class ReflectionTest
     [Test]
     public async Task GetValueFetcherForProperty_Property_ReturnsFetcher()
     {
-        var fixture = new TestFixture { IsOnlyOneWord = "Test" };
+        var fixture = new TestFixture { IsOnlyOneWord = TestText };
         var propertyInfo = typeof(TestFixture).GetProperty(nameof(TestFixture.IsOnlyOneWord))!;
 
         var fetcher = Reflection.GetValueFetcherForProperty(propertyInfo);
 
         await Assert.That(fetcher).IsNotNull();
         var value = fetcher!(fixture, null);
-        await Assert.That(value).IsEqualTo("Test");
+        await Assert.That(value).IsEqualTo(TestText);
     }
 
     /// <summary>
@@ -157,14 +164,14 @@ public class ReflectionTest
     [Test]
     public async Task GetValueFetcherOrThrow_ValidProperty_ReturnsFetcher()
     {
-        var fixture = new TestFixture { IsOnlyOneWord = "Test" };
+        var fixture = new TestFixture { IsOnlyOneWord = TestText };
         var propertyInfo = typeof(TestFixture).GetProperty(nameof(TestFixture.IsOnlyOneWord))!;
 
         var fetcher = Reflection.GetValueFetcherOrThrow(propertyInfo);
 
         await Assert.That(fetcher).IsNotNull();
         var value = fetcher(fixture, null);
-        await Assert.That(value).IsEqualTo("Test");
+        await Assert.That(value).IsEqualTo(TestText);
     }
 
     /// <summary>
@@ -206,8 +213,8 @@ public class ReflectionTest
         var setter = Reflection.GetValueSetterForProperty(propertyInfo);
 
         await Assert.That(setter).IsNotNull();
-        setter(fixture, "NewValue", null);
-        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo("NewValue");
+        setter(fixture, NewValueText, null);
+        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
     /// <summary>
@@ -232,8 +239,8 @@ public class ReflectionTest
         var setter = Reflection.GetValueSetterOrThrow(propertyInfo);
 
         await Assert.That(setter).IsNotNull();
-        setter(fixture, "NewValue", null);
-        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo("NewValue");
+        setter(fixture, NewValueText, null);
+        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
     /// <summary>
@@ -258,9 +265,9 @@ public class ReflectionTest
     [Test]
     public async Task IsStatic_NullProperty_Throws()
     {
-        PropertyInfo propertyInfo = null!;
+        const PropertyInfo propertyInfo = null!;
 
-        await Assert.That(() => propertyInfo.IsStatic())
+        await Assert.That(propertyInfo.IsStatic)
             .Throws<ArgumentNullException>();
     }
 
@@ -384,7 +391,7 @@ public class ReflectionTest
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
-        var success = Reflection.TryGetAllValuesForPropertyChain(out var values, fixture, chain);
+        var success = Reflection.TryGetAllValuesForPropertyChain(out _, fixture, chain);
 
         await Assert.That(success).IsFalse();
     }
@@ -396,16 +403,17 @@ public class ReflectionTest
     [Test]
     public async Task TryGetAllValuesForPropertyChain_ValidChain_ReturnsAllValues()
     {
-        var fixture = new HostTestFixture { Child = new TestFixture { IsOnlyOneWord = "Test" } };
+        var fixture = new HostTestFixture { Child = new() { IsOnlyOneWord = TestText } };
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
         var success = Reflection.TryGetAllValuesForPropertyChain(out var values, fixture, chain);
 
+        const int ExpectedCount = 2;
         await Assert.That(success).IsTrue();
-        await Assert.That(values).Count().IsEqualTo(2);
+        await Assert.That(values).Count().IsEqualTo(ExpectedCount);
         await Assert.That(values[0].Sender).IsEqualTo(fixture);
-        await Assert.That(values[1].Value).IsEqualTo("Test");
+        await Assert.That(values[1].Value).IsEqualTo(TestText);
     }
 
     /// <summary>
@@ -415,7 +423,7 @@ public class ReflectionTest
     [Test]
     public async Task TryGetValueForPropertyChain_NestedProperty_ReturnsValue()
     {
-        var fixture = new HostTestFixture { Child = new TestFixture { IsOnlyOneWord = "NestedTest" } };
+        var fixture = new HostTestFixture { Child = new() { IsOnlyOneWord = "NestedTest" } };
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
@@ -449,14 +457,14 @@ public class ReflectionTest
     [Test]
     public async Task TryGetValueForPropertyChain_SimpleProperty_ReturnsValue()
     {
-        var fixture = new TestFixture { IsOnlyOneWord = "Test" };
+        var fixture = new TestFixture { IsOnlyOneWord = TestText };
         Expression<Func<TestFixture, string?>> expression = x => x.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
         var success = Reflection.TryGetValueForPropertyChain<string>(out var value, fixture, chain);
 
         await Assert.That(success).IsTrue();
-        await Assert.That(value).IsEqualTo("Test");
+        await Assert.That(value).IsEqualTo(TestText);
     }
 
     /// <summary>
@@ -466,7 +474,7 @@ public class ReflectionTest
     [Test]
     public async Task TrySetValueToPropertyChain_NestedProperty_SetsValue()
     {
-        var fixture = new HostTestFixture { Child = new TestFixture() };
+        var fixture = new HostTestFixture { Child = new() };
         Expression<Func<HostTestFixture, string?>> expression = x => x.Child!.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
@@ -517,16 +525,16 @@ public class ReflectionTest
         Expression<Func<TestFixture, string?>> expression = x => x.IsOnlyOneWord;
         var chain = expression.Body.GetExpressionChain();
 
-        var success = Reflection.TrySetValueToPropertyChain(fixture, chain, "NewValue");
+        var success = Reflection.TrySetValueToPropertyChain(fixture, chain, NewValueText);
 
         await Assert.That(success).IsTrue();
-        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo("NewValue");
+        await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
     /// <summary>
     ///     Test class with an event.
     /// </summary>
-    private class TestClassWithEvent
+    private sealed class TestClassWithEvent
     {
         /// <summary>
         ///     A test event.
@@ -536,13 +544,13 @@ public class ReflectionTest
         /// <summary>
         ///     Raises the test event.
         /// </summary>
-        protected virtual void OnTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
+        public void OnTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
     ///     Test class with a field.
     /// </summary>
-    private class TestClassWithField
+    private sealed class TestClassWithField
     {
         /// <summary>
         ///     A test field.
@@ -557,7 +565,7 @@ public class ReflectionTest
     /// <summary>
     ///     Test class with overridden methods.
     /// </summary>
-    private class TestClassWithOverriddenMethods
+    private sealed class TestClassWithOverriddenMethods
     {
         /// <summary>
         ///     A test method.
@@ -565,22 +573,23 @@ public class ReflectionTest
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for test")]
         public void TestMethod()
         {
+            // No-op: only its existence as a method member is needed for the overload check.
         }
     }
 
     /// <summary>
     ///     Test class with static property.
     /// </summary>
-    private class TestClassWithStaticProperty
+    private sealed class TestClassWithStaticProperty
     {
         /// <summary>
         ///     Gets or sets a static property.
         /// </summary>
-        public static string? StaticProperty { get; set; }
+        public static string? StaticProperty { get; set; } = null!;
 
         /// <summary>
         ///     Gets or sets an instance property.
         /// </summary>
-        public string? InstanceProperty { get; set; }
+        public string? InstanceProperty { get; set; } = null!;
     }
 }

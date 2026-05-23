@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,6 +21,7 @@ public class ReactiveRecordTests
     [Test]
     public async Task ChangingObservableShouldFireBeforePropertyChanges()
     {
+        const int NewValue = 42;
         var fixture = new TestMutableRecord();
         var changingFired = false;
         var changedFired = false;
@@ -28,7 +29,7 @@ public class ReactiveRecordTests
         using var sub1 = fixture.Changing.ObserveOn(ImmediateScheduler.Instance).Subscribe(_ => changingFired = true);
         using var sub2 = fixture.Changed.ObserveOn(ImmediateScheduler.Instance).Subscribe(_ => changedFired = true);
 
-        fixture.Value = 42;
+        fixture.Value = NewValue;
 
         // Verify both events fired
         using (Assert.Multiple())
@@ -45,11 +46,12 @@ public class ReactiveRecordTests
     [Test]
     public async Task DelayChangeNotificationsShouldDeferNotifications()
     {
+        const int SecondValue = 2;
+        const int ThirdValue = 3;
+        const int ExpectedCountAfterDispose = 2;
         var fixture = new TestMutableRecord();
-        using var sub1 = fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed)
-            .Subscribe();
-        using var sub2 = fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing)
-            .Subscribe();
+        using var sub1 = fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
+        using var sub2 = fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
 
         await AssertCount(0, changing, changed);
 
@@ -58,15 +60,15 @@ public class ReactiveRecordTests
 
         using (fixture.DelayChangeNotifications())
         {
-            fixture.Value = 2;
+            fixture.Value = SecondValue;
             await AssertCount(1, changing, changed);
 
-            fixture.Value = 3;
+            fixture.Value = ThirdValue;
             await AssertCount(1, changing, changed);
         }
 
         // After disposing, delayed notifications should fire
-        await AssertCount(2, changing, changed);
+        await AssertCount(ExpectedCountAfterDispose, changing, changed);
     }
 
     /// <summary>
@@ -76,13 +78,13 @@ public class ReactiveRecordTests
     [Test]
     public async Task ExceptionsShouldMarshalToThrownExceptions()
     {
+        const int SecondValue = 2;
         var fixture = new TestMutableRecord { Value = 1 };
 
-        using var sub1 = fixture.Changed.Subscribe(static _ => throw new Exception("Test exception"));
-        using var sub2 = fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var exceptions).Subscribe();
+        using var sub1 = fixture.Changed.Subscribe(static _ => throw new InvalidOperationException("Test exception"));
+        using var sub2 = fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptions).Subscribe();
 
-        fixture.Value = 2;
+        fixture.Value = SecondValue;
 
         await Assert.That(exceptions).Count().IsGreaterThan(0);
     }
@@ -94,11 +96,10 @@ public class ReactiveRecordTests
     [Test]
     public async Task NestedDelayChangeNotificationsShouldWork()
     {
+        const int SecondValue = 2;
         var fixture = new TestMutableRecord();
-        using var sub1 = fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed)
-            .Subscribe();
-        using var sub2 = fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing)
-            .Subscribe();
+        using var sub1 = fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
+        using var sub2 = fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
 
         await AssertCount(0, changing, changed);
 
@@ -107,7 +108,7 @@ public class ReactiveRecordTests
         await AssertCount(0, changing, changed);
 
         var inner = fixture.DelayChangeNotifications();
-        fixture.Value = 2;
+        fixture.Value = SecondValue;
         await AssertCount(0, changing, changed);
 
         outer.Dispose();
@@ -124,17 +125,18 @@ public class ReactiveRecordTests
     [Test]
     public async Task PropertyChangedEventShouldFire()
     {
+        const int NewValue = 42;
         var fixture = new TestMutableRecord();
         var fired = false;
         var propertyName = string.Empty;
 
-        fixture.PropertyChanged += (sender, args) =>
+        fixture.PropertyChanged += (_, args) =>
         {
             fired = true;
             propertyName = args.PropertyName ?? string.Empty;
         };
 
-        fixture.Value = 42;
+        fixture.Value = NewValue;
 
         using (Assert.Multiple())
         {
@@ -150,17 +152,18 @@ public class ReactiveRecordTests
     [Test]
     public async Task PropertyChangingEventShouldFire()
     {
+        const int NewValue = 42;
         var fixture = new TestMutableRecord();
         var fired = false;
         var propertyName = string.Empty;
 
-        fixture.PropertyChanging += (sender, args) =>
+        fixture.PropertyChanging += (_, args) =>
         {
             fired = true;
             propertyName = args.PropertyName ?? string.Empty;
         };
 
-        fixture.Value = 42;
+        fixture.Value = NewValue;
 
         using (Assert.Multiple())
         {
@@ -176,7 +179,8 @@ public class ReactiveRecordTests
     [Test]
     public async Task ReactiveRecordShouldNotSerializeInternalReactiveProperties()
     {
-        var fixture = new TestRecord { Name = "Test", Age = 25 };
+        const int Age = 25;
+        var fixture = new TestRecord { Name = "Test", Age = Age };
         var json = JsonSerializer.Serialize(fixture);
 
         using (Assert.Multiple())
@@ -198,28 +202,16 @@ public class ReactiveRecordTests
         var changingEvents = new List<string>();
         var changedEvents = new List<string>();
 
-        using var sub1 = fixture.Changing
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => changingEvents.Add(x));
+        using var sub1 = fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changingEvents.Add);
 
-        using var sub2 = fixture.Changed
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => changedEvents.Add(x));
+        using var sub2 = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changedEvents.Add);
 
         var updated = fixture with { Name = "Updated" };
 
         // Records create new instances, so we need to subscribe to the new instance
-        using var sub3 = updated.Changing
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => changingEvents.Add(x));
+        using var sub3 = updated.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changingEvents.Add);
 
-        using var sub4 = updated.Changed
-            .Where(x => x.PropertyName is not null)
-            .Select(x => x.PropertyName!)
-            .Subscribe(x => changedEvents.Add(x));
+        using var sub4 = updated.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changedEvents.Add);
 
         await Assert.That(updated.Name).IsEqualTo("Updated");
     }
@@ -231,7 +223,8 @@ public class ReactiveRecordTests
     [Test]
     public async Task ReactiveRecordShouldSerializeCorrectly()
     {
-        var fixture = new TestRecord { Name = "Test", Age = 25 };
+        const int Age = 25;
+        var fixture = new TestRecord { Name = "Test", Age = Age };
         var json = JsonSerializer.Serialize(fixture);
 
         await Assert.That(json).Contains("Test");
@@ -243,7 +236,7 @@ public class ReactiveRecordTests
         {
             await Assert.That(deserialized).IsNotNull();
             await Assert.That(deserialized!.Name).IsEqualTo("Test");
-            await Assert.That(deserialized.Age).IsEqualTo(25);
+            await Assert.That(deserialized.Age).IsEqualTo(Age);
         }
     }
 
@@ -257,6 +250,11 @@ public class ReactiveRecordTests
         var fixture = new TestMutableRecord();
         var callCount = 0;
 
+        const int SecondValue = 2;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Code Smell",
+            "S2123:Values should not be uselessly incremented",
+            Justification = "Intentional counter increment in test handler.")]
         void Handler(object? sender, PropertyChangedEventArgs args) => callCount++;
 
         fixture.PropertyChanged += Handler;
@@ -264,7 +262,7 @@ public class ReactiveRecordTests
         await Assert.That(callCount).IsEqualTo(1);
 
         fixture.PropertyChanged -= Handler;
-        fixture.Value = 2;
+        fixture.Value = SecondValue;
         await Assert.That(callCount).IsEqualTo(1); // Should not have incremented
     }
 
@@ -278,6 +276,11 @@ public class ReactiveRecordTests
         var fixture = new TestMutableRecord();
         var callCount = 0;
 
+        const int SecondValue = 2;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Code Smell",
+            "S2123:Values should not be uselessly incremented",
+            Justification = "Intentional counter increment in test handler.")]
         void Handler(object? sender, PropertyChangingEventArgs args) => callCount++;
 
         fixture.PropertyChanging += Handler;
@@ -285,7 +288,7 @@ public class ReactiveRecordTests
         await Assert.That(callCount).IsEqualTo(1);
 
         fixture.PropertyChanging -= Handler;
-        fixture.Value = 2;
+        fixture.Value = SecondValue;
         await Assert.That(callCount).IsEqualTo(1); // Should not have incremented
     }
 
@@ -319,6 +322,12 @@ public class ReactiveRecordTests
         await Assert.That(fixture.ThrownExceptions).IsNotNull();
     }
 
+    /// <summary>
+    ///     Asserts that every supplied collection has the expected element count.
+    /// </summary>
+    /// <param name="expected">The expected count.</param>
+    /// <param name="collections">The collections to check.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     private static async Task AssertCount(int expected, params ICollection[] collections)
     {
         foreach (var collection in collections)
@@ -330,20 +339,29 @@ public class ReactiveRecordTests
     /// <summary>
     ///     Test record for immutable scenarios.
     /// </summary>
-    private record TestRecord : ReactiveRecord
+    private sealed record TestRecord : ReactiveRecord
     {
+        /// <summary>
+        ///     Gets the name.
+        /// </summary>
         public string? Name { get; init; }
 
+        /// <summary>
+        ///     Gets the age.
+        /// </summary>
         public int Age { get; init; }
     }
 
     /// <summary>
     ///     Test record with mutable properties for testing property change notifications.
     /// </summary>
-    private record TestMutableRecord : ReactiveRecord
+    private sealed record TestMutableRecord : ReactiveRecord
     {
         private int _value;
 
+        /// <summary>
+        ///     Gets or sets the value.
+        /// </summary>
         public int Value
         {
             get => _value;

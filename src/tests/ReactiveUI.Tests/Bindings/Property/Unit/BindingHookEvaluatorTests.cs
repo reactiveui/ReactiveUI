@@ -1,10 +1,8 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Linq.Expressions;
-using System.Reflection;
 using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
@@ -17,7 +15,7 @@ namespace ReactiveUI.Tests;
 /// These tests verify hook evaluation logic.
 /// Tests use the Executor paradigm to register mock hooks and manage state.
 /// </remarks>
-[TestExecutor<BindingHookEvaluatorTests.Executor>]
+[TestExecutor<Executor>]
 public class BindingHookEvaluatorTests
 {
     /// <summary>
@@ -90,7 +88,7 @@ public class BindingHookEvaluatorTests
     {
         // Arrange
         var evaluator = new BindingHookEvaluator();
-        TestViewModel? viewModel = null;
+        const TestViewModel? viewModel = null;
         var view = new TestView();
 
         Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Property1;
@@ -120,7 +118,7 @@ public class BindingHookEvaluatorTests
     {
         // Arrange
         var evaluator = new BindingHookEvaluator();
-        var viewModel = new TestViewModel { Model = new TestModel { AnotherProperty = 42 } };
+        var viewModel = new TestViewModel { Model = new() { AnotherProperty = 42 } };
         var view = new TestView { ViewModel = viewModel };
 
         Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Model!.AnotherProperty;
@@ -245,8 +243,12 @@ public class BindingHookEvaluatorTests
         }
     }
 
-    private class RejectingHook : IPropertyBindingHook
+    /// <summary>
+    /// Test binding hook that rejects bindings for the "RejectMe" property.
+    /// </summary>
+    private sealed class RejectingHook : IPropertyBindingHook
     {
+        /// <inheritdoc/>
         public bool ExecuteHook(
             object? source,
             object target,
@@ -257,37 +259,48 @@ public class BindingHookEvaluatorTests
             var vmProps = getCurrentViewModelProperties();
 
             // Reject if the property name is "RejectMe"
-            return vmProps is null || vmProps.Length == 0 || vmProps[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
+            return vmProps is null || vmProps.Length == 0 ||
+                   vmProps[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
         }
     }
 
     /// <summary>
     /// Test helper view class.
     /// </summary>
-    private class TestView : ReactiveObject, IViewFor<TestViewModel>
+    private sealed class TestView : ReactiveObject, IViewFor<TestViewModel>
     {
         private TestViewModel? _viewModel;
         private string? _someStringProperty;
         private int _someIntProperty;
 
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public TestViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (TestViewModel?)value;
         }
 
+        /// <summary>
+        /// Gets or sets a string property used for binding tests.
+        /// </summary>
         public string? SomeStringProperty
         {
             get => _someStringProperty;
             set => this.RaiseAndSetIfChanged(ref _someStringProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets an integer property used for binding tests.
+        /// </summary>
         public int SomeIntProperty
         {
             get => _someIntProperty;
@@ -298,24 +311,33 @@ public class BindingHookEvaluatorTests
     /// <summary>
     /// Test helper view model class.
     /// </summary>
-    private class TestViewModel : ReactiveObject
+    private sealed class TestViewModel : ReactiveObject
     {
         private int _property1;
         private int _rejectMe;
         private TestModel? _model;
 
+        /// <summary>
+        /// Gets or sets the first integer property used for binding tests.
+        /// </summary>
         public int Property1
         {
             get => _property1;
             set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
 
+        /// <summary>
+        /// Gets or sets the property that the rejecting hook is configured to reject.
+        /// </summary>
         public int RejectMe
         {
             get => _rejectMe;
             set => this.RaiseAndSetIfChanged(ref _rejectMe, value);
         }
 
+        /// <summary>
+        /// Gets or sets the nested model used for chained-property binding tests.
+        /// </summary>
         public TestModel? Model
         {
             get => _model;
@@ -326,10 +348,13 @@ public class BindingHookEvaluatorTests
     /// <summary>
     /// Test helper model class.
     /// </summary>
-    private class TestModel : ReactiveObject
+    private sealed class TestModel : ReactiveObject
     {
         private int _anotherProperty;
 
+        /// <summary>
+        /// Gets or sets a nested integer property used for chained-property binding tests.
+        /// </summary>
         public int AnotherProperty
         {
             get => _anotherProperty;

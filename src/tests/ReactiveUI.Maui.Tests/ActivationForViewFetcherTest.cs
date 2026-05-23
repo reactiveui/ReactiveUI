@@ -1,8 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Subjects;
 
 namespace ReactiveUI.Maui.Tests;
@@ -12,6 +13,10 @@ namespace ReactiveUI.Maui.Tests;
 /// </summary>
 public class ActivationForViewFetcherTest
 {
+    private const int ExpectedMauiAffinity = 10;
+    private const int ExpectedNonMauiAffinity = 0;
+    private const int ActivationDelayMilliseconds = 50;
+
     /// <summary>
     /// Tests that GetAffinityForView returns 10 for Page types.
     /// </summary>
@@ -23,7 +28,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(Page));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -37,7 +42,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(ContentPage));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -51,7 +56,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(View));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -65,7 +70,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(Label));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -79,7 +84,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(Cell));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -95,7 +100,7 @@ public class ActivationForViewFetcherTest
         var affinity = fetcher.GetAffinityForView(typeof(ViewCell));
 #pragma warning restore CS0618 // Type or member is obsolete
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
     /// <summary>
@@ -109,7 +114,7 @@ public class ActivationForViewFetcherTest
 
         var affinity = fetcher.GetAffinityForView(typeof(string));
 
-        await Assert.That(affinity).IsEqualTo(0);
+        await Assert.That(affinity).IsEqualTo(ExpectedNonMauiAffinity);
     }
 
     /// <summary>
@@ -141,12 +146,12 @@ public class ActivationForViewFetcherTest
         fetcher.GetActivationForView(view).Subscribe(results.Add);
 
         view.ActivateSubject.OnNext(Unit.Default);
-        await Task.Delay(50);
+        await Task.Delay(ActivationDelayMilliseconds);
 
         await Assert.That(results).Contains(true);
 
         view.DeactivateSubject.OnNext(Unit.Default);
-        await Task.Delay(50);
+        await Task.Delay(ActivationDelayMilliseconds);
 
         await Assert.That(results).Contains(false);
     }
@@ -169,21 +174,28 @@ public class ActivationForViewFetcherTest
     /// <summary>
     /// Test view that implements ICanActivate for testing.
     /// </summary>
-    private class TestCanActivateView : IActivatableView, ICanActivate
+    private sealed class TestCanActivateView : IActivatableView, ICanActivate
     {
+        /// <summary>
+        /// Gets the subject used to trigger activation.
+        /// </summary>
         public Subject<Unit> ActivateSubject { get; } = new();
 
+        /// <summary>
+        /// Gets the subject used to trigger deactivation.
+        /// </summary>
         public Subject<Unit> DeactivateSubject { get; } = new();
 
+        /// <inheritdoc/>
         public IObservable<Unit> Activated => ActivateSubject;
 
+        /// <inheritdoc/>
         public IObservable<Unit> Deactivated => DeactivateSubject;
     }
 
     /// <summary>
     /// Test non-activatable view for testing.
     /// </summary>
-    private class TestNonActivatableView : IActivatableView
-    {
-    }
+    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    private sealed class TestNonActivatableView : IActivatableView;
 }

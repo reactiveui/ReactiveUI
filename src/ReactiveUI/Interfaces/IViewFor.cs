@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -23,7 +23,7 @@ public interface IViewFor : IActivatableView
     object? ViewModel { get; set; }
 }
 
-#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable SA1402
 /// <summary>
 /// Implement this interface on views to participate in ReactiveUI routing, activation, and binding.
 /// </summary>
@@ -52,7 +52,7 @@ public interface IViewFor : IActivatableView
 /// </code>
 /// </example>
 public interface IViewFor<T> : IViewFor
-#pragma warning restore SA1402 // File may only contain a single type
+#pragma warning restore SA1402
     where T : class
 {
     /// <summary>

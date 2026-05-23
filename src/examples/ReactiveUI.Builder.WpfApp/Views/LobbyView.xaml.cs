@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -7,7 +7,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using System.Windows.Input;
-
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
@@ -21,7 +20,10 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
     /// The view model dependency property.
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
-        nameof(ViewModel), typeof(ViewModels.LobbyViewModel), typeof(LobbyView), new PropertyMetadata(null));
+        nameof(ViewModel),
+        typeof(ViewModels.LobbyViewModel),
+        typeof(LobbyView),
+        new(null));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LobbyView"/> class.
@@ -58,19 +60,23 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
         // Enter key to join
         void Enter(object s, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter && RoomsList.SelectedItem is ChatRoom room)
+            if (e.Key != Key.Enter || RoomsList.SelectedItem is not ChatRoom room)
             {
-                ViewModel?.JoinRoom.Execute(room).Subscribe();
+                return;
             }
+
+            ViewModel?.JoinRoom.Execute(room).Subscribe();
         }
 
         // Double-click to join room
         void Dbl(object s, MouseButtonEventArgs e)
         {
-            if (RoomsList.SelectedItem is ChatRoom room)
+            if (RoomsList.SelectedItem is not ChatRoom room)
             {
-                ViewModel?.JoinRoom.Execute(room).Subscribe();
+                return;
             }
+
+            ViewModel?.JoinRoom.Execute(room).Subscribe();
         }
     }
 

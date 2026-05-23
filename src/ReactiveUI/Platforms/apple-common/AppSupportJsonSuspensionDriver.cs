@@ -10,6 +10,8 @@ using System.Text.Json.Serialization.Metadata;
 
 using Foundation;
 
+using ReactiveUI.Internal;
+
 namespace ReactiveUI;
 
 /// <summary>
@@ -62,7 +64,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="subDirectory"/> is <see langword="null"/>.</exception>
     public AppSupportJsonSuspensionDriver(string subDirectory = DefaultSubDirectory)
     {
-        ArgumentNullException.ThrowIfNull(subDirectory);
+        ArgumentExceptionHelper.ThrowIfNull(subDirectory);
 
         _appDirectory = new Lazy<string>(
             () => CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory, subDirectory),
@@ -72,7 +74,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     /// <inheritdoc />
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
     {
-        ArgumentNullException.ThrowIfNull(typeInfo);
+        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
         try
         {
@@ -91,7 +93,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     /// <inheritdoc />
     public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
     {
-        ArgumentNullException.ThrowIfNull(typeInfo);
+        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
         try
         {
@@ -99,7 +101,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state, typeInfo);
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
         catch (Exception ex)
         {
@@ -138,7 +140,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state);
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
         catch (Exception ex)
         {
@@ -154,7 +156,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             var path = GetStatePath();
             File.Delete(path);
 
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
         catch (Exception ex)
         {

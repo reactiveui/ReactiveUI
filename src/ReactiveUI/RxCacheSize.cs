@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,16 +12,41 @@ namespace ReactiveUI;
 public static class RxCacheSize
 {
 #if ANDROID || IOS
+    /// <summary>
+    /// Default small cache limit for mobile platforms.
+    /// </summary>
     private const int DefaultSmallCacheLimit = 32;
+
+    /// <summary>
+    /// Default big cache limit for mobile platforms.
+    /// </summary>
     private const int DefaultBigCacheLimit = 64;
 #else
+    /// <summary>
+    /// Default small cache limit for desktop platforms.
+    /// </summary>
     private const int DefaultSmallCacheLimit = 64;
+
+    /// <summary>
+    /// Default big cache limit for desktop platforms.
+    /// </summary>
     private const int DefaultBigCacheLimit = 256;
 #endif
 
+    /// <summary>
+    /// The configured small cache limit.
+    /// </summary>
     private static int _smallCacheLimit;
+
+    /// <summary>
+    /// The configured big cache limit.
+    /// </summary>
     private static int _bigCacheLimit;
-    private static int _initialized; // 0 = false, 1 = true
+
+    /// <summary>
+    /// Tracks whether initialization has occurred; 0 means uninitialized, 1 means initialized.
+    /// </summary>
+    private static int _initialized;
 
     /// <summary>
     /// Gets the small cache limit used for internal memoizing caches.
@@ -56,11 +81,13 @@ public static class RxCacheSize
     /// <param name="bigCacheLimit">The big cache limit to use.</param>
     internal static void Initialize(int smallCacheLimit, int bigCacheLimit)
     {
-        if (Interlocked.CompareExchange(ref _initialized, 1, 0) == 0)
+        if (Interlocked.CompareExchange(ref _initialized, 1, 0) != 0)
         {
-            _smallCacheLimit = smallCacheLimit;
-            _bigCacheLimit = bigCacheLimit;
+            return;
         }
+
+        _smallCacheLimit = smallCacheLimit;
+        _bigCacheLimit = bigCacheLimit;
     }
 
     /// <summary>
@@ -82,9 +109,11 @@ public static class RxCacheSize
     /// </summary>
     private static void EnsureInitialized()
     {
-        if (Interlocked.CompareExchange(ref _initialized, 0, 0) == 0)
+        if (Interlocked.CompareExchange(ref _initialized, 0, 0) != 0)
         {
-            Initialize(DefaultSmallCacheLimit, DefaultBigCacheLimit);
+            return;
         }
+
+        Initialize(DefaultSmallCacheLimit, DefaultBigCacheLimit);
     }
 }

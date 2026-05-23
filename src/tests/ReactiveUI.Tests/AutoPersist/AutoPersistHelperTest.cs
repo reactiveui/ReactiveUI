@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,6 +16,21 @@ namespace ReactiveUI.Tests.AutoPersist;
 [TestExecutor<WithSchedulerExecutor>]
 public class AutoPersistHelperTest
 {
+    /// <summary>
+    ///     Milliseconds to advance the scheduler past initial subscription setup.
+    /// </summary>
+    private const int InitialAdvanceMilliseconds = 10;
+
+    /// <summary>
+    ///     The throttle interval, in milliseconds, used by the collection persistence tests.
+    /// </summary>
+    private const int ThrottleMilliseconds = 100;
+
+    /// <summary>
+    ///     Milliseconds to advance past the throttle interval to allow a save to fire.
+    /// </summary>
+    private const int PastThrottleMilliseconds = 150;
+
     /// <summary>
     ///     Tests that ActOnEveryObject calls onAdd when new item added.
     /// </summary>
@@ -47,6 +62,7 @@ public class AutoPersistHelperTest
     [Test]
     public async Task ActOnEveryObject_ClearCollection_CallsOnRemove()
     {
+        const int ExpectedRemovedCount = 2;
         var item1 = new TestFixture();
         var item2 = new TestFixture();
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
@@ -60,7 +76,7 @@ public class AutoPersistHelperTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(removedItems).Count().IsEqualTo(2);
+            await Assert.That(removedItems).Count().IsEqualTo(ExpectedRemovedCount);
             await Assert.That(removedItems).Contains(item1);
             await Assert.That(removedItems).Contains(item2);
         }
@@ -73,6 +89,7 @@ public class AutoPersistHelperTest
     [Test]
     public async Task ActOnEveryObject_Dispose_CallsOnRemoveForAll()
     {
+        const int ExpectedRemovedCount = 2;
         var item1 = new TestFixture();
         var item2 = new TestFixture();
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
@@ -86,7 +103,7 @@ public class AutoPersistHelperTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(removedItems).Count().IsEqualTo(2);
+            await Assert.That(removedItems).Count().IsEqualTo(ExpectedRemovedCount);
             await Assert.That(removedItems).Contains(item1);
             await Assert.That(removedItems).Contains(item2);
         }
@@ -99,6 +116,7 @@ public class AutoPersistHelperTest
     [Test]
     public async Task ActOnEveryObject_ExistingItems_CallsOnAdd()
     {
+        const int ExpectedAddedCount = 2;
         var item1 = new TestFixture();
         var item2 = new TestFixture();
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
@@ -110,7 +128,7 @@ public class AutoPersistHelperTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(addedItems).Count().IsEqualTo(2);
+            await Assert.That(addedItems).Count().IsEqualTo(ExpectedAddedCount);
             await Assert.That(addedItems).Contains(item1);
             await Assert.That(addedItems).Contains(item2);
         }
@@ -220,6 +238,7 @@ public class AutoPersistHelperTest
     [Test]
     public async Task ActOnEveryObject_ReplaceItem_CallsOnRemoveAndOnAdd()
     {
+        const int ExpectedAddedCount = 2;
         var item1 = new TestFixture();
         var item2 = new TestFixture();
         var collection = new ObservableCollection<TestFixture> { item1 };
@@ -234,7 +253,7 @@ public class AutoPersistHelperTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(addedItems).Count().IsEqualTo(2);
+            await Assert.That(addedItems).Count().IsEqualTo(ExpectedAddedCount);
             await Assert.That(addedItems[0]).IsEqualTo(item1);
             await Assert.That(addedItems[1]).IsEqualTo(item2);
             await Assert.That(removedItems).Count().IsEqualTo(1);
@@ -263,7 +282,8 @@ public class AutoPersistHelperTest
             },
             TimeSpan.FromSeconds(1));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        const int AfterDisposeSeconds = 2;
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         fixture.IsNotNullString = "First";
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
@@ -272,7 +292,7 @@ public class AutoPersistHelperTest
         subscription.Dispose();
 
         fixture.IsNotNullString = "Second";
-        scheduler.AdvanceBy(TimeSpan.FromSeconds(2));
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(AfterDisposeSeconds));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
@@ -300,7 +320,7 @@ public class AutoPersistHelperTest
             manualSave,
             TimeSpan.FromSeconds(1));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         manualSave.OnNext(Unit.Default);
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
@@ -316,8 +336,6 @@ public class AutoPersistHelperTest
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task AutoPersist_MetadataProvider_WorksCorrectly()
     {
-        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-
         var metadataProvider = AutoPersistHelper.CreateMetadataProvider<TestFixture>();
         var fixture = new TestFixture();
         var metadata = metadataProvider(fixture);
@@ -364,10 +382,11 @@ public class AutoPersistHelperTest
             },
             TimeSpan.FromSeconds(1));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        const int SmallAdvanceMilliseconds = 2;
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         fixture.PocoProperty = "NoSave";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(2));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(SmallAdvanceMilliseconds));
 
         await Assert.That(saveCount).IsEqualTo(0);
     }
@@ -409,6 +428,10 @@ public class AutoPersistHelperTest
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task AutoPersist_NullMetadata_ThrowsArgumentNullException()
     {
         var fixture = new TestFixture();
@@ -441,7 +464,7 @@ public class AutoPersistHelperTest
             },
             TimeSpan.FromSeconds(1));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         fixture.IsNotNullString = "Test";
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
@@ -456,6 +479,7 @@ public class AutoPersistHelperTest
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task AutoPersist_Throttle_RespectInterval()
     {
+        const int ThrottleSeconds = 2;
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var fixture = new TestFixture();
@@ -467,9 +491,9 @@ public class AutoPersistHelperTest
                 saveCount++;
                 return Observables.Unit;
             },
-            TimeSpan.FromSeconds(2));
+            TimeSpan.FromSeconds(ThrottleSeconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         fixture.IsNotNullString = "First";
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
@@ -506,7 +530,7 @@ public class AutoPersistHelperTest
             metadata,
             TimeSpan.FromSeconds(1));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         fixture.IsNotNullString = "Test";
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
@@ -532,16 +556,16 @@ public class AutoPersistHelperTest
                 saveCount++;
                 return Observables.Unit;
             },
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         var item = new TestFixture();
         collection.Add(item);
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
@@ -616,16 +640,16 @@ public class AutoPersistHelperTest
                 return Observables.Unit;
             },
             manualSave,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         var item = new TestFixture();
         innerCollection.Add(item);
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
@@ -650,14 +674,14 @@ public class AutoPersistHelperTest
                 saveCount++;
                 return Observables.Unit;
             },
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         collection.Remove(item);
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
 
         await Assert.That(saveCount).IsEqualTo(0);
     }
@@ -683,16 +707,16 @@ public class AutoPersistHelperTest
                 return Observables.Unit;
             },
             metadata,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         var item = new TestFixture();
         collection.Add(item);
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(150));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
@@ -749,8 +773,11 @@ public class AutoPersistHelperTest
     /// <summary>
     ///     Test object without DataContract attribute.
     /// </summary>
-    private class ObjectWithoutDataContract : ReactiveObject
+    private sealed class ObjectWithoutDataContract : ReactiveObject
     {
+        /// <summary>
+        ///     The backing field for the test property.
+        /// </summary>
         private string? _property;
 
         /// <summary>

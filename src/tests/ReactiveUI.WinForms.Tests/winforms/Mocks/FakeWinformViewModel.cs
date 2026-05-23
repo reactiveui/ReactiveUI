@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,13 +16,44 @@ namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 /// <param name="screen">The screen.</param>
 public class FakeWinformViewModel(IScreen? screen = null) : ReactiveObject, IRoutableViewModel
 {
+    /// <summary>
+    /// Backing field for the boolean property.
+    /// </summary>
     private bool _someBooleanProperty;
+
+    /// <summary>
+    /// Backing field for the integer property.
+    /// </summary>
     private int _someInteger;
+
+    /// <summary>
+    /// Backing field for the text property.
+    /// </summary>
     private string? _someText;
+
+    /// <summary>
+    /// Backing field for the double property.
+    /// </summary>
     private double _someDouble;
+
+    /// <summary>
+    /// Backing field for property 1.
+    /// </summary>
     private string? _property1;
+
+    /// <summary>
+    /// Backing field for property 2.
+    /// </summary>
     private string? _property2;
+
+    /// <summary>
+    /// Backing field for property 3.
+    /// </summary>
     private string? _property3;
+
+    /// <summary>
+    /// Backing field for property 4.
+    /// </summary>
     private string? _property4;
 
     /// <inheritdoc/>
@@ -97,9 +128,6 @@ public class FakeWinformViewModel(IScreen? screen = null) : ReactiveObject, IRou
     /// <summary>
     /// Gets or sets a value indicating whether [boolean property].
     /// </summary>
-    /// <value>
-    ///   <c>true</c> if [boolean property]; otherwise, <c>false</c>.
-    /// </value>
     public bool BooleanProperty
     {
         get => _someBooleanProperty;

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -14,7 +14,14 @@ namespace ReactiveUI.Tests.Utilities.Schedulers;
 /// </summary>
 public sealed class VirtualTimeScheduler : IScheduler
 {
+    /// <summary>
+    ///     The actions scheduled for execution, keyed by their virtual due time.
+    /// </summary>
     private readonly SortedList<DateTimeOffset, List<Action>> _scheduledItems = [];
+
+    /// <summary>
+    ///     The current virtual time.
+    /// </summary>
     private DateTimeOffset _now = DateTimeOffset.MinValue;
 
     /// <summary>
@@ -58,10 +65,12 @@ public sealed class VirtualTimeScheduler : IScheduler
         var cancelled = false;
         actions.Add(() =>
         {
-            if (!cancelled)
+            if (cancelled)
             {
-                action(this, state);
+                return;
             }
+
+            action(this, state);
         });
 
         return Disposable.Create(() => cancelled = true);
@@ -75,7 +84,10 @@ public sealed class VirtualTimeScheduler : IScheduler
     /// <param name="dueTime">Absolute time at which to execute the action.</param>
     /// <param name="action">Action to be executed.</param>
     /// <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-    public IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action)
+    public IDisposable Schedule<TState>(
+        TState state,
+        DateTimeOffset dueTime,
+        Func<IScheduler, TState, IDisposable> action)
     {
         ArgumentNullException.ThrowIfNull(action);
 
@@ -88,10 +100,12 @@ public sealed class VirtualTimeScheduler : IScheduler
         var cancelled = false;
         actions.Add(() =>
         {
-            if (!cancelled)
+            if (cancelled)
             {
-                action(this, state);
+                return;
             }
+
+            action(this, state);
         });
 
         return Disposable.Create(() => cancelled = true);
