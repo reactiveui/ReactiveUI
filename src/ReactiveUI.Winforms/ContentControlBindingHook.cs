@@ -37,6 +37,6 @@ public class ContentControlBindingHook : IPropertyBindingHook
             return true;
         }
 
-        return false;
+        return true;
     }
 }
