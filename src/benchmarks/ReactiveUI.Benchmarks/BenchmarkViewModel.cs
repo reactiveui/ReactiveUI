@@ -25,6 +25,20 @@ internal sealed class BenchmarkViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
+    /// <summary>Gets or sets the third observable string property (used by higher-arity WhenAnyValue benchmarks).</summary>
+    public string? Third
+    {
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
+    /// <summary>Gets or sets the fourth observable string property (used by higher-arity WhenAnyValue benchmarks).</summary>
+    public string? Fourth
+    {
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    }
+
     /// <summary>Gets or sets an observable integer property.</summary>
     public int Count
     {
