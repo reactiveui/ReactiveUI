@@ -96,6 +96,9 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// <summary>The scheduler on which handlers are invoked.</summary>
     private readonly IScheduler _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
 
+    /// <summary>Cached handler snapshot reused across <see cref="Handle"/> calls; invalidated when handlers change.</summary>
+    private Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>[]? _handlersSnapshot;
+
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
     {
@@ -158,7 +161,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     {
         lock (_sync)
         {
-            return [.. _handlers];
+            return _handlersSnapshot ??= [.. _handlers];
         }
     }
 
@@ -194,6 +197,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         lock (_sync)
         {
             _handlers.Add(handler);
+            _handlersSnapshot = null;
         }
     }
 
@@ -207,6 +211,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         lock (_sync)
         {
             _handlers.Remove(handler);
+            _handlersSnapshot = null;
         }
     }
 }
