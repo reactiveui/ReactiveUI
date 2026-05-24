@@ -481,9 +481,7 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
             ArgumentExceptionHelper.ThrowIfNull(target);
             ArgumentExceptionHelper.ThrowIfNull(hostExpressionChain);
 
-            var host = target;
-
-            if (!Reflection.TryGetValueForPropertyChain(out host, host, hostExpressionChain))
+            if (!Reflection.TryGetValueForPropertyChain(out object? host, target, hostExpressionChain))
             {
                 return null;
             }
