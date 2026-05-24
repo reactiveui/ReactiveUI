@@ -5,6 +5,7 @@
 
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Foundation;
 using ReactiveUI.Helpers;

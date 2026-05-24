@@ -3,12 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Helpers;
+
 #if UIKIT
 using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
 #else
 using AppKit;
-using ReactiveUI.Helpers;
 #endif
 
 namespace ReactiveUI;
