@@ -212,7 +212,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
     /// <summary>Schedules an execution-begin transition on the output scheduler.</summary>
     private void NotifyBegin() =>
-        _outputScheduler.Schedule(this, static (_, command) =>
+        ScheduleOutput(this, static (_, command) =>
         {
             command.ApplyBegin();
             return EmptyDisposable.Instance;
@@ -220,7 +220,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
 
     /// <summary>Schedules an execution-end transition on the output scheduler.</summary>
     private void NotifyEnd() =>
-        _outputScheduler.Schedule(this, static (_, command) =>
+        ScheduleOutput(this, static (_, command) =>
         {
             command.ApplyEnd();
             return EmptyDisposable.Instance;
@@ -229,7 +229,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <summary>Schedules a result broadcast to command subscribers on the output scheduler.</summary>
     /// <param name="result">The result value to broadcast.</param>
     private void NotifyResult(TResult result) =>
-        _outputScheduler.Schedule((Command: this, Result: result), static (_, state) =>
+        ScheduleOutput((Command: this, Result: result), static (_, state) =>
         {
             state.Command._resultsBroadcaster.Next(state.Result);
             return EmptyDisposable.Instance;
@@ -238,11 +238,32 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
     /// <summary>Schedules exception delivery on the output scheduler.</summary>
     /// <param name="error">The exception to deliver.</param>
     private void DeliverException(Exception error) =>
-        _outputScheduler.Schedule((Command: this, Error: error), static (_, state) =>
+        ScheduleOutput((Command: this, Error: error), static (_, state) =>
         {
             state.Command.ApplyException(state.Error);
             return EmptyDisposable.Instance;
         });
+
+    /// <summary>
+    /// Dispatches an output-scheduler transition. When the output scheduler is the immediate scheduler the action is
+    /// invoked inline: <see cref="ImmediateScheduler"/>'s stateful <c>Schedule</c> overload allocates a fresh
+    /// trampoline (<c>AsyncLockScheduler</c> + <c>LocalScheduler</c> + priority queue, plus a <c>SystemClock</c>
+    /// registration) on every call, which dominates per-execution allocations on synchronous commands. Running the
+    /// action directly is semantically identical for the immediate scheduler (it always executes synchronously now).
+    /// </summary>
+    /// <typeparam name="TState">The state threaded to the action.</typeparam>
+    /// <param name="state">The state to pass to the action.</param>
+    /// <param name="action">The transition to run on the output scheduler.</param>
+    private void ScheduleOutput<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
+    {
+        if (ReferenceEquals(_outputScheduler, ImmediateScheduler.Instance))
+        {
+            _ = action(_outputScheduler, state);
+            return;
+        }
+
+        _outputScheduler.Schedule(state, action);
+    }
 
     /// <summary>Applies an execution-begin: increments in-flight count and updates isExecuting / canExecute.</summary>
     private void ApplyBegin()
