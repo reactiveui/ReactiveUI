@@ -136,7 +136,7 @@ public sealed class POCOObservableForProperty : ICreatesObservableForProperty
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return scheduler.Schedule(
+            return scheduler.ScheduleOrInline(
                 (Observer: observer, Value: value),
                 static (_, state) =>
                 {

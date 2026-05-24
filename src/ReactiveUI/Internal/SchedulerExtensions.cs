@@ -23,14 +23,27 @@ internal static class SchedulerExtensions
     /// <param name="scheduler">The scheduler to dispatch on.</param>
     /// <param name="state">The state passed to the action.</param>
     /// <param name="action">The action to run on the scheduler.</param>
-    public static void ScheduleOrInline<TState>(this IScheduler scheduler, TState state, Func<IScheduler, TState, IDisposable> action)
+    /// <returns>The disposable controlling the scheduled (or inline-completed) work.</returns>
+    public static IDisposable ScheduleOrInline<TState>(this IScheduler scheduler, TState state, Func<IScheduler, TState, IDisposable> action) =>
+        ReferenceEquals(scheduler, ImmediateScheduler.Instance)
+            ? action(scheduler, state)
+            : scheduler.Schedule(state, action);
+
+    /// <summary>
+    /// Runs <paramref name="action"/> inline when the scheduler is <see cref="ImmediateScheduler.Instance"/>, otherwise
+    /// schedules it. See the stateful overload for why the immediate scheduler is special-cased.
+    /// </summary>
+    /// <param name="scheduler">The scheduler to dispatch on.</param>
+    /// <param name="action">The action to run on the scheduler.</param>
+    /// <returns>The disposable controlling the scheduled (or inline-completed) work.</returns>
+    public static IDisposable ScheduleOrInline(this IScheduler scheduler, Action action)
     {
         if (ReferenceEquals(scheduler, ImmediateScheduler.Instance))
         {
-            _ = action(scheduler, state);
-            return;
+            action();
+            return EmptyDisposable.Instance;
         }
 
-        scheduler.Schedule(state, action);
+        return scheduler.Schedule(action);
     }
 }

@@ -102,7 +102,7 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
         /// <summary>Schedules the next handler step on the handler scheduler.</summary>
         /// <param name="index">The handler index to run (descending toward the first-registered handler).</param>
         private void RunFrom(int index) =>
-            _current.Disposable = _scheduler.Schedule(
+            _current.Disposable = _scheduler.ScheduleOrInline(
                 (Self: this, Index: index),
                 static (_, state) =>
                 {

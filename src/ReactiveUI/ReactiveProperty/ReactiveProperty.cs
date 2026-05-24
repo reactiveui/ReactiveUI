@@ -317,12 +317,12 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                 var handler = ErrorsChanged;
                 if (handler != null)
                 {
-                    _scheduler.Schedule(() => handler(this, SingletonDataErrorsChangedEventArgs.Value));
+                    _scheduler.ScheduleOrInline(() => handler(this, SingletonDataErrorsChangedEventArgs.Value));
                 }
 
                 if (lastHasErrors != currentHasErrors)
                 {
-                    _scheduler.Schedule(() =>
+                    _scheduler.ScheduleOrInline(() =>
                         this.RaisePropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName));
                 }
 

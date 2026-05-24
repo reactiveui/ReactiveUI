@@ -21,7 +21,7 @@ internal sealed class StartObservable<T>(Func<T> function, IScheduler scheduler)
     public IDisposable Subscribe(IObserver<T> observer)
     {
         ArgumentExceptionHelper.ThrowIfNull(observer);
-        return scheduler.Schedule(
+        return scheduler.ScheduleOrInline(
             (Function: function, Observer: observer),
             static (_, state) =>
             {

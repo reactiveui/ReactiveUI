@@ -434,7 +434,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
     /// <param name="value">The value to deliver.</param>
     private void ScheduleDeliver(T? value) =>
-        _scheduler.Schedule(
+        _scheduler.ScheduleOrInline(
             (Helper: this, Value: value),
             static (_, state) =>
             {

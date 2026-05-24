@@ -758,7 +758,7 @@ public class ViewModelViewHost : ReactiveViewController
         {
             /// <inheritdoc/>
             public void OnNext(T value) =>
-                scheduler.Schedule((Downstream: downstream, Value: value), static (_, state) =>
+                scheduler.ScheduleOrInline((Downstream: downstream, Value: value), static (_, state) =>
                 {
                     state.Downstream.OnNext(state.Value);
                     return EmptyDisposable.Instance;
@@ -766,7 +766,7 @@ public class ViewModelViewHost : ReactiveViewController
 
             /// <inheritdoc/>
             public void OnError(Exception error) =>
-                scheduler.Schedule((Downstream: downstream, Error: error), static (_, state) =>
+                scheduler.ScheduleOrInline((Downstream: downstream, Error: error), static (_, state) =>
                 {
                     state.Downstream.OnError(state.Error);
                     return EmptyDisposable.Instance;
@@ -774,7 +774,7 @@ public class ViewModelViewHost : ReactiveViewController
 
             /// <inheritdoc/>
             public void OnCompleted() =>
-                scheduler.Schedule(downstream, static (_, observer) =>
+                scheduler.ScheduleOrInline(downstream, static (_, observer) =>
                 {
                     observer.OnCompleted();
                     return EmptyDisposable.Instance;
