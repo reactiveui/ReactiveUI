@@ -123,17 +123,15 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <summary>The change notifier this subscription is hooked to.</summary>
             private readonly INotifyPropertyChanged _notifier;
 
-            /// <summary>The object surfaced on the observed change.</summary>
-            private readonly object _sender;
-
-            /// <summary>The expression surfaced on the observed change.</summary>
-            private readonly Expression _expression;
-
             /// <summary>The observed property name.</summary>
             private readonly string _expectedName;
 
             /// <summary>The observer receiving observed changes.</summary>
             private readonly IObserver<IObservedChange<object?, object?>> _observer;
+
+            /// <summary>The projected change is constant for this subscription (fixed sender/expression, lazily-read
+            /// null value), so it is built once and reused rather than allocated on every matching notification.</summary>
+            private readonly IObservedChange<object?, object?> _change;
 
             /// <summary>Initializes a new instance of the <see cref="Subscription"/> class and hooks the event.</summary>
             /// <param name="notifier">The change notifier to hook.</param>
@@ -149,10 +147,9 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                 IObserver<IObservedChange<object?, object?>> observer)
             {
                 _notifier = notifier;
-                _sender = sender;
-                _expression = expression;
                 _expectedName = expectedName;
                 _observer = observer;
+                _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanged += OnPropertyChanged;
             }
 
@@ -169,7 +166,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                     return;
                 }
 
-                _observer.OnNext(new ObservedChange<object?, object?>(_sender, _expression, null));
+                _observer.OnNext(_change);
             }
         }
     }
@@ -201,17 +198,15 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             /// <summary>The change notifier this subscription is hooked to.</summary>
             private readonly INotifyPropertyChanging _notifier;
 
-            /// <summary>The object surfaced on the observed change.</summary>
-            private readonly object _sender;
-
-            /// <summary>The expression surfaced on the observed change.</summary>
-            private readonly Expression _expression;
-
             /// <summary>The observed property name.</summary>
             private readonly string _expectedName;
 
             /// <summary>The observer receiving observed changes.</summary>
             private readonly IObserver<IObservedChange<object?, object?>> _observer;
+
+            /// <summary>The projected change is constant for this subscription (fixed sender/expression, lazily-read
+            /// null value), so it is built once and reused rather than allocated on every matching notification.</summary>
+            private readonly IObservedChange<object?, object?> _change;
 
             /// <summary>Initializes a new instance of the <see cref="Subscription"/> class and hooks the event.</summary>
             /// <param name="notifier">The change notifier to hook.</param>
@@ -227,10 +222,9 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                 IObserver<IObservedChange<object?, object?>> observer)
             {
                 _notifier = notifier;
-                _sender = sender;
-                _expression = expression;
                 _expectedName = expectedName;
                 _observer = observer;
+                _change = new ObservedChange<object?, object?>(sender, expression, null);
                 _notifier.PropertyChanging += OnPropertyChanging;
             }
 
@@ -247,7 +241,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
                     return;
                 }
 
-                _observer.OnNext(new ObservedChange<object?, object?>(_sender, _expression, null));
+                _observer.OnNext(_change);
             }
         }
     }

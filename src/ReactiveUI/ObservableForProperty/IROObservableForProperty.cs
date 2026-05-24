@@ -131,6 +131,10 @@ public sealed class IROObservableForProperty : ICreatesObservableForProperty
             Expression expression,
             string observedName) : IObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>
         {
+            /// <summary>The projected change is constant for this subscription (sender, expression and a null value
+            /// read lazily), so it is built once and reused rather than allocated on every matching notification.</summary>
+            private readonly IObservedChange<object, object?> _change = new ObservedChange<object, object?>(sender, expression, null);
+
             /// <inheritdoc/>
             public void OnNext(IReactivePropertyChangedEventArgs<IReactiveObject> value)
             {
@@ -139,7 +143,7 @@ public sealed class IROObservableForProperty : ICreatesObservableForProperty
                     return;
                 }
 
-                downstream.OnNext(new ObservedChange<object, object?>(sender, expression, null));
+                downstream.OnNext(_change);
             }
 
             /// <inheritdoc/>
