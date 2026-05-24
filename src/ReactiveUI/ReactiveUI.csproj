@@ -31,6 +31,11 @@
   <ItemGroup>
     <Compile Include="..\Shared\**\*.cs" Exclude="..\Shared\Platform\**\*.cs" Link="Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
+  <!-- EventPatternObservable lives under Shared\Platform but is also consumed by core (CreatesCommandBindingViaEvent),
+       so it is linked here as a single shared source rather than duplicated into ReactiveUI\Internal. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+  </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <Compile Include="Platforms\netstandard2.0\**\*.cs"/>
     <Compile Include="Platforms\shared\**\*.cs"/>

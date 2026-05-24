@@ -139,8 +139,14 @@ namespace ReactiveUI.Winforms
     {
         public WinformsCreatesObservableForProperty() { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-        public int GetAffinityForObject(System.Type type, string propertyName, bool beforeChanged = false) { }
+        public int GetAffinityForObject(System.Type type, string propertyName) { }
         [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged = false, bool suppressWarnings = false) { }
+        public int GetAffinityForObject(System.Type? type, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged) { }
+        [System.Diagnostics.CodeAnalysis.RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+        public System.IObservable<ReactiveUI.IObservedChange<object, object?>> GetNotificationForProperty(object sender, System.Linq.Expressions.Expression expression, string propertyName, bool beforeChanged, bool suppressWarnings) { }
     }
 }
