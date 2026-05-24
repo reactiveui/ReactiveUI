@@ -24,19 +24,8 @@ public class ContentControlBindingHook : IPropertyBindingHook
     {
         ArgumentExceptionHelper.ThrowIfNull(getCurrentViewProperties);
 
-        var viewProperties = getCurrentViewProperties();
-        var lastViewProperty = viewProperties.LastOrDefault();
-
-        if (lastViewProperty?.Sender is not Panel)
-        {
-            return true;
-        }
-
-        if (viewProperties[^1].GetPropertyName() != "Controls")
-        {
-            return true;
-        }
-
+        // Always allow the binding to proceed: hosting a view inside a ContentControl/Panel is handled by the
+        // routed/view-model view host, not by aborting the property binding here. (Matches the shipped behaviour.)
         return true;
     }
 }
