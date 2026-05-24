@@ -158,4 +158,3 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
         base.Dispose(disposing);
     }
 }
-

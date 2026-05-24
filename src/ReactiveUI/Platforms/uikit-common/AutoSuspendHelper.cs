@@ -211,6 +211,8 @@ public class AutoSuspendHelper<
         _untimelyDeath.Dispose();
     }
 
+    /// <summary>Throws if this helper has already been disposed.</summary>
+    /// <exception cref="ObjectDisposedException">Thrown when the helper has been disposed.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed()
     {

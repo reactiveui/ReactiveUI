@@ -258,7 +258,8 @@ public class ViewModelViewHost : ReactiveViewController
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
-        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+        "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void Initialize()
     {
         var viewModelChanges = new PropertyObservable<object?>(this, static x => x._viewModel, nameof(ViewModel));

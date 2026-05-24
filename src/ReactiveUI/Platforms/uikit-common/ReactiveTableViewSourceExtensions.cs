@@ -90,6 +90,10 @@ public static class ReactiveTableViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UITableView tableView,
@@ -112,6 +116,10 @@ public static class ReactiveTableViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UITableView tableView,
@@ -119,7 +127,7 @@ public static class ReactiveTableViewSourceExtensions
         float sizeHint,
         Action<TCell>? initializeCellAction)
         where TCell : UITableViewCell =>
-        sourceObservable.BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource: null);
+        sourceObservable.BindTo<TSource, TCell>(tableView, cellKey, sizeHint, initializeCellAction, initSource: null);
 
     /// <summary>
     /// Extension method that binds an observable of a collection
@@ -170,6 +178,10 @@ public static class ReactiveTableViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UITableView tableView,
@@ -192,13 +204,17 @@ public static class ReactiveTableViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UITableViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UITableView tableView,
         float sizeHint,
         Action<TCell>? initializeCellAction)
         where TCell : UITableViewCell =>
-        sourceObservable.BindTo(tableView, sizeHint, initializeCellAction, initSource: null);
+        sourceObservable.BindTo<TSource, TCell>(tableView, sizeHint, initializeCellAction, initSource: null);
 
     /// <summary>
     /// Extension method that binds an observable of a collection

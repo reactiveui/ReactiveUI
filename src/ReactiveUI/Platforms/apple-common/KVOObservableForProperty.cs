@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Foundation;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -20,6 +21,7 @@ namespace ReactiveUI;
 [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "KVO is an established acronym and the public type name cannot change without a breaking API change.")]
 public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 {
+    /// <summary>The affinity score returned for properties declared on the <see cref="NSObject"/> hierarchy.</summary>
     private const int KvoAffinityScore = 15;
 
     /// <inheritdoc />
@@ -119,7 +121,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     /// <paramref name="observationKey"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="sender"/> is not an <see cref="NSObject"/>.</exception>
-    private static IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
+    private static KeyValueObservingObservable GetNotificationForProperty(
         object sender,
         Expression expression,
         string propertyName,
@@ -177,95 +179,6 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     }
 
     /// <summary>
-    /// A fused <see cref="IObservable{T}"/> that wires NSObject Key-Value Observing (KVO) add/remove
-    /// observer calls directly inside <see cref="Subscribe"/>, replacing the previous
-    /// <c>Observable.Create</c> allocation with a single class-based allocation.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// On each subscription a <see cref="BlockObserveValueDelegate"/> is created and pinned via
-    /// a <see cref="GCHandle"/> so that the runtime does not relocate or collect it while KVO holds
-    /// a reference to it.  Both the observer removal and the handle release are performed atomically
-    /// when the returned <see cref="ActionDisposable"/> is disposed.
-    /// </para>
-    /// <para>
-    /// The class is <see langword="sealed"/> and <see langword="internal"/> because it is an
-    /// implementation detail of <see cref="KVOObservableForProperty"/> and has no stable public API.
-    /// </para>
-    /// </remarks>
-    private sealed class KeyValueObservingObservable : IObservable<IObservedChange<object?, object?>>
-    {
-        /// <summary>The NSObject instance that is being observed.</summary>
-        private readonly NSObject _obj;
-
-        /// <summary>The expression that describes the observed member; surfaced in every change notification.</summary>
-        private readonly Expression _expression;
-
-        /// <summary>The Cocoa KVO key path string used to register and unregister the observer.</summary>
-        private readonly string _observationKey;
-
-        /// <summary>
-        /// <see langword="true"/> to request <see cref="NSKeyValueObservingOptions.Old"/> notifications
-        /// (before-changed); <see langword="false"/> to request <see cref="NSKeyValueObservingOptions.New"/>
-        /// notifications (after-changed).
-        /// </summary>
-        private readonly bool _beforeChanged;
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="KeyValueObservingObservable"/>.
-        /// </summary>
-        /// <param name="obj">The NSObject instance to observe. Must not be <see langword="null"/>.</param>
-        /// <param name="expression">The expression describing the observed member. Must not be <see langword="null"/>.</param>
-        /// <param name="observationKey">The Cocoa KVO key path. Must not be <see langword="null"/>.</param>
-        /// <param name="beforeChanged">
-        /// If <see langword="true"/>, observations use <see cref="NSKeyValueObservingOptions.Old"/>;
-        /// otherwise <see cref="NSKeyValueObservingOptions.New"/>.
-        /// </param>
-        internal KeyValueObservingObservable(
-            NSObject obj,
-            Expression expression,
-            string observationKey,
-            bool beforeChanged)
-        {
-            _obj = obj;
-            _expression = expression;
-            _observationKey = observationKey;
-            _beforeChanged = beforeChanged;
-        }
-
-        /// <inheritdoc/>
-        /// <returns>
-        /// An <see cref="IDisposable"/> that, when disposed, removes the KVO observer and frees
-        /// the pinned <see cref="GCHandle"/> that kept the delegate alive.
-        /// </returns>
-        public IDisposable Subscribe(IObserver<IObservedChange<object?, object?>> observer)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
-
-            // Create a single stable delegate instance; KVO removal requires the same observer instance.
-            var callback = new BlockObserveValueDelegate((_, observedObject, __) =>
-                observer.OnNext(new ObservedChange<object?, object?>(observedObject, _expression, default)));
-
-            // Ensure the delegate is kept alive for the lifetime of the subscription.
-            var handle = GCHandle.Alloc(callback);
-
-            var keyPath = (NSString)_observationKey;
-
-            _obj.AddObserver(
-                callback,
-                keyPath,
-                _beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New,
-                IntPtr.Zero);
-
-            return new ActionDisposable(() =>
-            {
-                _obj.RemoveObserver(callback, keyPath);
-                handle.Free();
-            });
-        }
-    }
-
-    /// <summary>
     /// Maps a .NET property name to an Objective-C selector / KVO key path using reflection over the runtime type.
     /// </summary>
     /// <remarks>
@@ -319,4 +232,94 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture),
             propertyName.AsSpan(1));
     }
+
+    /// <summary>
+    /// A fused <see cref="IObservable{T}"/> that wires NSObject Key-Value Observing (KVO) add/remove
+    /// observer calls directly inside <see cref="Subscribe"/>, replacing the previous
+    /// <c>Observable.Create</c> allocation with a single class-based allocation.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// On each subscription a <see cref="BlockObserveValueDelegate"/> is created and pinned via
+    /// a <see cref="GCHandle"/> so that the runtime does not relocate or collect it while KVO holds
+    /// a reference to it.  Both the observer removal and the handle release are performed atomically
+    /// when the returned <see cref="ActionDisposable"/> is disposed.
+    /// </para>
+    /// <para>
+    /// The class is <see langword="sealed"/> and <see langword="internal"/> because it is an
+    /// implementation detail of <see cref="KVOObservableForProperty"/> and has no stable public API.
+    /// </para>
+    /// </remarks>
+    private sealed class KeyValueObservingObservable : IObservable<IObservedChange<object?, object?>>
+    {
+        /// <summary>The NSObject instance that is being observed.</summary>
+        private readonly NSObject _obj;
+
+        /// <summary>The expression that describes the observed member; surfaced in every change notification.</summary>
+        private readonly Expression _expression;
+
+        /// <summary>The Cocoa KVO key path string used to register and unregister the observer.</summary>
+        private readonly string _observationKey;
+
+        /// <summary>
+        /// <see langword="true"/> to request <see cref="NSKeyValueObservingOptions.Old"/> notifications
+        /// (before-changed); <see langword="false"/> to request <see cref="NSKeyValueObservingOptions.New"/>
+        /// notifications (after-changed).
+        /// </summary>
+        private readonly bool _beforeChanged;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KeyValueObservingObservable"/> class.
+        /// </summary>
+        /// <param name="obj">The NSObject instance to observe. Must not be <see langword="null"/>.</param>
+        /// <param name="expression">The expression describing the observed member. Must not be <see langword="null"/>.</param>
+        /// <param name="observationKey">The Cocoa KVO key path. Must not be <see langword="null"/>.</param>
+        /// <param name="beforeChanged">
+        /// If <see langword="true"/>, observations use <see cref="NSKeyValueObservingOptions.Old"/>;
+        /// otherwise <see cref="NSKeyValueObservingOptions.New"/>.
+        /// </param>
+        internal KeyValueObservingObservable(
+            NSObject obj,
+            Expression expression,
+            string observationKey,
+            bool beforeChanged)
+        {
+            _obj = obj;
+            _expression = expression;
+            _observationKey = observationKey;
+            _beforeChanged = beforeChanged;
+        }
+
+        /// <inheritdoc/>
+        /// <returns>
+        /// An <see cref="IDisposable"/> that, when disposed, removes the KVO observer and frees
+        /// the pinned <see cref="GCHandle"/> that kept the delegate alive.
+        /// </returns>
+        public IDisposable Subscribe(IObserver<IObservedChange<object?, object?>> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            // Create a single stable delegate instance; KVO removal requires the same observer instance.
+            var callback = new BlockObserveValueDelegate((_, observedObject, _) =>
+                observer.OnNext(new ObservedChange<object?, object?>(observedObject, _expression, default)));
+
+            // Ensure the delegate is kept alive for the lifetime of the subscription.
+            var handle = GCHandle.Alloc(callback);
+
+            var keyPath = (NSString)_observationKey;
+
+            _obj.AddObserver(
+                callback,
+                keyPath,
+                _beforeChanged ? NSKeyValueObservingOptions.Old : NSKeyValueObservingOptions.New,
+                IntPtr.Zero);
+
+            return new ActionDisposable(() =>
+            {
+                _obj.RemoveObserver(callback, keyPath);
+                handle.Free();
+            });
+        }
+    }
+
 }

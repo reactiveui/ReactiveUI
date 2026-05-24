@@ -22,7 +22,7 @@ namespace ReactiveUI;
 /// support for another type that can be observed in a unique way.
 /// </summary>
 /// <remarks>
-/// Implementations typically call <see cref="Register(Type, string, int, Func{NSObject, Expression, IObservable{IObservedChange{object, object?}}})"/>
+/// Implementations typically call <see cref="Register(Type, string, int, Func{NSObject, Expression, IObservable{IObservedChange{object, object}}})"/>
 /// during construction to populate supported properties.
 /// </remarks>
 [Preserve]
@@ -334,7 +334,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 #if UIKIT
     /// <summary>
     /// Fused sink that subscribes to a <see cref="UIControlEvent"/> on a <see cref="UIControl"/> and produces
-    /// an <see cref="IObservedChange{object, object?}"/> notification for each occurrence.
+    /// an <see cref="IObservedChange{TSender, TValue}"/> notification for each occurrence.
     /// </summary>
     private sealed class ControlEventObservable : IObservable<IObservedChange<object, object?>>
     {
@@ -379,7 +379,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <summary>
     /// Fused sink that subscribes to an <see cref="NSNotificationCenter"/> notification and produces
-    /// an <see cref="IObservedChange{object, object?}"/> notification for each posting.
+    /// an <see cref="IObservedChange{TSender, TValue}"/> notification for each posting.
     /// </summary>
     private sealed class NotificationObservable : IObservable<IObservedChange<object, object?>>
     {
@@ -421,7 +421,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <summary>
     /// Fused sink that uses reflection-based event hookup (via <see cref="EventPatternObservable{TEventArgs}"/>)
-    /// to observe a named CLR event and produces an <see cref="IObservedChange{object, object?}"/> notification
+    /// to observe a named CLR event and produces an <see cref="IObservedChange{TSender, TValue}"/> notification
     /// for each occurrence. Equivalent to the old <c>Observable.FromEventPattern(sender, eventName).Subscribe(...)</c>
     /// two-step chain, collapsed into a single subscription.
     /// </summary>
@@ -454,8 +454,6 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
 
         /// <inheritdoc/>
-        [RequiresUnreferencedCode(RequiresUnreferencedCodeMessage)]
-        [RequiresDynamicCode(RequiresDynamicCodeMessage)]
         public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
@@ -470,7 +468,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <summary>
     /// Fused sink that subscribes to a non-generic <see cref="EventHandler"/> CLR event via explicit
-    /// add/remove handlers and produces an <see cref="IObservedChange{object, object?}"/> notification
+    /// add/remove handlers and produces an <see cref="IObservedChange{TSender, TValue}"/> notification
     /// for each occurrence. The event args are discarded.
     /// </summary>
     private sealed class NonGenericEventHandlerObservable : IObservable<IObservedChange<object, object?>>
@@ -522,7 +520,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <summary>
     /// Fused sink that subscribes to a strongly-typed CLR event via explicit add/remove handlers and produces
-    /// an <see cref="IObservedChange{object, object?}"/> notification for each occurrence.
+    /// an <see cref="IObservedChange{TSender, TValue}"/> notification for each occurrence.
     /// The event args are discarded; only the notification itself matters.
     /// </summary>
     /// <typeparam name="TEventArgs">The event argument type.</typeparam>

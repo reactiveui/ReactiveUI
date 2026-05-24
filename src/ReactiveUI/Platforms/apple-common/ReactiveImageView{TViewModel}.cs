@@ -6,9 +6,9 @@
 using CoreGraphics;
 
 #if UIKIT
+using NSCoder = Foundation.NSCoder;
 using NSImage = UIKit.UIImage;
 using NSObjectFlag = Foundation.NSObjectFlag;
-using NSCoder = Foundation.NSCoder;
 #endif
 
 namespace ReactiveUI;

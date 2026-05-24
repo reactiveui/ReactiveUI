@@ -194,6 +194,7 @@ public abstract class ReactivePageViewController : UIPageViewController, IReacti
 public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing field for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

@@ -8,6 +8,7 @@ using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using UIKit;
 
 namespace ReactiveUI;
@@ -59,7 +60,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private int _snapshotVersion;
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is part of the ICreatesCommandBinding public API contract and is used by the framework for type resolution.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T is part of the ICreatesCommandBinding public API contract and is used by the framework for type resolution.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -137,6 +141,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
     public virtual IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,

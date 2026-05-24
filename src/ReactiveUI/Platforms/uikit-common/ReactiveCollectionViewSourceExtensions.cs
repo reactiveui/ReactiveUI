@@ -86,6 +86,10 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
@@ -106,13 +110,17 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
         NSString cellKey,
         Action<TCell>? initializeCellAction)
         where TCell : UICollectionViewCell =>
-        sourceObservable.BindTo(collectionView, cellKey, initializeCellAction, initSource: null);
+        sourceObservable.BindTo<TSource, TCell>(collectionView, cellKey, initializeCellAction, initSource: null);
 
     /// <summary>
     /// Extension method that binds an observable of a collection
@@ -160,6 +168,10 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView)
@@ -180,12 +192,16 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
     [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameters are part of the public binding API and specified at the call site.")]
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
         Action<TCell>? initializeCellAction)
         where TCell : UICollectionViewCell =>
-        sourceObservable.BindTo(collectionView, initializeCellAction, initSource: null);
+        sourceObservable.BindTo<TSource, TCell>(collectionView, initializeCellAction, initSource: null);
 
     /// <summary>
     /// Extension method that binds an observable of a collection

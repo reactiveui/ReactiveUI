@@ -41,22 +41,27 @@
     <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <Compile Include="Platforms\apple-common\**\*.cs"/>
     <Compile Include="Platforms\ios\**\*.cs"/>
     <Compile Include="Platforms\uikit-common\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-macos'))">
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
     <Compile Include="Platforms\apple-common\**\*.cs"/>
     <Compile Include="Platforms\mac\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-tvos'))">
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
     <Compile Include="Platforms\apple-common\**\*.cs"/>
     <Compile Include="Platforms\tvos\**\*.cs"/>
     <Compile Include="Platforms\uikit-common\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
+  </ItemGroup>
+  <!-- Apple Platforms reuse the platform-lib-only fused sinks from Shared\Platform (excluded from the core compile above). -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>

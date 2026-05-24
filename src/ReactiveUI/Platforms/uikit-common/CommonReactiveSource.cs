@@ -453,7 +453,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private void OnSectionItemChanged(
         int sectionInfoId,
         SerialDisposable applyPendingChangesDisposable,
-        EventPattern<NotifyCollectionChangedEventArgs> change,
+        CollectionChanged change,
         int section)
     {
         VerifyOnMainThread();

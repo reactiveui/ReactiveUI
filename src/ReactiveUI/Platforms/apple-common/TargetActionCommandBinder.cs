@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Foundation;
 using ObjCRuntime;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 #if UIKIT
 using UIKit;
@@ -38,6 +39,11 @@ namespace ReactiveUI;
 /// </remarks>
 public class TargetActionCommandBinder : ICreatesCommandBinding
 {
+    /// <summary>
+    /// The affinity score returned when the object type is a valid Target/Action host.
+    /// </summary>
+    private const int TargetActionAffinity = 4;
+
 #if UIKIT
     /// <summary>
     /// The set of Cocoa types that are valid Target/Action hosts in UIKit builds.
@@ -72,13 +78,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </remarks>
     private static readonly ConcurrentDictionary<Type, Setters> PropertySetterCache = new();
 
-    /// <summary>
-    /// The affinity score returned when the object type is a valid Target/Action host.
-    /// </summary>
-    private const int TargetActionAffinity = 4;
-
     /// <inheritdoc/>
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter is part of the ICreatesCommandBinding public API contract and cannot be removed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameter is part of the ICreatesCommandBinding public API contract and cannot be removed.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -207,7 +211,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// Prefer the add/remove handler overload when you can supply delegates.
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "TEventArgs is part of the ICreatesCommandBinding public API contract and cannot be inferred from the parameter list.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "TEventArgs is part of the ICreatesCommandBinding public API contract and cannot be inferred from the parameter list.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,

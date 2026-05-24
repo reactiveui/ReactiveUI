@@ -105,8 +105,7 @@ public static class IndexNormalizer
     private static int CalculateAdditionIndex(List<Update> updates, int start, int count, int updateIndex)
     {
         Debug.Assert(updates[updateIndex].Type == UpdateType.Add, "Must be adding items");
-        var originalIndex = updates[updateIndex].Index;
-        var runningCalculation = originalIndex;
+        var runningCalculation = updates[updateIndex].Index;
 
         for (var i = updateIndex + 1; i < start + count; ++i)
         {
@@ -119,12 +118,9 @@ public static class IndexNormalizer
                     ++runningCalculation;
                 }
             }
-            else if (subsequentUpdate.Type == UpdateType.Delete)
+            else if (subsequentUpdate.Type == UpdateType.Delete && subsequentUpdate.Index < runningCalculation)
             {
-                if (subsequentUpdate.Index < runningCalculation)
-                {
-                    --runningCalculation;
-                }
+                --runningCalculation;
             }
         }
 
@@ -163,12 +159,9 @@ public static class IndexNormalizer
                     ++runningCalculation;
                 }
             }
-            else if (priorUpdate.Type == UpdateType.Add)
+            else if (priorUpdate.Type == UpdateType.Add && priorUpdate.Index <= runningCalculation)
             {
-                if (priorUpdate.Index <= runningCalculation)
-                {
-                    --runningCalculation;
-                }
+                --runningCalculation;
             }
         }
 
