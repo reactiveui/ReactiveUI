@@ -275,6 +275,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         /// <summary>The synchronization primitive guarding access to <see cref="Validated"/>.</summary>
         private static readonly object Gate = new();
 #endif
+
         /// <summary>Tracks which delegate types have already passed the lifecycle method validation check.</summary>
         private static readonly Dictionary<Type, byte> Validated = [];
 

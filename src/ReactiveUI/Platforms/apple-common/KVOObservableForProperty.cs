@@ -321,5 +321,4 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             });
         }
     }
-
 }

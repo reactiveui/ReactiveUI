@@ -376,8 +376,9 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     }
 
     /// <summary>
-    /// Builds and attaches the <see cref="IConnectableObservable{T}"/> pipelines that react to
-    /// reloading-state transitions and per-section item changes.
+    /// Attaches the per-section change subscriptions, routing each collection change according to the adapter's
+    /// current reload state. Replaces the previous <c>Publish</c>/<c>Join</c>/<c>Connect</c> multicast pipeline with
+    /// a single purpose-built sink (<see cref="ReloadAwareSectionSink"/>).
     /// </summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <param name="sectionInfo">The current section info.</param>
@@ -389,58 +390,9 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         CompositeDisposable sectionDisposables,
         SerialDisposable applyPendingChangesDisposable)
     {
-        var isReloading = _adapter
-            .IsReloadingData
-            .DistinctUntilChanged()
-            .Do(y => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] IsReloadingData = {1}", sectionInfoId, y))
-            .Publish();
-
-        // Merge per-section collection changes into a single stream.
-        // This remains a "setup path" rather than a hot per-event path.
-        var anySectionChanged = sectionInfo
-            .Select((y, index) => y.Collection!.ObserveCollectionChanges().Select(z => new { Section = index, Change = z }))
-            .Merge()
-            .Publish();
-
-        // since reloads are applied asynchronously, it is possible for data to change whilst the reload is occurring
-        // thus, we need to ensure any such changes result in another reload
-        sectionDisposables.Add(
-            isReloading
-                .Where(static y => y)
-                .Join(
-                    anySectionChanged,
-                    _ => isReloading,
-                    _ => EmptyObservable<Unit>.Instance,
-                    static (_, _) => Unit.Default)
-                .Subscribe(
-                    _ =>
-                    {
-                        VerifyOnMainThread();
-
-                        this.Log().Debug(
-                            CultureInfo.InvariantCulture,
-                            "[#{0}] A section changed whilst a reload is in progress - forcing another reload.",
-                            sectionInfoId);
-
-                        _adapter.ReloadData();
-                        _pendingChanges.Clear();
-                        _isCollectingChanges = false;
-                    }));
-
-        sectionDisposables.Add(
-            isReloading
-                .Where(static y => !y)
-                .Join(
-                    anySectionChanged,
-                    _ => isReloading,
-                    _ => EmptyObservable<Unit>.Instance,
-                    static (_, changeDetails) => (changeDetails.Change, changeDetails.Section))
-                .Subscribe(
-                    y => OnSectionItemChanged(sectionInfoId, applyPendingChangesDisposable, y.Change, y.Section),
-                    ex => this.Log().Error(CultureInfo.InvariantCulture, "[#{0}] Error while watching section collection: {1}", sectionInfoId, ex)));
-
-        sectionDisposables.Add(isReloading.Connect());
-        sectionDisposables.Add(anySectionChanged.Connect());
+        var sink = new ReloadAwareSectionSink(this, sectionInfoId, applyPendingChangesDisposable);
+        sectionDisposables.Add(sink);
+        sink.Run(sectionInfo);
     }
 
     /// <summary>
@@ -729,6 +681,109 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         throw new InvalidOperationException(
             "An operation has occurred off the main thread that must be performed on it. Be sure to schedule changes to the underlying data correctly.");
+    }
+
+    /// <summary>
+    /// Routes per-section collection changes according to the adapter's current reload state. While a reload is in
+    /// progress every section change forces another reload; otherwise the change is collected for batch application.
+    /// Replaces the previous <c>Publish</c>/<c>Join</c>/<c>Connect</c> multicast pipeline with a single sink that
+    /// tracks the reload state and dispatches changes directly.
+    /// </summary>
+    private sealed class ReloadAwareSectionSink : IDisposable
+    {
+        /// <summary>The owning source whose adapter and state the sink drives.</summary>
+        private readonly CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> _parent;
+
+        /// <summary>A correlation id for logging.</summary>
+        private readonly int _sectionInfoId;
+
+        /// <summary>Serial disposable that holds the scheduled apply-changes action.</summary>
+        private readonly SerialDisposable _applyPendingChangesDisposable;
+
+        /// <summary>All subscriptions created by this sink.</summary>
+        private readonly CompositeDisposable _subscriptions = [];
+
+        /// <summary>The latest observed reload state.</summary>
+        private bool _isReloading;
+
+        /// <summary>Whether a reload-state value has been observed yet.</summary>
+        private bool _hasReloadingValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ReloadAwareSectionSink"/> class.
+        /// </summary>
+        /// <param name="parent">The owning source.</param>
+        /// <param name="sectionInfoId">A correlation id for logging.</param>
+        /// <param name="applyPendingChangesDisposable">Serial disposable that holds the scheduled apply-changes action.</param>
+        public ReloadAwareSectionSink(
+            CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> parent,
+            int sectionInfoId,
+            SerialDisposable applyPendingChangesDisposable)
+        {
+            _parent = parent;
+            _sectionInfoId = sectionInfoId;
+            _applyPendingChangesDisposable = applyPendingChangesDisposable;
+        }
+
+        /// <summary>Subscribes to the adapter reload state and to each section's collection changes.</summary>
+        /// <param name="sectionInfo">The current section info.</param>
+        public void Run(IReadOnlyList<TSectionInfo> sectionInfo)
+        {
+            // IsReloadingData is a BehaviorSubject, so the current value arrives synchronously on subscription and is
+            // in place before any section-change notification is dispatched below.
+            _subscriptions.Add(_parent._adapter.IsReloadingData.Subscribe(new DelegateObserver<bool>(OnReloadingChanged)));
+
+            for (var index = 0; index < sectionInfo.Count; index++)
+            {
+                var section = index;
+                _subscriptions.Add(
+                    sectionInfo[section].Collection!.ObserveCollectionChanges().Subscribe(
+                        new DelegateObserver<CollectionChanged>(
+                            change => OnSectionChanged(change, section),
+                            ex => _parent.Log().Error(CultureInfo.InvariantCulture, "[#{0}] Error while watching section collection: {1}", _sectionInfoId, ex))));
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Dispose() => _subscriptions.Dispose();
+
+        /// <summary>Records the latest reload state, logging only when it changes.</summary>
+        /// <param name="value">The new reload state.</param>
+        private void OnReloadingChanged(bool value)
+        {
+            if (_hasReloadingValue && _isReloading == value)
+            {
+                return;
+            }
+
+            _isReloading = value;
+            _hasReloadingValue = true;
+            _parent.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] IsReloadingData = {1}", _sectionInfoId, value);
+        }
+
+        /// <summary>Dispatches a single section change based on the current reload state.</summary>
+        /// <param name="change">The collection change.</param>
+        /// <param name="section">The zero-based section index.</param>
+        private void OnSectionChanged(CollectionChanged change, int section)
+        {
+            _parent.VerifyOnMainThread();
+
+            if (_isReloading)
+            {
+                // A section changed whilst a reload is in progress - force another reload so the change is not lost.
+                _parent.Log().Debug(
+                    CultureInfo.InvariantCulture,
+                    "[#{0}] A section changed whilst a reload is in progress - forcing another reload.",
+                    _sectionInfoId);
+
+                _parent._adapter.ReloadData();
+                _parent._pendingChanges.Clear();
+                _parent._isCollectingChanges = false;
+                return;
+            }
+
+            _parent.OnSectionItemChanged(_sectionInfoId, _applyPendingChangesDisposable, change, section);
+        }
     }
 
     /// <summary>

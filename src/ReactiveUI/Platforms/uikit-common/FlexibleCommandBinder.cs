@@ -154,7 +154,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         Disposable.Empty;
 
     /// <inheritdoc/>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
     public virtual IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
             DynamicallyAccessedMemberTypes.PublicProperties |

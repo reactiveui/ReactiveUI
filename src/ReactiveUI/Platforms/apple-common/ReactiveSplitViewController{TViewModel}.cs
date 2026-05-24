@@ -7,8 +7,6 @@ using Foundation;
 
 #if UIKIT
 using NSSplitViewController = UIKit.UISplitViewController;
-#else
-using AppKit;
 #endif
 
 namespace ReactiveUI;
