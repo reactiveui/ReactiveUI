@@ -6,7 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -93,11 +92,11 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.OpenRead(path);
 
             var result = JsonSerializer.Deserialize(stream, typeInfo);
-            return Observable.Return(result);
+            return new ReturnObservable<T?>(result);
         }
         catch (Exception ex)
         {
-            return Observable.Throw<T?>(ex);
+            return new ThrowObservable<T?>(ex);
         }
     }
 
@@ -113,11 +112,11 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
             // Reflection-based: object deserialization typically requires metadata at runtime.
             var result = JsonSerializer.Deserialize<object>(stream);
-            return Observable.Return(result);
+            return new ReturnObservable<object?>(result);
         }
         catch (Exception ex)
         {
-            return Observable.Throw<object?>(ex);
+            return new ThrowObservable<object?>(ex);
         }
     }
 
@@ -136,7 +135,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
         }
         catch (Exception ex)
         {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<Unit>(ex);
         }
     }
 
@@ -155,7 +154,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
         }
         catch (Exception ex)
         {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<Unit>(ex);
         }
     }
 
@@ -171,7 +170,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
         }
         catch (Exception ex)
         {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<Unit>(ex);
         }
     }
 

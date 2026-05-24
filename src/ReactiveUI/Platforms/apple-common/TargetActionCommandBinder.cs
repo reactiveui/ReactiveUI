@@ -6,7 +6,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using Foundation;
@@ -128,7 +127,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
@@ -183,15 +182,13 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         ctlDelegate.IsEnabled = command.CanExecute(Volatile.Read(ref latestParam));
 
         // Keep Enabled (and AppKit validate) in sync with CanExecuteChanged.
-        var canExecuteChangedSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return Handler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteChangedSub = new FromEventObservable<bool>(onNext =>
+            {
+                void Handler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += Handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            })
             .Subscribe(x =>
             {
                 setters.EnabledSetter.Invoke(target, x, null);
@@ -227,12 +224,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         ArgumentExceptionHelper.ThrowIfNull(eventName);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
-        // Stable handler for deterministic unsubscription is provided by Rx's FromEventPattern.
-        var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
+        // Stable handler for deterministic unsubscription is provided by EventPatternObservable.
+        var evt = new EventPatternObservable<TEventArgs>(target, eventName);
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
         var evtSub = evt.Subscribe(_ =>
@@ -275,7 +272,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 

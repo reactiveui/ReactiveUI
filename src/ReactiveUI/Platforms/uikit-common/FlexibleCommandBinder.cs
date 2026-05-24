@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Input;
 using ReactiveUI.Helpers;
@@ -172,7 +171,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
@@ -231,7 +230,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
@@ -261,15 +260,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         // Initial enabled state.
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
@@ -309,7 +306,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
@@ -339,15 +336,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         // Initial enabled state.
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
@@ -380,13 +375,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(eventName);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return(target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
 
-        var actionSub = Observable.FromEventPattern(target, eventName).Subscribe(_ =>
+        var actionSub = new EventPatternObservable<EventArgs>(target, eventName).Subscribe(_ =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -405,15 +400,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return Handler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void Handler(object? sender, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += Handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, actionSub, canExecuteSub);
@@ -439,7 +432,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(target);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return(target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         if (target is not UIControl ctl)
         {
@@ -474,15 +467,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, actionDisp, canExecuteSub);
