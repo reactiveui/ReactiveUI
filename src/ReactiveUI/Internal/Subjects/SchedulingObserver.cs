@@ -17,7 +17,7 @@ internal sealed class SchedulingObserver<T>(IObserver<T> downstream, IScheduler 
 {
     /// <inheritdoc/>
     public void OnNext(T value) =>
-        scheduler.Schedule(
+        scheduler.ScheduleOrInline(
             (Observer: downstream, Value: value),
             static (_, state) =>
             {
@@ -27,7 +27,7 @@ internal sealed class SchedulingObserver<T>(IObserver<T> downstream, IScheduler 
 
     /// <inheritdoc/>
     public void OnError(Exception error) =>
-        scheduler.Schedule(
+        scheduler.ScheduleOrInline(
             (Observer: downstream, Error: error),
             static (_, state) =>
             {
@@ -37,7 +37,7 @@ internal sealed class SchedulingObserver<T>(IObserver<T> downstream, IScheduler 
 
     /// <inheritdoc/>
     public void OnCompleted() =>
-        scheduler.Schedule(
+        scheduler.ScheduleOrInline(
             downstream,
             static (_, observer) =>
             {
