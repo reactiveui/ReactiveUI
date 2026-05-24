@@ -12,6 +12,12 @@ namespace ReactiveUI;
 /// </summary>
 public sealed class Update
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Update"/> class.
+    /// </summary>
+    /// <param name="type">The update type.</param>
+    /// <param name="index">The index affected by this update.</param>
+    /// <param name="isDuplicate">Whether this update is a duplicate.</param>
     private Update(UpdateType type, int index, bool isDuplicate = false)
     {
         Type = type;

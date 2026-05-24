@@ -26,7 +26,10 @@ namespace ReactiveUI;
 /// </summary>
 public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
+    /// <summary>The subject that signals when the view is activated (moved to a superview).</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject that signals when the view is deactivated (removed from a superview).</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -129,9 +132,9 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
     }
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool activate) =>
+    void ICanForceManualActivation.Activate(bool shouldActivate) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (activate ? _activated : _deactivated).OnNext(Unit.Default));
+            (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -155,6 +158,7 @@ public class ReactiveView : NSView, IReactiveNotifyPropertyChanged<ReactiveView>
 public abstract class ReactiveView<TViewModel> : ReactiveView, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

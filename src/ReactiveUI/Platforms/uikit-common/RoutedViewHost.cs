@@ -52,12 +52,21 @@ namespace ReactiveUI;
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 
 [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+[RequiresDynamicCode(
+    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+    "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 public class RoutedViewHost : ReactiveNavigationController
 {
+    /// <summary>The disposable that tracks the current title-update subscription.</summary>
     private readonly SerialDisposable _titleUpdater;
+
+    /// <summary>The backing field for the <see cref="Router"/> property.</summary>
     private RoutingState? _router;
+
+    /// <summary>The backing field for the <see cref="ViewContractObservable"/> property.</summary>
     private IObservable<string?>? _viewContractObservable;
+
+    /// <summary>Whether the current navigation event was initiated by the router rather than the user.</summary>
     private bool _routerInstigated;
 
     /// <summary>
@@ -68,96 +77,16 @@ public class RoutedViewHost : ReactiveNavigationController
         ViewContractObservable = Observable.Return<string?>(null);
         _titleUpdater = new SerialDisposable();
 
-        _ = this.WhenActivated(
-                               d =>
-                               {
-                                   d(this
-                                     .WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
-                                     .Where(x => x?.NavigationStack.Count > 0 && ViewControllers?.Length == 0)
-                                     .Subscribe(x =>
-                                     {
-                                         _routerInstigated = true;
-                                         NSViewController? view = null;
+        _ = this.WhenActivated(d =>
+        {
+            d(SubscribeToInitialStack());
 
-                                         if (Router is not null && x is not null)
-                                         {
-                                             foreach (var viewModel in x.NavigationStack)
-                                             {
-                                                 view = ResolveView(Router.GetCurrentViewModel(), null);
-                                                 if (view is null)
-                                                 {
-                                                     throw new NullReferenceException(nameof(view));
-                                                 }
+            var navigationStackChanged = BuildNavigationStackChangedObservable();
 
-                                                 PushViewController(view, false);
-                                             }
-
-                                             if (view is not null)
-                                             {
-                                                 _titleUpdater.Disposable = Router
-                                                                            .WhenAnyValue(y => y.GetCurrentViewModel())
-                                                                            .WhereNotNull()
-                                                                            .Select(vm => vm.WhenAnyValue<IRoutableViewModel, string?>(nameof(vm.UrlPathSegment)))
-                                                                            .Switch()
-                                                                            .Subscribe(y => view.NavigationItem.Title = y);
-                                             }
-                                         }
-
-                                         _routerInstigated = false;
-                                     }));
-
-                                   var navigationStackChanged = this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
-                                                                    .Where(x => x is not null)
-                                                                    .Select(x => x!.NavigationStack.ObserveCollectionChanges())
-                                                                    .Switch();
-
-                                   d(navigationStackChanged
-                                     .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
-                                     .Select(_ => new { View = ResolveView(Router?.GetCurrentViewModel(), null), Animate = Router?.NavigationStack.Count > 1 })
-                                     .Subscribe(x =>
-                                     {
-                                         if (_routerInstigated || Router is null)
-                                         {
-                                             return;
-                                         }
-
-                                         if (x?.View is not null)
-                                         {
-                                             _titleUpdater.Disposable = Router
-                                                                        .WhenAnyValue(y => y.GetCurrentViewModel())
-                                                                        .WhereNotNull()
-                                                                        .Select(vm => vm.WhenAnyValue<IRoutableViewModel, string?>(nameof(vm.UrlPathSegment)))
-                                                                        .Switch()
-                                                                        .Subscribe(y => x.View.NavigationItem.Title = y);
-                                         }
-
-                                         _routerInstigated = true;
-
-                                         // super important that animate is false if it's the first view being pushed, otherwise iOS gets hella confused
-                                         // and calls PushViewController twice
-                                         PushViewController(x?.View, x?.Animate ?? false);
-
-                                         _routerInstigated = false;
-                                     }));
-
-                                   d(navigationStackChanged
-                                     .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
-                                     .Subscribe(_ =>
-                                     {
-                                         _routerInstigated = true;
-                                         PopToRootViewController(true);
-                                         _routerInstigated = false;
-                                     }));
-
-                                   d(this
-                                     .WhenAnyObservable(x => x.Router!.NavigateBack!)
-                                     .Subscribe(_ =>
-                                     {
-                                         _routerInstigated = true;
-                                         PopViewController(true);
-                                         _routerInstigated = false;
-                                     }));
-                               });
+            d(SubscribeToStackAdded(navigationStackChanged));
+            d(SubscribeToStackReset(navigationStackChanged));
+            d(SubscribeToNavigateBack());
+        });
     }
 
     /// <summary>
@@ -193,16 +122,19 @@ public class RoutedViewHost : ReactiveNavigationController
 
         base.PushViewController(viewController, animated);
 
-        if (!_routerInstigated)
+        if (_routerInstigated)
         {
-            // code must be pushing a view directly against nav controller rather than using the router, so we need to manually sync up the router state
-            // TODO: what should we _actually_ do here? Soft-check the view and VM type and ignore if they're not IViewFor/IRoutableViewModel?
-            var view = (IViewFor)viewController;
-            var viewModel = (IRoutableViewModel?)view.ViewModel;
-            if (viewModel is not null)
-            {
-                Router?.NavigationStack.Add(viewModel);
-            }
+            return;
+        }
+
+        // A view is being pushed directly against the nav controller rather than via the router;
+        // sync the router state so the two stacks stay aligned. Views that don't implement
+        // IViewFor<IRoutableViewModel> are silently ignored.
+        var view = (IViewFor)viewController;
+        var viewModel = (IRoutableViewModel?)view.ViewModel;
+        if (viewModel is not null)
+        {
+            Router?.NavigationStack.Add(viewModel);
         }
     }
 
@@ -229,6 +161,120 @@ public class RoutedViewHost : ReactiveNavigationController
         base.Dispose(disposing);
     }
 
+    /// <summary>Builds the observable that emits collection-change events for the active navigation stack.</summary>
+    /// <returns>An observable of collection-changed event patterns for the router's navigation stack.</returns>
+    private IObservable<System.Reactive.EventPattern<NotifyCollectionChangedEventArgs>> BuildNavigationStackChangedObservable() =>
+        this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
+            .Where(x => x is not null)
+            .Select(x => x!.NavigationStack.ObserveCollectionChanges())
+            .Switch();
+
+    /// <summary>
+    /// Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.
+    /// </summary>
+    /// <returns>A disposable that represents the subscription.</returns>
+    private IDisposable SubscribeToInitialStack() =>
+        this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
+            .Where(x => x?.NavigationStack.Count > 0 && ViewControllers?.Length == 0)
+            .Subscribe(x =>
+            {
+                _routerInstigated = true;
+                NSViewController? view = null;
+
+                if (Router is not null && x is not null)
+                {
+                    foreach (var viewModel in x.NavigationStack)
+                    {
+                        view = ResolveView(Router.GetCurrentViewModel(), null);
+                        if (view is null)
+                        {
+                            throw new InvalidOperationException(nameof(view));
+                        }
+
+                        PushViewController(view, false);
+                    }
+
+                    if (view is not null)
+                    {
+                        _titleUpdater.Disposable = SubscribeToTitleUpdates(Router, view);
+                    }
+                }
+
+                _routerInstigated = false;
+            });
+
+    /// <summary>Subscribes to stack-add events and pushes the resolved view controller.</summary>
+    /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
+    /// <returns>A disposable that represents the subscription.</returns>
+    private IDisposable SubscribeToStackAdded(
+        IObservable<System.Reactive.EventPattern<NotifyCollectionChangedEventArgs>> navigationStackChanged) =>
+        navigationStackChanged
+            .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Add)
+            .Select(_ => new { View = ResolveView(Router?.GetCurrentViewModel(), null), Animate = Router?.NavigationStack.Count > 1 })
+            .Subscribe(x =>
+            {
+                if (_routerInstigated || Router is null)
+                {
+                    return;
+                }
+
+                if (x?.View is not null)
+                {
+                    _titleUpdater.Disposable = SubscribeToTitleUpdates(Router, x.View);
+                }
+
+                _routerInstigated = true;
+
+                // Animate must be false for the first view pushed; otherwise iOS calls PushViewController twice.
+                PushViewController(x?.View, x?.Animate ?? false);
+
+                _routerInstigated = false;
+            });
+
+    /// <summary>Subscribes to stack-reset events and pops to the root view controller.</summary>
+    /// <param name="navigationStackChanged">The observable that emits navigation-stack change events.</param>
+    /// <returns>A disposable that represents the subscription.</returns>
+    private IDisposable SubscribeToStackReset(
+        IObservable<System.Reactive.EventPattern<NotifyCollectionChangedEventArgs>> navigationStackChanged) =>
+        navigationStackChanged
+            .Where(x => x.EventArgs.Action == NotifyCollectionChangedAction.Reset)
+            .Subscribe(_ =>
+            {
+                _routerInstigated = true;
+                PopToRootViewController(true);
+                _routerInstigated = false;
+            });
+
+    /// <summary>Subscribes to the router's <see cref="RoutingState.NavigateBack"/> signal and pops the top view controller.</summary>
+    /// <returns>A disposable that represents the subscription.</returns>
+    private IDisposable SubscribeToNavigateBack() =>
+        this.WhenAnyObservable(x => x.Router!.NavigateBack!)
+            .Subscribe(_ =>
+            {
+                _routerInstigated = true;
+                PopViewController(true);
+                _routerInstigated = false;
+            });
+
+    /// <summary>
+    /// Creates a subscription that keeps <paramref name="viewController"/>'s navigation-item title in sync with the
+    /// current view model's <see cref="IRoutableViewModel.UrlPathSegment"/>.
+    /// </summary>
+    /// <param name="router">The routing state providing the current view model.</param>
+    /// <param name="viewController">The view controller whose title is updated.</param>
+    /// <returns>A disposable that represents the title-update subscription.</returns>
+    private static IDisposable SubscribeToTitleUpdates(RoutingState router, NSViewController viewController) =>
+        router
+            .WhenAnyValue(y => y.GetCurrentViewModel())
+            .WhereNotNull()
+            .Select(vm => vm.WhenAnyValue<IRoutableViewModel, string?>(nameof(vm.UrlPathSegment)))
+            .Switch()
+            .Subscribe(title => viewController.NavigationItem.Title = title);
+
+    /// <summary>Resolves and returns the <see cref="NSViewController"/> for <paramref name="viewModel"/>.</summary>
+    /// <param name="viewModel">The view model to resolve a view for; returns <see langword="null"/> when <see langword="null"/>.</param>
+    /// <param name="contract">An optional contract string passed to the view locator.</param>
+    /// <returns>The resolved <see cref="NSViewController"/>, or <see langword="null"/> when <paramref name="viewModel"/> is <see langword="null"/>.</returns>
     private NSViewController? ResolveView(IRoutableViewModel? viewModel, string? contract)
     {
         if (viewModel is null)
@@ -237,11 +283,12 @@ public class RoutedViewHost : ReactiveNavigationController
         }
 
         var viewLocator = ViewLocator ?? ReactiveUI.ViewLocator.Current;
-        var view = viewLocator.ResolveView(viewModel, contract) ?? throw new Exception($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
+        var view = viewLocator.ResolveView(viewModel, contract)
+            ?? throw new InvalidOperationException($"Couldn't find a view for view model. You probably need to register an IViewFor<{viewModel.GetType().Name}>");
         view.ViewModel = viewModel;
 
         return view is not NSViewController viewController
-                   ? throw new Exception($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController")
-                   : viewController;
+            ? throw new InvalidOperationException($"View type {view.GetType().Name} for view model type {viewModel.GetType().Name} is not a UIViewController")
+            : viewController;
     }
 }

@@ -21,6 +21,16 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
     private const string EnabledPropertyName = "Enabled";
 
     /// <summary>
+    /// Binding affinity score for <see cref="UIControl"/> (base type, lower priority).
+    /// </summary>
+    private const int UIControlAffinityScore = 9;
+
+    /// <summary>
+    /// Binding affinity score for specific <see cref="UIControl"/> subtypes (higher priority than the base type).
+    /// </summary>
+    private const int UIControlSubtypeAffinityScore = 10;
+
+    /// <summary>
     /// Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.
     /// </summary>
     private static readonly PropertyInfo UIControlEnabledProperty =
@@ -47,10 +57,10 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
     public UIKitCommandBinders()
     {
         // UIControl: prefer the AOT-safe target-action helper (no string event name).
-        Register(typeof(UIControl), 9, static (cmd, t, cp) => ForTargetAction(cmd, t, cp, UIControlEnabledProperty));
+        Register(typeof(UIControl), UIControlAffinityScore, static (cmd, t, cp) => ForTargetAction(cmd, t, cp, UIControlEnabledProperty));
 
         // UIRefreshControl: ValueChanged is a .NET event; use the AOT-safe ForEvent overload via add/remove delegates.
-        Register(typeof(UIRefreshControl), 10, (cmd, t, cp) =>
+        Register(typeof(UIRefreshControl), UIControlSubtypeAffinityScore, (cmd, t, cp) =>
             ForEvent(
                 cmd,
                 (UIRefreshControl)t!,
@@ -60,7 +70,7 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
                 UIRefreshControlEnabledProperty));
 
         // UIBarButtonItem: Clicked is a .NET event; use the AOT-safe ForEvent overload via add/remove delegates.
-        Register(typeof(UIBarButtonItem), 10, (cmd, t, cp) =>
+        Register(typeof(UIBarButtonItem), UIControlSubtypeAffinityScore, (cmd, t, cp) =>
             ForEvent(
                 cmd,
                 (UIBarButtonItem)t!,

@@ -18,9 +18,13 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactivePageViewController : UIPageViewController, IReactiveNotifyPropertyChanged<ReactivePageViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
+public abstract class ReactivePageViewController : UIPageViewController, IReactiveNotifyPropertyChanged<ReactivePageViewController>,
+    IHandleObservableErrors, IReactiveObject, ICanActivate
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -62,7 +66,11 @@ public abstract class ReactivePageViewController : UIPageViewController, IReacti
     /// <param name="orientation">The orientation.</param>
     /// <param name="spineLocation">The spine location.</param>
     /// <param name="interPageSpacing">The inter page spacing.</param>
-    protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation, float interPageSpacing)
+    protected ReactivePageViewController(
+        UIPageViewControllerTransitionStyle style,
+        UIPageViewControllerNavigationOrientation orientation,
+        UIPageViewControllerSpineLocation spineLocation,
+        float interPageSpacing)
         : base(style, orientation, spineLocation, interPageSpacing)
     {
     }
@@ -227,7 +235,11 @@ public abstract class ReactivePageViewController<TViewModel> : ReactivePageViewC
     /// <param name="orientation">The view controller navigation orientation.</param>
     /// <param name="spineLocation">The view controller spine location.</param>
     /// <param name="interPageSpacing">The spacing between pages.</param>
-    protected ReactivePageViewController(UIPageViewControllerTransitionStyle style, UIPageViewControllerNavigationOrientation orientation, UIPageViewControllerSpineLocation spineLocation, float interPageSpacing)
+    protected ReactivePageViewController(
+        UIPageViewControllerTransitionStyle style,
+        UIPageViewControllerNavigationOrientation orientation,
+        UIPageViewControllerSpineLocation spineLocation,
+        float interPageSpacing)
         : base(style, orientation, spineLocation, interPageSpacing)
     {
     }

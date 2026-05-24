@@ -20,9 +20,13 @@ namespace ReactiveUI;
 /// (i.e. you can call RaiseAndSetIfChanged).
 /// </summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
+public abstract class ReactiveCollectionView
+    : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -113,9 +117,9 @@ public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotify
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool activate) =>
+    void ICanForceManualActivation.Activate(bool shouldActivate) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-                                               (activate ? _activated : _deactivated).OnNext(Unit.Default));
+                                               (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -140,6 +144,7 @@ public abstract class ReactiveCollectionView : UICollectionView, IReactiveNotify
 public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

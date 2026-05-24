@@ -27,7 +27,7 @@ public static class UIControlCommandExtensions
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(control);
 
-        var ev = new EventHandler((o, e) =>
+        var ev = new EventHandler((_, _) =>
         {
             if (!item.CanExecute(null))
             {
@@ -37,7 +37,7 @@ public static class UIControlCommandExtensions
             item.Execute(null);
         });
 
-        var cech = new EventHandler((o, e) => control.Enabled = item.CanExecute(null));
+        var cech = new EventHandler((_, _) => control.Enabled = item.CanExecute(null));
 
         item.CanExecuteChanged += cech;
         control.AddTarget(ev, events);

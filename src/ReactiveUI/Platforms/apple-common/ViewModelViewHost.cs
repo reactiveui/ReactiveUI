@@ -47,8 +47,10 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-[RequiresUnreferencedCode("This class uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-[RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+[RequiresUnreferencedCode(
+    "This class uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+[RequiresDynamicCode(
+    "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
 public class ViewModelViewHost : ReactiveViewController
 {
     /// <summary>
@@ -100,7 +102,7 @@ public class ViewModelViewHost : ReactiveViewController
     public ViewModelViewHost()
     {
         _currentView = new SerialDisposable();
-        _subscriptions = new CompositeDisposable();
+        _subscriptions = [];
         _viewContractObservableSubscription = new SerialDisposable();
 
         // Drive ViewContract from ViewContractObservable without WhenAny*/expression trees (AOT-trimmer friendly).
@@ -160,7 +162,7 @@ public class ViewModelViewHost : ReactiveViewController
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => this.RaiseAndSetIfChanged(ref _viewContract, value);
     }
 
     /// <inheritdoc/>
@@ -168,11 +170,13 @@ public class ViewModelViewHost : ReactiveViewController
     {
         base.Dispose(disposing);
 
-        if (disposing)
+        if (!disposing)
         {
-            _subscriptions.Dispose();
-            _currentView.Dispose();
+            return;
         }
+
+        _subscriptions.Dispose();
+        _currentView.Dispose();
     }
 
     /// <summary>
@@ -250,8 +254,10 @@ public class ViewModelViewHost : ReactiveViewController
     /// <summary>
     /// Initializes reactive subscriptions that drive view resolution and controller swapping.
     /// </summary>
-    [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-    [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
     private void Initialize()
     {
         var viewModelChanges = ObserveProperty(static x => x.ViewModel, nameof(ViewModel));
@@ -292,13 +298,13 @@ public class ViewModelViewHost : ReactiveViewController
                             }
 
                             message += ".";
-                            throw new Exception(message);
+                            throw new InvalidOperationException(message);
                         }
 
                         if (view is not NSViewController viewController)
                         {
-                            //// TODO: As viewController may be NULL at this point this execution will never show the FullName, find fixed text to replace this with.
-                            throw new Exception($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                            // view?.GetType().FullName may be null when the runtime type name is unavailable; the message still identifies the expected type.
+                            throw new InvalidOperationException($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;

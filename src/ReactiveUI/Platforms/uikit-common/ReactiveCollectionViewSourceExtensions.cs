@@ -29,6 +29,27 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
     /// <param name="sectionsObservable">Sections observable.</param>
     /// <param name="collectionView">Collection view.</param>
+    /// <typeparam name="TSource">Type of the view source.</typeparam>
+    /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    public static IDisposable BindTo<TSource, TCell>(
+        this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
+        UICollectionView collectionView)
+        where TCell : UICollectionViewCell =>
+        sectionsObservable.BindTo(collectionView, initSource: null);
+
+    /// <summary>
+    /// <para>Extension method that binds an observable of a list of collection
+    /// sections as the source of a <see cref="UICollectionView"/>.</para>
+    /// <para>If your <see cref="IReadOnlyList{T}"/> is also an instance of
+    /// <see cref="INotifyCollectionChanged"/>, then this method
+    /// will silently update the bindings whenever it changes as well.
+    /// Otherwise, it will just log a message.</para>
+    /// </summary>
+    /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+    /// <param name="sectionsObservable">Sections observable.</param>
+    /// <param name="collectionView">Collection view.</param>
     /// <param name="initSource">Optionally initializes some property of
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
     /// <typeparam name="TSource">Type of the view source.</typeparam>
@@ -38,7 +59,7 @@ public static class ReactiveCollectionViewSourceExtensions
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<IReadOnlyList<CollectionViewSectionInformation<TSource, TCell>>> sectionsObservable,
         UICollectionView collectionView,
-        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
+        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource)
         where TCell : UICollectionViewCell
     {
         ArgumentExceptionHelper.ThrowIfNull(sectionsObservable);
@@ -61,6 +82,46 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <param name="sourceObservable">Source collection observable.</param>
     /// <param name="collectionView">Collection view.</param>
     /// <param name="cellKey">Cell key.</param>
+    /// <typeparam name="TSource">Type of the source.</typeparam>
+    /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    public static IDisposable BindTo<TSource, TCell>(
+        this IObservable<INotifyCollectionChanged> sourceObservable,
+        UICollectionView collectionView,
+        NSString cellKey)
+        where TCell : UICollectionViewCell =>
+        sourceObservable.BindTo<TSource, TCell>(collectionView, cellKey, initializeCellAction: null);
+
+    /// <summary>
+    /// Extension method that binds an observable of a collection
+    /// as the source of a <see cref="UICollectionView"/>.
+    /// </summary>
+    /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+    /// <param name="sourceObservable">Source collection observable.</param>
+    /// <param name="collectionView">Collection view.</param>
+    /// <param name="cellKey">Cell key.</param>
+    /// <param name="initializeCellAction">Initialize cell action.</param>
+    /// <typeparam name="TSource">Type of the source.</typeparam>
+    /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    public static IDisposable BindTo<TSource, TCell>(
+        this IObservable<INotifyCollectionChanged> sourceObservable,
+        UICollectionView collectionView,
+        NSString cellKey,
+        Action<TCell>? initializeCellAction)
+        where TCell : UICollectionViewCell =>
+        sourceObservable.BindTo(collectionView, cellKey, initializeCellAction, initSource: null);
+
+    /// <summary>
+    /// Extension method that binds an observable of a collection
+    /// as the source of a <see cref="UICollectionView"/>.
+    /// </summary>
+    /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+    /// <param name="sourceObservable">Source collection observable.</param>
+    /// <param name="collectionView">Collection view.</param>
+    /// <param name="cellKey">Cell key.</param>
     /// <param name="initializeCellAction">Initialize cell action.</param>
     /// <param name="initSource">Optionally initializes some property of
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
@@ -72,8 +133,8 @@ public static class ReactiveCollectionViewSourceExtensions
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
         NSString cellKey,
-        Action<TCell>? initializeCellAction = null,
-        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
+        Action<TCell>? initializeCellAction,
+        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource)
         where TCell : UICollectionViewCell =>
         sourceObservable
             .Select(
@@ -95,6 +156,46 @@ public static class ReactiveCollectionViewSourceExtensions
     /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
     /// <param name="sourceObservable">Source collection observable.</param>
     /// <param name="collectionView">Collection view.</param>
+    /// <typeparam name="TSource">Type of the source.</typeparam>
+    /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    public static IDisposable BindTo<TSource, TCell>(
+        this IObservable<INotifyCollectionChanged> sourceObservable,
+        UICollectionView collectionView)
+        where TCell : UICollectionViewCell =>
+        sourceObservable.BindTo<TSource, TCell>(collectionView, initializeCellAction: null);
+
+    /// <summary>
+    /// Extension method that binds an observable of a collection
+    /// as the source of a <see cref="UICollectionView"/>.  Also registers
+    /// the given class with an unspecified cellKey (you should probably
+    /// not specify any other cellKeys).
+    /// </summary>
+    /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+    /// <param name="sourceObservable">Source collection observable.</param>
+    /// <param name="collectionView">Collection view.</param>
+    /// <param name="initializeCellAction">Initialize cell action.</param>
+    /// <typeparam name="TSource">Type of the source.</typeparam>
+    /// <typeparam name="TCell">Type of the <see cref="UICollectionViewCell"/>.</typeparam>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+    public static IDisposable BindTo<TSource, TCell>(
+        this IObservable<INotifyCollectionChanged> sourceObservable,
+        UICollectionView collectionView,
+        Action<TCell>? initializeCellAction)
+        where TCell : UICollectionViewCell =>
+        sourceObservable.BindTo(collectionView, initializeCellAction, initSource: null);
+
+    /// <summary>
+    /// Extension method that binds an observable of a collection
+    /// as the source of a <see cref="UICollectionView"/>.  Also registers
+    /// the given class with an unspecified cellKey (you should probably
+    /// not specify any other cellKeys).
+    /// </summary>
+    /// <returns>The <see cref="IDisposable"/> used to dispose this binding.</returns>
+    /// <param name="sourceObservable">Source collection observable.</param>
+    /// <param name="collectionView">Collection view.</param>
     /// <param name="initializeCellAction">Initialize cell action.</param>
     /// <param name="initSource">Optionally initializes some property of
     /// the <see cref="ReactiveCollectionViewSource{TSource}"/>.</param>
@@ -105,8 +206,8 @@ public static class ReactiveCollectionViewSourceExtensions
     public static IDisposable BindTo<TSource, TCell>(
         this IObservable<INotifyCollectionChanged> sourceObservable,
         UICollectionView collectionView,
-        Action<TCell>? initializeCellAction = null,
-        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource = null)
+        Action<TCell>? initializeCellAction,
+        Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource)
         where TCell : UICollectionViewCell
     {
         ArgumentExceptionHelper.ThrowIfNull(collectionView);

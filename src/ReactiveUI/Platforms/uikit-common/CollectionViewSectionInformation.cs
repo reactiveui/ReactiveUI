@@ -15,6 +15,7 @@ namespace ReactiveUI;
 /// and <see cref="UICollectionViewCell"/>.
 /// </summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
+[SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "Type parameter is part of the public generic API and preserves call-site type safety.")]
 public class CollectionViewSectionInformation<TSource> : ISectionInformation<UICollectionViewCell>
 {
     /// <inheritdoc/>
@@ -42,16 +43,38 @@ public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSe
     /// </summary>
     /// <param name="collection">The notify collection changed.</param>
     /// <param name="cellKeySelector">The key selector function.</param>
+    public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString> cellKeySelector)
+        : this(collection, cellKeySelector, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
+    /// </summary>
+    /// <param name="collection">The notify collection changed.</param>
+    /// <param name="cellKeySelector">The key selector function.</param>
     /// <param name="initializeCellAction">The cell initialization action.</param>
-    public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString> cellKeySelector, Action<TCell>? initializeCellAction = null)
+    public CollectionViewSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString> cellKeySelector, Action<TCell>? initializeCellAction)
     {
         Collection = collection;
         CellKeySelector = cellKeySelector;
 
-        if (initializeCellAction is not null)
+        if (initializeCellAction is null)
         {
-            InitializeCellAction = cell => initializeCellAction((TCell)cell);
+            return;
         }
+
+        InitializeCellAction = cell => initializeCellAction((TCell)cell);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionViewSectionInformation{TSource, TCell}"/> class.
+    /// </summary>
+    /// <param name="collection">The notify collection changed.</param>
+    /// <param name="cellKey">The key selector function.</param>
+    public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey)
+        : this(collection, _ => cellKey, null)
+    {
     }
 
     /// <summary>
@@ -60,7 +83,7 @@ public class CollectionViewSectionInformation<TSource, TCell> : CollectionViewSe
     /// <param name="collection">The notify collection changed.</param>
     /// <param name="cellKey">The key selector function.</param>
     /// <param name="initializeCellAction">The cell initialization action.</param>
-    public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell>? initializeCellAction = null)
+    public CollectionViewSectionInformation(INotifyCollectionChanged collection, NSString cellKey, Action<TCell>? initializeCellAction)
         : this(collection, _ => cellKey, initializeCellAction)
     {
     }

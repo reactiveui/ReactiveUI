@@ -17,7 +17,10 @@ namespace ReactiveUI;
 /// </summary>
 public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
+    /// <summary>The subject used to signal window activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal window deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -107,20 +110,24 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
     {
         var handler = PropertyChanging;
-        if (handler is not null)
+        if (handler is null)
         {
-            handler(this, args);
+            return;
         }
+
+        handler(this, args);
     }
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
     {
         var handler = PropertyChanged;
-        if (handler is not null)
+        if (handler is null)
         {
-            handler(this, args);
+            return;
         }
+
+        handler(this, args);
     }
 
     /// <summary>

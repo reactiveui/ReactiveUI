@@ -28,7 +28,10 @@ namespace ReactiveUI;
 /// </summary>
 public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<ReactiveControl>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
+    /// <summary>The subject that emits when the control is deactivated (removed from its superview).</summary>
     private readonly Subject<Unit> _deactivated = new();
+
+    /// <summary>The subject that emits when the control is activated (added to a superview).</summary>
     private readonly Subject<Unit> _activated = new();
 
     /// <summary>
@@ -123,9 +126,9 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
     }
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool activate) =>
+    void ICanForceManualActivation.Activate(bool shouldActivate) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (activate ? _activated : _deactivated).OnNext(Unit.Default));
+            (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -164,6 +167,7 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
 public abstract class ReactiveControl<TViewModel> : ReactiveControl, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing field for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

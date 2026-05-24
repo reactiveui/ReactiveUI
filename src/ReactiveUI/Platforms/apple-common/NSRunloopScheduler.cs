@@ -8,8 +8,6 @@ using System.Reactive.Disposables;
 using CoreFoundation;
 using Foundation;
 
-using NSAction = System.Action;
-
 namespace ReactiveUI;
 
 /// <summary>
@@ -19,6 +17,7 @@ namespace ReactiveUI;
 public class NSRunloopScheduler : IScheduler
 {
     /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S6354:Use a testable (date) time provider instead", Justification = "Scheduler requires the current wall-clock time.")]
     public DateTimeOffset Now => DateTimeOffset.Now;
 
     /// <inheritdoc/>
@@ -26,13 +25,15 @@ public class NSRunloopScheduler : IScheduler
     {
         var innerDisp = new SingleAssignmentDisposable();
 
-        DispatchQueue.MainQueue.DispatchAsync(new NSAction(() =>
+        DispatchQueue.MainQueue.DispatchAsync(() =>
         {
-            if (!innerDisp.IsDisposed)
+            if (innerDisp.IsDisposed)
             {
-                innerDisp.Disposable = action(this, state);
+                return;
             }
-        }));
+
+            innerDisp.Disposable = action(this, state);
+        });
 
         return innerDisp;
     }
@@ -56,10 +57,12 @@ public class NSRunloopScheduler : IScheduler
 
         var timer = NSTimer.CreateScheduledTimer(dueTime, _ =>
         {
-            if (!isCancelled)
+            if (isCancelled)
             {
-                innerDisp = action(this, state);
+                return;
             }
+
+            innerDisp = action(this, state);
         });
 
         return Disposable.Create(() =>

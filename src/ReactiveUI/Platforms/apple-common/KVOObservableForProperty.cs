@@ -11,15 +11,19 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Foundation;
-using ReactiveUI;
 using ReactiveUI.Helpers;
+
+namespace ReactiveUI;
 
 /// <summary>
 /// Provides change notifications for Cocoa <see cref="NSObject"/> instances using Key-Value Observing (KVO).
 /// </summary>
-[ReactiveUI.Preserve(AllMembers = true)]
+[Preserve(AllMembers = true)]
+[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "KVO is an established acronym and the public type name cannot change without a breaking API change.")]
 public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 {
+    private const int KvoAffinityScore = 15;
+
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public int GetAffinityForObject(Type type, string propertyName) =>
@@ -37,7 +41,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             return 0;
         }
 
-        return IsDeclaredOnNSObject(type, propertyName) ? 15 : 0;
+        return IsDeclaredOnNSObject(type, propertyName) ? KvoAffinityScore : 0;
     }
 
     /// <inheritdoc />
@@ -59,6 +63,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    [SuppressMessage("Major Code Smell", "S1172:Unused method parameters should be removed", Justification = "suppressWarnings is part of the ICreatesObservableForProperty interface contract.")]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -82,8 +87,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             expression,
             propertyName,
             keyPath,
-            beforeChanged,
-            suppressWarnings);
+            beforeChanged);
     }
 
     /// <summary>
@@ -109,7 +113,6 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     /// If <see langword="true"/>, request notifications using <see cref="NSKeyValueObservingOptions.Old"/>; otherwise
     /// request notifications using <see cref="NSKeyValueObservingOptions.New"/>.
     /// </param>
-    /// <param name="suppressWarnings">If <see langword="true"/>, warnings should not be logged.</param>
     /// <returns>
     /// An observable that produces an <see cref="IObservedChange{TSender,TValue}"/> whenever the KVO key path changes.
     /// </returns>
@@ -123,8 +126,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         Expression expression,
         string propertyName,
         string observationKey,
-        bool beforeChanged = false,
-        bool suppressWarnings = false)
+        bool beforeChanged = false)
     {
         ArgumentExceptionHelper.ThrowIfNull(sender);
         ArgumentExceptionHelper.ThrowIfNull(expression);
@@ -141,7 +143,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             // Create a single stable delegate instance; KVO removal requires the same observer instance.
-            var callback = new BlockObserveValueDelegate((unusedKeyPath, observedObject, unusedChange) =>
+            var callback = new BlockObserveValueDelegate((_, observedObject, __) =>
                 observer.OnNext(new ObservedChange<object?, object?>(observedObject, expression, default)));
 
             // Ensure the delegate is kept alive for the lifetime of the subscription.

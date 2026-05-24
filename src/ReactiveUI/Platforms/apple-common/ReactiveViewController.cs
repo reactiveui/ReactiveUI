@@ -24,7 +24,10 @@ namespace ReactiveUI;
 /// </summary>
 public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -163,6 +166,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
 public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing field for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

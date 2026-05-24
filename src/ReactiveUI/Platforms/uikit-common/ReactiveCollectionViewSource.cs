@@ -21,7 +21,10 @@ namespace ReactiveUI;
 /// <typeparam name="TSource">The source type.</typeparam>
 public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IReactiveNotifyPropertyChanged<ReactiveCollectionViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
+    /// <summary>The common reactive source that manages section data and drives collection view updates.</summary>
     private readonly CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>> _commonSource;
+
+    /// <summary>The subject that publishes items whenever a collection view cell is selected.</summary>
     private readonly Subject<object?> _elementSelected = new();
 
     /// <summary>
@@ -30,8 +33,19 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     /// <param name="collectionView">The ui collection view.</param>
     /// <param name="collection">The notify collection changed.</param>
     /// <param name="cellKey">The cell key.</param>
+    public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey)
+        : this(collectionView, collection, cellKey, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveCollectionViewSource{TSource}"/> class.
+    /// </summary>
+    /// <param name="collectionView">The ui collection view.</param>
+    /// <param name="collection">The notify collection changed.</param>
+    /// <param name="cellKey">The cell key.</param>
     /// <param name="initializeCellAction">The cell initialization action.</param>
-    public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction = null)
+    public ReactiveCollectionViewSource(UICollectionView collectionView, INotifyCollectionChanged collection, NSString cellKey, Action<UICollectionViewCell>? initializeCellAction)
         : this(collectionView) =>
         Data = [new CollectionViewSectionInformation<TSource, UICollectionViewCell>(collection, cellKey, initializeCellAction)
         ];

@@ -14,8 +14,6 @@ using ReactiveUI.Internal;
 
 #if UIKIT
 using UIKit;
-#else
-using AppKit;
 #endif
 
 namespace ReactiveUI;
@@ -90,7 +88,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
 
         var match = ResolveBestMatch(type, propertyName);
-        return match is null ? 0 : match.Affinity;
+        return match?.Affinity ?? 0;
     }
 
     /// <inheritdoc/>
@@ -294,10 +292,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             typeProperties[property] = new ObservablePropertyInfo(affinity, createObservable);
 
             // Invalidate caches by bumping version.
-            unchecked
-            {
-                _version++;
-            }
+            _version++;
         }
     }
 
@@ -311,13 +306,10 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     {
         // Fast path: check cache.
         var key = (runtimeType.TypeHandle, propertyName);
-        if (_bestMatchCache.TryGetValue(key, out var cached))
+        if (_bestMatchCache.TryGetValue(key, out var cached) && cached.Version == _version)
         {
-            // If config has not changed since the cached entry was computed, return it.
-            if (cached.Version == _version)
-            {
-                return cached.Info;
-            }
+            // Config has not changed since this entry was computed; return it.
+            return cached.Info;
         }
 
         // Slow path: compute under lock against a consistent snapshot of config.

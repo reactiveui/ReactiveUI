@@ -58,13 +58,22 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     private readonly Lazy<string> _appDirectory;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="AppSupportJsonSuspensionDriver"/> class
+    /// using the default <c>Data</c> subdirectory beneath Application Support.
+    /// </summary>
+    public AppSupportJsonSuspensionDriver()
+        : this(DefaultSubDirectory)
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="AppSupportJsonSuspensionDriver"/> class.
     /// </summary>
     /// <param name="subDirectory">
-    /// The application-specific subdirectory beneath Application Support to store state. Defaults to <c>Data</c>.
+    /// The application-specific subdirectory beneath Application Support to store state.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="subDirectory"/> is <see langword="null"/>.</exception>
-    public AppSupportJsonSuspensionDriver(string subDirectory = DefaultSubDirectory)
+    public AppSupportJsonSuspensionDriver(string subDirectory)
     {
         ArgumentExceptionHelper.ThrowIfNull(subDirectory);
 
@@ -93,25 +102,6 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
-
-        try
-        {
-            var path = GetStatePath();
-            using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            JsonSerializer.Serialize(stream, state, typeInfo);
-            return SingleValueObservable.Unit;
-        }
-        catch (Exception ex)
-        {
-            return Observable.Throw<Unit>(ex);
-        }
-    }
-
-    /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection-based System.Text.Json serialization for 'object'. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming/AOT.")]
     [RequiresDynamicCode("Uses reflection-based System.Text.Json serialization for 'object'. Prefer LoadState<T>(JsonTypeInfo<T>) for trimming/AOT.")]
     public IObservable<object?> LoadState()
@@ -128,6 +118,25 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
         catch (Exception ex)
         {
             return Observable.Throw<object?>(ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
+
+        try
+        {
+            var path = GetStatePath();
+            using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            JsonSerializer.Serialize(stream, state, typeInfo);
+            return SingleValueObservable.Unit;
+        }
+        catch (Exception ex)
+        {
+            return Observable.Throw<Unit>(ex);
         }
     }
 

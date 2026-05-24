@@ -14,8 +14,11 @@ namespace ReactiveUI;
 /// </summary>
 public sealed class NSDateToDateTimeConverter : BindingTypeConverter<NSDate, DateTime>
 {
+    /// <summary>The affinity score returned for supported type pairs.</summary>
+    private const int ConverterAffinity = 8;
+
     /// <inheritdoc/>
-    public override int GetAffinityForObjects() => 8;
+    public override int GetAffinityForObjects() => ConverterAffinity;
 
     /// <inheritdoc/>
     public override bool TryConvert(NSDate? from, object? conversionHint, [NotNullWhen(true)] out DateTime result)

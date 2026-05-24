@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Foundation;
 using ObjCRuntime;
@@ -74,7 +73,13 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </remarks>
     private static readonly ConcurrentDictionary<Type, Setters> PropertySetterCache = new();
 
+    /// <summary>
+    /// The affinity score returned when the object type is a valid Target/Action host.
+    /// </summary>
+    private const int TargetActionAffinity = 4;
+
     /// <inheritdoc/>
+    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter is part of the ICreatesCommandBinding public API contract and cannot be removed.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -87,7 +92,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         {
             if (ValidTypes[i].IsAssignableFrom(t))
             {
-                return 4;
+                return TargetActionAffinity;
             }
         }
 
@@ -106,7 +111,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </para>
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -114,7 +123,6 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
 
-        // Match other binders: null command means "no binding".
         if (command is null)
         {
             return Disposable.Empty;
@@ -135,10 +143,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         ctlDelegate.SetBlock(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         // Selector name must match [Export] on ControlDelegate.
@@ -200,6 +210,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// Prefer the add/remove handler overload when you can supply delegates.
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "TEventArgs is part of the ICreatesCommandBinding public API contract and cannot be inferred from the parameter list.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -227,10 +238,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         var evtSub = evt.Subscribe(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         return new CompositeDisposable(paramSub, evtSub);
@@ -240,7 +253,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <remarks>
     /// This overload is fully AOT-compatible and should be preferred when an explicit event subscription API is available.
     /// </remarks>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -265,10 +282,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
@@ -320,6 +339,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </remarks>
     private sealed class ControlDelegate : NSObject
     {
+        /// <summary>The action block invoked when the Cocoa control fires the bound selector.</summary>
         private Action<NSObject> _block;
 
         /// <summary>

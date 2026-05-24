@@ -9,11 +9,12 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
-using Foundation;
 
 #if UIKIT
+using NSCoder = Foundation.NSCoder;
 using NSImage = UIKit.UIImage;
 using NSImageView = UIKit.UIImageView;
+using NSObjectFlag = Foundation.NSObjectFlag;
 using NSView = UIKit.UIView;
 #else
 using AppKit;
@@ -27,7 +28,10 @@ namespace ReactiveUI;
 /// </summary>
 public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -146,9 +150,9 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     }
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool activate) =>
+    void ICanForceManualActivation.Activate(bool shouldActivate) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (activate ? _activated : _deactivated).OnNext(Unit.Default));
+            (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -160,94 +164,5 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-public abstract class ReactiveImageView<TViewModel> : ReactiveImageView, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveImageView()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="frame">The frame.</param>
-    protected ReactiveImageView(CGRect frame)
-        : base(frame)
-    {
-    }
-
-#if UIKIT
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="image">The image.</param>
-    protected ReactiveImageView(NSImage image)
-        : base(image)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveImageView(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="image">The image.</param>
-    /// <param name="highlightedImage">The highlighted image.</param>
-    protected ReactiveImageView(NSImage image, NSImage highlightedImage)
-        : base(image, highlightedImage)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The coder.</param>
-    protected ReactiveImageView(NSCoder coder)
-        : base(coder)
-    {
-    }
-#endif
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveImageView(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

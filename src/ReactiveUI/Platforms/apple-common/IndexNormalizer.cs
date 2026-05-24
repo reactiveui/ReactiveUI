@@ -26,15 +26,17 @@ public static class IndexNormalizer
         var updatesList = updates.ToList();
         MarkDuplicates(updatesList);
 
-        return updatesList
+        return [.. updatesList
                .Select((x, i) => x.IsDuplicate ? null : Update.Create(x.Type, CalculateUpdateIndex(updatesList, i)))
-               .Where(x => x is not null)
-               .ToList();
+               .Where(x => x is not null)];
     }
 
-    // find all updates that cancel each other out, and mark them as duplicates
-    // they're still required for subsequent index calculations, but ultimately they won't be returned from the Normalize method
-    private static void MarkDuplicates(IList<Update> updates)
+    /// <summary>
+    /// Finds all updates that cancel each other out, and marks them as duplicates.
+    /// They are still required for subsequent index calculations, but ultimately they will not be returned from the Normalize method.
+    /// </summary>
+    /// <param name="updates">The updates to scan for duplicates.</param>
+    private static void MarkDuplicates(List<Update> updates)
     {
         for (var updateIndex = 1; updateIndex < updates.Count; ++updateIndex)
         {
@@ -67,8 +69,13 @@ public static class IndexNormalizer
         }
     }
 
-    // calculate the index for an update
-    private static int CalculateUpdateIndex(IList<Update> updates, int updateIndex) =>
+    /// <summary>
+    /// Calculates the normalized index for an update, taking prior and subsequent updates into account.
+    /// </summary>
+    /// <param name="updates">The full list of updates.</param>
+    /// <param name="updateIndex">The index of the update whose normalized index is being calculated.</param>
+    /// <returns>The normalized index for the update at <paramref name="updateIndex"/>.</returns>
+    private static int CalculateUpdateIndex(List<Update> updates, int updateIndex) =>
         updates[updateIndex].Type switch
         {
             UpdateType.Add =>
@@ -78,19 +85,27 @@ public static class IndexNormalizer
             _ => throw new NotSupportedException(),
         };
 
-    // calculate the index for an addition update
-    // the formula is:
-    //   Ia = Io + Na - Nd
-    // where:
-    //   Ia = addition index
-    //   Io = the addition's original index (as specified by client code)
-    //   Na = the number of subsequent addition updates whose original index is <= the running (calculated) index of the update whose index is being calculated
-    //   Nd = the number of subsequent deletion updates whose original index is < the running (calculated) index of the update whose index is being calculated
-    private static int CalculateAdditionIndex(IList<Update> updates, int start, int count, int updateIndex)
+    /// <summary>
+    /// Calculates the index for an addition update.
+    /// </summary>
+    /// <remarks>
+    /// The formula is:
+    ///   Ia = Io + Na - Nd
+    /// where:
+    ///   Ia = addition index,
+    ///   Io = the addition's original index (as specified by client code),
+    ///   Na = the number of subsequent addition updates whose original index is &lt;= the running (calculated) index of the update whose index is being calculated,
+    ///   Nd = the number of subsequent deletion updates whose original index is &lt; the running (calculated) index of the update whose index is being calculated.
+    /// </remarks>
+    /// <param name="updates">The full list of updates.</param>
+    /// <param name="start">The start index within the list to consider.</param>
+    /// <param name="count">The number of items from <paramref name="start"/> to consider.</param>
+    /// <param name="updateIndex">The index of the addition update whose normalized index is being calculated.</param>
+    /// <returns>The normalized index for the addition update.</returns>
+    private static int CalculateAdditionIndex(List<Update> updates, int start, int count, int updateIndex)
     {
-        var update = updates[updateIndex];
-        Debug.Assert(update.Type == UpdateType.Add, "Must be adding items");
-        var originalIndex = update.Index;
+        Debug.Assert(updates[updateIndex].Type == UpdateType.Add, "Must be adding items");
+        var originalIndex = updates[updateIndex].Index;
         var runningCalculation = originalIndex;
 
         for (var i = updateIndex + 1; i < start + count; ++i)
@@ -103,8 +118,6 @@ public static class IndexNormalizer
                 {
                     ++runningCalculation;
                 }
-
-                continue;
             }
             else if (subsequentUpdate.Type == UpdateType.Delete)
             {
@@ -112,23 +125,30 @@ public static class IndexNormalizer
                 {
                     --runningCalculation;
                 }
-
-                continue;
             }
         }
 
         return runningCalculation;
     }
 
-    // calculate the index for a deletion update
-    // the formula is:
-    //    Id = Io + Nd - Na
-    // where:
-    //    Id = deletion index
-    //    Io = the deletion's original index (as specified by client code)
-    //    Nd = the number of prior deletion updates whose original index is <= the running (calculated) index of the update whose index is being calculated
-    //    Na = the number of prior addition updates whose original index is <= the running (calculated) index of the update whose index is being calculated
-    private static int CalculateDeletionIndex(IList<Update> updates, int start, int deletionIndex, int originalIndex)
+    /// <summary>
+    /// Calculates the index for a deletion update.
+    /// </summary>
+    /// <remarks>
+    /// The formula is:
+    ///    Id = Io + Nd - Na
+    /// where:
+    ///    Id = deletion index,
+    ///    Io = the deletion's original index (as specified by client code),
+    ///    Nd = the number of prior deletion updates whose original index is &lt;= the running (calculated) index of the update whose index is being calculated,
+    ///    Na = the number of prior addition updates whose original index is &lt;= the running (calculated) index of the update whose index is being calculated.
+    /// </remarks>
+    /// <param name="updates">The full list of updates.</param>
+    /// <param name="start">The start index within the list to consider.</param>
+    /// <param name="deletionIndex">The index of the deletion update being processed.</param>
+    /// <param name="originalIndex">The original index value from the deletion update.</param>
+    /// <returns>The normalized index for the deletion update.</returns>
+    private static int CalculateDeletionIndex(List<Update> updates, int start, int deletionIndex, int originalIndex)
     {
         var runningCalculation = originalIndex;
 
@@ -142,8 +162,6 @@ public static class IndexNormalizer
                 {
                     ++runningCalculation;
                 }
-
-                continue;
             }
             else if (priorUpdate.Type == UpdateType.Add)
             {
@@ -151,8 +169,6 @@ public static class IndexNormalizer
                 {
                     --runningCalculation;
                 }
-
-                continue;
             }
         }
 

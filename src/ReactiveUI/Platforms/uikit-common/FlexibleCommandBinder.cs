@@ -60,6 +60,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private int _snapshotVersion;
 
     /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T is part of the ICreatesCommandBinding public API contract and is used by the framework for type resolution.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -93,7 +94,11 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -142,7 +147,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         Disposable.Empty;
 
     /// <inheritdoc/>
-    public virtual IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
+    public virtual IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T,
+        TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -168,10 +179,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
@@ -225,10 +238,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
@@ -301,10 +316,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, EventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
@@ -372,10 +389,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         var actionSub = Observable.FromEventPattern(target, eventName).Subscribe(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
@@ -433,10 +452,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, EventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));

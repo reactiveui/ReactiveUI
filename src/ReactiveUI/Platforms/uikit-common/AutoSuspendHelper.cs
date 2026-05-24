@@ -36,13 +36,22 @@ public class AutoSuspendHelper<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] T> : IEnableLogger, IDisposable
         where T : UIApplicationDelegate
 {
+    /// <summary>Subject that fires when the application finishes launching.</summary>
     private readonly Subject<UIApplication> _finishedLaunching = new();
+
+    /// <summary>Subject that fires when the application becomes active.</summary>
     private readonly Subject<UIApplication> _activated = new();
+
+    /// <summary>Subject that fires when the application enters the background.</summary>
     private readonly Subject<UIApplication> _backgrounded = new();
+
+    /// <summary>Subject that fires when an unhandled exception signals an untimely process death.</summary>
     private readonly Subject<Unit> _untimelyDeath = new();
 
+    /// <summary>The cached handler used to subscribe and later unsubscribe from <see cref="AppDomain.UnhandledException"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
 
+    /// <summary>Whether this instance has already been disposed.</summary>
     private bool _isDisposed;
 
     /// <summary>
@@ -89,7 +98,7 @@ public class AutoSuspendHelper<
 
         RxSuspension.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
         {
-            var taskId = app.BeginBackgroundTask(new NSAction(() => _untimelyDeath.OnNext(Unit.Default)));
+            var taskId = app.BeginBackgroundTask(() => _untimelyDeath.OnNext(Unit.Default));
 
             // NB: We're being force-killed, signal invalidate instead.
             if (taskId == UIApplication.BackgroundTaskInvalid)
@@ -134,11 +143,8 @@ public class AutoSuspendHelper<
                 var k = keys[i];
                 var keyString = k?.ToString() ?? string.Empty;
 
-                var value = launchOptions[k];
-                var valueString = value?.ToString() ?? string.Empty;
-
                 // NSDictionary keys are unique by contract.
-                dict[keyString] = valueString;
+                dict[keyString] = launchOptions[k]?.ToString() ?? string.Empty;
             }
 
             LaunchOptions = dict;
@@ -208,9 +214,11 @@ public class AutoSuspendHelper<
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed()
     {
-        if (_isDisposed)
+        if (!_isDisposed)
         {
-            throw new ObjectDisposedException(nameof(AutoSuspendHelper<>));
+            return;
         }
+
+        throw new ObjectDisposedException(nameof(AutoSuspendHelper<>));
     }
 }
