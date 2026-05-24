@@ -58,7 +58,7 @@
     <Compile Include="Platforms\uikit-common\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-android'))">
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>

@@ -37,6 +37,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
+
+    <!-- NETSDK1202: net*-android EOL-support notice. Suppressed for now while the Android TFMs are migrated. -->
+    <NoWarn>$(NoWarn);NETSDK1202</NoWarn>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -62,7 +65,10 @@
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
     <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst;net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
-    <ReactiveUIAndroidTargets>net9.0-android;net10.0-android</ReactiveUIAndroidTargets>
+    <!-- The Xamarin.AndroidX.* packages dropped support for the default (low) Android platform version and now
+         require net9.0-android35.0 / net10.0-android36.0. Only the net10 Android pack is available on the current
+         SDK band, and net9.0-android clamps to API 21 (no net9 pack), so Android targets net10 only here. -->
+    <ReactiveUIAndroidTargets>net10.0-android36.0</ReactiveUIAndroidTargets>
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
