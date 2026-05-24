@@ -319,16 +319,11 @@ public class RoutedViewHost<
     {
         // PagesForViewModel emits a single page synchronously (or signals an error), so the subscription resolves it inline.
         Page? page = null;
-        Exception? error = null;
         PagesForViewModel(Router.GetCurrentViewModel())
-            .Subscribe(new DelegateObserver<Page>(p => page = p, e => error = e))
+            .Subscribe(new DelegateObserver<Page>(
+                p => page = p,
+                e => this.Log().Error(e, "Failed to resolve the page for navigation")))
             .Dispose();
-
-        if (error is not null)
-        {
-            this.Log().Error(error, "Failed to resolve the page for navigation");
-            return;
-        }
 
         if (page is null)
         {

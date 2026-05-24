@@ -112,7 +112,7 @@ public static class ReactivePropertyMixins
                 string? message;
                 try
                 {
-                    message = value?.OfType<string>()?.FirstOrDefault();
+                    message = value?.OfType<string>().FirstOrDefault();
                 }
                 catch (Exception ex)
                 {

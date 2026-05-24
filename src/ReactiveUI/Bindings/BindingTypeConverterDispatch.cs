@@ -96,19 +96,14 @@ internal static class BindingTypeConverterDispatch
         ArgumentExceptionHelper.ThrowIfNull(from);
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
-        if (!converter.TryConvert(fromType, from, toType, conversionHint, out result))
+        // TryConvert is annotated [NotNullWhen(true)], so a successful conversion guarantees a non-null result.
+        var converted = converter.TryConvert(fromType, from, toType, conversionHint, out result);
+        if (!converted)
         {
             result = null;
-            return false;
         }
 
-        if (result is not null)
-        {
-            return true;
-        }
-
-        result = null;
-        return false;
+        return converted;
     }
 
     /// <summary>
