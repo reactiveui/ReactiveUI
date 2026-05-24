@@ -48,6 +48,9 @@ public sealed class ViewModelActivator : IDisposable
     /// <summary>Subject that emits each time the view model is deactivated.</summary>
     private readonly BroadcastSubject<Unit> _deactivated;
 
+    /// <summary>Cached deactivation callback so each <see cref="Activate"/> doesn't allocate a fresh method-group delegate.</summary>
+    private readonly Action _deactivate;
+
     /// <summary>Composite disposable that is replaced on each activation cycle.</summary>
     private IDisposable _activationHandle = EmptyDisposable.Instance;
 
@@ -62,6 +65,7 @@ public sealed class ViewModelActivator : IDisposable
         _blocks = [];
         _activated = new();
         _deactivated = new();
+        _deactivate = Deactivate;
     }
 
     /// <summary>
@@ -86,12 +90,22 @@ public sealed class ViewModelActivator : IDisposable
     {
         if (Interlocked.Increment(ref _refCount) == 1)
         {
-            CompositeDisposable disposable = [.. _blocks.SelectMany(x => x())];
+            // Build the composite with a plain loop rather than SelectMany so activation doesn't allocate a LINQ
+            // iterator plus an intermediate buffer on every cycle.
+            var disposable = new CompositeDisposable();
+            foreach (var block in _blocks)
+            {
+                foreach (var item in block())
+                {
+                    disposable.Add(item);
+                }
+            }
+
             Interlocked.Exchange(ref _activationHandle, disposable).Dispose();
             _activated.OnNext(Unit.Default);
         }
 
-        return new ActionDisposable(Deactivate);
+        return new ActionDisposable(_deactivate);
     }
 
     /// <summary>
