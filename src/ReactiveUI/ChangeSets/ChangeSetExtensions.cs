@@ -73,6 +73,10 @@ public static class ChangeSetExtensions
         /// <param name="observer">The observer receiving change sets.</param>
         private sealed class Subscription(TCollection collection, IObserver<IReactiveChangeSet<T>> observer) : IDisposable
         {
+            /// <summary>Floor capacity for a per-event change list so the first <c>Add</c> doesn't immediately
+            /// reallocate the backing array when the change count is unknown or trivial.</summary>
+            private const int DefaultChangeCapacity = 4;
+
             /// <summary>Shadow copy of the collection, kept in sync to service resets and indices.</summary>
             private readonly List<T> _shadow = [];
 
@@ -103,7 +107,9 @@ public static class ChangeSetExtensions
             /// <param name="e">The collection-changed event arguments.</param>
             private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
             {
-                var changes = new List<ReactiveChange<T>>();
+                // Pre-size the change list from the known item count so the per-change Add calls don't trigger
+                // List growth/resize churn.
+                var changes = new List<ReactiveChange<T>>(GetChangeCapacity(e));
                 switch (e.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
@@ -143,6 +149,19 @@ public static class ChangeSetExtensions
                 }
 
                 observer.OnNext(new ReactiveChangeSet<T>(changes));
+            }
+
+            /// <summary>Computes a starting capacity for the per-event change list from the known item count.</summary>
+            /// <param name="e">The collection-changed event arguments.</param>
+            /// <returns>A capacity of at least <see cref="DefaultChangeCapacity"/>.</returns>
+            /// <remarks>A reset emits a remove for every prior item then an add for every surviving one, so its
+            /// worst case is twice the current shadow count.</remarks>
+            private int GetChangeCapacity(NotifyCollectionChangedEventArgs e)
+            {
+                var added = e.NewItems?.Count ?? 0;
+                var removed = e.OldItems?.Count ?? 0;
+                var count = e.Action == NotifyCollectionChangedAction.Reset ? _shadow.Count * 2 : added + removed;
+                return count < DefaultChangeCapacity ? DefaultChangeCapacity : count;
             }
 
             /// <summary>Records added items into the shadow and the change list.</summary>
