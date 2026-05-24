@@ -17,8 +17,8 @@ jobs:
             installWorkloads: true
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
-            sonarExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/TestResults/**'
-            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
+            sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/TestResults/**'
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
             # CPD (copy/paste detection) exclusions:
             #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
             #    demo apps that deliberately parallel each other (each sample reimplements the same
@@ -31,8 +31,8 @@ jobs:
             #    generators or boxing-based erasure; suppressing CPD here keeps the metric honest
             #    while every other Sonar rule still runs on them. Sonar path matchers only support
             #    *, **, ? — use ? twice to cover 1- and 2-digit arities.
-            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs'
-            sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/Benchmarks/**'
+            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs'
+            sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**'
             testTimeout: '15m'
         secrets:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
