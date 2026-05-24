@@ -167,13 +167,21 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
             return;
         }
 
+        var raisesEvent = _propertyChanging.IsValueCreated;
+        var raisesObservable = _changing.IsValueCreated;
+        if (!raisesEvent && !raisesObservable)
+        {
+            // No PropertyChanging listener and no Changing observer: don't allocate the event args.
+            return;
+        }
+
         ReactivePropertyChangingEventArgs<TSender> changing = new(_sender, propertyName);
-        if (_propertyChanging.IsValueCreated)
+        if (raisesEvent)
         {
             _propertyChanging.Value.OnNext(changing);
         }
 
-        if (!_changing.IsValueCreated)
+        if (!raisesObservable)
         {
             return;
         }
@@ -203,13 +211,21 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
             return;
         }
 
+        var raisesEvent = _propertyChanged.IsValueCreated;
+        var raisesObservable = _changed.IsValueCreated;
+        if (!raisesEvent && !raisesObservable)
+        {
+            // No PropertyChanged listener and no Changed observer: don't allocate the event args.
+            return;
+        }
+
         ReactivePropertyChangedEventArgs<TSender> changed = new(_sender, propertyName);
-        if (_propertyChanged.IsValueCreated)
+        if (raisesEvent)
         {
             _propertyChanged.Value.OnNext(changed);
         }
 
-        if (!_changed.IsValueCreated)
+        if (!raisesObservable)
         {
             return;
         }
