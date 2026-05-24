@@ -64,7 +64,8 @@
     <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
-    <ReactiveUIAppleTargets>net9.0-ios;net9.0-tvos;net9.0-macos;net9.0-maccatalyst;net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
+    <!-- net9 mobile (iOS/tvOS/macOS/maccatalyst) support ended 12 May 2026; target net10 only. -->
+    <ReactiveUIAppleTargets>net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
     <!-- The Xamarin.AndroidX.* packages dropped support for the default (low) Android platform version and now
          require net9.0-android35.0 / net10.0-android36.0. Only the net10 Android pack is available on the current
          SDK band, and net9.0-android clamps to API 21 (no net9 pack), so Android targets net10 only here. -->
