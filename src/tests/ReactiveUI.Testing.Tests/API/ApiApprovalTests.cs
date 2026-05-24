@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Tests.Utilities;
-using TUnit.Core.Enums;
 
 namespace ReactiveUI.Testing.Tests.API;
 
@@ -13,7 +12,6 @@ namespace ReactiveUI.Testing.Tests.API;
 /// Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[RunOn(OS.Windows)]
 public class ApiApprovalTests
 {
     /// <summary>
