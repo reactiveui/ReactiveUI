@@ -69,7 +69,7 @@
     <!-- The Xamarin.AndroidX.* packages dropped support for the default (low) Android platform version and now
          require net9.0-android35.0 / net10.0-android36.0. Only the net10 Android pack is available on the current
          SDK band, and net9.0-android clamps to API 21 (no net9 pack), so Android targets net10 only here. -->
-    <ReactiveUIAndroidTargets>net10.0-android36.0</ReactiveUIAndroidTargets>
+    <ReactiveUIAndroidTargets>net10.0-android</ReactiveUIAndroidTargets>
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
