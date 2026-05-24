@@ -4,23 +4,23 @@
     <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <OutputType>Exe</OutputType>
-    <NoWarn>;1591;1701;1702;1705;CA1822</NoWarn>
-    <PackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. This is the base package with the base platform implementations</PackageDescription>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <SonarQubeExclude>true</SonarQubeExclude>
+    <!-- Benchmarks are never trimmed/AOT-published, so the trim/AOT analyzers add only noise here
+         (e.g. IL2026 on the reflection-based WhenAnyValue path we are deliberately measuring). -->
+    <IsAotCompatible>false</IsAotCompatible>
+    <IsTrimmable>false</IsTrimmable>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <PackageDescription>Micro-benchmarks for ReactiveUI's reactive sinks, bindings, commands and change-set layers.</PackageDescription>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="CreateReactiveListBenchmark.cs" />
-    <Compile Remove="ReactiveListOperationBenchmark.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DynamicData" />
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
   </ItemGroup>
 </Project>
