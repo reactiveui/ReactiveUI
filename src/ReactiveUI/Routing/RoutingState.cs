@@ -9,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using DynamicData;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
@@ -128,7 +129,15 @@ public class RoutingState : ReactiveObject
     /// </summary>
     [IgnoreDataMember]
     [JsonIgnore]
-    public IObservable<IReactiveChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
+    public IObservable<IChangeSet<IRoutableViewModel>> NavigationChanged { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the ReactiveUI-native change-set stream backing <see cref="NavigationChanged"/>. Internal
+    /// consumers observe this directly to avoid the DynamicData projection.
+    /// </summary>
+    [IgnoreDataMember]
+    [JsonIgnore]
+    internal IObservable<IReactiveChangeSet<IRoutableViewModel>> NavigationChanges { get; set; }
 
     /// <summary>
     /// Sets up reactive commands and observables after deserialization.
@@ -137,6 +146,7 @@ public class RoutingState : ReactiveObject
     [OnDeserialized]
     [RequiresUnreferencedCode("RoutingState uses ReactiveCommand which may require unreferenced code.")]
     [MemberNotNull(
+        nameof(NavigationChanges),
         nameof(NavigationChanged),
         nameof(NavigateBack),
         nameof(Navigate),
@@ -150,6 +160,7 @@ public class RoutingState : ReactiveObject
 
     /// <summary>Initializes reactive commands and observables for the navigation stack.</summary>
     [MemberNotNull(
+        nameof(NavigationChanges),
         nameof(NavigationChanged),
         nameof(NavigateBack),
         nameof(Navigate),
@@ -158,7 +169,8 @@ public class RoutingState : ReactiveObject
     private void SetupRx()
     {
         var navigateScheduler = _scheduler;
-        NavigationChanged = NavigationStack.ToReactiveChangeSet();
+        NavigationChanges = NavigationStack.ToReactiveChangeSet();
+        NavigationChanged = NavigationChanges.ToDynamicDataChangeSet();
 
         var countAsBehavior = new NavigationCountObservable(this);
         NavigateBack =
@@ -190,7 +202,7 @@ public class RoutingState : ReactiveObject
         });
 
         CurrentViewModel = new SelectObservable<IReactiveChangeSet<IRoutableViewModel>, IRoutableViewModel>(
-            NavigationChanged,
+            NavigationChanges,
             _ => NavigationStack.LastOrDefault()!);
     }
 
@@ -220,7 +232,7 @@ public class RoutingState : ReactiveObject
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
             observer.OnNext(owner.NavigationStack.Count);
-            return owner.NavigationChanged.WhenCountChanged()
+            return owner.NavigationChanges.WhenCountChanged()
                 .Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ => observer.OnNext(owner.NavigationStack.Count)));
         }
     }

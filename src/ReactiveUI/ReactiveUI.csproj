@@ -76,6 +76,7 @@
     <Compile Include="Platforms\net\**\*.cs"/>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DynamicData" />
     <PackageReference Include="Splat" />
     <PackageReference Include="System.Reactive" />
   </ItemGroup>

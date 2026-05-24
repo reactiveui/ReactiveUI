@@ -38,7 +38,7 @@ public static class RoutableViewModelMixin
         IDisposable? inner = null;
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
         return navigationStackChanged.Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ =>
         {
             if (router.GetCurrentViewModel() == item)
@@ -78,7 +78,7 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
 
         return new NavigatedToObservable(navigationStackChanged, router, item);
     }
@@ -106,7 +106,7 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.WhenCountChanged();
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
 
         return new NavigatingFromObservable(navigationStackChanged, router, item);
     }

@@ -18,6 +18,8 @@ namespace ReactiveUI
             where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable ActOnEveryObject<TItem>(this System.Collections.ObjectModel.ReadOnlyObservableCollection<TItem> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
             where TItem : ReactiveUI.IReactiveObject { }
+        public static System.IDisposable ActOnEveryObject<TItem>(this System.IObservable<DynamicData.IChangeSet<TItem>> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
+            where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable ActOnEveryObject<TItem>(this System.IObservable<ReactiveUI.IReactiveChangeSet<TItem>> @this, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
             where TItem : ReactiveUI.IReactiveObject { }
         public static System.IDisposable ActOnEveryObject<TItem, TCollection>(this TCollection collection, System.Action<TItem> onAdd, System.Action<TItem> onRemove)
@@ -211,7 +213,11 @@ namespace ReactiveUI
     }
     public static class ChangeSetMixin
     {
+        public static System.IObservable<DynamicData.IChangeSet> CountChanged(this System.IObservable<DynamicData.IChangeSet> changeSet) { }
+        public static System.IObservable<DynamicData.IChangeSet<T>> CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>> changeSet)
+            where T :  notnull { }
         public static bool CountHasChanged(this ReactiveUI.IReactiveChangeSet changeSet) { }
+        public static bool HasCountChanged(this DynamicData.IChangeSet changeSet) { }
         public static System.IObservable<ReactiveUI.IReactiveChangeSet<T>> WhenCountChanged<T>(this System.IObservable<ReactiveUI.IReactiveChangeSet<T>> changeSet) { }
     }
     public readonly struct CollectionChanged : System.IEquatable<ReactiveUI.CollectionChanged>
@@ -1825,7 +1831,7 @@ namespace ReactiveUI
         public ReactiveUI.ReactiveCommand<System.Reactive.Unit, ReactiveUI.IRoutableViewModel> NavigateBack { get; protected set; }
         [System.Runtime.Serialization.IgnoreDataMember]
         [System.Text.Json.Serialization.JsonIgnore]
-        public System.IObservable<ReactiveUI.IReactiveChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; protected set; }
+        public System.IObservable<DynamicData.IChangeSet<ReactiveUI.IRoutableViewModel>> NavigationChanged { get; protected set; }
         [System.Runtime.Serialization.DataMember]
         [System.Text.Json.Serialization.JsonRequired]
         public System.Collections.ObjectModel.ObservableCollection<ReactiveUI.IRoutableViewModel> NavigationStack { get; set; }
