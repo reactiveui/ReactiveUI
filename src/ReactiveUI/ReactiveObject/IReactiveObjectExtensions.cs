@@ -285,9 +285,12 @@ public static class IReactiveObjectExtensions
     {
         if (reactiveObject is not IReactiveObjectStateSlot slotHost)
         {
+            // Use the callback's key argument rather than capturing reactiveObject: a capturing lambda forces the
+            // compiler to allocate a closure at method entry on *every* GetState call (including the slot fast path
+            // below), and GetState runs on every property-change notification.
             return state.GetValue(
                 reactiveObject,
-                _ => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>(reactiveObject));
+                static key => (IExtensionState<IReactiveObject>)(object)new ExtensionState<TSender>((TSender)key));
         }
 
         ref var slot = ref slotHost.GetReactiveStateSlot();
