@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ReactiveUI.Wpf;
 
@@ -36,13 +37,25 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
         // Try to get the Command property using reflection
         var commandProperty = control.GetType().GetProperty("Command");
 
-        // If the control has a writable Command property, update it directly
+        // If the control has a writable Command property, update it.
         if (commandProperty?.CanWrite != true)
         {
             return false;
         }
 
-        commandProperty.SetValue(control, command);
+        // Marshal the update onto the owning dispatcher when called off the UI thread, so a background-thread
+        // command rebind doesn't touch the WPF control directly (which throws an InvalidOperationException).
+        if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
+        {
+            dispatcherObject.Dispatcher.BeginInvoke(
+                () => commandProperty.SetValue(control, command),
+                DispatcherPriority.Normal);
+        }
+        else
+        {
+            commandProperty.SetValue(control, command);
+        }
+
         return true;
     }
 }
