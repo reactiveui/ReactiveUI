@@ -234,21 +234,21 @@ public class MessageBus : IMessageBus
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private IReactiveSubject<T> SetupSubjectIfNecessary<T>(string? contract)
     {
-        IReactiveSubject<T>? ret = null;
-
-        WithMessageBus(typeof(T), contract, (mb, item) =>
+        // Inlined rather than routed through WithMessageBus: a captured-result Action allocated a closure plus a
+        // delegate on every SendMessage. The get-or-create result is always alive, so the dead-entry sweep that
+        // WithMessageBus performs is unnecessary here.
+        var item = (typeof(T), contract);
+        lock (_messageBus)
         {
-            if (mb.TryGetValue(item, out var subjRef) && subjRef.IsAlive)
+            if (_messageBus.TryGetValue(item, out var subjRef) && subjRef.IsAlive)
             {
-                ret = (IReactiveSubject<T>)subjRef.Target;
-                return;
+                return (IReactiveSubject<T>)subjRef.Target;
             }
 
-            ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorBroadcastSubject<T>(default!));
-            mb[item] = new(ret);
-        });
-
-        return ret!;
+            IReactiveSubject<T> ret = new ScheduledSubject<T>(GetScheduler(item), null, new BehaviorBroadcastSubject<T>(default!));
+            _messageBus[item] = new(ret);
+            return ret;
+        }
     }
 
     /// <summary>
