@@ -76,7 +76,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged)
+    public int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged)
     {
         ArgumentExceptionHelper.ThrowIfNull(type);
         ArgumentExceptionHelper.ThrowIfNull(propertyName);
