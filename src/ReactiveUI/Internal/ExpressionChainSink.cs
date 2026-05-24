@@ -190,6 +190,13 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             /// <summary>The current link-notification subscription; swapped on each re-parent.</summary>
             private readonly SwapDisposable _subscription = new();
 
+            /// <summary>This link's value fetcher, compiled once at construction rather than re-derived from the
+            /// expression on every notification (the chain and fetcher were the dominant per-emit allocation).</summary>
+            private readonly Func<object?, object?[]?, object?>? _getter = GetLinkFetcher(sink._links[index]);
+
+            /// <summary>This link's index/argument array (non-null only for indexer links), cached once.</summary>
+            private readonly object?[]? _arguments = sink._links[index].GetArgumentsArray();
+
             /// <summary>Re-establishes this watcher on a new parent value and propagates the current value downward.</summary>
             /// <param name="parent">The object this link is read from.</param>
             public void SetParent(object? parent)
@@ -212,7 +219,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
                 var link = sink._links[index];
 
                 // Kicker: propagate the current value immediately, then subscribe for updates.
-                Push(ReadValue(parent, link));
+                Push(ReadValue(parent));
                 _subscription.Disposable = sink._notify(parent, link, sink._beforeChange, sink._suppressWarnings)
                     .Subscribe(new Observer(this));
             }
@@ -231,7 +238,7 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
                         return;
                     }
 
-                    Push(change.GetValueOrDefault());
+                    Push(ReadValue(change.Sender));
                 }
             }
 
@@ -239,12 +246,31 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
             /// <param name="error">The error to forward.</param>
             public void ForwardError(Exception error) => sink._downstream.OnError(error);
 
-            /// <summary>Reads the current value of a link on a parent object via reflection.</summary>
-            /// <param name="parent">The object the link is read from.</param>
+            /// <summary>Builds the value fetcher for a link once, returning null when the member has no fetcher.</summary>
             /// <param name="link">The member-access link.</param>
-            /// <returns>The link's current value.</returns>
-            private static object? ReadValue(object parent, Expression link) =>
-                new ObservedChange<object?, object?>(parent, link, null).GetValueOrDefault();
+            /// <returns>The cached fetcher, or null for an unsupported member.</returns>
+            private static Func<object?, object?[]?, object?>? GetLinkFetcher(Expression link)
+            {
+                var member = link.GetMemberInfo();
+                return member is null ? null : Reflection.GetValueFetcherForProperty(member);
+            }
+
+            /// <summary>Reads the current value of this link from a parent using the cached fetcher.</summary>
+            /// <param name="parent">The object the link is read from.</param>
+            /// <returns>The link's current value, or the default when the parent is null.</returns>
+            private object? ReadValue(object? parent)
+            {
+                if (parent is null)
+                {
+                    return null;
+                }
+
+                // Fast path: the per-link fetcher cached at construction. Fall back to the reflective read only
+                // for the rare member with no compiled fetcher (kept for behavioural parity).
+                return _getter is not null
+                    ? _getter(parent, _arguments)
+                    : new ObservedChange<object?, object?>(parent, sink._links[index], null).GetValueOrDefault();
+            }
 
             /// <summary>Forwards this link's value to the next level, or emits it at the leaf.</summary>
             /// <param name="value">The value this link produced.</param>
