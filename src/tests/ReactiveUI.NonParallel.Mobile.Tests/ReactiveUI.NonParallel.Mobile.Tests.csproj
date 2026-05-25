@@ -6,8 +6,8 @@
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!-- Target mobile platforms - Android and iOS -->
-    <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
+    <!-- Target mobile platforms - Android and iOS (net9 mobile EOL 12 May 2026) -->
+    <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
@@ -40,24 +40,4 @@
     </When>
   </Choose>
 
-  <!-- Global usings -->
-  <ItemGroup>
-    <Using Include="ReactiveUI.Tests.Utilities.Schedulers" />
-    <Using Include="Splat" />
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.ComponentModel" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Linq.Expressions" />
-    <Using Include="System.Reactive" />
-    <Using Include="System.Reactive.Concurrency" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Reactive.Subjects" />
-    <Using Include="System.Reactive.Threading.Tasks" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Threading.Tasks" />
-  </ItemGroup>
 </Project>

@@ -1,13 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
+using System.Globalization;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
+using TUnit.Core.Executors;
 
 [assembly: NotInParallel]
 [assembly: TestExecutor<AppBuilderTestExecutor>]
+[assembly: System.Resources.NeutralResourcesLanguage("en-US")]
 
 namespace ReactiveUI.Tests;
 
@@ -22,6 +25,14 @@ public static class AssemblyHooks
     [Before(Assembly)]
     public static void AssemblySetup()
     {
+        // Pin the test culture to invariant so culture-sensitive converter tests (dates, currency, percent) are
+        // deterministic regardless of the host machine's locale. The converters themselves use CurrentCulture by
+        // design (correct for UI display); fixing the culture here makes that observable output match expectations.
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+
         // Override ModeDetector to ensure we're detected as being in a unit test runner.
         // App builder initialization is handled per-test via AppBuilderTestExecutor.
         ModeDetector.OverrideModeDetector(new TestModeDetector());
@@ -44,6 +55,7 @@ public static class AssemblyHooks
     /// </summary>
     private sealed class TestModeDetector : IModeDetector
     {
+        /// <inheritdoc/>
         public bool? InUnitTestRunner() => true;
     }
 }

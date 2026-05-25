@@ -1,10 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Subjects;
 using Foundation;
-
 using UIKit;
 
 namespace ReactiveUI;
@@ -17,7 +20,10 @@ namespace ReactiveUI;
 public abstract class ReactiveCollectionViewController : UICollectionViewController,
     IReactiveNotifyPropertyChanged<ReactiveCollectionViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
     /// <summary>
@@ -89,10 +95,10 @@ public abstract class ReactiveCollectionViewController : UICollectionViewControl
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -148,6 +154,7 @@ public abstract class ReactiveCollectionViewController : UICollectionViewControl
 public abstract class ReactiveCollectionViewController<TViewModel> : ReactiveCollectionViewController, IViewFor<TViewModel>
     where TViewModel : class
 {
+    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
     private TViewModel? _viewModel;
 
     /// <summary>

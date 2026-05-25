@@ -1,9 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -35,6 +36,9 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class BindingTypeConverterRegistry
 {
+    /// <summary>The initial capacity used for a per-type-pair converter list.</summary>
+    private const int DefaultConverterListCapacity = 4;
+
 #if NET9_0_OR_GREATER
     /// <summary>
     /// Synchronization primitive guarding mutations to the registry's internal state.
@@ -87,26 +91,16 @@ public sealed class BindingTypeConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>>(16));
+            var snap = _snapshot ?? new Snapshot(new(16));
 
-            // Copy-on-write update: clone the dictionary shallowly
             var newDict = CloneRegistryShallow(snap.ConvertersByTypePair);
 
-            if (!newDict.TryGetValue(key, out var list))
-            {
-                list = new List<IBindingTypeConverter>(4);
-            }
-            else
-            {
-                // Copy-on-write at the list level: clone before mutating
-                list = [.. list];
-            }
+            List<IBindingTypeConverter> outputList = !newDict.TryGetValue(key, out var list) ? new(DefaultConverterListCapacity) : [.. list];
 
-            list.Add(converter);
-            newDict[key] = list;
+            outputList.Add(converter);
+            newDict[key] = outputList;
 
-            // Publish the new snapshot (atomic via reference assignment)
-            _snapshot = new Snapshot(newDict);
+            _snapshot = new(newDict);
         }
     }
 
@@ -148,7 +142,6 @@ public sealed class BindingTypeConverterRegistry
             return null;
         }
 
-        // Find the converter with the highest affinity
         IBindingTypeConverter? best = null;
         var bestScore = -1;
 
@@ -156,11 +149,13 @@ public sealed class BindingTypeConverterRegistry
         {
             var converter = list[i];
             var score = converter.GetAffinityForObjects();
-            if (score > bestScore && score > 0)
+            if (score <= bestScore || score <= 0)
             {
-                bestScore = score;
-                best = converter;
+                continue;
             }
+
+            bestScore = score;
+            best = converter;
         }
 
         return best;
@@ -185,9 +180,7 @@ public sealed class BindingTypeConverterRegistry
             return [];
         }
 
-        // Flatten all lists into a single enumerable
-        // Use a list to avoid lazy evaluation issues with concurrent modifications
-        var result = new List<IBindingTypeConverter>();
+        List<IBindingTypeConverter> result = [];
         foreach (var kvp in snap.ConvertersByTypePair)
         {
             result.AddRange(kvp.Value);
@@ -213,7 +206,7 @@ public sealed class BindingTypeConverterRegistry
     {
         ArgumentExceptionHelper.ThrowIfNull(source);
 
-        var clone = new Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>>(source.Count);
+        Dictionary<(Type fromType, Type toType), List<IBindingTypeConverter>> clone = new(source.Count);
         foreach (var kvp in source)
         {
             clone[kvp.Key] = kvp.Value;

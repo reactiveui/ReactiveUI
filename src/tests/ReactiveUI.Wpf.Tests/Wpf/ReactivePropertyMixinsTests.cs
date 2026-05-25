@@ -1,18 +1,34 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel.DataAnnotations;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using TUnit.Core.Executors;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 namespace ReactiveUI.Tests.Wpf;
 
+/// <summary>
+/// Tests for the reactive property validation mixins.
+/// </summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class ReactivePropertyMixinsTests
 {
+    private const int OutOfRangeValue = 150;
+    private const int InRangeValue = 50;
+    private const int MaxStringLength = 10;
+    private const int MaxRange = 100;
+    private const string ValidationErrorText = "Error";
+
+    /// <summary>
+    /// Verifies that a required property reports a validation error when empty.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithRequiredAttribute_ShouldValidate()
     {
@@ -23,6 +39,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.RequiredProperty.HasErrors).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that setting a valid value clears the validation errors.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithValidValue_ShouldClearErrors()
     {
@@ -36,6 +56,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.RequiredProperty.HasErrors).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that setting an invalid value sets the validation errors.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithInvalidValue_ShouldSetErrors()
     {
@@ -50,6 +74,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.RequiredProperty.HasErrors).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that a string-length attribute reports an error when the value is too long.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithStringLengthAttribute_ShouldValidateLength()
     {
@@ -63,6 +91,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.StringLengthProperty.HasErrors).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that a value within the string-length constraint passes validation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithValidStringLength_ShouldPass()
     {
@@ -76,6 +108,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.StringLengthProperty.HasErrors).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that a range attribute reports an error for an out-of-range value.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithRangeAttribute_ShouldValidateRange()
     {
@@ -83,12 +119,16 @@ public class ReactivePropertyMixinsTests
         var viewModel = new TestViewModel();
 
         // Act - Set value outside range
-        viewModel.RangeProperty.Value = 150;
+        viewModel.RangeProperty.Value = OutOfRangeValue;
 
         // Assert
         await Assert.That(viewModel.RangeProperty.HasErrors).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that a value within the range constraint passes validation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithValidRange_ShouldPass()
     {
@@ -96,12 +136,16 @@ public class ReactivePropertyMixinsTests
         var viewModel = new TestViewModel();
 
         // Act - Set value within range
-        viewModel.RangeProperty.Value = 50;
+        viewModel.RangeProperty.Value = InRangeValue;
 
         // Assert
         await Assert.That(viewModel.RangeProperty.HasErrors).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that the display attribute name is used in validation error messages.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithDisplayAttribute_ShouldUseDisplayName()
     {
@@ -119,6 +163,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(errorMessage).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies that passing a null selector throws <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithNullSelfSelector_ShouldThrowArgumentNullException()
     {
@@ -130,6 +178,10 @@ public class ReactivePropertyMixinsTests
             .Throws<ArgumentNullException>();
     }
 
+    /// <summary>
+    /// Verifies that calling the mixin on a null property throws <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithNullSelf_ShouldThrowArgumentNullException()
     {
@@ -141,6 +193,10 @@ public class ReactivePropertyMixinsTests
             .Throws<ArgumentNullException>();
     }
 
+    /// <summary>
+    /// Verifies that all validation attributes are evaluated when multiple are applied.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithMultipleValidationAttributes_ShouldValidateAll()
     {
@@ -154,6 +210,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.MultiValidationProperty.HasErrors).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that a custom error message from an attribute is surfaced.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithCustomErrorMessage_ShouldUseCustomMessage()
     {
@@ -171,6 +231,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(errorMessage).Contains("custom error");
     }
 
+    /// <summary>
+    /// Verifies that a property with no validation attributes never reports errors.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AddValidation_WithNoValidationAttributes_ShouldNotAddValidation()
     {
@@ -184,30 +248,38 @@ public class ReactivePropertyMixinsTests
         await Assert.That(viewModel.NoValidationProperty.HasErrors).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that <c>ObserveValidationErrors</c> emits the current validation errors.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveValidationErrors_ShouldReturnObservableOfErrors()
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
+        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.Subscribe(error => errors.Add(error));
+        observable.Subscribe(errors.Add);
         property.Value = null;
 
         // Assert
-        await Assert.That(errors).Contains("Error");
+        await Assert.That(errors).Contains(ValidationErrorText);
     }
 
+    /// <summary>
+    /// Verifies that <c>ObserveValidationErrors</c> emits null when there are no errors.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveValidationErrors_WhenNoErrors_ShouldReturnNull()
     {
         // Arrange
         var property = new ReactiveProperty<string>("Valid", ImmediateScheduler.Instance, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
+        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         string? lastError = "initial";
         var observable = property.ObserveValidationErrors();
@@ -220,6 +292,10 @@ public class ReactivePropertyMixinsTests
         await Assert.That(lastError).IsNull();
     }
 
+    /// <summary>
+    /// Verifies that <c>ObserveValidationErrors</c> on a null property throws <see cref="ArgumentNullException"/>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveValidationErrors_WithNullProperty_ShouldThrowArgumentNullException()
     {
@@ -231,6 +307,10 @@ public class ReactivePropertyMixinsTests
             .Throws<ArgumentNullException>();
     }
 
+    /// <summary>
+    /// Verifies that <c>ObserveValidationErrors</c> emits only the first error when several apply.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveValidationErrors_ShouldEmitOnlyFirstError()
     {
@@ -243,35 +323,50 @@ public class ReactivePropertyMixinsTests
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.Subscribe(error => errors.Add(error));
+        observable.Subscribe(errors.Add);
         property.Value = null;
 
         // Assert
-        await Assert.That(errors.Last()).IsEqualTo("Error1");
+        await Assert.That(errors[^1]).IsEqualTo("Error1");
     }
 
+    /// <summary>
+    /// Verifies that <c>ObserveValidationErrors</c> updates as the validation errors change.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObserveValidationErrors_ShouldUpdateWhenErrorsChange()
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, ImmediateScheduler.Instance, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error" : null);
+        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errorHistory = new List<string?>();
         var observable = property.ObserveValidationErrors();
-        observable.Subscribe(error => errorHistory.Add(error));
+        observable.Subscribe(errorHistory.Add);
 
         // Act
         property.Value = null;  // Should trigger error
         property.Value = "Valid";  // Should clear error
 
         // Assert
-        await Assert.That(errorHistory).Contains((string?)"Error");
+        await Assert.That(errorHistory).Contains((string?)ValidationErrorText);
         await Assert.That(errorHistory).Contains((string?)null);
     }
 
-    private class TestViewModel : ReactiveObject
+    /// <summary>
+    /// A view model exposing reactive properties with various validation attributes.
+    /// </summary>
+    private sealed class TestViewModel : ReactiveObject
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestViewModel"/> class.
+        /// </summary>
+        /// <param name="scheduler">The scheduler used by the reactive properties.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Bug",
+            "S3366:Don't expose \"this\" in constructors",
+            Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
         public TestViewModel(IScheduler? scheduler = null)
         {
             scheduler ??= ImmediateScheduler.Instance;
@@ -298,26 +393,47 @@ public class ReactivePropertyMixinsTests
                 .AddValidation(() => NoValidationProperty);
         }
 
+        /// <summary>
+        /// Gets a property with a required validation attribute.
+        /// </summary>
         [Required]
         public ReactiveProperty<string> RequiredProperty { get; }
 
-        [StringLength(10)]
+        /// <summary>
+        /// Gets a property with a string-length validation attribute.
+        /// </summary>
+        [StringLength(MaxStringLength)]
         public ReactiveProperty<string> StringLengthProperty { get; }
 
-        [Range(0, 100)]
+        /// <summary>
+        /// Gets a property with a range validation attribute.
+        /// </summary>
+        [Range(0, MaxRange)]
         public ReactiveProperty<int> RangeProperty { get; }
 
+        /// <summary>
+        /// Gets a property with a display name and required validation attribute.
+        /// </summary>
         [Required]
         [Display(Name = "Custom Display Name")]
         public ReactiveProperty<string> DisplayNameProperty { get; }
 
+        /// <summary>
+        /// Gets a property with multiple validation attributes.
+        /// </summary>
         [Required]
-        [StringLength(10)]
+        [StringLength(MaxStringLength)]
         public ReactiveProperty<string> MultiValidationProperty { get; }
 
+        /// <summary>
+        /// Gets a property with a custom validation error message.
+        /// </summary>
         [Required(ErrorMessage = "This is a custom error message")]
         public ReactiveProperty<string> CustomErrorMessageProperty { get; }
 
+        /// <summary>
+        /// Gets a property without any validation attributes.
+        /// </summary>
         public ReactiveProperty<string> NoValidationProperty { get; }
     }
 }

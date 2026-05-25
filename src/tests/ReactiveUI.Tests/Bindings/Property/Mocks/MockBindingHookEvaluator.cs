@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -14,7 +14,7 @@ using Expression = System.Linq.Expressions.Expression;
 /// This mock provides configurable behavior for testing binding hook evaluation
 /// without requiring registered Splat hooks.
 /// </remarks>
-internal class MockBindingHookEvaluator : IBindingHookEvaluator
+internal sealed class MockBindingHookEvaluator : IBindingHookEvaluator
 {
     private bool _returnValue = true;
 
@@ -22,10 +22,7 @@ internal class MockBindingHookEvaluator : IBindingHookEvaluator
     /// Configures the return value for <see cref="EvaluateBindingHooks{TViewModel, TView}"/>.
     /// </summary>
     /// <param name="value">True to allow binding; false to reject binding.</param>
-    public void SetReturnValue(bool value)
-    {
-        _returnValue = value;
-    }
+    public void SetReturnValue(bool value) => _returnValue = value;
 
     /// <inheritdoc/>
     public bool EvaluateBindingHooks<TViewModel, TView>(

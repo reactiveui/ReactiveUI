@@ -1,10 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+
 namespace ReactiveUI.Tests;
 
+/// <summary>
+///     Tests for <see cref="WaitForDispatcherScheduler" />.
+/// </summary>
 public class WaitForDispatcherSchedulerTests
 {
     /// <summary>
@@ -21,7 +27,7 @@ public class WaitForDispatcherSchedulerTests
             return null!;
         });
 
-        var sut = new WaitForDispatcherScheduler(schedulerFactory);
+        _ = new WaitForDispatcherScheduler(schedulerFactory);
 
         await Assert.That(schedulerFactoryCalls).IsEqualTo(1);
     }
@@ -38,7 +44,7 @@ public class WaitForDispatcherSchedulerTests
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 schedulerExecutedOn = scheduler;
                 return Disposable.Empty;
@@ -64,7 +70,8 @@ public class WaitForDispatcherSchedulerTests
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule(() => { });
 
-        await Assert.That(schedulerFactoryCalls).IsEqualTo(2);
+        const int ExpectedFactoryCalls = 2;
+        await Assert.That(schedulerFactoryCalls).IsEqualTo(ExpectedFactoryCalls);
     }
 
     /// <summary>
@@ -95,7 +102,7 @@ public class WaitForDispatcherSchedulerTests
         IScheduler? firstCallScheduler = null;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 firstCallScheduler = scheduler;
                 return Disposable.Empty;
@@ -105,7 +112,7 @@ public class WaitForDispatcherSchedulerTests
         IScheduler? secondCallScheduler = null;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 secondCallScheduler = scheduler;
                 return Disposable.Empty;
@@ -115,7 +122,7 @@ public class WaitForDispatcherSchedulerTests
         var callsBeforeThird = schedulerFactoryCalls;
         sut.Schedule<object>(
             null!,
-            (scheduler, state) => Disposable.Empty);
+            (_, _) => Disposable.Empty);
 
         await Assert.That(firstCallScheduler).IsEqualTo(CurrentThreadScheduler.Instance);
         await Assert.That(secondCallScheduler).IsEqualTo(successScheduler);
@@ -135,7 +142,7 @@ public class WaitForDispatcherSchedulerTests
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         sut.Schedule<object>(
             null!,
-            (scheduler, state) =>
+            (scheduler, _) =>
             {
                 schedulerExecutedOn = scheduler;
                 return Disposable.Empty;

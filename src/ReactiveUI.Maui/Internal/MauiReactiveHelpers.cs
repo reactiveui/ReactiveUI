@@ -1,10 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
 using System.Reactive;
+using System.Reactive.Disposables;
+using ReactiveUI.Internal;
 
 #if IS_WINUI
 using Microsoft.UI.Xaml;
@@ -34,19 +36,21 @@ internal static class MauiReactiveHelpers
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(propertyName);
 
-        return Observable.Create<Unit>(observer =>
+        return new FromEventObservable<Unit>(onNext =>
         {
             void Handler(object? sender, PropertyChangedEventArgs e)
             {
-                if (string.IsNullOrEmpty(e.PropertyName) ||
-                    string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName) &&
+                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
-                    observer.OnNext(Unit.Default);
+                    return;
                 }
+
+                onNext(Unit.Default);
             }
 
             source.PropertyChanged += Handler;
-            return Disposable.Create(() => source.PropertyChanged -= Handler);
+            return new ActionDisposable(() => source.PropertyChanged -= Handler);
         });
     }
 
@@ -73,22 +77,24 @@ internal static class MauiReactiveHelpers
         ArgumentNullException.ThrowIfNull(propertyName);
         ArgumentNullException.ThrowIfNull(getPropertyValue);
 
-        return Observable.Create<T>(observer =>
+        return new FromEventObservable<T>(onNext =>
         {
             // Emit initial value
-            observer.OnNext(getPropertyValue());
+            onNext(getPropertyValue());
 
             void Handler(object? sender, PropertyChangedEventArgs e)
             {
-                if (string.IsNullOrEmpty(e.PropertyName) ||
-                    string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
+                if (!string.IsNullOrEmpty(e.PropertyName) &&
+                    !string.Equals(e.PropertyName, propertyName, StringComparison.Ordinal))
                 {
-                    observer.OnNext(getPropertyValue());
+                    return;
                 }
+
+                onNext(getPropertyValue());
             }
 
             source.PropertyChanged += Handler;
-            return Disposable.Create(() => source.PropertyChanged -= Handler);
+            return new ActionDisposable(() => source.PropertyChanged -= Handler);
         });
     }
 
@@ -118,18 +124,15 @@ internal static class MauiReactiveHelpers
         ArgumentNullException.ThrowIfNull(property);
         ArgumentNullException.ThrowIfNull(getPropertyValue);
 
-        return Observable.Create<T>(observer =>
+        return new FromEventObservable<T>(onNext =>
         {
             // Emit initial value
-            observer.OnNext(getPropertyValue());
+            onNext(getPropertyValue());
 
             // Register for property changes using the provided DependencyProperty
-            var token = source.RegisterPropertyChangedCallback(property, (sender, dp) =>
-            {
-                observer.OnNext(getPropertyValue());
-            });
+            var token = source.RegisterPropertyChangedCallback(property, (_, _) => onNext(getPropertyValue()));
 
-            return Disposable.Create(() => source.UnregisterPropertyChangedCallback(property, token));
+            return new ActionDisposable(() => source.UnregisterPropertyChangedCallback(property, token));
         });
     }
 #endif
@@ -148,11 +151,11 @@ internal static class MauiReactiveHelpers
     {
         if (viewModel is not IActivatableViewModel activatable)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        var activatedSub = activatedSignal.Subscribe(_ => activatable.Activator.Activate());
-        var deactivatedSub = deactivatedSignal.Subscribe(_ => activatable.Activator.Deactivate());
+        var activatedSub = activatedSignal.Subscribe(new DelegateObserver<Unit>(_ => activatable.Activator.Activate()));
+        var deactivatedSub = deactivatedSignal.Subscribe(new DelegateObserver<Unit>(_ => activatable.Activator.Deactivate()));
 
         return new CompositeDisposable(activatedSub, deactivatedSub);
     }

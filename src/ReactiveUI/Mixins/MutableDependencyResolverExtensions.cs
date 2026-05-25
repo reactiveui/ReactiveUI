@@ -1,9 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder;
+using ReactiveUI.Helpers;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -19,6 +22,23 @@ public static class MutableDependencyResolverExtensions
     static MutableDependencyResolverExtensions() => RxAppBuilder.EnsureInitialized();
 
     /// <summary>
+    /// Registers a view type for a specified view model type with the dependency resolver.
+    /// </summary>
+    /// <typeparam name="TView">The view type to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
+    /// <typeparam name="TViewModel">The view model type for which the view is registered.</typeparam>
+    /// <param name="resolver">The dependency resolver to which the view registration is added. Cannot be null.</param>
+    /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(
+        this IMutableDependencyResolver resolver)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class =>
+        RegisterViewForViewModel<TView, TViewModel>(resolver, null);
+
+    /// <summary>
     /// Registers a view type for a specified view model type with the dependency resolver, optionally using a contract.
     /// </summary>
     /// <remarks>This method enables the dependency resolver to resolve the specified view type when an
@@ -29,7 +49,13 @@ public static class MutableDependencyResolverExtensions
     /// <param name="resolver">The dependency resolver to which the view registration is added. Cannot be null.</param>
     /// <param name="contract">An optional contract to associate with the registration. If null, the registration is made without a contract.</param>
     /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-    public static IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IMutableDependencyResolver RegisterViewForViewModel<TView, TViewModel>(
+        this IMutableDependencyResolver resolver,
+        string? contract)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {
@@ -49,6 +75,23 @@ public static class MutableDependencyResolverExtensions
     /// <summary>
     /// Registers a singleton view implementation for the specified view model type in the dependency resolver.
     /// </summary>
+    /// <typeparam name="TView">The type of the view to register. Must implement IViewFor{TViewModel} and have a parameterless constructor.</typeparam>
+    /// <typeparam name="TViewModel">The type of the view model associated with the view.</typeparam>
+    /// <param name="resolver">The dependency resolver in which to register the singleton view.</param>
+    /// <returns>The dependency resolver instance, enabling method chaining.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(
+        this IMutableDependencyResolver resolver)
+        where TView : class, IViewFor<TViewModel>, new()
+        where TViewModel : class =>
+        RegisterSingletonViewForViewModel<TView, TViewModel>(resolver, null);
+
+    /// <summary>
+    /// Registers a singleton view implementation for the specified view model type in the dependency resolver.
+    /// </summary>
     /// <remarks>This method registers a singleton instance of the specified view type for the given view
     /// model type. The view will be created lazily upon first resolution. Use the contract parameter to distinguish
     /// between multiple registrations of the same view model type, if needed.</remarks>
@@ -58,7 +101,13 @@ public static class MutableDependencyResolverExtensions
     /// <param name="contract">An optional contract string to associate with the registration. If null, the registration is made without a
     /// contract.</param>
     /// <returns>The dependency resolver instance, enabling method chaining.</returns>
-    public static IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(this IMutableDependencyResolver resolver, string? contract = null)
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static IMutableDependencyResolver RegisterSingletonViewForViewModel<TView, TViewModel>(
+        this IMutableDependencyResolver resolver,
+        string? contract)
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class
     {

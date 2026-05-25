@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -12,7 +12,7 @@ namespace ReactiveUI.Maui.Tests.Internal;
 /// <summary>
 /// Tests for MauiReactiveHelpers.
 /// </summary>
-public class MauiReactiveHelpersTest
+public sealed class MauiReactiveHelpersTest
 {
     /// <summary>
     /// Tests that CreatePropertyChangedPulse emits when the property changes.
@@ -59,24 +59,35 @@ public class MauiReactiveHelpersTest
         var values = new List<string?>();
 
         using var sub = MauiReactiveHelpers.CreatePropertyValueObservable(
-            vm,
-            nameof(TestViewModel.Name),
-            () => vm.Name)
+                vm,
+                nameof(TestViewModel.Name),
+                () => vm.Name)
             .Subscribe(values.Add);
 
         vm.Name = "Updated";
 
-        await Assert.That(values.Count).IsEqualTo(2);
+        const int expectedValueCount = 2;
+        await Assert.That(values.Count).IsEqualTo(expectedValueCount);
         await Assert.That(values[0]).IsEqualTo("Initial");
         await Assert.That(values[1]).IsEqualTo("Updated");
     }
 
-    private class TestViewModel : INotifyPropertyChanged
+    /// <summary>
+    /// Test view model that raises property change notifications.
+    /// </summary>
+    private sealed class TestViewModel : INotifyPropertyChanged
     {
+        /// <summary>
+        /// The backing field for <see cref="Name"/>.
+        /// </summary>
         private string? _name;
 
+        /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
         public string? Name
         {
             get => _name;
@@ -87,9 +98,11 @@ public class MauiReactiveHelpersTest
             }
         }
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+            PropertyChanged?.Invoke(this, new(propertyName));
     }
 }

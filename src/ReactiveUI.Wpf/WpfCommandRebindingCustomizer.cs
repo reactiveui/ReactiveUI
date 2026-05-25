@@ -1,10 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Wpf;
 
@@ -37,24 +39,31 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
         // Try to get the Command property using reflection
         var commandProperty = control.GetType().GetProperty("Command");
 
-        // If the control has a writable Command property, update it directly
-        if (commandProperty?.CanWrite == true)
+        // If the control has a writable Command property, update it.
+        if (commandProperty?.CanWrite != true)
         {
-            if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
-            {
-                dispatcherObject.Dispatcher.BeginInvoke(
-                    new Action(() => commandProperty.SetValue(control, command)),
-                    DispatcherPriority.Normal);
-            }
-            else
-            {
-                commandProperty.SetValue(control, command);
-            }
-
-            return true;
+            return false;
         }
 
-        // Fall back to full rebind if Command property doesn't exist or isn't writable
-        return false;
+        // When already on the control's dispatcher thread, update inline. Otherwise marshal through the configured
+        // main-thread scheduler (RxSchedulers.MainThreadScheduler) rather than the control's dispatcher directly, so
+        // a background-thread command rebind is delivered where the consumer/test expects and never touches the WPF
+        // control off-thread (which would throw an InvalidOperationException).
+        if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
+        {
+            RxSchedulers.MainThreadScheduler.Schedule(
+                (Property: commandProperty, Control: control, Command: command),
+                static (_, state) =>
+                {
+                    state.Property.SetValue(state.Control, state.Command);
+                    return EmptyDisposable.Instance;
+                });
+        }
+        else
+        {
+            commandProperty.SetValue(control, command);
+        }
+
+        return true;
     }
 }

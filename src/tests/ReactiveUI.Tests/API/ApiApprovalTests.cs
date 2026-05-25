@@ -1,10 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Tests.Utilities;
-using TUnit.Core.Enums;
 
 namespace ReactiveUI.Tests.API;
 
@@ -12,7 +12,6 @@ namespace ReactiveUI.Tests.API;
 ///     Checks to make sure that the API is consistent with previous releases, and new API changes are highlighted.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[RunOn(OS.Windows)]
 public class ApiApprovalTests
 {
     /// <summary>
@@ -20,5 +19,5 @@ public class ApiApprovalTests
     /// </summary>
     /// <returns>A task to monitor the process.</returns>
     [Test]
-    public Task ReactiveUI() => typeof(RxState).Assembly.CheckApproval(["ReactiveUI"]);
+    public Task ReactiveUi() => typeof(RxState).Assembly.CheckApproval(["ReactiveUI"]);
 }

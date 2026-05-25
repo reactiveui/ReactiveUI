@@ -1,7 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -17,6 +20,10 @@ public static class RoutingStateMixins
     /// <param name="item">The <see cref="RoutingState"/> instance whose navigation stack is searched.</param>
     /// <returns>The first view model of type <typeparamref name="T"/> found in the navigation stack, or <see langword="null"/>
     /// if no such view model exists.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static T? FindViewModelInStack<T>(this RoutingState item)
         where T : IRoutableViewModel
     {

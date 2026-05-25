@@ -1,9 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Windows.Input;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -39,17 +42,25 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
     /// It will remain active until disposed.</returns>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TParam>(
+    IReactiveBinding<TView, TProp> BindCommand<
+        TView,
+        TViewModel,
+        TProp,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        TControl,
+        TParam>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> vmProperty,
         Expression<Func<TView, TControl>> controlProperty,
         Expression<Func<TViewModel, TParam?>> withParameter,
         string? toEvent = null)
-            where TView : class, IViewFor
-            where TViewModel : class
-            where TProp : ICommand
-            where TControl : class;
+        where TView : class, IViewFor
+        where TViewModel : class
+        where TProp : ICommand
+        where TControl : class;
 
     /// <summary>
     /// Binds a command from the view model to a control on the view, enabling the control to execute the command with a
@@ -78,15 +89,23 @@ internal interface ICommandBinderImplementation : IEnableLogger
     /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
     /// It will remain active until disposed.</returns>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-    IReactiveBinding<TView, TProp> BindCommand<TView, TViewModel, TProp, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] TControl, TParam>(
+    IReactiveBinding<TView, TProp> BindCommand<
+        TView,
+        TViewModel,
+        TProp,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        TControl,
+        TParam>(
         TViewModel? viewModel,
         TView view,
         Expression<Func<TViewModel, TProp?>> vmProperty,
         Expression<Func<TView, TControl>> controlProperty,
         IObservable<TParam?> withParameter,
         string? toEvent = null)
-            where TView : class, IViewFor
-            where TViewModel : class
-            where TProp : ICommand
-            where TControl : class;
+        where TView : class, IViewFor
+        where TViewModel : class
+        where TProp : ICommand
+        where TControl : class;
 }

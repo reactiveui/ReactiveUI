@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny.Mockups;
@@ -13,24 +14,24 @@ namespace ReactiveUI.Tests.WhenAny.Mockups;
 public class HostTestFixture : ReactiveObject
 {
     private readonly ObservableAsPropertyHelper<string?> _ownerName;
-    private TestFixture? _Child;
+    private TestFixture? _child;
     private OwnerClass? _owner;
-    private NonObservableTestFixture? _PocoChild;
-    private int _SomeOtherParam;
+    private NonObservableTestFixture? _pocoChild;
+    private int _someOtherParam;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="HostTestFixture" /> class.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S3366:Make sure the use of this in constructors is safe here",
+        Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
     public HostTestFixture() =>
-        _ownerName = this.WhenAnyValue(static x => x.Owner)
-            .WhereNotNull()
-            .Select(static owner => owner.WhenAnyValue(static x => x.Name))
-            .Switch()
-            .ToProperty(this, static x => x.OwnerName);
+        _ownerName = this.WhenAnyValue(static x => x.Owner).WhereNotNull().Select(static owner => owner.WhenAnyValue(static x => x.Name)).Switch().ToProperty(this, static x => x.OwnerName);
 
     /// <summary>
     ///     Gets the name of the owner.
     /// </summary>
-    /// <value>
-    ///     The name of the owner.
-    /// </value>
     public string? OwnerName => _ownerName.Value;
 
     /// <summary>
@@ -38,16 +39,13 @@ public class HostTestFixture : ReactiveObject
     /// </summary>
     public TestFixture? Child
     {
-        get => _Child;
-        set => this.RaiseAndSetIfChanged(ref _Child, value);
+        get => _child;
+        set => this.RaiseAndSetIfChanged(ref _child, value);
     }
 
     /// <summary>
     ///     Gets or sets the owner.
     /// </summary>
-    /// <value>
-    ///     The owner.
-    /// </value>
     public OwnerClass? Owner
     {
         get => _owner;
@@ -59,8 +57,8 @@ public class HostTestFixture : ReactiveObject
     /// </summary>
     public NonObservableTestFixture? PocoChild
     {
-        get => _PocoChild;
-        set => this.RaiseAndSetIfChanged(ref _PocoChild, value);
+        get => _pocoChild;
+        set => this.RaiseAndSetIfChanged(ref _pocoChild, value);
     }
 
     /// <summary>
@@ -68,7 +66,7 @@ public class HostTestFixture : ReactiveObject
     /// </summary>
     public int SomeOtherParam
     {
-        get => _SomeOtherParam;
-        set => this.RaiseAndSetIfChanged(ref _SomeOtherParam, value);
+        get => _someOtherParam;
+        set => this.RaiseAndSetIfChanged(ref _someOtherParam, value);
     }
 }

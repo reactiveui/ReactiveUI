@@ -1,7 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -13,11 +17,11 @@ namespace ReactiveUI;
 /// <para>
 /// <see cref="SuspensionHost"/> backs <see cref="RxSuspension.SuspensionHost"/> and provides concrete observables that are wired up
 /// by helpers such as <c>AutoSuspendHelper</c>. Platform hosts push their lifecycle notifications into the
-/// <see cref="ReplaySubject{T}"/> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
+/// <see cref="ReplayBroadcastSubject{T}"/> instances exposed here and view models subscribe through <see cref="ISuspensionHost"/>.
 /// </para>
 /// <para>
 /// Consumers rarely instantiate this type directly; instead call <see cref="RxSuspension.SuspensionHost"/> to access the singleton. The
-/// object is intentionally thread-safe via <see cref="ReplaySubject{T}"/> so events raised prior to subscription are
+/// object is intentionally thread-safe via <see cref="ReplayBroadcastSubject{T}"/> so events raised prior to subscription are
 /// replayed to late subscribers.
 /// </para>
 /// </remarks>
@@ -33,16 +37,34 @@ namespace ReactiveUI;
 /// </example>
 internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
 {
-    private readonly ReplaySubject<IObservable<Unit>> _isLaunchingNew = new(1);
+    /// <summary>
+    /// Backing subject for IsLaunchingNew.
+    /// </summary>
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isLaunchingNew = new(1);
 
-    private readonly ReplaySubject<IObservable<Unit>> _isResuming = new(1);
+    /// <summary>
+    /// Backing subject for IsResuming.
+    /// </summary>
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isResuming = new(1);
 
-    private readonly ReplaySubject<IObservable<Unit>> _isUnpausing = new(1);
+    /// <summary>
+    /// Backing subject for IsUnpausing.
+    /// </summary>
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _isUnpausing = new(1);
 
-    private readonly ReplaySubject<IObservable<IDisposable>> _shouldPersistState = new(1);
+    /// <summary>
+    /// Backing subject for ShouldPersistState.
+    /// </summary>
+    private readonly ReplayBroadcastSubject<IObservable<IDisposable>> _shouldPersistState = new(1);
 
-    private readonly ReplaySubject<IObservable<Unit>> _shouldInvalidateState = new(1);
+    /// <summary>
+    /// Backing subject for ShouldInvalidateState.
+    /// </summary>
+    private readonly ReplayBroadcastSubject<IObservable<Unit>> _shouldInvalidateState = new(1);
 
+    /// <summary>
+    /// Backing store for the AppState property.
+    /// </summary>
     private object? _appState;
 
     /// <summary>
@@ -51,17 +73,19 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     public SuspensionHost()
     {
 #if COCOA
-        const string? message = "Your AppDelegate class needs to use AutoSuspendHelper";
+        const string? Message = "Your AppDelegate class needs to use AutoSuspendHelper";
 #elif ANDROID
-        const string? message = "You need to create an App class and use AutoSuspendHelper";
+        const string? Message = "You need to create an App class and use AutoSuspendHelper";
 #else
-        const string? message = "Your App class needs to use AutoSuspendHelper";
+        const string? Message = "Your App class needs to use AutoSuspendHelper";
 #endif
 
-        IsLaunchingNew = IsResuming = IsUnpausing = ShouldInvalidateState =
-            Observable.Throw<Unit>(new Exception(message));
+        ShouldInvalidateState = new ThrowObservable<Unit>(new InvalidOperationException(Message));
+        IsUnpausing = ShouldInvalidateState;
+        IsResuming = IsUnpausing;
+        IsLaunchingNew = IsResuming;
 
-        ShouldPersistState = Observable.Throw<IDisposable>(new Exception(message));
+        ShouldPersistState = new ThrowObservable<IDisposable>(new InvalidOperationException(Message));
     }
 
     /// <summary>
@@ -71,9 +95,9 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// Raised when the host platform reports that the previous process image is being restored (for example, when an
     /// Android Activity is recreated with a saved bundle). Use this signal to reload persisted state before showing UI.
     /// </remarks>
-    public IObservable<Unit> IsResuming // TODO: Create Test
+    public IObservable<Unit> IsResuming
     {
-        get => _isResuming.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isResuming);
         set => _isResuming.OnNext(value);
     }
 
@@ -84,9 +108,9 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// Fired when the app returns to the foreground without being recreated (for example, when an Activity is resumed
     /// after being paused). React to this stream to refresh transient UI state that should not be serialized.
     /// </remarks>
-    public IObservable<Unit> IsUnpausing // TODO: Create Test
+    public IObservable<Unit> IsUnpausing
     {
-        get => _isUnpausing.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isUnpausing);
         set => _isUnpausing.OnNext(value);
     }
 
@@ -97,9 +121,9 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// Subscribers should write <see cref="AppState"/> to durable storage and dispose the provided token once the
     /// operation completes so platform helpers can release any background execution grants.
     /// </remarks>
-    public IObservable<IDisposable> ShouldPersistState // TODO: Create Test
+    public IObservable<IDisposable> ShouldPersistState
     {
-        get => _shouldPersistState.Switch();
+        get => new WhenAnyObservableSwitchSink<IDisposable>(_shouldPersistState);
         set => _shouldPersistState.OnNext(value);
     }
 
@@ -110,9 +134,9 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// Emits when the platform indicates a clean launch (for example, no saved Android bundle). Use this to create
     /// default state via <see cref="CreateNewAppState"/> or to initialize services only needed on cold start.
     /// </remarks>
-    public IObservable<Unit> IsLaunchingNew // TODO: Create Test
+    public IObservable<Unit> IsLaunchingNew
     {
-        get => _isLaunchingNew.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_isLaunchingNew);
         set => _isLaunchingNew.OnNext(value);
     }
 
@@ -123,9 +147,9 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// Triggered when the host detects an unrecoverable failure (for example, AppDomain unhandled exceptions). Use it to
     /// delete corrupt state and log crash telemetry before the process terminates.
     /// </remarks>
-    public IObservable<Unit> ShouldInvalidateState // TODO: Create Test
+    public IObservable<Unit> ShouldInvalidateState
     {
-        get => _shouldInvalidateState.Switch();
+        get => new WhenAnyObservableSwitchSink<Unit>(_shouldInvalidateState);
         set => _shouldInvalidateState.OnNext(value);
     }
 
@@ -172,13 +196,15 @@ internal class SuspensionHost : ReactiveObject, ISuspensionHost, IDisposable
     /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
+        if (!disposing)
         {
-            _isLaunchingNew.Dispose();
-            _isResuming.Dispose();
-            _isUnpausing.Dispose();
-            _shouldPersistState.Dispose();
-            _shouldInvalidateState.Dispose();
+            return;
         }
+
+        _isLaunchingNew.Dispose();
+        _isResuming.Dispose();
+        _isUnpausing.Dispose();
+        _shouldPersistState.Dispose();
+        _shouldInvalidateState.Dispose();
     }
 }

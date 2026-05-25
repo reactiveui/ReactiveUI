@@ -1,11 +1,15 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using ReactiveUI.Helpers;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -25,6 +29,11 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public static class Reflection
 {
+    /// <summary>
+    /// Error message used when an expression chain is empty.
+    /// </summary>
+    private const string EmptyExpressionChainMessage = "Expression chain must contain at least one element.";
+
     /// <summary>
     /// Cached expression rewriter used to simplify expression trees.
     /// </summary>
@@ -61,14 +70,14 @@ public static class Reflection
     /// This method intentionally follows existing behavior, including the assumption that index arguments are
     /// <see cref="ConstantExpression"/> instances.
     /// </remarks>
-    public static string ExpressionToPropertyNames(Expression? expression) // TODO: Create Test
+    public static string ExpressionToPropertyNames(Expression? expression)
     {
         ArgumentExceptionHelper.ThrowIfNull(expression);
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         var firstSegment = true;
 
-        foreach (var exp in expression!.GetExpressionChain())
+        foreach (var exp in expression.GetExpressionChain())
         {
             if (exp.NodeType == ExpressionType.Parameter)
             {
@@ -80,29 +89,34 @@ public static class Reflection
                 sb.Append('.');
             }
 
-            if (exp.NodeType == ExpressionType.Index &&
-                exp is IndexExpression indexExpression &&
-                indexExpression.Indexer is not null)
+            switch (exp.NodeType)
             {
-                sb.Append(indexExpression.Indexer.Name).Append('[');
-
-                var args = indexExpression.Arguments;
-                for (var i = 0; i < args.Count; i++)
-                {
-                    if (i != 0)
+                case ExpressionType.Index when
+                    exp is IndexExpression indexExpression &&
+                    indexExpression.Indexer is not null:
                     {
-                        sb.Append(',');
+                        sb.Append(indexExpression.Indexer.Name).Append('[');
+
+                        var args = indexExpression.Arguments;
+                        for (var i = 0; i < args.Count; i++)
+                        {
+                            if (i != 0)
+                            {
+                                sb.Append(',');
+                            }
+
+                            sb.Append(((ConstantExpression)args[i]).Value);
+                        }
+
+                        sb.Append(']');
+                        break;
                     }
 
-                    // Preserve original behavior: assumes ConstantExpression.
-                    sb.Append(((ConstantExpression)args[i]).Value);
-                }
-
-                sb.Append(']');
-            }
-            else if (exp.NodeType == ExpressionType.MemberAccess && exp is MemberExpression memberExpression)
-            {
-                sb.Append(memberExpression.Member.Name);
+                case ExpressionType.MemberAccess when exp is MemberExpression memberExpression:
+                    {
+                        sb.Append(memberExpression.Member.Name);
+                        break;
+                    }
             }
 
             firstSegment = false;
@@ -129,13 +143,13 @@ public static class Reflection
     /// Trimming note: this method does not discover members by name; it operates on an already-resolved <see cref="MemberInfo"/>.
     /// </para>
     /// </remarks>
-    public static Func<object?, object?[]?, object?>? GetValueFetcherForProperty(MemberInfo? member) // TODO: Create Test
+    public static Func<object?, object?[]?, object?>?
+        GetValueFetcherForProperty(MemberInfo? member)
     {
         ArgumentExceptionHelper.ThrowIfNull(member);
 
         if (member is FieldInfo field)
         {
-            // Delegate captures 'field' (setup-time), avoiding repeated dynamic checks.
             return (obj, _) =>
             {
                 var value = field.GetValue(obj);
@@ -143,12 +157,12 @@ public static class Reflection
             };
         }
 
-        if (member is PropertyInfo property)
+        if (member is not PropertyInfo property)
         {
-            return property.GetValue;
+            return null;
         }
 
-        return null;
+        return property.GetValue;
     }
 
     /// <summary>
@@ -159,12 +173,13 @@ public static class Reflection
     /// <returns>A delegate that takes (target, indexArguments) and returns the value.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="member"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="member"/> is not a field or property.</exception>
-    public static Func<object?, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member) // TODO: Create Test
+    public static Func<object?, object?[]?, object?> GetValueFetcherOrThrow(MemberInfo? member)
     {
         ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueFetcherForProperty(member);
-        return ret ?? throw new ArgumentException($"Type '{member!.DeclaringType}' must have a property '{member.Name}'");
+        return ret ??
+               throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>
@@ -186,7 +201,8 @@ public static class Reflection
     /// Trimming note: this method does not discover members by name; it operates on an already-resolved <see cref="MemberInfo"/>.
     /// </para>
     /// </remarks>
-    public static Action<object?, object?, object?[]?>? GetValueSetterForProperty(MemberInfo? member) // TODO: Create Test
+    public static Action<object?, object?, object?[]?>?
+        GetValueSetterForProperty(MemberInfo? member)
     {
         ArgumentExceptionHelper.ThrowIfNull(member);
 
@@ -195,12 +211,12 @@ public static class Reflection
             return (obj, val, _) => field.SetValue(obj, val);
         }
 
-        if (member is PropertyInfo property)
+        if (member is not PropertyInfo property)
         {
-            return property.SetValue;
+            return null;
         }
 
-        return null;
+        return property.SetValue;
     }
 
     /// <summary>
@@ -211,12 +227,13 @@ public static class Reflection
     /// <returns>A delegate that takes (target, value, indexArguments) and sets the value.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="member"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="member"/> is not a field or property.</exception>
-    public static Action<object?, object?, object?[]?> GetValueSetterOrThrow(MemberInfo? member) // TODO: Create Test
+    public static Action<object?, object?, object?[]?> GetValueSetterOrThrow(MemberInfo? member)
     {
         ArgumentExceptionHelper.ThrowIfNull(member);
 
         var ret = GetValueSetterForProperty(member);
-        return ret ?? throw new ArgumentException($"Type '{member!.DeclaringType}' must have a property '{member.Name}'");
+        return ret ??
+               throw new ArgumentException($"Type '{member.DeclaringType}' must have a property '{member.Name}'");
     }
 
     /// <summary>
@@ -234,14 +251,17 @@ public static class Reflection
     /// to express a complete trimming contract locally.
     /// </remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static bool TryGetValueForPropertyChain<TValue>(out TValue changeValue, object? current, IEnumerable<Expression> expressionChain) // TODO: Create Test
+    public static bool TryGetValueForPropertyChain<TValue>(
+        out TValue changeValue,
+        object? current,
+        IEnumerable<Expression> expressionChain)
     {
         var expressions = MaterializeExpressions(expressionChain);
         var count = expressions.Length;
 
         if (count == 0)
         {
-            throw new InvalidOperationException("Expression chain must contain at least one element.");
+            throw new InvalidOperationException(EmptyExpressionChainMessage);
         }
 
         for (var i = 0; i < count - 1; i++)
@@ -263,7 +283,10 @@ public static class Reflection
         }
 
         var lastExpression = expressions[count - 1];
-        changeValue = (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(current, lastExpression.GetArgumentsArray())!;
+        changeValue =
+            (TValue)GetValueFetcherOrThrow(lastExpression.GetMemberInfo())(
+                current,
+                lastExpression.GetArgumentsArray())!;
         return true;
     }
 
@@ -282,7 +305,10 @@ public static class Reflection
     /// element at the failing index and returns <see langword="false"/>.
     /// </remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static bool TryGetAllValuesForPropertyChain(out IObservedChange<object, object?>[] changeValues, object? current, IEnumerable<Expression> expressionChain) // TODO: Create Test
+    public static bool TryGetAllValuesForPropertyChain(
+        out IObservedChange<object, object?>[] changeValues,
+        object? current,
+        IEnumerable<Expression> expressionChain)
     {
         var expressions = MaterializeExpressions(expressionChain);
         var count = expressions.Length;
@@ -291,7 +317,7 @@ public static class Reflection
 
         if (count == 0)
         {
-            throw new InvalidOperationException("Expression chain must contain at least one element.");
+            throw new InvalidOperationException(EmptyExpressionChainMessage);
         }
 
         var currentIndex = 0;
@@ -326,6 +352,24 @@ public static class Reflection
     }
 
     /// <summary>
+    /// Based on a list of expressions, attempts to set the value of the last property in the chain, throwing on missing members.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the end value being set.</typeparam>
+    /// <param name="target">The object that starts the property chain.</param>
+    /// <param name="expressionChain">A sequence of expressions that point to properties/fields.</param>
+    /// <param name="value">The value to set on the last property in the chain.</param>
+    /// <returns>True if the value was successfully set; otherwise false.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when expressionChain is empty.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when target is null and traversal is required.</exception>
+    /// <exception cref="ArgumentException">Thrown when a required member is not settable.</exception>
+    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    public static bool TrySetValueToPropertyChain<TValue>(
+        object? target,
+        IEnumerable<Expression> expressionChain,
+        TValue value) =>
+        TrySetValueToPropertyChain(target, expressionChain, value, true);
+
+    /// <summary>
     /// Based on a list of expressions, attempts to set the value of the last property in the chain.
     /// </summary>
     /// <typeparam name="TValue">The type of the end value being set.</typeparam>
@@ -333,29 +377,33 @@ public static class Reflection
     /// <param name="expressionChain">A sequence of expressions that point to properties/fields.</param>
     /// <param name="value">The value to set on the last property in the chain.</param>
     /// <param name="shouldThrow">
-    /// If <see langword="true"/>, throw when reflection members are missing; otherwise fail softly.
+    /// If true, throw when reflection members are missing; otherwise fail softly.
     /// </param>
-    /// <returns><see langword="true"/> if the value was successfully set; otherwise <see langword="false"/>.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when <paramref name="expressionChain"/> is empty.</exception>
+    /// <returns>True if the value was successfully set; otherwise false.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when expressionChain is empty.</exception>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="target"/> is <see langword="null"/> and traversal is required.
+    /// Thrown when target is null and traversal is required.
     /// </exception>
     /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="shouldThrow"/> is <see langword="true"/> and a required member is not settable.
+    /// Thrown when shouldThrow is true and a required member is not settable.
     /// </exception>
     /// <remarks>
     /// Trimming note: this method may traverse arbitrary member chains represented by expressions; it is not possible
     /// to express a complete trimming contract locally.
     /// </remarks>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    public static bool TrySetValueToPropertyChain<TValue>(object? target, IEnumerable<Expression> expressionChain, TValue value, bool shouldThrow = true) // TODO: Create Test
+    public static bool TrySetValueToPropertyChain<TValue>(
+        object? target,
+        IEnumerable<Expression> expressionChain,
+        TValue value,
+        bool shouldThrow)
     {
         var expressions = MaterializeExpressions(expressionChain);
         var count = expressions.Length;
 
         if (count == 0)
         {
-            throw new InvalidOperationException("Expression chain must contain at least one element.");
+            throw new InvalidOperationException(EmptyExpressionChainMessage);
         }
 
         for (var i = 0; i < count - 1; i++)
@@ -368,7 +416,9 @@ public static class Reflection
 
             if (getter is not null)
             {
-                target = getter(target ?? throw new ArgumentNullException(nameof(target)), expression.GetArgumentsArray());
+                target = getter(
+                    target ?? throw new ArgumentNullException(nameof(target)),
+                    expression.GetArgumentsArray());
             }
         }
 
@@ -407,13 +457,12 @@ public static class Reflection
     /// Trimming note: resolving types by string name is inherently trimming-unfriendly unless additional metadata is preserved externally.
     /// </remarks>
     [RequiresUnreferencedCode("Resolves types by name and loads assemblies; types may be trimmed.")]
-    public static Type? ReallyFindType(string? type, bool throwOnFailure) // TODO: Create Test
+    public static Type? ReallyFindType(string? type, bool throwOnFailure)
     {
         var cache = Volatile.Read(ref _typeCache);
         if (cache is null)
         {
-            // Create inside the RUC boundary to avoid analyzer warnings from static initialization.
-            var created = new MemoizingMRUCache<string, Type?>(
+            MemoizingMRUCache<string, Type?> created = new(
                 static (typeName, _) => GetTypeHelper(typeName),
                 20);
 
@@ -439,19 +488,20 @@ public static class Reflection
     /// </remarks>
     [RequiresUnreferencedCode("Reflects over custom delegate Invoke signature; members may be trimmed.")]
     public static Type GetEventArgsTypeForEvent(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type type,
-        string? eventName) // TODO: Create Test
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type type,
+        string? eventName)
     {
         ArgumentExceptionHelper.ThrowIfNull(type);
 
         var eventInfo = type.GetRuntimeEvent(eventName!);
         if (eventInfo is null || eventInfo.EventHandlerType is null)
         {
-            throw new Exception($"Couldn't find {type.FullName}.{eventName}");
+            throw new InvalidOperationException($"Couldn't find {type.FullName}.{eventName}");
         }
 
-        // Faster and allocation-free: do not enumerate runtime methods.
-        var invoke = eventInfo.EventHandlerType.GetMethod("Invoke") ?? throw new MissingMethodException(eventInfo.EventHandlerType.FullName, "Invoke");
+        var invoke = eventInfo.EventHandlerType.GetMethod("Invoke") ??
+                     throw new MissingMethodException(eventInfo.EventHandlerType.FullName, "Invoke");
         var parameters = invoke.GetParameters();
         return parameters[1].ParameterType;
     }
@@ -468,9 +518,10 @@ public static class Reflection
     /// </remarks>
     public static void ThrowIfMethodsNotOverloaded(
         string callingTypeName,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods |
+                                    DynamicallyAccessedMemberTypes.NonPublicMethods)]
         Type targetType,
-        params string[] methodsToCheck) // TODO: Create Test
+        params string[] methodsToCheck)
     {
         ArgumentExceptionHelper.ThrowIfNull(methodsToCheck);
 
@@ -492,7 +543,7 @@ public static class Reflection
 
             if (found is null)
             {
-                throw new Exception($"Your class must implement {name} and call {callingTypeName}.{name}");
+                throw new InvalidOperationException($"Your class must implement {name} and call {callingTypeName}.{name}");
             }
         }
     }
@@ -510,7 +561,10 @@ public static class Reflection
     /// cannot express a complete trimming contract locally.
     /// </remarks>
     [RequiresUnreferencedCode("Inspects declared methods on a runtime type; members may be trimmed.")]
-    public static void ThrowIfMethodsNotOverloaded(string callingTypeName, object targetObject, params string[] methodsToCheck) // TODO: Create Test
+    public static void ThrowIfMethodsNotOverloaded(
+        string callingTypeName,
+        object targetObject,
+        params string[] methodsToCheck)
     {
         ArgumentExceptionHelper.ThrowIfNull(targetObject);
         ArgumentExceptionHelper.ThrowIfNull(methodsToCheck);
@@ -533,7 +587,8 @@ public static class Reflection
 
             if (found is null)
             {
-                throw new Exception($"Your class must implement {name} and call {callingTypeName}.{name}");
+                throw new InvalidOperationException(
+                    $"Your class must implement {name} and call {callingTypeName}.{name}");
             }
         }
     }
@@ -544,7 +599,7 @@ public static class Reflection
     /// <param name="item">The property information to check.</param>
     /// <returns><see langword="true"/> if the property is static; otherwise <see langword="false"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="item"/> is <see langword="null"/>.</exception>
-    public static bool IsStatic(this PropertyInfo item) // TODO: Create Test
+    public static bool IsStatic(this PropertyInfo item)
     {
         ArgumentExceptionHelper.ThrowIfNull(item);
 
@@ -566,13 +621,14 @@ public static class Reflection
     /// that may be trimmed; callers should preserve metadata for observed members.
     /// </remarks>
     [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-    internal static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(TViewModel? viewModel, TView view, Expression? expression)
+    public static IObservable<object> ViewModelWhenAnyValue<TView, TViewModel>(
+        TViewModel? viewModel,
+        TView view,
+        Expression? expression)
         where TView : class, IViewFor
         where TViewModel : class =>
         view.WhenAnyValue(x => x.ViewModel)
-            .Where(x => x is not null)
-            .Select(x => ((TViewModel?)x).WhenAnyDynamic(expression, y => y.Value))
-            .Switch()!;
+            .SwitchSelect(x => ((TViewModel?)x).WhenAnyDynamic(expression, y => y.Value))!;
 
     /// <summary>
     /// Attempts to resolve a type name using <see cref="Type.GetType(string, Func{AssemblyName, Assembly?}?, Func{Assembly, string, bool, Type?}?, bool)"/>
@@ -625,24 +681,25 @@ public static class Reflection
     {
         ArgumentExceptionHelper.ThrowIfNull(expressionChain);
 
-        if (expressionChain is Expression[] arr)
+        switch (expressionChain)
         {
-            return arr;
+            case Expression[] arr:
+                return arr;
+            case ICollection<Expression> coll:
+                {
+                    if (coll.Count == 0)
+                    {
+                        return [];
+                    }
+
+                    var result = new Expression[coll.Count];
+                    coll.CopyTo(result, 0);
+                    return result;
+                }
+
+            default:
+                return [.. expressionChain];
         }
-
-        if (expressionChain is ICollection<Expression> coll)
-        {
-            if (coll.Count == 0)
-            {
-                return Array.Empty<Expression>();
-            }
-
-            var result = new Expression[coll.Count];
-            coll.CopyTo(result, 0);
-            return result;
-        }
-
-        return expressionChain.ToArray();
     }
 
     /// <summary>
@@ -689,7 +746,7 @@ public static class Reflection
 
             if (expressionChain.Length == 0)
             {
-                throw new InvalidOperationException("Expression chain must contain at least one element.");
+                throw new InvalidOperationException(EmptyExpressionChainMessage);
             }
 
             _expressions = expressionChain;
@@ -833,35 +890,38 @@ public static class Reflection
         {
             ArgumentExceptionHelper.ThrowIfNull(expressionChain);
 
-            if (expressionChain.Length == 0)
+            switch (expressionChain.Length)
             {
-                throw new InvalidOperationException("Expression chain must contain at least one element.");
+                case 0:
+                    throw new InvalidOperationException(EmptyExpressionChainMessage);
+                case 1:
+                    {
+                        _parentGetters = [];
+                        _parentArguments = [];
+                        break;
+                    }
+
+                default:
+                    {
+                        var parentCount = expressionChain.Length - 1;
+                        _parentGetters = new Func<object?, object?[]?, object?>[parentCount];
+                        _parentArguments = new object?[]?[parentCount];
+
+                        for (var i = 0; i < parentCount; i++)
+                        {
+                            var expr = expressionChain[i];
+                            _parentGetters[i] = GetValueFetcherOrThrow(expr.GetMemberInfo());
+                            _parentArguments[i] = expr.GetArgumentsArray();
+                        }
+
+                        break;
+                    }
             }
 
-            if (expressionChain.Length == 1)
-            {
-                _parentGetters = Array.Empty<Func<object?, object?[]?, object?>>();
-                _parentArguments = Array.Empty<object?[]?>();
-            }
-            else
-            {
-                var parentCount = expressionChain.Length - 1;
-                _parentGetters = new Func<object?, object?[]?, object?>[parentCount];
-                _parentArguments = new object?[]?[parentCount];
-
-                for (var i = 0; i < parentCount; i++)
-                {
-                    var expr = expressionChain[i];
-                    _parentGetters[i] = GetValueFetcherOrThrow(expr.GetMemberInfo());
-                    _parentArguments[i] = expr.GetArgumentsArray();
-                }
-            }
-
-            var lastExpr = expressionChain[expressionChain.Length - 1];
+            var lastExpr = expressionChain[^1];
             _setter = GetValueSetterForProperty(lastExpr.GetMemberInfo());
             _setterArguments = lastExpr.GetArgumentsArray();
 
-            // Preserve legacy-style message format used by OrThrow helpers (type + member name).
             var member = lastExpr.GetMemberInfo();
             _unsettableMemberMessage = $"Type '{member?.DeclaringType}' must have a property '{member?.Name}'";
         }
@@ -897,7 +957,6 @@ public static class Reflection
                 current = _parentGetters[i](current, _parentArguments[i]);
                 if (current is null)
                 {
-                    // Preserve Try* semantics: intermediate nulls soft-fail; do not synthesize exceptions.
                     return false;
                 }
             }

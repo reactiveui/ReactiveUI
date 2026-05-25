@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -55,8 +58,6 @@ internal static class BindingTypeConverterDispatch
         var runtimeType = from.GetType();
         var converterFromType = converter.FromType;
 
-        // Exact pair match keeps dispatch predictable and avoids assignability ambiguity,
-        // but allow nullable<T> converters to accept boxed T values.
         if (converterFromType != runtimeType &&
             Nullable.GetUnderlyingType(converterFromType) != runtimeType)
         {
@@ -83,9 +84,11 @@ internal static class BindingTypeConverterDispatch
     /// <returns>true if the conversion was successful and the result is non-null; otherwise, false.</returns>
     internal static bool TryConvertFallback(
         IBindingFallbackConverter converter,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type fromType,
         object from,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type toType,
         object? conversionHint,
         out object? result)
     {
@@ -93,21 +96,14 @@ internal static class BindingTypeConverterDispatch
         ArgumentExceptionHelper.ThrowIfNull(from);
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
-        // Delegate to fallback converter (from is guaranteed non-null)
-        if (!converter.TryConvert(fromType, from, toType, conversionHint, out result))
+        // TryConvert is annotated [NotNullWhen(true)], so a successful conversion guarantees a non-null result.
+        var converted = converter.TryConvert(fromType, from, toType, conversionHint, out result);
+        if (!converted)
         {
             result = null;
-            return false;
         }
 
-        // Fallback converters must still guarantee a non-null result on success.
-        if (result is null)
-        {
-            result = null;
-            return false;
-        }
-
-        return true;
+        return converted;
     }
 
     /// <summary>
@@ -128,40 +124,42 @@ internal static class BindingTypeConverterDispatch
     /// <returns>true if the conversion was successful and result contains the converted value; otherwise, false.</returns>
     internal static bool TryConvertAny(
         object? converter,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type fromType,
         object? from,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type toType,
         object? conversionHint,
         out object? result)
     {
         ArgumentExceptionHelper.ThrowIfNull(toType);
 
-        if (converter is null)
+        switch (converter)
         {
-            result = null;
-            return false;
+            case null:
+                {
+                    result = null;
+                    return false;
+                }
+
+            case IBindingTypeConverter typedConverter:
+                return TryConvert(typedConverter, from, toType, conversionHint, out result);
+            case IBindingFallbackConverter fallbackConverter:
+                {
+                    if (from is null)
+                    {
+                        result = null;
+                        return false;
+                    }
+
+                    return TryConvertFallback(fallbackConverter, fromType, from, toType, conversionHint, out result);
+                }
+
+            default:
+                {
+                    result = null;
+                    return false;
+                }
         }
-
-        // Dispatch to typed converter
-        if (converter is IBindingTypeConverter typedConverter)
-        {
-            return TryConvert(typedConverter, from, toType, conversionHint, out result);
-        }
-
-        // Dispatch to fallback converter (requires non-null input)
-        if (converter is IBindingFallbackConverter fallbackConverter)
-        {
-            if (from is null)
-            {
-                result = null;
-                return false;
-            }
-
-            return TryConvertFallback(fallbackConverter, fromType, from, toType, conversionHint, out result);
-        }
-
-        // Unknown converter type
-        result = null;
-        return false;
     }
 }

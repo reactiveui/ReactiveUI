@@ -1,12 +1,24 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
 namespace ReactiveUI.Tests.Bindings.CommandBindings;
 
+/// <summary>
+/// Tests for <see cref="CreatesCommandBindingViaEvent"/> event-driven command binding behavior.
+/// </summary>
 public class CreatesCommandBindingViaEventTests
 {
+    /// <summary>
+    /// Verifies that the command is no longer executed after the binding is disposed.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_AfterDispose_DoesNotExecuteCommand()
     {
@@ -24,6 +36,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that the command's CanExecute state gates execution from the event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_ChecksCanExecute()
     {
@@ -43,6 +59,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(executionCount).IsEqualTo(1); // Should not execute when CanExecute is false
     }
 
+    /// <summary>
+    /// Verifies that multiple event raises execute the command multiple times.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_MultipleClicks_ExecutesMultipleTimes()
     {
@@ -57,9 +77,14 @@ public class CreatesCommandBindingViaEventTests
         target.RaiseClick();
         target.RaiseClick();
 
-        await Assert.That(executionCount).IsEqualTo(3);
+        const int ExpectedExecutionCount = 3;
+        await Assert.That(executionCount).IsEqualTo(ExpectedExecutionCount);
     }
 
+    /// <summary>
+    /// Verifies that the command receives the latest parameter value when the event fires.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_UpdatesParameter_UsesLatestParameter()
     {
@@ -76,6 +101,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(receivedParameter).IsEqualTo("second");
     }
 
+    /// <summary>
+    /// Verifies that raising the Click event executes the bound command.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithClickEvent_ExecutesCommand()
     {
@@ -90,6 +119,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that binding to an explicitly named event executes the command when that event fires.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithExplicitEvent_BindsToSpecifiedEvent()
     {
@@ -108,6 +141,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that raising the MouseUp event executes the bound command.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithMouseUpEvent_ExecutesCommand()
     {
@@ -122,6 +159,9 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that binding to a target with no suitable events throws an exception.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithNoEvents_Throws()
     {
@@ -133,6 +173,9 @@ public class CreatesCommandBindingViaEventTests
             binder.BindCommandToObject(command, target, Observable.Return<object?>(null)));
     }
 
+    /// <summary>
+    /// Verifies that binding to a null target throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithNullTarget_Throws()
     {
@@ -143,13 +186,19 @@ public class CreatesCommandBindingViaEventTests
             binder.BindCommandToObject<ClickableControl>(command, null, Observable.Return<object?>(null)));
     }
 
+    /// <summary>
+    /// Verifies that the configured parameter is passed to the command when the event fires.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithParameter_PassesParameterToCommand()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
         object? receivedParameter = null;
-        var command = ReactiveCommand.Create<object?>(param => receivedParameter = param, outputScheduler: ImmediateScheduler.Instance);
+        var command = ReactiveCommand.Create<object?>(
+            param => receivedParameter = param,
+            outputScheduler: ImmediateScheduler.Instance);
         var parameter = new BehaviorSubject<object?>("test");
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
@@ -158,46 +207,78 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(receivedParameter).IsEqualTo("test");
     }
 
+    /// <summary>
+    /// Verifies that the generic affinity check returns 3 for a target exposing a Click event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_Generic_WithClickEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<ClickableControl>(false);
-        await Assert.That(affinity).IsEqualTo(3);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultEvent);
     }
 
+    /// <summary>
+    /// Verifies that the generic affinity check returns 5 when an event target is requested.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_Generic_WithEventTarget_Returns5()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<ClickableControl>(true);
-        await Assert.That(affinity).IsEqualTo(5);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
     }
 
+    /// <summary>
+    /// Verifies that the affinity check returns 3 for a target exposing a Click event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithClickEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<ClickableControl>(false);
-        await Assert.That(affinity).IsEqualTo(3);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultEvent);
     }
 
+    /// <summary>
+    /// Verifies that the affinity check returns 5 when an event target is requested.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task GetAffinityForObject_WithEventTarget_Returns5()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<ClickableControl>(true);
-        await Assert.That(affinity).IsEqualTo(5);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
     }
 
+    /// <summary>
+    /// Verifies that the affinity check returns 3 for a target exposing a MouseUp event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_WithMouseUpEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<MouseUpControl>(false);
-        await Assert.That(affinity).IsEqualTo(3);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultEvent);
     }
 
+    /// <summary>
+    /// Verifies that the affinity check returns 0 for a target with no suitable events.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_WithNoEvents_Returns0()
     {
@@ -206,18 +287,26 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Verifies that binding a null command returns a non-null, disposable result.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithNullCommand_ReturnsEmptyDisposable()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControl();
 
-        var binding = binder.BindCommandToObject<ClickableControl>(null, target, Observable.Return<object?>(null));
+        var binding = binder.BindCommandToObject(null, target, Observable.Return<object?>(null));
 
         await Assert.That(binding).IsNotNull();
         binding?.Dispose(); // Should not throw
     }
 
+    /// <summary>
+    /// Verifies that binding a null command with an explicit event name returns a non-null, disposable result.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithExplicitEventAndNullCommand_ReturnsEmptyDisposable()
     {
@@ -234,6 +323,9 @@ public class CreatesCommandBindingViaEventTests
         binding?.Dispose(); // Should not throw
     }
 
+    /// <summary>
+    /// Verifies that binding with a null event name throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithNullEventName_Throws()
     {
@@ -249,6 +341,9 @@ public class CreatesCommandBindingViaEventTests
                 null!));
     }
 
+    /// <summary>
+    /// Verifies that binding with an empty event name throws an <see cref="ArgumentException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithEmptyEventName_Throws()
     {
@@ -264,6 +359,10 @@ public class CreatesCommandBindingViaEventTests
                 string.Empty));
     }
 
+    /// <summary>
+    /// Verifies that binding via explicit add/remove handler delegates executes the command on the event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithAddRemoveHandlers_ExecutesCommand()
     {
@@ -283,6 +382,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that, after disposal, an add/remove handler binding no longer executes the command.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithAddRemoveHandlers_AfterDispose_DoesNotExecute()
     {
@@ -292,11 +395,11 @@ public class CreatesCommandBindingViaEventTests
         var command = ReactiveCommand.Create(() => wasCalled = true, outputScheduler: ImmediateScheduler.Instance);
 
         using (var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
-            command,
-            target,
-            Observable.Return<object?>(null),
-            handler => target.GenericClick += handler,
-            handler => target.GenericClick -= handler))
+                   command,
+                   target,
+                   Observable.Return<object?>(null),
+                   handler => target.GenericClick += handler,
+                   handler => target.GenericClick -= handler))
         {
             // Binding active
         }
@@ -305,13 +408,19 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that an add/remove handler binding passes the configured parameter to the command.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithAddRemoveHandlers_PassesParameter()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var target = new ClickableControlWithGenericEvent();
         object? receivedParameter = null;
-        var command = ReactiveCommand.Create<object?>(param => receivedParameter = param, outputScheduler: ImmediateScheduler.Instance);
+        var command = ReactiveCommand.Create<object?>(
+            param => receivedParameter = param,
+            outputScheduler: ImmediateScheduler.Instance);
         var parameter = new BehaviorSubject<object?>("testParam");
 
         using var binding = binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
@@ -325,6 +434,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(receivedParameter).IsEqualTo("testParam");
     }
 
+    /// <summary>
+    /// Verifies that an add/remove handler binding with a null command returns a non-null, disposable result.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithAddRemoveHandlers_NullCommand_ReturnsEmptyDisposable()
     {
@@ -339,9 +452,12 @@ public class CreatesCommandBindingViaEventTests
             handler => target.GenericClick -= handler);
 
         await Assert.That(binding).IsNotNull();
-        binding?.Dispose(); // Should not throw
+        binding.Dispose(); // Should not throw
     }
 
+    /// <summary>
+    /// Verifies that an add/remove handler binding with a null target throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithAddRemoveHandlers_NullTarget_Throws()
     {
@@ -357,6 +473,9 @@ public class CreatesCommandBindingViaEventTests
                 handler => { }));
     }
 
+    /// <summary>
+    /// Verifies that an add/remove handler binding with a null add handler throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithAddRemoveHandlers_NullAddHandler_Throws()
     {
@@ -373,6 +492,9 @@ public class CreatesCommandBindingViaEventTests
                 handler => { }));
     }
 
+    /// <summary>
+    /// Verifies that an add/remove handler binding with a null remove handler throws an <see cref="ArgumentNullException"/>.
+    /// </summary>
     [Test]
     public void BindCommandToObject_WithAddRemoveHandlers_NullRemoveHandler_Throws()
     {
@@ -389,6 +511,10 @@ public class CreatesCommandBindingViaEventTests
                 null!));
     }
 
+    /// <summary>
+    /// Verifies that the EventHandler-based add/remove overload executes the command on the event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithEventHandlerOverload_ExecutesCommand()
     {
@@ -408,6 +534,10 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that the EventHandler-based overload with a null command returns a non-null, disposable result.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithEventHandlerOverload_NullCommand_ReturnsEmptyDisposable()
     {
@@ -425,6 +555,10 @@ public class CreatesCommandBindingViaEventTests
         binding.Dispose(); // Should not throw
     }
 
+    /// <summary>
+    /// Verifies that raising the TouchUpInside event executes the bound command.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithTouchUpInsideEvent_ExecutesCommand()
     {
@@ -439,39 +573,79 @@ public class CreatesCommandBindingViaEventTests
         await Assert.That(wasCalled).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that the affinity check returns 3 for a target exposing a TouchUpInside event.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_WithTouchUpInsideEvent_Returns3()
     {
         var binder = new CreatesCommandBindingViaEvent();
         var affinity = binder.GetAffinityForObject<TouchUpInsideControl>(false);
-        await Assert.That(affinity).IsEqualTo(3);
+        await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultEvent);
     }
 
-    private class ClickableControl
+    /// <summary>
+    /// Test control exposing a Click event.
+    /// </summary>
+    private sealed class ClickableControl
     {
+        /// <summary>
+        /// Occurs when the control is clicked.
+        /// </summary>
         public event EventHandler? Click;
 
+        /// <summary>
+        /// Raises the <see cref="Click"/> event.
+        /// </summary>
         public void RaiseClick() => Click?.Invoke(this, EventArgs.Empty);
     }
 
-    private class MouseUpControl
+    /// <summary>
+    /// Test control exposing a MouseUp event.
+    /// </summary>
+    private sealed class MouseUpControl
     {
+        /// <summary>
+        /// Occurs when the mouse button is released over the control.
+        /// </summary>
         public event EventHandler? MouseUp;
 
+        /// <summary>
+        /// Raises the <see cref="MouseUp"/> event.
+        /// </summary>
         public void RaiseMouseUp() => MouseUp?.Invoke(this, EventArgs.Empty);
     }
 
-    private class TouchUpInsideControl
+    /// <summary>
+    /// Test control exposing a TouchUpInside event.
+    /// </summary>
+    private sealed class TouchUpInsideControl
     {
+        /// <summary>
+        /// Occurs when a touch is released inside the control.
+        /// </summary>
         public event EventHandler? TouchUpInside;
 
+        /// <summary>
+        /// Raises the <see cref="TouchUpInside"/> event.
+        /// </summary>
         public void RaiseTouchUpInside() => TouchUpInside?.Invoke(this, EventArgs.Empty);
     }
 
-    private class ClickableControlWithGenericEvent
+    /// <summary>
+    /// Test control exposing a strongly typed generic click event.
+    /// </summary>
+    private sealed class ClickableControlWithGenericEvent
     {
+        /// <summary>
+        /// Occurs when the control is clicked.
+        /// </summary>
         public event EventHandler<EventArgs>? GenericClick;
 
+        /// <summary>
+        /// Raises the <see cref="GenericClick"/> event.
+        /// </summary>
         public void RaiseGenericClick() => GenericClick?.Invoke(this, EventArgs.Empty);
     }
 }

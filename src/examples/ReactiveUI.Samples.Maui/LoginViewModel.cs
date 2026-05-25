@@ -1,9 +1,11 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace ReactiveUI.Samples.Maui;
@@ -84,11 +86,13 @@ public class LoginViewModel : ReactiveObject, IDisposable
     /// <param name="disposing">Whether to release managed resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
+        if (!disposing)
         {
-            _cancelSignal.Dispose();
-            Login.Dispose();
-            Cancel.Dispose();
+            return;
         }
+
+        _cancelSignal.Dispose();
+        Login.Dispose();
+        Cancel.Dispose();
     }
 }

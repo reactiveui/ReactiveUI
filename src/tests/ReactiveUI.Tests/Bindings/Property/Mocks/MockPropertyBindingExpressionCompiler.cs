@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 
@@ -14,7 +17,8 @@ using Expression = System.Linq.Expressions.Expression;
 /// This mock provides configurable behavior for testing property binding expression compilation
 /// without requiring actual expression tree compilation.
 /// </remarks>
-internal class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressionCompiler
+[SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
+internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressionCompiler
 {
     private Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)>? _setThenGetFunc;
     private bool _isDirectMemberAccess;
@@ -25,37 +29,26 @@ internal class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressio
     /// Configures the return value for <see cref="CreateSetThenGet"/>.
     /// </summary>
     /// <param name="func">The function to return.</param>
-    public void SetSetThenGetFunction(Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)> func)
-    {
+    public void SetSetThenGetFunction(Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)> func) =>
         _setThenGetFunc = func;
-    }
 
     /// <summary>
     /// Configures the return value for <see cref="IsDirectMemberAccess"/>.
     /// </summary>
     /// <param name="value">True if the expression should be treated as direct member access.</param>
-    public void SetIsDirectMemberAccess(bool value)
-    {
-        _isDirectMemberAccess = value;
-    }
+    public void SetIsDirectMemberAccess(bool value) => _isDirectMemberAccess = value;
 
     /// <summary>
     /// Configures the return value for <see cref="GetExpressionChainArray"/>.
     /// </summary>
     /// <param name="chain">The expression chain to return.</param>
-    public void SetExpressionChainArray(Expression[]? chain)
-    {
-        _expressionChainArray = chain;
-    }
+    public void SetExpressionChainArray(Expression[]? chain) => _expressionChainArray = chain;
 
     /// <summary>
     /// Configures the return value for <see cref="ShouldReplayOnHostChanges"/>.
     /// </summary>
     /// <param name="value">True if values should be replayed on host changes.</param>
-    public void SetShouldReplayOnHostChanges(bool value)
-    {
-        _shouldReplayOnHostChanges = value;
-    }
+    public void SetShouldReplayOnHostChanges(bool value) => _shouldReplayOnHostChanges = value;
 
     /// <inheritdoc/>
     public Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)> CreateSetThenGet(
@@ -96,16 +89,10 @@ internal class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressio
     }
 
     /// <inheritdoc/>
-    public Expression[]? GetExpressionChainArray(Expression? expression)
-    {
-        return _expressionChainArray;
-    }
+    public Expression[]? GetExpressionChainArray(Expression? expression) => _expressionChainArray;
 
     /// <inheritdoc/>
-    public bool ShouldReplayOnHostChanges(Expression[]? hostExpressionChain)
-    {
-        return _shouldReplayOnHostChanges;
-    }
+    public bool ShouldReplayOnHostChanges(Expression[]? hostExpressionChain) => _shouldReplayOnHostChanges;
 
     /// <inheritdoc/>
     public IObservable<(bool ShouldEmit, TValue Value)> CreateDirectSetObservable<TTarget, TValue, TObs>(
@@ -128,9 +115,9 @@ internal class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressio
         var arguments = viewExpression.GetArgumentsArray();
 
         return observedChanged.Synchronize()
-                              .Select(value => setThenGet(target, value, arguments))
-                              .Where(result => result.ShouldEmit)
-                              .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
+            .Select(value => setThenGet(target, value, arguments))
+            .Where(result => result.ShouldEmit)
+            .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
     }
 
     /// <inheritdoc/>
@@ -158,8 +145,8 @@ internal class MockPropertyBindingExpressionCompiler : IPropertyBindingExpressio
         var arguments = viewExpression.GetArgumentsArray();
 
         return observedChanged.Synchronize()
-                              .Select(value => setThenGet(target, value, arguments))
-                              .Where(result => result.ShouldEmit)
-                              .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
+            .Select(value => setThenGet(target, value, arguments))
+            .Where(result => result.ShouldEmit)
+            .Select(result => (result.ShouldEmit, result.Value is null ? default! : (TValue)result.Value));
     }
 }

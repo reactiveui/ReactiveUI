@@ -1,7 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive;
+using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -78,22 +83,34 @@ namespace ReactiveUI;
 /// </param>
 public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) : IInteraction<TInput, TOutput>
 {
+    /// <summary>The ordered list of registered interaction handlers.</summary>
     private readonly List<Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>> _handlers = [];
+
+    /// <summary>Lock object used to synchronize access to the handler list.</summary>
+    #if NET9_0_OR_GREATER
+    private readonly Lock _sync = new();
+    #else
     private readonly object _sync = new();
+    #endif
+
+    /// <summary>The scheduler on which handlers are invoked.</summary>
     private readonly IScheduler _handlerScheduler = handlerScheduler ?? CurrentThreadScheduler.Instance;
+
+    /// <summary>Cached handler snapshot reused across <see cref="Handle"/> calls; invalidated when handlers change.</summary>
+    private Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>>[]? _handlersSnapshot;
 
     /// <inheritdoc/>
     public IDisposable RegisterHandler(Action<IInteractionContext<TInput, TOutput>> handler)
     {
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
+        return RegisterHandlerCore(ContentHandler);
+
         IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> interaction)
         {
             handler(interaction);
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
-
-        return RegisterHandlerCore(ContentHandler);
     }
 
     /// <inheritdoc />
@@ -101,46 +118,37 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     {
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
-        IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> interaction) =>
-            Observable.FromAsync(
-                async () =>
-                {
-                    await YieldToCurrentContext();
-                    await handler(interaction).ConfigureAwait(false);
-                });
-
         return RegisterHandlerCore(ContentHandler);
+
+        // Yield before invoking the async handler so it is not run inside the current scheduler
+        // trampoline (see #4351).
+        IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> interaction) =>
+            new TaskUnitObservable(InvokeAsync(interaction));
+
+        async Task InvokeAsync(IInteractionContext<TInput, TOutput> interaction)
+        {
+            await YieldToCurrentContext().ConfigureAwait(false);
+            await handler(interaction).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc />
-    public IDisposable RegisterHandler<TDontCare>(Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
+    public IDisposable RegisterHandler<TDontCare>(
+        Func<IInteractionContext<TInput, TOutput>, IObservable<TDontCare>> handler)
     {
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
-        IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> context) =>
-            Observable.FromAsync(() => Task.Run(() => handler(context)))
-                .SelectMany(result => result.Select(_ => Unit.Default));
-
         return RegisterHandlerCore(ContentHandler);
+
+        IObservable<Unit> ContentHandler(IInteractionContext<TInput, TOutput> context) =>
+            new ToUnitObservable<TDontCare>(handler(context));
     }
 
     /// <inheritdoc />
     public virtual IObservable<TOutput> Handle(TInput input)
     {
         var context = GenerateContext(input);
-
-        return Enumerable.Reverse(GetHandlers())
-            .ToObservable()
-            .ObserveOn(_handlerScheduler)
-            .Select(handler => Observable.Defer(() => handler(context)))
-            .Concat()
-            .TakeWhile(_ => !context.IsHandled)
-            .SelectMany(_ => Observable.Empty<TOutput>())
-            .Concat(
-                Observable.Defer(
-                    () => context.IsHandled
-                        ? Observable.Return(context.GetOutput())
-                        : Observable.Throw<TOutput>(new UnhandledInteractionException<TInput, TOutput>(this, input))));
+        return new InteractionHandleObservable<TInput, TOutput>(GetHandlers(), context, _handlerScheduler, this, input);
     }
 
     /// <summary>
@@ -153,7 +161,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     {
         lock (_sync)
         {
-            return [.. _handlers];
+            return _handlersSnapshot ??= [.. _handlers];
         }
     }
 
@@ -162,24 +170,21 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
     /// </summary>
     /// <param name="input">The input that is being passed in.</param>
     /// <returns>The interaction context.</returns>
-    protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) => new InteractionContext<TInput, TOutput>(input);
+    protected virtual IOutputContext<TInput, TOutput> GenerateContext(TInput input) =>
+        new InteractionContext<TInput, TOutput>(input);
 
-    /// <summary>
-    /// Yields through the default task scheduler so asynchronous handlers are not invoked inside the current scheduler trampoline.
-    /// </summary>
-    /// <returns>A task that completes after the current scheduler trampoline has yielded.</returns>
-    private static Task YieldToCurrentContext() => Task.Run(static () => { });
+    /// <summary>Yields once so asynchronous handlers are not invoked inside the current scheduler trampoline.</summary>
+    /// <returns>A task that completes after the current context has yielded.</returns>
+    private static async Task YieldToCurrentContext() => await Task.Yield();
 
-    /// <summary>
-    /// Registers a normalized interaction handler.
-    /// </summary>
+    /// <summary>Registers a normalized interaction handler that produces a <see cref="Unit"/> stream.</summary>
     /// <param name="contentHandler">The normalized handler.</param>
     /// <returns>A disposable which unregisters the handler.</returns>
-    private IDisposable RegisterHandlerCore(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> contentHandler)
+    private ActionDisposable RegisterHandlerCore(Func<IInteractionContext<TInput, TOutput>, IObservable<Unit>> contentHandler)
     {
         ArgumentExceptionHelper.ThrowIfNull(contentHandler);
         AddHandler(contentHandler);
-        return Disposable.Create(() => RemoveHandler(contentHandler));
+        return new(() => RemoveHandler(contentHandler));
     }
 
     /// <summary>
@@ -192,6 +197,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         lock (_sync)
         {
             _handlers.Add(handler);
+            _handlersSnapshot = null;
         }
     }
 
@@ -205,6 +211,7 @@ public class Interaction<TInput, TOutput>(IScheduler? handlerScheduler = null) :
         lock (_sync)
         {
             _handlers.Remove(handler);
+            _handlersSnapshot = null;
         }
     }
 }

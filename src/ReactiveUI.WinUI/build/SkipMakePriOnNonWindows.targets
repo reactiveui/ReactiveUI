@@ -1,0 +1,26 @@
+<Project>
+  <!-- Disables the WindowsAppSDK / MSIX PRI pipeline off-Windows so MakePri.exe (a native Windows tool that
+       crashes under Wine) is never invoked. The managed assembly still compiles, enabling reference/CI
+       validation on Linux and macOS.
+
+       AppxGeneratePriEnabled is the documented master switch: the PRI generation target only runs when it is
+       'true', and AddPriPayloadFilesToCopyToOutputDirectoryItems only runs when it is not 'false'. We force it
+       false, and also no-op the individual PRI targets directly as belt-and-suspenders in case a package sets
+       the property after this import. -->
+  <PropertyGroup>
+    <AppxGeneratePriEnabled>false</AppxGeneratePriEnabled>
+    <AppxGeneratePrisForPortableLibrariesEnabled>false</AppxGeneratePrisForPortableLibrariesEnabled>
+  </PropertyGroup>
+
+  <!-- cswinrt.exe (Microsoft.Windows.CsWinRT, pulled in transitively via WindowsAppSDK) is a native Windows
+       binary that cannot execute off-Windows ("cannot execute binary file", exit 126). CsWinRTEnabled is the
+       documented master switch the CsWinRT targets check before running the projection; force it off so the
+       managed assembly still compiles for reference/CI validation on Linux and macOS. -->
+  <PropertyGroup>
+    <CsWinRTEnabled>false</CsWinRTEnabled>
+  </PropertyGroup>
+
+  <Target Name="_GenerateProjectPriFile" />
+  <Target Name="_GenerateProjectPriFileCore" />
+  <Target Name="AddPriPayloadFilesToCopyToOutputDirectoryItems" />
+</Project>

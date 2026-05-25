@@ -1,11 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI.AOT.Tests;
 
@@ -15,6 +18,21 @@ namespace ReactiveUI.AOT.Tests;
 [NotInParallel]
 public class ComprehensiveAOTMarkupTests
 {
+    /// <summary>
+    /// The initial value used when constructing reactive properties under test.
+    /// </summary>
+    private const string InitialValue = "initial";
+
+    /// <summary>
+    /// The updated value assigned to reactive properties during the workflow tests.
+    /// </summary>
+    private const string UpdatedValue = "updated";
+
+    /// <summary>
+    /// The expected count or activation total used in assertions.
+    /// </summary>
+    private const int ExpectedCount = 2;
+
     /// <summary>
     /// Tests that ReactiveObject constructor works with AOT suppression.
     /// </summary>
@@ -43,15 +61,15 @@ public class ComprehensiveAOTMarkupTests
     public async Task ReactiveProperty_Refresh_WorksWithAOTSuppression()
     {
         var scheduler = CurrentThreadScheduler.Instance;
-        var property = new ReactiveProperty<string>("initial", scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
         var values = new List<string>();
 
         property.Subscribe(value => values.Add(value ?? string.Empty));
 
         property.Refresh(); // This calls RaisePropertyChanged which has AOT attributes
 
-        await Assert.That(values).Contains("initial");
-        await Assert.That(values).Count().IsGreaterThanOrEqualTo(2); // Initial value plus refresh
+        await Assert.That(values).Contains(InitialValue);
+        await Assert.That(values).Count().IsGreaterThanOrEqualTo(ExpectedCount); // Initial value plus refresh
 
         property.Dispose();
     }
@@ -84,7 +102,7 @@ public class ComprehensiveAOTMarkupTests
     public async Task ReactiveProperty_ComprehensiveOperations_WorkWithAOT()
     {
         var scheduler = CurrentThreadScheduler.Instance;
-        var property = new ReactiveProperty<string>("initial", scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
 
         // Test basic operations
         var valueChanges = new List<string>();
@@ -103,7 +121,7 @@ public class ComprehensiveAOTMarkupTests
         _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
-        await Assert.That(valueChanges).Contains("initial");
+        await Assert.That(valueChanges).Contains(InitialValue);
         using (Assert.Multiple())
         {
             await Assert.That(valueChanges).Contains("changed");
@@ -126,28 +144,25 @@ public class ComprehensiveAOTMarkupTests
         var source = new BehaviorSubject<string>("start");
 
         // AOT-incompatible but suppressed: ReactiveProperty creation
-        var property = new ReactiveProperty<string>("initial", scheduler, false, false);
+        var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
 
         // AOT-compatible: MessageBus usage
         var messageBus = new MessageBus();
         var messages = new List<string>();
-        messageBus.Listen<string>().Subscribe(msg => messages.Add(msg));
+        messageBus.Listen<string>().Subscribe(messages.Add);
 
         // AOT-compatible: Interactions
         var interaction = new Interaction<string, bool>();
-        interaction.RegisterHandler(context =>
-        {
-            context.SetOutput(context.Input == "test");
-        });
+        interaction.RegisterHandler(context => context.SetOutput(context.Input == "test"));
 
         // Test the workflow
-        property.Value = "updated";
+        property.Value = UpdatedValue;
         messageBus.SendMessage("workflow test");
         var result = interaction.Handle("test").Wait();
 
         using (Assert.Multiple())
         {
-            await Assert.That(property.Value).IsEqualTo("updated");
+            await Assert.That(property.Value).IsEqualTo(UpdatedValue);
             await Assert.That(messages).Contains("workflow test");
             await Assert.That(result).IsTrue();
         }
@@ -175,8 +190,8 @@ public class ComprehensiveAOTMarkupTests
 
         await Assert.That(helper.Value).IsEqualTo("computed");
 
-        source.OnNext("updated");
-        await Assert.That(helper.Value).IsEqualTo("updated");
+        source.OnNext(UpdatedValue);
+        await Assert.That(helper.Value).IsEqualTo(UpdatedValue);
 
         source.Dispose();
         helper.Dispose();
@@ -199,7 +214,7 @@ public class ComprehensiveAOTMarkupTests
         resolver.Register<Func<string, ReactiveProperty<string>>>(static () => static value =>
         {
             var scheduler = Locator.Current.GetService<IScheduler>();
-            return new ReactiveProperty<string>(value, scheduler, false, false);
+            return new(value, scheduler, false, false);
         });
 
         // Test resolution
@@ -263,15 +278,15 @@ public class ComprehensiveAOTMarkupTests
         viewModel.Activator.Activate();
         using (Assert.Multiple())
         {
-            await Assert.That(activationCount).IsEqualTo(2);
+            await Assert.That(activationCount).IsEqualTo(ExpectedCount);
             await Assert.That(deactivationCount).IsEqualTo(1);
         }
 
         viewModel.Activator.Deactivate();
         using (Assert.Multiple())
         {
-            await Assert.That(activationCount).IsEqualTo(2);
-            await Assert.That(deactivationCount).IsEqualTo(2);
+            await Assert.That(activationCount).IsEqualTo(ExpectedCount);
+            await Assert.That(deactivationCount).IsEqualTo(ExpectedCount);
         }
     }
 
@@ -287,7 +302,7 @@ public class ComprehensiveAOTMarkupTests
         var errors = new List<Exception>();
 
         // Subscribe to thrown exceptions (tests ReactiveObject error handling)
-        property.ThrownExceptions.Subscribe(ex => errors.Add(ex));
+        property.ThrownExceptions.Subscribe(errors.Add);
 
         // Test validation errors
         var validationErrors = new List<string>();

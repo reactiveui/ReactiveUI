@@ -1,2975 +1,662 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using Splat.Builder;
+using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-public class BuilderInstanceMixinsTests
+/// <summary>
+/// Tests for the instance- and extension-based WithInstance overloads on the builder.
+/// </summary>
+public partial class BuilderInstanceMixinsTests
 {
-    [Test]
-    public async Task Builder_WithInstance_1_Type_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        builder.WithInstance<InstanceService01>((s1) => { captured1 = s1; });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_1_Type_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01>((_) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_1_Type_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        builder.WithInstance<InstanceService01>((s1) => { captured1 = s1; });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_1_Type_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01>((_) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_2_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_2_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_2_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_2_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_3_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-            captured3 = s3;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_3_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_3_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-            captured3 = s3;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_3_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_4_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-            captured3 = s3;
-            captured4 = s4;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_4_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
-            invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_4_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
-        {
-            captured1 = s1;
-            captured2 = s2;
-            captured3 = s3;
-            captured4 = s4;
-        });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_4_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
-            invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_5_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04,
-                InstanceService05>((s1, s2, s3, s4, s5) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_5_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04,
-                InstanceService05>((_, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_5_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04,
-                InstanceService05>((s1, s2, s3, s4, s5) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_5_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04,
-                InstanceService05>((_, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_6_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06>((s1, s2, s3, s4, s5, s6) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_6_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06>((_, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_6_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06>((s1, s2, s3, s4, s5, s6) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_6_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06>((_, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_7_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07>((s1, s2, s3, s4, s5, s6, s7) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_7_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07>((_, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_7_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07>((s1, s2, s3, s4, s5, s6, s7) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_7_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07>((_, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_8_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08>((s1, s2, s3, s4, s5, s6, s7, s8) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_8_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08>((_, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_8_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08>((s1, s2, s3, s4, s5, s6, s7, s8) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_8_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08>((_, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_9_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09>((s1, s2, s3, s4, s5, s6, s7, s8, s9) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_9_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08,
-                InstanceService09>((_, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_9_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09>((s1, s2, s3, s4, s5, s6, s7, s8, s9) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_9_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08,
-                InstanceService09>((_, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_10_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09,
-                InstanceService10>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_10_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09,
-                InstanceService10>((_, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_10_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09,
-                InstanceService10>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_10_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09,
-                InstanceService10>((_, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_11_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_11_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11>((_, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_11_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_11_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11>((_, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_12_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_12_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12>((_, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_12_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_12_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12>((_, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_13_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_13_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13>((_, _, _, _, _, _, _, _, _, _, _, _, _) =>
-                                                                             invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_13_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_13_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13>((_, _, _, _, _, _, _, _, _, _, _, _, _) =>
-                                                                             invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_14_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_14_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14>((_, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_14_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_14_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14>((_, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_15_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(
-                                  s15,
-                                  typeof(InstanceService15));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        InstanceService15? captured15 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14,
-                InstanceService15>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-                captured15 = s15;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-        await Assert.That(captured15).IsSameReferenceAs(s15);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_15_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14,
-                InstanceService15>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_15_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(
-                                  s15,
-                                  typeof(InstanceService15));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        InstanceService15? captured15 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14,
-                InstanceService15>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-                captured15 = s15;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-        await Assert.That(captured15).IsSameReferenceAs(s15);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_15_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14,
-                InstanceService15>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_16_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(
-                                  s15,
-                                  typeof(InstanceService15));
-        var s16 = new InstanceService16();
-        resolver.RegisterConstant(
-                                  s16,
-                                  typeof(InstanceService16));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        InstanceService15? captured15 = null;
-        InstanceService16? captured16 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15,
-                InstanceService16>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-                captured15 = s15;
-                captured16 = s16;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-        await Assert.That(captured15).IsSameReferenceAs(s15);
-        await Assert.That(captured16).IsSameReferenceAs(s16);
-    }
-
-    [Test]
-    public async Task Builder_WithInstance_16_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15,
-                InstanceService16>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_16_Types_invokes_action()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = resolver.CreateReactiveUIBuilder();
-        var s1 = new InstanceService01();
-        resolver.RegisterConstant(
-                                  s1,
-                                  typeof(InstanceService01));
-        var s2 = new InstanceService02();
-        resolver.RegisterConstant(
-                                  s2,
-                                  typeof(InstanceService02));
-        var s3 = new InstanceService03();
-        resolver.RegisterConstant(
-                                  s3,
-                                  typeof(InstanceService03));
-        var s4 = new InstanceService04();
-        resolver.RegisterConstant(
-                                  s4,
-                                  typeof(InstanceService04));
-        var s5 = new InstanceService05();
-        resolver.RegisterConstant(
-                                  s5,
-                                  typeof(InstanceService05));
-        var s6 = new InstanceService06();
-        resolver.RegisterConstant(
-                                  s6,
-                                  typeof(InstanceService06));
-        var s7 = new InstanceService07();
-        resolver.RegisterConstant(
-                                  s7,
-                                  typeof(InstanceService07));
-        var s8 = new InstanceService08();
-        resolver.RegisterConstant(
-                                  s8,
-                                  typeof(InstanceService08));
-        var s9 = new InstanceService09();
-        resolver.RegisterConstant(
-                                  s9,
-                                  typeof(InstanceService09));
-        var s10 = new InstanceService10();
-        resolver.RegisterConstant(
-                                  s10,
-                                  typeof(InstanceService10));
-        var s11 = new InstanceService11();
-        resolver.RegisterConstant(
-                                  s11,
-                                  typeof(InstanceService11));
-        var s12 = new InstanceService12();
-        resolver.RegisterConstant(
-                                  s12,
-                                  typeof(InstanceService12));
-        var s13 = new InstanceService13();
-        resolver.RegisterConstant(
-                                  s13,
-                                  typeof(InstanceService13));
-        var s14 = new InstanceService14();
-        resolver.RegisterConstant(
-                                  s14,
-                                  typeof(InstanceService14));
-        var s15 = new InstanceService15();
-        resolver.RegisterConstant(
-                                  s15,
-                                  typeof(InstanceService15));
-        var s16 = new InstanceService16();
-        resolver.RegisterConstant(
-                                  s16,
-                                  typeof(InstanceService16));
-        builder.WithCoreServices().Build();
-
-        InstanceService01? captured1 = null;
-        InstanceService02? captured2 = null;
-        InstanceService03? captured3 = null;
-        InstanceService04? captured4 = null;
-        InstanceService05? captured5 = null;
-        InstanceService06? captured6 = null;
-        InstanceService07? captured7 = null;
-        InstanceService08? captured8 = null;
-        InstanceService09? captured9 = null;
-        InstanceService10? captured10 = null;
-        InstanceService11? captured11 = null;
-        InstanceService12? captured12 = null;
-        InstanceService13? captured13 = null;
-        InstanceService14? captured14 = null;
-        InstanceService15? captured15 = null;
-        InstanceService16? captured16 = null;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15,
-                InstanceService16>((s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16) =>
-            {
-                captured1 = s1;
-                captured2 = s2;
-                captured3 = s3;
-                captured4 = s4;
-                captured5 = s5;
-                captured6 = s6;
-                captured7 = s7;
-                captured8 = s8;
-                captured9 = s9;
-                captured10 = s10;
-                captured11 = s11;
-                captured12 = s12;
-                captured13 = s13;
-                captured14 = s14;
-                captured15 = s15;
-                captured16 = s16;
-            });
-
-        await Assert.That(captured1).IsSameReferenceAs(s1);
-        await Assert.That(captured2).IsSameReferenceAs(s2);
-        await Assert.That(captured3).IsSameReferenceAs(s3);
-        await Assert.That(captured4).IsSameReferenceAs(s4);
-        await Assert.That(captured5).IsSameReferenceAs(s5);
-        await Assert.That(captured6).IsSameReferenceAs(s6);
-        await Assert.That(captured7).IsSameReferenceAs(s7);
-        await Assert.That(captured8).IsSameReferenceAs(s8);
-        await Assert.That(captured9).IsSameReferenceAs(s9);
-        await Assert.That(captured10).IsSameReferenceAs(s10);
-        await Assert.That(captured11).IsSameReferenceAs(s11);
-        await Assert.That(captured12).IsSameReferenceAs(s12);
-        await Assert.That(captured13).IsSameReferenceAs(s13);
-        await Assert.That(captured14).IsSameReferenceAs(s14);
-        await Assert.That(captured15).IsSameReferenceAs(s15);
-        await Assert.That(captured16).IsSameReferenceAs(s16);
-    }
-
-    [Test]
-    public async Task Extension_WithInstance_16_Types_skips_when_null()
-    {
-        using var resolver = new ModernDependencyResolver();
-        var builder = new ReactiveUIBuilder(
-                                            resolver,
-                                            current: null);
-        builder.WithCoreServices();
-
-        var invoked = false;
-        builder
-            .WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04, InstanceService05,
-                InstanceService06, InstanceService07, InstanceService08, InstanceService09, InstanceService10,
-                InstanceService11, InstanceService12, InstanceService13, InstanceService14, InstanceService15,
-                InstanceService16>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => invoked = true);
-
-        await Assert.That(invoked).IsFalse();
-    }
+    /// <summary>
+    /// Registers nine test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices09(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+    }
+
+    /// <summary>
+    /// Registers ten test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices10(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+    }
 
+    /// <summary>
+    /// Registers eleven test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices11(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+    }
+
+    /// <summary>
+    /// Registers twelve test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    /// <param name="s12">The created instance for service 12.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices12(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11,
+        out InstanceService12 s12)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+        s12 = new();
+        resolver.RegisterConstant(s12, typeof(InstanceService12));
+    }
+
+    /// <summary>
+    /// Registers thirteen test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    /// <param name="s12">The created instance for service 12.</param>
+    /// <param name="s13">The created instance for service 13.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices13(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11,
+        out InstanceService12 s12,
+        out InstanceService13 s13)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+        s12 = new();
+        resolver.RegisterConstant(s12, typeof(InstanceService12));
+        s13 = new();
+        resolver.RegisterConstant(s13, typeof(InstanceService13));
+    }
+
+    /// <summary>
+    /// Registers fourteen test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    /// <param name="s12">The created instance for service 12.</param>
+    /// <param name="s13">The created instance for service 13.</param>
+    /// <param name="s14">The created instance for service 14.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices14(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11,
+        out InstanceService12 s12,
+        out InstanceService13 s13,
+        out InstanceService14 s14)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+        s12 = new();
+        resolver.RegisterConstant(s12, typeof(InstanceService12));
+        s13 = new();
+        resolver.RegisterConstant(s13, typeof(InstanceService13));
+        s14 = new();
+        resolver.RegisterConstant(s14, typeof(InstanceService14));
+    }
+
+    /// <summary>
+    /// Registers fifteen test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    /// <param name="s12">The created instance for service 12.</param>
+    /// <param name="s13">The created instance for service 13.</param>
+    /// <param name="s14">The created instance for service 14.</param>
+    /// <param name="s15">The created instance for service 15.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices15(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11,
+        out InstanceService12 s12,
+        out InstanceService13 s13,
+        out InstanceService14 s14,
+        out InstanceService15 s15)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+        s12 = new();
+        resolver.RegisterConstant(s12, typeof(InstanceService12));
+        s13 = new();
+        resolver.RegisterConstant(s13, typeof(InstanceService13));
+        s14 = new();
+        resolver.RegisterConstant(s14, typeof(InstanceService14));
+        s15 = new();
+        resolver.RegisterConstant(s15, typeof(InstanceService15));
+    }
+
+    /// <summary>
+    /// Registers sixteen test service instances on the resolver and returns the created instances.
+    /// </summary>
+    /// <param name="resolver">The resolver to register the services on.</param>
+    /// <param name="s1">The created instance for service 1.</param>
+    /// <param name="s2">The created instance for service 2.</param>
+    /// <param name="s3">The created instance for service 3.</param>
+    /// <param name="s4">The created instance for service 4.</param>
+    /// <param name="s5">The created instance for service 5.</param>
+    /// <param name="s6">The created instance for service 6.</param>
+    /// <param name="s7">The created instance for service 7.</param>
+    /// <param name="s8">The created instance for service 8.</param>
+    /// <param name="s9">The created instance for service 9.</param>
+    /// <param name="s10">The created instance for service 10.</param>
+    /// <param name="s11">The created instance for service 11.</param>
+    /// <param name="s12">The created instance for service 12.</param>
+    /// <param name="s13">The created instance for service 13.</param>
+    /// <param name="s14">The created instance for service 14.</param>
+    /// <param name="s15">The created instance for service 15.</param>
+    /// <param name="s16">The created instance for service 16.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "Test exercises a variadic overload.")]
+    private static void RegisterServices16(
+        ModernDependencyResolver resolver,
+        out InstanceService01 s1,
+        out InstanceService02 s2,
+        out InstanceService03 s3,
+        out InstanceService04 s4,
+        out InstanceService05 s5,
+        out InstanceService06 s6,
+        out InstanceService07 s7,
+        out InstanceService08 s8,
+        out InstanceService09 s9,
+        out InstanceService10 s10,
+        out InstanceService11 s11,
+        out InstanceService12 s12,
+        out InstanceService13 s13,
+        out InstanceService14 s14,
+        out InstanceService15 s15,
+        out InstanceService16 s16)
+    {
+        s1 = new();
+        resolver.RegisterConstant(s1, typeof(InstanceService01));
+        s2 = new();
+        resolver.RegisterConstant(s2, typeof(InstanceService02));
+        s3 = new();
+        resolver.RegisterConstant(s3, typeof(InstanceService03));
+        s4 = new();
+        resolver.RegisterConstant(s4, typeof(InstanceService04));
+        s5 = new();
+        resolver.RegisterConstant(s5, typeof(InstanceService05));
+        s6 = new();
+        resolver.RegisterConstant(s6, typeof(InstanceService06));
+        s7 = new();
+        resolver.RegisterConstant(s7, typeof(InstanceService07));
+        s8 = new();
+        resolver.RegisterConstant(s8, typeof(InstanceService08));
+        s9 = new();
+        resolver.RegisterConstant(s9, typeof(InstanceService09));
+        s10 = new();
+        resolver.RegisterConstant(s10, typeof(InstanceService10));
+        s11 = new();
+        resolver.RegisterConstant(s11, typeof(InstanceService11));
+        s12 = new();
+        resolver.RegisterConstant(s12, typeof(InstanceService12));
+        s13 = new();
+        resolver.RegisterConstant(s13, typeof(InstanceService13));
+        s14 = new();
+        resolver.RegisterConstant(s14, typeof(InstanceService14));
+        s15 = new();
+        resolver.RegisterConstant(s15, typeof(InstanceService15));
+        s16 = new();
+        resolver.RegisterConstant(s16, typeof(InstanceService16));
+    }
+
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService01;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService02;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService03;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService04;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService05;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService06;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService07;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService08;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService09;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService10;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService11;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService12;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService13;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService14;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService15;
 
+    /// <summary>
+    /// Test service type used to verify instance resolution.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Marker type for tests.")]
     private sealed class InstanceService16;
 }

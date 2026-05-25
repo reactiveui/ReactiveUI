@@ -1,10 +1,11 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Disposables;
 using System.Windows.Input;
-
+using ReactiveUI.Helpers;
 using UIKit;
 
 namespace ReactiveUI;
@@ -26,7 +27,7 @@ public static class UIControlCommandExtensions
         ArgumentExceptionHelper.ThrowIfNull(item);
         ArgumentExceptionHelper.ThrowIfNull(control);
 
-        var ev = new EventHandler((o, e) =>
+        var ev = new EventHandler((_, _) =>
         {
             if (!item.CanExecute(null))
             {
@@ -36,7 +37,7 @@ public static class UIControlCommandExtensions
             item.Execute(null);
         });
 
-        var cech = new EventHandler((o, e) => control.Enabled = item.CanExecute(null));
+        var cech = new EventHandler((_, _) => control.Enabled = item.CanExecute(null));
 
         item.CanExecuteChanged += cech;
         control.AddTarget(ev, events);

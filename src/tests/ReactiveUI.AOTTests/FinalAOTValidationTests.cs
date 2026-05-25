@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,7 +6,10 @@
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Splat;
 
 namespace ReactiveUI.AOT.Tests;
 
@@ -16,6 +19,21 @@ namespace ReactiveUI.AOT.Tests;
 /// </summary>
 public class FinalAOTValidationTests
 {
+    /// <summary>
+    /// The minimum input length used by the validation interaction.
+    /// </summary>
+    private const int MinimumInputLength = 3;
+
+    /// <summary>
+    /// The parameter value passed to the parameterized command.
+    /// </summary>
+    private const int CommandParameterValue = 42;
+
+    /// <summary>
+    /// The expected minimum number of tested features.
+    /// </summary>
+    private const int ExpectedFeatureCount = 13;
+
     /// <summary>
     /// Comprehensive test that validates all the AOT-compatible patterns work together.
     /// </summary>
@@ -35,15 +53,12 @@ public class FinalAOTValidationTests
 
         // 3. Use interactions (fully AOT-compatible)
         var interaction = new Interaction<string, bool>();
-        interaction.RegisterHandler(context =>
-        {
-            context.SetOutput(context.Input.Length > 3);
-        });
+        interaction.RegisterHandler(context => context.SetOutput(context.Input.Length > MinimumInputLength));
 
         // 4. Use message bus (fully AOT-compatible)
         var messageBus = new MessageBus();
         var messages = new List<string>();
-        messageBus.Listen<string>().Subscribe(msg => messages.Add(msg));
+        messageBus.Listen<string>().Subscribe(messages.Add);
 
         // 5. Test the complete workflow
         property.Value = "test value";
@@ -78,8 +93,12 @@ public class FinalAOTValidationTests
         // Test all types of ReactiveCommand creation
         var simpleCommand = ReactiveCommand.Create(() => "executed", outputScheduler: scheduler);
         var paramCommand = ReactiveCommand.Create<int, string>(x => $"value: {x}", outputScheduler: scheduler);
-        var taskCommand = ReactiveCommand.CreateFromTask(async () => await Task.FromResult("async result"), outputScheduler: scheduler);
-        var observableCommand = ReactiveCommand.CreateFromObservable(() => Observable.Return("observable result"), outputScheduler: scheduler);
+        var taskCommand = ReactiveCommand.CreateFromTask(
+            () => Task.FromResult("async result"),
+            outputScheduler: scheduler);
+        var observableCommand = ReactiveCommand.CreateFromObservable(
+            () => Observable.Return("observable result"),
+            outputScheduler: scheduler);
 
         // Test command execution
         var simpleResult = string.Empty;
@@ -94,7 +113,7 @@ public class FinalAOTValidationTests
 
         // Execute commands and wait for completion
         simpleCommand.Execute().Wait();
-        paramCommand.Execute(42).Wait();
+        paramCommand.Execute(CommandParameterValue).Wait();
         taskCommand.Execute().Wait();
         observableCommand.Execute().Wait();
 
@@ -179,7 +198,7 @@ public class FinalAOTValidationTests
         {
             var scheduler = Locator.Current.GetService<IScheduler>();
             var initialValue = Locator.Current.GetService<string>();
-            return new ReactiveProperty<string>(initialValue ?? string.Empty, scheduler, false, false);
+            return new(initialValue ?? string.Empty, scheduler, false, false);
         });
 
         // Test the factory
@@ -249,6 +268,6 @@ public class FinalAOTValidationTests
         };
 
         // Verify we have comprehensive coverage
-        await Assert.That(testedFeatures).Count().IsGreaterThanOrEqualTo(13);
+        await Assert.That(testedFeatures).Count().IsGreaterThanOrEqualTo(ExpectedFeatureCount);
     }
 }

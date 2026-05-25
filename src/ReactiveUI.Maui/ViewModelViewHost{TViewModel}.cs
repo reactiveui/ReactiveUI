@@ -1,9 +1,15 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
 using Microsoft.Maui.Controls;
+using ReactiveUI.Internal;
+using ReactiveUI.Maui.Internal;
+using Splat;
 
 namespace ReactiveUI.Maui;
 
@@ -17,34 +23,36 @@ namespace ReactiveUI.Maui;
 /// This is the AOT-compatible generic version of ViewModelViewHost. It uses compile-time type information
 /// to resolve views without reflection, making it safe for Native AOT and trimming scenarios.
 /// </remarks>
-public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : ContentView, IViewFor<TViewModel>
+public class ViewModelViewHost<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
+        .PublicParameterlessConstructor)]
+    TViewModel> : ContentView, IViewFor<TViewModel>
     where TViewModel : class
 {
     /// <summary>
     /// Identifies the <see cref="ViewModel"/> property.
     /// </summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
-     nameof(ViewModel),
-     typeof(TViewModel),
-     typeof(ViewModelViewHost<TViewModel>));
+        nameof(ViewModel),
+        typeof(TViewModel),
+        typeof(ViewModelViewHost<TViewModel>));
 
     /// <summary>
     /// Identifies the <see cref="DefaultContent"/> property.
     /// </summary>
     public static readonly BindableProperty DefaultContentProperty = BindableProperty.Create(
-     nameof(DefaultContent),
-     typeof(View),
-     typeof(ViewModelViewHost<TViewModel>),
-     default(View));
+        nameof(DefaultContent),
+        typeof(View),
+        typeof(ViewModelViewHost<TViewModel>));
 
     /// <summary>
     /// Identifies the <see cref="ViewContractObservable"/> property.
     /// </summary>
     public static readonly BindableProperty ViewContractObservableProperty = BindableProperty.Create(
-     nameof(ViewContractObservable),
-     typeof(IObservable<string>),
-     typeof(ViewModelViewHost<TViewModel>),
-     Observable<string>.Never);
+        nameof(ViewContractObservable),
+        typeof(IObservable<string>),
+        typeof(ViewModelViewHost<TViewModel>),
+        NeverObservable<string>.Instance);
 
     /// <summary>
     ///  The ContractFallbackByPass dependency property.
@@ -55,7 +63,14 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
         typeof(ViewModelViewHost<TViewModel>),
         false);
 
+    /// <summary>
+    /// The disposables for the view resolution subscriptions.
+    /// </summary>
     private readonly CompositeDisposable _subscriptions = [];
+
+    /// <summary>
+    /// The most recently observed view contract.
+    /// </summary>
     private string? _viewContract;
 
     /// <summary>
@@ -66,7 +81,7 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
         // NB: InUnitTestRunner also returns true in Design Mode
         if (ModeDetector.InUnitTestRunner())
         {
-            ViewContractObservable = Observable<string>.Never;
+            ViewContractObservable = NeverObservable<string>.Instance;
             return;
         }
 
@@ -82,9 +97,7 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
         set => SetValue(ViewModelProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view model whose associated view is to be displayed.
-    /// </summary>
+    /// <inheritdoc/>
     object? IViewFor.ViewModel
     {
         get => ViewModel;
@@ -115,10 +128,14 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
     /// <remarks>
     /// This property is a mere convenience so that a fixed contract can be assigned directly in XAML.
     /// </remarks>
+    [SuppressMessage(
+        "Critical Bug",
+        "S4275:Getters and setters should access the expected fields",
+        Justification = "Setter routes through ViewContractObservable; _viewContract is updated by its subscription.")]
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = Observable.Return(value);
+        set => ViewContractObservable = new ReturnObservable<string?>(value);
     }
 
     /// <summary>
@@ -171,7 +188,8 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
 
         if (viewInstance is not View castView)
         {
-            throw new InvalidOperationException($"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
+            throw new InvalidOperationException(
+                $"View '{viewInstance.GetType().FullName}' is not a subclass of '{typeof(View).FullName}'.");
         }
 
         viewInstance.ViewModel = viewModel;
@@ -192,7 +210,7 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
     [ExcludeFromCodeCoverage]
     private void InitializeViewResolution()
     {
-        ViewContractObservable = Observable<string>.Default;
+        ViewContractObservable = new ReturnObservable<string?>(null);
 
         // Observe ViewModel property changes without expression trees (AOT-friendly)
         var viewModelChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
@@ -200,18 +218,15 @@ public partial class ViewModelViewHost<[DynamicallyAccessedMembers(DynamicallyAc
             nameof(ViewModel),
             () => ViewModel);
 
-        // Combine ViewModel and ViewContractObservable streams
-        var vmAndContract = viewModelChanged.CombineLatest(
-            ViewContractObservable,
-            (vm, contract) => new { ViewModel = vm, Contract = contract });
-
-        // Subscribe directly without WhenActivated
-        vmAndContract
-            .Subscribe(x =>
-            {
-                _viewContract = x.Contract;
-                ResolveViewForViewModel(x.ViewModel, x.Contract);
-            })
+        // Combine ViewModel + ViewContractObservable and re-resolve the view, folded into one fused sink.
+        new CombineLatestSink<TViewModel?, string?>(
+                viewModelChanged,
+                ViewContractObservable,
+                (vm, contract) =>
+                {
+                    _viewContract = contract;
+                    ResolveViewForViewModel(vm, contract);
+                })
             .DisposeWith(_subscriptions);
     }
 }

@@ -1,11 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Subjects;
 using DynamicData.Binding;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.AutoPersist;
 
@@ -16,6 +21,21 @@ namespace ReactiveUI.Tests.AutoPersist;
 [NotInParallel]
 public class AutoPersistCollectionTest
 {
+    /// <summary>
+    ///     Milliseconds to advance the scheduler past initial subscription setup.
+    /// </summary>
+    private const int InitialAdvanceMilliseconds = 10;
+
+    /// <summary>
+    ///     The throttle interval, in milliseconds, used by the collection persistence tests.
+    /// </summary>
+    private const int ThrottleMilliseconds = 100;
+
+    /// <summary>
+    ///     Milliseconds to advance past the throttle interval to allow a save to fire.
+    /// </summary>
+    private const int PastThrottleMilliseconds = 110;
+
     /// <summary>
     ///     Tests that disposing AutoPersistCollection stops all persistence operations.
     ///     Verifies that no saves occur after disposal, even when items change or are added/removed.
@@ -36,45 +56,45 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(0);
 
         item.IsNotNullString = "Foo";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         disp.Dispose();
 
         fixture.Clear();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         item.IsNotNullString = "Bar";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.Add(item);
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Baz";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.SuspendNotifications().Dispose();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Bamf";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.RemoveAt(0);
         item.IsNotNullString = "Blomf";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
     }
 
@@ -97,18 +117,18 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         fixture.Add(item);
         fixture.Add(item);
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
 
         await Assert.That(timesSaved).IsEqualTo(1);
     }
@@ -122,6 +142,8 @@ public class AutoPersistCollectionTest
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task AutoPersistCollection_Lifecycle_ManagesPersistence()
     {
+        const int ExpectedSavesAfterReAdd = 2;
+        const int ExpectedSavesAfterReset = 3;
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var manualSave = new Subject<Unit>();
@@ -133,43 +155,43 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(0);
 
         item.IsNotNullString = "Foo";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.Clear();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Bar";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.Add(item);
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Baz";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
-        await Assert.That(timesSaved).IsEqualTo(2);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+        await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReAdd);
 
         fixture.SuspendNotifications().Dispose();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Bamf";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
-        await Assert.That(timesSaved).IsEqualTo(3);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+        await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReset);
 
         fixture.RemoveAt(0);
         item.IsNotNullString = "Blomf";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
-        await Assert.That(timesSaved).IsEqualTo(3);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+        await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReset);
     }
 
     /// <summary>
@@ -192,16 +214,16 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
             manualSave,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(0);
 
         manualSave.OnNext(Unit.Default);
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
     }
 
@@ -225,16 +247,16 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
-            Observable<Unit>.Never,
+            NeverObservable<Unit>.Instance,
             metadataProvider,
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Test";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
     }
 
@@ -247,6 +269,7 @@ public class AutoPersistCollectionTest
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task AutoPersistCollection_Reset_ContinuesPersistence()
     {
+        const int ExpectedSavesAfterReset = 2;
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var item = new TestFixture();
@@ -257,21 +280,21 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return Observables.Unit;
+                return SingleValueObservable.Unit;
             },
-            TimeSpan.FromMilliseconds(100));
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Before";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
         fixture.SuspendNotifications().Dispose();
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(10));
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "After";
-        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(110));
-        await Assert.That(timesSaved).IsEqualTo(2);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+        await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReset);
     }
 }

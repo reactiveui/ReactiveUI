@@ -1,12 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-
+using System.ComponentModel;
+using System.Reactive.Subjects;
 using Foundation;
-
+using ReactiveUI.Helpers;
 using UIKit;
 
 namespace ReactiveUI;
@@ -20,8 +21,13 @@ namespace ReactiveUI;
 /// <typeparam name="TSource">The source type.</typeparam>
 public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNotifyPropertyChanged<ReactiveTableViewSource<TSource>>, IHandleObservableErrors, IReactiveObject
 {
+    /// <summary>The common reactive source that manages section data and drives table view updates.</summary>
     private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
+
+    /// <summary>The subject that publishes items whenever a table view row is selected.</summary>
     private readonly Subject<object?> _elementSelected = new();
+
+    /// <summary>The adapter that bridges the UITableView with the reactive source.</summary>
     private readonly UITableViewAdapter _adapter;
 
     /// <summary>
@@ -31,8 +37,20 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <param name="collection">The collection.</param>
     /// <param name="cellKey">The cell key.</param>
     /// <param name="sizeHint">The size hint.</param>
+    public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint)
+        : this(tableView, collection, cellKey, sizeHint, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
+    /// </summary>
+    /// <param name="tableView">The table view.</param>
+    /// <param name="collection">The collection.</param>
+    /// <param name="cellKey">The cell key.</param>
+    /// <param name="sizeHint">The size hint.</param>
     /// <param name="initializeCellAction">The initialize cell action.</param>
-    public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction = null)
+    public ReactiveTableViewSource(UITableView tableView, INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<UITableViewCell>? initializeCellAction)
         : this(tableView) =>
         Data = [new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)
         ];

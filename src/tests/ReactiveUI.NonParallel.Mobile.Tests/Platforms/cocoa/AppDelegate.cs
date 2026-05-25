@@ -23,7 +23,15 @@ namespace ReactiveUI.Tests
     public partial class AppDelegate : UIApplicationDelegate
     {
         // class-level declarations
+
+        /// <summary>
+        /// The application window.
+        /// </summary>
         UIWindow window;
+
+        /// <summary>
+        /// The touch runner that hosts the test runner UI.
+        /// </summary>
         TouchRunner runner;
 
         //

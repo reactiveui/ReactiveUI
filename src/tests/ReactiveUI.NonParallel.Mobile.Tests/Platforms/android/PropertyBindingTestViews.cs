@@ -24,6 +24,9 @@ namespace ReactiveUI.Tests
     /// </summary>
     public class PropertyBindView : ReactiveFragment<PropertyBindViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyBindView"/> class.
+        /// </summary>
         public PropertyBindView()
         {
             SomeTextBox = new TextView(Application.Context);
@@ -52,8 +55,19 @@ namespace ReactiveUI.Tests
     /// </summary>
     public class PropertyBindFakeControl : ReactiveFragment, INotifyPropertyChanged
     {
+        /// <summary>
+        /// The backing field for the nullable double.
+        /// </summary>
         private double? _NullableDouble;
+
+        /// <summary>
+        /// The backing field for the just a double value.
+        /// </summary>
         private double _JustADouble;
+
+        /// <summary>
+        /// The backing field for the null hating string.
+        /// </summary>
         private string _NullHatingString = string.Empty;
 
         /// <summary>

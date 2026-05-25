@@ -1,11 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
 using Splat.Builder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Locator;
 
@@ -31,7 +34,7 @@ public class ViewLocatorTests
         AppBuilder.ResetBuilderStateForTests();
 
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.ConfigureViewLocator(locator => { locator.Map<TestViewModel, TestView>(() => new TestView()); });
+        builder.ConfigureViewLocator(locator => locator.Map<TestViewModel, TestView>(() => new()));
         builder.WithCoreServices().BuildApp();
 
         var current = ViewLocator.Current;
@@ -91,8 +94,7 @@ public class ViewLocatorTests
         RxAppBuilder.ResetForTesting();
         AppBuilder.ResetBuilderStateForTests();
         RxAppBuilder.CreateReactiveUIBuilder()
-            .WithCoreServices()
-            .BuildApp();
+            .WithCoreServices().BuildApp();
 
         var current2 = ViewLocator.Current;
 
@@ -156,7 +158,9 @@ public class ViewLocatorTests
     /// <summary>
     ///     Test view model used for testing view locator functionality.
     /// </summary>
-    private sealed class TestViewModel : ReactiveObject
-    {
-    }
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    private sealed class TestViewModel : ReactiveObject;
 }

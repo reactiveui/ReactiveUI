@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -7,18 +7,18 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using ReactiveUI.Maui;
-
+using Splat;
 using Splat.Builder;
-
-using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Maui.Tests.Activation;
 
 /// <summary>
 /// Tests for the activation for view fetcher.
 /// </summary>
-public sealed partial class ActivationForViewFetcherTests
+public sealed class ActivationForViewFetcherTests
 {
+    private const int PropagationDelayMilliseconds = 50;
+
     /// <summary>
     /// Verifies that a page and its child view activate and deactivate via the fetcher.
     /// </summary>
@@ -55,7 +55,7 @@ public sealed partial class ActivationForViewFetcherTests
             child.Activate();
 
             // Give the activation time to propagate
-            await Task.Delay(50);
+            await Task.Delay(PropagationDelayMilliseconds);
 
             using (Assert.Multiple())
             {
@@ -70,7 +70,7 @@ public sealed partial class ActivationForViewFetcherTests
             child.Deactivate();
 
             // Give the deactivation time to propagate
-            await Task.Delay(50);
+            await Task.Delay(PropagationDelayMilliseconds);
 
             using (Assert.Multiple())
             {

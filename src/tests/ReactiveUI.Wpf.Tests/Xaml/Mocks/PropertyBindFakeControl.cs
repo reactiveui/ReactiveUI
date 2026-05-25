@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -18,19 +18,19 @@ public class PropertyBindFakeControl : Control
     /// The null hating string property.
     /// </summary>
     public static readonly DependencyProperty NullHatingStringProperty =
-        DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new PropertyMetadata(string.Empty));
+        DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new(string.Empty));
 
     /// <summary>
     /// The nullable double property.
     /// </summary>
     public static readonly DependencyProperty NullableDoubleProperty =
-        DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new PropertyMetadata(null));
+        DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new(null));
 
     /// <summary>
     /// The just a double property.
     /// </summary>
     public static readonly DependencyProperty JustADoubleProperty =
-        DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new PropertyMetadata(0.0));
+        DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new(0.0));
 
     /// <summary>
     /// Gets or sets the nullable double.

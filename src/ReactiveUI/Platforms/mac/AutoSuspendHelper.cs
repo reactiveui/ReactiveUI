@@ -1,15 +1,19 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-
 using AppKit;
-
 using Foundation;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -89,12 +93,12 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// </exception>
     public AutoSuspendHelper(T appDelegate)
     {
-        ArgumentNullException.ThrowIfNull(appDelegate);
+        ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
         // Developer-time guard. Cache the result per delegate runtime type to avoid repeated reflection.
         EnsureMethodsNotOverloadedCached();
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
+        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
         RxSuspension.SuspensionHost.IsResuming = _isResuming;
         RxSuspension.SuspensionHost.IsUnpausing = _isUnpausing;
         RxSuspension.SuspensionHost.ShouldPersistState = _shouldPersistState;
@@ -176,6 +180,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <remarks>
     /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
     /// </remarks>
+    [SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Both lifecycle callbacks intentionally route to the same handler.")]
     public void DidHide(NSNotification notification)
     {
         ThrowIfDisposed();
@@ -252,13 +257,8 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// </summary>
     /// <exception cref="ObjectDisposedException">Thrown when the instance is disposed.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ThrowIfDisposed()
-    {
-        if (_isDisposed)
-        {
-            throw new ObjectDisposedException(nameof(AutoSuspendHelper<T>));
-        }
-    }
+    private void ThrowIfDisposed() =>
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
 
     /// <summary>
     /// Stores a process-wide cache of which delegate types have been validated for lifecycle forwarding.
@@ -269,11 +269,15 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     private static class MethodForwardingValidationCache
     {
 #if NET9_0_OR_GREATER
+        /// <summary>The synchronization primitive guarding access to <see cref="Validated"/>.</summary>
         private static readonly Lock Gate = new();
 #else
+        /// <summary>The synchronization primitive guarding access to <see cref="Validated"/>.</summary>
         private static readonly object Gate = new();
 #endif
-        private static readonly Dictionary<Type, byte> Validated = new();
+
+        /// <summary>Tracks which delegate types have already passed the lifecycle method validation check.</summary>
+        private static readonly Dictionary<Type, byte> Validated = [];
 
         /// <summary>
         /// Returns whether the specified delegate type has been validated.

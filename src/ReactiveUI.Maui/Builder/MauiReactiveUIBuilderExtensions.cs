@@ -1,22 +1,31 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Hosting;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using ReactiveUI.Maui;
+using Splat;
 
 namespace ReactiveUI.Builder;
 
 /// <summary>
 /// MAUI-specific extensions for the ReactiveUI builder.
 /// </summary>
-public static partial class MauiReactiveUIBuilderExtensions
+public static class MauiReactiveUIBuilderExtensions
 {
 #if WINUI_TARGET
-    private static readonly Lazy<IScheduler> LazyWinUIMauiMainThreadScheduler = new(() => new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current));
+    /// <summary>
+    /// The lazily-initialized scheduler that marshals work onto the WinUI/MAUI main UI thread.
+    /// </summary>
+    private static readonly Lazy<IScheduler> LazyWinUIMauiMainThreadScheduler =
+ new(() => new WaitForDispatcherScheduler(static () => DispatcherQueueScheduler.Current));
 #endif
 
     /// <summary>
@@ -54,8 +63,16 @@ public static partial class MauiReactiveUIBuilderExtensions
     /// <remarks>Use this scheduler to execute actions that must run on the main UI thread of Apple platforms,
     /// such as updating user interface elements from background operations. This property is available on macOS, iOS,
     /// and Mac Catalyst platforms.</remarks>
-    public static IScheduler AppleMainThreadScheduler { get; } = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
+    public static IScheduler AppleMainThreadScheduler { get; } =
+ new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
 #endif
+
+    /// <summary>
+    /// Configures ReactiveUI for MAUI platform with appropriate schedulers and platform services.
+    /// </summary>
+    /// <param name="builder">The builder instance.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithMaui(this IReactiveUIBuilder builder) => builder.WithMaui(null);
 
     /// <summary>
     /// Configures ReactiveUI for MAUI platform with appropriate schedulers and platform services.
@@ -63,7 +80,7 @@ public static partial class MauiReactiveUIBuilderExtensions
     /// <param name="builder">The builder instance.</param>
     /// <param name="dispatcher">The MAUI dispatcher to use for the main thread scheduler.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithMaui(this IReactiveUIBuilder builder, IDispatcher? dispatcher = null)
+    public static IReactiveUIBuilder WithMaui(this IReactiveUIBuilder builder, IDispatcher? dispatcher)
     {
         if (builder is null)
         {
@@ -85,7 +102,9 @@ public static partial class MauiReactiveUIBuilderExtensions
     /// <param name="withReactiveUIBuilder">The reactive UI builder.</param>
     /// <returns>A The builder instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">builder.</exception>
-    public static MauiAppBuilder UseReactiveUI(this MauiAppBuilder builder, Action<IReactiveUIBuilder> withReactiveUIBuilder)
+    public static MauiAppBuilder UseReactiveUI(
+        this MauiAppBuilder builder,
+        Action<IReactiveUIBuilder> withReactiveUIBuilder)
     {
         if (builder is null)
         {
@@ -120,9 +139,16 @@ public static partial class MauiReactiveUIBuilderExtensions
     /// Adds the MAUI scheduler.
     /// </summary>
     /// <param name="builder">The builder.</param>
+    /// <returns>The builder instance for chaining.</returns>
+    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder) => builder.WithMauiScheduler(null);
+
+    /// <summary>
+    /// Adds the MAUI scheduler.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
     /// <param name="dispatcher">Optional dispatcher instance to derive the scheduler from.</param>
     /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder, IDispatcher? dispatcher = null)
+    public static IReactiveUIBuilder WithMauiScheduler(this IReactiveUIBuilder builder, IDispatcher? dispatcher)
     {
         if (builder is null)
         {
@@ -154,6 +180,11 @@ public static partial class MauiReactiveUIBuilderExtensions
             .WithFallbackConverter(new ComponentModelFallbackConverter());
     }
 
+    /// <summary>
+    /// Resolves the main thread scheduler to use based on the current platform and supplied dispatcher.
+    /// </summary>
+    /// <param name="dispatcher">Optional dispatcher to derive the scheduler from.</param>
+    /// <returns>The resolved main thread scheduler.</returns>
     private static IScheduler ResolveMainThreadScheduler(IDispatcher? dispatcher)
     {
         if (dispatcher is not null)
@@ -180,18 +211,29 @@ public static partial class MauiReactiveUIBuilderExtensions
     /// <summary>
     /// Scheduler implementation that marshals work onto a provided MAUI dispatcher.
     /// </summary>
-    private sealed partial class MauiDispatcherScheduler(IDispatcher dispatcher) : LocalScheduler
+    private sealed class MauiDispatcherScheduler(IDispatcher dispatcher) : LocalScheduler
     {
+        /// <summary>
+        /// The dispatcher used to marshal scheduled work onto the MAUI main thread.
+        /// </summary>
         private readonly IDispatcher _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
 
         /// <summary>
         /// Gets the current timestamp for the scheduler.
         /// </summary>
+        [SuppressMessage(
+            "Major Code Smell",
+            "S6354:Use a testable (date) time provider",
+            Justification = "Scheduler intentionally uses real time.")]
         public override DateTimeOffset Now => DateTimeOffset.Now;
 
         /// <summary>
         /// Schedules immediate work on the dispatcher.
         /// </summary>
+        /// <typeparam name="TState">The type of the state passed to the action.</typeparam>
+        /// <param name="state">The state to pass to the action.</param>
+        /// <param name="action">The action to execute.</param>
+        /// <returns>A disposable that cancels the scheduled work.</returns>
         public override IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
             if (action is null)
@@ -199,14 +241,16 @@ public static partial class MauiReactiveUIBuilderExtensions
                 throw new ArgumentNullException(nameof(action));
             }
 
-            var disposable = new SingleAssignmentDisposable();
+            var disposable = new OnceDisposable();
 
             void Execute()
             {
-                if (!disposable.IsDisposed)
+                if (disposable.IsDisposed)
                 {
-                    disposable.Disposable = action(this, state);
+                    return;
                 }
+
+                disposable.Disposable = action(this, state);
             }
 
             if (_dispatcher.IsDispatchRequired)
@@ -224,7 +268,15 @@ public static partial class MauiReactiveUIBuilderExtensions
         /// <summary>
         /// Schedules work to execute after the specified delay.
         /// </summary>
-        public override IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
+        /// <typeparam name="TState">The type of the state passed to the action.</typeparam>
+        /// <param name="state">The state to pass to the action.</param>
+        /// <param name="dueTime">The relative delay before the action executes.</param>
+        /// <param name="action">The action to execute.</param>
+        /// <returns>A disposable that cancels the scheduled work.</returns>
+        public override IDisposable Schedule<TState>(
+            TState state,
+            TimeSpan dueTime,
+            Func<IScheduler, TState, IDisposable> action)
         {
             if (action is null)
             {
@@ -237,27 +289,29 @@ public static partial class MauiReactiveUIBuilderExtensions
                 return Schedule(state, action);
             }
 
-            var disposable = new SingleAssignmentDisposable();
+            var disposable = new OnceDisposable();
             var timer = _dispatcher.CreateTimer();
             timer.IsRepeating = false;
             timer.Interval = normalized;
 
             EventHandler? handler = null;
-            handler = (sender, args) =>
+            handler = (_, _) =>
             {
                 timer.Tick -= handler;
                 timer.Stop();
 
-                if (!disposable.IsDisposed)
+                if (disposable.IsDisposed)
                 {
-                    disposable.Disposable = action(this, state);
+                    return;
                 }
+
+                disposable.Disposable = action(this, state);
             };
 
             timer.Tick += handler;
             timer.Start();
 
-            return new CompositeDisposable(disposable, Disposable.Create(() =>
+            return new CompositeDisposable(disposable, new ActionDisposable(() =>
             {
                 timer.Tick -= handler;
                 timer.Stop();
@@ -267,7 +321,15 @@ public static partial class MauiReactiveUIBuilderExtensions
         /// <summary>
         /// Schedules work to execute at the specified absolute time.
         /// </summary>
-        public override IDisposable Schedule<TState>(TState state, DateTimeOffset dueTime, Func<IScheduler, TState, IDisposable> action) =>
+        /// <typeparam name="TState">The type of the state passed to the action.</typeparam>
+        /// <param name="state">The state to pass to the action.</param>
+        /// <param name="dueTime">The absolute time at which the action executes.</param>
+        /// <param name="action">The action to execute.</param>
+        /// <returns>A disposable that cancels the scheduled work.</returns>
+        public override IDisposable Schedule<TState>(
+            TState state,
+            DateTimeOffset dueTime,
+            Func<IScheduler, TState, IDisposable> action) =>
             Schedule(state, dueTime - Now, action);
     }
 }

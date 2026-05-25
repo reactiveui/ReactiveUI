@@ -1,15 +1,19 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Disposables.Fluent;
 using Microsoft.AspNetCore.Components;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Blazor.Internal;
 
 /// <summary>
 /// Internal helper methods for reactive Blazor components.
-/// Provides shared functionality for activation wiring, property change observation, and state management.
+/// Provides shared functionality for activation wiring and view model change reactivity.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,45 +21,12 @@ namespace ReactiveUI.Blazor.Internal;
 /// eliminating code duplication and providing a single source of truth for reactive behavior.
 /// </para>
 /// <para>
-/// Performance: All methods are optimized to minimize allocations and use static delegates where possible
-/// to avoid closure allocations. Observable creation patterns are designed for efficient subscription management.
+/// Performance: the wiring is implemented with direct event handlers and fused sinks rather than operator
+/// pipelines, minimizing allocations and giving direct control over subscription lifecycles.
 /// </para>
 /// </remarks>
 internal static class ReactiveComponentHelpers
 {
-    /// <summary>
-    /// Creates an observable that produces a <see cref="Unit"/> value for each
-    /// <see cref="INotifyPropertyChanged.PropertyChanged"/> notification raised by <paramref name="source"/>.
-    /// </summary>
-    /// <param name="source">The source object that implements <see cref="INotifyPropertyChanged"/>.</param>
-    /// <returns>
-    /// An observable sequence of <see cref="Unit"/> pulses, one for each property change notification.
-    /// </returns>
-    /// <remarks>
-    /// <para>
-    /// This method uses Observable.Create to create a highly efficient event-based observable
-    /// with direct event handler management, avoiding the overhead of Observable.FromEvent.
-    /// </para>
-    /// <para>
-    /// Performance: Observable.Create is more efficient than Observable.FromEvent as it avoids
-    /// delegate conversions and provides direct control over subscription lifecycle. The event
-    /// handler is a local function that captures minimal state, optimizing allocation overhead.
-    /// </para>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> is <see langword="null"/>.</exception>
-    public static IObservable<Unit> CreatePropertyChangedPulse(INotifyPropertyChanged source)
-    {
-        ArgumentNullException.ThrowIfNull(source);
-
-        return Observable.Create<Unit>(observer =>
-        {
-            void Handler(object? sender, PropertyChangedEventArgs e) => observer.OnNext(Unit.Default);
-
-            source.PropertyChanged += Handler;
-            return Disposable.Create(() => source.PropertyChanged -= Handler);
-        });
-    }
-
     /// <summary>
     /// Wires ReactiveUI activation semantics to the specified view model if it implements <see cref="IActivatableViewModel"/>.
     /// </summary>
@@ -63,25 +34,14 @@ internal static class ReactiveComponentHelpers
     /// <param name="viewModel">The view model to wire activation for.</param>
     /// <param name="state">The reactive component state that provides activation/deactivation observables.</param>
     /// <remarks>
-    /// <para>
-    /// This method sets up a two-way binding between the component's activation lifecycle and the view model's
-    /// <see cref="ViewModelActivator"/>. When the component is activated, the view model's activator is triggered.
-    /// When the component is deactivated, the view model's activator is deactivated.
-    /// </para>
-    /// <para>
-    /// The activation subscription is added to <see cref="ReactiveComponentState{T}.LifetimeDisposables"/> to ensure
-    /// it is disposed when the component is disposed. The deactivation subscription does not require explicit disposal
-    /// as it is a fire-and-forget operation that completes when the component is disposed.
-    /// </para>
-    /// <para>
-    /// Performance: This is a low-frequency setup operation that occurs once during component initialization.
-    /// The guard check ensures no work is done if the view model doesn't support activation.
-    /// </para>
+    /// When the component is activated, the view model's <see cref="ViewModelActivator"/> is triggered; when the
+    /// component is deactivated, the activator is deactivated. The activation subscription is tracked by
+    /// <see cref="ReactiveComponentState.LifetimeDisposables"/> so it is disposed with the component.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="viewModel"/> or <paramref name="state"/> is <see langword="null"/>.
     /// </exception>
-    public static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState<T> state)
+    public static void WireActivationIfSupported<T>(T? viewModel, ReactiveComponentState state)
         where T : class, INotifyPropertyChanged
     {
         ArgumentNullException.ThrowIfNull(state);
@@ -91,107 +51,26 @@ internal static class ReactiveComponentHelpers
             return;
         }
 
-        // Subscribe to component activation and trigger view model activation
+        // Subscribe to component activation and trigger view model activation.
         state.Activated
-            .Subscribe(_ => avm.Activator.Activate())
+            .Subscribe(new DelegateObserver<Unit>(_ => avm.Activator.Activate()))
             .DisposeWith(state.LifetimeDisposables);
 
-        // Deactivation subscription does not need disposal tracking beyond component lifetime
-        state.Deactivated.Subscribe(_ => avm.Activator.Deactivate());
+        // Deactivation subscription does not need disposal tracking beyond component lifetime.
+        state.Deactivated.Subscribe(new DelegateObserver<Unit>(_ => avm.Activator.Deactivate()));
     }
 
     /// <summary>
-    /// Creates an observable that emits the current view model (if non-null) and then emits each
-    /// subsequent non-null view model assignment.
-    /// </summary>
-    /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
-    /// <param name="getCurrentViewModel">A function that returns the current view model value.</param>
-    /// <param name="addPropertyChangedHandler">
-    /// An action that adds a handler to the <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
-    /// </param>
-    /// <param name="removePropertyChangedHandler">
-    /// An action that removes a handler from the <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
-    /// </param>
-    /// <param name="viewModelPropertyName">
-    /// The name of the view model property to observe. Typically "ViewModel".
-    /// </param>
-    /// <returns>
-    /// An observable sequence of non-null view models. Emits the current view model once (if non-null),
-    /// then emits each subsequent non-null view model assignment.
-    /// </returns>
-    /// <remarks>
-    /// <para>
-    /// This method creates a cold observable using Observable.Create. Each subscription
-    /// gets its own event handler that is properly cleaned up when the subscription is disposed.
-    /// </para>
-    /// <para>
-    /// The observable filters property changes to only emit when the view model property changes (using
-    /// ordinal string comparison for performance). Null view models are filtered out to ensure downstream
-    /// operators always receive non-null values.
-    /// </para>
-    /// <para>
-    /// Performance: Uses <see cref="StringComparison.Ordinal"/> for property name comparison, which is
-    /// the fastest string comparison method and matches the typical behavior of <see langword="nameof"/> expressions.
-    /// </para>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="getCurrentViewModel"/>, <paramref name="addPropertyChangedHandler"/>,
-    /// <paramref name="removePropertyChangedHandler"/>, or <paramref name="viewModelPropertyName"/> is <see langword="null"/>.
-    /// </exception>
-    public static IObservable<T> CreateViewModelChangedStream<T>(
-        Func<T?> getCurrentViewModel,
-        Action<PropertyChangedEventHandler> addPropertyChangedHandler,
-        Action<PropertyChangedEventHandler> removePropertyChangedHandler,
-        string viewModelPropertyName)
-        where T : class, INotifyPropertyChanged
-    {
-        ArgumentNullException.ThrowIfNull(getCurrentViewModel);
-        ArgumentNullException.ThrowIfNull(addPropertyChangedHandler);
-        ArgumentNullException.ThrowIfNull(removePropertyChangedHandler);
-        ArgumentNullException.ThrowIfNull(viewModelPropertyName);
-
-        return Observable.Create<T>(
-            observer =>
-            {
-                // Emit current value once to preserve the original "Skip(1)" behavior in consumers
-                var current = getCurrentViewModel();
-                if (current is not null)
-                {
-                    observer.OnNext(current);
-                }
-
-                // Handler for subsequent changes
-                void Handler(object? sender, PropertyChangedEventArgs e)
-                {
-                    // Use ordinal comparison for best performance; nameof() produces ordinal strings
-                    if (!string.Equals(e.PropertyName, viewModelPropertyName, StringComparison.Ordinal))
-                    {
-                        return;
-                    }
-
-                    var vm = getCurrentViewModel();
-                    if (vm is not null)
-                    {
-                        observer.OnNext(vm);
-                    }
-                }
-
-                addPropertyChangedHandler(Handler);
-                return Disposable.Create(() => removePropertyChangedHandler(Handler));
-            });
-    }
-
-    /// <summary>
-    /// Wires reactivity that triggers UI re-rendering when the view model changes or when the current
+    /// Wires reactivity that triggers UI re-rendering when the view model instance changes or when the current
     /// view model raises property changed events.
     /// </summary>
     /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
     /// <param name="getCurrentViewModel">A function that returns the current view model value.</param>
     /// <param name="addPropertyChangedHandler">
-    /// An action that adds a handler to the <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
+    /// An action that adds a handler to the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
     /// </param>
     /// <param name="removePropertyChangedHandler">
-    /// An action that removes a handler from the <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
+    /// An action that removes a handler from the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.
     /// </param>
     /// <param name="viewModelPropertyName">
     /// The name of the view model property to observe. Typically "ViewModel".
@@ -202,30 +81,14 @@ internal static class ReactiveComponentHelpers
     /// </param>
     /// <returns>
     /// A disposable that tears down all subscriptions when disposed. Should be assigned to
-    /// <see cref="ReactiveComponentState{T}.FirstRenderSubscriptions"/>.
+    /// <see cref="ReactiveComponentState.FirstRenderSubscriptions"/>.
     /// </returns>
     /// <remarks>
-    /// <para>
-    /// This method creates two subscriptions that work together to provide comprehensive UI reactivity:
-    /// 1. A subscription that triggers re-render when the view model instance changes (skipping the initial value).
-    /// 2. A subscription that triggers re-render when any property on the current view model changes.
-    /// </para>
-    /// <para>
-    /// The view model stream is created with Publish and RefCount operators
-    /// to ensure the underlying observable is shared between both subscriptions, preventing duplicate event handler registrations.
-    /// </para>
-    /// <para>
-    /// The Switch operator ensures that when the view model changes, the old view model's
-    /// property changes are automatically unsubscribed and the new view model's property changes are subscribed.
-    /// </para>
-    /// <para>
-    /// Performance: The Publish().RefCount() pattern minimizes allocations by sharing the underlying observable.
-    /// The Switch operator efficiently manages subscription lifecycle to prevent memory leaks from old view models.
-    /// </para>
+    /// Re-renders when the view model instance is reassigned (after the first assignment) and whenever the current
+    /// view model raises any property change, implemented as a single fused
+    /// <see cref="ViewModelReactivitySink{T}"/> rather than an operator pipeline.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when any parameter is <see langword="null"/>.
-    /// </exception>
+    /// <exception cref="ArgumentNullException">Thrown when any parameter is <see langword="null"/>.</exception>
     public static IDisposable WireViewModelChangeReactivity<T>(
         Func<T?> getCurrentViewModel,
         Action<PropertyChangedEventHandler> addPropertyChangedHandler,
@@ -240,31 +103,124 @@ internal static class ReactiveComponentHelpers
         ArgumentNullException.ThrowIfNull(viewModelPropertyName);
         ArgumentNullException.ThrowIfNull(stateHasChangedCallback);
 
-        // Create a shared stream of non-null view models:
-        // - Emits the current ViewModel once (if non-null)
-        // - Emits subsequent non-null ViewModel assignments
-        // The Publish().RefCount(2) pattern shares the subscription between two consumers
-        var viewModelChanged = CreateViewModelChangedStream(
-                getCurrentViewModel,
-                addPropertyChangedHandler,
-                removePropertyChangedHandler,
-                viewModelPropertyName)
-            .Publish()
-            .RefCount(2);
+        return new ViewModelReactivitySink<T>(
+            getCurrentViewModel,
+            addPropertyChangedHandler,
+            removePropertyChangedHandler,
+            viewModelPropertyName,
+            stateHasChangedCallback);
+    }
 
-        return new CompositeDisposable
+    /// <summary>
+    /// Performs the shared <c>OnInitialized</c> work for a reactive component: wires activation for the current view
+    /// model (when supported) and signals component activation.
+    /// </summary>
+    /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
+    /// <param name="viewModel">The current view model.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void HandleInitialized<T>(T? viewModel, ReactiveComponentState state)
+        where T : class, INotifyPropertyChanged
+    {
+        WireActivationIfSupported(viewModel, state);
+        state.NotifyActivated();
+    }
+
+    /// <summary>
+    /// Performs the shared first-render work for a reactive component: on the first render it wires view-model change
+    /// reactivity (stored on the state) and triggers an initial re-render to surface changes raised during activation.
+    /// </summary>
+    /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
+    /// <param name="firstRender">Whether this is the first render of the component.</param>
+    /// <param name="state">The reactive component state.</param>
+    /// <param name="getCurrentViewModel">A function returning the current view model value.</param>
+    /// <param name="addPropertyChangedHandler">Adds a handler to the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
+    /// <param name="removePropertyChangedHandler">Removes a handler from the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
+    /// <param name="stateHasChangedCallback">A callback that re-renders the component.</param>
+    public static void HandleFirstRender<T>(
+        bool firstRender,
+        ReactiveComponentState state,
+        Func<T?> getCurrentViewModel,
+        Action<PropertyChangedEventHandler> addPropertyChangedHandler,
+        Action<PropertyChangedEventHandler> removePropertyChangedHandler,
+        Action stateHasChangedCallback)
+        where T : class, INotifyPropertyChanged
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(stateHasChangedCallback);
+
+        if (!firstRender)
         {
-            // Skip the initial value to avoid an immediate extra render on first render
-            viewModelChanged
-                .Skip(1)
-                .Subscribe(_ => stateHasChangedCallback()),
+            return;
+        }
 
-            // Re-render on any ViewModel property change
-            // Switch unsubscribes from the previous ViewModel automatically when it changes
-            viewModelChanged
-                .Select(static vm => CreatePropertyChangedPulse(vm))
-                .Switch()
-                .Subscribe(_ => stateHasChangedCallback())
-        };
+        // These subscriptions are intentionally created here (not OnInitialized) due to framework interop constraints.
+        state.FirstRenderSubscriptions = WireViewModelChangeReactivity(
+            getCurrentViewModel,
+            addPropertyChangedHandler,
+            removePropertyChangedHandler,
+            nameof(IViewFor.ViewModel),
+            stateHasChangedCallback);
+
+        // Re-render to pick up any property changes that occurred during activation (OnInitialized)
+        // before these subscriptions were wired.
+        stateHasChangedCallback();
+    }
+
+    /// <summary>
+    /// Performs the shared dispose work for a reactive component: idempotently notifies deactivation and disposes the
+    /// state when disposing managed resources.
+    /// </summary>
+    /// <param name="disposed">The component's disposed flag, set to <see langword="true"/> on first call.</param>
+    /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void HandleDispose(ref bool disposed, bool disposing, ReactiveComponentState state)
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        DeactivateAndDisposeState(disposing, state);
+        disposed = true;
+    }
+
+    /// <summary>
+    /// Notifies deactivation and disposes the state when disposing managed resources. Used by components whose own
+    /// base class already provides dispose idempotency (e.g. <c>OwningComponentBase</c>).
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void DeactivateAndDisposeState(bool disposing, ReactiveComponentState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        if (!disposing)
+        {
+            return;
+        }
+
+        // Notify deactivation first so observers can perform cleanup while subscriptions are still active.
+        state.NotifyDeactivated();
+        state.Dispose();
+    }
+
+    /// <summary>
+    /// Assigns <paramref name="value"/> to <paramref name="field"/> when it differs, reporting whether a change occurred
+    /// so the caller can raise its property-changed notification.
+    /// </summary>
+    /// <typeparam name="T">The view model type.</typeparam>
+    /// <param name="field">The backing field to update.</param>
+    /// <param name="value">The new value.</param>
+    /// <returns><see langword="true"/> when the field changed; otherwise <see langword="false"/>.</returns>
+    public static bool SetIfChanged<T>(ref T? field, T? value)
+        where T : class
+    {
+        if (EqualityComparer<T?>.Default.Equals(field, value))
+        {
+            return false;
+        }
+
+        field = value;
+        return true;
     }
 }

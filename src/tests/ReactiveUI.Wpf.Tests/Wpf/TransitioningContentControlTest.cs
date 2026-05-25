@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,6 +6,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -16,6 +17,23 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class TransitioningContentControlTest
 {
+    private const int TransitionTypeCount = 5;
+    private const int TransitionDirectionCount = 4;
+    private const double OverriddenDpiScale = 1.25;
+    private const double HalfSecond = 0.5;
+    private const double OneSecond = 1.0;
+    private const double DefaultDurationSeconds = 0.3;
+    private const int NegativeSign = -1;
+    private const double ControlSize = 100;
+    private const double ButtonWidth = 100;
+    private const double ButtonHeight = 50;
+    private const string PartContainerName = "PART_Container";
+    private const string PartCurrentContentName = "PART_CurrentContentPresentationSite";
+    private const string PartPreviousImageName = "PART_PreviousImageSite";
+    private const string PresentationStatesName = "PresentationStates";
+    private const string TransitionFadeName = "Transition_Fade";
+    private const string NewContentText = "New Content";
+
     /// <summary>
     /// Tests that Transition property can be set and retrieved.
     /// </summary>
@@ -63,14 +81,14 @@ public class TransitioningContentControlTest
     {
         var control = new TransitioningContentControl
         {
-            Duration = TimeSpan.FromSeconds(0.5)
+            Duration = TimeSpan.FromSeconds(HalfSecond)
         };
 
-        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(0.5));
+        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
 
-        control.Duration = TimeSpan.FromSeconds(1.0);
+        control.Duration = TimeSpan.FromSeconds(OneSecond);
 
-        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(1.0));
+        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(OneSecond));
     }
 
     /// <summary>
@@ -191,7 +209,7 @@ public class TransitioningContentControlTest
         await Assert.That(control).IsNotNull();
         await Assert.That(control.Transition).IsEqualTo(TransitioningContentControl.TransitionType.Fade);
         await Assert.That(control.Direction).IsEqualTo(TransitioningContentControl.TransitionDirection.Left);
-        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(0.3));
+        await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(DefaultDurationSeconds));
     }
 
     /// <summary>
@@ -222,8 +240,8 @@ public class TransitioningContentControlTest
 
         var dpiScale = TransitioningContentControl.GetDpiScaleForElement(button);
 
-        await Assert.That(dpiScale.DpiScaleX).IsEqualTo(1.25);
-        await Assert.That(dpiScale.DpiScaleY).IsEqualTo(1.25);
+        await Assert.That(dpiScale.DpiScaleX).IsEqualTo(OverriddenDpiScale);
+        await Assert.That(dpiScale.DpiScaleY).IsEqualTo(OverriddenDpiScale);
 
         TransitioningContentControl.OverrideDpi = false;
     }
@@ -237,7 +255,7 @@ public class TransitioningContentControlTest
     {
         var control = new TransitioningContentControl
         {
-            Duration = TimeSpan.FromSeconds(0.5),
+            Duration = TimeSpan.FromSeconds(HalfSecond),
             Transition = TransitioningContentControl.TransitionType.Fade
         };
 
@@ -251,8 +269,8 @@ public class TransitioningContentControlTest
 
         control.SetFadeTransitionDefaults();
 
-        await Assert.That(animation1.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
-        await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
+        await Assert.That(animation1.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
+        await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
     }
 
     /// <summary>
@@ -278,9 +296,9 @@ public class TransitioningContentControlTest
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]
-    [Arguments(TransitioningContentControl.TransitionDirection.Down, -1)]
+    [Arguments(TransitioningContentControl.TransitionDirection.Down, NegativeSign)]
     [Arguments(TransitioningContentControl.TransitionDirection.Up, 1)]
-    [Arguments(TransitioningContentControl.TransitionDirection.Right, -1)]
+    [Arguments(TransitioningContentControl.TransitionDirection.Right, NegativeSign)]
     [Arguments(TransitioningContentControl.TransitionDirection.Left, 1)]
     public async Task SetSlideTransitionDefaults_WithDirection_SetsCorrectFromValue(
         TransitioningContentControl.TransitionDirection direction,
@@ -290,14 +308,14 @@ public class TransitioningContentControlTest
         {
             Transition = TransitioningContentControl.TransitionType.Slide,
             Direction = direction,
-            Duration = TimeSpan.FromSeconds(0.5),
-            Width = 100,
-            Height = 100
+            Duration = TimeSpan.FromSeconds(HalfSecond),
+            Width = ControlSize,
+            Height = ControlSize
         };
 
         // Force a measure and arrange to set ActualWidth/Height
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -307,9 +325,9 @@ public class TransitioningContentControlTest
 
         control.SetSlideTransitionDefaults();
 
-        await Assert.That(animation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
+        await Assert.That(animation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
 
-        var expectedValue = direction == TransitioningContentControl.TransitionDirection.Down || direction == TransitioningContentControl.TransitionDirection.Up
+        var expectedValue = direction is TransitioningContentControl.TransitionDirection.Down or TransitioningContentControl.TransitionDirection.Up
             ? expectedSign * control.ActualHeight
             : expectedSign * control.ActualWidth;
 
@@ -334,13 +352,13 @@ public class TransitioningContentControlTest
         {
             Transition = TransitioningContentControl.TransitionType.Move,
             Direction = direction,
-            Duration = TimeSpan.FromSeconds(0.5),
-            Width = 100,
-            Height = 100
+            Duration = TimeSpan.FromSeconds(HalfSecond),
+            Width = ControlSize,
+            Height = ControlSize
         };
 
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var completingAnimation = new DoubleAnimation();
@@ -352,8 +370,8 @@ public class TransitioningContentControlTest
 
         control.SetMoveTransitionDefaults();
 
-        await Assert.That(completingAnimation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
-        await Assert.That(startingAnimation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
+        await Assert.That(completingAnimation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
+        await Assert.That(startingAnimation.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
         await Assert.That(startingAnimation.To).IsNotNull();
         await Assert.That(completingAnimation.From).IsNotNull();
     }
@@ -376,12 +394,12 @@ public class TransitioningContentControlTest
         {
             Transition = TransitioningContentControl.TransitionType.Bounce,
             Direction = direction,
-            Width = 100,
-            Height = 100
+            Width = ControlSize,
+            Height = ControlSize
         };
 
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -393,7 +411,7 @@ public class TransitioningContentControlTest
 
         await Assert.That(animation.To.HasValue).IsTrue();
 
-        var isVertical = direction == TransitioningContentControl.TransitionDirection.Down || direction == TransitioningContentControl.TransitionDirection.Up;
+        var isVertical = direction is TransitioningContentControl.TransitionDirection.Down or TransitioningContentControl.TransitionDirection.Up;
         var expectedMagnitude = isVertical ? control.ActualHeight : control.ActualWidth;
 
         await Assert.That(Math.Abs(animation.To!.Value)).IsEqualTo(expectedMagnitude);
@@ -411,7 +429,7 @@ public class TransitioningContentControlTest
 
         var transitionName = control.ConfigureStandardTransition();
 
-        await Assert.That(transitionName).IsEqualTo("Transition_Fade");
+        await Assert.That(transitionName).IsEqualTo(TransitionFadeName);
     }
 
     /// <summary>
@@ -474,7 +492,7 @@ public class TransitioningContentControlTest
     public async Task PrepareTransitionImages_WithNewContent_SetsContentPresenterContent()
     {
         var control = CreateControlWithTemplateParts();
-        var newContent = new TextBlock { Text = "New Content" };
+        var newContent = new TextBlock { Text = NewContentText };
 
         control.PrepareTransitionImages(newContent);
 
@@ -504,13 +522,13 @@ public class TransitioningContentControlTest
     {
         var button = new Button
         {
-            Width = 100,
-            Height = 50,
+            Width = ButtonWidth,
+            Height = ButtonHeight,
             Content = "Test"
         };
 
-        button.Measure(new Size(100, 50));
-        button.Arrange(new Rect(0, 0, 100, 50));
+        button.Measure(new Size(ButtonWidth, ButtonHeight));
+        button.Arrange(new Rect(0, 0, ButtonWidth, ButtonHeight));
 
         TransitioningContentControl.OverrideDpi = true;
         var bitmap = TransitioningContentControl.GetRenderTargetBitmapFromUiElement(button);
@@ -554,7 +572,7 @@ public class TransitioningContentControlTest
     {
         var control = new TransitioningContentControl();
 
-        await Assert.That(() => control.GetTransitionStoryboardByName("Transition_Fade"))
+        await Assert.That(() => control.GetTransitionStoryboardByName(TransitionFadeName))
             .Throws<InvalidOperationException>();
     }
 
@@ -580,7 +598,7 @@ public class TransitioningContentControlTest
     {
         var control = CreateControlWithTemplate();
 
-        var storyboard = control.GetTransitionStoryboardByName("Transition_Fade");
+        var storyboard = control.GetTransitionStoryboardByName(TransitionFadeName);
 
         await Assert.That(storyboard).IsNotNull();
     }
@@ -603,12 +621,12 @@ public class TransitioningContentControlTest
         var control = new TransitioningContentControl
         {
             Transition = transitionType,
-            Width = 100,
-            Height = 100
+            Width = ControlSize,
+            Height = ControlSize
         };
 
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Should not throw even without storyboards set (methods check for null)
         control.SetTransitionDefaultValues();
@@ -623,14 +641,15 @@ public class TransitioningContentControlTest
     [Test]
     public async Task OnApplyTemplate_WithoutContainer_ThrowsInvalidOperationException()
     {
-        var control = new TransitioningContentControl();
-        var template = new ControlTemplate(typeof(TransitioningContentControl));
-        var grid = new FrameworkElementFactory(typeof(Grid));
-        grid.Name = "WrongName";
-        template.VisualTree = grid;
-        control.Template = template;
+        var control = new TransitioningContentControl
+        {
+            Template = new(typeof(TransitioningContentControl))
+            {
+                VisualTree = new(typeof(Grid)) { Name = "WrongName" },
+            },
+        };
 
-        await Assert.That(() => control.ApplyTemplate())
+        await Assert.That(control.ApplyTemplate)
             .Throws<InvalidOperationException>();
     }
 
@@ -641,14 +660,15 @@ public class TransitioningContentControlTest
     [Test]
     public async Task OnApplyTemplate_WithoutContentPresenter_ThrowsInvalidOperationException()
     {
-        var control = new TransitioningContentControl();
-        var template = new ControlTemplate(typeof(TransitioningContentControl));
-        var grid = new FrameworkElementFactory(typeof(Grid));
-        grid.Name = "PART_Container";
-        template.VisualTree = grid;
-        control.Template = template;
+        var control = new TransitioningContentControl
+        {
+            Template = new(typeof(TransitioningContentControl))
+            {
+                VisualTree = new(typeof(Grid)) { Name = PartContainerName },
+            },
+        };
 
-        await Assert.That(() => control.ApplyTemplate())
+        await Assert.That(control.ApplyTemplate)
             .Throws<InvalidOperationException>();
     }
 
@@ -671,9 +691,9 @@ public class TransitioningContentControlTest
     [Test]
     public async Task TransitionType_Enum_HasExpectedValues()
     {
-        var values = Enum.GetValues(typeof(TransitioningContentControl.TransitionType));
+        var values = Enum.GetValues<TransitioningContentControl.TransitionType>();
 
-        await Assert.That(values.Length).IsEqualTo(5);
+        await Assert.That(values.Length).IsEqualTo(TransitionTypeCount);
     }
 
     /// <summary>
@@ -683,9 +703,9 @@ public class TransitioningContentControlTest
     [Test]
     public async Task TransitionDirection_Enum_HasExpectedValues()
     {
-        var values = Enum.GetValues(typeof(TransitioningContentControl.TransitionDirection));
+        var values = Enum.GetValues<TransitioningContentControl.TransitionDirection>();
 
-        await Assert.That(values.Length).IsEqualTo(4);
+        await Assert.That(values.Length).IsEqualTo(TransitionDirectionCount);
     }
 
     /// <summary>
@@ -698,7 +718,7 @@ public class TransitioningContentControlTest
         var control = new TransitioningContentControl
         {
             Transition = TransitioningContentControl.TransitionType.Fade,
-            Duration = TimeSpan.FromSeconds(0.5)
+            Duration = TimeSpan.FromSeconds(HalfSecond)
         };
 
         var storyboard = new Storyboard();
@@ -710,8 +730,8 @@ public class TransitioningContentControlTest
         control.CompletingTransition = storyboard;
 
         // SetTransitionDefaultValues should have been called, setting the durations
-        await Assert.That(animation1.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
-        await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(0.5));
+        await Assert.That(animation1.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
+        await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
     }
 
     /// <summary>
@@ -725,12 +745,12 @@ public class TransitioningContentControlTest
         {
             Transition = TransitioningContentControl.TransitionType.Bounce,
             Direction = TransitioningContentControl.TransitionDirection.Down,
-            Width = 100,
-            Height = 100
+            Width = ControlSize,
+            Height = ControlSize
         };
 
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         var storyboard = new Storyboard();
         var animation = new DoubleAnimation();
@@ -750,22 +770,22 @@ public class TransitioningContentControlTest
     public async Task PrepareTransitionImages_CapturesCurrentContent()
     {
         var control = CreateControlWithTemplate();
-        control.Width = 100;
-        control.Height = 100;
-        control.Measure(new Size(100, 100));
-        control.Arrange(new Rect(0, 0, 100, 100));
+        control.Width = ControlSize;
+        control.Height = ControlSize;
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
 
         // Set initial content
-        if (control.CurrentContentPresentationSite != null)
+        if (control.CurrentContentPresentationSite is not null)
         {
             control.CurrentContentPresentationSite.Content = "Old Content";
         }
 
         // Prepare transition with new content
-        control.PrepareTransitionImages("New Content");
+        control.PrepareTransitionImages(NewContentText);
 
         // Should update to new content
-        await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo("New Content");
+        await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo(NewContentText);
     }
 
     /// <summary>
@@ -796,7 +816,7 @@ public class TransitioningContentControlTest
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]
-    [Arguments(TransitioningContentControl.TransitionType.Fade, TransitioningContentControl.TransitionDirection.Left, "Transition_Fade")]
+    [Arguments(TransitioningContentControl.TransitionType.Fade, TransitioningContentControl.TransitionDirection.Left, TransitionFadeName)]
     [Arguments(TransitioningContentControl.TransitionType.Move, TransitioningContentControl.TransitionDirection.Right, "Transition_MoveRight")]
     [Arguments(TransitioningContentControl.TransitionType.Slide, TransitioningContentControl.TransitionDirection.Up, "Transition_SlideUp")]
     [Arguments(TransitioningContentControl.TransitionType.Drop, TransitioningContentControl.TransitionDirection.Down, "Transition_DropDown")]
@@ -826,9 +846,9 @@ public class TransitioningContentControlTest
         // Don't set size - ActualWidth/Height will be 0
 
         // Should not throw even with zero size
-        control.PrepareTransitionImages("New Content");
+        control.PrepareTransitionImages(NewContentText);
 
-        await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo("New Content");
+        await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo(NewContentText);
     }
 
     /// <summary>
@@ -841,15 +861,12 @@ public class TransitioningContentControlTest
 
         // Create a minimal template with visual state groups
         var template = new ControlTemplate(typeof(TransitioningContentControl));
-        var grid = new FrameworkElementFactory(typeof(Grid));
-        grid.Name = "PART_Container";
+        var grid = new FrameworkElementFactory(typeof(Grid)) { Name = PartContainerName };
 
-        var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter));
-        contentPresenter.Name = "PART_CurrentContentPresentationSite";
+        var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter)) { Name = PartCurrentContentName };
         grid.AppendChild(contentPresenter);
 
-        var image = new FrameworkElementFactory(typeof(Image));
-        image.Name = "PART_PreviousImageSite";
+        var image = new FrameworkElementFactory(typeof(Image)) { Name = PartPreviousImageName };
         grid.AppendChild(image);
 
         template.VisualTree = grid;
@@ -857,10 +874,9 @@ public class TransitioningContentControlTest
         control.ApplyTemplate();
 
         // Set up visual state groups AFTER applying template
-        var container = control.Template.FindName("PART_Container", control) as Grid;
-        if (container != null)
+        if (control.Template.FindName(PartContainerName, control) is Grid container)
         {
-            var stateGroup = new VisualStateGroup { Name = "PresentationStates" };
+            var stateGroup = new VisualStateGroup { Name = PresentationStatesName };
 
             // Add states for all transition types
             AddTransitionStates(stateGroup);
@@ -870,8 +886,7 @@ public class TransitioningContentControlTest
 
             // Manually update the PresentationStateGroup property since OnApplyTemplate already ran
             // Get the first group with name "PresentationStates"
-            var presentationGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(g => g.Name == "PresentationStates");
-            control.PresentationStateGroup = presentationGroup;
+            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(g => g.Name == PresentationStatesName);
         }
 
         return control;
@@ -886,15 +901,12 @@ public class TransitioningContentControlTest
         var control = new TransitioningContentControl();
 
         var template = new ControlTemplate(typeof(TransitioningContentControl));
-        var grid = new FrameworkElementFactory(typeof(Grid));
-        grid.Name = "PART_Container";
+        var grid = new FrameworkElementFactory(typeof(Grid)) { Name = PartContainerName };
 
-        var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter));
-        contentPresenter.Name = "PART_CurrentContentPresentationSite";
+        var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter)) { Name = PartCurrentContentName };
         grid.AppendChild(contentPresenter);
 
-        var image = new FrameworkElementFactory(typeof(Image));
-        image.Name = "PART_PreviousImageSite";
+        var image = new FrameworkElementFactory(typeof(Image)) { Name = PartPreviousImageName };
         grid.AppendChild(image);
 
         template.VisualTree = grid;
@@ -911,19 +923,17 @@ public class TransitioningContentControlTest
     private static void AddTransitionStates(VisualStateGroup stateGroup)
     {
         // Normal state
-        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new Storyboard() });
+        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
 
         // Fade transition
         var fadeStoryboard = new Storyboard();
         fadeStoryboard.Children.Add(new DoubleAnimation());
         fadeStoryboard.Children.Add(new DoubleAnimation());
-        stateGroup.States.Add(new VisualState { Name = "Transition_Fade", Storyboard = fadeStoryboard });
+        stateGroup.States.Add(new VisualState { Name = TransitionFadeName, Storyboard = fadeStoryboard });
 
         // Add states for each direction and transition type
         var directions = new[] { "Left", "Right", "Up", "Down" };
-        var transitions = new[] { "Move", "Slide", "Drop" };
-
-        foreach (var transition in transitions)
+        foreach (var transition in new[] { "Move", "Slide", "Drop" })
         {
             foreach (var direction in directions)
             {

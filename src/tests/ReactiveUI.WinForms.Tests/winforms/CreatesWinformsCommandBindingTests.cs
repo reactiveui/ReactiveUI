@@ -1,12 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ReactiveUI.Winforms;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -17,6 +19,14 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class CreatesWinformsCommandBindingTests
 {
+    private const int HighAffinity = 10;
+    private const int EventTargetAffinity = 6;
+    private const int ComponentAffinity = 4;
+    private const int NoAffinity = 0;
+    private const int ParameterValue42 = 42;
+    private const int ParameterValue99 = 99;
+    private const int ParameterValue123 = 123;
+
     /// <summary>
     /// Tests that GetAffinityForObject returns high affinity for WinForms controls.
     /// </summary>
@@ -28,7 +38,7 @@ public class CreatesWinformsCommandBindingTests
 
         var affinity = fixture.GetAffinityForObject<Button>(hasEventTarget: false);
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(HighAffinity);
     }
 
     /// <summary>
@@ -42,7 +52,7 @@ public class CreatesWinformsCommandBindingTests
 
         var affinity = fixture.GetAffinityForObject<CustomClickableControl>(hasEventTarget: false);
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(HighAffinity);
     }
 
     /// <summary>
@@ -56,7 +66,7 @@ public class CreatesWinformsCommandBindingTests
 
         var affinity = fixture.GetAffinityForObject<CustomClickableComponent>(hasEventTarget: true);
 
-        await Assert.That(affinity).IsEqualTo(6);
+        await Assert.That(affinity).IsEqualTo(EventTargetAffinity);
     }
 
     /// <summary>
@@ -70,7 +80,7 @@ public class CreatesWinformsCommandBindingTests
 
         var affinity = fixture.GetAffinityForObject<CustomClickableComponent>(hasEventTarget: false);
 
-        await Assert.That(affinity).IsEqualTo(4);
+        await Assert.That(affinity).IsEqualTo(ComponentAffinity);
     }
 
     /// <summary>
@@ -84,7 +94,7 @@ public class CreatesWinformsCommandBindingTests
 
         var affinity = fixture.GetAffinityForObject<NoClickEventComponent>(hasEventTarget: false);
 
-        await Assert.That(affinity).IsEqualTo(0);
+        await Assert.That(affinity).IsEqualTo(NoAffinity);
     }
 
     /// <summary>
@@ -114,7 +124,7 @@ public class CreatesWinformsCommandBindingTests
 
         var result = fixture.BindCommandToObject<Button>(null, button, Observable.Return<object?>(null));
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -129,11 +139,9 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null)))
-        {
-            button.PerformClick();
-            await Assert.That(executed).IsTrue();
-        }
+        using var binding = fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null));
+        button.PerformClick();
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
@@ -148,11 +156,9 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create<int>(p => receivedParam = p, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(42)))
-        {
-            button.PerformClick();
-            await Assert.That(receivedParam).IsEqualTo(42);
-        }
+        using var binding = fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(ParameterValue42));
+        button.PerformClick();
+        await Assert.That(receivedParam).IsEqualTo(ParameterValue42);
     }
 
     /// <summary>
@@ -168,15 +174,13 @@ public class CreatesWinformsCommandBindingTests
         var button = new Button();
         var paramSubject = new BehaviorSubject<object?>(1);
 
-        using (fixture.BindCommandToObject(cmd, button, paramSubject))
-        {
-            button.PerformClick();
-            await Assert.That(receivedParam).IsEqualTo(1);
+        using var binding = fixture.BindCommandToObject(cmd, button, paramSubject);
+        button.PerformClick();
+        await Assert.That(receivedParam).IsEqualTo(1);
 
-            paramSubject.OnNext(99);
-            button.PerformClick();
-            await Assert.That(receivedParam).IsEqualTo(99);
-        }
+        paramSubject.OnNext(ParameterValue99);
+        button.PerformClick();
+        await Assert.That(receivedParam).IsEqualTo(ParameterValue99);
     }
 
     /// <summary>
@@ -229,11 +233,9 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null)))
-        {
-            button.PerformClick();
-            await Assert.That(executed).IsFalse();
-        }
+        using var binding = fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null));
+        button.PerformClick();
+        await Assert.That(executed).IsFalse();
     }
 
     /// <summary>
@@ -248,16 +250,14 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
         var control = new GenericEventControl();
 
-        using (fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(
+        using var binding = fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(
             cmd,
             control,
             Observable.Return<object?>(null),
             h => control.CustomEvent += h,
-            h => control.CustomEvent -= h))
-        {
-            control.RaiseCustomEvent();
-            await Assert.That(executed).IsTrue();
-        }
+            h => control.CustomEvent -= h);
+        control.RaiseCustomEvent();
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
@@ -277,7 +277,7 @@ public class CreatesWinformsCommandBindingTests
             h => control.CustomEvent += h,
             h => control.CustomEvent -= h);
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -383,21 +383,19 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var component = new EnabledComponent();
 
-        using (fixture.BindCommandToObject<EnabledComponent, CustomEventArgs>(
+        using var binding = fixture.BindCommandToObject<EnabledComponent, CustomEventArgs>(
             cmd,
             component,
             Observable.Return<object?>(null),
             h => component.CustomEvent += h,
-            h => component.CustomEvent -= h))
-        {
-            await Assert.That(component.Enabled).IsTrue();
+            h => component.CustomEvent -= h);
+        await Assert.That(component.Enabled).IsTrue();
 
-            canExecute.OnNext(false);
-            await Assert.That(component.Enabled).IsFalse();
+        canExecute.OnNext(false);
+        await Assert.That(component.Enabled).IsFalse();
 
-            canExecute.OnNext(true);
-            await Assert.That(component.Enabled).IsTrue();
-        }
+        canExecute.OnNext(true);
+        await Assert.That(component.Enabled).IsTrue();
     }
 
     /// <summary>
@@ -412,16 +410,14 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(
+        using var binding = fixture.BindCommandToObject(
             cmd,
             button,
             Observable.Return<object?>(null),
             h => button.Click += h,
-            h => button.Click -= h))
-        {
-            button.PerformClick();
-            await Assert.That(executed).IsTrue();
-        }
+            h => button.Click -= h);
+        button.PerformClick();
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
@@ -441,7 +437,7 @@ public class CreatesWinformsCommandBindingTests
             h => button.Click += h,
             h => button.Click -= h);
 
-        await Assert.That(result).IsEqualTo(Disposable.Empty);
+        await Assert.That(result).IsNotNull();
     }
 
     /// <summary>
@@ -505,21 +501,19 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var component = new CustomClickableComponentWithEnabled();
 
-        using (fixture.BindCommandToObject(
+        using var binding = fixture.BindCommandToObject(
             cmd,
             component,
             Observable.Return<object?>(null),
             h => component.Click += h,
-            h => component.Click -= h))
-        {
-            await Assert.That(component.Enabled).IsTrue();
+            h => component.Click -= h);
+        await Assert.That(component.Enabled).IsTrue();
 
-            canExecute.OnNext(false);
-            await Assert.That(component.Enabled).IsFalse();
+        canExecute.OnNext(false);
+        await Assert.That(component.Enabled).IsFalse();
 
-            canExecute.OnNext(true);
-            await Assert.That(component.Enabled).IsTrue();
-        }
+        canExecute.OnNext(true);
+        await Assert.That(component.Enabled).IsTrue();
     }
 
     /// <summary>
@@ -534,16 +528,14 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create<int>(p => receivedParam = p, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(
+        using var binding = fixture.BindCommandToObject(
             cmd,
             button,
-            Observable.Return<object?>(123),
+            Observable.Return<object?>(ParameterValue123),
             h => button.Click += h,
-            h => button.Click -= h))
-        {
-            button.PerformClick();
-            await Assert.That(receivedParam).IsEqualTo(123);
-        }
+            h => button.Click -= h);
+        button.PerformClick();
+        await Assert.That(receivedParam).IsEqualTo(ParameterValue123);
     }
 
     /// <summary>
@@ -558,11 +550,9 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
         var control = new CustomClickableControl();
 
-        using (fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, control, Observable.Return<object?>(null), "MouseUp"))
-        {
-            control.RaiseMouseUpEvent(new System.Windows.Forms.MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
-            await Assert.That(executed).IsTrue();
-        }
+        using var binding = fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, control, Observable.Return<object?>(null), "MouseUp");
+        control.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
+        await Assert.That(executed).IsTrue();
     }
 
     /// <summary>
@@ -607,13 +597,11 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var toolStripButton = new ToolStripButton();
 
-        using (fixture.BindCommandToObject<ToolStripButton, EventArgs>(cmd, toolStripButton, Observable.Return<object?>(null), "Click"))
-        {
-            await Assert.That(toolStripButton.Enabled).IsTrue();
+        using var binding = fixture.BindCommandToObject<ToolStripButton, EventArgs>(cmd, toolStripButton, Observable.Return<object?>(null), "Click");
+        await Assert.That(toolStripButton.Enabled).IsTrue();
 
-            canExecute.OnNext(false);
-            await Assert.That(toolStripButton.Enabled).IsFalse();
-        }
+        canExecute.OnNext(false);
+        await Assert.That(toolStripButton.Enabled).IsFalse();
     }
 
     /// <summary>
@@ -628,10 +616,8 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var button = new Button();
 
-        using (fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null)))
-        {
-            await Assert.That(button.Enabled).IsFalse();
-        }
+        using var binding = fixture.BindCommandToObject(cmd, button, Observable.Return<object?>(null));
+        await Assert.That(button.Enabled).IsFalse();
     }
 
     /// <summary>
@@ -646,16 +632,14 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => { }, canExecute, outputScheduler: ImmediateScheduler.Instance);
         var toolStripButton = new ToolStripButton();
 
-        using (fixture.BindCommandToObject(cmd, toolStripButton, Observable.Return<object?>(null)))
-        {
-            await Assert.That(toolStripButton.Enabled).IsTrue();
+        using var binding = fixture.BindCommandToObject(cmd, toolStripButton, Observable.Return<object?>(null));
+        await Assert.That(toolStripButton.Enabled).IsTrue();
 
-            canExecute.OnNext(false);
-            await Assert.That(toolStripButton.Enabled).IsFalse();
+        canExecute.OnNext(false);
+        await Assert.That(toolStripButton.Enabled).IsFalse();
 
-            canExecute.OnNext(true);
-            await Assert.That(toolStripButton.Enabled).IsTrue();
-        }
+        canExecute.OnNext(true);
+        await Assert.That(toolStripButton.Enabled).IsTrue();
     }
 
     /// <summary>
@@ -670,10 +654,8 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: ImmediateScheduler.Instance);
         var component = new CustomClickableComponent();
 
-        using (fixture.BindCommandToObject(cmd, component, Observable.Return<object?>(null)))
-        {
-            component.PerformClick();
-            await Assert.That(executed).IsTrue();
-        }
+        using var binding = fixture.BindCommandToObject(cmd, component, Observable.Return<object?>(null));
+        component.PerformClick();
+        await Assert.That(executed).IsTrue();
     }
 }

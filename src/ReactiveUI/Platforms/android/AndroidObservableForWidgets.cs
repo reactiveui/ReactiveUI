@@ -1,18 +1,17 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Runtime.Versioning;
-
 using Android.OS;
 using Android.Text;
 using Android.Views;
-using Android.Widget;
-
-using Observable = System.Reactive.Linq.Observable;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -36,12 +35,26 @@ namespace ReactiveUI;
 public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 {
     /// <summary>
+    /// The Android API level (23, Marshmallow) at which <see cref="TimePicker.Hour"/> and
+    /// <see cref="TimePicker.Minute"/> were introduced, replacing the obsolete CurrentHour/CurrentMinute members.
+    /// </summary>
+    private const int TimePickerHourMinuteApiLevel = 23;
+
+    /// <summary>
+    /// The initial capacity used for the per-property list of candidate widget types.
+    /// </summary>
+    private const int CandidateTypesInitialCapacity = 2;
+
+    /// <summary>
     /// Stores observable factory functions keyed by (widget type, property name).
     /// </summary>
     /// <remarks>
     /// This table is immutable after type initialization and is safe for concurrent reads.
     /// </remarks>
-    private static readonly FrozenDictionary<(Type ViewType, string PropertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> DispatchTable;
+    private static readonly
+        FrozenDictionary<
+            (Type ViewType, string PropertyName),
+            Func<object, Expression, IObservable<IObservedChange<object, object?>>>> DispatchTable;
 
     /// <summary>
     /// Stores, per property name, the set of widget types that can produce notifications for that property.
@@ -68,43 +81,34 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
                 static v => v.Text,
                 static (v, h) => v.TextChanged += h,
                 static (v, h) => v.TextChanged -= h),
-
             CreateFromWidget<NumberPicker, NumberPicker.ValueChangeEventArgs>(
                 static v => v.Value,
                 static (v, h) => v.ValueChanged += h,
                 static (v, h) => v.ValueChanged -= h),
-
             CreateFromWidget<RatingBar, RatingBar.RatingBarChangeEventArgs>(
                 static v => v.Rating,
                 static (v, h) => v.RatingBarChange += h,
                 static (v, h) => v.RatingBarChange -= h),
-
             CreateFromWidget<CompoundButton, CompoundButton.CheckedChangeEventArgs>(
                 static v => v.Checked,
                 static (v, h) => v.CheckedChange += h,
                 static (v, h) => v.CheckedChange -= h),
-
             CreateFromWidget<CalendarView, CalendarView.DateChangeEventArgs>(
                 static v => v.Date,
                 static (v, h) => v.DateChange += h,
                 static (v, h) => v.DateChange -= h),
-
             CreateFromWidget<TabHost, TabHost.TabChangeEventArgs>(
                 static v => v.CurrentTab,
                 static (v, h) => v.TabChanged += h,
                 static (v, h) => v.TabChanged -= h),
-
-            CreateTimePickerHourFromWidget(),
-            CreateTimePickerMinuteFromWidget(),
-            CreateFromAdapterView(),
+            CreateTimePickerHourFromWidget(), CreateTimePickerMinuteFromWidget(), CreateFromAdapterView()
         };
 
-        var dispatch =
-            new Dictionary<(Type ViewType, string PropertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>>(
-                capacity: items.Length);
+        Dictionary<(Type ViewType, string PropertyName), Func<object, Expression, IObservable<IObservedChange<object, object?>>>> dispatch =
+            new(
+                items.Length);
 
-        var byProperty =
-            new Dictionary<string, List<Type>>(capacity: items.Length, comparer: StringComparer.Ordinal);
+        Dictionary<string, List<Type>> byProperty = new(items.Length, StringComparer.Ordinal);
 
         for (var i = 0; i < items.Length; i++)
         {
@@ -119,7 +123,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
             if (!byProperty.TryGetValue(item.Property, out var list))
             {
-                list = new List<Type>(capacity: 2);
+                list = new(CandidateTypesInitialCapacity);
                 byProperty.Add(item.Property, list);
             }
 
@@ -128,24 +132,29 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
         DispatchTable = dispatch.ToFrozenDictionary();
 
-        var index = new Dictionary<string, Type[]>(byProperty.Count, StringComparer.Ordinal);
+        Dictionary<string, Type[]> index = new(byProperty.Count, StringComparer.Ordinal);
         foreach (var pair in byProperty)
         {
-            index[pair.Key] = pair.Value.ToArray();
+            index[pair.Key] = [.. pair.Value];
         }
 
         TypesByPropertyName = index.ToFrozenDictionary(StringComparer.Ordinal);
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public int GetAffinityForObject(Type type, string propertyName) =>
+        GetAffinityForObject(type, propertyName, false);
+
+    /// <inheritdoc />
     /// <remarks>
     /// This implementation does not support before-change notifications.
     /// </remarks>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-    public int GetAffinityForObject(Type type, string propertyName, bool beforeChanged = false)
+    public int GetAffinityForObject(Type? type, string propertyName, bool beforeChanged)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (beforeChanged)
         {
@@ -161,7 +170,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         {
             if (candidates[i].IsAssignableFrom(type))
             {
-                return 5;
+                return BindingAffinity.Explicit;
             }
         }
 
@@ -169,35 +178,51 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName) =>
+        GetNotificationForProperty(sender, expression, propertyName, false, false);
+
+    /// <inheritdoc />
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
+        object sender,
+        Expression expression,
+        string propertyName,
+        bool beforeChanged) =>
+        GetNotificationForProperty(sender, expression, propertyName, beforeChanged, false);
+
+    /// <inheritdoc />
     /// <remarks>
     /// This implementation does not support before-change notifications.
     /// </remarks>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="sender"/>, <paramref name="expression"/>, or <paramref name="propertyName"/> is
-    /// <see langword="null"/>.
+    /// Thrown when sender, expression, or propertyName is null.
     /// </exception>
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
     public IObservable<IObservedChange<object, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
         string propertyName,
-        bool beforeChanged = false,
-        bool suppressWarnings = false)
+        bool beforeChanged,
+        bool suppressWarnings)
     {
-        ArgumentNullException.ThrowIfNull(sender);
-        ArgumentNullException.ThrowIfNull(expression);
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ArgumentExceptionHelper.ThrowIfNull(sender);
+        ArgumentExceptionHelper.ThrowIfNull(expression);
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         if (beforeChanged)
         {
-            return Observable.Never<IObservedChange<object, object?>>();
+            return NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
         var senderType = sender.GetType();
 
         if (!TypesByPropertyName.TryGetValue(propertyName, out var candidates))
         {
-            return Observable.Never<IObservedChange<object, object?>>();
+            return NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
         for (var i = 0; i < candidates.Length; i++)
@@ -211,10 +236,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
             return DispatchTable.TryGetValue((candidateType, propertyName), out var factory)
                 ? factory(sender, expression)
-                : Observable.Never<IObservedChange<object, object?>>();
+                : NeverObservable<IObservedChange<object, object?>>.Instance;
         }
 
-        return Observable.Never<IObservedChange<object, object?>>();
+        return NeverObservable<IObservedChange<object, object?>>.Instance;
     }
 
     /// <summary>
@@ -231,39 +256,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     {
         const string propName = "SelectedItem";
 
-        return new DispatchItem(
+        return new(
             typeof(AdapterView),
             propName,
-            (x, ex) =>
-            {
-                var adapterView = (AdapterView)x;
-
-                var itemSelected =
-                    Observable.FromEvent<EventHandler<AdapterView.ItemSelectedEventArgs>, ObservedChange<object, object?>>(
-                        eventHandler =>
-                        {
-                            void Handler(object? unusedSender, AdapterView.ItemSelectedEventArgs unusedEventArgs) =>
-                                eventHandler(new ObservedChange<object, object?>(adapterView, ex, default));
-
-                            return Handler;
-                        },
-                        h => adapterView.ItemSelected += h,
-                        h => adapterView.ItemSelected -= h);
-
-                var nothingSelected =
-                    Observable.FromEvent<EventHandler<AdapterView.NothingSelectedEventArgs>, ObservedChange<object, object?>>(
-                        eventHandler =>
-                        {
-                            void Handler(object? unusedSender, AdapterView.NothingSelectedEventArgs unusedEventArgs) =>
-                                eventHandler(new ObservedChange<object, object?>(adapterView, ex, default));
-
-                            return Handler;
-                        },
-                        h => adapterView.NothingSelected += h,
-                        h => adapterView.NothingSelected -= h);
-
-                return itemSelected.Merge(nothingSelected);
-            });
+            (x, ex) => new AdapterSelectionObservable((AdapterView)x, ex));
     }
 
     /// <summary>
@@ -278,7 +274,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     [SupportedOSPlatform("android23.0")]
     private static DispatchItem CreateTimePickerHourFromWidget()
     {
-        if ((int)Build.VERSION.SdkInt >= 23)
+        if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
         {
             return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Hour,
@@ -304,7 +300,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     [SupportedOSPlatform("android23.0")]
     private static DispatchItem CreateTimePickerMinuteFromWidget()
     {
-        if ((int)Build.VERSION.SdkInt >= 23)
+        if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
         {
             return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Minute,
@@ -348,27 +344,77 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             property.Body.GetMemberInfo() ??
             throw new ArgumentException("Does not have a valid body member info.", nameof(property));
 
-        // ExpressionToPropertyNames is used here as it handles boxing expressions that might occur due to our use of object.
         var propName = memberInfo.Name;
 
-        return new DispatchItem(
+        return new(
             typeof(TView),
             propName,
-            (x, ex) =>
+            (x, ex) => new WidgetEventObservable<TView, TEventArgs>((TView)x, ex, addHandler, removeHandler));
+    }
+
+    /// <summary>
+    /// Bridges an <see cref="AdapterView"/>'s selection events into an observed-change stream — replacing the
+    /// <c>FromEvent(ItemSelected).Merge(FromEvent(NothingSelected))</c> chain. Each <see cref="AdapterView.ItemSelected"/>
+    /// or <see cref="AdapterView.NothingSelected"/> raise emits an observed change; both handlers are detached on dispose.
+    /// </summary>
+    /// <param name="adapterView">The adapter view to observe.</param>
+    /// <param name="expression">The expression surfaced on the emitted change.</param>
+    private sealed class AdapterSelectionObservable(AdapterView adapterView, Expression expression)
+        : IObservable<IObservedChange<object, object?>>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            void OnItemSelected(object? sender, AdapterView.ItemSelectedEventArgs args) =>
+                observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
+
+            void OnNothingSelected(object? sender, AdapterView.NothingSelectedEventArgs args) =>
+                observer.OnNext(new ObservedChange<object, object?>(adapterView, expression, null));
+
+            adapterView.ItemSelected += OnItemSelected;
+            adapterView.NothingSelected += OnNothingSelected;
+
+            return new ActionDisposable(() =>
             {
-                var view = (TView)x;
-
-                return Observable.FromEvent<EventHandler<TEventArgs>, ObservedChange<object, object?>>(
-                    eventHandler =>
-                    {
-                        void Handler(object? unusedSender, TEventArgs unusedEventArgs) =>
-                            eventHandler(new ObservedChange<object, object?>(view, ex, default));
-
-                        return Handler;
-                    },
-                    h => addHandler(view, h),
-                    h => removeHandler(view, h));
+                adapterView.ItemSelected -= OnItemSelected;
+                adapterView.NothingSelected -= OnNothingSelected;
             });
+        }
+    }
+
+    /// <summary>
+    /// Bridges a widget's typed CLR event into an observed-change stream — replacing
+    /// <c>Observable.FromEvent</c>. Each event raise emits an <see cref="ObservedChange{TSender, TValue}"/> for the
+    /// widget; the handler is detached when the subscription is disposed.
+    /// </summary>
+    /// <typeparam name="TView">The widget type.</typeparam>
+    /// <typeparam name="TEventArgs">The widget event's argument type.</typeparam>
+    /// <param name="view">The widget instance.</param>
+    /// <param name="expression">The expression surfaced on the emitted change.</param>
+    /// <param name="addHandler">Attaches an event handler to the widget.</param>
+    /// <param name="removeHandler">Detaches an event handler from the widget.</param>
+    private sealed class WidgetEventObservable<TView, TEventArgs>(
+        TView view,
+        Expression expression,
+        Action<TView, EventHandler<TEventArgs>> addHandler,
+        Action<TView, EventHandler<TEventArgs>> removeHandler)
+        : IObservable<IObservedChange<object, object?>>
+        where TView : View
+        where TEventArgs : EventArgs
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<IObservedChange<object, object?>> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+
+            void Handler(object? sender, TEventArgs args) =>
+                observer.OnNext(new ObservedChange<object, object?>(view!, expression, null));
+
+            addHandler(view, Handler);
+            return new ActionDisposable(() => removeHandler(view, Handler));
+        }
     }
 
     /// <summary>

@@ -1,19 +1,17 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-#nullable enable
-
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
-
 using Foundation;
-
 using ObjCRuntime;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 #if UIKIT
 using UIKit;
@@ -41,6 +39,11 @@ namespace ReactiveUI;
 /// </remarks>
 public class TargetActionCommandBinder : ICreatesCommandBinding
 {
+    /// <summary>
+    /// The affinity score returned when the object type is a valid Target/Action host.
+    /// </summary>
+    private const int TargetActionAffinity = 4;
+
 #if UIKIT
     /// <summary>
     /// The set of Cocoa types that are valid Target/Action hosts in UIKit builds.
@@ -76,6 +79,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     private static readonly ConcurrentDictionary<Type, Setters> PropertySetterCache = new();
 
     /// <inheritdoc/>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "Type parameter is part of the ICreatesCommandBinding public API contract and cannot be removed.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -88,7 +95,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         {
             if (ValidTypes[i].IsAssignableFrom(t))
             {
-                return 4;
+                return TargetActionAffinity;
             }
         }
 
@@ -107,7 +114,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </para>
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -115,13 +126,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
 
-        // Match other binders: null command means "no binding".
         if (command is null)
         {
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
@@ -136,10 +146,12 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         ctlDelegate.SetBlock(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         // Selector name must match [Export] on ControlDelegate.
@@ -174,15 +186,13 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         ctlDelegate.IsEnabled = command.CanExecute(Volatile.Read(ref latestParam));
 
         // Keep Enabled (and AppKit validate) in sync with CanExecuteChanged.
-        var canExecuteChangedSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return Handler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteChangedSub = new FromEventObservable<bool>(onNext =>
+            {
+                void Handler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += Handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            })
             .Subscribe(x =>
             {
                 setters.EnabledSetter.Invoke(target, x, null);
@@ -201,6 +211,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// Prefer the add/remove handler overload when you can supply delegates.
     /// </remarks>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "TEventArgs is part of the ICreatesCommandBinding public API contract and cannot be inferred from the parameter list.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -217,21 +231,23 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         ArgumentExceptionHelper.ThrowIfNull(eventName);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
-        // Stable handler for deterministic unsubscription is provided by Rx's FromEventPattern.
-        var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
+        // Stable handler for deterministic unsubscription is provided by EventPatternObservable.
+        var evt = new EventPatternObservable<TEventArgs>(target, eventName);
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
         var evtSub = evt.Subscribe(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         return new CompositeDisposable(paramSub, evtSub);
@@ -241,7 +257,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <remarks>
     /// This overload is fully AOT-compatible and should be preferred when an explicit event subscription API is available.
     /// </remarks>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -251,25 +271,27 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         where TEventArgs : EventArgs
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
         if (command is null)
         {
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
@@ -321,6 +343,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// </remarks>
     private sealed class ControlDelegate : NSObject
     {
+        /// <summary>The action block invoked when the Cocoa control fires the bound selector.</summary>
         private Action<NSObject> _block;
 
         /// <summary>

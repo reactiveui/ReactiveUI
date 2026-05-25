@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputType>Exe</OutputType>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <SonarQubeExclude>true</SonarQubeExclude>
+    <!-- Benchmarks are never trimmed/AOT-published, so the trim/AOT analyzers add only noise here
+         (e.g. IL2026 on the reflection-based WhenAnyValue path we are deliberately measuring). -->
+    <IsAotCompatible>false</IsAotCompatible>
+    <IsTrimmable>false</IsTrimmable>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <PackageDescription>Micro-benchmarks for ReactiveUI's reactive sinks, bindings, commands and change-set layers.</PackageDescription>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DynamicData" />
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+  </ItemGroup>
+</Project>

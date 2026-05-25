@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -33,9 +33,9 @@ public interface IRoutableViewModel : IReactiveObject
     /// <summary>
     /// Gets a string token representing the current view model, such as "login" or "user".
     /// </summary>
-#pragma warning disable CA1056 // URI-like properties should not be strings
+#pragma warning disable CA1056
     string? UrlPathSegment { get; }
-#pragma warning restore CA1056 // URI-like properties should not be strings
+#pragma warning restore CA1056
 
     /// <summary>
     /// Gets the <see cref="IScreen"/> instance that hosts this view model. Use this reference to access the

@@ -1,9 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using ReactiveUI.Winforms;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -15,6 +20,10 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public class WinformsCreatesObservableForPropertyTests
 {
+    /// <summary>
+    /// The expected affinity for a Component property that exposes a Changed event.
+    /// </summary>
+    private const int ExpectedComponentAffinity = 8;
 
     /// <summary>
     /// Tests that GetAffinityForObject returns correct affinity for Component types.
@@ -27,7 +36,7 @@ public class WinformsCreatesObservableForPropertyTests
 
         // Should return 8 for property with Changed event
         var affinity = creator.GetAffinityForObject(typeof(TestComponent), nameof(TestComponent.TestProperty));
-        await Assert.That(affinity).IsEqualTo(8);
+        await Assert.That(affinity).IsEqualTo(ExpectedComponentAffinity);
     }
 
     /// <summary>
@@ -106,8 +115,11 @@ public class WinformsCreatesObservableForPropertyTests
     /// <summary>
     /// Test component with a property that has a Changed event.
     /// </summary>
-    private class TestComponent : Component
+    private sealed class TestComponent : Component
     {
+        /// <summary>
+        /// Backing field for the test property.
+        /// </summary>
         private string? _testProperty;
 
         /// <summary>
@@ -124,11 +136,13 @@ public class WinformsCreatesObservableForPropertyTests
             get => _testProperty;
             set
             {
-                if (_testProperty != value)
+                if (_testProperty == value)
                 {
-                    _testProperty = value;
-                    TestPropertyChanged?.Invoke(this, EventArgs.Empty);
+                    return;
                 }
+
+                _testProperty = value;
+                TestPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     }
@@ -136,7 +150,7 @@ public class WinformsCreatesObservableForPropertyTests
     /// <summary>
     /// Test component with a property that does NOT have a Changed event.
     /// </summary>
-    private class TestComponentWithoutEvent : Component
+    private sealed class TestComponentWithoutEvent : Component
     {
         /// <summary>
         /// Gets or sets a property without a corresponding Changed event.

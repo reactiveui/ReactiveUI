@@ -1,10 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Reactive.Subjects;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
@@ -17,6 +19,13 @@ namespace ReactiveUI.Tests;
 [TestExecutor<AppBuilderTestExecutor>]
 public class PropertyBindingExpressionCompilerTests
 {
+    private const string TestValueText = "TestValue";
+    private const string InitialValueText = "InitialValue";
+    private const string TestConvertedText = "TestConverted";
+    private const string GetterNotFoundMessage = "Getter not found";
+    private const string ChangedText = "Changed";
+    private const string SecondText = "Second";
+
     /// <summary>
     /// Verifies that CreateSetThenGet creates a working set-then-get function for a simple property.
     /// </summary>
@@ -31,17 +40,18 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => null);
-        var (shouldEmit, value) = setThenGet(view, "TestValue", null);
+        var (shouldEmit, value) = setThenGet(view, TestValueText, null);
 
         // Assert
         await Assert.That(shouldEmit).IsTrue();
-        await Assert.That(value).IsEqualTo("TestValue");
-        await Assert.That(view.SomeStringProperty).IsEqualTo("TestValue");
+        await Assert.That(value).IsEqualTo(TestValueText);
+        await Assert.That(view.SomeStringProperty).IsEqualTo(TestValueText);
     }
 
     /// <summary>
@@ -53,21 +63,22 @@ public class PropertyBindingExpressionCompilerTests
     {
         // Arrange
         var compiler = new PropertyBindingExpressionCompiler();
-        var view = new TestView { SomeStringProperty = "InitialValue" };
+        var view = new TestView { SomeStringProperty = InitialValueText };
 
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => null);
-        var (shouldEmit, value) = setThenGet(view, "InitialValue", null);
+        var (shouldEmit, value) = setThenGet(view, InitialValueText, null);
 
         // Assert
         await Assert.That(shouldEmit).IsFalse();
-        await Assert.That(value).IsEqualTo("InitialValue");
+        await Assert.That(value).IsEqualTo(InitialValueText);
     }
 
     /// <summary>
@@ -84,19 +95,20 @@ public class PropertyBindingExpressionCompilerTests
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
         // Converter that appends "Converted"
-        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => input + "Converted";
+        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => input + "Converted";
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
         var (shouldEmit, value) = setThenGet(view, "Test", null);
 
         // Assert
         await Assert.That(shouldEmit).IsTrue();
-        await Assert.That(value).IsEqualTo("TestConverted");
-        await Assert.That(view.SomeStringProperty).IsEqualTo("TestConverted");
+        await Assert.That(value).IsEqualTo(TestConvertedText);
+        await Assert.That(view.SomeStringProperty).IsEqualTo(TestConvertedText);
     }
 
     /// <summary>
@@ -108,23 +120,24 @@ public class PropertyBindingExpressionCompilerTests
     {
         // Arrange
         var compiler = new PropertyBindingExpressionCompiler();
-        var view = new TestView { SomeStringProperty = "TestConverted" };
+        var view = new TestView { SomeStringProperty = TestConvertedText };
 
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
         // Converter that appends "Converted"
-        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => input + "Converted";
+        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => input + "Converted";
         var setThenGet = compiler.CreateSetThenGet(rewritten, getter, setter, (_, _) => converter);
-        var (shouldEmit, value) = setThenGet(view, "Test", null); // "Test" -> "TestConverted" which matches current
+        var (shouldEmit, value) = setThenGet(view, "Test", null); // "Test" -> TestConvertedText which matches current
 
         // Assert
         await Assert.That(shouldEmit).IsFalse();
-        await Assert.That(value).IsEqualTo("TestConverted");
+        await Assert.That(value).IsEqualTo(TestConvertedText);
     }
 
     /// <summary>
@@ -269,12 +282,13 @@ public class PropertyBindingExpressionCompilerTests
         // Arrange
         var compiler = new PropertyBindingExpressionCompiler();
         var view = new TestView();
-        var updates = new System.Reactive.Subjects.Subject<string>();
+        var updates = new Subject<string>();
 
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -291,13 +305,14 @@ public class PropertyBindingExpressionCompilerTests
 
         // Emit changes
         updates.OnNext("First");
-        updates.OnNext("Second");
+        updates.OnNext(SecondText);
 
         // Assert
-        await Assert.That(view.SomeStringProperty).IsEqualTo("Second");
-        await Assert.That(emitted.Count).IsEqualTo(2);
+        const int ExpectedEmissionCount = 2;
+        await Assert.That(view.SomeStringProperty).IsEqualTo(SecondText);
+        await Assert.That(emitted.Count).IsEqualTo(ExpectedEmissionCount);
         await Assert.That(emitted[0]).IsEqualTo("First");
-        await Assert.That(emitted[1]).IsEqualTo("Second");
+        await Assert.That(emitted[1]).IsEqualTo(SecondText);
     }
 
     /// <summary>
@@ -310,12 +325,13 @@ public class PropertyBindingExpressionCompilerTests
         // Arrange
         var compiler = new PropertyBindingExpressionCompiler();
         var view = new TestView { SomeStringProperty = "Initial" };
-        var updates = new System.Reactive.Subjects.Subject<string>();
+        var updates = new Subject<string>();
 
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -332,12 +348,12 @@ public class PropertyBindingExpressionCompilerTests
 
         // Emit same value twice
         updates.OnNext("Initial");
-        updates.OnNext("Changed");
-        updates.OnNext("Changed");
+        updates.OnNext(ChangedText);
+        updates.OnNext(ChangedText);
 
         // Assert
-        await Assert.That(emitted.Count).IsEqualTo(1); // Only "Changed" should emit (not "Initial" or duplicate "Changed")
-        await Assert.That(emitted[0]).IsEqualTo("Changed");
+        await Assert.That(emitted.Count).IsEqualTo(1); // Only ChangedText should emit (not "Initial" or duplicate ChangedText)
+        await Assert.That(emitted[0]).IsEqualTo(ChangedText);
     }
 
     /// <summary>
@@ -350,17 +366,20 @@ public class PropertyBindingExpressionCompilerTests
         // Arrange
         var compiler = new PropertyBindingExpressionCompiler();
         var view = new TestView();
-        var updates = new System.Reactive.Subjects.Subject<int>();
+        var updates = new Subject<int>();
 
         Expression<Func<TestView, string?>> expr = v => v.SomeStringProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
+        const int InputValue = 42;
+
         // Converter that converts int to string with prefix
-        Func<object?, object?, object?[]?, object?> converter = (current, input, _) => "Number:" + input;
+        Func<object?, object?, object?[]?, object?> converter = (_, input, _) => "Number:" + input;
         var observable = compiler.CreateDirectSetObservable<TestView, string?, int>(
             view,
             updates,
@@ -372,7 +391,7 @@ public class PropertyBindingExpressionCompilerTests
         var emitted = new List<string?>();
         using var sub = observable.Subscribe(x => emitted.Add(x.Value));
 
-        updates.OnNext(42);
+        updates.OnNext(InputValue);
 
         // Assert
         await Assert.That(view.SomeStringProperty).IsEqualTo("Number:42");
@@ -388,15 +407,19 @@ public class PropertyBindingExpressionCompilerTests
     public async Task CreateChainedSetObservable_EmitsChanges()
     {
         // Arrange
+        const int InitialValue = 10;
+        const int UpdatedValue = 20;
+        const int NonDefaultValue = 100;
         var compiler = new PropertyBindingExpressionCompiler();
-        var viewModel = new TestViewModel { Model = new TestModel { AnotherProperty = 10 } };
-        var updates = new System.Reactive.Subjects.Subject<int>();
+        var viewModel = new TestViewModel { Model = new() { AnotherProperty = InitialValue } };
+        var updates = new Subject<int>();
 
         Expression<Func<TestViewModel, int>> expr = vm => vm.Model!.AnotherProperty;
         var rewritten = Reflection.Rewrite(expr.Body);
         var chain = compiler.GetExpressionChainArray(rewritten.GetParent())!;
         var memberInfo = rewritten.GetMemberInfo();
-        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ?? throw new InvalidOperationException("Getter not found");
+        var getter = Reflection.GetValueFetcherOrThrow(memberInfo) ??
+                     throw new InvalidOperationException(GetterNotFoundMessage);
         var setter = Reflection.GetValueSetterOrThrow(memberInfo);
 
         // Act
@@ -413,52 +436,62 @@ public class PropertyBindingExpressionCompilerTests
         using var sub = observable.Subscribe(x => emitted.Add(x.Value));
 
         // 1. Emit update
-        updates.OnNext(20);
-        await Assert.That(viewModel.Model.AnotherProperty).IsEqualTo(20);
+        updates.OnNext(UpdatedValue);
+        await Assert.That(viewModel.Model.AnotherProperty).IsEqualTo(UpdatedValue);
         await Assert.That(emitted.Count).IsEqualTo(1);
-        await Assert.That(emitted[0]).IsEqualTo(20);
+        await Assert.That(emitted[0]).IsEqualTo(UpdatedValue);
 
         // 2. Change host (Model) - should not overwrite if property is non-default
-        var newModel = new TestModel { AnotherProperty = 100 };
+        var newModel = new TestModel { AnotherProperty = NonDefaultValue };
         viewModel.Model = newModel;
 
-        await Assert.That(newModel.AnotherProperty).IsEqualTo(100);
+        await Assert.That(newModel.AnotherProperty).IsEqualTo(NonDefaultValue);
 
         // 3. Change host (Model) with default value - should overwrite with last observed (20)
         var defaultModel = new TestModel { AnotherProperty = 0 };
         viewModel.Model = defaultModel;
 
-        await Assert.That(defaultModel.AnotherProperty).IsEqualTo(20);
-        await Assert.That(emitted.Last()).IsEqualTo(20);
+        await Assert.That(defaultModel.AnotherProperty).IsEqualTo(UpdatedValue);
+        await Assert.That(emitted[^1]).IsEqualTo(UpdatedValue);
     }
 
     /// <summary>
     /// Test helper view class.
     /// </summary>
-    private class TestView : ReactiveObject, IViewFor<TestViewModel>
+    private sealed class TestView : ReactiveObject, IViewFor<TestViewModel>
     {
         private TestViewModel? _viewModel;
         private string? _someStringProperty;
         private int _someIntProperty;
 
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public TestViewModel? ViewModel
         {
             get => _viewModel;
             set => this.RaiseAndSetIfChanged(ref _viewModel, value);
         }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = (TestViewModel?)value;
         }
 
+        /// <summary>
+        /// Gets or sets a string property used for binding tests.
+        /// </summary>
         public string? SomeStringProperty
         {
             get => _someStringProperty;
             set => this.RaiseAndSetIfChanged(ref _someStringProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets an integer property used for binding tests.
+        /// </summary>
         public int SomeIntProperty
         {
             get => _someIntProperty;
@@ -469,17 +502,23 @@ public class PropertyBindingExpressionCompilerTests
     /// <summary>
     /// Test helper view model class.
     /// </summary>
-    private class TestViewModel : ReactiveObject
+    private sealed class TestViewModel : ReactiveObject
     {
         private int _property1;
         private TestModel? _model;
 
+        /// <summary>
+        /// Gets or sets the first integer property used for binding tests.
+        /// </summary>
         public int Property1
         {
             get => _property1;
             set => this.RaiseAndSetIfChanged(ref _property1, value);
         }
 
+        /// <summary>
+        /// Gets or sets the nested model used for chained-property binding tests.
+        /// </summary>
         public TestModel? Model
         {
             get => _model;
@@ -490,10 +529,13 @@ public class PropertyBindingExpressionCompilerTests
     /// <summary>
     /// Test helper model class.
     /// </summary>
-    private class TestModel : ReactiveObject
+    private sealed class TestModel : ReactiveObject
     {
         private int _anotherProperty;
 
+        /// <summary>
+        /// Gets or sets a nested integer property used for chained-property binding tests.
+        /// </summary>
         public int AnotherProperty
         {
             get => _anotherProperty;

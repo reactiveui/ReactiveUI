@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.AOT.Tests;
 
@@ -16,12 +19,18 @@ public class TestReactiveObject : ReactiveObject
     /// <summary>
     /// Initializes a new instance of the <see cref="TestReactiveObject"/> class.
     /// </summary>
-    public TestReactiveObject()
-    {
+    [UnconditionalSuppressMessage(
+        "Trimming",
+        "IL2026:Members annotated with RequiresUnreferencedCodeAttribute may break when trimming",
+        Justification = "Test deliberately exercises the expression-based reflection API to verify runtime behavior.")]
+    [SuppressMessage(
+        "Reliability",
+        "S3366:Don't expose 'this' in constructors",
+        Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
+    public TestReactiveObject() =>
         _computedProperty = this.WhenAnyValue(static x => x.TestProperty)
             .Select(static x => $"Computed: {x}")
             .ToProperty(this, nameof(ComputedProperty));
-    }
 
     /// <summary>
     /// Gets or sets the test property.

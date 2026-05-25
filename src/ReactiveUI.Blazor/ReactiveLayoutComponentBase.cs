@@ -1,12 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
 using System.Runtime.CompilerServices;
-
 using Microsoft.AspNetCore.Components;
-
 using ReactiveUI.Blazor.Internal;
 
 namespace ReactiveUI.Blazor;
@@ -25,13 +26,15 @@ namespace ReactiveUI.Blazor;
 /// observables instead.
 /// </para>
 /// </remarks>
-public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
+[SuppressMessage("Usage", "BL0007:Component parameters should be auto properties", Justification = "Needed for design of the properties")]
+public class ReactiveLayoutComponentBase<T>
+    : LayoutComponentBase, IViewFor<T>, INotifyPropertyChanged, IDisposable, ICanActivate
     where T : class, INotifyPropertyChanged
 {
     /// <summary>
     /// Encapsulates reactive state and lifecycle management for this component.
     /// </summary>
-    private readonly ReactiveComponentState<T> _state = new();
+    private readonly ReactiveComponentState _state = new();
 
     /// <summary>
     /// Backing field for <see cref="ViewModel"/>.
@@ -53,12 +56,11 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
         get => _viewModel;
         set
         {
-            if (EqualityComparer<T?>.Default.Equals(_viewModel, value))
+            if (!ReactiveComponentHelpers.SetIfChanged(ref _viewModel, value))
             {
                 return;
             }
 
-            _viewModel = value;
             OnPropertyChanged();
         }
     }
@@ -88,28 +90,20 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        ReactiveComponentHelpers.WireActivationIfSupported(ViewModel, _state);
-        _state.NotifyActivated();
+        ReactiveComponentHelpers.HandleInitialized(ViewModel, _state);
         base.OnInitialized();
     }
 
     /// <inheritdoc />
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            _state.FirstRenderSubscriptions = ReactiveComponentHelpers.WireViewModelChangeReactivity(
-                () => ViewModel,
-                h => PropertyChanged += h,
-                h => PropertyChanged -= h,
-                nameof(ViewModel),
-                () => InvokeAsync(StateHasChanged));
-
-            // Re-render to pick up any property changes that occurred during activation (OnInitialized)
-            // before these subscriptions were wired.
-            InvokeAsync(StateHasChanged);
-        }
-
+        ReactiveComponentHelpers.HandleFirstRender(
+            firstRender,
+            _state,
+            () => ViewModel,
+            h => PropertyChanged += h,
+            h => PropertyChanged -= h,
+            () => InvokeAsync(StateHasChanged));
         base.OnAfterRender(firstRender);
     }
 
@@ -118,7 +112,7 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        PropertyChanged?.Invoke(this, new(propertyName));
 
     /// <summary>
     /// Releases managed resources used by the component.
@@ -126,20 +120,6 @@ public class ReactiveLayoutComponentBase<T> : LayoutComponentBase, IViewFor<T>, 
     /// <param name="disposing">
     /// <see langword="true"/> to release managed resources; <see langword="false"/> to release unmanaged resources only.
     /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            // Notify deactivation first so observers can perform cleanup while subscriptions are still active.
-            _state.NotifyDeactivated();
-            _state.Dispose();
-        }
-
-        _disposed = true;
-    }
+    protected virtual void Dispose(bool disposing) =>
+        ReactiveComponentHelpers.HandleDispose(ref _disposed, disposing, _state);
 }

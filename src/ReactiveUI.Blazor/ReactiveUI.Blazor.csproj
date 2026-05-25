@@ -3,14 +3,19 @@
     <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor</PackageDescription>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
-    <NoWarn>$(NoWarn);BL0007;</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Reactive.Wasm" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" />
-    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="Reactive.Wasm"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\Broadcaster.cs" Link="Shared\Broadcaster.cs"/>
+    <Compile Include="..\Shared\BroadcastSubject.cs" Link="Shared\BroadcastSubject.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 </Project>

@@ -1,11 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
-
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using UIKit;
 
 namespace ReactiveUI;
@@ -57,6 +60,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     private int _snapshotVersion;
 
     /// <inheritdoc/>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T is part of the ICreatesCommandBinding public API contract and is used by the framework for type resolution.")]
     public int GetAffinityForObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)] T>(bool hasEventTarget)
     {
         if (hasEventTarget)
@@ -90,7 +97,11 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+    public IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -130,6 +141,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
     /// <inheritdoc/>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
     public virtual IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -139,7 +154,16 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         Disposable.Empty;
 
     /// <inheritdoc/>
-    public virtual IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "T and TEventArgs are part of the ICreatesCommandBinding public API contract and are used by the framework for type resolution.")]
+    public virtual IDisposable? BindCommandToObject<
+        [DynamicallyAccessedMembers(
+            DynamicallyAccessedMemberTypes.PublicProperties |
+            DynamicallyAccessedMemberTypes.PublicEvents |
+            DynamicallyAccessedMemberTypes.NonPublicEvents)] T,
+        TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -149,8 +173,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         where TEventArgs : EventArgs
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
         // Match existing binder behavior: null command means "no binding".
         if (command is null)
@@ -158,17 +182,19 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             return Disposable.Empty;
         }
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
@@ -211,21 +237,23 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         void Handler(object? sender, TEventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
@@ -243,15 +271,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         // Initial enabled state.
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
@@ -287,21 +313,23 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
         ArgumentExceptionHelper.ThrowIfNull(target);
-        ArgumentNullException.ThrowIfNull(addHandler);
-        ArgumentNullException.ThrowIfNull(removeHandler);
+        ArgumentExceptionHelper.ThrowIfNull(addHandler);
+        ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return((object?)target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         void Handler(object? sender, EventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
@@ -319,15 +347,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         // Initial enabled state.
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
@@ -360,19 +386,21 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(eventName);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return(target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         object? latestParam = null;
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
 
-        var actionSub = Observable.FromEventPattern(target, eventName).Subscribe(_ =>
+        var actionSub = new EventPatternObservable<EventArgs>(target, eventName).Subscribe(_ =>
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         });
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
@@ -383,15 +411,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void Handler(object? sender, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return Handler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void Handler(object? sender, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += Handler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, actionSub, canExecuteSub);
@@ -417,7 +443,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(target);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= Observable.Return(target);
+        commandParameter ??= new ReturnObservable<object?>(target);
 
         if (target is not UIControl ctl)
         {
@@ -430,10 +456,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         void Handler(object? sender, EventArgs e)
         {
             var param = Volatile.Read(ref latestParam);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
+
+            command.Execute(param);
         }
 
         var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
@@ -450,15 +478,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
 
-        var canExecuteSub = Observable.FromEvent<EventHandler, bool>(
-                eventHandler =>
-                {
-                    void CanExecuteHandler(object? s, EventArgs e) =>
-                        eventHandler(command.CanExecute(Volatile.Read(ref latestParam)));
-                    return CanExecuteHandler;
-                },
-                h => command.CanExecuteChanged += h,
-                h => command.CanExecuteChanged -= h)
+        var canExecuteSub = new FromEventObservable<bool>(onNext =>
+            {
+                void CanExecuteHandler(object? s, EventArgs e) =>
+                    onNext(command.CanExecute(Volatile.Read(ref latestParam)));
+                command.CanExecuteChanged += CanExecuteHandler;
+                return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
+            })
             .Subscribe(x => enabledSetter(target, x, null));
 
         return new CompositeDisposable(paramSub, actionDisp, canExecuteSub);
@@ -473,8 +499,8 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="createBinding"/> is null.</exception>
     protected void Register(Type type, int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(createBinding);
+        ArgumentExceptionHelper.ThrowIfNull(type);
+        ArgumentExceptionHelper.ThrowIfNull(createBinding);
 
         lock (_gate)
         {

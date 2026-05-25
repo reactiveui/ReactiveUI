@@ -4,22 +4,26 @@
             "parallel": false
         }
     },
-    "extensions": [
-        {
-            "extensionId": "Microsoft.Testing.Extensions.CodeCoverage",
-            "settings": {
-                "format": "cobertura",
-                "skipAutoProperties": true,
-                "modulePaths": {
-                    "include": [
+    "codeCoverage": {
+        "Configuration": {
+            "Format": "cobertura",
+            "CodeCoverage": {
+                "SkipAutoProperties": true,
+                "ModulePaths": {
+                    "Include": [
                         "ReactiveUI\\..*"
                     ],
-                    "exclude": [
-                        ".*Tests.*",
+                    "Exclude": [
+                        ".*Tests\\.dll$",
                         ".*TestRunner.*"
+                    ]
+                },
+                "Functions": {
+                    "Exclude": [
+                        ".*__.*"
                     ]
                 }
             }
         }
-    ]
+    }
 }

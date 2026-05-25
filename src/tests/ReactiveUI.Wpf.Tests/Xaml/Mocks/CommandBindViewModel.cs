@@ -1,7 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive;
 
 namespace ReactiveUI.Tests.Mocks;
 
@@ -10,9 +12,19 @@ namespace ReactiveUI.Tests.Mocks;
 /// </summary>
 public class CommandBindViewModel : ReactiveObject
 {
-    private ReactiveCommand<int, Unit> _Command1 = null!;
-    private ReactiveCommand<Unit, Unit> _Command2 = null!;
+    /// <summary>
+    /// Backing field for the <see cref="Command1"/> property.
+    /// </summary>
+    private ReactiveCommand<int, Unit> _command1 = null!;
 
+    /// <summary>
+    /// Backing field for the <see cref="Command2"/> property.
+    /// </summary>
+    private ReactiveCommand<Unit, Unit> _command2 = null!;
+
+    /// <summary>
+    /// Backing field for the <see cref="Value"/> property.
+    /// </summary>
     private int _value;
 
     /// <summary>
@@ -22,7 +34,7 @@ public class CommandBindViewModel : ReactiveObject
     {
         Command1 = ReactiveCommand.Create<int, Unit>(static _ => Unit.Default);
         Command2 = ReactiveCommand.Create(static () => { });
-        NestedViewModel = new FakeNestedViewModel();
+        NestedViewModel = new();
     }
 
     /// <summary>
@@ -30,8 +42,8 @@ public class CommandBindViewModel : ReactiveObject
     /// </summary>
     public ReactiveCommand<int, Unit> Command1
     {
-        get => _Command1;
-        set => this.RaiseAndSetIfChanged(ref _Command1, value);
+        get => _command1;
+        set => this.RaiseAndSetIfChanged(ref _command1, value);
     }
 
     /// <summary>
@@ -39,8 +51,8 @@ public class CommandBindViewModel : ReactiveObject
     /// </summary>
     public ReactiveCommand<Unit, Unit> Command2
     {
-        get => _Command2;
-        set => this.RaiseAndSetIfChanged(ref _Command2, value);
+        get => _command2;
+        set => this.RaiseAndSetIfChanged(ref _command2, value);
     }
 
     /// <summary>

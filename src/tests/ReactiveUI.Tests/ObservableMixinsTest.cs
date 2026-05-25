@@ -1,7 +1,11 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace ReactiveUI.Tests;
 
@@ -20,16 +24,21 @@ public class ObservableMixinsTest
         var subject = new Subject<int?>();
         var results = new List<int?>();
 
+        const int SecondValue = 2;
+        const int ThirdValue = 3;
+        const int ExpectedCount = 3;
+        const int ThirdIndex = 2;
+
         subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
 
         subject.OnNext(1);
-        subject.OnNext(2);
-        subject.OnNext(3);
+        subject.OnNext(SecondValue);
+        subject.OnNext(ThirdValue);
 
-        await Assert.That(results).Count().IsEqualTo(3);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCount);
         await Assert.That(results[0]).IsEqualTo(1);
-        await Assert.That(results[1]).IsEqualTo(2);
-        await Assert.That(results[2]).IsEqualTo(3);
+        await Assert.That(results[1]).IsEqualTo(SecondValue);
+        await Assert.That(results[ThirdIndex]).IsEqualTo(ThirdValue);
     }
 
     /// <summary>
@@ -50,10 +59,12 @@ public class ObservableMixinsTest
         subject.OnNext(null);
         subject.OnNext("value3");
 
-        await Assert.That(results).Count().IsEqualTo(3);
+        const int ExpectedCount = 3;
+        const int ThirdIndex = 2;
+        await Assert.That(results).Count().IsEqualTo(ExpectedCount);
         await Assert.That(results[0]).IsEqualTo("value1");
         await Assert.That(results[1]).IsEqualTo("value2");
-        await Assert.That(results[2]).IsEqualTo("value3");
+        await Assert.That(results[ThirdIndex]).IsEqualTo("value3");
     }
 
     /// <summary>
@@ -93,7 +104,8 @@ public class ObservableMixinsTest
         subject.OnNext(null);
         subject.OnNext(obj2);
 
-        await Assert.That(results).Count().IsEqualTo(2);
+        const int ExpectedCount = 2;
+        await Assert.That(results).Count().IsEqualTo(ExpectedCount);
         await Assert.That(results[0]).IsEqualTo(obj1);
         await Assert.That(results[1]).IsEqualTo(obj2);
     }
@@ -101,8 +113,11 @@ public class ObservableMixinsTest
     /// <summary>
     ///     Test class for reference type testing.
     /// </summary>
-    private class TestClass
+    private sealed class TestClass
     {
+        /// <summary>
+        ///     Gets or sets the test value.
+        /// </summary>
         public string? Value { get; set; }
     }
 }

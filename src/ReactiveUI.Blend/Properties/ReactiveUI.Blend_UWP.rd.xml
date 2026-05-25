@@ -33,7 +33,7 @@ See the LICENSE file in the project root for more information.
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
   <Library Name="ReactiveUI.Blend_UWP">
 
-  	<!-- add directives for your library here -->
+    <!-- add directives for your library here -->
 
   </Library>
 </Directives>

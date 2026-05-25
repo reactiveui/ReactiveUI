@@ -1,12 +1,17 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
-
 using Foundation;
-
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 using UIKit;
 
 using NSAction = System.Action;
@@ -30,13 +35,22 @@ public class AutoSuspendHelper<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] T> : IEnableLogger, IDisposable
         where T : UIApplicationDelegate
 {
+    /// <summary>Subject that fires when the application finishes launching.</summary>
     private readonly Subject<UIApplication> _finishedLaunching = new();
+
+    /// <summary>Subject that fires when the application becomes active.</summary>
     private readonly Subject<UIApplication> _activated = new();
+
+    /// <summary>Subject that fires when the application enters the background.</summary>
     private readonly Subject<UIApplication> _backgrounded = new();
+
+    /// <summary>Subject that fires when an unhandled exception signals an untimely process death.</summary>
     private readonly Subject<Unit> _untimelyDeath = new();
 
+    /// <summary>The cached handler used to subscribe and later unsubscribe from <see cref="AppDomain.UnhandledException"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
 
+    /// <summary>Whether this instance has already been disposed.</summary>
     private bool _isDisposed;
 
     /// <summary>
@@ -71,9 +85,9 @@ public class AutoSuspendHelper<
     {
         ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = Observable<Unit>.Never;
-        RxSuspension.SuspensionHost.IsResuming = _finishedLaunching.Select(static _ => Unit.Default);
-        RxSuspension.SuspensionHost.IsUnpausing = _activated.Select(static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
+        RxSuspension.SuspensionHost.IsResuming = new SelectObservable<UIApplication, Unit>(_finishedLaunching, static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsUnpausing = new SelectObservable<UIApplication, Unit>(_activated, static _ => Unit.Default);
 
         // Keep a stable delegate instance so we can unsubscribe on Dispose.
         _unhandledExceptionHandler = (_, _) => _untimelyDeath.OnNext(Unit.Default);
@@ -81,18 +95,18 @@ public class AutoSuspendHelper<
 
         RxSuspension.SuspensionHost.ShouldInvalidateState = _untimelyDeath;
 
-        RxSuspension.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
+        RxSuspension.SuspensionHost.ShouldPersistState = new SelectManyObservable<UIApplication, IDisposable>(_backgrounded, app =>
         {
-            var taskId = app.BeginBackgroundTask(new NSAction(() => _untimelyDeath.OnNext(Unit.Default)));
+            var taskId = app.BeginBackgroundTask(() => _untimelyDeath.OnNext(Unit.Default));
 
             // NB: We're being force-killed, signal invalidate instead.
             if (taskId == UIApplication.BackgroundTaskInvalid)
             {
                 _untimelyDeath.OnNext(Unit.Default);
-                return Observable<IDisposable>.Empty;
+                return EmptyObservable<IDisposable>.Instance;
             }
 
-            return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
+            return new ReturnObservable<IDisposable>(Disposable.Create(() => app.EndBackgroundTask(taskId)));
         });
     }
 
@@ -128,11 +142,8 @@ public class AutoSuspendHelper<
                 var k = keys[i];
                 var keyString = k?.ToString() ?? string.Empty;
 
-                var value = launchOptions[k];
-                var valueString = value?.ToString() ?? string.Empty;
-
                 // NSDictionary keys are unique by contract.
-                dict[keyString] = valueString;
+                dict[keyString] = launchOptions[k]?.ToString() ?? string.Empty;
             }
 
             LaunchOptions = dict;
@@ -199,12 +210,16 @@ public class AutoSuspendHelper<
         _untimelyDeath.Dispose();
     }
 
+    /// <summary>Throws if this helper has already been disposed.</summary>
+    /// <exception cref="ObjectDisposedException">Thrown when the helper has been disposed.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed()
     {
-        if (_isDisposed)
+        if (!_isDisposed)
         {
-            throw new ObjectDisposedException(nameof(AutoSuspendHelper<>));
+            return;
         }
+
+        throw new ObjectDisposedException(nameof(AutoSuspendHelper<>));
     }
 }

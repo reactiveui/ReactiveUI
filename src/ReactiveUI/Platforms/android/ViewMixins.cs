@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Android.Views;
 
 namespace ReactiveUI;
@@ -15,6 +16,9 @@ namespace ReactiveUI;
 /// is static and cannot be instantiated.</remarks>
 public static class ViewMixins
 {
+    /// <summary>
+    /// The tag key used to store the view host instance on a view.
+    /// </summary>
     internal const int ViewHostTag = -4222;
 
     /// <summary>
@@ -24,7 +28,11 @@ public static class ViewMixins
     /// <param name="item">The view from which to retrieve the associated view host. Cannot be null.</param>
     /// <returns>An instance of <typeparamref name="T"/> if a view host of the specified type is associated with the view;
     /// otherwise, the default value for <typeparamref name="T"/>.</returns>
-    public static T GetViewHost<T>(this View item) // TODO: Create Test
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    public static T GetViewHost<T>(this View item)
         where T : ILayoutViewHost
     {
         var tagData = item?.GetTag(ViewHostTag);
@@ -42,6 +50,5 @@ public static class ViewMixins
     /// <param name="item">The view from which to retrieve the associated layout view host. Cannot be null.</param>
     /// <returns>An object that implements <see cref="ILayoutViewHost"/> if the view has an associated host; otherwise, <see
     /// langword="null"/>.</returns>
-    public static ILayoutViewHost? GetViewHost(this View item) => // TODO: Create Test
-        item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
+    public static ILayoutViewHost? GetViewHost(this View item) => item?.GetTag(ViewHostTag)?.ToNetObject<ILayoutViewHost>();
 }

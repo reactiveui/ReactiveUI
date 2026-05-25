@@ -1,7 +1,11 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -15,10 +19,17 @@ namespace ReactiveUI;
 /// <param name="resolver">The dependency resolver used to register service instances and factories. Cannot be null.</param>
 internal sealed class DependencyResolverRegistrar(IMutableDependencyResolver resolver) : IRegistrar
 {
-    private readonly IMutableDependencyResolver _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+    /// <summary>The underlying dependency resolver used for all service registrations.</summary>
+    private readonly IMutableDependencyResolver _resolver =
+        resolver ?? throw new ArgumentNullException(nameof(resolver));
 
     /// <inheritdoc/>
-    public void RegisterConstant<TService>(Func<TService> factory, string? contract = null)
+    public void RegisterConstant<TService>(Func<TService> factory)
+        where TService : class =>
+        RegisterConstant(factory, null);
+
+    /// <inheritdoc/>
+    public void RegisterConstant<TService>(Func<TService> factory, string? contract)
         where TService : class
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);
@@ -33,7 +44,17 @@ internal sealed class DependencyResolverRegistrar(IMutableDependencyResolver res
     }
 
     /// <inheritdoc/>
-    public void RegisterLazySingleton<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TService>(Func<TService> factory, string? contract = null)
+    public void RegisterLazySingleton<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TService>(
+        Func<TService> factory)
+        where TService : class =>
+        RegisterLazySingleton<TService>(factory, null);
+
+    /// <inheritdoc/>
+    public void RegisterLazySingleton<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TService>(
+        Func<TService> factory,
+        string? contract)
         where TService : class
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);
@@ -48,7 +69,12 @@ internal sealed class DependencyResolverRegistrar(IMutableDependencyResolver res
     }
 
     /// <inheritdoc/>
-    public void Register<TService>(Func<TService> factory, string? contract = null)
+    public void Register<TService>(Func<TService> factory)
+        where TService : class =>
+        Register(factory, null);
+
+    /// <inheritdoc/>
+    public void Register<TService>(Func<TService> factory, string? contract)
         where TService : class
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);

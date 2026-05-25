@@ -1,23 +1,44 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Windows;
 using System.Windows.Controls;
 
 using DynamicData;
 
 using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Wpf.Mocks;
 using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
+/// <summary>
+/// Tests for the WPF activation-for-view fetcher.
+/// </summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class WpfActivationForViewFetcherTest
 {
+    /// <summary>The number of <c>WhenActivated</c> overloads exercised by the overload tests.</summary>
+    private const int WhenActivatedOverloadCount = 5;
+
+    private static readonly bool[] _expectedActivated = [true];
+    private static readonly bool[] _expectedActivatedDeactivated = [true, false];
+    private static readonly bool[] _expectedActivatedDeactivatedActivated = [true, false, true];
+    private static readonly bool[] _expectedActivatedDeactivatedActivatedDeactivated = [true, false, true, false];
+
+    /// <summary>
+    /// Verifies a framework element is activated on load and deactivated on unload.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task GetIsDesignModeReturnsFalseForRuntimeWpfView()
@@ -27,6 +48,10 @@ public class WpfActivationForViewFetcherTest
         await Assert.That(view.GetIsDesignMode()).IsFalse();
     }
 
+    /// <summary>
+    /// Verifies that a designer WPF view reports design mode as true.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task GetIsDesignModeReturnsTrueForDesignerWpfView()
@@ -36,6 +61,10 @@ public class WpfActivationForViewFetcherTest
         await Assert.That(view.GetIsDesignMode()).IsTrue();
     }
 
+    /// <summary>
+    /// Verifies that activating a view in designer mode without a registered fetcher does not throw.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
     public async Task WhenActivatedInDesignerModeWithoutRegisteredFetcherDoesNotThrow()
@@ -54,8 +83,13 @@ public class WpfActivationForViewFetcherTest
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies that the <c>WhenActivated</c> overloads short-circuit in designer mode without a registered fetcher.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsShortCircuitInDesignerModeWithoutRegisteredFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -71,15 +105,20 @@ public class WpfActivationForViewFetcherTest
                 view.WhenActivated(static () => [Disposable.Empty], view),
                 view.WhenActivated(static (Action<IDisposable> _) => { }, view));
 
-            await Assert.That(disposables.Count).IsEqualTo(5);
+            await Assert.That(disposables.Count).IsEqualTo(WhenActivatedOverloadCount);
             disposables.Dispose();
         }
 
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies that the <c>WhenActivated</c> overloads delegate to the runtime activation fetcher.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     public async Task WpfWhenActivatedOverloadsDelegateToRuntimeActivationFetcher()
     {
         using var locator = new ModernDependencyResolver();
@@ -113,18 +152,22 @@ public class WpfActivationForViewFetcherTest
                     (Action<IDisposable> _) => activationCount++,
                     view));
 
-            view.RaiseEvent(new RoutedEventArgs
+            view.RaiseEvent(new()
             {
                 RoutedEvent = FrameworkElement.LoadedEvent
             });
 
-            await Assert.That(activationCount).IsEqualTo(5);
+            await Assert.That(activationCount).IsEqualTo(WhenActivatedOverloadCount);
             disposables.Dispose();
         }
 
         ViewForMixins.ResetActivationFetcherCacheForTesting();
     }
 
+    /// <summary>
+    /// Verifies a framework element raises activation on load and deactivation on unload.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task FrameworkElementIsActivatedAndDeactivated()
     {
@@ -141,7 +184,7 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -150,9 +193,13 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies that making a loaded element hit-test visible does not re-raise activation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsHitTestVisibleActivatesFrameworkElement()
     {
@@ -173,12 +220,12 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(loaded);
 
         // Loaded has happened.
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = true;
 
         // IsHitTestVisible true, we don't want the event to repeat unnecessarily.
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -188,9 +235,13 @@ public class WpfActivationForViewFetcherTest
         uc.RaiseEvent(unloaded);
 
         // We had both a loaded/hit test visible change/unloaded happen.
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies that clearing hit-test visibility deactivates a loaded element.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsHitTestVisibleDeactivatesFrameworkElement()
     {
@@ -207,13 +258,17 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         uc.IsHitTestVisible = false;
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    /// <summary>
+    /// Verifies activation and deactivation toggle correctly as hit-test visibility changes.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task FrameworkElementIsActivatedAndDeactivatedWithHitTest()
     {
@@ -230,17 +285,17 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(activated);
+        await _expectedActivated.AssertAreEqual(activated);
 
         // this should deactivate it
         uc.IsHitTestVisible = false;
 
-        await new[] { true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivated.AssertAreEqual(activated);
 
         // this should activate it
         uc.IsHitTestVisible = true;
 
-        await new[] { true, false, true }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivatedActivated.AssertAreEqual(activated);
 
         var unloaded = new RoutedEventArgs
         {
@@ -249,9 +304,10 @@ public class WpfActivationForViewFetcherTest
 
         uc.RaiseEvent(unloaded);
 
-        await new[] { true, false, true, false }.AssertAreEqual(activated);
+        await _expectedActivatedDeactivatedActivatedDeactivated.AssertAreEqual(activated);
     }
 
+    [SuppressMessage("Minor Code Smell", "S3257:Declarations and initializations should be as concise as possible", Justification = "Required")]
     private sealed class DesignModeActivatableUserControl : UserControl, IActivatableView
     {
         static DesignModeActivatableUserControl() =>
@@ -259,7 +315,7 @@ public class WpfActivationForViewFetcherTest
                 typeof(DesignModeActivatableUserControl),
                 new FrameworkPropertyMetadata(true));
 
-        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static _ => { });
+        public DesignModeActivatableUserControl() => ActivationDisposable = this.WhenActivated(static (CompositeDisposable _) => { });
 
         public IDisposable ActivationDisposable { get; }
     }

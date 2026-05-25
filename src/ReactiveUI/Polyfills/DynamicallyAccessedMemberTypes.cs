@@ -1,12 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-// Polyfill implementation adapted from SimonCropp/Polyfill
-// https://github.com/SimonCropp/Polyfill
 #if !NET
-
 namespace System.Diagnostics.CodeAnalysis;
 
 /// <summary>
@@ -16,6 +13,10 @@ namespace System.Diagnostics.CodeAnalysis;
 /// bitwise combination of its member values.
 /// </summary>
 [Flags]
+[SuppressMessage(
+    "Major Code Smell",
+    "S4070:Non-flags enums should not be marked with FlagsAttribute",
+    Justification = "Faithful BCL polyfill.")]
 internal enum DynamicallyAccessedMemberTypes
 {
     /// <summary>
@@ -31,6 +32,10 @@ internal enum DynamicallyAccessedMemberTypes
     /// <summary>
     /// Specifies all public constructors.
     /// </summary>
+    [SuppressMessage(
+        "Roslynator",
+        "RCS1157:Composite enum value contains undefined flag",
+        Justification = "Faithful BCL polyfill.")]
     PublicConstructors = 0x0002 | PublicParameterlessConstructor,
 
     /// <summary>
@@ -100,7 +105,8 @@ internal enum DynamicallyAccessedMemberTypes
 }
 
 #else
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-[assembly: TypeForwardedTo(typeof(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes))]
+[assembly: TypeForwardedTo(typeof(DynamicallyAccessedMemberTypes))]
 #endif

@@ -1,11 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
 using ReactiveUI.Winforms;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -16,6 +15,13 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class PanelSetMethodBindingConverterTests
 {
+    private const int EnumerableControlAffinity = 10;
+    private const int ExpectedControlCount = 2;
+
+    /// <summary>
+    /// Tests that GetAffinityForObjects returns zero when the target type is not a control collection.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns_Zero_When_ToType_Is_Not_ControlCollection()
     {
@@ -25,15 +31,23 @@ public class PanelSetMethodBindingConverterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObjects returns ten when the source type is an enumerable of controls.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns_Ten_When_FromType_Is_IEnumerable_Of_Control()
     {
         var converter = new PanelSetMethodBindingConverter();
         var affinity = converter.GetAffinityForObjects(typeof(List<Button>), typeof(Control.ControlCollection));
 
-        await Assert.That(affinity).IsEqualTo(10);
+        await Assert.That(affinity).IsEqualTo(EnumerableControlAffinity);
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObjects returns zero when the source type is not an enumerable of controls.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns_Zero_When_FromType_Is_Not_IEnumerable_Of_Control()
     {
@@ -43,6 +57,10 @@ public class PanelSetMethodBindingConverterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that GetAffinityForObjects returns zero when the source type is null.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns_Zero_When_FromType_Is_Null()
     {
@@ -52,6 +70,9 @@ public class PanelSetMethodBindingConverterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Tests that PerformSet throws when the target is null.
+    /// </summary>
     [Test]
     public void PerformSet_Throws_When_ToTarget_Is_Null()
     {
@@ -60,6 +81,9 @@ public class PanelSetMethodBindingConverterTests
             converter.PerformSet(null, new List<Button>(), null));
     }
 
+    /// <summary>
+    /// Tests that PerformSet throws when the new value is not an enumerable of controls.
+    /// </summary>
     [Test]
     public void PerformSet_Throws_When_NewValue_Is_Not_IEnumerable_Control()
     {
@@ -69,6 +93,10 @@ public class PanelSetMethodBindingConverterTests
             converter.PerformSet(panel.Controls, "not a collection", null));
     }
 
+    /// <summary>
+    /// Tests that PerformSet adds the controls to the target collection.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PerformSet_Adds_Controls_To_Collection()
     {
@@ -78,9 +106,9 @@ public class PanelSetMethodBindingConverterTests
         var button2 = new Button { Name = "Button2" };
         var controls = new List<Button> { button1, button2 };
 
-        var result = converter.PerformSet(panel.Controls, controls, null);
+        converter.PerformSet(panel.Controls, controls, null);
 
-        await Assert.That(panel.Controls.Count).IsEqualTo(2);
+        await Assert.That(panel.Controls.Count).IsEqualTo(ExpectedControlCount);
         await Assert.That(panel.Controls[0]).IsSameReferenceAs(button1);
         await Assert.That(panel.Controls[1]).IsSameReferenceAs(button2);
     }

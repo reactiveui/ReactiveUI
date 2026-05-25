@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -11,7 +11,7 @@ namespace ReactiveUI.Maui.Tests;
 /// Test dispatcher that executes actions synchronously for unit testing.
 /// Based on MAUI's internal test infrastructure.
 /// </summary>
-internal class TestDispatcher : IDispatcher
+internal sealed class TestDispatcher : IDispatcher
 {
     /// <inheritdoc/>
     public bool IsDispatchRequired => false;
@@ -31,8 +31,6 @@ internal class TestDispatcher : IDispatcher
     }
 
     /// <inheritdoc/>
-    public IDispatcherTimer CreateTimer()
-    {
-        throw new NotImplementedException("CreateTimer is not supported in test dispatcher");
-    }
+    public IDispatcherTimer CreateTimer() =>
+        throw new NotSupportedException("CreateTimer is not supported in test dispatcher");
 }

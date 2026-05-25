@@ -1,12 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using DynamicData;
 
 namespace ReactiveUI.Tests.Activation;
 
+/// <summary>
+///     Tests for the <see cref="ViewModelActivator" />.
+/// </summary>
 public class ViewModelActivatorTests
 {
     /// <summary>
@@ -17,8 +21,7 @@ public class ViewModelActivatorTests
     public async Task TestActivatingTicksActivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
-        viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated)
-            .Subscribe();
+        viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
 
         viewModelActivator.Activate();
 
@@ -33,8 +36,7 @@ public class ViewModelActivatorTests
     public async Task TestDeactivatingCountDoesntTickDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
-        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated)
-            .Subscribe();
+        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         viewModelActivator.Deactivate();
 
@@ -49,8 +51,7 @@ public class ViewModelActivatorTests
     public async Task TestDeactivatingFollowingActivatingTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
-        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated)
-            .Subscribe();
+        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         viewModelActivator.Activate();
         viewModelActivator.Deactivate();
@@ -66,8 +67,7 @@ public class ViewModelActivatorTests
     public async Task TestDeactivatingIgnoringRefCountTicksDeactivatedObservable()
     {
         var viewModelActivator = new ViewModelActivator();
-        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated)
-            .Subscribe();
+        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         viewModelActivator.Deactivate(true);
 
@@ -82,10 +82,8 @@ public class ViewModelActivatorTests
     public async Task TestDisposingAfterActivationDeactivatesViewModel()
     {
         var viewModelActivator = new ViewModelActivator();
-        viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated)
-            .Subscribe();
-        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated)
-            .Subscribe();
+        viewModelActivator.Activated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var activated).Subscribe();
+        viewModelActivator.Deactivated.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var deactivated).Subscribe();
 
         using (viewModelActivator.Activate())
         using (Assert.Multiple())

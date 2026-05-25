@@ -1,17 +1,32 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using DynamicData;
+using ReactiveUI.Internal;
 using ReactiveUI.Tests.ObservableAsPropertyHelper.Mocks;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.ObservableAsPropertyHelper;
 
+/// <summary>
+/// Tests for the <see cref="ObservableAsPropertyHelper{T}"/> behavior.
+/// </summary>
 public class ObservableAsPropertyHelperTest
 {
+    /// <summary>
+    ///     The value emitted by the source observables used across these tests.
+    /// </summary>
+    private const int EmittedValue = 42;
+
     /// <summary>
     ///     No thrown-exceptions subscriber equals OAPH death.
     /// </summary>
@@ -20,19 +35,22 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task NoThrownExceptionsSubscriberEqualsOaphDeath()
     {
-        var scheduler = TestContext.Current!.GetScheduler();
+        const int InitialValue = -5;
+        const int SecondInput = 2;
+        const int ThirdInput = 3;
+        const int ExpectedLastValue = 4;
         var input = new Subject<int>();
-        var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: ImmediateScheduler.Instance);
+        var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, InitialValue, scheduler: ImmediateScheduler.Instance);
 
-        await Assert.That(fixture.Value).IsEqualTo(-5);
-        new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
+        await Assert.That(fixture.Value).IsEqualTo(InitialValue);
+        new[] { 1, SecondInput, ThirdInput, ExpectedLastValue }.Run(input.OnNext);
 
-        var exception = Assert.Throws<UnhandledErrorException>(() => input.OnError(new Exception("Die!")));
+        var exception = Assert.Throws<UnhandledErrorException>(() => input.OnError(new InvalidOperationException("Die!")));
 
         using (Assert.Multiple())
         {
             await Assert.That(exception.InnerException?.Message).IsEqualTo("Die!");
-            await Assert.That(fixture.Value).IsEqualTo(4);
+            await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
         }
     }
 
@@ -43,21 +61,19 @@ public class ObservableAsPropertyHelperTest
     [Test]
     public async Task NullableTypesTestShouldNotNeedDecorators2_ToProperty()
     {
+        const int ExpectedAccountsFound = 3;
         var fixture = new WhenAnyTestFixture();
         fixture.WhenAnyValue(
-                static x => x.ProjectService.ProjectsNullable,
-                static x => x.AccountService.AccountUsersNullable)
-            .Where(static tuple => tuple.Item1.Count > 0 && tuple.Item2.Count > 0)
-            .Select(static tuple =>
-            {
-                var (_, users) = tuple;
-                return users.Values.Count(static x => !string.IsNullOrWhiteSpace(x?.LastName));
-            })
-            .ToProperty(fixture, static x => x.AccountsFound, out var helper);
+            static x => x.ProjectService.ProjectsNullable,
+            static x => x.AccountService.AccountUsersNullable).Where(static tuple => tuple.Value1.Count > 0 && tuple.Value2.Count > 0).Select(static tuple =>
+                {
+                    var (_, users) = tuple;
+                    return users.Values.Count(static x => !string.IsNullOrWhiteSpace(x?.LastName));
+                }).ToProperty(fixture, static x => x.AccountsFound, out var helper);
 
         fixture.AccountsFoundHelper = helper;
 
-        await Assert.That(fixture.AccountsFound).IsEqualTo(3);
+        await Assert.That(fixture.AccountsFound).IsEqualTo(ExpectedAccountsFound);
     }
 
     /// <summary>
@@ -72,7 +88,7 @@ public class ObservableAsPropertyHelperTest
         var observable = Observable.Create<int>(o =>
         {
             isSubscribed = true;
-            o.OnNext(42);
+            o.OnNext(EmittedValue);
             o.OnCompleted();
             return Disposable.Empty;
         });
@@ -82,7 +98,7 @@ public class ObservableAsPropertyHelperTest
         using (Assert.Multiple())
         {
             await Assert.That(isSubscribed).IsFalse();
-            await Assert.That(fixture.Value).IsEqualTo(42);
+            await Assert.That(fixture.Value).IsEqualTo(EmittedValue);
         }
 
         await Assert.That(isSubscribed).IsTrue();
@@ -97,7 +113,7 @@ public class ObservableAsPropertyHelperTest
     {
         var observable = Observable.Create<int>(static o =>
         {
-            o.OnNext(42);
+            o.OnNext(EmittedValue);
             o.OnCompleted();
             return Disposable.Empty;
         });
@@ -107,7 +123,7 @@ public class ObservableAsPropertyHelperTest
         using (Assert.Multiple())
         {
             await Assert.That(fixture.IsSubscribed).IsFalse();
-            await Assert.That(fixture.Value).IsEqualTo(42);
+            await Assert.That(fixture.Value).IsEqualTo(EmittedValue);
             await Assert.That(fixture.IsSubscribed).IsTrue();
         }
     }
@@ -121,7 +137,7 @@ public class ObservableAsPropertyHelperTest
     {
         var observable = Observable.Create<int>(o =>
         {
-            o.OnNext(42);
+            o.OnNext(EmittedValue);
             o.OnCompleted();
             return Disposable.Empty;
         });
@@ -133,7 +149,7 @@ public class ObservableAsPropertyHelperTest
 
         await Assert.That(() =>
         {
-            var value = fixture.Value;
+            _ = fixture.Value;
             return Task.CompletedTask;
         }).ThrowsNothing();
 
@@ -171,7 +187,7 @@ public class ObservableAsPropertyHelperTest
         {
             await Assert.That(fixture.IsSubscribed).IsTrue();
             await Assert.That(wasAccessed).IsTrue();
-            await Assert.That(result).IsEqualTo(42);
+            await Assert.That(result).IsEqualTo(EmittedValue);
         }
 
         return;
@@ -179,7 +195,7 @@ public class ObservableAsPropertyHelperTest
         int GetInitialValue()
         {
             wasAccessed = true;
-            return 42;
+            return EmittedValue;
         }
     }
 
@@ -192,7 +208,7 @@ public class ObservableAsPropertyHelperTest
     [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public async Task OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(
+    public async Task OaphDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSourceProvidesInitialValue(
         int initialValue)
     {
         var observable = new Subject<int>();
@@ -227,7 +243,7 @@ public class ObservableAsPropertyHelperTest
     [Test]
     [Arguments(0)]
     [Arguments(42)]
-    public async Task OAPHDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
+    public async Task OaphDeferSubscriptionWithInitialFuncValueNotCallOnChangedWhenSubscribed(int initialValue)
     {
         var observable = Observable.Empty<int>();
 
@@ -288,7 +304,7 @@ public class ObservableAsPropertyHelperTest
 
         return;
 
-        static int ThrowIfAccessed() => throw new Exception();
+        static int ThrowIfAccessed() => throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -375,14 +391,18 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task OaphShouldFireChangeNotifications()
     {
+        const int InitialValue = -5;
+        const int SecondInput = 2;
+        const int ThirdInput = 3;
+        const int FourthInput = 4;
         var scheduler = TestContext.Current!.GetScheduler();
-        var input = new[] { 1, 2, 3, 3, 4 }.ToObservable();
+        var input = new[] { 1, SecondInput, ThirdInput, ThirdInput, FourthInput }.ToObservable();
         var output = new List<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
             input,
-            x => output.Add(x),
-            -5,
+            output.Add,
+            InitialValue,
             scheduler: scheduler);
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
@@ -391,7 +411,7 @@ public class ObservableAsPropertyHelperTest
             await Assert.That(fixture.Value).IsEqualTo(input.LastAsync().Wait());
 
             // Suppresses duplicate notifications (note single '3')
-            await Assert.That(output).IsEquivalentTo([-5, 1, 2, 3, 4]);
+            await Assert.That(output).IsEquivalentTo([InitialValue, 1, SecondInput, ThirdInput, FourthInput]);
         }
     }
 
@@ -403,16 +423,17 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task OaphShouldProvideInitialValueImmediatelyRegardlessOfScheduler()
     {
+        const int InitialValue = 32;
         var scheduler = TestContext.Current!.GetScheduler();
         var output = new List<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
-            Observable<int>.Never,
-            x => output.Add(x),
-            32,
+            NeverObservable<int>.Instance,
+            output.Add,
+            InitialValue,
             scheduler: scheduler);
 
-        await Assert.That(fixture.Value).IsEqualTo(32);
+        await Assert.That(fixture.Value).IsEqualTo(InitialValue);
     }
 
     /// <summary>
@@ -423,26 +444,30 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task OaphShouldProvideLatestValue()
     {
+        const int InitialValue = -5;
+        const int SecondInput = 2;
+        const int ThirdInput = 3;
+        const int ExpectedLastValue = 4;
         var scheduler = TestContext.Current!.GetScheduler();
         var input = new Subject<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
             input,
             _ => { },
-            -5,
+            InitialValue,
             scheduler: scheduler);
 
-        await Assert.That(fixture.Value).IsEqualTo(-5);
+        await Assert.That(fixture.Value).IsEqualTo(InitialValue);
 
-        new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
+        new[] { 1, SecondInput, ThirdInput, ExpectedLastValue }.Run(input.OnNext);
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
-        await Assert.That(fixture.Value).IsEqualTo(4);
+        await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
 
         input.OnCompleted();
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
-        await Assert.That(fixture.Value).IsEqualTo(4);
+        await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
     }
 
     /// <summary>
@@ -453,25 +478,29 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task OaphShouldRethrowErrors()
     {
+        const int InitialValue = -5;
+        const int SecondInput = 2;
+        const int ThirdInput = 3;
+        const int ExpectedLastValue = 4;
         var scheduler = TestContext.Current!.GetScheduler();
         var input = new Subject<int>();
-        var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, -5, scheduler: scheduler);
+        var fixture = new ObservableAsPropertyHelper<int>(input, _ => { }, InitialValue, scheduler: scheduler);
         var errors = new List<Exception>();
 
-        await Assert.That(fixture.Value).IsEqualTo(-5);
-        new[] { 1, 2, 3, 4 }.Run(x => input.OnNext(x));
+        await Assert.That(fixture.Value).IsEqualTo(InitialValue);
+        new[] { 1, SecondInput, ThirdInput, ExpectedLastValue }.Run(input.OnNext);
 
         fixture.ThrownExceptions.Subscribe(errors.Add);
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
-        await Assert.That(fixture.Value).IsEqualTo(4);
+        await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
 
-        input.OnError(new Exception("Die!"));
+        input.OnError(new InvalidOperationException("Die!"));
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
         using (Assert.Multiple())
         {
-            await Assert.That(fixture.Value).IsEqualTo(4);
+            await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
             await Assert.That(errors).Count().IsEqualTo(1);
         }
     }
@@ -484,13 +513,15 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public async Task OaphShouldSkipFirstValueIfItMatchesTheInitialValue()
     {
+        const int SecondInput = 2;
+        const int ThirdInput = 3;
         var scheduler = TestContext.Current!.GetScheduler();
-        var input = new[] { 1, 2, 3 }.ToObservable();
+        var input = new[] { 1, SecondInput, ThirdInput }.ToObservable();
         var output = new List<int>();
 
         var fixture = new ObservableAsPropertyHelper<int>(
             input,
-            x => output.Add(x),
+            output.Add,
             1,
             scheduler: scheduler);
 
@@ -498,7 +529,7 @@ public class ObservableAsPropertyHelperTest
         using (Assert.Multiple())
         {
             await Assert.That(fixture.Value).IsEqualTo(input.LastAsync().Wait());
-            await Assert.That(output).IsEquivalentTo([1, 2, 3]);
+            await Assert.That(output).IsEquivalentTo([1, SecondInput, ThirdInput]);
         }
     }
 
@@ -514,7 +545,7 @@ public class ObservableAsPropertyHelperTest
         var observable = Observable.Create<int>(o =>
         {
             isSubscribed = true;
-            o.OnNext(42);
+            o.OnNext(EmittedValue);
             o.OnCompleted();
             return Disposable.Empty;
         });
@@ -524,7 +555,7 @@ public class ObservableAsPropertyHelperTest
         using (Assert.Multiple())
         {
             await Assert.That(isSubscribed).IsTrue();
-            await Assert.That(fixture.Value).IsEqualTo(42);
+            await Assert.That(fixture.Value).IsEqualTo(EmittedValue);
         }
     }
 
@@ -535,15 +566,17 @@ public class ObservableAsPropertyHelperTest
     [Test]
     public async Task ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName()
     {
-        var fixture = new OAPHIndexerTestFixture(0, ImmediateScheduler.Instance);
+        var fixture = new OaphIndexerTestFixture(0, ImmediateScheduler.Instance);
         var propertiesChanged = new List<string>();
 
         fixture.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName is not null)
+            if (args.PropertyName is null)
             {
-                propertiesChanged.Add(args.PropertyName);
+                return;
             }
+
+            propertiesChanged.Add(args.PropertyName);
         };
 
         fixture.Text = "awesome";
@@ -563,16 +596,18 @@ public class ObservableAsPropertyHelperTest
 
         Assert.Throws<NotSupportedException>(() =>
         {
-            var fixture = new OAPHIndexerTestFixture(
+            var fixture = new OaphIndexerTestFixture(
                 1,
                 scheduler);
 
             fixture.PropertyChanged += (_, args) =>
             {
-                if (args.PropertyName is not null)
+                if (args.PropertyName is null)
                 {
-                    propertiesChanged.Add(args.PropertyName);
+                    return;
                 }
+
+                propertiesChanged.Add(args.PropertyName);
             };
 
             fixture.Text = "awesome";
@@ -586,8 +621,9 @@ public class ObservableAsPropertyHelperTest
     [TestExecutor<WithSchedulerExecutor>]
     public void ToProperty_GivenIndexer_NotifiesOnExpectedPropertyName2()
     {
+        const int InvalidPathMode = 2;
         var scheduler = TestContext.Current!.GetScheduler();
-        Assert.Throws<ArgumentException>(() => _ = new OAPHIndexerTestFixture(2, scheduler));
+        Assert.Throws<ArgumentException>(() => _ = new OaphIndexerTestFixture(InvalidPathMode, scheduler));
     }
 
     /// <summary>
@@ -661,22 +697,18 @@ public class ObservableAsPropertyHelperTest
 
         var fixture = new OaphNameOfTestFixture();
 
-        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, true)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanging).Subscribe();
-        fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, true)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanging).Subscribe();
+        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanging).Subscribe();
+        fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanging).Subscribe();
         var changing = new[] { firstThreeChanging!, lastThreeChanging };
 
-        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, false)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanged).Subscribe();
-        fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, false)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();
+        fixture.ObservableForProperty(x => x.FirstThreeLettersOfOneWord, false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var firstThreeChanged).Subscribe();
+        fixture.ObservableForProperty(x => x.LastThreeLettersOfOneWord, false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var lastThreeChanged).Subscribe();
         var changed = new[] { firstThreeChanged!, lastThreeChanged };
 
         using (Assert.Multiple())
         {
-            await Assert.That(changed.All(x => x.Count == 0)).IsTrue();
-            await Assert.That(changing.All(x => x.Count == 0)).IsTrue();
+            await Assert.That(Array.TrueForAll(changed, x => x.Count == 0)).IsTrue();
+            await Assert.That(Array.TrueForAll(changing, x => x.Count == 0)).IsTrue();
         }
 
         for (var i = 0; i < testWords.Length; ++i)
@@ -685,8 +717,8 @@ public class ObservableAsPropertyHelperTest
 
             using (Assert.Multiple())
             {
-                await Assert.That(changed.All(x => x.Count == i + 1)).IsTrue();
-                await Assert.That(changing.All(x => x.Count == i + 1)).IsTrue();
+                await Assert.That(Array.TrueForAll(changed, x => x.Count == i + 1)).IsTrue();
+                await Assert.That(Array.TrueForAll(changing, x => x.Count == i + 1)).IsTrue();
                 await Assert.That(firstThreeChanged[i].Value).IsEqualTo(first3Letters[i]);
                 await Assert.That(lastThreeChanged[i].Value).IsEqualTo(last3Letters[i]);
             }
@@ -714,10 +746,8 @@ public class ObservableAsPropertyHelperTest
         // NB: Hack to connect up the OAPH
         _ = (fixture.FirstThreeLettersOfOneWord ?? string.Empty).Substring(0, 0);
 
-        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, true)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanging).Subscribe();
-        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, false)
-            .ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
+        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanging).Subscribe();
+        fixture.ObservableForProperty(static x => x.FirstThreeLettersOfOneWord, false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var resultChanged).Subscribe();
 
         using (Assert.Multiple())
         {
@@ -734,11 +764,12 @@ public class ObservableAsPropertyHelperTest
             await Assert.That(resultChanged[0].Value).IsEqualTo("Foo");
         }
 
+        const int ExpectedCountAfterSecondChange = 2;
         fixture.IsOnlyOneWord = "Bazz";
         using (Assert.Multiple())
         {
-            await Assert.That(resultChanging).Count().IsEqualTo(2);
-            await Assert.That(resultChanged).Count().IsEqualTo(2);
+            await Assert.That(resultChanging).Count().IsEqualTo(ExpectedCountAfterSecondChange);
+            await Assert.That(resultChanged).Count().IsEqualTo(ExpectedCountAfterSecondChange);
             await Assert.That(resultChanging[1].Value).IsEqualTo("Foo");
             await Assert.That(resultChanged[1].Value).IsEqualTo("Baz");
         }

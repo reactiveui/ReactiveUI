@@ -1,10 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Subjects;
 using DynamicData;
 using ReactiveUI.Tests.Utilities.MessageBus;
+using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.MessageBus;
 
@@ -16,6 +20,71 @@ namespace ReactiveUI.Tests.MessageBus;
 [TestExecutor<WithMessageBusExecutor>]
 public class MessageBusTest
 {
+    /// <summary>
+    ///     A representative integer message value used across the tests.
+    /// </summary>
+    private const int MessageValue = 42;
+
+    /// <summary>
+    ///     A second representative integer message value used across the tests.
+    /// </summary>
+    private const int SecondMessageValue = 100;
+
+    /// <summary>
+    ///     A representative string message used across the tests.
+    /// </summary>
+    private const string TestMessage1 = "Test";
+
+    /// <summary>
+    ///     The first representative contract name used across the tests.
+    /// </summary>
+    private const string Contract1 = "Contract1";
+
+    /// <summary>
+    ///     The second representative contract name used across the tests.
+    /// </summary>
+    private const string Contract2 = "Contract2";
+
+    /// <summary>
+    ///     A representative string message sent before a state change.
+    /// </summary>
+    private const string BeforeMessage = "Before";
+
+    /// <summary>
+    ///     A representative string message sent after a state change.
+    /// </summary>
+    private const string AfterMessage = "After";
+
+    /// <summary>
+    ///     A representative first ordered string message.
+    /// </summary>
+    private const string FirstMessage = "First";
+
+    /// <summary>
+    ///     A representative second ordered string message.
+    /// </summary>
+    private const string SecondTextMessage = "Second";
+
+    /// <summary>
+    ///     A representative third ordered string message.
+    /// </summary>
+    private const string ThirdMessage = "Third";
+
+    /// <summary>
+    ///     A representative greeting string message.
+    /// </summary>
+    private const string HelloMessage = "Hello";
+
+    /// <summary>
+    ///     A representative world string message.
+    /// </summary>
+    private const string WorldMessage = "World";
+
+    /// <summary>
+    ///     A representative contract name used for scheduler-scoping tests.
+    /// </summary>
+    private const string TestContract = "TestContract";
+
     /// <summary>
     ///     Tests that MessageBus.Current property can be get and set.
     ///     Verifies the static Current property accessor functionality.
@@ -63,7 +132,7 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
 
-        messageBus.SendMessage("Test");
+        messageBus.SendMessage(TestMessage1);
 
         await Assert.That(messageBus.IsRegistered(typeof(string))).IsTrue();
     }
@@ -91,7 +160,7 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
 
-        messageBus.SendMessage(42);
+        messageBus.SendMessage(MessageValue);
 
         using (Assert.Multiple())
         {
@@ -110,12 +179,12 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
 
-        messageBus.SendMessage("Test", "Contract1");
+        messageBus.SendMessage(TestMessage1, Contract1);
 
         using (Assert.Multiple())
         {
-            await Assert.That(messageBus.IsRegistered(typeof(string), "Contract1")).IsTrue();
-            await Assert.That(messageBus.IsRegistered(typeof(string), "Contract2")).IsFalse();
+            await Assert.That(messageBus.IsRegistered(typeof(string), Contract1)).IsTrue();
+            await Assert.That(messageBus.IsRegistered(typeof(string), Contract2)).IsFalse();
             await Assert.That(messageBus.IsRegistered(typeof(string))).IsFalse();
         }
     }
@@ -152,15 +221,14 @@ public class MessageBusTest
         messageBus.SendMessage("Before1");
         messageBus.SendMessage("Before2");
 
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        messageBus.SendMessage("After");
+        messageBus.SendMessage(AfterMessage);
 
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("After");
+            await Assert.That(messages[0]).IsEqualTo(AfterMessage);
         }
     }
 
@@ -177,9 +245,9 @@ public class MessageBusTest
 
         await Assert.That(messages).IsEmpty();
 
-        messageBus.SendMessage(42);
+        messageBus.SendMessage(MessageValue);
         await Assert.That(messages).Count().IsEqualTo(1);
-        await Assert.That(messages[0]).IsEqualTo(42);
+        await Assert.That(messages[0]).IsEqualTo(MessageValue);
     }
 
     /// <summary>
@@ -191,17 +259,16 @@ public class MessageBusTest
     public async Task Listen_Unsubscribe_StopsReceivingMessages()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        var subscription = messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var messages).Subscribe();
+        var subscription = messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        messageBus.SendMessage("Before");
+        messageBus.SendMessage(BeforeMessage);
         subscription.Dispose();
-        messageBus.SendMessage("After");
+        messageBus.SendMessage(AfterMessage);
 
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Before");
+            await Assert.That(messages[0]).IsEqualTo(BeforeMessage);
         }
     }
 
@@ -215,24 +282,24 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
 
-        messageBus.SendMessage("First");
-        messageBus.SendMessage("Second");
-        messageBus.SendMessage("Third");
+        messageBus.SendMessage(FirstMessage);
+        messageBus.SendMessage(SecondTextMessage);
+        messageBus.SendMessage(ThirdMessage);
 
-        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var messages).Subscribe();
+        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Third");
+            await Assert.That(messages[0]).IsEqualTo(ThirdMessage);
         }
 
         messageBus.SendMessage("Fourth");
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
             await Assert.That(messages[1]).IsEqualTo("Fourth");
         }
     }
@@ -246,19 +313,19 @@ public class MessageBusTest
     public async Task ListenIncludeLatest_ReceivesInitialValue()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.ListenIncludeLatest<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.ListenIncludeLatest<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         await Assert.That(messages).Count().IsEqualTo(1);
         await Assert.That(messages[0]).IsEqualTo(0);
 
-        messageBus.SendMessage(42);
+        messageBus.SendMessage(MessageValue);
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
             await Assert.That(messages[0]).IsEqualTo(0);
-            await Assert.That(messages[1]).IsEqualTo(42);
+            await Assert.That(messages[1]).IsEqualTo(MessageValue);
         }
     }
 
@@ -272,16 +339,15 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
 
-        messageBus.SendMessage("First");
-        messageBus.SendMessage("Second");
+        messageBus.SendMessage(FirstMessage);
+        messageBus.SendMessage(SecondTextMessage);
 
-        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var messages).Subscribe();
+        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Second");
+            await Assert.That(messages[0]).IsEqualTo(SecondTextMessage);
         }
     }
 
@@ -295,19 +361,18 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         var subscription = messageBus.RegisterMessageSource(source);
 
-        source.OnNext("Before");
+        source.OnNext(BeforeMessage);
         subscription.Dispose();
-        source.OnNext("After");
+        source.OnNext(AfterMessage);
 
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Before");
+            await Assert.That(messages[0]).IsEqualTo(BeforeMessage);
         }
     }
 
@@ -338,21 +403,21 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         messageBus.RegisterMessageSource(source);
 
-        source.OnNext("Before");
+        source.OnNext(BeforeMessage);
         source.OnCompleted();
 
-        messageBus.SendMessage("After");
+        messageBus.SendMessage(AfterMessage);
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
-            await Assert.That(messages[0]).IsEqualTo("Before");
-            await Assert.That(messages[1]).IsEqualTo("After");
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(BeforeMessage);
+            await Assert.That(messages[1]).IsEqualTo(AfterMessage);
         }
     }
 
@@ -366,21 +431,21 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         messageBus.RegisterMessageSource(source);
 
-        source.OnNext("Before");
+        source.OnNext(BeforeMessage);
         source.OnError(new InvalidOperationException("Test error"));
 
-        messageBus.SendMessage("After");
+        messageBus.SendMessage(AfterMessage);
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
-            await Assert.That(messages[0]).IsEqualTo("Before");
-            await Assert.That(messages[1]).IsEqualTo("After");
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(BeforeMessage);
+            await Assert.That(messages[1]).IsEqualTo(AfterMessage);
         }
     }
 
@@ -394,21 +459,22 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
         messageBus.RegisterMessageSource(source);
 
-        source.OnNext("First");
-        source.OnNext("Second");
-        source.OnNext("Third");
+        source.OnNext(FirstMessage);
+        source.OnNext(SecondTextMessage);
+        source.OnNext(ThirdMessage);
 
+        const int ExpectedCount = 3;
+        const int ThirdIndex = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(3);
-            await Assert.That(messages[0]).IsEqualTo("First");
-            await Assert.That(messages[1]).IsEqualTo("Second");
-            await Assert.That(messages[2]).IsEqualTo("Third");
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(FirstMessage);
+            await Assert.That(messages[1]).IsEqualTo(SecondTextMessage);
+            await Assert.That(messages[ThirdIndex]).IsEqualTo(ThirdMessage);
         }
     }
 
@@ -422,21 +488,22 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var source = new Subject<int>();
-        messageBus.Listen<int>("MyContract").ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var contractMessages).Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var noContractMessages)
-            .Subscribe();
+        messageBus.Listen<int>("MyContract").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var contractMessages).Subscribe();
+        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var noContractMessages).Subscribe();
+
+        const int SecondMessage = 2;
+        const int ExpectedCount = 2;
 
         messageBus.RegisterMessageSource(source, "MyContract");
 
         source.OnNext(1);
-        source.OnNext(2);
+        source.OnNext(SecondMessage);
 
         using (Assert.Multiple())
         {
-            await Assert.That(contractMessages).Count().IsEqualTo(2);
+            await Assert.That(contractMessages).Count().IsEqualTo(ExpectedCount);
             await Assert.That(contractMessages[0]).IsEqualTo(1);
-            await Assert.That(contractMessages[1]).IsEqualTo(2);
+            await Assert.That(contractMessages[1]).IsEqualTo(SecondMessage);
             await Assert.That(noContractMessages).IsEmpty();
         }
     }
@@ -453,10 +520,9 @@ public class MessageBusTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler);
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        messageBus.SendMessage("Test");
+        messageBus.SendMessage(TestMessage1);
 
         await Assert.That(messages).IsEmpty();
 
@@ -465,7 +531,7 @@ public class MessageBusTest
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Test");
+            await Assert.That(messages[0]).IsEqualTo(TestMessage1);
         }
     }
 
@@ -479,15 +545,14 @@ public class MessageBusTest
     {
         var messageBus = new ReactiveUI.MessageBus();
         var scheduler1 = TestContext.Current.GetVirtualTimeScheduler();
-        var scheduler2 = new ReactiveUI.Tests.Utilities.Schedulers.VirtualTimeScheduler();
+        var scheduler2 = new VirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler1);
         messageBus.RegisterScheduler<string>(scheduler2);
 
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        messageBus.SendMessage("Test");
+        messageBus.SendMessage(TestMessage1);
 
         await Assert.That(messages).IsEmpty();
 
@@ -499,7 +564,7 @@ public class MessageBusTest
         using (Assert.Multiple())
         {
             await Assert.That(messages).Count().IsEqualTo(1);
-            await Assert.That(messages[0]).IsEqualTo("Test");
+            await Assert.That(messages[0]).IsEqualTo(TestMessage1);
         }
     }
 
@@ -514,13 +579,11 @@ public class MessageBusTest
         var messageBus = new ReactiveUI.MessageBus();
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
-        messageBus.RegisterScheduler<string>(scheduler, "TestContract");
-        messageBus.Listen<string>("TestContract").ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var contractMessages).Subscribe();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var normalMessages)
-            .Subscribe();
+        messageBus.RegisterScheduler<string>(scheduler, TestContract);
+        messageBus.Listen<string>(TestContract).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var contractMessages).Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var normalMessages).Subscribe();
 
-        messageBus.SendMessage("Contract", "TestContract");
+        messageBus.SendMessage("Contract", TestContract);
         messageBus.SendMessage("Normal");
 
         using (Assert.Multiple())
@@ -548,24 +611,26 @@ public class MessageBusTest
     public async Task SendMessage_ComplexObject_WorksCorrectly()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<TestMessage>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<TestMessage>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        var msg1 = new TestMessage { Id = 1, Text = "First" };
-        var msg2 = new TestMessage { Id = 2, Text = "Second" };
+        const int SecondId = 2;
+        const int ExpectedCount = 2;
+
+        var msg1 = new TestMessage { Id = 1, Text = FirstMessage };
+        var msg2 = new TestMessage { Id = SecondId, Text = SecondTextMessage };
 
         messageBus.SendMessage(msg1);
         messageBus.SendMessage(msg2);
 
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
             await Assert.That(messages[0]).IsEqualTo(msg1);
             await Assert.That(messages[1]).IsEqualTo(msg2);
             await Assert.That(messages[0].Id).IsEqualTo(1);
-            await Assert.That(messages[0].Text).IsEqualTo("First");
-            await Assert.That(messages[1].Id).IsEqualTo(2);
-            await Assert.That(messages[1].Text).IsEqualTo("Second");
+            await Assert.That(messages[0].Text).IsEqualTo(FirstMessage);
+            await Assert.That(messages[1].Id).IsEqualTo(SecondId);
+            await Assert.That(messages[1].Text).IsEqualTo(SecondTextMessage);
         }
     }
 
@@ -580,11 +645,12 @@ public class MessageBusTest
         var messageBus = new ReactiveUI.MessageBus();
         messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        var tasks = Enumerable.Range(0, 100).Select(i => Task.Run(() => messageBus.SendMessage(i))).ToArray();
+        const int MessageCount = 100;
+        var tasks = Enumerable.Range(0, MessageCount).Select(i => Task.Run(() => messageBus.SendMessage(i))).ToArray();
 
         await Task.WhenAll(tasks);
 
-        await Assert.That(messages).Count().IsEqualTo(100);
+        await Assert.That(messages).Count().IsEqualTo(MessageCount);
     }
 
     /// <summary>
@@ -596,24 +662,24 @@ public class MessageBusTest
     public async Task SendMessage_DifferentTypes_AreIndependent()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var stringMessages)
-            .Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var intMessages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var stringMessages).Subscribe();
+        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var intMessages).Subscribe();
 
-        messageBus.SendMessage("Hello");
-        messageBus.SendMessage(42);
-        messageBus.SendMessage("World");
-        messageBus.SendMessage(100);
+        const int ExpectedCount = 2;
+
+        messageBus.SendMessage(HelloMessage);
+        messageBus.SendMessage(MessageValue);
+        messageBus.SendMessage(WorldMessage);
+        messageBus.SendMessage(SecondMessageValue);
 
         using (Assert.Multiple())
         {
-            await Assert.That(stringMessages).Count().IsEqualTo(2);
-            await Assert.That(stringMessages[0]).IsEqualTo("Hello");
-            await Assert.That(stringMessages[1]).IsEqualTo("World");
-            await Assert.That(intMessages).Count().IsEqualTo(2);
-            await Assert.That(intMessages[0]).IsEqualTo(42);
-            await Assert.That(intMessages[1]).IsEqualTo(100);
+            await Assert.That(stringMessages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(stringMessages[0]).IsEqualTo(HelloMessage);
+            await Assert.That(stringMessages[1]).IsEqualTo(WorldMessage);
+            await Assert.That(intMessages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(intMessages[0]).IsEqualTo(MessageValue);
+            await Assert.That(intMessages[1]).IsEqualTo(SecondMessageValue);
         }
     }
 
@@ -626,10 +692,8 @@ public class MessageBusTest
     public async Task SendMessage_Listen_NullVsEmptyContract_AreDifferent()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var nullMessages)
-            .Subscribe();
-        messageBus.Listen<string>(string.Empty).ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var emptyMessages).Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var nullMessages).Subscribe();
+        messageBus.Listen<string>(string.Empty).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var emptyMessages).Subscribe();
 
         messageBus.SendMessage("Null");
         messageBus.SendMessage("Empty", string.Empty);
@@ -652,17 +716,17 @@ public class MessageBusTest
     public async Task SendMessage_Listen_ReceivesMessage()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages)
-            .Subscribe();
+        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
 
-        messageBus.SendMessage("Hello");
-        messageBus.SendMessage("World");
+        messageBus.SendMessage(HelloMessage);
+        messageBus.SendMessage(WorldMessage);
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(2);
-            await Assert.That(messages[0]).IsEqualTo("Hello");
-            await Assert.That(messages[1]).IsEqualTo("World");
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(HelloMessage);
+            await Assert.That(messages[1]).IsEqualTo(WorldMessage);
         }
     }
 
@@ -675,18 +739,17 @@ public class MessageBusTest
     public async Task SendMessage_Listen_WithContract_DistinguishesMessages()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>("Contract1").ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var messages1).Subscribe();
-        messageBus.Listen<string>("Contract2").ToObservableChangeSet(ImmediateScheduler.Instance)
-            .Bind(out var messages2).Subscribe();
+        messageBus.Listen<string>(Contract1).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages1).Subscribe();
+        messageBus.Listen<string>(Contract2).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages2).Subscribe();
 
-        messageBus.SendMessage("Message1", "Contract1");
-        messageBus.SendMessage("Message2", "Contract2");
-        messageBus.SendMessage("Message3", "Contract1");
+        messageBus.SendMessage("Message1", Contract1);
+        messageBus.SendMessage("Message2", Contract2);
+        messageBus.SendMessage("Message3", Contract1);
 
+        const int ExpectedCount = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages1).Count().IsEqualTo(2);
+            await Assert.That(messages1).Count().IsEqualTo(ExpectedCount);
             await Assert.That(messages1[0]).IsEqualTo("Message1");
             await Assert.That(messages1[1]).IsEqualTo("Message3");
             await Assert.That(messages2).Count().IsEqualTo(1);
@@ -703,23 +766,20 @@ public class MessageBusTest
     public async Task SendMessage_MultipleSubscribers_AllReceiveMessage()
     {
         var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber1)
-            .Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber2)
-            .Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber3)
-            .Subscribe();
+        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber1).Subscribe();
+        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber2).Subscribe();
+        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber3).Subscribe();
 
-        messageBus.SendMessage(42);
+        messageBus.SendMessage(MessageValue);
 
         using (Assert.Multiple())
         {
             await Assert.That(subscriber1).Count().IsEqualTo(1);
-            await Assert.That(subscriber1[0]).IsEqualTo(42);
+            await Assert.That(subscriber1[0]).IsEqualTo(MessageValue);
             await Assert.That(subscriber2).Count().IsEqualTo(1);
-            await Assert.That(subscriber2[0]).IsEqualTo(42);
+            await Assert.That(subscriber2[0]).IsEqualTo(MessageValue);
             await Assert.That(subscriber3).Count().IsEqualTo(1);
-            await Assert.That(subscriber3[0]).IsEqualTo(42);
+            await Assert.That(subscriber3[0]).IsEqualTo(MessageValue);
         }
     }
 
@@ -736,16 +796,19 @@ public class MessageBusTest
         var messages = new List<int?>();
         messageBus.Listen<int?>().Subscribe(messages.Add);
 
-        messageBus.SendMessage<int?>(42);
+        const int ExpectedCount = 3;
+        const int ThirdIndex = 2;
+
+        messageBus.SendMessage<int?>(MessageValue);
         messageBus.SendMessage<int?>(null);
-        messageBus.SendMessage<int?>(100);
+        messageBus.SendMessage<int?>(SecondMessageValue);
 
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(3);
-            await Assert.That(messages[0]).IsEqualTo(42);
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(MessageValue);
             await Assert.That(messages[1]).IsNull();
-            await Assert.That(messages[2]).IsEqualTo(100);
+            await Assert.That(messages[ThirdIndex]).IsEqualTo(SecondMessageValue);
         }
     }
 
@@ -762,23 +825,25 @@ public class MessageBusTest
         var messages = new List<string?>();
         messageBus.Listen<string?>().Subscribe(messages.Add);
 
-        messageBus.SendMessage<string?>("Hello");
+        messageBus.SendMessage<string?>(HelloMessage);
         messageBus.SendMessage<string?>(null);
-        messageBus.SendMessage<string?>("World");
+        messageBus.SendMessage<string?>(WorldMessage);
 
+        const int ExpectedCount = 3;
+        const int ThirdIndex = 2;
         using (Assert.Multiple())
         {
-            await Assert.That(messages).Count().IsEqualTo(3);
-            await Assert.That(messages[0]).IsEqualTo("Hello");
+            await Assert.That(messages).Count().IsEqualTo(ExpectedCount);
+            await Assert.That(messages[0]).IsEqualTo(HelloMessage);
             await Assert.That(messages[1]).IsNull();
-            await Assert.That(messages[2]).IsEqualTo("World");
+            await Assert.That(messages[ThirdIndex]).IsEqualTo(WorldMessage);
         }
     }
 
     /// <summary>
     ///     Test message class for complex object testing.
     /// </summary>
-    private class TestMessage
+    private sealed class TestMessage
     {
         /// <summary>
         ///     Gets or sets the message identifier.

@@ -1,6 +1,6 @@
 [![Build](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml/badge.svg)](https://github.com/reactiveui/ReactiveUI/actions/workflows/ci-build.yml)
 [![Code Coverage](https://codecov.io/gh/reactiveui/ReactiveUI/branch/main/graph/badge.svg)](https://codecov.io/gh/reactiveui/ReactiveUI)
-[![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute) 
+[![#yourfirstpr](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](https://reactiveui.net/contribute)
 [![](https://img.shields.io/badge/chat-slack-blue.svg)](https://reactiveui.net/slack)
 
 <br>
@@ -11,7 +11,10 @@
 
 # What is ReactiveUI?
 
-[ReactiveUI](https://reactiveui.net/) is a composable, cross-platform model-view-viewmodel framework for all .NET platforms that is inspired by functional reactive programming, which is a paradigm that allows you to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk) and improve the testability of your application.
+[ReactiveUI](https://reactiveui.net/) is a composable, cross-platform model-view-viewmodel framework for all .NET
+platforms that is inspired by functional reactive programming, which is a paradigm that allows you
+to [abstract mutable state away from your user interfaces and express the idea around a feature in one readable place](https://www.youtube.com/watch?v=3HwEytvngXk)
+and improve the testability of your application.
 
 [🔨 Get Started](https://reactiveui.net/docs/getting-started/) [🛍 Install Packages](https://reactiveui.net/docs/getting-started/installation/) [🎞 Watch Videos](https://reactiveui.net/docs/resources/videos) [🎓 View Samples](https://reactiveui.net/docs/resources/samples/) [🎤 Discuss ReactiveUI](https://reactiveui.net/slack)
 
@@ -20,105 +23,149 @@
 - [RxSchedulers](docs/RxSchedulers.md) - Using ReactiveUI schedulers without RequiresUnreferencedCode attributes
 
 ## Book
-There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer Kent Boogart.
+
+There has been an excellent [book](https://kent-boogaart.com/you-i-and-reactiveui/) written by our Alumni maintainer
+Kent Boogart.
 
 ## NuGet Packages
 
-Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific packages are required. This means your app won't perform as expected until you install the packages properly. See the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
+Install the following packages to start building your own ReactiveUI app. <b>Note:</b> some of the platform-specific
+packages are required. This means your app won't perform as expected until you install the packages properly. See
+the <a href="https://reactiveui.net/docs/getting-started/installation/">Installation</a> docs page for more info.
 
-| Platform          | ReactiveUI Package                  | NuGet                  |
-| ----------------- | ----------------------------------- | ---------------------- |
-| .NET Standard     | [ReactiveUI][CoreDoc]               | [![CoreBadge]][Core]   |
-| Any               | [ReactiveUI.SourceGenerators][SGDoc]| [![SGBadge]][SG]       |
-| Unit Testing      | [ReactiveUI.Testing][TestDoc]       | [![TestBadge]][Test]   |
-| WPF               | [ReactiveUI.WPF][WpfDoc]            | [![WpfBadge]][Wpf]     |
-| WinUI             | [ReactiveUI.WinUI][WinUiDoc]        | [![WinUiBadge]][WinUi] |
-| MAUI              | [ReactiveUI.Maui][MauiDoc]          | [![MauiBadge]][Maui]   |
-| Windows Forms     | [ReactiveUI.WinForms][WinDoc]       | [![WinBadge]][Win]     |
-| AndroidX          | [ReactiveUI.AndroidX][DroDoc]       | [![DroXBadge]][DroX]   |
-| Blazor            | [ReactiveUI.Blazor][BlazDoc]        | [![BlazBadge]][Blaz]   |
-| Platform Uno      | [ReactiveUI.Uno][UnoDoc]            | [![UnoBadge]][Uno]     |
-| Platform Uno      | [ReactiveUI.Uno.WinUI][UnoWinUiDoc] | [![UnoWinUiBadge]][UnoWinUi] |
-| Avalonia          | [ReactiveUI.Avalonia][AvaDoc]       | [![AvaBadge]][Ava]     |
-| Any               | [ReactiveUI.Validation][ValDocs]    | [![ValBadge]][ValCore] |
-| Any               | [ReactiveUI.Extensions][ExtDocs]    | [![ExtBadge]][Ext]     |
+| Platform      | ReactiveUI Package                   | NuGet                        |
+|---------------|--------------------------------------|------------------------------|
+| .NET Standard | [ReactiveUI][CoreDoc]                | [![CoreBadge]][Core]         |
+| Any           | [ReactiveUI.SourceGenerators][SGDoc] | [![SGBadge]][SG]             |
+| Unit Testing  | [ReactiveUI.Testing][TestDoc]        | [![TestBadge]][Test]         |
+| WPF           | [ReactiveUI.WPF][WpfDoc]             | [![WpfBadge]][Wpf]           |
+| WinUI         | [ReactiveUI.WinUI][WinUiDoc]         | [![WinUiBadge]][WinUi]       |
+| MAUI          | [ReactiveUI.Maui][MauiDoc]           | [![MauiBadge]][Maui]         |
+| Windows Forms | [ReactiveUI.WinForms][WinDoc]        | [![WinBadge]][Win]           |
+| AndroidX      | [ReactiveUI.AndroidX][DroDoc]        | [![DroXBadge]][DroX]         |
+| Blazor        | [ReactiveUI.Blazor][BlazDoc]         | [![BlazBadge]][Blaz]         |
+| Platform Uno  | [ReactiveUI.Uno][UnoDoc]             | [![UnoBadge]][Uno]           |
+| Platform Uno  | [ReactiveUI.Uno.WinUI][UnoWinUiDoc]  | [![UnoWinUiBadge]][UnoWinUi] |
+| Avalonia      | [ReactiveUI.Avalonia][AvaDoc]        | [![AvaBadge]][Ava]           |
+| Any           | [ReactiveUI.Validation][ValDocs]     | [![ValBadge]][ValCore]       |
+| Any           | [ReactiveUI.Extensions][ExtDocs]     | [![ExtBadge]][Ext]           |
 
 [Core]: https://www.nuget.org/packages/ReactiveUI/
+
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg
+
 [CoreDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [SG]: https://www.nuget.org/packages/ReactiveUI.SourceGenerators/
+
 [SGDoc]: https://reactiveui.net/docs/handbook/view-models/boilerplate-code
+
 [SGBadge]: https://img.shields.io/nuget/v/ReactiveUI.SourceGenerators.svg
 
 [Test]: https://www.nuget.org/packages/ReactiveUI.Testing/
+
 [TestBadge]: https://img.shields.io/nuget/v/ReactiveUI.Testing.svg
+
 [TestDoc]: https://reactiveui.net/docs/handbook/testing/
 
 [Wpf]: https://www.nuget.org/packages/ReactiveUI.WPF/
+
 [WpfBadge]: https://img.shields.io/nuget/v/ReactiveUI.WPF.svg
+
 [WpfDoc]: https://reactiveui.net/docs/getting-started/installation/windows-presentation-foundation
 
 [WinUi]: https://www.nuget.org/packages/ReactiveUI.WinUI/
+
 [WinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinUI.svg
+
 [WinUiDoc]: https://reactiveui.net/docs/getting-started/installation/universal-windows-platform
 
 [Maui]: https://www.nuget.org/packages/ReactiveUI.Maui/
+
 [MauiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Maui.svg
+
 [MauiDoc]: https://blog.jetbrains.com/dotnet/2020/09/18/xamarin-maui-and-the-reactive-mvvm-between-them-webinar-recording/
 
 [Win]: https://www.nuget.org/packages/ReactiveUI.WinForms/
+
 [WinEvents]: https://www.nuget.org/packages/ReactiveUI.Events.WinForms/
+
 [WinBadge]: https://img.shields.io/nuget/v/ReactiveUI.WinForms.svg
+
 [WinDoc]: https://reactiveui.net/docs/getting-started/installation/windows-forms
 
 [DroX]: https://www.nuget.org/packages/ReactiveUI.AndroidX/
+
 [DroXBadge]: https://img.shields.io/nuget/v/ReactiveUI.AndroidX.svg
+
 [DroDoc]: https://reactiveui.net/docs/getting-started/installation/
 
 [Uno]: https://www.nuget.org/packages/ReactiveUI.Uno/
+
 [UnoBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.svg
+
 [UnoDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
+
 [UnoWinUi]: https://www.nuget.org/packages/ReactiveUI.Uno.WinUI/
+
 [UnoWinUiBadge]: https://img.shields.io/nuget/v/ReactiveUI.Uno.WinUI.svg
+
 [UnoWinUiDoc]: https://reactiveui.net/docs/getting-started/installation/uno-platform
 
 [Blaz]: https://www.nuget.org/packages/ReactiveUI.Blazor/
+
 [BlazBadge]: https://img.shields.io/nuget/v/ReactiveUI.Blazor.svg
+
 [BlazDoc]: https://www.reactiveui.net/docs/getting-started/installation/blazor
 
 [Ava]: https://www.nuget.org/packages/ReactiveUI.Avalonia/
+
 [AvaBadge]: https://img.shields.io/nuget/v/ReactiveUI.Avalonia.svg
+
 [AvaDoc]: https://reactiveui.net/docs/getting-started/installation/avalonia
+
 [EventsDocs]: https://reactiveui.net/docs/handbook/events/
 
 [ValCore]: https://www.nuget.org/packages/ReactiveUI.Validation/
+
 [ValBadge]: https://img.shields.io/nuget/v/ReactiveUI.Validation.svg
+
 [ValDocs]: https://reactiveui.net/docs/handbook/user-input-validation/
 
 [Ext]: https://www.nuget.org/packages/ReactiveUI.Extensions/
+
 [ExtBadge]: https://img.shields.io/nuget/v/ReactiveUI.Extensions.svg
+
 [ExtDocs]: https://reactiveui.net/
 
 ## Sponsorship
 
-The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project increases your income/productivity too. It makes development and applications faster and it reduces the required bandwidth.
+The core team members, ReactiveUI contributors and contributors in the ecosystem do this open-source work in their free
+time. If you use ReactiveUI, a serious task, and you'd like us to invest more time on it, please donate. This project
+increases your income/productivity too. It makes development and applications faster and it reduces the required
+bandwidth.
 
 [Become a sponsor](https://github.com/sponsors/reactivemarbles).
 
 ## Migration from Xamarin and .NET 8 MAUI
 
 ### Xamarin Users
-As of May 2024, Microsoft ended support for Xamarin per their [support policy](https://docs.microsoft.com/dotnet/maui/what-is-maui#xamarin-retirement). ReactiveUI has removed support for legacy Xamarin platforms in favor of modern .NET MAUI. For Xamarin projects:
+
+As of May 2024, Microsoft ended support for Xamarin per
+their [support policy](https://docs.microsoft.com/dotnet/maui/what-is-maui#xamarin-retirement). ReactiveUI has removed
+support for legacy Xamarin platforms in favor of modern .NET MAUI. For Xamarin projects:
 
 - **Xamarin.Forms** → Migrate to **MAUI** and use `ReactiveUI.Maui`
 - **Xamarin.Android** → Migrate to **MAUI Android** or use `ReactiveUI.AndroidX` for native Android
 - **Xamarin.iOS/Mac** → Migrate to **MAUI iOS/Mac Catalyst**
 
-For guidance on migrating from Xamarin to MAUI, see the [official migration documentation](https://docs.microsoft.com/dotnet/maui/migration/).
+For guidance on migrating from Xamarin to MAUI, see
+the [official migration documentation](https://docs.microsoft.com/dotnet/maui/migration/).
 
 ### MAUI Users
+
 ReactiveUI supports .NET 9 and .NET 10 for MAUI platforms:
+
 - `net10.0-android` / `net9.0-android`
 - `net10.0-ios` / `net9.0-ios`
 - `net10.0-maccatalyst` / `net9.0-maccatalyst`
@@ -130,15 +177,16 @@ Non-MAUI `net8.0` library targets remain fully supported.
 
 Platform-specific sample applications are included in [`src/examples/`](src/examples/):
 
-| Sample | Platform | Description |
-|--------|----------|-------------|
-| [ReactiveUI.Samples.Wpf](src/examples/ReactiveUI.Samples.Wpf) | WPF | Login form with reactive bindings, PasswordBox event marshaling |
-| [ReactiveUI.Samples.Winforms](src/examples/ReactiveUI.Samples.Winforms) | WinForms | Login form with IViewFor, programmatic UI layout |
-| [ReactiveUI.Samples.Maui](src/examples/ReactiveUI.Samples.Maui) | MAUI | Cross-platform login with Shell navigation, ReactiveContentPage |
-| [ReactiveUI.Builder.WpfApp](src/examples/ReactiveUI.Builder.WpfApp) | WPF | Multi-instance chat app with routing, suspension, and network sync |
-| [ReactiveUI.Builder.BlazorServer](src/examples/ReactiveUI.Builder.BlazorServer) | Blazor Server | Chat app with server-side Blazor and reactive components |
+| Sample                                                                          | Platform      | Description                                                        |
+|---------------------------------------------------------------------------------|---------------|--------------------------------------------------------------------|
+| [ReactiveUI.Samples.Wpf](src/examples/ReactiveUI.Samples.Wpf)                   | WPF           | Login form with reactive bindings, PasswordBox event marshaling    |
+| [ReactiveUI.Samples.Winforms](src/examples/ReactiveUI.Samples.Winforms)         | WinForms      | Login form with IViewFor, programmatic UI layout                   |
+| [ReactiveUI.Samples.Maui](src/examples/ReactiveUI.Samples.Maui)                 | MAUI          | Cross-platform login with Shell navigation, ReactiveContentPage    |
+| [ReactiveUI.Builder.WpfApp](src/examples/ReactiveUI.Builder.WpfApp)             | WPF           | Multi-instance chat app with routing, suspension, and network sync |
+| [ReactiveUI.Builder.BlazorServer](src/examples/ReactiveUI.Builder.BlazorServer) | Blazor Server | Chat app with server-side Blazor and reactive components           |
 
-All samples target .NET 10, use `RxAppBuilder` for initialization, and demonstrate `WhenActivated`, `Bind`/`BindCommand`, and proper subscription disposal.
+All samples target .NET 10, use `RxAppBuilder` for initialization, and demonstrate `WhenActivated`, `Bind`/
+`BindCommand`, and proper subscription disposal.
 
 This is how we use the donations:
 
@@ -148,17 +196,23 @@ This is how we use the donations:
 
 ## Support
 
-If you have a question, please see if any discussions in our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues) or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
+If you have a question, please see if any discussions in
+our [GitHub issues](https://github.com/reactiveui/ReactiveUI/issues)
+or [Stack Overflow](https://stackoverflow.com/questions/tagged/reactiveui) have already answered it.
 
-If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack), where there are always individuals looking to help out!
+If you want to discuss something or just need help, here is our [Slack room](https://reactiveui.net/slack), where there
+are always individuals looking to help out!
 
 Please do not open GitHub issues for support requests.
 
 ## Contribute
 
-ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use. 
+ReactiveUI is developed under an OSI-approved open source license, making it freely usable and distributable, even for
+commercial use.
 
-If you want to submit pull requests please first open a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR contributors friendly.
+If you want to submit pull requests please first open
+a [GitHub issue](https://github.com/reactiveui/ReactiveUI/issues/new/choose) to discuss. We are first time PR
+contributors friendly.
 
 See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for further information how to contribute changes.
 
@@ -196,7 +250,6 @@ See [Contribution Guidelines](https://www.reactiveui.net/contribute/) for furthe
     </tr>
   </tbody>
 </table>
-
 
 ## Alumni Core Team
 
@@ -255,7 +308,8 @@ The following have been core team members in the past.
   </tbody>
 </table>
 
-
 ## .NET Foundation
 
-ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of projects, and Microsoft .NET Core.
+ReactiveUI is part of the [.NET Foundation](https://www.dotnetfoundation.org/). Other projects that are associated with
+the foundation include the Microsoft .NET Compiler Platform ("Roslyn") as well as the Microsoft ASP.NET family of
+projects, and Microsoft .NET Core.

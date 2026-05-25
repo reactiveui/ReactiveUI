@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows;
 using System.Windows.Controls;
 #endif
+using System.Reactive.Disposables;
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
@@ -94,8 +95,8 @@ public
     partial
 #endif
     class ReactivePage<TViewModel> :
-        Page, IViewFor<TViewModel>
-        where TViewModel : class
+    Page, IViewFor<TViewModel>
+    where TViewModel : class
 {
 #if !HAS_MAUI
     /// <summary>
@@ -106,7 +107,7 @@ public
             "ViewModel",
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 #else
     /// <summary>
     /// The view model bindable property.
@@ -164,11 +165,11 @@ public
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactivePage{TViewModel}"/> class.
     /// </summary>
-    public ReactivePage() => this.WhenActivated(disposables =>
-                                  {
-                                      // No-op, but ensures that when the Page is activated,
-                                      // any IActivatableViewModel logic in the ViewModel is also triggered.
-                                  });
+    public ReactivePage() => this.WhenActivated((CompositeDisposable _) =>
+    {
+        // No-op, but ensures that when the Page is activated,
+        // any IActivatableViewModel logic in the ViewModel is also triggered.
+    });
 #endif
 
     /// <summary>
@@ -198,6 +199,7 @@ public
         ViewModel = BindingContext as TViewModel;
     }
 
-    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext = newValue;
+    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext
+ = newValue;
 #endif
 }

@@ -1,11 +1,16 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 #if WINUI_TARGET
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
+// Alias Page: the Maui-windows TFM also imports Microsoft.Maui.Controls implicitly, so a bare Page would be
+// ambiguous between Microsoft.UI.Xaml.Controls.Page and Microsoft.Maui.Controls.Page.
+using Page = Microsoft.UI.Xaml.Controls.Page;
 #else
 using Microsoft.Maui.Controls;
 #endif
@@ -79,10 +84,16 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">
 /// The type of the view model backing the view.
 /// </typeparam>
-[SuppressMessage("WinRT", "CsWinRT1029:Types used in signatures should be WinRT types", Justification = "This is a netstandard2.0 library")]
-public partial class ReactivePage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :
-        Page, IViewFor<TViewModel>
-        where TViewModel : class
+[SuppressMessage(
+    "WinRT",
+    "CsWinRT1029:Types used in signatures should be WinRT types",
+    Justification = "This is a netstandard2.0 library")]
+[SuppressMessage("Roslynator", "RCS1043:Remove \'partial\' modifier from type with a single part", Justification = "This is a netstandard2.0 library")]
+[SuppressMessage("Minor Code Smell", "S2333:Redundant modifiers should not be used", Justification = "This is a netstandard2.0 library")]
+public partial class ReactivePage<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :
+    Page, IViewFor<TViewModel>
+    where TViewModel : class
 {
 #if WINUI_TARGET
     /// <summary>
@@ -93,18 +104,16 @@ public partial class ReactivePage<[DynamicallyAccessedMembers(DynamicallyAccesse
             "ViewModel",
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 #else
     /// <summary>
     /// The view model bindable property.
     /// </summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
-     nameof(ViewModel),
-     typeof(TViewModel),
-     typeof(ReactivePage<TViewModel>),
-     default(TViewModel),
-     BindingMode.OneWay,
-     propertyChanged: OnViewModelChanged);
+        nameof(ViewModel),
+        typeof(TViewModel),
+        typeof(ReactivePage<TViewModel>),
+        propertyChanged: OnViewModelChanged);
 #endif
 
     /// <summary>
@@ -134,6 +143,13 @@ public partial class ReactivePage<[DynamicallyAccessedMembers(DynamicallyAccesse
         ViewModel = BindingContext as TViewModel;
     }
 
-    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) => bindableObject.BindingContext = newValue;
+    /// <summary>
+    /// Updates the binding context when the view model changes.
+    /// </summary>
+    /// <param name="bindableObject">The bindable object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) =>
+        bindableObject.BindingContext = newValue;
 #endif
 }

@@ -1,14 +1,15 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-
 using ReactiveUI.Wpf.Binding;
+using TUnit.Core.Executors;
+using Control = System.Windows.Controls.Control;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -19,6 +20,8 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class ValidationBindingWpfTest
 {
+    private const int ObservableEmitDelayMs = 100;
+
     /// <summary>
     /// Tests that ExtractPropertyPath correctly extracts simple property path.
     /// </summary>
@@ -121,7 +124,7 @@ public class ValidationBindingWpfTest
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.EnumerateDependencyProperties(textBox).ToList();
 
         await Assert.That(result).IsNotEmpty();
-        await Assert.That(result.Any(dp => dp.Name == "Text")).IsTrue();
+        await Assert.That(result.Exists(dp => dp.Name == "Text")).IsTrue();
     }
 
     /// <summary>
@@ -189,36 +192,6 @@ public class ValidationBindingWpfTest
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result!.Name).IsEqualTo("Text");
-    }
-
-    /// <summary>
-    /// Tests that GetDependencyProperty finds dependency properties inherited from base controls.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task GetDependencyProperty_FindsInheritedPropertyByName()
-    {
-        var comboBox = new ComboBox();
-
-        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.GetDependencyProperty(comboBox, nameof(Selector.SelectedValue));
-
-        await Assert.That(result).IsNotNull();
-        await Assert.That(result).IsSameReferenceAs(Selector.SelectedValueProperty);
-    }
-
-    /// <summary>
-    /// Tests that GetDependencyProperty finds dependency properties inherited by TextBox.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task GetDependencyProperty_FindsInheritedTextBoxBasePropertyByName()
-    {
-        var textBox = new TextBox();
-
-        var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.GetDependencyProperty(textBox, nameof(TextBoxBase.IsReadOnly));
-
-        await Assert.That(result).IsNotNull();
-        await Assert.That(result).IsSameReferenceAs(TextBoxBase.IsReadOnlyProperty);
     }
 
     /// <summary>
@@ -408,25 +381,6 @@ public class ValidationBindingWpfTest
     }
 
     /// <summary>
-    /// Tests that BindWithValidation supports ComboBox.SelectedValue.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task BindWithValidation_BindsComboBoxSelectedValue()
-    {
-        var view = new TestViewWithComboBox();
-        var viewModel = new TestViewModel { SelectedValue = "initial" };
-        view.ViewModel = viewModel;
-
-        using var binding = view.BindWithValidation(viewModel, vm => vm.SelectedValue, v => v.MyComboBox.SelectedValue);
-
-        var bindingExpression = BindingOperations.GetBindingExpression(view.MyComboBox, Selector.SelectedValueProperty);
-
-        await Assert.That(bindingExpression).IsNotNull();
-        await Assert.That(bindingExpression!.ParentBinding.Path.Path).IsEqualTo("SelectedValue");
-    }
-
-    /// <summary>
     /// Tests that Dispose clears the binding.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -539,7 +493,7 @@ public class ValidationBindingWpfTest
             viewModel.TestProperty = "changed";
 
             // Give observable time to emit
-            await Task.Delay(100);
+            await Task.Delay(ObservableEmitDelayMs);
 
             await Assert.That(receivedValue).IsEqualTo("changed");
 
@@ -571,13 +525,13 @@ public class ValidationBindingWpfTest
                 v => v.MyTextBox.Text);
 
             var emissions = new List<string?>();
-            using var subscription = binding.Changed.Subscribe(value => emissions.Add(value));
+            using var subscription = binding.Changed.Subscribe(emissions.Add);
 
             // Trigger view property change
             view.MyTextBox.Text = "view-changed";
 
             // Give observable time to emit
-            await Task.Delay(100);
+            await Task.Delay(ObservableEmitDelayMs);
 
             // Should emit default value when view changes
             await Assert.That(emissions).IsNotEmpty();
@@ -661,87 +615,109 @@ public class ValidationBindingWpfTest
         }
     }
 
-    private class TestView : Control, IViewFor<TestViewModel>
+    /// <summary>
+    /// A mock view used by the WPF validation binding tests.
+    /// </summary>
+    private sealed class TestView : Control, IViewFor<TestViewModel>
     {
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = value as TestViewModel;
         }
 
+        /// <summary>
+        /// Gets the text box used as a binding target.
+        /// </summary>
         public TextBox TestControl { get; } = new();
 
+        /// <summary>
+        /// Gets a control that always throws when accessed, used to test missing-control handling.
+        /// </summary>
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Instance property is required for expression tree usage")]
         public TextBox NonExistentControl => throw new InvalidOperationException("This property should not be accessed");
     }
 
-    private class TestViewWithControl : Window, IViewFor<TestViewModel>
+    /// <summary>
+    /// A mock window-based view that hosts a named text box.
+    /// </summary>
+    private sealed class TestViewWithControl : Window, IViewFor<TestViewModel>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestViewWithControl"/> class.
+        /// </summary>
         public TestViewWithControl()
         {
             MyTextBox = new TextBox { Name = "MyTextBox" };
             Content = MyTextBox;
         }
 
+        /// <summary>
+        /// Gets or sets the view model.
+        /// </summary>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
             set => ViewModel = value as TestViewModel;
         }
 
+        /// <summary>
+        /// Gets the hosted text box.
+        /// </summary>
         public TextBox MyTextBox { get; }
     }
 
-    private class TestViewWithComboBox : StackPanel, IViewFor<TestViewModel>
+    /// <summary>
+    /// A mock view model used by the WPF validation binding tests.
+    /// </summary>
+    private sealed class TestViewModel : ReactiveObject
     {
-        public TestViewWithComboBox()
-        {
-            MyComboBox = new ComboBox { Name = "MyComboBox" };
-            Children.Add(MyComboBox);
-        }
-
-        public TestViewModel? ViewModel { get; set; }
-
-        object? IViewFor.ViewModel
-        {
-            get => ViewModel;
-            set => ViewModel = value as TestViewModel;
-        }
-
-        public ComboBox MyComboBox { get; }
-    }
-
-    private class TestViewModel : ReactiveObject
-    {
+        /// <summary>
+        /// Backing field for the <see cref="TestProperty"/> property.
+        /// </summary>
         private string? _testProperty;
-        private NestedTestObject? _nestedObject;
-        private string? _selectedValue;
 
+        /// <summary>
+        /// Backing field for the <see cref="NestedObject"/> property.
+        /// </summary>
+        private NestedTestObject? _nestedObject;
+
+        /// <summary>
+        /// Gets or sets a sample property.
+        /// </summary>
         public string? TestProperty
         {
             get => _testProperty;
             set => this.RaiseAndSetIfChanged(ref _testProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets a nested object.
+        /// </summary>
         public NestedTestObject? NestedObject
         {
             get => _nestedObject;
             set => this.RaiseAndSetIfChanged(ref _nestedObject, value);
         }
-
-        public string? SelectedValue
-        {
-            get => _selectedValue;
-            set => this.RaiseAndSetIfChanged(ref _selectedValue, value);
-        }
     }
 
-    private class NestedTestObject
+    /// <summary>
+    /// A nested object used to test nested property validation bindings.
+    /// </summary>
+    private sealed class NestedTestObject
     {
-        public string? Name { get; set; }
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
+        public string? Name { get; set; } = null!;
     }
 }

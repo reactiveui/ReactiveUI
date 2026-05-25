@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Disposables;
 using System.Windows;
 
 namespace ReactiveUI;
@@ -48,10 +49,10 @@ public class ReactiveWindow<TViewModel> :
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-                                    "ViewModel",
-                                    typeof(TViewModel),
-                                    typeof(ReactiveWindow<TViewModel>),
-                                    new PropertyMetadata(null));
+            "ViewModel",
+            typeof(TViewModel),
+            typeof(ReactiveWindow<TViewModel>),
+            new(null));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveWindow{TViewModel}"/> class.
@@ -59,11 +60,11 @@ public class ReactiveWindow<TViewModel> :
     /// <remarks>When the window is activated, this constructor ensures that the ViewModel's activation logic
     /// is also triggered if the ViewModel implements IActivatableViewModel. This enables coordinated activation and
     /// deactivation of resources tied to the window and its ViewModel.</remarks>
-    public ReactiveWindow() => this.WhenActivated(disposables =>
-                                    {
-                                        // No-op, but ensures that when the Page is activated,
-                                        // any IActivatableViewModel logic in the ViewModel is also triggered.
-                                    });
+    public ReactiveWindow() => this.WhenActivated((CompositeDisposable _) =>
+    {
+        // No-op, but ensures that when the Page is activated,
+        // any IActivatableViewModel logic in the ViewModel is also triggered.
+    });
 
     /// <summary>
     /// Gets the binding root view model.

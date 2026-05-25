@@ -1,7 +1,11 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -9,13 +13,41 @@ namespace ReactiveUI;
 /// A subject which dispatches all its events on the specified Scheduler.
 /// </summary>
 /// <typeparam name="T">The type of item being dispatched by the Subject.</typeparam>
-public class ScheduledSubject<T> : ISubject<T>, IDisposable
+public class ScheduledSubject<T> : IReactiveSubject<T>, IDisposable
 {
-    private readonly IObserver<T> _defaultObserver;
+    /// <summary>The observer that receives notifications when no other subscribers are active.</summary>
+    private readonly IObserver<T>? _defaultObserver;
+
+    /// <summary>The scheduler used to dispatch items to observers.</summary>
     private readonly IScheduler _scheduler;
-    private readonly ISubject<T> _subject;
+
+    /// <summary>The underlying subject that items are forwarded through.</summary>
+    private readonly IReactiveSubject<T> _subject;
+
+    /// <summary>The current count of active observers.</summary>
     private int _observerRefCount;
-    private IDisposable _defaultObserverSub = Disposable.Empty;
+
+    /// <summary>The subscription connecting the subject to the default observer.</summary>
+    private IDisposable _defaultObserverSub = EmptyDisposable.Instance;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScheduledSubject{T}"/> class with only a scheduler.
+    /// </summary>
+    /// <param name="scheduler">The scheduler where to dispatch items to.</param>
+    public ScheduledSubject(IScheduler scheduler)
+        : this(scheduler, null, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScheduledSubject{T}"/> class with a scheduler and a default observer.
+    /// </summary>
+    /// <param name="scheduler">The scheduler where to dispatch items to.</param>
+    /// <param name="defaultObserver">A default observer where notifications will be sent when no other subscribers are active.</param>
+    public ScheduledSubject(IScheduler scheduler, IObserver<T>? defaultObserver)
+        : this(scheduler, defaultObserver, null)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScheduledSubject{T}"/> class.
@@ -23,16 +55,21 @@ public class ScheduledSubject<T> : ISubject<T>, IDisposable
     /// <param name="scheduler">The scheduler where to dispatch items to.</param>
     /// <param name="defaultObserver">A optional default observer where notifications will be sent.</param>
     /// <param name="defaultSubject">A optional default subject which this Subject will wrap.</param>
-    public ScheduledSubject(IScheduler scheduler, IObserver<T>? defaultObserver = null, ISubject<T>? defaultSubject = null)
+    public ScheduledSubject(
+        IScheduler scheduler,
+        IObserver<T>? defaultObserver,
+        IReactiveSubject<T>? defaultSubject)
     {
         _scheduler = scheduler;
-        _defaultObserver = defaultObserver ?? new Subject<T>();
-        _subject = defaultSubject ?? new Subject<T>();
+        _defaultObserver = defaultObserver;
+        _subject = defaultSubject ?? new BroadcastSubject<T>();
 
-        if (defaultObserver is not null)
+        if (defaultObserver is null)
         {
-            _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
+            return;
         }
+
+        _defaultObserverSub = _subject.Subscribe(new SchedulingObserver<T>(defaultObserver, _scheduler));
     }
 
     /// <inheritdoc />
@@ -43,10 +80,10 @@ public class ScheduledSubject<T> : ISubject<T>, IDisposable
     }
 
     /// <inheritdoc/>
-    public void OnCompleted() => _subject.OnCompleted(); // TODO: Create Test
+    public void OnCompleted() => _subject.OnCompleted();
 
     /// <inheritdoc/>
-    public void OnError(Exception error) => _subject.OnError(error); // TODO: Create Test
+    public void OnError(Exception error) => _subject.OnError(error);
 
     /// <inheritdoc/>
     public void OnNext(T value) => _subject.OnNext(value);
@@ -54,19 +91,13 @@ public class ScheduledSubject<T> : ISubject<T>, IDisposable
     /// <inheritdoc/>
     public IDisposable Subscribe(IObserver<T> observer)
     {
-        Interlocked.Exchange(ref _defaultObserverSub, Disposable.Empty).Dispose();
+        ArgumentExceptionHelper.ThrowIfNull(observer);
 
+        Interlocked.Exchange(ref _defaultObserverSub, EmptyDisposable.Instance).Dispose();
         Interlocked.Increment(ref _observerRefCount);
 
-        return new CompositeDisposable(
-                                       _subject.ObserveOn(_scheduler).Subscribe(observer),
-                                       Disposable.Create(() =>
-                                       {
-                                           if (Interlocked.Decrement(ref _observerRefCount) <= 0)
-                                           {
-                                               _defaultObserverSub = _subject.ObserveOn(_scheduler).Subscribe(_defaultObserver);
-                                           }
-                                       }));
+        var inner = _subject.Subscribe(new SchedulingObserver<T>(observer, _scheduler));
+        return new Subscription(this, inner);
     }
 
     /// <summary>
@@ -75,14 +106,40 @@ public class ScheduledSubject<T> : ISubject<T>, IDisposable
     /// <param name="isDisposing">If we are being called by the IDisposable method.</param>
     protected virtual void Dispose(bool isDisposing)
     {
-        if (isDisposing)
+        if (!isDisposing)
         {
-            if (_subject is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
+            return;
+        }
 
-            _defaultObserverSub.Dispose();
+        if (_subject is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+
+        _defaultObserverSub.Dispose();
+    }
+
+    /// <summary>Re-attaches the default observer once the last real subscriber leaves.</summary>
+    private void OnUnsubscribe()
+    {
+        if (Interlocked.Decrement(ref _observerRefCount) > 0 || _defaultObserver is null)
+        {
+            return;
+        }
+
+        _defaultObserverSub = _subject.Subscribe(new SchedulingObserver<T>(_defaultObserver, _scheduler));
+    }
+
+    /// <summary>Tears down a real subscription and restores the default observer when none remain.</summary>
+    /// <param name="parent">The owning subject.</param>
+    /// <param name="inner">The inner subject subscription.</param>
+    private sealed class Subscription(ScheduledSubject<T> parent, IDisposable inner) : IDisposable
+    {
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            inner.Dispose();
+            parent.OnUnsubscribe();
         }
     }
 }

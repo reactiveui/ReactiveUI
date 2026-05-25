@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 #if WINUI_TARGET
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -89,7 +90,7 @@ public partial class ReactiveUserControl<TViewModel> :
             "ViewModel",
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 
     /// <summary>
     /// Gets the binding root view model.

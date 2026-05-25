@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -18,8 +18,8 @@ public class InternalUtilitiesTests
     public async Task NotAWeakReference_AfterGC_StillAlive()
     {
         // Arrange
-        const string target = "test target";
-        var weakRef = new NotAWeakReference(target);
+        const string Target = "test target";
+        var weakRef = new NotAWeakReference(Target);
 
         // Act - Force garbage collection
         GC.Collect();
@@ -29,7 +29,7 @@ public class InternalUtilitiesTests
         {
             // Assert - NotAWeakReference always holds strong reference
             await Assert.That(weakRef.IsAlive).IsTrue();
-            await Assert.That(weakRef.Target).IsEqualTo(target);
+            await Assert.That(weakRef.Target).IsEqualTo(Target);
         }
     }
 
@@ -41,15 +41,15 @@ public class InternalUtilitiesTests
     public async Task NotAWeakReference_Constructor_StoresTarget()
     {
         // Arrange
-        const string target = "test target";
+        const string Target = "test target";
 
         // Act
-        var weakRef = new NotAWeakReference(target);
+        var weakRef = new NotAWeakReference(Target);
 
         using (Assert.Multiple())
         {
             // Assert
-            await Assert.That(weakRef.Target).IsEqualTo(target);
+            await Assert.That(weakRef.Target).IsEqualTo(Target);
             await Assert.That(weakRef.IsAlive).IsTrue();
         }
     }

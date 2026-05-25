@@ -1,9 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Mixins;
 
@@ -14,6 +17,12 @@ namespace ReactiveUI.Tests.Mixins;
 [TestExecutor<AppBuilderTestExecutor>]
 public class MutableDependencyResolverExtensionsTests
 {
+    private const string TestContract = "TestContract";
+
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel registers a singleton view.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelRegistersSingleton()
     {
@@ -29,6 +38,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel returns the resolver for chaining.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelReturnsResolver()
     {
@@ -38,6 +51,10 @@ public class MutableDependencyResolverExtensionsTests
         await Assert.That(result).IsEqualTo(resolver);
     }
 
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel resolves the same instance each time.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelReturnsSameInstance()
     {
@@ -55,13 +72,15 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel supports fluent chaining of registrations.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelSupportsChaining()
     {
         var resolver = new ModernDependencyResolver();
-        resolver
-            .RegisterSingletonViewForViewModel<TestView, TestViewModel>()
-            .RegisterSingletonViewForViewModel<AlternateTestView, AlternateTestViewModel>();
+        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>().RegisterSingletonViewForViewModel<AlternateTestView, AlternateTestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<AlternateTestViewModel>>();
@@ -73,21 +92,27 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel throws when the resolver is null.
+    /// </summary>
     [Test]
     public void RegisterSingletonViewForViewModelThrowsOnNullResolver()
     {
         IMutableDependencyResolver? resolver = null;
-        Assert.Throws<ArgumentNullException>(() =>
-            resolver!.RegisterSingletonViewForViewModel<TestView, TestViewModel>());
+        Assert.Throws<ArgumentNullException>(() => resolver!.RegisterSingletonViewForViewModel<TestView, TestViewModel>());
     }
 
+    /// <summary>
+    ///     Verifies that RegisterSingletonViewForViewModel registers a singleton view with a contract.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelWithContractRegistersSingleton()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>("TestContract");
+        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>(TestContract);
 
-        var view = resolver.GetService<IViewFor<TestViewModel>>("TestContract");
+        var view = resolver.GetService<IViewFor<TestViewModel>>(TestContract);
 
         using (Assert.Multiple())
         {
@@ -96,6 +121,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel resolves a new instance each time.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelCreatesNewInstanceEachTime()
     {
@@ -113,6 +142,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel registers a view.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelRegistersView()
     {
@@ -128,6 +161,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel returns the resolver for chaining.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelReturnsResolver()
     {
@@ -137,13 +174,15 @@ public class MutableDependencyResolverExtensionsTests
         await Assert.That(result).IsEqualTo(resolver);
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel supports fluent chaining of registrations.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelSupportsChaining()
     {
         var resolver = new ModernDependencyResolver();
-        resolver
-            .RegisterViewForViewModel<TestView, TestViewModel>()
-            .RegisterViewForViewModel<AlternateTestView, AlternateTestViewModel>();
+        resolver.RegisterViewForViewModel<TestView, TestViewModel>().RegisterViewForViewModel<AlternateTestView, AlternateTestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<AlternateTestViewModel>>();
@@ -155,21 +194,27 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel throws when the resolver is null.
+    /// </summary>
     [Test]
     public void RegisterViewForViewModelThrowsOnNullResolver()
     {
         IMutableDependencyResolver? resolver = null;
-        Assert.Throws<ArgumentNullException>(() =>
-            resolver!.RegisterViewForViewModel<TestView, TestViewModel>());
+        Assert.Throws<ArgumentNullException>(() => resolver!.RegisterViewForViewModel<TestView, TestViewModel>());
     }
 
+    /// <summary>
+    ///     Verifies that RegisterViewForViewModel registers a view with a contract.
+    /// </summary>
+    /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelWithContractRegistersView()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterViewForViewModel<TestView, TestViewModel>("TestContract");
+        resolver.RegisterViewForViewModel<TestView, TestViewModel>(TestContract);
 
-        var view = resolver.GetService<IViewFor<TestViewModel>>("TestContract");
+        var view = resolver.GetService<IViewFor<TestViewModel>>(TestContract);
 
         using (Assert.Multiple())
         {
@@ -181,10 +226,14 @@ public class MutableDependencyResolverExtensionsTests
     /// <summary>
     ///     Alternate test view.
     /// </summary>
-    private class AlternateTestView : IViewFor<AlternateTestViewModel>
+    private sealed class AlternateTestView : IViewFor<AlternateTestViewModel>
     {
+        /// <summary>
+        ///     Gets or sets the strongly typed view model.
+        /// </summary>
         public AlternateTestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -195,17 +244,23 @@ public class MutableDependencyResolverExtensionsTests
     /// <summary>
     ///     Alternate test view model.
     /// </summary>
-    private class AlternateTestViewModel : ReactiveObject
-    {
-    }
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    private sealed class AlternateTestViewModel : ReactiveObject;
 
     /// <summary>
     ///     Test view.
     /// </summary>
-    private class TestView : IViewFor<TestViewModel>
+    private sealed class TestView : IViewFor<TestViewModel>
     {
+        /// <summary>
+        ///     Gets or sets the strongly typed view model.
+        /// </summary>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -216,7 +271,9 @@ public class MutableDependencyResolverExtensionsTests
     /// <summary>
     ///     Test view model.
     /// </summary>
-    private class TestViewModel : ReactiveObject
-    {
-    }
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    private sealed class TestViewModel : ReactiveObject;
 }

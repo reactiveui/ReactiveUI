@@ -2,6 +2,7 @@
 ignore:
   - src/tests
   - integrationtests
-  - benchmarks
+  - src/benchmarks
+  - src/examples
   - "**/Tests/"
   - "**/*.Tests/"

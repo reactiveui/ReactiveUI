@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
 using System.Windows.Controls;
-using PropertyMetadata = System.Windows.PropertyMetadata;
+using Control = System.Windows.Controls.Control;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
@@ -18,37 +18,37 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     /// The view model property.
     /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("ViewModel", typeof(PropertyBindViewModel), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// The fake control property.
     /// </summary>
     public static readonly DependencyProperty FakeControlProperty =
-        DependencyProperty.Register("FakeControl", typeof(PropertyBindFakeControl), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("FakeControl", typeof(PropertyBindFakeControl), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// The some text box property.
     /// </summary>
     public static readonly DependencyProperty SomeTextBoxProperty =
-        DependencyProperty.Register("SomeTextBox", typeof(TextBox), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("SomeTextBox", typeof(TextBox), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// The property2 property.
     /// </summary>
     public static readonly DependencyProperty Property2Property =
-        DependencyProperty.Register("Property2", typeof(TextBox), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("Property2", typeof(TextBox), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// The fake items control property.
     /// </summary>
     public static readonly DependencyProperty FakeItemsControlProperty =
-        DependencyProperty.Register("FakeItemsControl", typeof(ListBox), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("FakeItemsControl", typeof(ListBox), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// The combo box selection property.
     /// </summary>
     public static readonly DependencyProperty ComboBoxSelectionProperty =
-        DependencyProperty.Register("ComboBoxSelection", typeof(ComboBox), typeof(PropertyBindView), new PropertyMetadata(null));
+        DependencyProperty.Register("ComboBoxSelection", typeof(ComboBox), typeof(PropertyBindView), new(null));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertyBindView"/> class.
@@ -57,7 +57,7 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     {
         SomeTextBox = new TextBox();
         Property2 = new TextBox();
-        FakeControl = new PropertyBindFakeControl();
+        FakeControl = new();
         FakeItemsControl = new ListBox();
         ComboBoxSelection = new ComboBox();
     }

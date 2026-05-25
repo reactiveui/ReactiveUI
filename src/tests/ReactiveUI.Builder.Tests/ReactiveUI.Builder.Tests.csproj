@@ -3,40 +3,26 @@
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
     <OutputType>Exe</OutputType>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <NoWarn>$(NoWarn);SA1600;CA1812;</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj" />
-    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="RandomTests.cs" />
-    <Compile Remove="Platforms\**\*.cs" />
-    <None Include="Platforms\**\*.cs" />
+    <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="RandomTests.cs"/>
+    <Compile Remove="Platforms\**\*.cs"/>
+    <None Include="Platforms\**\*.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.EndsWith('net8.0')) or $(TargetFramework.EndsWith('net9.0')) or $(TargetFramework.EndsWith('net8.0'))">
-    <Compile Include="Platforms\Blazor\**\*.cs" />
-    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+    <Compile Include="Platforms\Blazor\**\*.cs"/>
+    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Platforms\Drawing\**\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Using Include="Splat" />
-    <Using Include="Splat.Builder" />
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Threading.Tasks" />
-    <Using Include="TUnit.Core.Executors" />
-    <Using Include="TUnit.Core.Interfaces" />
+    <Compile Include="Platforms\Drawing\**\*.cs"/>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,41 @@
+name: SonarCloud
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
+
+permissions:
+    contents: read
+
+jobs:
+    sonarcloud:
+        uses: reactiveui/actions-common/.github/workflows/workflow-common-sonarcloud.yml@main
+        with:
+            productNamespacePrefix: ReactiveUI
+            installWorkloads: true
+            sonarProjectKey: reactiveui_ReactiveUI
+            sonarOrganization: reactiveui
+            sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
+            # Shared/Platform fused Rx-replacement observables are compile-linked into every platform assembly and
+            # only exercisable via platform (WPF/WinForms/MAUI/mobile) tests, so exclude them from coverage like
+            # generated code. The Shared/ root helpers stay measured (covered by the core test suite).
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**'
+            # CPD (copy/paste detection) exclusions:
+            #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
+            #    demo apps that deliberately parallel each other (each sample reimplements the same
+            #    view-model/driver shapes so it reads standalone), so cross-sample duplication is
+            #    expected and not worth de-duplicating into a shared library.
+            #  - WhenAny{Value,Change}Sink.Arity{N}.cs, WhenAnyMixin.Arity{N}.cs and
+            #    WhenAnyObservableMixin.Arity{N}.cs are template-style arity-specific files: the
+            #    residual duplication is the irreducible per-arity typed surface (N typed fields,
+            #    N constructor params, N switch arms). Compressing further would need source
+            #    generators or boxing-based erasure; suppressing CPD here keeps the metric honest
+            #    while every other Sonar rule still runs on them. Sonar path matchers only support
+            #    *, **, ? — use ? twice to cover 1- and 2-digit arities.
+            sonarCpdExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*.Arity?.cs,**/*.Arity??.cs'
+            sonarTestExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**'
+            testTimeout: '15m'
+        secrets:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

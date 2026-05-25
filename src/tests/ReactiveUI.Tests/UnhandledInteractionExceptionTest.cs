@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -32,12 +32,12 @@ public class UnhandledInteractionExceptionTest
     public async Task Constructor_WithInteractionAndInput_SetsProperties()
     {
         var interaction = new Interaction<string, int>();
-        var input = "test input";
+        const string Input = "test input";
 
-        var exception = new UnhandledInteractionException<string, int>(interaction, input);
+        var exception = new UnhandledInteractionException<string, int>(interaction, Input);
 
         await Assert.That(exception.Interaction).IsEqualTo(interaction);
-        await Assert.That(exception.Input).IsEqualTo(input);
+        await Assert.That(exception.Input).IsEqualTo(Input);
         await Assert.That(exception.Message).Contains("Failed to find a registration");
     }
 
@@ -48,11 +48,11 @@ public class UnhandledInteractionExceptionTest
     [Test]
     public async Task Constructor_WithMessage_SetsMessage()
     {
-        var message = "Test error message";
+        const string Message = "Test error message";
 
-        var exception = new UnhandledInteractionException<string, int>(message);
+        var exception = new UnhandledInteractionException<string, int>(Message);
 
-        await Assert.That(exception.Message).IsEqualTo(message);
+        await Assert.That(exception.Message).IsEqualTo(Message);
     }
 
     /// <summary>
@@ -62,12 +62,12 @@ public class UnhandledInteractionExceptionTest
     [Test]
     public async Task Constructor_WithMessageAndInnerException_SetsProperties()
     {
-        var message = "Test error message";
+        const string Message = "Test error message";
         var innerException = new InvalidOperationException("Inner");
 
-        var exception = new UnhandledInteractionException<string, int>(message, innerException);
+        var exception = new UnhandledInteractionException<string, int>(Message, innerException);
 
-        await Assert.That(exception.Message).IsEqualTo(message);
+        await Assert.That(exception.Message).IsEqualTo(Message);
         await Assert.That(exception.InnerException).IsEqualTo(innerException);
     }
 
@@ -79,9 +79,9 @@ public class UnhandledInteractionExceptionTest
     public async Task Exception_CanBeThrownAndCaught()
     {
         var interaction = new Interaction<string, int>();
-        var input = "test";
+        const string Input = "test";
 
-        await Assert.That(() => throw new UnhandledInteractionException<string, int>(interaction, input))
+        await Assert.That(() => throw new UnhandledInteractionException<string, int>(interaction, Input))
             .Throws<UnhandledInteractionException<string, int>>();
     }
 
@@ -93,11 +93,11 @@ public class UnhandledInteractionExceptionTest
     public async Task Input_ReturnsInputValue()
     {
         var interaction = new Interaction<int, string>();
-        var input = 42;
+        const int Input = 42;
 
-        var exception = new UnhandledInteractionException<int, string>(interaction, input);
+        var exception = new UnhandledInteractionException<int, string>(interaction, Input);
 
-        await Assert.That(exception.Input).IsEqualTo(input);
+        await Assert.That(exception.Input).IsEqualTo(Input);
     }
 
     /// <summary>
@@ -108,9 +108,9 @@ public class UnhandledInteractionExceptionTest
     public async Task Interaction_ReturnsInteraction()
     {
         var interaction = new Interaction<string, int>();
-        var input = "test";
+        const string Input = "test";
 
-        var exception = new UnhandledInteractionException<string, int>(interaction, input);
+        var exception = new UnhandledInteractionException<string, int>(interaction, Input);
 
         await Assert.That(exception.Interaction).IsEqualTo(interaction);
     }

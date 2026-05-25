@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -85,13 +88,11 @@ public sealed class SetMethodBindingConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new List<ISetMethodBindingConverter>(8));
+            var snap = _snapshot ?? new Snapshot(new(8));
 
-            // Copy-on-write update: clone the list
-            var newList = new List<ISetMethodBindingConverter>(snap.Converters) { converter };
+            List<ISetMethodBindingConverter> newList = [..snap.Converters, converter];
 
-            // Publish the new snapshot (atomic via reference assignment)
-            _snapshot = new Snapshot(newList);
+            _snapshot = new(newList);
         }
     }
 
@@ -115,8 +116,10 @@ public sealed class SetMethodBindingConverterRegistry
     /// </para>
     /// </remarks>
     public ISetMethodBindingConverter? TryGetConverter(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type? fromType,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type? toType)
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type? fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type? toType)
     {
         var snap = Volatile.Read(ref _snapshot);
         if (snap is null)
@@ -124,7 +127,6 @@ public sealed class SetMethodBindingConverterRegistry
             return null;
         }
 
-        // Find the converter with the highest affinity
         ISetMethodBindingConverter? best = null;
         var bestScore = -1;
 
@@ -162,7 +164,6 @@ public sealed class SetMethodBindingConverterRegistry
             return [];
         }
 
-        // Return a copy to avoid exposing internal list
         return [.. snap.Converters];
     }
 

@@ -1,9 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Linq;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -14,6 +17,9 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class CanActivateViewFetcherTests
 {
+    private const short ActivatedState = 1;
+    private const short DeactivatedState = 2;
+
     /// <summary>
     /// Tests return negative for ICanActivate.
     /// </summary>
@@ -35,7 +41,7 @@ public class CanActivateViewFetcherTests
     public async Task CanGetActivationForViewForCanActivateableFormActivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(1)).FirstAsync();
+        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(ActivatedState)).FirstAsync();
         await Assert.That(result).IsTrue();
     }
 
@@ -47,7 +53,7 @@ public class CanActivateViewFetcherTests
     public async Task CanGetActivationForViewForCanActivateableFormDeactivated()
     {
         var canActivateViewFetcher = new CanActivateViewFetcher();
-        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(2)).FirstAsync();
+        var result = await canActivateViewFetcher.GetActivationForView(new TestForm(DeactivatedState)).FirstAsync();
         await Assert.That(result).IsFalse();
     }
 
@@ -87,10 +93,15 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    private class CanActivateStub : ICanActivate
+    /// <summary>
+    /// A stub implementing <see cref="ICanActivate"/> used to verify affinity for derivatives.
+    /// </summary>
+    private sealed class CanActivateStub : ICanActivate
     {
+        /// <inheritdoc/>
         public IObservable<Unit> Activated { get; } = Observable.Empty<Unit>();
 
+        /// <inheritdoc/>
         public IObservable<Unit> Deactivated { get; } = Observable.Empty<Unit>();
     }
 }

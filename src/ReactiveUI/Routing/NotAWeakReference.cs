@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,8 +21,8 @@ internal class NotAWeakReference(object target)
     public object Target { get; } = target;
 
     /// <summary>
-    /// Gets a value indicating whether the current instance is considered alive.
+    /// Gets a value indicating whether the current instance is considered alive. Always <see langword="true"/>: this
+    /// type holds a strong reference to <see cref="Target"/>, so the target can never be collected while it is held.
     /// </summary>
-    [SuppressMessage("Microsoft.Maintainability", "CA1822", Justification = "Keep existing API.")]
-    public bool IsAlive => true;
+    public bool IsAlive => Target is not null;
 }

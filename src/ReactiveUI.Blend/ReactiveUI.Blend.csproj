@@ -9,26 +9,25 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests"/>
   </ItemGroup>
   <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="ReactiveUI.Helpers" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-    <PackageReference Include="System.Reactive" />
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
+    <Compile Include="..\ReactiveUI\Polyfills\**\*.cs" Link="Polyfills\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Platforms\**\*.cs" />
-    <None Include="Platforms\**\*.cs" />
+    <Compile Remove="Platforms\**\*.cs"/>
+    <None Include="Platforms\**\*.cs"/>
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PresentationFramework.Aero"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 </Project>

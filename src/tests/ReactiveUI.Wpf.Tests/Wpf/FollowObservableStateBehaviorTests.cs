@@ -1,15 +1,19 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows;
 using System.Windows.Controls;
-
 using Microsoft.Xaml.Behaviors;
 
 using ReactiveUI.Blend;
 using ReactiveUI.Tests.Utilities.Schedulers;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -20,6 +24,10 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class FollowObservableStateBehaviorTests
 {
+    private const int StateSettleDelayMs = 50;
+    private const int MaxErrorsBeforeComplete = 3;
+    private const int ExpectedSubscriptionCount = 4;
+
     /// <summary>
     /// Tests that the behavior subscribes to state changes and transitions visual states.
     /// </summary>
@@ -45,7 +53,7 @@ public class FollowObservableStateBehaviorTests
         // This is expected behavior for VisualStateManager.GoToState
         stateSubject.OnNext("SomeState");
 
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         // If we reach here without exception, the test passed
         await Task.CompletedTask;
@@ -123,11 +131,11 @@ public class FollowObservableStateBehaviorTests
 
         // Set first observable
         behavior.StateObservable = subject1.AsObservable();
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         // Set second observable (should dispose first)
         behavior.StateObservable = subject2.AsObservable();
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         // First subject should no longer be subscribed
         var completed1 = false;
@@ -158,7 +166,7 @@ public class FollowObservableStateBehaviorTests
         behavior.StateObservable = Observable.Create<string>(observer =>
         {
             errorCount++;
-            if (errorCount <= 3)
+            if (errorCount <= MaxErrorsBeforeComplete)
             {
                 observer.OnError(new InvalidOperationException("Test error"));
             }
@@ -173,7 +181,7 @@ public class FollowObservableStateBehaviorTests
         scheduler.Start();
 
         // Should have resubscribed 3 times (errored 3 times, then completed on 4th)
-        await Assert.That(errorCount).IsEqualTo(4);
+        await Assert.That(errorCount).IsEqualTo(ExpectedSubscriptionCount);
     }
 
     /// <summary>
@@ -224,11 +232,11 @@ public class FollowObservableStateBehaviorTests
 
         var disposed = false;
         behavior.StateObservable = Observable.Create<string>(observer => Disposable.Create(() => disposed = true));
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         // Detach the behavior
         behaviors.Remove(behavior);
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         await Assert.That(disposed).IsTrue();
     }
@@ -254,7 +262,7 @@ public class FollowObservableStateBehaviorTests
         behavior.StateObservable = subject.AsObservable();
 
         subject.OnNext("SomeState");
-        await Task.Delay(50);
+        await Task.Delay(StateSettleDelayMs);
 
         // If we reach here without exception, target object was used
         await Task.CompletedTask;

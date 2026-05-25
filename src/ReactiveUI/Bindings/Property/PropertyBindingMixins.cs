@@ -1,7 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Reactive;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -31,10 +36,14 @@ namespace ReactiveUI;
 /// </code>
 /// </example>
 [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-[RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
+[RequiresDynamicCode(
+    "Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
 public static class PropertyBindingMixins
 {
-    private static readonly PropertyBinderImplementation _defaultBinderImplementation;
+    /// <summary>
+    /// The fallback binder implementation used when no platform-specific binder is registered.
+    /// </summary>
+    private static readonly IPropertyBinderImplementation _defaultBinderImplementation;
 
     /// <summary>
     /// Initializes static members of the <see cref="PropertyBindingMixins"/> class.
@@ -44,6 +53,11 @@ public static class PropertyBindingMixins
     /// user code.</remarks>
     static PropertyBindingMixins() => _defaultBinderImplementation = new PropertyBinderImplementation();
 
+    /// <summary>
+    /// Gets the binder implementation used by the extension methods in this class. Resolves the registered
+    /// <see cref="IPropertyBinderImplementation"/> (e.g. the WPF/WinForms binder that marshals view updates onto the
+    /// UI thread) from the locator, falling back to the platform-agnostic default when none is registered.
+    /// </summary>
     private static IPropertyBinderImplementation BinderImplementation =>
         AppLocator.Current.GetService<IPropertyBinderImplementation>() ?? _defaultBinderImplementation;
 
@@ -52,11 +66,80 @@ public static class PropertyBindingMixins
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
     /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
-    /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
     /// <param name="view">The instance of the view to bind.</param>
     /// <param name="viewModel">The instance of the view model to bind.</param>
-    /// <param name="vmProperty">
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, null, null, null);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, conversionHint, null, null);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <param name="viewModelToViewConverterOverride">An optional converter to use when converting from the view model to view property.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, conversionHint, viewModelToViewConverterOverride, null);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">
     /// An expression indicating the property that is bound on the view model.
     /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
     /// and the binder will attempt to subscribe to changes on each recursively.
@@ -70,11 +153,11 @@ public static class PropertyBindingMixins
     /// An object that can provide a hint for the converter.
     /// The semantics of this object is defined by the converter used.
     /// </param>
-    /// <param name="vmToViewConverterOverride">
+    /// <param name="viewModelToViewConverterOverride">
     /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
     /// viewModel to view property.
     /// </param>
-    /// <param name="viewToVMConverterOverride">
+    /// <param name="viewToViewModelConverterOverride">
     /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
     /// view to viewModel property.
     /// </param>
@@ -82,25 +165,157 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null,
-        IBindingTypeConverter? viewToVMConverterOverride = null)
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride,
+        IBindingTypeConverter? viewToViewModelConverterOverride)
         where TViewModel : class
         where TView : class, IViewFor =>
         BinderImplementation.Bind(
-                                   viewModel,
-                                   view,
-                                   vmProperty,
-                                   viewProperty,
-                                   (IObservable<Unit>?)null,
-                                   conversionHint,
-                                   vmToViewConverterOverride,
-                                   viewToVMConverterOverride);
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            (IObservable<Unit>?)null,
+            conversionHint,
+            viewModelToViewConverterOverride,
+            viewToViewModelConverterOverride);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property with a custom view update signal.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type; only the fact that signalViewUpdate emits values is used.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="signalViewUpdate">An observable that, when signaled, indicates the view property has been changed.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        IObservable<TDontCare>? signalViewUpdate)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, signalViewUpdate, null, null, null, TriggerUpdate.ViewToViewModel);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property with a custom view update signal.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type; only the fact that signalViewUpdate emits values is used.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="signalViewUpdate">An observable that, when signaled, indicates the view property has been changed.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        IObservable<TDontCare>? signalViewUpdate,
+        object? conversionHint)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, signalViewUpdate, conversionHint, null, null, TriggerUpdate.ViewToViewModel);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property with a custom view update signal.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type; only the fact that signalViewUpdate emits values is used.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="signalViewUpdate">An observable that, when signaled, indicates the view property has been changed.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <param name="viewModelToViewConverterOverride">An optional converter to use when converting from the view model to view property.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        IObservable<TDontCare>? signalViewUpdate,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, signalViewUpdate, conversionHint, viewModelToViewConverterOverride, null, TriggerUpdate.ViewToViewModel);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property with a custom view update signal.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type; only the fact that signalViewUpdate emits values is used.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="signalViewUpdate">An observable that, when signaled, indicates the view property has been changed.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <param name="viewModelToViewConverterOverride">An optional converter to use when converting from the view model to view property.</param>
+    /// <param name="viewToViewModelConverterOverride">An optional converter to use when converting from the view to view model property.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
+            this TView view,
+            TViewModel? viewModel,
+            Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+            Expression<Func<TView, TViewPropertyType>> viewProperty,
+            IObservable<TDontCare>? signalViewUpdate,
+            object? conversionHint,
+            IBindingTypeConverter? viewModelToViewConverterOverride,
+            IBindingTypeConverter? viewToViewModelConverterOverride)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, signalViewUpdate, conversionHint, viewModelToViewConverterOverride, viewToViewModelConverterOverride, TriggerUpdate.ViewToViewModel);
 
     /// <summary>
     /// Binds the specified view model property to the given view property, and
@@ -108,13 +323,13 @@ public static class PropertyBindingMixins
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
     /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
-    /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
     /// <typeparam name="TDontCare">A dummy type, only the fact that <paramref name="signalViewUpdate" />
     /// emits values is considered, not the actual values emitted.</typeparam>
     /// <param name="view">The instance of the view to bind.</param>
     /// <param name="viewModel">The instance of the view model to bind.</param>
-    /// <param name="vmProperty">An expression indicating the property that is bound on the view model.
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.
     /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
     /// and the binder will attempt to subscribe to changes on each recursively.</param>
     /// <param name="viewProperty">The property on the view that is to be bound.
@@ -125,39 +340,57 @@ public static class PropertyBindingMixins
     /// property accordingly.</param>
     /// <param name="conversionHint">An object that can provide a hint for the converter.
     /// The semantics of this object is defined by the converter used.</param>
-    /// <param name="vmToViewConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
+    /// <param name="viewModelToViewConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
     /// viewModel to view property.</param>
-    /// <param name="viewToVMConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
+    /// <param name="viewToViewModelConverterOverride">An optional <see cref="IBindingTypeConverter" /> to use when converting from the
     /// view to viewModel property.</param>
     /// <param name="triggerUpdate">The trigger update direction.</param>
     /// <returns>
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
         IObservable<TDontCare>? signalViewUpdate,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null,
-        IBindingTypeConverter? viewToVMConverterOverride = null,
-        TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride,
+        IBindingTypeConverter? viewToViewModelConverterOverride,
+        TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor =>
-        BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, conversionHint, vmToViewConverterOverride, viewToVMConverterOverride, triggerUpdate);
+        BinderImplementation.Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            conversionHint,
+            viewModelToViewConverterOverride,
+            viewToViewModelConverterOverride,
+            triggerUpdate);
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
     /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
-    /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
     /// <param name="view">The instance of the view to bind.</param>
     /// <param name="viewModel">The instance of the view model to bind.</param>
-    /// <param name="vmProperty">
+    /// <param name="viewModelProperty">
     /// An expression indicating the property that is bound on the view model.
     /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
     /// and the binder will attempt to subscribe to changes on each recursively.
@@ -167,11 +400,11 @@ public static class PropertyBindingMixins
     /// This can be a chain of properties of the form. <c>view => view.Foo.Bar.Baz</c>
     /// and the binder will attempt to set the last one each time the view model property is updated.
     /// </param>
-    /// <param name="vmToViewConverter">
+    /// <param name="viewModelToViewConverter">
     /// Delegate to convert the value of the view model's property's type to a value of the
     /// view's property's type.
     /// </param>
-    /// <param name="viewToVmConverter">
+    /// <param name="viewToViewModelConverter">
     /// Delegate to convert the value of the view's property's type to a value of the
     /// view model's property's type.
     /// </param>
@@ -179,28 +412,68 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp>(
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        Func<TVMProp?, TVProp> vmToViewConverter,
-        Func<TVProp, TVMProp?> viewToVmConverter)
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
+        Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter)
         where TViewModel : class
-        where TView : class, IViewFor => BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, (IObservable<Unit>?)null, vmToViewConverter, viewToVmConverter);
+        where TView : class, IViewFor => BinderImplementation.Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            (IObservable<Unit>?)null,
+            viewModelToViewConverter,
+            viewToViewModelConverter);
+
+    /// <summary>
+    /// Binds the specified view model property to the given view property using delegate converters.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
+    /// <typeparam name="TView">The type of the view being bound.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TDontCare">A dummy type; only the fact that signalViewUpdate emits values is used.</typeparam>
+    /// <param name="view">The instance of the view to bind.</param>
+    /// <param name="viewModel">The instance of the view model to bind.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="signalViewUpdate">An observable that, when signaled, indicates the view property has been changed.</param>
+    /// <param name="viewModelToViewConverter">Delegate to convert a view model property value to a view property value.</param>
+    /// <param name="viewToViewModelConverter">Delegate to convert a view property value to a view model property value.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        IObservable<TDontCare>? signalViewUpdate,
+        Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
+        Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        Bind(view, viewModel, viewModelProperty, viewProperty, signalViewUpdate, viewModelToViewConverter, viewToViewModelConverter, TriggerUpdate.ViewToViewModel);
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model being bound.</typeparam>
     /// <typeparam name="TView">The type of the view being bound.</typeparam>
-    /// <typeparam name="TVMProp">The type of the property bound on the view model.</typeparam>
-    /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of the property bound on the view model.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
     /// <typeparam name="TDontCare">A dummy type, only the fact that <paramref name="signalViewUpdate" />
     /// emits values is considered, not the actual values emitted.</typeparam>
     /// <param name="view">The instance of the view to bind.</param>
     /// <param name="viewModel">The instance of the view model to bind.</param>
-    /// <param name="vmProperty">An expression indicating the property that is bound on the view model.
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.
     /// This can be a chain of properties of the form. <c>vm =&gt; vm.Foo.Bar.Baz</c>
     /// and the binder will attempt to subscribe to changes on each recursively.</param>
     /// <param name="viewProperty">The property on the view that is to be bound.
@@ -209,35 +482,96 @@ public static class PropertyBindingMixins
     /// <param name="signalViewUpdate">An observable, that when signaled, indicates that the view property
     /// has been changed, and that the binding should update the view model
     /// property accordingly.</param>
-    /// <param name="vmToViewConverter">Delegate to convert the value of the view model's property's type to a value of the
+    /// <param name="viewModelToViewConverter">Delegate to convert the value of the view model's property's type to a value of the
     /// view's property's type.</param>
-    /// <param name="viewToVmConverter">Delegate to convert the value of the view's property's type to a value of the
+    /// <param name="viewToViewModelConverter">Delegate to convert the value of the view's property's type to a value of the
     /// view model's property's type.</param>
     /// <param name="triggerUpdate">The trigger update direction.</param>
     /// <returns>
     /// An instance of <see cref="IDisposable" /> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<TViewModel, TView, TVMProp, TVProp, TDontCare>(
+    [SuppressMessage(
+        "Major Code Smell",
+        "S107:Methods should not have too many parameters",
+        Justification = "This overload is part of the public binding API surface; the parameter count is intentional.")]
+    public static IReactiveBinding<TView, (object? view, bool isViewModel)> Bind<
+        TViewModel,
+        TView,
+        TViewModelPropertyType,
+        TViewPropertyType,
+        TDontCare>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
         IObservable<TDontCare>? signalViewUpdate,
-        Func<TVMProp?, TVProp> vmToViewConverter,
-        Func<TVProp, TVMProp?> viewToVmConverter,
-        TriggerUpdate triggerUpdate = TriggerUpdate.ViewToViewModel)
+        Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
+        Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter,
+        TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor =>
-        BinderImplementation.Bind(viewModel, view, vmProperty, viewProperty, signalViewUpdate, vmToViewConverter, viewToVmConverter, triggerUpdate);
+        BinderImplementation.Bind(
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            signalViewUpdate,
+            viewModelToViewConverter,
+            viewToViewModelConverter,
+            triggerUpdate);
+
+    /// <summary>
+    /// Binds the given property on the view model to a given property on the view in a one-way fashion.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of view model property.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <param name="view">The instance of the view object which is bound.</param>
+    /// <param name="viewModel">The view model that is bound.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        OneWayBind(view, viewModel, viewModelProperty, viewProperty, null, null);
+
+    /// <summary>
+    /// Binds the given property on the view model to a given property on the view in a one-way fashion.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of view model property.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
+    /// <param name="view">The instance of the view object which is bound.</param>
+    /// <param name="viewModel">The view model that is bound.</param>
+    /// <param name="viewModelProperty">An expression indicating the property that is bound on the view model.</param>
+    /// <param name="viewProperty">The property on the view that is to be bound.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <returns>An instance of IDisposable that, when disposed, disconnects the binding.</returns>
+    public static IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
+        this TView view,
+        TViewModel? viewModel,
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint)
+        where TViewModel : class
+        where TView : class, IViewFor =>
+        OneWayBind(view, viewModel, viewModelProperty, viewProperty, conversionHint, null);
 
     /// <summary>
     /// Binds the given property on the view model to a given property on the view in a one-way (view model to view) fashion.
     /// </summary>
     /// <typeparam name="TViewModel">The type of the view model.</typeparam>
     /// <typeparam name="TView">The type of the view.</typeparam>
-    /// <typeparam name="TVMProp">The type of view model property.</typeparam>
-    /// <typeparam name="TVProp">The type of the property bound on the view.</typeparam>
+    /// <typeparam name="TViewModelPropertyType">The type of view model property.</typeparam>
+    /// <typeparam name="TViewPropertyType">The type of the property bound on the view.</typeparam>
     /// <param name="view">
     /// The instance of the view object which is bound. Usually, it is the. <c>this</c>
     /// instance.
@@ -245,7 +579,7 @@ public static class PropertyBindingMixins
     /// <param name="viewModel">
     /// The view model that is bound.
     /// It is usually set to the <see cref="IViewFor.ViewModel"/> property of the <paramref name="view"/>.</param>
-    /// <param name="vmProperty">
+    /// <param name="viewModelProperty">
     /// An expression indicating the property that is bound on the view model.
     /// This can be a chain of properties of the form. <c>vm => vm.Foo.Bar.Baz</c>
     /// and the binder will attempt to subscribe to changes on each recursively.
@@ -259,7 +593,7 @@ public static class PropertyBindingMixins
     /// An object that can provide a hint for the converter.
     /// The semantics of this object is defined by the converter used.
     /// </param>
-    /// <param name="vmToViewConverterOverride">
+    /// <param name="viewModelToViewConverterOverride">
     /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
     /// viewModel to view property.
     /// </param>
@@ -267,22 +601,22 @@ public static class PropertyBindingMixins
     /// An instance of <see cref="IDisposable"/> that, when disposed,
     /// disconnects the binding.
     /// </returns>
-    public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+    public static IReactiveBinding<TView, TViewPropertyType> OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TVMProp?>> vmProperty,
-        Expression<Func<TView, TVProp>> viewProperty,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null)
+        Expression<Func<TViewModel, TViewModelPropertyType?>> viewModelProperty,
+        Expression<Func<TView, TViewPropertyType>> viewProperty,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
         where TViewModel : class
         where TView : class, IViewFor =>
         BinderImplementation.OneWayBind(
-                                         viewModel,
-                                         view,
-                                         vmProperty,
-                                         viewProperty,
-                                         conversionHint,
-                                         vmToViewConverterOverride);
+            viewModel,
+            view,
+            viewModelProperty,
+            viewProperty,
+            conversionHint,
+            viewModelToViewConverterOverride);
 
     /// <summary>
     /// Binds the specified view model property to the given view, in a one-way (view model to view) fashion,
@@ -294,7 +628,7 @@ public static class PropertyBindingMixins
     /// <typeparam name="TOut">The return type of the <paramref name="selector"/>.</typeparam>
     /// <param name="view">The instance of the view to bind to.</param>
     /// <param name="viewModel">The instance of the view model to bind to.</param>
-    /// <param name="vmProperty">
+    /// <param name="viewModelProperty">
     /// An expression representing the property to be bound to on the view model.
     /// This can be a child property, for example <c>x =&gt; x.Foo.Bar.Baz</c> in which case
     /// the binding will attempt to subscribe recursively to updates in order to
@@ -317,12 +651,70 @@ public static class PropertyBindingMixins
     public static IReactiveBinding<TView, TOut> OneWayBind<TViewModel, TView, TProp, TOut>(
         this TView view,
         TViewModel? viewModel,
-        Expression<Func<TViewModel, TProp>> vmProperty,
+        Expression<Func<TViewModel, TProp>> viewModelProperty,
         Expression<Func<TView, TOut>> viewProperty,
         Func<TProp, TOut> selector)
         where TViewModel : class
         where TView : class, IViewFor =>
-        BinderImplementation.OneWayBind(viewModel, view, vmProperty, viewProperty, selector);
+        BinderImplementation.OneWayBind(viewModel, view, viewModelProperty, viewProperty, selector);
+
+    /// <summary>
+    /// BindTo takes an Observable stream and applies it to a target property.
+    /// </summary>
+    /// <typeparam name="TValue">The source type.</typeparam>
+    /// <typeparam name="TTarget">The target object type.</typeparam>
+    /// <typeparam name="TTargetValue">The type of the property on the target object.</typeparam>
+    /// <param name="this">The observable stream to bind to a target property.</param>
+    /// <param name="target">The target object whose property will be set.</param>
+    /// <param name="property">An expression representing the target property to set.</param>
+    /// <returns>An object that when disposed, disconnects the binding.</returns>
+    public static IDisposable BindTo<TValue, TTarget, TTargetValue>(
+        this IObservable<TValue> @this,
+        TTarget? target,
+        Expression<Func<TTarget, TTargetValue?>> property)
+        where TTarget : class =>
+        BindTo(@this, target, property, null, null);
+
+    /// <summary>
+    /// BindTo takes an Observable stream and applies it to a target property.
+    /// </summary>
+    /// <typeparam name="TValue">The source type.</typeparam>
+    /// <typeparam name="TTarget">The target object type.</typeparam>
+    /// <typeparam name="TTargetValue">The type of the property on the target object.</typeparam>
+    /// <param name="this">The observable stream to bind to a target property.</param>
+    /// <param name="target">The target object whose property will be set.</param>
+    /// <param name="property">An expression representing the target property to set.</param>
+    /// <param name="conversionHint">An object that can provide a hint for the converter.</param>
+    /// <returns>An object that when disposed, disconnects the binding.</returns>
+    public static IDisposable BindTo<TValue, TTarget, TTargetValue>(
+        this IObservable<TValue> @this,
+        TTarget? target,
+        Expression<Func<TTarget, TTargetValue?>> property,
+        object? conversionHint)
+        where TTarget : class =>
+        BindTo(@this, target, property, conversionHint, null);
+
+    /// <summary>
+    /// BindTo takes an Observable stream and applies it to a target property.
+    /// </summary>
+    /// <typeparam name="TValue">The source type.</typeparam>
+    /// <typeparam name="TTarget">The target object type.</typeparam>
+    /// <typeparam name="TTargetValue">The type of the property on the target object.</typeparam>
+    /// <param name="this">The observable stream to bind to a target property.</param>
+    /// <param name="target">The target object whose property will be set.</param>
+    /// <param name="property">An expression representing the target property to set.</param>
+    /// <param name="vmToViewConverterOverride">
+    /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
+    /// viewModel to view property.
+    /// </param>
+    /// <returns>An object that when disposed, disconnects the binding.</returns>
+    public static IDisposable BindTo<TValue, TTarget, TTargetValue>(
+        this IObservable<TValue> @this,
+        TTarget? target,
+        Expression<Func<TTarget, TTargetValue?>> property,
+        IBindingTypeConverter? vmToViewConverterOverride)
+        where TTarget : class =>
+        BindTo(@this, target, property, null, vmToViewConverterOverride);
 
     /// <summary>
     /// BindTo takes an Observable stream and applies it to a target
@@ -332,7 +724,7 @@ public static class PropertyBindingMixins
     /// </summary>
     /// <typeparam name="TValue">The source type.</typeparam>
     /// <typeparam name="TTarget">The target object type.</typeparam>
-    /// <typeparam name="TTValue">The type of the property on the target object.</typeparam>
+    /// <typeparam name="TTargetValue">The type of the property on the target object.</typeparam>
     /// <param name="this">The observable stream to bind to a target property.</param>
     /// <param name="target">The target object whose property will be set.</param>
     /// <param name="property">
@@ -343,17 +735,17 @@ public static class PropertyBindingMixins
     /// An object that can provide a hint for the converter.
     /// The semantics of this object is defined by the converter used.
     /// </param>
-    /// <param name="vmToViewConverterOverride">
+    /// <param name="viewModelToViewConverterOverride">
     /// An optional <see cref="IBindingTypeConverter"/> to use when converting from the
     /// viewModel to view property.
     /// </param>
     /// <returns>An object that when disposed, disconnects the binding.</returns>
-    public static IDisposable BindTo<TValue, TTarget, TTValue>(
+    public static IDisposable BindTo<TValue, TTarget, TTargetValue>(
         this IObservable<TValue> @this,
         TTarget? target,
-        Expression<Func<TTarget, TTValue?>> property,
-        object? conversionHint = null,
-        IBindingTypeConverter? vmToViewConverterOverride = null)
+        Expression<Func<TTarget, TTargetValue?>> property,
+        object? conversionHint,
+        IBindingTypeConverter? viewModelToViewConverterOverride)
         where TTarget : class =>
-        BinderImplementation.BindTo(@this, target, property, conversionHint, vmToViewConverterOverride);
+        BinderImplementation.BindTo(@this, target, property, conversionHint, viewModelToViewConverterOverride);
 }

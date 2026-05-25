@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -15,20 +15,16 @@ public class ReactiveShellContentTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewModelProperty_IsRegistered()
-    {
+    public async Task ViewModelProperty_IsRegistered() =>
         await Assert.That(ReactiveShellContent<TestViewModel>.ViewModelProperty).IsNotNull();
-    }
 
     /// <summary>
     /// Tests that ContractProperty BindableProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ContractProperty_IsRegistered()
-    {
+    public async Task ContractProperty_IsRegistered() =>
         await Assert.That(ReactiveShellContent<TestViewModel>.ContractProperty).IsNotNull();
-    }
 
     /// <summary>
     /// Tests that ViewModel property can be set and retrieved.
@@ -52,10 +48,8 @@ public class ReactiveShellContentTest
     [Test]
     public async Task Contract_SetAndGet_WorksCorrectly()
     {
-        var content = new ReactiveShellContent<TestViewModel>();
-        var contract = "TestContract";
-
-        content.Contract = contract;
+        const string contract = "TestContract";
+        var content = new ReactiveShellContent<TestViewModel> { Contract = contract };
 
         await Assert.That(content.Contract).IsEqualTo(contract);
     }
@@ -87,7 +81,6 @@ public class ReactiveShellContentTest
     /// <summary>
     /// Test view model for testing.
     /// </summary>
-    private class TestViewModel
-    {
-    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    private sealed class TestViewModel;
 }

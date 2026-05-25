@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace ReactiveUI;
 
@@ -87,6 +90,10 @@ internal interface IPropertyBindingExpressionCompiler
     /// Direct set observables are optimized for simple property bindings without intermediate
     /// object navigation. They don't need to track host changes.
     /// </remarks>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<(bool ShouldEmit, TValue Value)> CreateDirectSetObservable<TTarget, TValue, TObs>(
         TTarget? target,
         IObservable<TObs> observedChanged,
@@ -114,6 +121,10 @@ internal interface IPropertyBindingExpressionCompiler
     /// Chained set observables handle complex property paths where intermediate objects can change.
     /// They track host changes and replay values when the host (e.g., ViewModel) changes.
     /// </remarks>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     IObservable<(bool ShouldEmit, TValue Value)> CreateChainedSetObservable<TTarget, TValue, TObs>(
         TTarget? target,
         IObservable<TObs> observedChanged,

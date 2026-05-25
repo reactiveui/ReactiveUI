@@ -1,14 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
-using TUnit.Core.Interfaces;
+using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 
@@ -18,24 +20,29 @@ namespace ReactiveUI.Maui.Tests;
 public class RoutedViewHostTest
 {
     /// <summary>
+    /// The delay in milliseconds used to allow the scheduler to process title updates.
+    /// </summary>
+    private const int SchedulerProcessingDelayMs = 100;
+
+    /// <summary>
+    /// The title used for navigation title tests.
+    /// </summary>
+    private const string TestTitle = "TestTitle";
+
+    /// <summary>
     /// Tests that RouterProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task RouterProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.RoutedViewHost.RouterProperty).IsNotNull();
-    }
+    public async Task RouterProperty_IsRegistered() => await Assert.That(RoutedViewHost.RouterProperty).IsNotNull();
 
     /// <summary>
     /// Tests that SetTitleOnNavigateProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task SetTitleOnNavigateProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.RoutedViewHost.SetTitleOnNavigateProperty).IsNotNull();
-    }
+    public async Task SetTitleOnNavigateProperty_IsRegistered() =>
+        await Assert.That(RoutedViewHost.SetTitleOnNavigateProperty).IsNotNull();
 
     /// <summary>
     /// Tests that Router property can be set and retrieved.
@@ -124,10 +131,10 @@ public class RoutedViewHostTest
     public async Task PagesForViewModel_SetTitleOnNavigateTrue_SetsPageTitle()
     {
         var host = new TestableRoutedViewHost { SetTitleOnNavigate = true };
-        var viewModel = new TestRoutableViewModel { UrlPathSegment = "TestTitle" };
+        var viewModel = new TestRoutableViewModel { UrlPathSegment = TestTitle };
         var pages = await host.PublicPagesForViewModel(viewModel).ToList();
 
-        await Assert.That(pages[0].Title).IsEqualTo("TestTitle");
+        await Assert.That(pages[0].Title).IsEqualTo(TestTitle);
     }
 
     /// <summary>
@@ -139,10 +146,10 @@ public class RoutedViewHostTest
     public async Task PagesForViewModel_SetTitleOnNavigateFalse_DoesNotSetPageTitle()
     {
         var host = new TestableRoutedViewHost { SetTitleOnNavigate = false };
-        var viewModel = new TestRoutableViewModel { UrlPathSegment = "TestTitle" };
+        var viewModel = new TestRoutableViewModel { UrlPathSegment = TestTitle };
         var pages = await host.PublicPagesForViewModel(viewModel).ToList();
 
-        await Assert.That(pages[0].Title).IsNotEqualTo("TestTitle");
+        await Assert.That(pages[0].Title).IsNotEqualTo(TestTitle);
     }
 
     /// <summary>
@@ -200,17 +207,17 @@ public class RoutedViewHostTest
     public async Task PageForViewModel_SetTitleOnNavigateTrue_SetsPageTitle()
     {
         var host = new TestableRoutedViewHost { SetTitleOnNavigate = true };
-        var viewModel = new TestRoutableViewModel { UrlPathSegment = "TestTitle" };
+        var viewModel = new TestRoutableViewModel { UrlPathSegment = TestTitle };
 
         // Allow scheduler to process the title update
-        await Task.Delay(100);
+        await Task.Delay(SchedulerProcessingDelayMs);
 
         var page = host.PublicPageForViewModel(viewModel);
 
         // The title is set via scheduler, so we need to wait
-        await Task.Delay(100);
+        await Task.Delay(SchedulerProcessingDelayMs);
 
-        await Assert.That(page.Title).IsEqualTo("TestTitle");
+        await Assert.That(page.Title).IsEqualTo(TestTitle);
     }
 
     /// <summary>
@@ -219,6 +226,9 @@ public class RoutedViewHostTest
     [NotInParallel]
     public sealed class MauiRoutedViewHostTestExecutor : MauiTestExecutor
     {
+        /// <summary>
+        /// The helper that configures and tears down the ReactiveUI app builder.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -249,19 +259,37 @@ public class RoutedViewHostTest
     /// <summary>
     /// Testable RoutedViewHost that exposes protected methods.
     /// </summary>
-    [RequiresUnreferencedCode("This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
+    [RequiresUnreferencedCode(
+        "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
     [RequiresDynamicCode("ViewLocator.ResolveView uses reflection which is incompatible with AOT compilation.")]
     private sealed class TestableRoutedViewHost : RoutedViewHost
     {
+        /// <summary>
+        /// Exposes the protected PagesForViewModel method.
+        /// </summary>
+        /// <param name="vm">The view model.</param>
+        /// <returns>An observable of pages.</returns>
         public IObservable<Page> PublicPagesForViewModel(IRoutableViewModel? vm) =>
             PagesForViewModel(vm);
 
+        /// <summary>
+        /// Exposes the protected PageForViewModel method.
+        /// </summary>
+        /// <param name="vm">The view model.</param>
+        /// <returns>The page for the view model.</returns>
         public Page PublicPageForViewModel(IRoutableViewModel vm) =>
             PageForViewModel(vm);
 
+        /// <summary>
+        /// Exposes the protected InvalidateCurrentViewModel method.
+        /// </summary>
         public void PublicInvalidateCurrentViewModel() =>
             InvalidateCurrentViewModel();
 
+        /// <summary>
+        /// Exposes the protected SyncNavigationStacksAsync method.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public Task PublicSyncNavigationStacksAsync() =>
             SyncNavigationStacksAsync();
     }
@@ -271,8 +299,10 @@ public class RoutedViewHostTest
     /// </summary>
     private sealed class TestRoutableViewModel : ReactiveObject, IRoutableViewModel
     {
+        /// <inheritdoc/>
         public string? UrlPathSegment { get; set; } = "test";
 
+        /// <inheritdoc/>
         public IScreen HostScreen { get; } = null!;
     }
 
@@ -281,8 +311,10 @@ public class RoutedViewHostTest
     /// </summary>
     private sealed class TestRoutableView : ContentPage, IViewFor<TestRoutableViewModel>
     {
+        /// <inheritdoc/>
         public TestRoutableViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -295,8 +327,10 @@ public class RoutedViewHostTest
     /// </summary>
     private sealed class UnregisteredViewModel : ReactiveObject, IRoutableViewModel
     {
+        /// <inheritdoc/>
         public string? UrlPathSegment { get; set; } = "unregistered";
 
+        /// <inheritdoc/>
         public IScreen HostScreen { get; } = null!;
     }
 
@@ -305,6 +339,7 @@ public class RoutedViewHostTest
     /// </summary>
     private sealed class TestScreen : ReactiveObject, IScreen
     {
+        /// <inheritdoc/>
         public RoutingState Router { get; } = new(ImmediateScheduler.Instance);
     }
 }

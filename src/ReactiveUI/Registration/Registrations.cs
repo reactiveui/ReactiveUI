@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -20,15 +23,28 @@ public class Registrations : IWantsToRegisterStuff
     {
         ArgumentExceptionHelper.ThrowIfNull(registrar);
 
+        RegisterObservableForPropertyFactories(registrar);
+        RegisterStringConverters(registrar);
+        RegisterNullableConverters(registrar);
+        RegisterPlatformServices(registrar);
+    }
+
+    /// <summary>Registers the default <see cref="ICreatesObservableForProperty"/> factories.</summary>
+    /// <param name="registrar">The Splat registrar.</param>
+    private static void RegisterObservableForPropertyFactories(IRegistrar registrar)
+    {
         registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new INPCObservableForProperty());
         registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new IROObservableForProperty());
         registrar.RegisterConstant<ICreatesObservableForProperty>(static () => new POCOObservableForProperty());
+    }
 
-        // General converters - register to Splat for backward compatibility
+    /// <summary>Registers the default value-to-string and string-to-value binding converters.</summary>
+    /// <param name="registrar">The Splat registrar.</param>
+    private static void RegisterStringConverters(IRegistrar registrar)
+    {
         RegisterConverter(registrar, new EqualityTypeConverter());
         RegisterConverter(registrar, new StringConverter());
 
-        // Numeric → String converters
         RegisterConverter(registrar, new ByteToStringTypeConverter());
         RegisterConverter(registrar, new NullableByteToStringTypeConverter());
         RegisterConverter(registrar, new ShortToStringTypeConverter());
@@ -44,7 +60,6 @@ public class Registrations : IWantsToRegisterStuff
         RegisterConverter(registrar, new DecimalToStringTypeConverter());
         RegisterConverter(registrar, new NullableDecimalToStringTypeConverter());
 
-        // String → Numeric converters
         RegisterConverter(registrar, new StringToByteTypeConverter());
         RegisterConverter(registrar, new StringToNullableByteTypeConverter());
         RegisterConverter(registrar, new StringToShortTypeConverter());
@@ -60,55 +75,51 @@ public class Registrations : IWantsToRegisterStuff
         RegisterConverter(registrar, new StringToDecimalTypeConverter());
         RegisterConverter(registrar, new StringToNullableDecimalTypeConverter());
 
-        // Boolean ↔ String converters
         RegisterConverter(registrar, new BooleanToStringTypeConverter());
         RegisterConverter(registrar, new NullableBooleanToStringTypeConverter());
         RegisterConverter(registrar, new StringToBooleanTypeConverter());
         RegisterConverter(registrar, new StringToNullableBooleanTypeConverter());
 
-        // Guid ↔ String converters
         RegisterConverter(registrar, new GuidToStringTypeConverter());
         RegisterConverter(registrar, new NullableGuidToStringTypeConverter());
         RegisterConverter(registrar, new StringToGuidTypeConverter());
         RegisterConverter(registrar, new StringToNullableGuidTypeConverter());
 
-        // DateTime ↔ String converters
         RegisterConverter(registrar, new DateTimeToStringTypeConverter());
         RegisterConverter(registrar, new NullableDateTimeToStringTypeConverter());
         RegisterConverter(registrar, new StringToDateTimeTypeConverter());
         RegisterConverter(registrar, new StringToNullableDateTimeTypeConverter());
 
-        // DateTimeOffset ↔ String converters
         RegisterConverter(registrar, new DateTimeOffsetToStringTypeConverter());
         RegisterConverter(registrar, new NullableDateTimeOffsetToStringTypeConverter());
         RegisterConverter(registrar, new StringToDateTimeOffsetTypeConverter());
         RegisterConverter(registrar, new StringToNullableDateTimeOffsetTypeConverter());
 
-        // TimeSpan ↔ String converters
         RegisterConverter(registrar, new TimeSpanToStringTypeConverter());
         RegisterConverter(registrar, new NullableTimeSpanToStringTypeConverter());
         RegisterConverter(registrar, new StringToTimeSpanTypeConverter());
         RegisterConverter(registrar, new StringToNullableTimeSpanTypeConverter());
 
 #if NET6_0_OR_GREATER
-        // DateOnly ↔ String converters (.NET 6+)
         RegisterConverter(registrar, new DateOnlyToStringTypeConverter());
         RegisterConverter(registrar, new NullableDateOnlyToStringTypeConverter());
         RegisterConverter(registrar, new StringToDateOnlyTypeConverter());
         RegisterConverter(registrar, new StringToNullableDateOnlyTypeConverter());
 
-        // TimeOnly ↔ String converters (.NET 6+)
         RegisterConverter(registrar, new TimeOnlyToStringTypeConverter());
         RegisterConverter(registrar, new NullableTimeOnlyToStringTypeConverter());
         RegisterConverter(registrar, new StringToTimeOnlyTypeConverter());
         RegisterConverter(registrar, new StringToNullableTimeOnlyTypeConverter());
 #endif
 
-        // Uri ↔ String converters
         RegisterConverter(registrar, new UriToStringTypeConverter());
         RegisterConverter(registrar, new StringToUriTypeConverter());
+    }
 
-        // Nullable ↔ Non-Nullable converters
+    /// <summary>Registers the unidirectional value/nullable-value binding converters.</summary>
+    /// <param name="registrar">The Splat registrar.</param>
+    private static void RegisterNullableConverters(IRegistrar registrar)
+    {
         RegisterUnidirectionalConverter<byte, byte?, ByteToNullableByteTypeConverter>(registrar);
         RegisterUnidirectionalConverter<byte?, byte, NullableByteToByteTypeConverter>(registrar);
         RegisterUnidirectionalConverter<short, short?, ShortToNullableShortTypeConverter>(registrar);
@@ -123,7 +134,12 @@ public class Registrations : IWantsToRegisterStuff
         RegisterUnidirectionalConverter<double?, double, NullableDoubleToDoubleTypeConverter>(registrar);
         RegisterUnidirectionalConverter<decimal, decimal?, DecimalToNullableDecimalTypeConverter>(registrar);
         RegisterUnidirectionalConverter<decimal?, decimal, NullableDecimalToDecimalTypeConverter>(registrar);
+    }
 
+    /// <summary>Registers the default view locator, activation fetcher and command binding services.</summary>
+    /// <param name="registrar">The Splat registrar.</param>
+    private static void RegisterPlatformServices(IRegistrar registrar)
+    {
         registrar.RegisterConstant<IViewLocator>(static () => new DefaultViewLocator());
         registrar.RegisterConstant<IActivationForViewFetcher>(static () => new CanActivateViewFetcher());
         registrar.RegisterConstant<ICreatesCommandBinding>(static () => new CreatesCommandBindingViaEvent());
@@ -147,8 +163,7 @@ public class Registrations : IWantsToRegisterStuff
         ArgumentExceptionHelper.ThrowIfNull(registrar);
         ArgumentExceptionHelper.ThrowIfNull(converter);
 
-        // Register to Splat for backward compatibility
-        registrar.RegisterConstant<IBindingTypeConverter>(() => converter);
+        registrar.RegisterConstant(() => converter);
     }
 
     /// <summary>
@@ -165,49 +180,18 @@ public class Registrations : IWantsToRegisterStuff
     /// <item><description>As <see cref="IBindingTypeConverter"/> for affinity-based discovery</description></item>
     /// </list>
     /// </remarks>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private static void RegisterUnidirectionalConverter<TFrom, TTo, TConverter>(
         IRegistrar registrar)
         where TConverter : IBindingTypeConverter<TFrom, TTo>, new()
     {
         ArgumentExceptionHelper.ThrowIfNull(registrar);
 
-        var instance = new TConverter();
-
-        // Register typed interface for direct type lookup
+        TConverter instance = new();
         registrar.RegisterConstant<IBindingTypeConverter<TFrom, TTo>>(() => instance);
-
-        // Register base interface for affinity-based discovery
-        registrar.RegisterConstant<IBindingTypeConverter>(() => instance);
-    }
-
-    /// <summary>
-    /// Helper method to register a bidirectional type converter with explicit generic instantiations.
-    /// </summary>
-    /// <typeparam name="TFrom">The source type.</typeparam>
-    /// <typeparam name="TTo">The target type.</typeparam>
-    /// <typeparam name="TConverter">The converter type that handles both TFrom→TTo and TTo→TFrom conversions.</typeparam>
-    /// <param name="registrar">The dependency resolver to register with.</param>
-    /// <remarks>
-    /// This method registers the converter three times:
-    /// <list type="bullet">
-    /// <item><description>As <see cref="IBindingTypeConverter{TFrom, TTo}"/> for TFrom→TTo conversion</description></item>
-    /// <item><description>As <see cref="IBindingTypeConverter{TTo, TFrom}"/> for TTo→TFrom conversion</description></item>
-    /// <item><description>As <see cref="IBindingTypeConverter"/> for affinity-based discovery</description></item>
-    /// </list>
-    /// </remarks>
-    private static void RegisterBidirectionalConverter<TFrom, TTo, TConverter>(
-        IRegistrar registrar)
-        where TConverter : IBindingTypeConverter<TFrom, TTo>, IBindingTypeConverter<TTo, TFrom>, new()
-    {
-        ArgumentExceptionHelper.ThrowIfNull(registrar);
-
-        var instance = new TConverter();
-
-        // Register both generic directions
-        registrar.Register<IBindingTypeConverter<TFrom, TTo>>(() => instance);
-        registrar.Register<IBindingTypeConverter<TTo, TFrom>>(() => instance);
-
-        // Register base interface for affinity-based discovery
         registrar.RegisterConstant<IBindingTypeConverter>(() => instance);
     }
 }

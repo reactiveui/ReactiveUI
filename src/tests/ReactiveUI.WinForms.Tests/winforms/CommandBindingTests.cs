@@ -1,12 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Windows.Forms;
-
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ReactiveUI.Winforms;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -18,6 +20,8 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public class CommandBindingTests
 {
+    private const int CommandParameter = 5;
+
     /// <summary>
     /// Tests that the command binder binds to button.
     /// </summary>
@@ -43,7 +47,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -82,7 +86,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -121,7 +125,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -147,7 +151,7 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.Create(static () => { }, canExecute);
         var input = new Button();
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
         {
             canExecute.OnNext(true);
             await Assert.That(input.Enabled).IsTrue();
@@ -171,7 +175,7 @@ public class CommandBindingTests
         var cmd = ReactiveCommand.Create(static () => { }, canExecute);
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)5)))
+        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
         {
             canExecute.OnNext(true);
             await Assert.That(input.Enabled).IsTrue();

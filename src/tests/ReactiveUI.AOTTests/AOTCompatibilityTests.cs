@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.AOT.Tests;
 
@@ -12,6 +15,16 @@ namespace ReactiveUI.AOT.Tests;
 public class AOTCompatibilityTests
 {
     /// <summary>
+    /// The number of times the test property is expected to change during observation.
+    /// </summary>
+    private const int ExpectedPropertyChangeCount = 2;
+
+    /// <summary>
+    /// The value emitted by the observable-backed command under test.
+    /// </summary>
+    private const int CommandResultValue = 42;
+
+    /// <summary>
     /// Tests that ReactiveObjects can be created and property changes work in AOT.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -21,7 +34,7 @@ public class AOTCompatibilityTests
         var obj = new TestReactiveObject();
         var propertyChanged = false;
 
-        obj.PropertyChanged += (s, e) => propertyChanged = true;
+        obj.PropertyChanged += (_, _) => propertyChanged = true;
         obj.TestProperty = "New Value";
 
         using (Assert.Multiple())
@@ -82,6 +95,10 @@ public class AOTCompatibilityTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
+    [UnconditionalSuppressMessage(
+        "Trimming",
+        "IL2026:Members annotated with RequiresUnreferencedCodeAttribute may break when trimming",
+        Justification = "Test deliberately exercises the string/expression-based reflection API to verify runtime behavior.")]
     public async Task WhenAnyValue_StringPropertyNames_WorksInAOT()
     {
         var obj = new TestReactiveObject();
@@ -89,7 +106,7 @@ public class AOTCompatibilityTests
 
         // Using string property names should work in AOT
         obj.WhenAnyValue<TestReactiveObject, string>(nameof(TestReactiveObject.TestProperty))
-           .Subscribe(value => observedValue = value);
+            .Subscribe(value => observedValue = value);
 
         obj.TestProperty = "test value";
 
@@ -131,13 +148,13 @@ public class AOTCompatibilityTests
         var obj = new TestReactiveObject();
         var changes = new List<string?>();
 
-        obj.PropertyChanged += (s, e) => changes.Add(e.PropertyName);
+        obj.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
 
         obj.TestProperty = "value1";
         obj.TestProperty = "value2";
 
         await Assert.That(changes).Contains(nameof(TestReactiveObject.TestProperty));
-        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(2);
+        await Assert.That(changes.Count(x => x == nameof(TestReactiveObject.TestProperty))).IsEqualTo(ExpectedPropertyChangeCount);
     }
 
     /// <summary>
@@ -147,12 +164,12 @@ public class AOTCompatibilityTests
     [Test]
     public async Task ReactiveCommand_CreateFromObservable_WorksInAOT()
     {
-        var command = ReactiveCommand.CreateFromObservable(() => Observable.Return(42));
+        var command = ReactiveCommand.CreateFromObservable(() => Observable.Return(CommandResultValue));
 
         // Ensure the execution completes before asserting by blocking for the result
         var result = command.Execute().Wait();
 
-        await Assert.That(result).IsEqualTo(42);
+        await Assert.That(result).IsEqualTo(CommandResultValue);
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -18,10 +18,8 @@ public class MauiReactiveUIBuilderExtensionsTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task MauiMainThreadScheduler_IsNotNull()
-    {
+    public async Task MauiMainThreadScheduler_IsNotNull() =>
         await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler).IsNotNull();
-    }
 
 #if ANDROID
     /// <summary>
@@ -81,7 +79,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task WithMauiScheduler_NullBuilder_Throws()
     {
-        IReactiveUIBuilder builder = null!;
+        const IReactiveUIBuilder builder = null!;
 
         await Assert.That(() => builder.WithMauiScheduler())
             .Throws<ArgumentNullException>();
@@ -94,7 +92,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task WithMaui_NullBuilder_Throws()
     {
-        IReactiveUIBuilder builder = null!;
+        const IReactiveUIBuilder builder = null!;
 
         await Assert.That(() => builder.WithMaui())
             .Throws<ArgumentNullException>();
@@ -107,7 +105,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_WithAction_NullBuilder_Throws()
     {
-        MauiAppBuilder builder = null!;
+        const MauiAppBuilder builder = null!;
 
         await Assert.That(() => builder.UseReactiveUI(_ => { }))
             .Throws<ArgumentNullException>();
@@ -120,7 +118,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_WithDispatcher_NullBuilder_Throws()
     {
-        MauiAppBuilder builder = null!;
+        const MauiAppBuilder builder = null!;
 
         await Assert.That(() => builder.UseReactiveUI(Microsoft.Maui.Dispatching.Dispatcher.GetForCurrentThread()!))
             .Throws<ArgumentNullException>();
@@ -159,41 +157,47 @@ public class MauiReactiveUIBuilderExtensionsTest
     /// <summary>
     /// Test dispatcher for testing.
     /// </summary>
-    private class TestDispatcher : Microsoft.Maui.Dispatching.IDispatcher
+    private sealed class TestDispatcher : Microsoft.Maui.Dispatching.IDispatcher
     {
+        /// <inheritdoc/>
         public bool IsDispatchRequired => false;
 
+        /// <inheritdoc/>
         public bool Dispatch(Action action)
         {
             action();
             return true;
         }
 
+        /// <inheritdoc/>
         public bool DispatchDelayed(TimeSpan delay, Action action)
         {
             action();
             return true;
         }
 
-        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer()
-        {
-            return new TestDispatcherTimer();
-        }
+        /// <inheritdoc/>
+        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
     }
 
     /// <summary>
     /// Test dispatcher timer for testing.
     /// </summary>
-    private class TestDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
+    private sealed class TestDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
     {
+        /// <inheritdoc/>
         public event EventHandler? Tick;
 
+        /// <inheritdoc/>
         public TimeSpan Interval { get; set; }
 
+        /// <inheritdoc/>
         public bool IsRepeating { get; set; }
 
+        /// <inheritdoc/>
         public bool IsRunning { get; private set; }
 
+        /// <inheritdoc/>
         public void Start()
         {
             IsRunning = true;
@@ -202,9 +206,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             Tick?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Stop()
-        {
-            IsRunning = false;
-        }
+        /// <inheritdoc/>
+        public void Stop() => IsRunning = false;
     }
 }

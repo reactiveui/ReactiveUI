@@ -1,9 +1,13 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Reflection;
+using ReactiveUI.Helpers;
 #if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
 using System.ComponentModel.DataAnnotations;
 #endif
@@ -32,8 +36,11 @@ public static class ReactivePropertyMixins
     /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
     /// and display metadata. Cannot be null.</param>
     /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
-    [RequiresUnreferencedCode("DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
-    public static ReactiveProperty<T> AddValidation<T>(this ReactiveProperty<T> self, Expression<Func<ReactiveProperty<T>?>> selfSelector)
+    [RequiresUnreferencedCode(
+        "DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
+    public static ReactiveProperty<T> AddValidation<T>(
+        this ReactiveProperty<T> self,
+        Expression<Func<ReactiveProperty<T>?>> selfSelector)
     {
         ArgumentExceptionHelper.ThrowIfNull(selfSelector);
         ArgumentExceptionHelper.ThrowIfNull(self);
@@ -43,19 +50,17 @@ public static class ReactivePropertyMixins
         var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
         var attrs = propertyInfo.GetCustomAttributes<ValidationAttribute>().ToArray();
 
-        // Use the AOT-compatible constructor that doesn't require reflection for type discovery
-        var context = new ValidationContext(self, serviceProvider: null, items: null)
+        ValidationContext context = new(self, null, null)
         {
-            DisplayName = display?.GetName() ?? propertyInfo.Name,
-            MemberName = nameof(ReactiveProperty<T>.Value),
+            DisplayName = display?.GetName() ?? propertyInfo.Name, MemberName = nameof(ReactiveProperty<T>.Value)
         };
 
         if (attrs.Length != 0)
         {
             self.AddValidationError(x =>
             {
-                var validationResults = new List<ValidationResult>();
-                if (System.ComponentModel.DataAnnotations.Validator.TryValidateValue(x!, context, validationResults, attrs))
+                List<ValidationResult> validationResults = [];
+                if (Validator.TryValidateValue(x!, context, validationResults, attrs))
                 {
                     return null;
                 }
@@ -80,7 +85,49 @@ public static class ReactivePropertyMixins
     {
         ArgumentExceptionHelper.ThrowIfNull(self);
 
-        return self.ObserveErrorChanged
-            .Select(static x => x?.OfType<string>()?.FirstOrDefault());
+        return new ValidationErrorObservable(self.ObserveErrorChanged);
+    }
+
+    /// <summary>
+    /// A fused sink that projects each error collection to its first <see cref="string"/> message (or <see langword="null"/>) —
+    /// replacing the <c>Select(x =&gt; x?.OfType&lt;string&gt;()?.FirstOrDefault())</c> used by
+    /// <see cref="ObserveValidationErrors{T}"/>.
+    /// </summary>
+    /// <param name="source">The source stream of error collections.</param>
+    private sealed class ValidationErrorObservable(IObservable<IEnumerable?> source) : IObservable<string?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<string?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Projects each error collection to its first string message and forwards it.</summary>
+        private sealed class Sink(IObserver<string?> downstream) : IObserver<IEnumerable?>
+        {
+            /// <inheritdoc/>
+            public void OnNext(IEnumerable? value)
+            {
+                string? message;
+                try
+                {
+                    message = value?.OfType<string>().FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                downstream.OnNext(message);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
     }
 }

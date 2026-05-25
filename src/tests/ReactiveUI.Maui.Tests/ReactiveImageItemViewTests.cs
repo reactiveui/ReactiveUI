@@ -1,7 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 
@@ -34,9 +36,7 @@ public class ReactiveImageItemViewTests
     [Test]
     public async Task Text_SetAndGet_WorksCorrectly()
     {
-        var view = new ReactiveImageItemView<TestViewModel>();
-
-        view.Text = "Test Text";
+        var view = new ReactiveImageItemView<TestViewModel> { Text = "Test Text" };
 
         await Assert.That(view.Text).IsEqualTo("Test Text");
     }
@@ -48,9 +48,7 @@ public class ReactiveImageItemViewTests
     [Test]
     public async Task Detail_SetAndGet_WorksCorrectly()
     {
-        var view = new ReactiveImageItemView<TestViewModel>();
-
-        view.Detail = "Test Detail";
+        var view = new ReactiveImageItemView<TestViewModel> { Detail = "Test Detail" };
 
         await Assert.That(view.Detail).IsEqualTo("Test Detail");
     }
@@ -62,10 +60,8 @@ public class ReactiveImageItemViewTests
     [Test]
     public async Task ImageSource_SetAndGet_WorksCorrectly()
     {
-        var view = new ReactiveImageItemView<TestViewModel>();
         var imageSource = ImageSource.FromFile("test.png");
-
-        view.ImageSource = imageSource;
+        var view = new ReactiveImageItemView<TestViewModel> { ImageSource = imageSource };
 
         await Assert.That(view.ImageSource).IsEqualTo(imageSource);
     }
@@ -88,7 +84,7 @@ public class ReactiveImageItemViewTests
     /// <summary>
     /// Test view model.
     /// </summary>
-    private class TestViewModel
+    private sealed class TestViewModel
     {
         /// <summary>
         /// Gets or sets the name.

@@ -1,7 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Reactive.Concurrency;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -14,8 +19,73 @@ namespace ReactiveUI;
 /// string-based property identification, allow for optional initial values, and provide control over subscription
 /// timing and notification scheduling. Use these methods to implement read-only reactive properties that automatically
 /// notify listeners when their values change.</remarks>
+[SuppressMessage(
+    "Minor Code Smell",
+    "S101:Types should be named in PascalCase",
+    Justification = "Established public API; renaming is breaking.")]
 public static class OAPHCreationHelperMixin
 {
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, deferSubscription, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="scheduler">
+    /// The scheduler that the notifications will be provided on - this should normally
+    /// be a Dispatcher-based scheduler.
+    /// </param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        IScheduler? scheduler)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, false, scheduler);
+
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
     /// automatically provides the onChanged method to raise the property
@@ -50,8 +120,8 @@ public static class OAPHCreationHelperMixin
         this IObservable<TRet> target,
         TObj source,
         Expression<Func<TObj, TRet>> property,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -60,6 +130,73 @@ public static class OAPHCreationHelperMixin
 
         return source.ObservableToProperty(target, property, deferSubscription, scheduler);
     }
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        TRet initialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <param name="scheduler">
+    /// The scheduler that the notifications will be provided on - this should normally
+    /// be a Dispatcher-based scheduler.
+    /// </param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        TRet initialValue,
+        IScheduler? scheduler)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, false, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        TRet initialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -99,10 +236,77 @@ public static class OAPHCreationHelperMixin
         TObj source,
         Expression<Func<TObj, TRet>> property,
         TRet initialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
         => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        Func<TRet> getInitialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, getInitialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <param name="scheduler">
+    /// The scheduler that the notifications will be provided on - this should normally
+    /// be a Dispatcher-based scheduler.
+    /// </param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        Func<TRet> getInitialValue,
+        IScheduler? scheduler)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, getInitialValue, false, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        Func<TRet> getInitialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, getInitialValue, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -142,13 +346,55 @@ public static class OAPHCreationHelperMixin
         TObj source,
         Expression<Func<TObj, TRet>> property,
         Func<TRet> getInitialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(property);
         return source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
     }
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -188,8 +434,8 @@ public static class OAPHCreationHelperMixin
         TObj source,
         Expression<Func<TObj, TRet>> property,
         out ObservableAsPropertyHelper<TRet> result,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -210,6 +456,52 @@ public static class OAPHCreationHelperMixin
     /// </summary>
     /// <typeparam name="TObj">The object type.</typeparam>
     /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result,
+        TRet initialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, initialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result,
+        TRet initialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, initialValue, deferSubscription, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
     /// <param name="target">
     /// The observable to convert to an ObservableAsPropertyHelper.
     /// </param>
@@ -245,10 +537,56 @@ public static class OAPHCreationHelperMixin
         Expression<Func<TObj, TRet>> property,
         out ObservableAsPropertyHelper<TRet> result,
         TRet initialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
         => ToProperty(target, source, property, out result, () => initialValue, deferSubscription, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result,
+        Func<TRet> getInitialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, getInitialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">An Expression representing the property (i.e. x => x.SomeProperty).</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        Expression<Func<TObj, TRet>> property,
+        out ObservableAsPropertyHelper<TRet> result,
+        Func<TRet> getInitialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, getInitialValue, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -292,8 +630,8 @@ public static class OAPHCreationHelperMixin
         Expression<Func<TObj, TRet>> property,
         out ObservableAsPropertyHelper<TRet> result,
         Func<TRet> getInitialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(property);
@@ -302,6 +640,73 @@ public static class OAPHCreationHelperMixin
         result = ret;
         return ret;
     }
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        TRet initialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <param name="scheduler">
+    /// The scheduler that the notifications will be provided on - this should normally
+    /// be a Dispatcher-based scheduler.
+    /// </param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        TRet initialValue,
+        IScheduler? scheduler)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, false, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="initialValue">The initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        TRet initialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, initialValue, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -342,10 +747,71 @@ public static class OAPHCreationHelperMixin
         TObj source,
         string property,
         TRet initialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
         => ToProperty(target, source, property, () => initialValue, deferSubscription, scheduler);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, deferSubscription, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="scheduler">
+    /// The scheduler that the notifications will be provided on - this should normally
+    /// be a Dispatcher-based scheduler.
+    /// </param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        IScheduler? scheduler)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, false, scheduler);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -382,8 +848,8 @@ public static class OAPHCreationHelperMixin
         this IObservable<TRet> target,
         TObj source,
         string property,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -401,6 +867,48 @@ public static class OAPHCreationHelperMixin
     /// </summary>
     /// <typeparam name="TObj">The object type.</typeparam>
     /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        Func<TRet> getInitialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, getInitialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        Func<TRet> getInitialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, getInitialValue, deferSubscription, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
     /// <param name="target">
     /// The observable to convert to an ObservableAsPropertyHelper.
     /// </param>
@@ -433,8 +941,8 @@ public static class OAPHCreationHelperMixin
         TObj source,
         string property,
         Func<TRet> getInitialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -444,6 +952,48 @@ public static class OAPHCreationHelperMixin
 
         return source.ObservableToProperty(target, property, getInitialValue, deferSubscription, scheduler);
     }
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        out ObservableAsPropertyHelper<TRet> result)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        out ObservableAsPropertyHelper<TRet> result,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, deferSubscription, null);
 
     /// <summary>
     /// Converts an Observable to an ObservableAsPropertyHelper and
@@ -483,8 +1033,8 @@ public static class OAPHCreationHelperMixin
         TObj source,
         string property,
         out ObservableAsPropertyHelper<TRet> result,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -504,6 +1054,52 @@ public static class OAPHCreationHelperMixin
     /// </summary>
     /// <typeparam name="TObj">The object type.</typeparam>
     /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        out ObservableAsPropertyHelper<TRet> result,
+        Func<TRet> getInitialValue)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, getInitialValue, false, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
+    /// <param name="target">The observable to convert to an ObservableAsPropertyHelper.</param>
+    /// <param name="source">The ReactiveObject that has the property.</param>
+    /// <param name="property">The name of the property. Recommended for use with nameof().</param>
+    /// <param name="result">An out param matching the return value, provided for convenience.</param>
+    /// <param name="getInitialValue">A function that returns the initial value of the property.</param>
+    /// <param name="deferSubscription">If true, defers subscription until the first read of the property value.</param>
+    /// <returns>An initialized ObservableAsPropertyHelper; use this as the backing field for your property.</returns>
+    public static ObservableAsPropertyHelper<TRet> ToProperty<TObj, TRet>(
+        this IObservable<TRet> target,
+        TObj source,
+        string property,
+        out ObservableAsPropertyHelper<TRet> result,
+        Func<TRet> getInitialValue,
+        bool deferSubscription)
+        where TObj : class, IReactiveObject =>
+        ToProperty(target, source, property, out result, getInitialValue, deferSubscription, null);
+
+    /// <summary>
+    /// Converts an Observable to an ObservableAsPropertyHelper and
+    /// automatically provides the onChanged method to raise the property
+    /// changed notification.
+    /// </summary>
+    /// <typeparam name="TObj">The object type.</typeparam>
+    /// <typeparam name="TRet">The result type.</typeparam>
     /// <param name="target">
     /// The observable to convert to an ObservableAsPropertyHelper.
     /// </param>
@@ -539,8 +1135,8 @@ public static class OAPHCreationHelperMixin
         string property,
         out ObservableAsPropertyHelper<TRet> result,
         Func<TRet> getInitialValue,
-        bool deferSubscription = false,
-        IScheduler? scheduler = null) // TODO: Create Test
+        bool deferSubscription,
+        IScheduler? scheduler)
         where TObj : class, IReactiveObject
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -590,26 +1186,32 @@ public static class OAPHCreationHelperMixin
 
         var expression = Reflection.Rewrite(property.Body);
 
-        var parent = expression.GetParent() ?? throw new ArgumentException("The property expression does not have a valid parent.", nameof(property));
+        var parent = expression.GetParent() ??
+                     throw new ArgumentException(
+                         "The property expression does not have a valid parent.",
+                         nameof(property));
         if (parent.NodeType != ExpressionType.Parameter)
         {
             throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
         }
 
-        var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
+        var memberInfo = expression.GetMemberInfo() ??
+                         throw new ArgumentException(
+                             "The property expression does not point towards a valid member.",
+                             nameof(property));
         var name = memberInfo.Name;
         if (expression is IndexExpression)
         {
             name += "[]";
         }
 
-        return new ObservableAsPropertyHelper<TRet>(
-                                                    observable,
-                                                    _ => target.RaisingPropertyChanged(name),
-                                                    _ => target.RaisingPropertyChanging(name),
-                                                    getInitialValue,
-                                                    deferSubscription,
-                                                    scheduler);
+        return new(
+            observable,
+            _ => target.RaisingPropertyChanged(name),
+            _ => target.RaisingPropertyChanging(name),
+            getInitialValue,
+            deferSubscription,
+            scheduler);
     }
 
     /// <summary>
@@ -646,26 +1248,32 @@ public static class OAPHCreationHelperMixin
 
         var expression = Reflection.Rewrite(property.Body);
 
-        var parent = expression.GetParent() ?? throw new ArgumentException("The property expression does not have a valid parent.", nameof(property));
+        var parent = expression.GetParent() ??
+                     throw new ArgumentException(
+                         "The property expression does not have a valid parent.",
+                         nameof(property));
         if (parent.NodeType != ExpressionType.Parameter)
         {
             throw new ArgumentException("Property expression must be of the form 'x => x.SomeProperty'");
         }
 
-        var memberInfo = expression.GetMemberInfo() ?? throw new ArgumentException("The property expression does not point towards a valid member.", nameof(property));
+        var memberInfo = expression.GetMemberInfo() ??
+                         throw new ArgumentException(
+                             "The property expression does not point towards a valid member.",
+                             nameof(property));
         var name = memberInfo.Name;
         if (expression is IndexExpression)
         {
             name += "[]";
         }
 
-        return new ObservableAsPropertyHelper<TRet>(
-                                                    observable,
-                                                    _ => target.RaisingPropertyChanged(name),
-                                                    _ => target.RaisingPropertyChanging(name),
-                                                    () => default,
-                                                    deferSubscription,
-                                                    scheduler);
+        return new(
+            observable,
+            _ => target.RaisingPropertyChanged(name),
+            _ => target.RaisingPropertyChanging(name),
+            () => default,
+            deferSubscription,
+            scheduler);
     }
 
     /// <summary>
@@ -700,13 +1308,13 @@ public static class OAPHCreationHelperMixin
         ArgumentExceptionHelper.ThrowIfNull(observable);
         ArgumentExceptionHelper.ThrowIfNull(property);
 
-        return new ObservableAsPropertyHelper<TRet>(
-                                                    observable,
-                                                    _ => target.RaisingPropertyChanged(property),
-                                                    _ => target.RaisingPropertyChanging(property),
-                                                    getInitialValue,
-                                                    deferSubscription,
-                                                    scheduler);
+        return new(
+            observable,
+            _ => target.RaisingPropertyChanged(property),
+            _ => target.RaisingPropertyChanging(property),
+            getInitialValue,
+            deferSubscription,
+            scheduler);
     }
 
     /// <summary>
@@ -738,12 +1346,12 @@ public static class OAPHCreationHelperMixin
         ArgumentExceptionHelper.ThrowIfNull(observable);
         ArgumentExceptionHelper.ThrowIfNull(property);
 
-        return new ObservableAsPropertyHelper<TRet>(
-                                                    observable,
-                                                    _ => target.RaisingPropertyChanged(property),
-                                                    _ => target.RaisingPropertyChanging(property),
-                                                    () => default,
-                                                    deferSubscription,
-                                                    scheduler);
+        return new(
+            observable,
+            _ => target.RaisingPropertyChanged(property),
+            _ => target.RaisingPropertyChanging(property),
+            () => default,
+            deferSubscription,
+            scheduler);
     }
 }

@@ -1,16 +1,19 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Threading;
 
 using DynamicData;
-
+using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -25,6 +28,12 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class ViewModelViewHostTests
 {
+    private static readonly bool[] _expectedActivated = [true];
+
+    /// <summary>
+    /// Verifies that the view-model view host shows its default content when activated with no view model.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelViewHostDefaultContentNotNull()
     {
@@ -46,10 +55,14 @@ public class ViewModelViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(controlActivated);
+        await _expectedActivated.AssertAreEqual(controlActivated);
         await Assert.That(uc.Content).IsNotNull();
     }
 
+    /// <summary>
+    /// Verifies the view-model view host resolves the matching view once activated.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfWithViewExecutor>]
     public async Task ViewModelViewHostContentNotNullWithViewModelAndActivated()
@@ -72,14 +85,20 @@ public class ViewModelViewHostTests
         };
         uc.RaiseEvent(loaded);
 
-        await new[] { true }.AssertAreEqual(controlActivated);
+        await _expectedActivated.AssertAreEqual(controlActivated);
 
         // Test IViewFor<ViewModel> after activated
         await Assert.That(uc.Content).IsTypeOf<TestView>();
     }
 
+    /// <summary>
+    /// A test executor that registers the test view for view-resolution tests.
+    /// </summary>
     public class WpfWithViewExecutor : STAThreadExecutor
     {
+        /// <summary>
+        /// Helper that manages app builder setup and teardown for the test.
+        /// </summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>

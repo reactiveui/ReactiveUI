@@ -1,10 +1,12 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Runtime.Versioning;
 using System.Windows.Threading;
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Wpf;
@@ -26,6 +28,9 @@ namespace ReactiveUI.Tests.Wpf;
 [SupportedOSPlatform("windows")]
 public class WpfTestExecutor : STAThreadExecutor
 {
+    /// <summary>
+    /// Helper that manages app builder setup and teardown for the test.
+    /// </summary>
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
@@ -35,18 +40,22 @@ public class WpfTestExecutor : STAThreadExecutor
 
         _helper.Initialize(builder =>
         {
-            // Include WPF platform services to ensure view locator, activation, etc. work
+            // Include WPF platform services to ensure view locator, activation, etc. work.
             builder
                 .WithWpf()
                 .WithCoreServices();
-
-            // Configure WPF scheduler for test execution
-            // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
-            // so we must manually configure it for tests that need WPF controls
-            var dispatcher = Dispatcher.CurrentDispatcher;
-            RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
         });
+
+        // Configure the WPF scheduler AFTER BuildApp. WithWpf() registers the lazy WpfMainThreadScheduler
+        // (WaitForDispatcherScheduler(() => DispatcherScheduler.Current)) and BuildApp applies it to
+        // RxSchedulers.MainThreadScheduler, so setting it inside the builder callback would be overwritten. The lazy
+        // scheduler resolves its dispatcher on whichever thread first schedules, so a background-thread binding
+        // update (e.g. via Task.Run) would resolve to the pool thread's dispatcher, which DispatcherUtilities.DoEvents
+        // never pumps. Binding this executor's dedicated STA dispatcher concretely keeps marshalled work on the
+        // dispatcher the test pumps. Initialize and the test body run on the same dedicated thread (see
+        // DedicatedThreadExecutor), so Dispatcher.CurrentDispatcher here is that thread's dispatcher.
+        RxSchedulers.MainThreadScheduler = new DispatcherScheduler(Dispatcher.CurrentDispatcher);
+        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
     }
 
     /// <inheritdoc/>

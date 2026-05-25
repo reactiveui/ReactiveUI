@@ -1,9 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Reactive.Disposables.Fluent;
 
 namespace ReactiveUI.Samples.Winforms;
 
@@ -12,9 +13,27 @@ namespace ReactiveUI.Samples.Winforms;
 /// </summary>
 public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 {
+    /// <summary>
+    /// The text box bound to the view model's user name.
+    /// </summary>
     private readonly TextBox _username = new() { PlaceholderText = "Username", Width = 240, Name = "Username" };
-    private readonly TextBox _password = new() { PlaceholderText = "Password", Width = 240, UseSystemPasswordChar = true, Name = "Password" };
+
+    /// <summary>
+    /// The text box bound to the view model's password.
+    /// </summary>
+    private readonly TextBox _password = new()
+    {
+        PlaceholderText = "Password", Width = 240, UseSystemPasswordChar = true, Name = "Password"
+    };
+
+    /// <summary>
+    /// The button bound to the view model's login command.
+    /// </summary>
     private readonly Button _login = new() { Text = "Login", Width = 115, Name = "Login" };
+
+    /// <summary>
+    /// The button bound to the view model's cancel command.
+    /// </summary>
     private readonly Button _cancel = new() { Text = "Cancel", Width = 115, Name = "Cancel" };
 
     /// <summary>
@@ -24,25 +43,18 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
     {
         var layout = new FlowLayoutPanel
         {
-            Dock = DockStyle.Fill,
-            FlowDirection = FlowDirection.TopDown,
-            Padding = new Padding(20),
-            WrapContents = false,
+            Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, Padding = new(20), WrapContents = false
         };
 
-        layout.Controls.AddRange([_username, _password]);
+        layout.Controls.AddRange(_username, _password);
 
-        var buttons = new FlowLayoutPanel
-        {
-            FlowDirection = FlowDirection.LeftToRight,
-            AutoSize = true,
-        };
-        buttons.Controls.AddRange([_login, _cancel]);
+        var buttons = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, AutoSize = true };
+        buttons.Controls.AddRange(_login, _cancel);
         layout.Controls.Add(buttons);
 
         Controls.Add(layout);
 
-        ViewModel = new LoginViewModel(RxSchedulers.MainThreadScheduler);
+        ViewModel = new(RxSchedulers.MainThreadScheduler);
 
         this.WhenActivated(d =>
         {

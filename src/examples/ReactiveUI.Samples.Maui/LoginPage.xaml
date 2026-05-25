@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
+
 <rxui:ReactiveContentPage
     x:Class="ReactiveUI.Samples.Maui.LoginPage"
     x:TypeArguments="local:LoginViewModel"
@@ -15,7 +16,8 @@
 
         <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
             <Button x:Name="CancelButton" Text="Cancel" Grid.Column="0" />
-            <Button x:Name="LoginButton" Text="Login" Grid.Column="1" BackgroundColor="{StaticResource Primary}" TextColor="White" />
+            <Button x:Name="LoginButton" Text="Login" Grid.Column="1" BackgroundColor="{StaticResource Primary}"
+                    TextColor="White" />
         </Grid>
 
     </VerticalStackLayout>

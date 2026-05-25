@@ -1,7 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using ReactiveUI.Helpers;
 
 namespace ReactiveUI;
 
@@ -79,13 +82,11 @@ public sealed class BindingFallbackConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new List<IBindingFallbackConverter>(8));
+            var snap = _snapshot ?? new Snapshot(new(8));
 
-            // Copy-on-write update: clone the list
-            var newList = new List<IBindingFallbackConverter>(snap.Converters) { converter };
+            List<IBindingFallbackConverter> newList = [..snap.Converters, converter];
 
-            // Publish the new snapshot (atomic via reference assignment)
-            _snapshot = new Snapshot(newList);
+            _snapshot = new(newList);
         }
     }
 
@@ -112,8 +113,10 @@ public sealed class BindingFallbackConverterRegistry
     /// </para>
     /// </remarks>
     public IBindingFallbackConverter? TryGetConverter(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type fromType,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+        Type toType)
     {
         ArgumentExceptionHelper.ThrowIfNull(fromType);
         ArgumentExceptionHelper.ThrowIfNull(toType);
@@ -124,7 +127,6 @@ public sealed class BindingFallbackConverterRegistry
             return null;
         }
 
-        // Find the converter with the highest affinity
         IBindingFallbackConverter? best = null;
         var bestScore = -1;
 
@@ -162,7 +164,6 @@ public sealed class BindingFallbackConverterRegistry
             return [];
         }
 
-        // Return a copy to avoid exposing internal list
         return [.. snap.Converters];
     }
 

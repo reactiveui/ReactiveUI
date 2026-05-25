@@ -1,11 +1,13 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Subjects;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -16,6 +18,10 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class CommandBindingImplementationTests
 {
+    private const int FirstValue = 42;
+    private const int SecondValue = 13;
+    private const int InitialValue = 10;
+
     /// <summary>
     /// Tests the command bind by name wireup.
     /// </summary>
@@ -147,15 +153,15 @@ public class CommandBindingImplementationTests
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-        var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
-        view.ViewModel.Value = 42;
+        view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(42);
+        await Assert.That(received).IsEqualTo(FirstValue);
 
-        view.ViewModel.Value = 13;
+        view.ViewModel.Value = SecondValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(13);
+        await Assert.That(received).IsEqualTo(SecondValue);
     }
 
     /// <summary>
@@ -163,7 +169,7 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task CommandBindWithDelaySetVMParameterExpression()
+    public async Task CommandBindWithDelaySetVmParameterExpression()
     {
         var view = new ReactiveObjectCommandBindView
         {
@@ -173,15 +179,15 @@ public class CommandBindingImplementationTests
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
 
-        var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
-        view.ViewModel.Value = 42;
+        view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(42);
+        await Assert.That(received).IsEqualTo(FirstValue);
 
-        view.ViewModel.Value = 13;
+        view.ViewModel.Value = SecondValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(13);
+        await Assert.That(received).IsEqualTo(SecondValue);
     }
 
     /// <summary>
@@ -189,26 +195,26 @@ public class CommandBindingImplementationTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task CommandBindWithDelaySetVMParameterNoINPCExpression()
+    public async Task CommandBindWithDelaySetVmParameterNoInpcExpression()
     {
         var view = new CommandBindView { ViewModel = new() };
 
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
-        view.ViewModel.Value = 10;
+        view.ViewModel.Value = InitialValue;
 
         view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(10);
+        await Assert.That(received).IsEqualTo(InitialValue);
 
-        view.ViewModel.Value = 42;
+        view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(42);
+        await Assert.That(received).IsEqualTo(FirstValue);
 
-        view.ViewModel.Value = 13;
+        view.ViewModel.Value = SecondValue;
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(13);
+        await Assert.That(received).IsEqualTo(SecondValue);
     }
 
     /// <summary>
@@ -222,16 +228,16 @@ public class CommandBindingImplementationTests
 
         var received = 0;
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
-        view.ViewModel.Value = 10;
+        view.ViewModel.Value = InitialValue;
         var value = view.ViewModel.WhenAnyValue(v => v.Value);
-        var disp = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
-        await Assert.That(received).IsEqualTo(10);
+        await Assert.That(received).IsEqualTo(InitialValue);
 
-        view.ViewModel.Value = 42;
+        view.ViewModel.Value = FirstValue;
         view.Command1.RaiseCustomClick();
 
-        await Assert.That(received).IsEqualTo(42);
+        await Assert.That(received).IsEqualTo(FirstValue);
     }
 }

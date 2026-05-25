@@ -1,10 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 
 namespace ReactiveUI.Samples.Wpf;
 
@@ -14,9 +14,9 @@ namespace ReactiveUI.Samples.Wpf;
 public class LoginViewModel : ReactiveObject, IDisposable
 {
     /// <summary>
-    /// Signal used to cancel an in-flight login operation via TakeUntil.
+    /// Cancellation source for the in-flight login operation, signalled by the <see cref="Cancel"/> command.
     /// </summary>
-    private readonly Subject<Unit> _cancelSignal = new();
+    private CancellationTokenSource? _loginCancellation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoginViewModel"/> class.
@@ -29,16 +29,30 @@ public class LoginViewModel : ReactiveObject, IDisposable
             vm => vm.Password,
             (user, pass) => !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass));
 
-        Login = ReactiveCommand.CreateFromObservable(
-            () => Observable
-                .Return(Password is "secret")
-                .Delay(TimeSpan.FromSeconds(1), scheduler)
-                .TakeUntil(_cancelSignal),
+        Login = ReactiveCommand.CreateFromTask(
+            async () =>
+            {
+                using var cancellation = new CancellationTokenSource();
+                _loginCancellation = cancellation;
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellation.Token);
+                    return Password is "secret";
+                }
+                catch (OperationCanceledException)
+                {
+                    return false;
+                }
+                finally
+                {
+                    _loginCancellation = null;
+                }
+            },
             canLogin,
             scheduler);
 
         Cancel = ReactiveCommand.Create(
-            () => _cancelSignal.OnNext(Unit.Default),
+            () => _loginCancellation?.Cancel(),
             Login.IsExecuting,
             scheduler);
     }
@@ -84,11 +98,12 @@ public class LoginViewModel : ReactiveObject, IDisposable
     /// <param name="disposing">Whether to release managed resources.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
+        if (!disposing)
         {
-            _cancelSignal.Dispose();
-            Login.Dispose();
-            Cancel.Dispose();
+            return;
         }
+
+        Login.Dispose();
+        Cancel.Dispose();
     }
 }

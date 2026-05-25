@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using UIKit;
 
 namespace ReactiveUI.Cocoa;
@@ -11,8 +12,13 @@ namespace ReactiveUI.Cocoa;
 /// This class exists to force the MT linker to include properties called by RxUI via reflection.
 /// </summary>
 [Preserve(AllMembers = true)]
+[SuppressMessage("Major Code Smell", "S1656:Useless self-assignment", Justification = "Self-assignments force the linker to preserve these members.")]
+[SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Self-assignments force the linker to preserve these members.")]
 internal class LinkerOverrides
 {
+    /// <summary>
+    /// Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.
+    /// </summary>
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
     public void KeepMe()
     {
@@ -49,6 +55,8 @@ internal class LinkerOverrides
 
         static void Eh(object? s, EventArgs e)
         {
+            // Intentionally empty: the handler exists only to force the linker to preserve
+            // the event add/remove accessors; no runtime behavior is needed.
         }
 
         ctl.TouchUpInside += Eh;

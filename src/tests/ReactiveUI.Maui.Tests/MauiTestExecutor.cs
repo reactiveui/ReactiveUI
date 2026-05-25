@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -20,6 +20,9 @@ namespace ReactiveUI.Maui.Tests;
 /// </remarks>
 public class MauiTestExecutor : ITestExecutor
 {
+    /// <summary>
+    /// The dispatcher provider that was active before the test, restored on cleanup.
+    /// </summary>
     private IDispatcherProvider? _previousProvider;
 
     /// <inheritdoc/>
@@ -53,9 +56,11 @@ public class MauiTestExecutor : ITestExecutor
     /// </summary>
     protected virtual void CleanUp()
     {
-        if (_previousProvider is not null)
+        if (_previousProvider is null)
         {
-            DispatcherProvider.SetCurrent(_previousProvider);
+            return;
         }
+
+        DispatcherProvider.SetCurrent(_previousProvider);
     }
 }

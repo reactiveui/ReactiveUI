@@ -1,8 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Subjects;
 using Foundation;
 
 #if UIKIT
@@ -19,7 +22,10 @@ namespace ReactiveUI;
 /// </summary>
 public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
+    /// <summary>The subject used to signal view activation.</summary>
     private readonly Subject<Unit> _activated = new();
+
+    /// <summary>The subject used to signal view deactivation.</summary>
     private readonly Subject<Unit> _deactivated = new();
 
 #if UIKIT
@@ -84,10 +90,10 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -149,78 +155,5 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a View that is both a NSSplitViewController and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactiveSplitViewController<TViewModel> : ReactiveSplitViewController, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    private TViewModel? _viewModel;
-
-#if UIKIT
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="nibName">The name.</param>
-    /// <param name="bundle">The bundle.</param>
-    protected ReactiveSplitViewController(string nibName, NSBundle bundle)
-        : base(nibName, bundle)
-    {
-    }
-
-#endif
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveSplitViewController(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveSplitViewController(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The coder.</param>
-    protected ReactiveSplitViewController(NSCoder coder)
-        : base(coder)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveSplitViewController()
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

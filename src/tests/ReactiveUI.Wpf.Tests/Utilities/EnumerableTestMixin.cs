@@ -1,12 +1,22 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 namespace ReactiveUI.Tests.Utilities;
 
+/// <summary>
+/// Test helper extension methods for working with enumerables.
+/// </summary>
 public static class EnumerableTestMixin
 {
+    /// <summary>
+    /// Asserts that two sequences contain equal elements in the same order.
+    /// </summary>
+    /// <typeparam name="T">The element type of the sequences.</typeparam>
+    /// <param name="lhs">The first sequence.</param>
+    /// <param name="rhs">The second sequence.</param>
+    /// <returns>A task that completes when the assertion finishes.</returns>
     public static async Task AssertAreEqual<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         var left = lhs.ToArray();
@@ -19,6 +29,12 @@ public static class EnumerableTestMixin
         }
     }
 
+    /// <summary>
+    /// Returns the elements of a sequence, skipping consecutive duplicate values.
+    /// </summary>
+    /// <typeparam name="T">The element type of the sequence.</typeparam>
+    /// <param name="enumerable">The source sequence.</param>
+    /// <returns>The sequence with consecutive duplicates removed.</returns>
     public static IEnumerable<T> DistinctUntilChanged<T>(this IEnumerable<T> enumerable)
     {
         if (enumerable is null)
@@ -26,6 +42,11 @@ public static class EnumerableTestMixin
             throw new ArgumentNullException(nameof(enumerable));
         }
 
+        return DistinctUntilChangedIterator(enumerable);
+    }
+
+    private static IEnumerable<T> DistinctUntilChangedIterator<T>(IEnumerable<T> enumerable)
+    {
         var isFirst = true;
         var lastValue = default(T);
 

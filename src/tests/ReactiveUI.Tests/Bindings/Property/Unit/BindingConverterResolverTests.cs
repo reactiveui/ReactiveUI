@@ -1,10 +1,14 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Numerics;
 using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
@@ -15,7 +19,7 @@ namespace ReactiveUI.Tests;
 /// These tests verify converter resolution logic.
 /// Tests use the Executor paradigm to manage AppBuilder state and registrations.
 /// </remarks>
-[TestExecutor<BindingConverterResolverTests.Executor>]
+[TestExecutor<Executor>]
 public class BindingConverterResolverTests
 {
     /// <summary>
@@ -46,7 +50,7 @@ public class BindingConverterResolverTests
         var resolver = new BindingConverterResolver();
 
         // Act - Use obscure types unlikely to have registered converters
-        var converter = resolver.GetBindingConverter(typeof(System.Net.IPAddress), typeof(System.Numerics.BigInteger));
+        var converter = resolver.GetBindingConverter(typeof(IPAddress), typeof(BigInteger));
 
         // Assert
         await Assert.That(converter).IsNull();
@@ -158,7 +162,8 @@ public class BindingConverterResolverTests
         var resolver = new BindingConverterResolver();
 
         // Act
-        var converterFunc = resolver.GetSetMethodConverter(typeof(System.Net.IPAddress), typeof(System.Numerics.BigInteger));
+        var converterFunc =
+            resolver.GetSetMethodConverter(typeof(IPAddress), typeof(BigInteger));
 
         // Assert
         await Assert.That(converterFunc).IsNull();
@@ -188,6 +193,10 @@ public class BindingConverterResolverTests
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task GetBindingConverter_WithNoRxConverters_FallsBackToSplat()
     {
         // Arrange
@@ -214,23 +223,38 @@ public class BindingConverterResolverTests
 
             builder
                 .WithRegistration(r => r.RegisterConstant<IBindingTypeConverter>(new MockBindingTypeConverter()))
-                .WithRegistration(r => r.RegisterConstant<ISetMethodBindingConverter>(new MockSetMethodBindingConverter()))
+                .WithRegistration(r =>
+                    r.RegisterConstant<ISetMethodBindingConverter>(new MockSetMethodBindingConverter()))
                 .WithCoreServices();
         }
     }
 
-    private class MockType
-    {
-    }
+    /// <summary>
+    /// Placeholder type used as both source and target for the mock converters.
+    /// </summary>
+    [SuppressMessage(
+        "Minor Code Smell",
+        "S2094:Classes should not be empty",
+        Justification = "Empty type used as a test marker.")]
+    private sealed class MockType;
 
-    private class MockBindingTypeConverter : IBindingTypeConverter
+    /// <summary>
+    /// Mock binding type converter registered for <see cref="MockType"/>.
+    /// </summary>
+    private sealed class MockBindingTypeConverter : IBindingTypeConverter
     {
+        private const int HighAffinity = 100;
+
+        /// <inheritdoc/>
         public Type FromType => typeof(MockType);
 
+        /// <inheritdoc/>
         public Type ToType => typeof(MockType);
 
-        public int GetAffinityForObjects() => 100;
+        /// <inheritdoc/>
+        public int GetAffinityForObjects() => HighAffinity;
 
+        /// <inheritdoc/>
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = null;
@@ -238,11 +262,18 @@ public class BindingConverterResolverTests
         }
     }
 
-    private class MockSetMethodBindingConverter : ISetMethodBindingConverter
+    /// <summary>
+    /// Mock set-method binding converter registered for <see cref="MockType"/>.
+    /// </summary>
+    private sealed class MockSetMethodBindingConverter : ISetMethodBindingConverter
     {
-        public int GetAffinityForObjects(Type? fromType, Type? toType) =>
-            fromType == typeof(MockType) && toType == typeof(MockType) ? 100 : 0;
+        private const int HighAffinity = 100;
 
+        /// <inheritdoc/>
+        public int GetAffinityForObjects(Type? fromType, Type? toType) =>
+            fromType == typeof(MockType) && toType == typeof(MockType) ? HighAffinity : 0;
+
+        /// <inheritdoc/>
         public object? PerformSet(object? current, object? newValue, object?[]? arguments) => "SetPerformed";
     }
 }

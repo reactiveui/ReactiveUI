@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using DynamicData;
+using System.Reactive;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -18,8 +20,6 @@ namespace ReactiveUI;
 /// reactive navigation patterns.</remarks>
 public static class RoutableViewModelMixin
 {
-    private static readonly ListChangeReason[] _navigationStackRemovalOperations = [ListChangeReason.Remove, ListChangeReason.RemoveRange];
-
     /// <summary>
     /// This method allows you to set up connections that only operate
     /// while the ViewModel has focus, and cleans up when the ViewModel
@@ -38,8 +38,8 @@ public static class RoutableViewModelMixin
         IDisposable? inner = null;
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
-        return navigationStackChanged.Subscribe(_ =>
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
+        return navigationStackChanged.Subscribe(new DelegateObserver<IReactiveChangeSet<IRoutableViewModel>>(_ =>
         {
             if (router.GetCurrentViewModel() == item)
             {
@@ -51,7 +51,7 @@ public static class RoutableViewModelMixin
             {
                 inner?.Dispose();
             }
-        });
+        }));
     }
 
     /// <summary>
@@ -78,13 +78,9 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
-        var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
 
-        return navigationStackChanged
-               .Where(_ => router.GetCurrentViewModel() == item)
-               .Select(_ => Unit.Default)
-               .TakeUntil(itemRemoved);
+        return new NavigatedToObservable(navigationStackChanged, router, item);
     }
 
     /// <summary>
@@ -110,14 +106,9 @@ public static class RoutableViewModelMixin
         ArgumentExceptionHelper.ThrowIfNull(item);
 
         var router = item.HostScreen.Router;
-        var navigationStackChanged = router.NavigationChanged.CountChanged();
-        var itemRemoved = navigationStackChanged.Where(x => WasItemRemoved(x, item));
-        var viewModelsChanged = navigationStackChanged.Scan(new IRoutableViewModel?[2], (previous, _) => [previous[1], router.GetCurrentViewModel()]);
+        var navigationStackChanged = router.NavigationChanges.WhenCountChanged();
 
-        return viewModelsChanged
-               .Where(x => x[0] == item)
-               .Select(_ => Unit.Default)
-               .TakeUntil(itemRemoved);
+        return new NavigatingFromObservable(navigationStackChanged, router, item);
     }
 
     /// <summary>
@@ -126,9 +117,214 @@ public static class RoutableViewModelMixin
     /// <param name="changeSet">The set of changes to evaluate for item removal.</param>
     /// <param name="item">The item to check for removal within the change set.</param>
     /// <returns>true if the item was removed according to the change set; otherwise, false.</returns>
-    private static bool WasItemRemoved(IChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item) =>
-        changeSet
-            .Any(
-                 change => change.Reason == ListChangeReason.Clear ||
-                           (_navigationStackRemovalOperations.Contains(change.Reason) && change.Item.Current == item));
+    private static bool WasItemRemoved(IReactiveChangeSet<IRoutableViewModel> changeSet, IRoutableViewModel item)
+    {
+        // A reset/clear is flattened to one Remove per prior item, so a removal of this item (directly or via a
+        // clear) always appears as a Remove change carrying the item.
+        for (var i = 0; i < changeSet.Count; i++)
+        {
+            var change = changeSet[i];
+            if (change.Reason == ReactiveChangeReason.Remove && ReferenceEquals(change.Current, item))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Emits when this view model is (or becomes) the topmost view model, and completes when it is removed from the
+    /// stack. Fuses the prior <c>Where</c> + <c>Select</c> + <c>TakeUntil</c> pipeline into one sink.
+    /// </summary>
+    /// <param name="source">The navigation-stack change stream.</param>
+    /// <param name="router">The router whose current view model is inspected.</param>
+    /// <param name="item">The view model being watched.</param>
+    private sealed class NavigatedToObservable(
+        IObservable<IReactiveChangeSet<IRoutableViewModel>> source,
+        RoutingState router,
+        IRoutableViewModel item) : IObservable<Unit>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<Unit> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return new Sink(observer, router, item).Run(source);
+        }
+
+        /// <summary>Emits a unit when the watched view model is current, completing once it is removed.</summary>
+        /// <param name="downstream">The observer receiving the focus signal.</param>
+        /// <param name="router">The router whose current view model is inspected.</param>
+        /// <param name="item">The view model being watched.</param>
+        private sealed class Sink(IObserver<Unit> downstream, RoutingState router, IRoutableViewModel item)
+            : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+        {
+            /// <summary>The subscription to the navigation-stack change stream.</summary>
+            private IDisposable? _subscription;
+
+            /// <summary>Whether the downstream has terminated.</summary>
+            private bool _stopped;
+
+            /// <summary>Subscribes to the source.</summary>
+            /// <param name="changes">The navigation-stack change stream.</param>
+            /// <returns>The sink, which stops the run when disposed.</returns>
+            public Sink Run(IObservable<IReactiveChangeSet<IRoutableViewModel>> changes)
+            {
+                _subscription = changes.Subscribe(this);
+                return this;
+            }
+
+            /// <inheritdoc/>
+            public void OnNext(IReactiveChangeSet<IRoutableViewModel> value)
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                if (WasItemRemoved(value, item))
+                {
+                    Complete();
+                    return;
+                }
+
+                if (router.GetCurrentViewModel() != item)
+                {
+                    return;
+                }
+
+                downstream.OnNext(Unit.Default);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error)
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                _stopped = true;
+                downstream.OnError(error);
+            }
+
+            /// <inheritdoc/>
+            public void OnCompleted() => Complete();
+
+            /// <inheritdoc/>
+            public void Dispose() => _subscription?.Dispose();
+
+            /// <summary>Completes the downstream and disposes the subscription exactly once.</summary>
+            private void Complete()
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                _stopped = true;
+                downstream.OnCompleted();
+                _subscription?.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Emits when this view model stops being the topmost view model, and completes when it is removed from the stack.
+    /// Fuses the prior <c>Scan</c> + <c>Where</c> + <c>Select</c> + <c>TakeUntil</c> pipeline into one sink.
+    /// </summary>
+    /// <param name="source">The navigation-stack change stream.</param>
+    /// <param name="router">The router whose current view model is inspected.</param>
+    /// <param name="item">The view model being watched.</param>
+    private sealed class NavigatingFromObservable(
+        IObservable<IReactiveChangeSet<IRoutableViewModel>> source,
+        RoutingState router,
+        IRoutableViewModel item) : IObservable<Unit>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<Unit> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return new Sink(observer, router, item).Run(source);
+        }
+
+        /// <summary>Emits a unit when the watched view model was the previous current view model, completing on removal.</summary>
+        /// <param name="downstream">The observer receiving the lost-focus signal.</param>
+        /// <param name="router">The router whose current view model is inspected.</param>
+        /// <param name="item">The view model being watched.</param>
+        private sealed class Sink(IObserver<Unit> downstream, RoutingState router, IRoutableViewModel item)
+            : IObserver<IReactiveChangeSet<IRoutableViewModel>>, IDisposable
+        {
+            /// <summary>The subscription to the navigation-stack change stream.</summary>
+            private IDisposable? _subscription;
+
+            /// <summary>The current view model recorded at the previous change.</summary>
+            private IRoutableViewModel? _previousCurrent;
+
+            /// <summary>Whether the downstream has terminated.</summary>
+            private bool _stopped;
+
+            /// <summary>Subscribes to the source.</summary>
+            /// <param name="changes">The navigation-stack change stream.</param>
+            /// <returns>The sink, which stops the run when disposed.</returns>
+            public Sink Run(IObservable<IReactiveChangeSet<IRoutableViewModel>> changes)
+            {
+                _subscription = changes.Subscribe(this);
+                return this;
+            }
+
+            /// <inheritdoc/>
+            public void OnNext(IReactiveChangeSet<IRoutableViewModel> value)
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                if (WasItemRemoved(value, item))
+                {
+                    Complete();
+                    return;
+                }
+
+                if (_previousCurrent == item)
+                {
+                    downstream.OnNext(Unit.Default);
+                }
+
+                _previousCurrent = router.GetCurrentViewModel();
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error)
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                _stopped = true;
+                downstream.OnError(error);
+            }
+
+            /// <inheritdoc/>
+            public void OnCompleted() => Complete();
+
+            /// <inheritdoc/>
+            public void Dispose() => _subscription?.Dispose();
+
+            /// <summary>Completes the downstream and disposes the subscription exactly once.</summary>
+            private void Complete()
+            {
+                if (_stopped)
+                {
+                    return;
+                }
+
+                _stopped = true;
+                downstream.OnCompleted();
+                _subscription?.Dispose();
+            }
+        }
+    }
 }

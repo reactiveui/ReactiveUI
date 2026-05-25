@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
     <AssemblyName>ReactiveUI</AssemblyName>
@@ -21,105 +21,83 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Using Include="Splat" />
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.Collections.ObjectModel" />
-    <Using Include="System.ComponentModel" />
-    <Using Condition="'$(DefineConstants)' == '' or !$(DefineConstants.Contains('MONO'))" Include="System.ComponentModel.DataAnnotations" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Linq.Expressions" />
-    <Using Include="System.Reactive" />
-    <Using Include="System.Reactive.Concurrency" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Disposables.Fluent" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Reactive.Subjects" />
-    <Using Include="System.Reactive.Threading.Tasks" />
-    <Using Include="System.Runtime.Serialization" />
-    <Using Include="System.Text.Json.Serialization" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Threading.Tasks" />
-    <Using Include="ReactiveUI.Helpers" />
+    <Compile Remove="Platforms\**\*.cs"/>
+    <Compile Remove="Resources\**"/>
+    <None Include="Platforms\**\*.cs"/>
+    <EmbeddedResource Remove="Resources\**"/>
+    <None Remove="Resources\**"/>
   </ItemGroup>
-  
+  <!-- Platform subfolder is platform-lib-only; excluded here to avoid CA1812 on types core never uses. -->
   <ItemGroup>
-    <Compile Remove="Platforms\**\*.cs" />
-    <Compile Remove="Resources\**" />
-    <None Include="Platforms\**\*.cs" />
-    <EmbeddedResource Remove="Resources\**" />
-    <None Remove="Resources\**" />
+    <Compile Include="..\Shared\**\*.cs" Exclude="..\Shared\Platform\**\*.cs" Link="Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <!-- EventPatternObservable lives under Shared\Platform but is also consumed by core (CreatesCommandBindingViaEvent),
+       so it is linked here as a single shared source rather than duplicated into ReactiveUI\Internal. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <Compile Include="Platforms\netstandard2.0\**\*.cs" />
-    <Compile Include="Platforms\shared\**\*.cs" />
+    <Compile Include="Platforms\netstandard2.0\**\*.cs"/>
+    <Compile Include="Platforms\shared\**\*.cs"/>
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
-    <PackageReference Include="System.ComponentModel.Annotations" />
-    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="System.ComponentModel.Annotations"/>
+    <PackageReference Include="System.Text.Json"/>
   </ItemGroup>
-  
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-ios')) or $(TargetFramework.EndsWith('-maccatalyst'))">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\ios\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\mobile-common\**\*.cs" />
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <Compile Include="Platforms\apple-common\**\*.cs"/>
+    <Compile Include="Platforms\ios\**\*.cs"/>
+    <Compile Include="Platforms\uikit-common\**\*.cs"/>
+    <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-macos'))">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\mac\**\*.cs" />
-    <Compile Include="Platforms\mobile-common\**\*.cs" />
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
+    <Compile Include="Platforms\apple-common\**\*.cs"/>
+    <Compile Include="Platforms\mac\**\*.cs"/>
+    <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-tvos'))">
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\tvos\**\*.cs" />
-    <Compile Include="Platforms\uikit-common\**\*.cs" />
-    <Compile Include="Platforms\mobile-common\**\*.cs" />
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="Platforms\apple-common\**\*.cs"/>
+    <Compile Include="Platforms\tvos\**\*.cs"/>
+    <Compile Include="Platforms\uikit-common\**\*.cs"/>
+    <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.EndsWith('-android'))">
-    <Compile Include="Platforms\android\**\*.cs" />
-    <Compile Include="Platforms\mobile-common\**\*.cs" />
+  <!-- Apple Platforms reuse the platform-lib-only fused sinks from Shared\Platform (excluded from the core compile above). -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+  </ItemGroup>
+  <!-- WhereObservable/SelectManyObservable are consumed only by uikit-common (CommonReactiveSource, AutoSuspendHelper),
+       so they are included for the UIKit-based Apple TFMs only (macOS uses mac\, not uikit-common) to avoid CA1812. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\WhereObservable.cs" Link="Shared\Platform\WhereObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SelectManyObservable.cs" Link="Shared\Platform\SelectManyObservable.cs"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Include="Platforms\android\**\*.cs"/>
+    <Compile Include="Platforms\mobile-common\**\*.cs"/>
   </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
-    <Compile Include="Platforms\net\**\*.cs" />
+    <Compile Include="Platforms\net\**\*.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Reactive" />
-    <PackageReference Include="Splat" />
     <PackageReference Include="DynamicData" />
+    <PackageReference Include="Splat" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="VariadicTemplates.tt" Generator="TextTemplatingFileGenerator" LastGenOutput="VariadicTemplates.cs" />
-    <Compile Update="VariadicTemplates.cs" DesignTime="True" AutoGen="true" DependentUpon="VariadicTemplates.tt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Test.Utilities" />
-    <InternalsVisibleTo Include="ReactiveUI.TestGuiMocks" />
-    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Blazor" />
-    <InternalsVisibleTo Include="ReactiveUI.Blend" />
-    <InternalsVisibleTo Include="ReactiveUI.Builder.WpfApp" />
-    <InternalsVisibleTo Include="ReactiveUI.Winforms" />
-    <InternalsVisibleTo Include="ReactiveUI.Wpf" />
-    <InternalsVisibleTo Include="ReactiveUI.Maui" />
-    <InternalsVisibleTo Include="ReactiveUI.Testing" />
-    <InternalsVisibleTo Include="ReactiveUI.Testing.Reactive" />
-    <InternalsVisibleTo Include="ReactiveUI.Uno" />
-    <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI" />
-    <InternalsVisibleTo Include="ReactiveUI.Drawing" />
-    <InternalsVisibleTo Include="ReactiveUI.WinUI" />
-    <InternalsVisibleTo Include="ReactiveUI.AndroidX" />
-    <InternalsVisibleTo Include="ReactiveUI.Builder.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.AOT.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.Avalonia" />
+    <InternalsVisibleTo Include="ReactiveUI.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Test.Utilities"/>
+    <InternalsVisibleTo Include="ReactiveUI.TestGuiMocks"/>
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Uno"/>
+    <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI"/>
+    <InternalsVisibleTo Include="ReactiveUI.Builder.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.AOT.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Avalonia"/>
   </ItemGroup>
 </Project>

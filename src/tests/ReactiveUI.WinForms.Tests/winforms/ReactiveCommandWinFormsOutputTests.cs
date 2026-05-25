@@ -1,9 +1,16 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
@@ -27,6 +34,12 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class ReactiveCommandWinFormsOutputTests
 {
+    private const int Two = 2;
+    private const int Three = 3;
+    private const string HelloInput = "hello";
+    private const string HelloUpper = "HELLO";
+    private const string Page1 = "page1";
+
     /// <summary>
     /// Verifies that subscribing directly to a ReactiveCommand receives the output value
     /// when the command executes. Reproduces the bug where command.Subscribe() did nothing.
@@ -40,7 +53,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<string>();
-        command.Subscribe(x => results.Add(x));
+        command.Subscribe(results.Add);
 
         await command.Execute();
 
@@ -61,12 +74,12 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<string>();
-        command.Subscribe(x => results.Add(x));
+        command.Subscribe(results.Add);
 
-        await command.Execute("hello");
+        await command.Execute(HelloInput);
 
         await Assert.That(results).Count().IsEqualTo(1);
-        await Assert.That(results[0]).IsEqualTo("HELLO");
+        await Assert.That(results[0]).IsEqualTo(HelloUpper);
     }
 
     /// <summary>
@@ -82,19 +95,17 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<int>();
-        command.Subscribe(x => results.Add(x));
+        command.Subscribe(results.Add);
 
         await command.Execute();
         await command.Execute();
         await command.Execute();
 
-        using (Assert.Multiple())
-        {
-            await Assert.That(results).Count().IsEqualTo(3);
-            await Assert.That(results[0]).IsEqualTo(1);
-            await Assert.That(results[1]).IsEqualTo(2);
-            await Assert.That(results[2]).IsEqualTo(3);
-        }
+        using var multiple = Assert.Multiple();
+        await Assert.That(results).Count().IsEqualTo(Three);
+        await Assert.That(results[0]).IsEqualTo(1);
+        await Assert.That(results[1]).IsEqualTo(Two);
+        await Assert.That(results[Two]).IsEqualTo(Three);
     }
 
     /// <summary>
@@ -111,7 +122,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var executingValues = new List<bool>();
-        command.IsExecuting.Subscribe(x => executingValues.Add(x));
+        command.IsExecuting.Subscribe(executingValues.Add);
 
         // Start execution (don't await yet)
         var executeTask = command.Execute().ToTask();
@@ -120,14 +131,13 @@ public class ReactiveCommandWinFormsOutputTests
         gate.OnNext(Unit.Default);
         await executeTask;
 
-        using (Assert.Multiple())
-        {
-            // Should have: false (initial), true (executing), false (completed)
-            await Assert.That(executingValues).Count().IsGreaterThanOrEqualTo(3);
-            await Assert.That(executingValues[0]).IsFalse();
-            await Assert.That(executingValues[1]).IsTrue();
-            await Assert.That(executingValues[executingValues.Count - 1]).IsFalse();
-        }
+        using var multiple = Assert.Multiple();
+
+        // Should have: false (initial), true (executing), false (completed)
+        await Assert.That(executingValues).Count().IsGreaterThanOrEqualTo(Three);
+        await Assert.That(executingValues[0]).IsFalse();
+        await Assert.That(executingValues[1]).IsTrue();
+        await Assert.That(executingValues[executingValues.Count - 1]).IsFalse();
     }
 
     /// <summary>
@@ -142,12 +152,12 @@ public class ReactiveCommandWinFormsOutputTests
 
         var results = new List<string>();
         viewModel.WhenAnyObservable(vm => vm.NavigateCommand)
-                 .Subscribe(x => results.Add(x));
+                 .Subscribe(results.Add);
 
-        await viewModel.NavigateCommand.Execute("page1");
+        await viewModel.NavigateCommand.Execute(Page1);
 
         await Assert.That(results).Count().IsEqualTo(1);
-        await Assert.That(results[0]).IsEqualTo("page1");
+        await Assert.That(results[0]).IsEqualTo(Page1);
     }
 
     /// <summary>
@@ -163,14 +173,14 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<string>();
-        command.Subscribe(x => results.Add(x));
+        command.Subscribe(results.Add);
 
         var source = new Subject<string>();
         source.InvokeCommand(command);
-        source.OnNext("hello");
+        source.OnNext(HelloInput);
 
         await Assert.That(results).Count().IsEqualTo(1);
-        await Assert.That(results[0]).IsEqualTo("HELLO");
+        await Assert.That(results[0]).IsEqualTo(HelloUpper);
     }
 
     /// <summary>
@@ -185,14 +195,14 @@ public class ReactiveCommandWinFormsOutputTests
         var viewModel = new ReactiveCommandOutputViewModel();
 
         var results = new List<string>();
-        viewModel.NavigateCommand.Subscribe(x => results.Add(x));
+        viewModel.NavigateCommand.Subscribe(results.Add);
 
         var source = new Subject<string>();
         source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
-        source.OnNext("page1");
+        source.OnNext(Page1);
 
         await Assert.That(results).Count().IsEqualTo(1);
-        await Assert.That(results[0]).IsEqualTo("page1");
+        await Assert.That(results[0]).IsEqualTo(Page1);
     }
 
     /// <summary>
@@ -211,18 +221,16 @@ public class ReactiveCommandWinFormsOutputTests
         var subscribedResults = new List<string>();
 
         // Subscribe to the command output stream
-        command.Subscribe(x => subscribedResults.Add(x));
+        command.Subscribe(subscribedResults.Add);
 
         // Execute the command
-        await command.Execute("hello").Do(x => executedResults.Add(x));
+        await command.Execute(HelloInput).Do(executedResults.Add);
 
-        using (Assert.Multiple())
-        {
-            await Assert.That(executedResults).Count().IsEqualTo(1);
-            await Assert.That(subscribedResults).Count().IsEqualTo(1);
-            await Assert.That(executedResults[0]).IsEqualTo("HELLO");
-            await Assert.That(subscribedResults[0]).IsEqualTo("HELLO");
-        }
+        using var multiple = Assert.Multiple();
+        await Assert.That(executedResults).Count().IsEqualTo(1);
+        await Assert.That(subscribedResults).Count().IsEqualTo(1);
+        await Assert.That(executedResults[0]).IsEqualTo(HelloUpper);
+        await Assert.That(subscribedResults[0]).IsEqualTo(HelloUpper);
     }
 
     /// <summary>
@@ -244,7 +252,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<string>();
-        command.Subscribe(x => results.Add(x));
+        command.Subscribe(results.Add);
 
         await command.Execute("clients");
 
@@ -270,7 +278,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: ImmediateScheduler.Instance);
 
         var results = new List<string>();
-        outerCommand.Subscribe(x => results.Add(x));
+        outerCommand.Subscribe(results.Add);
 
         await outerCommand.Execute("clients");
 

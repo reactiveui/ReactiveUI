@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Object = Java.Lang.Object;
 
 namespace ReactiveUI;
@@ -27,6 +28,10 @@ internal static class ObjectExtension
     /// <returns>The .NET object of type TObject represented by the specified Java.Lang.Object, or the default value of TObject
     /// if value is null.</returns>
     /// <exception cref="InvalidOperationException">Thrown if value is not a Java.Lang.Object created with .ToJavaObject().</exception>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static TObject ToNetObject<TObject>(this Object value)
     {
         if (value is null)
@@ -36,7 +41,8 @@ internal static class ObjectExtension
 
         if (value is not JavaHolder)
         {
-            throw new InvalidOperationException("Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
+            throw new InvalidOperationException(
+                "Unable to convert to .NET object. Only Java.Lang.Object created with .ToJavaObject() can be converted.");
         }
 
         return (TObject)((JavaHolder)value).Instance;

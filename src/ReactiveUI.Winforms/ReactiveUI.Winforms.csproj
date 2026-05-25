@@ -7,43 +7,32 @@
     <PackageId>ReactiveUI.WinForms</PackageId>
     <UseWindowsForms>true</UseWindowsForms>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
-    <NoWarn>$(NoWarn);IDE1006;</NoWarn>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <IsAotCompatible>false</IsAotCompatible>
     <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
     <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="System" />
-    <Using Include="System.Collections.Generic" />
-    <Using Include="System.ComponentModel" />
-    <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="System.Linq" />
-    <Using Include="System.Linq.Expressions" />
-    <Using Include="System.Reactive.Concurrency" />
-    <Using Include="System.Reactive.Disposables" />
-    <Using Include="System.Reactive.Linq" />
-    <Using Include="System.Threading" />
-    <Using Include="System.Windows.Forms" />
-    <Using Include="ReactiveUI.Helpers" />
-    <Using Include="Splat" />
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj" />
-    <PackageReference Include="System.Reactive" />
+    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
+    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\MergedDistinctObservable.cs" Link="Shared\Platform\MergedDistinctObservable.cs"/>
+    <Compile Include="..\Shared\Platform\EmptyObservable.cs" Link="Shared\Platform\EmptyObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\StartWithObservable.cs" Link="Shared\Platform\StartWithObservable.cs"/>
+    <Compile Include="..\Shared\Platform\CombineLatestSink.cs" Link="Shared\Platform\CombineLatestSink.cs"/>
+    <Compile Include="..\ReactiveUI\Polyfills\**\*.cs" Link="Polyfills\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\ReactiveUI.Wpf\Rx\**\*.cs" LinkBase="Rx" Exclude="..\ReactiveUI.Wpf\Rx\**\Dispatcher*.cs;..\ReactiveUI.Wpf\Rx\Internal\*.cs;..\ReactiveUI.Wpf\Rx\Concurrency\*.cs;..\ReactiveUI.Wpf\Rx\Linq\ControlObservable.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
-    <Compile Include="..\ReactiveUI.Wpf\Rx\Concurrency\ControlScheduler.cs" LinkBase="Rx\Concurrency" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests" />
-    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests" />
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests"/>
   </ItemGroup>
 </Project>

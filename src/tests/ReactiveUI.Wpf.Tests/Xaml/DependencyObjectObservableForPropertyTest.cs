@@ -1,14 +1,17 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Windows.Controls;
 
 using DynamicData;
 
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
@@ -19,6 +22,16 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class DependencyObjectObservableForPropertyTest
 {
+    private const int ExpectedCountTwo = 2;
+    private const int ExpectedCountThree = 3;
+    private const int ExpectedCountFour = 4;
+    private const int ExpectedAffinity = 4;
+    private const int SecondSelectedIndex = 2;
+    private const string TestStringPropertyName = "TestString";
+    private const string FooValue = "Foo";
+    private const string BarValue = "Bar";
+    private const string TestValue = "Test";
+
     /// <summary>
     /// Runs a smoke test for dependency object observables for property.
     /// </summary>
@@ -31,7 +44,7 @@ public class DependencyObjectObservableForPropertyTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "TestString")).IsNotEqualTo(0);
+            await Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), TestStringPropertyName)).IsNotEqualTo(0);
             await Assert.That(binder.GetAffinityForObject(typeof(DepObjFixture), "DoesntExist")).IsEqualTo(0);
         }
 
@@ -47,10 +60,10 @@ public class DependencyObjectObservableForPropertyTest
                           .WhereNotNull()
                           .Subscribe(results.Add);
 
-        fixture.TestString = "Foo";
-        fixture.TestString = "Bar";
+        fixture.TestString = FooValue;
+        fixture.TestString = BarValue;
 
-        await Assert.That(results).Count().IsEqualTo(4);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCountFour);
 
         disp1.Dispose();
         disp2.Dispose();
@@ -68,7 +81,7 @@ public class DependencyObjectObservableForPropertyTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "TestString")).IsNotEqualTo(0);
+            await Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), TestStringPropertyName)).IsNotEqualTo(0);
             await Assert.That(binder.GetAffinityForObject(typeof(DerivedDepObjFixture), "DoesntExist")).IsEqualTo(0);
         }
 
@@ -84,10 +97,10 @@ public class DependencyObjectObservableForPropertyTest
                           .WhereNotNull()
                           .Subscribe(results.Add);
 
-        fixture.TestString = "Foo";
-        fixture.TestString = "Bar";
+        fixture.TestString = FooValue;
+        fixture.TestString = BarValue;
 
-        await Assert.That(results).Count().IsEqualTo(4);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCountFour);
 
         disp1.Dispose();
         disp2.Dispose();
@@ -100,7 +113,7 @@ public class DependencyObjectObservableForPropertyTest
     [Test]
     public async Task WhenAnyWithDependencyObjectTest()
     {
-        var inputs = new[] { "Foo", "Bar", "Baz" };
+        var inputs = new[] { FooValue, BarValue, "Baz" };
         var fixture = new DepObjFixture();
 
         fixture.WhenAnyValue(static x => x.TestString)
@@ -115,8 +128,8 @@ public class DependencyObjectObservableForPropertyTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(outputs.First()).IsNull();
-            await Assert.That(outputs).Count().IsEqualTo(4);
+            await Assert.That(outputs[0]).IsNull();
+            await Assert.That(outputs).Count().IsEqualTo(ExpectedCountFour);
         }
 
         await Assert.That(outputs.Skip(1)).IsEquivalentTo(inputs);
@@ -130,8 +143,8 @@ public class DependencyObjectObservableForPropertyTest
     public async Task ListBoxSelectedItemTest()
     {
         var input = new ListBox();
-        input.Items.Add("Foo");
-        input.Items.Add("Bar");
+        input.Items.Add(FooValue);
+        input.Items.Add(BarValue);
         input.Items.Add("Baz");
 
         input.WhenAnyValue(static x => x.SelectedItem)
@@ -142,10 +155,10 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(output).Count().IsEqualTo(1);
 
         input.SelectedIndex = 1;
-        await Assert.That(output).Count().IsEqualTo(2);
+        await Assert.That(output).Count().IsEqualTo(ExpectedCountTwo);
 
-        input.SelectedIndex = 2;
-        await Assert.That(output).Count().IsEqualTo(3);
+        input.SelectedIndex = SecondSelectedIndex;
+        await Assert.That(output).Count().IsEqualTo(ExpectedCountThree);
     }
 
     /// <summary>
@@ -173,9 +186,9 @@ public class DependencyObjectObservableForPropertyTest
     {
         var binder = new DependencyObjectObservableForProperty();
 
-        var affinity = binder.GetAffinityForObject(typeof(DepObjFixture), "TestString");
+        var affinity = binder.GetAffinityForObject(typeof(DepObjFixture), TestStringPropertyName);
 
-        await Assert.That(affinity).IsEqualTo(4);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>
@@ -204,7 +217,7 @@ public class DependencyObjectObservableForPropertyTest
         var binder = new DependencyObjectObservableForProperty();
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
 
-        await Assert.That(() => binder.GetNotificationForProperty(null!, expression.Body, "TestString"))
+        await Assert.That(() => binder.GetNotificationForProperty(null!, expression.Body, TestStringPropertyName))
             .Throws<ArgumentNullException>();
     }
 
@@ -237,10 +250,10 @@ public class DependencyObjectObservableForPropertyTest
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
 
         var results = new List<IObservedChange<object, object?>>();
-        var disp = binder.GetNotificationForProperty(fixture, expression.Body, "TestString", suppressWarnings: true)
+        var disp = binder.GetNotificationForProperty(fixture, expression.Body, TestStringPropertyName, beforeChanged: false, suppressWarnings: true)
                          .Subscribe(results.Add);
 
-        fixture.TestString = "Test";
+        fixture.TestString = TestValue;
 
         await Assert.That(results).Count().IsEqualTo(1);
 
@@ -271,7 +284,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(results[0].Sender).IsEqualTo(fixture);
 
         fixture.TestString = "Second";
-        await Assert.That(results).Count().IsEqualTo(2);
+        await Assert.That(results).Count().IsEqualTo(ExpectedCountTwo);
 
         disp.Dispose();
     }
@@ -285,7 +298,9 @@ public class DependencyObjectObservableForPropertyTest
     public async Task GetNotificationForProperty_Disposal_StopsNotifications()
     {
         var fixture = new DepObjFixture();
-        var binder = new DependencyObjectObservableForProperty();
+
+        // Detach the handler inline on dispose so the assertions below are deterministic without a running pump.
+        var binder = new DependencyObjectObservableForProperty { Scheduler = ImmediateScheduler.Instance };
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name!;
 
@@ -332,9 +347,9 @@ public class DependencyObjectObservableForPropertyTest
 
         using (Assert.Multiple())
         {
-            await Assert.That(results1).Count().IsEqualTo(2);
-            await Assert.That(results2).Count().IsEqualTo(2);
-            await Assert.That(results3).Count().IsEqualTo(2);
+            await Assert.That(results1).Count().IsEqualTo(ExpectedCountTwo);
+            await Assert.That(results2).Count().IsEqualTo(ExpectedCountTwo);
+            await Assert.That(results3).Count().IsEqualTo(ExpectedCountTwo);
         }
 
         disp1.Dispose();
@@ -359,7 +374,7 @@ public class DependencyObjectObservableForPropertyTest
         var disp = binder.GetNotificationForProperty(fixture, expression.Body, propertyName, beforeChanged: true)
                          .Subscribe(results.Add);
 
-        fixture.TestString = "Test";
+        fixture.TestString = TestValue;
 
         // beforeChanged is not supported for DependencyProperty, but should still get notifications
         await Assert.That(results).Count().IsEqualTo(1);
@@ -377,9 +392,9 @@ public class DependencyObjectObservableForPropertyTest
     {
         var binder = new DependencyObjectObservableForProperty();
 
-        var affinity = binder.GetAffinityForObject(typeof(DepObjFixture), "TestString", beforeChanged: true);
+        var affinity = binder.GetAffinityForObject(typeof(DepObjFixture), TestStringPropertyName, beforeChanged: true);
 
-        await Assert.That(affinity).IsEqualTo(4);
+        await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
     /// <summary>
@@ -399,7 +414,7 @@ public class DependencyObjectObservableForPropertyTest
         var disp = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
                          .Subscribe(x => result = x);
 
-        fixture.TestString = "Test";
+        fixture.TestString = TestValue;
 
         await Assert.That(result).IsNotNull();
         await Assert.That(result!.Expression).IsEqualTo(expression.Body);

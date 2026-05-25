@@ -1,12 +1,11 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.Specialized;
-
+using System.Diagnostics.CodeAnalysis;
 using Foundation;
-
 using UIKit;
 
 namespace ReactiveUI;
@@ -16,6 +15,7 @@ namespace ReactiveUI;
 /// and <see cref="UITableViewCell"/>.
 /// </summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
+[SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "Type parameter is part of the public generic API and preserves call-site type safety.")]
 public class TableSectionInformation<TSource> : ISectionInformation<UITableViewCell>
 {
     /// <inheritdoc/>
@@ -61,16 +61,41 @@ public class TableSectionInformation<TSource, TCell> : TableSectionInformation<T
     /// <param name="collection">The collection.</param>
     /// <param name="cellKeySelector">The cell key selector.</param>
     /// <param name="sizeHint">The size hint.</param>
+    public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint)
+        : this(collection, cellKeySelector, sizeHint, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
+    /// </summary>
+    /// <param name="collection">The collection.</param>
+    /// <param name="cellKeySelector">The cell key selector.</param>
+    /// <param name="sizeHint">The size hint.</param>
     /// <param name="initializeCellAction">The initialize cell action.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction = null)
+    public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction)
     {
         Collection = collection;
         SizeHint = sizeHint;
         CellKeySelector = cellKeySelector;
-        if (initializeCellAction is not null)
+
+        if (initializeCellAction is null)
         {
-            InitializeCellAction = cell => initializeCellAction((TCell)cell);
+            return;
         }
+
+        InitializeCellAction = cell => initializeCellAction((TCell)cell);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
+    /// </summary>
+    /// <param name="collection">The collection.</param>
+    /// <param name="cellKey">The cell key.</param>
+    /// <param name="sizeHint">The size hint.</param>
+    public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint)
+        : this(collection, _ => cellKey, sizeHint, null)
+    {
     }
 
     /// <summary>
@@ -80,7 +105,7 @@ public class TableSectionInformation<TSource, TCell> : TableSectionInformation<T
     /// <param name="cellKey">The cell key.</param>
     /// <param name="sizeHint">The size hint.</param>
     /// <param name="initializeCellAction">The initialize cell action.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell>? initializeCellAction = null)
+    public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell>? initializeCellAction)
         : this(collection, _ => cellKey, sizeHint, initializeCellAction)
     {
     }

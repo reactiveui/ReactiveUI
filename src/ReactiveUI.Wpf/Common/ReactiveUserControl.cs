@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Controls;
 using System.Windows;
 using System.Windows.Controls;
 #endif
+using System.Reactive.Disposables;
 
 #if HAS_UNO
 namespace ReactiveUI.Uno
@@ -90,9 +91,9 @@ public
 #if HAS_UNO
     partial
 #endif
-class ReactiveUserControl<TViewModel> :
-        UserControl, IViewFor<TViewModel>
-        where TViewModel : class
+    class ReactiveUserControl<TViewModel> :
+    UserControl, IViewFor<TViewModel>
+    where TViewModel : class
 {
     /// <summary>
     /// The view model dependency property.
@@ -102,7 +103,7 @@ class ReactiveUserControl<TViewModel> :
             "ViewModel",
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
-            new PropertyMetadata(null));
+            new(null));
 
 #if HAS_UNO
     /// <summary>
@@ -148,11 +149,11 @@ class ReactiveUserControl<TViewModel> :
     /// <summary>
     /// Initializes a new instance of the <see cref="ReactiveUserControl{TViewModel}"/> class.
     /// </summary>
-    public ReactiveUserControl() => this.WhenActivated(disposables =>
-                                         {
-                                             // No-op, but ensures that when the Page is activated,
-                                             // any IActivatableViewModel logic in the ViewModel is also triggered.
-                                         });
+    public ReactiveUserControl() => this.WhenActivated((CompositeDisposable _) =>
+    {
+        // No-op, but ensures that when the Page is activated,
+        // any IActivatableViewModel logic in the ViewModel is also triggered.
+    });
 #endif
 
     /// <summary>

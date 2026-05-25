@@ -1,10 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using ReactiveUI.Tests.Utilities.AppBuilder;
-
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
@@ -17,6 +16,11 @@ namespace ReactiveUI.Testing.Tests;
 [TestExecutor<AppBuilderTestExecutor>]
 public class RxTestTests
 {
+    private const int ExpectedSequentialCallCount = 3;
+    private const int CustomTimeoutMilliseconds = 5000;
+    private const int ShortTimeoutMilliseconds = 100;
+    private const int DelayLongerThanTimeoutMilliseconds = 2000;
+
     /// <summary>
     /// Verifies that the AppBuilderTestAsync method executes the provided test body as expected.
     /// </summary>
@@ -43,12 +47,9 @@ public class RxTestTests
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
-    public async Task AppBuilderTestAsync_ThrowsArgumentNullException_WhenTestBodyIsNull()
-    {
-        // Act & Assert
+    public async Task AppBuilderTestAsync_ThrowsArgumentNullException_WhenTestBodyIsNull() =>
         await Assert.That(() => RxTest.AppBuilderTestAsync(null!))
             .Throws<ArgumentException>();
-    }
 
     /// <summary>
     /// Verifies that exceptions thrown within the AppBuilderTestAsync delegate are properly propagated to the caller.
@@ -56,17 +57,10 @@ public class RxTestTests
     /// <returns>A task that represents the asynchronous test operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the delegate passed to AppBuilderTestAsync throws an InvalidOperationException.</exception>
     [Test]
-    public async Task AppBuilderTestAsync_PropagatesExceptions()
-    {
+    public async Task AppBuilderTestAsync_PropagatesExceptions() =>
+
         // Act & Assert
-        await Assert.That(async () =>
-        {
-            await RxTest.AppBuilderTestAsync(() =>
-            {
-                throw new InvalidOperationException("Test exception");
-            });
-        }).Throws<InvalidOperationException>();
-    }
+        await Assert.That(async () => await RxTest.AppBuilderTestAsync(() => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
     /// <summary>
     /// Verifies that asynchronous exceptions thrown within the AppBuilderTestAsync method are properly propagated to
@@ -75,9 +69,7 @@ public class RxTestTests
     /// <returns>A task that represents the asynchronous test operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the asynchronous delegate passed to AppBuilderTestAsync throws an InvalidOperationException.</exception>
     [Test]
-    public async Task AppBuilderTestAsync_PropagatesAsyncExceptions()
-    {
-        // Act & Assert
+    public async Task AppBuilderTestAsync_PropagatesAsyncExceptions() =>
         await Assert.That(async () =>
         {
             await RxTest.AppBuilderTestAsync(async () =>
@@ -86,7 +78,6 @@ public class RxTestTests
                 throw new InvalidOperationException("Async test exception");
             });
         }).Throws<InvalidOperationException>();
-    }
 
     /// <summary>
     /// Verifies that the AppBuilderTestAsync method allows multiple sequential invocations without interference or side
@@ -119,7 +110,7 @@ public class RxTestTests
         });
 
         // Assert
-        await Assert.That(count).IsEqualTo(3);
+        await Assert.That(count).IsEqualTo(ExpectedSequentialCallCount);
     }
 
     /// <summary>
@@ -133,11 +124,7 @@ public class RxTestTests
     {
         // This test verifies that multiple calls don't interfere with each other
         // Arrange & Act
-        await RxTest.AppBuilderTestAsync(() =>
-        {
-            // First test - setup some state
-            return Task.CompletedTask;
-        });
+        await RxTest.AppBuilderTestAsync(() => Task.CompletedTask);
 
         var secondTestExecuted = false;
         await RxTest.AppBuilderTestAsync(() =>
@@ -170,7 +157,7 @@ public class RxTestTests
                 executed = true;
                 return Task.CompletedTask;
             },
-            maxWaitMs: 5000);
+            CustomTimeoutMilliseconds);
 
         // Assert
         await Assert.That(executed).IsTrue();
@@ -181,19 +168,18 @@ public class RxTestTests
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
-    public async Task AppBuilderTestAsync_ThrowsTimeoutException_WhenTestExceedsTimeout()
-    {
+    public async Task AppBuilderTestAsync_ThrowsTimeoutException_WhenTestExceedsTimeout() =>
+
         // Act & Assert
         await Assert.That(async () =>
         {
             await RxTest.AppBuilderTestAsync(
                 async () =>
                 {
-                    await Task.Delay(2000); // Delay longer than timeout
+                    await Task.Delay(DelayLongerThanTimeoutMilliseconds); // Delay longer than timeout
                 },
-                maxWaitMs: 100);
+                ShortTimeoutMilliseconds);
         }).Throws<TimeoutException>();
-    }
 
     /// <summary>
     /// Verifies that the AppBuilderTestAsync method correctly handles delegates that return Task.CompletedTask without
@@ -201,12 +187,9 @@ public class RxTestTests
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
-    public async Task AppBuilderTestAsync_HandlesTaskCompletedTask()
-    {
+    public async Task AppBuilderTestAsync_HandlesTaskCompletedTask() =>
+
         // This test verifies that returning Task.CompletedTask works correctly
         // Act - Should not throw
         await RxTest.AppBuilderTestAsync(() => Task.CompletedTask);
-
-        // If we get here without exception, the test passed
-    }
 }

@@ -1,14 +1,17 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reactive;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-
 using Foundation;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -54,15 +57,24 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     private readonly Lazy<string> _appDirectory;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="AppSupportJsonSuspensionDriver"/> class
+    /// using the default <c>Data</c> subdirectory beneath Application Support.
+    /// </summary>
+    public AppSupportJsonSuspensionDriver()
+        : this(DefaultSubDirectory)
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="AppSupportJsonSuspensionDriver"/> class.
     /// </summary>
     /// <param name="subDirectory">
-    /// The application-specific subdirectory beneath Application Support to store state. Defaults to <c>Data</c>.
+    /// The application-specific subdirectory beneath Application Support to store state.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="subDirectory"/> is <see langword="null"/>.</exception>
-    public AppSupportJsonSuspensionDriver(string subDirectory = DefaultSubDirectory)
+    public AppSupportJsonSuspensionDriver(string subDirectory)
     {
-        ArgumentNullException.ThrowIfNull(subDirectory);
+        ArgumentExceptionHelper.ThrowIfNull(subDirectory);
 
         _appDirectory = new Lazy<string>(
             () => CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory, subDirectory),
@@ -72,7 +84,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     /// <inheritdoc />
     public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
     {
-        ArgumentNullException.ThrowIfNull(typeInfo);
+        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
         try
         {
@@ -80,30 +92,11 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.OpenRead(path);
 
             var result = JsonSerializer.Deserialize(stream, typeInfo);
-            return Observable.Return(result);
+            return new ReturnObservable<T?>(result);
         }
         catch (Exception ex)
         {
-            return Observable.Throw<T?>(ex);
-        }
-    }
-
-    /// <inheritdoc />
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
-    {
-        ArgumentNullException.ThrowIfNull(typeInfo);
-
-        try
-        {
-            var path = GetStatePath();
-            using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
-
-            JsonSerializer.Serialize(stream, state, typeInfo);
-            return Observables.Unit;
-        }
-        catch (Exception ex)
-        {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<T?>(ex);
         }
     }
 
@@ -119,11 +112,30 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
             // Reflection-based: object deserialization typically requires metadata at runtime.
             var result = JsonSerializer.Deserialize<object>(stream);
-            return Observable.Return(result);
+            return new ReturnObservable<object?>(result);
         }
         catch (Exception ex)
         {
-            return Observable.Throw<object?>(ex);
+            return new ThrowObservable<object?>(ex);
+        }
+    }
+
+    /// <inheritdoc />
+    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+    {
+        ArgumentExceptionHelper.ThrowIfNull(typeInfo);
+
+        try
+        {
+            var path = GetStatePath();
+            using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
+
+            JsonSerializer.Serialize(stream, state, typeInfo);
+            return SingleValueObservable.Unit;
+        }
+        catch (Exception ex)
+        {
+            return new ThrowObservable<Unit>(ex);
         }
     }
 
@@ -138,11 +150,11 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state);
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
         catch (Exception ex)
         {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<Unit>(ex);
         }
     }
 
@@ -154,11 +166,11 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             var path = GetStatePath();
             File.Delete(path);
 
-            return Observables.Unit;
+            return SingleValueObservable.Unit;
         }
         catch (Exception ex)
         {
-            return Observable.Throw<Unit>(ex);
+            return new ThrowObservable<Unit>(ex);
         }
     }
 

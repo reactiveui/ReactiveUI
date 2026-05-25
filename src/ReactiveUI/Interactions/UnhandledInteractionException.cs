@@ -1,7 +1,12 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+#if !NET8_0_OR_GREATER
+using System.Runtime.Serialization;
+using ReactiveUI.Helpers;
+#endif
 
 namespace ReactiveUI;
 
@@ -19,6 +24,7 @@ namespace ReactiveUI;
 #endif
 public class UnhandledInteractionException<TInput, TOutput> : Exception
 {
+    /// <summary>The interaction instance that was not handled.</summary>
     [field: NonSerialized]
     private readonly Interaction<TInput, TOutput>? _interaction;
 

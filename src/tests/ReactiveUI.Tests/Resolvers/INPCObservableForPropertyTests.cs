@@ -1,14 +1,25 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace ReactiveUI.Tests.Resolvers;
 
-public class INPCObservableForPropertyTests
+/// <summary>
+/// Tests for <see cref="INPCObservableForProperty"/>.
+/// </summary>
+public class InpcObservableForPropertyTests
 {
+    private const string PropertyNameNullMessage = "propertyName should not be null";
+
+    /// <summary>
+    /// Verifies that the affinity values returned for changed and changing types are correct.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task CheckGetAffinityForObjectValues()
     {
@@ -16,20 +27,21 @@ public class INPCObservableForPropertyTests
 
         using (Assert.Multiple())
         {
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false))
-                .IsEqualTo(5);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, false)).IsEqualTo(BindingAffinity.Explicit);
             await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), string.Empty, true)).IsEqualTo(0);
             await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
 
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true))
-                .IsEqualTo(5);
-            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false))
-                .IsEqualTo(0);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, true)).IsEqualTo(BindingAffinity.Explicit);
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanging), string.Empty, false)).IsEqualTo(0);
         }
 
         await Assert.That(instance.GetAffinityForObject(typeof(object), string.Empty, false)).IsEqualTo(0);
     }
 
+    /// <summary>
+    /// Verifies that property changed notifications are raised for an individual property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task NotificationOnPropertyChanged()
     {
@@ -37,19 +49,20 @@ public class INPCObservableForPropertyTests
 
         var testClass = new TestClassChanged();
 
-        Expression<Func<TestClassChanged, string?>> expr = x => x!.Property1;
+        Expression<Func<TestClassChanged, string?>> expr = x => x.Property1;
         var exp = Reflection.Rewrite(expr.Body);
 
         var changes = new List<IObservedChange<object?, object?>>();
 
         var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+        instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(changes.Add);
 
+        const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        await Assert.That(changes).Count().IsEqualTo(2);
+        await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
         using (Assert.Multiple())
         {
@@ -58,6 +71,10 @@ public class INPCObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that property changing notifications are raised for an individual property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task NotificationOnPropertyChanging()
     {
@@ -71,14 +88,14 @@ public class INPCObservableForPropertyTests
         var changes = new List<IObservedChange<object?, object?>>();
 
         var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull()
-            .Subscribe(c => changes.Add(c));
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(changes.Add);
 
+        const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
         testClass.Property1 = "test2";
 
-        await Assert.That(changes).Count().IsEqualTo(2);
+        await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
         using (Assert.Multiple())
         {
@@ -87,6 +104,10 @@ public class INPCObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that notifications are raised when the whole object signals a change.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task NotificationOnWholeObjectChanged()
     {
@@ -100,13 +121,17 @@ public class INPCObservableForPropertyTests
         var changes = new List<IObservedChange<object?, object?>>();
 
         var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(c => changes.Add(c));
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+        instance.GetNotificationForProperty(testClass, exp, propertyName).WhereNotNull().Subscribe(changes.Add);
 
-        testClass.OnPropertyChanged(null);
-        testClass.OnPropertyChanged(string.Empty);
+        const int ExpectedChangeCount = 2;
 
-        await Assert.That(changes).Count().IsEqualTo(2);
+        // Raise genuine whole-object notifications (null/empty name). A bare OnPropertyChanged() would capture the
+        // caller member name via [CallerMemberName] (the test method), which is not a whole-object change.
+        testClass.RaiseChanged(null);
+        testClass.RaiseChanged(string.Empty);
+
+        await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
         using (Assert.Multiple())
         {
@@ -115,6 +140,10 @@ public class INPCObservableForPropertyTests
         }
     }
 
+    /// <summary>
+    /// Verifies that notifications are raised when the whole object signals a changing event.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task NotificationOnWholeObjectChanging()
     {
@@ -128,14 +157,17 @@ public class INPCObservableForPropertyTests
         var changes = new List<IObservedChange<object?, object?>>();
 
         var propertyName = exp.GetMemberInfo()?.Name ??
-                           throw new InvalidOperationException("propertyName should not be null");
-        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull()
-            .Subscribe(c => changes.Add(c));
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+        instance.GetNotificationForProperty(testClass, exp, propertyName, true).WhereNotNull().Subscribe(changes.Add);
 
-        testClass.OnPropertyChanging(null);
-        testClass.OnPropertyChanging(string.Empty);
+        const int ExpectedChangeCount = 2;
 
-        await Assert.That(changes).Count().IsEqualTo(2);
+        // Raise genuine whole-object notifications (null/empty name). A bare OnPropertyChanging() would capture the
+        // caller member name via [CallerMemberName] (the test method), which is not a whole-object change.
+        testClass.RaiseChanging(null);
+        testClass.RaiseChanging(string.Empty);
+
+        await Assert.That(changes).Count().IsEqualTo(ExpectedChangeCount);
 
         using (Assert.Multiple())
         {
@@ -144,14 +176,23 @@ public class INPCObservableForPropertyTests
         }
     }
 
-    private class TestClassChanged : INotifyPropertyChanged
+    /// <summary>
+    /// A test fixture implementing <see cref="INotifyPropertyChanged"/> to drive change notifications.
+    /// </summary>
+    private sealed class TestClassChanged : INotifyPropertyChanged
     {
         private string? _property;
 
         private string? _property2;
 
+        /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// Gets or sets the first test property.
+        /// </summary>
         public string? Property1
         {
             get => _property;
@@ -162,6 +203,9 @@ public class INPCObservableForPropertyTests
             }
         }
 
+        /// <summary>
+        /// Gets or sets the second test property.
+        /// </summary>
         public string? Property2
         {
             get => _property2;
@@ -172,18 +216,36 @@ public class INPCObservableForPropertyTests
             }
         }
 
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
         public void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new(propertyName));
+
+        /// <summary>Raises <see cref="PropertyChanged"/> with an explicit name (null/empty means whole-object).</summary>
+        /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
+        public void RaiseChanged(string? propertyName) =>
+            PropertyChanged?.Invoke(this, new(propertyName));
     }
 
-    private class TestClassChanging : INotifyPropertyChanging
+    /// <summary>
+    /// A test fixture implementing <see cref="INotifyPropertyChanging"/> to drive changing notifications.
+    /// </summary>
+    private sealed class TestClassChanging : INotifyPropertyChanging
     {
         private string? _property1;
 
         private string? _property2;
 
+        /// <summary>
+        /// Occurs when a property value is changing.
+        /// </summary>
         public event PropertyChangingEventHandler? PropertyChanging;
 
+        /// <summary>
+        /// Gets or sets the first test property.
+        /// </summary>
         public string? Property1
         {
             get => _property1;
@@ -194,6 +256,9 @@ public class INPCObservableForPropertyTests
             }
         }
 
+        /// <summary>
+        /// Gets or sets the second test property.
+        /// </summary>
         public string? Property2
         {
             get => _property2;
@@ -204,10 +269,19 @@ public class INPCObservableForPropertyTests
             }
         }
 
+        /// <summary>
+        /// Raises the <see cref="PropertyChanging"/> event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that is changing.</param>
         public void OnPropertyChanging([CallerMemberName] string? propertyName = null)
         {
             var handler = PropertyChanging;
-            handler?.Invoke(this, new PropertyChangingEventArgs(propertyName));
+            handler?.Invoke(this, new(propertyName));
         }
+
+        /// <summary>Raises <see cref="PropertyChanging"/> with an explicit name (null/empty means whole-object).</summary>
+        /// <param name="propertyName">The property name, or null/empty for a whole-object change.</param>
+        public void RaiseChanging(string? propertyName) =>
+            PropertyChanging?.Invoke(this, new(propertyName));
     }
 }

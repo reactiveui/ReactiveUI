@@ -1,4 +1,4 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -21,7 +21,14 @@ namespace ReactiveUI.Tests.Utilities.SuspensionHost;
 /// </remarks>
 public class SuspensionHostTestExecutor : AppBuilderTestExecutor
 {
+    /// <summary>
+    ///     The load-app-state func captured before the test, restored during cleanup.
+    /// </summary>
     private Func<IObservable<Unit>>? _previousEnsureLoadAppStateFunc;
+
+    /// <summary>
+    ///     The suspension driver captured before the test, restored during cleanup.
+    /// </summary>
     private ISuspensionDriver? _previousSuspensionDriver;
 
     /// <inheritdoc/>

@@ -1,8 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 
 namespace ReactiveUI;
@@ -17,14 +19,23 @@ namespace ReactiveUI;
 /// </remarks>
 public static class RxSchedulers
 {
+    /// <summary>
+    /// Lock object used to synchronize access to mutable scheduler fields.
+    /// </summary>
 #if NET9_0_OR_GREATER
     private static readonly Lock _lock = new();
 #else
     private static readonly object _lock = new();
 #endif
 
+    /// <summary>
+    /// The current main-thread scheduler, or null if not yet assigned.
+    /// </summary>
     private static volatile IScheduler? _mainThreadScheduler;
 
+    /// <summary>
+    /// The current task-pool scheduler, or null if not yet assigned.
+    /// </summary>
     private static volatile IScheduler? _taskpoolScheduler;
 
     /// <summary>
@@ -44,6 +55,10 @@ public static class RxSchedulers
     /// should be run "on the UI thread". In normal mode, this will be
     /// DispatcherScheduler. This defaults to DefaultScheduler.Instance.
     /// </summary>
+    [SuppressMessage(
+        "Maintainability",
+        "CA1508:Avoid dead conditional code",
+        Justification = "Double-checked locking; another thread may set the field between the outer check and the lock.")]
     public static IScheduler MainThreadScheduler
     {
         get
@@ -72,6 +87,10 @@ public static class RxSchedulers
     /// Gets or sets the scheduler used to schedule work items to
     /// run in a background thread. This defaults to TaskPoolScheduler.Default.
     /// </summary>
+    [SuppressMessage(
+        "Maintainability",
+        "CA1508:Avoid dead conditional code",
+        Justification = "Double-checked locking; another thread may set the field between the outer check and the lock.")]
     public static IScheduler TaskpoolScheduler
     {
         get
@@ -141,6 +160,6 @@ public static class RxSchedulers
     [MethodImpl(MethodImplOptions.NoOptimization)]
     internal static void EnsureStaticConstructorRun()
     {
-        // NB: This method only exists to invoke the static constructor if needed
+        // Intentionally empty: calling this forces the type's static constructor to run.
     }
 }

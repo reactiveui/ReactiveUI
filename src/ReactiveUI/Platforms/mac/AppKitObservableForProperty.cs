@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -16,19 +16,22 @@ namespace ReactiveUI;
 [Preserve]
 public class AppKitObservableForProperty : ObservableForPropertyBase
 {
+    /// <summary>The affinity score used when registering AppKit NSControl property observations.</summary>
+    private const int AppKitAffinity = 20;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AppKitObservableForProperty"/> class.
     /// </summary>
     public AppKitObservableForProperty()
     {
-        Register(typeof(NSControl), "AlphaValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "DoubleValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "FloatValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "IntValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "NintValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "ObjectValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "StringValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
-        Register(typeof(NSControl), "AttributedStringValue", 20, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "AlphaValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "DoubleValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "FloatValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "IntValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "NintValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "ObjectValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "StringValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
+        Register(typeof(NSControl), "AttributedStringValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
     }
 
     /// <summary>

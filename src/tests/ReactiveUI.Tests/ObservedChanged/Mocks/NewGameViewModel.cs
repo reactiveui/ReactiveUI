@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Security.Cryptography;
 using DynamicData.Binding;
 
@@ -14,6 +16,9 @@ namespace ReactiveUI.Tests.ObservedChanged.Mocks;
 /// <seealso cref="ReactiveObject" />
 public class NewGameViewModel : ReactiveObject
 {
+    /// <summary>
+    ///     The backing field for the new player name.
+    /// </summary>
     private string? _newPlayerName;
 
     /// <summary>
@@ -23,7 +28,7 @@ public class NewGameViewModel : ReactiveObject
     {
         Players = [];
 
-        var canStart = Players.ToObservableChangeSet().CountChanged().Select(_ => Players.Count >= 3);
+        var canStart = Players.ToReactiveChangeSet().WhenCountChanged().Select(_ => Players.Count >= 3);
         StartGame = ReactiveCommand.Create(
             () => { },
             canStart);
@@ -97,6 +102,11 @@ public class NewGameViewModel : ReactiveObject
             value);
     }
 
+    /// <summary>
+    ///     Shuffles the list in place using a cryptographically secure random number generator.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the list.</typeparam>
+    /// <param name="list">The list to shuffle.</param>
     private static void ShuffleCrypto<T>(List<T> list)
     {
         // Fisher–Yates shuffle using a cryptographically secure RNG

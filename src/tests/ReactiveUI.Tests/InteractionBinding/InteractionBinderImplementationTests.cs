@@ -1,12 +1,19 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.Tests.InteractionBinding;
 
+/// <summary>
+/// Tests for the interaction binder implementation.
+/// </summary>
 public class InteractionBinderImplementationTests
 {
     /// <summary>
@@ -19,7 +26,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionAncestorViewModel();
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -43,7 +50,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionAncestorViewModel();
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -66,7 +73,7 @@ public class InteractionBinderImplementationTests
     {
         static (IDisposable, WeakReference) GetWeakReference()
         {
-            var vm = new InteractionAncestorViewModel { InteractionViewModel = new InteractionBindViewModel() };
+            var vm = new InteractionAncestorViewModel { InteractionViewModel = new() };
             var view = new InteractionAncestorView { ViewModel = vm };
             var weakRef = new WeakReference(vm.InteractionViewModel);
             var disposable = view.BindInteraction(
@@ -77,12 +84,12 @@ public class InteractionBinderImplementationTests
                     input.SetOutput(true);
                     return Observable.Return(Unit.Default);
                 });
-            vm.InteractionViewModel = new InteractionBindViewModel();
+            vm.InteractionViewModel = new();
 
             return (disposable, weakRef);
         }
 
-        var (disposable, weakRef) = GetWeakReference();
+        var (_, weakRef) = GetWeakReference();
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
@@ -100,7 +107,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -121,10 +128,10 @@ public class InteractionBinderImplementationTests
     [Test]
     public async Task ReceiveOutputFromObservableHandlerWhenViewModelWasInitiallyNull()
     {
-        InteractionBindViewModel? vm = null;
+        const InteractionBindViewModel? vm = null;
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -133,7 +140,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
@@ -150,7 +157,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -171,10 +178,10 @@ public class InteractionBinderImplementationTests
     [Test]
     public async Task ReceiveOutputFromTaskHandlerWhenViewModelWasInitiallyNull()
     {
-        InteractionBindViewModel? vm = null;
+        const InteractionBindViewModel? vm = null;
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -183,7 +190,7 @@ public class InteractionBinderImplementationTests
                 return Task.CompletedTask;
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
@@ -197,10 +204,10 @@ public class InteractionBinderImplementationTests
     [Test]
     public async Task RegisterObservableHandlerToNewlyAssignedNestedViewModel()
     {
-        var vm = new InteractionAncestorViewModel { InteractionViewModel = new InteractionBindViewModel() };
+        var vm = new InteractionAncestorViewModel { InteractionViewModel = new() };
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -209,7 +216,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        vm.InteractionViewModel = new InteractionBindViewModel();
+        vm.InteractionViewModel = new();
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
@@ -226,7 +233,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -235,7 +242,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
@@ -247,12 +254,16 @@ public class InteractionBinderImplementationTests
     /// </summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4144:Methods should not have identical implementations",
+        Justification = "Intentional duplicate test scenario.")]
     public async Task RegisterTaskHandlerToNewlyAssignedNestedViewModel()
     {
-        var vm = new InteractionAncestorViewModel { InteractionViewModel = new InteractionBindViewModel() };
+        var vm = new InteractionAncestorViewModel { InteractionViewModel = new() };
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -261,7 +272,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        vm.InteractionViewModel = new InteractionBindViewModel();
+        vm.InteractionViewModel = new();
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
 
@@ -278,7 +289,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -287,7 +298,7 @@ public class InteractionBinderImplementationTests
                 return Task.CompletedTask;
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         var isDeletionConfirmed = await view.ViewModel.Interaction1.Handle("123");
 
@@ -304,7 +315,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionAncestorViewModel();
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -313,7 +324,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
+        view.ViewModel.InteractionViewModel = new();
 
         _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() =>
             firstInteractionVm.Interaction1.Handle("123").ToTask());
@@ -328,7 +339,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -337,7 +348,7 @@ public class InteractionBinderImplementationTests
                 return Observable.Return(Unit.Default);
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() =>
             vm.Interaction1.Handle("123").ToTask());
@@ -377,7 +388,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -388,7 +399,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        await Assert.That(async () => await vm.Interaction1.Handle("123").ToTask())
+        await Assert.That(() => vm.Interaction1.Handle("123").ToTask())
             .Throws<UnhandledInteractionException<string, bool>>();
     }
 
@@ -402,7 +413,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionAncestorViewModel();
         var view = new InteractionAncestorView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
             input =>
@@ -411,7 +422,7 @@ public class InteractionBinderImplementationTests
                 return Task.CompletedTask;
             });
 
-        view.ViewModel.InteractionViewModel = new InteractionBindViewModel();
+        view.ViewModel.InteractionViewModel = new();
 
         _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() =>
             firstInteractionVm.Interaction1.Handle("123").ToTask());
@@ -426,7 +437,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -435,7 +446,7 @@ public class InteractionBinderImplementationTests
                 return Task.CompletedTask;
             });
 
-        view.ViewModel = new InteractionBindViewModel();
+        view.ViewModel = new();
 
         _ = Assert.ThrowsAsync<UnhandledInteractionException<string, bool>>(() =>
             vm.Interaction1.Handle("123").ToTask());
@@ -475,7 +486,7 @@ public class InteractionBinderImplementationTests
         var vm = new InteractionBindViewModel();
         var view = new InteractionBindView { ViewModel = vm };
 
-        var disposable = view.BindInteraction(
+        _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
             input =>
@@ -486,7 +497,7 @@ public class InteractionBinderImplementationTests
 
         view.ViewModel = null;
 
-        await Assert.That(async () => await vm.Interaction1.Handle("123").ToTask())
+        await Assert.That(() => vm.Interaction1.Handle("123").ToTask())
             .Throws<UnhandledInteractionException<string, bool>>();
     }
 
@@ -510,12 +521,12 @@ public class InteractionBinderImplementationTests
                     input.SetOutput(true);
                     return Task.CompletedTask;
                 });
-            view.ViewModel = new InteractionBindViewModel();
+            view.ViewModel = new();
 
             return (disposable, weakRef);
         }
 
-        var (disposable, weakRef) = GetWeakReference();
+        var (_, weakRef) = GetWeakReference();
 
         GC.Collect();
         GC.WaitForPendingFinalizers();

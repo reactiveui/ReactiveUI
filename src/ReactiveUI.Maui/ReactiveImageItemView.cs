@@ -1,8 +1,9 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -15,7 +16,10 @@ namespace ReactiveUI.Maui;
 /// </summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="ReactiveContentView{TViewModel}" />
-public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> : ReactiveContentView<TViewModel>
+public class ReactiveImageItemView<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
+        .PublicParameterlessConstructor)]
+    TViewModel> : ReactiveContentView<TViewModel>
     where TViewModel : class
 {
     /// <summary>
@@ -25,7 +29,7 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
         nameof(ImageSource),
         typeof(ImageSource),
         typeof(ReactiveImageItemView<TViewModel>),
-        default(ImageSource));
+        propertyChanged: OnImageSourceChanged);
 
     /// <summary>
     /// The text bindable property for the primary text.
@@ -34,7 +38,7 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
         nameof(Text),
         typeof(string),
         typeof(ReactiveImageItemView<TViewModel>),
-        default(string));
+        propertyChanged: OnTextChanged);
 
     /// <summary>
     /// The detail bindable property for the secondary text.
@@ -43,7 +47,7 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
         nameof(Detail),
         typeof(string),
         typeof(ReactiveImageItemView<TViewModel>),
-        default(string));
+        propertyChanged: OnDetailChanged);
 
     /// <summary>
     /// The text color bindable property.
@@ -52,7 +56,7 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
         nameof(TextColor),
         typeof(Color),
         typeof(ReactiveImageItemView<TViewModel>),
-        default(Color));
+        propertyChanged: OnTextColorChanged);
 
     /// <summary>
     /// The detail color bindable property.
@@ -61,11 +65,51 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
         nameof(DetailColor),
         typeof(Color),
         typeof(ReactiveImageItemView<TViewModel>),
-        default(Color));
+        propertyChanged: OnDetailColorChanged);
 
-    private readonly CompositeDisposable _propertyBindings = [];
+    /// <summary>
+    /// The width and height of the image, in device-independent units.
+    /// </summary>
+    private const double ImageSize = 40;
+
+    /// <summary>
+    /// The font size of the primary text label.
+    /// </summary>
+    private const double PrimaryFontSize = 16;
+
+    /// <summary>
+    /// The font size of the detail text label.
+    /// </summary>
+    private const double DetailFontSize = 12;
+
+    /// <summary>
+    /// The opacity applied to the detail text label.
+    /// </summary>
+    private const double DetailOpacity = 0.7;
+
+    /// <summary>
+    /// The padding around the content layout.
+    /// </summary>
+    private const double ContentPadding = 16;
+
+    /// <summary>
+    /// The spacing between the image and the text layout.
+    /// </summary>
+    private const double ContentSpacing = 12;
+
+    /// <summary>
+    /// The image element that displays the bound image source.
+    /// </summary>
     private readonly Image _image;
+
+    /// <summary>
+    /// The label that displays the primary text.
+    /// </summary>
     private readonly Label _textLabel;
+
+    /// <summary>
+    /// The label that displays the detail text.
+    /// </summary>
     private readonly Label _detailLabel;
 
     /// <summary>
@@ -73,28 +117,23 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
     /// </summary>
     public ReactiveImageItemView()
     {
-        _image = new Image
+        _image = new()
         {
-            WidthRequest = 40,
-            HeightRequest = 40,
+            WidthRequest = ImageSize,
+            HeightRequest = ImageSize,
             VerticalOptions = LayoutOptions.Center,
             HorizontalOptions = LayoutOptions.Start,
             Source = ImageSource // Set initial value
         };
 
-        _textLabel = new Label
+        _textLabel = new()
         {
-            FontSize = 16,
-            VerticalOptions = LayoutOptions.Center,
-            Text = Text // Set initial value
+            FontSize = PrimaryFontSize, VerticalOptions = LayoutOptions.Center, Text = Text // Set initial value
         };
 
-        _detailLabel = new Label
+        _detailLabel = new()
         {
-            FontSize = 12,
-            VerticalOptions = LayoutOptions.Center,
-            Opacity = 0.7,
-            Text = Detail // Set initial value
+            FontSize = DetailFontSize, VerticalOptions = LayoutOptions.Center, Opacity = DetailOpacity, Text = Detail // Set initial value
         };
 
         var textStackLayout = new StackLayout
@@ -105,37 +144,14 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
             Children = { _textLabel, _detailLabel }
         };
 
-        var mainStackLayout = new StackLayout
+        Content = new StackLayout
         {
             Orientation = StackOrientation.Horizontal,
             VerticalOptions = LayoutOptions.Center,
-            Padding = 16,
-            Spacing = 12,
+            Padding = ContentPadding,
+            Spacing = ContentSpacing,
             Children = { _image, textStackLayout }
         };
-
-        Content = mainStackLayout;
-
-        // Use expression-based property observation instead of string-based bindings (AOT-safe)
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(ImageSource), () => ImageSource)
-            .Subscribe(value => _image.Source = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Text), () => Text)
-            .Subscribe(value => _textLabel.Text = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(TextColor), () => TextColor)
-            .Subscribe(value => _textLabel.TextColor = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(Detail), () => Detail)
-            .Subscribe(value => _detailLabel.Text = value)
-            .DisposeWith(_propertyBindings);
-
-        MauiReactiveHelpers.CreatePropertyValueObservable(this, nameof(DetailColor), () => DetailColor)
-            .Subscribe(value => _detailLabel.TextColor = value)
-            .DisposeWith(_propertyBindings);
     }
 
     /// <summary>
@@ -181,5 +197,85 @@ public partial class ReactiveImageItemView<[DynamicallyAccessedMembers(Dynamical
     {
         get => (Color)GetValue(DetailColorProperty);
         set => SetValue(DetailColorProperty, value);
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="ImageSource"/> property by updating the image control.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnImageSourceChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveImageItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._image.Source = (ImageSource?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="Text"/> property by updating the primary text label.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnTextChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveImageItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._textLabel.Text = (string?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="TextColor"/> property by updating the primary text label color.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnTextColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveImageItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._textLabel.TextColor = (Color?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="Detail"/> property by updating the detail text label.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnDetailChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveImageItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._detailLabel.Text = (string?)newValue;
+    }
+
+    /// <summary>
+    /// Handles changes to the <see cref="DetailColor"/> property by updating the detail text label color.
+    /// </summary>
+    /// <param name="bindable">The object whose property changed.</param>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    private static void OnDetailColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    {
+        if (bindable is not ReactiveImageItemView<TViewModel> view)
+        {
+            return;
+        }
+
+        view._detailLabel.TextColor = (Color?)newValue;
     }
 }

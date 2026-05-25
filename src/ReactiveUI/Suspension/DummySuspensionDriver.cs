@@ -1,9 +1,13 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive;
 using System.Text.Json.Serialization.Metadata;
+
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -24,7 +28,10 @@ public sealed class DummySuspensionDriver : ISuspensionDriver
         "Implementations commonly use reflection-based serialization. " +
         "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<object?> LoadState()
-        => Observable.Return((object?)null);
+        => new SingleValueObservable<object?>(null);
+
+    /// <inheritdoc />
+    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => new SingleValueObservable<T?>(default);
 
     /// <inheritdoc />
     [RequiresUnreferencedCode(
@@ -34,21 +41,12 @@ public sealed class DummySuspensionDriver : ISuspensionDriver
         "Implementations commonly use reflection-based serialization. " +
         "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<Unit> SaveState<T>(T state)
-        => Observables.Unit;
+        => SingleValueObservable.Unit;
 
     /// <inheritdoc />
-    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo)
-    {
-        return Observable.Return<T?>(default);
-    }
-
-    /// <inheritdoc />
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
-    {
-        return Observables.Unit;
-    }
+    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => SingleValueObservable.Unit;
 
     /// <inheritdoc />
     public IObservable<Unit> InvalidateState()
-        => Observables.Unit;
+        => SingleValueObservable.Unit;
 }

@@ -1,9 +1,10 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.Maui.Tests;
 
@@ -17,40 +18,32 @@ public class ViewModelViewHostTest
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewModelProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.ViewModelViewHost.ViewModelProperty).IsNotNull();
-    }
+    public async Task ViewModelProperty_IsRegistered() =>
+        await Assert.That(ViewModelViewHost.ViewModelProperty).IsNotNull();
 
     /// <summary>
     /// Tests that DefaultContentProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task DefaultContentProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.ViewModelViewHost.DefaultContentProperty).IsNotNull();
-    }
+    public async Task DefaultContentProperty_IsRegistered() =>
+        await Assert.That(ViewModelViewHost.DefaultContentProperty).IsNotNull();
 
     /// <summary>
     /// Tests that ViewContractObservableProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ViewContractObservableProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.ViewModelViewHost.ViewContractObservableProperty).IsNotNull();
-    }
+    public async Task ViewContractObservableProperty_IsRegistered() =>
+        await Assert.That(ViewModelViewHost.ViewContractObservableProperty).IsNotNull();
 
     /// <summary>
     /// Tests that ContractFallbackByPassProperty is registered.
     /// </summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task ContractFallbackByPassProperty_IsRegistered()
-    {
-        await Assert.That(ReactiveUI.Maui.ViewModelViewHost.ContractFallbackByPassProperty).IsNotNull();
-    }
+    public async Task ContractFallbackByPassProperty_IsRegistered() =>
+        await Assert.That(ViewModelViewHost.ContractFallbackByPassProperty).IsNotNull();
 
     /// <summary>
     /// Tests that ViewModel property can be set and retrieved.
@@ -59,7 +52,7 @@ public class ViewModelViewHostTest
     [Test]
     public async Task ViewModel_SetAndGet_WorksCorrectly()
     {
-        var host = new ReactiveUI.Maui.ViewModelViewHost();
+        var host = new ViewModelViewHost();
         var viewModel = new TestViewModel();
 
         host.ViewModel = viewModel;
@@ -74,7 +67,7 @@ public class ViewModelViewHostTest
     [Test]
     public async Task DefaultContent_SetAndGet_WorksCorrectly()
     {
-        var host = new ReactiveUI.Maui.ViewModelViewHost();
+        var host = new ViewModelViewHost();
         var defaultContent = new Label { Text = "Default" };
 
         host.DefaultContent = defaultContent;
@@ -89,9 +82,7 @@ public class ViewModelViewHostTest
     [Test]
     public async Task ContractFallbackByPass_SetAndGet_WorksCorrectly()
     {
-        var host = new ReactiveUI.Maui.ViewModelViewHost();
-
-        host.ContractFallbackByPass = true;
+        var host = new ViewModelViewHost { ContractFallbackByPass = true };
 
         await Assert.That(host.ContractFallbackByPass).IsTrue();
 
@@ -107,7 +98,7 @@ public class ViewModelViewHostTest
     [Test]
     public async Task ViewLocator_SetAndGet_WorksCorrectly()
     {
-        var host = new ReactiveUI.Maui.ViewModelViewHost();
+        var host = new ViewModelViewHost();
         var viewLocator = new TestViewLocator();
 
         host.ViewLocator = viewLocator;
@@ -122,7 +113,7 @@ public class ViewModelViewHostTest
     [Test]
     public async Task ViewContractObservable_SetAndGet_WorksCorrectly()
     {
-        var host = new ReactiveUI.Maui.ViewModelViewHost();
+        var host = new ViewModelViewHost();
         var observable = Observable.Return("contract");
 
         host.ViewContractObservable = observable;
@@ -140,9 +131,7 @@ public class ViewModelViewHostTest
         var host = new TestableViewModelViewHost();
         var viewModel = new TestViewModel();
         var view = new TestView();
-        var locator = new MockViewLocator(view);
-
-        host.ViewLocator = locator;
+        host.ViewLocator = new MockViewLocator(view);
         host.ViewModel = viewModel;
         host.SimulateViewModelChange();
 
@@ -172,14 +161,18 @@ public class ViewModelViewHostTest
     /// <summary>
     /// Test view model for testing.
     /// </summary>
-    private class TestViewModel
-    {
-    }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    private sealed class TestViewModel;
 
-    private class TestView : ContentView, IViewFor<TestViewModel>
+    /// <summary>
+    /// Test view that implements IViewFor for testing.
+    /// </summary>
+    private sealed class TestView : ContentView, IViewFor<TestViewModel>
     {
+        /// <inheritdoc/>
         public TestViewModel? ViewModel { get; set; }
 
+        /// <inheritdoc/>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -187,41 +180,93 @@ public class ViewModelViewHostTest
         }
     }
 
-    private class MockViewLocator : IViewLocator
+    /// <summary>
+    /// Mock view locator that always resolves to a fixed view for testing.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
+    private sealed class MockViewLocator : IViewLocator
     {
+        /// <summary>
+        /// The view to always resolve to.
+        /// </summary>
         private readonly IViewFor _view;
 
-        public MockViewLocator(IViewFor view)
-        {
-            _view = view;
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MockViewLocator"/> class.
+        /// </summary>
+        /// <param name="view">The view to always resolve to.</param>
+        public MockViewLocator(IViewFor view) => _view = view;
 
-        public IViewFor<T>? ResolveView<T>(string? contract = null)
+        /// <inheritdoc/>
+        public IViewFor<T>? ResolveView<T>(string? contract)
             where T : class => _view as IViewFor<T>;
 
-        [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? viewModel, string? contract = null) => _view;
+        /// <inheritdoc/>
+        public IViewFor<T>? ResolveView<T>()
+            where T : class => _view as IViewFor<T>;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? viewModel) => _view;
     }
 
-    private class TestableViewModelViewHost : ViewModelViewHost
+    /// <summary>
+    /// Testable ViewModelViewHost that exposes the protected view model resolution.
+    /// </summary>
+    private sealed class TestableViewModelViewHost : ViewModelViewHost
     {
-        public void SimulateViewModelChange()
-        {
-            ResolveViewForViewModel(ViewModel, ViewContract);
-        }
+        /// <summary>
+        /// Simulates a view model change by resolving the view for the current view model.
+        /// </summary>
+        public void SimulateViewModelChange() => ResolveViewForViewModel(ViewModel, ViewContract);
     }
 
     /// <summary>
     /// Test view locator for testing.
     /// </summary>
-    private class TestViewLocator : IViewLocator
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
+    private sealed class TestViewLocator : IViewLocator
     {
-        public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract = null)
+        /// <inheritdoc/>
+        public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
             where TViewModel : class => null;
 
-        [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
-        [RequiresDynamicCode("If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? instance, string? contract = null) => null;
+        /// <inheritdoc/>
+        public IViewFor<TViewModel>? ResolveView<TViewModel>()
+            where TViewModel : class => null;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? instance, string? contract) => null;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? instance) => null;
     }
 }

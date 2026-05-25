@@ -1,11 +1,15 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI;
 
@@ -34,21 +38,26 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     [
         ("Click", typeof(EventArgs)),
         ("TouchUpInside", typeof(EventArgs)),
-        ("MouseUp", typeof(EventArgs)),
+        ("MouseUp", typeof(EventArgs))
     ];
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public int GetAffinityForObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.PublicProperties)]T>(bool hasEventTarget)
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.PublicProperties)]
+        T>(bool hasEventTarget)
     {
         if (hasEventTarget)
         {
-            return 5;
+            return BindingAffinity.Explicit;
         }
 
-        // Fast, allocation-free per-closed-generic cache.
-        return DefaultEventCache<T>.HasDefaultEvent ? 3 : 0;
+        return DefaultEventCache<T>.HasDefaultEvent ? BindingAffinity.DefaultEvent : 0;
     }
 
     /// <summary>
@@ -65,7 +74,10 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// </exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T>(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter)
@@ -73,20 +85,13 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
 
-        // Typical binding semantics: null command => no-op binding.
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        var eventName = DefaultEventCache<T>.DefaultEventName;
-        if (eventName is null)
-        {
-            throw new InvalidOperationException(
+        var eventName = DefaultEventCache<T>.DefaultEventName ?? throw new InvalidOperationException(
                 $"Couldn't find a default event to bind to on {typeof(T).FullName}, specify an event explicitly");
-        }
-
-        // Default events in this binder are EventArgs-shaped.
         return BindCommandToObject<T, EventArgs>(command, target, commandParameter, eventName);
     }
 
@@ -107,6 +112,10 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// Thrown when <paramref name="eventName"/> is empty.
     /// </exception>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,
@@ -124,37 +133,33 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        // Parameter value may be updated on a different thread than the event callback;
-        // ensure a consistent publication/read.
         object? latestParameter = null;
 
-        var ret = new CompositeDisposable();
+        CompositeDisposable ret = [];
 
-        ret.Add(commandParameter.Subscribe(static x =>
-        {
-            // Store under volatile semantics.
-            Volatile.Write(ref Unsafe.As<object?, object?>(ref x), x); // no-op; keeps delegate static-friendly
-        }));
+        ret.Add(commandParameter.Subscribe(new DelegateObserver<object?>(
+            static x =>
+                Volatile.Write(ref Unsafe.As<object?, object?>(ref x), x))));
 
-        // The above static trick is not useful because we still need to update latestParameter; keep a single closure,
-        // but use Volatile for correctness.
         ret.Clear();
 
-        ret.Add(commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)));
+        ret.Add(commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))));
 
-        var evt = Observable.FromEventPattern<TEventArgs>(target, eventName);
+        var evt = new EventPatternObservable<TEventArgs>(target, eventName);
 
-        ret.Add(evt.Subscribe(_ =>
+        ret.Add(evt.Subscribe(new DelegateObserver<TEventArgs>(_ =>
         {
             var param = Volatile.Read(ref latestParameter);
-            if (command.CanExecute(param))
+            if (!command.CanExecute(param))
             {
-                command.Execute(param);
+                return;
             }
-        }));
+
+            command.Execute(param);
+        })));
 
         return ret;
     }
@@ -173,7 +178,11 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="target"/>, <paramref name="addHandler"/>, or <paramref name="removeHandler"/> is <see langword="null"/>.
     /// </exception>
-    public IDisposable? BindCommandToObject<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.NonPublicEvents)] T, TEventArgs>(
+    public IDisposable BindCommandToObject<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
+                                    DynamicallyAccessedMemberTypes.PublicEvents |
+                                    DynamicallyAccessedMemberTypes.NonPublicEvents)]
+        T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -186,34 +195,31 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(addHandler);
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
-        // Preserve typical binding semantics: null command => no-op binding.
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
-        // latestParameter may be produced on a different thread than the UI event.
         object? latestParameter = null;
 
-        // Stable delegate for deterministic unsubscription.
-        void Handler(object? s, TEventArgs e)
-        {
-            var param = Volatile.Read(ref latestParameter);
-            if (command.CanExecute(param))
-            {
-                command.Execute(param);
-            }
-        }
+        var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x)));
 
-        // Subscribe to parameter changes first so the first event sees the latest parameter.
-        var parameterSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x));
-
-        // Hook the event after parameter subscription; unhook deterministically on dispose.
         addHandler(Handler);
 
         return new CompositeDisposable(
             parameterSub,
-            Disposable.Create(() => removeHandler(Handler)));
+            new ActionDisposable(() => removeHandler(Handler)));
+
+        void Handler(object? s, TEventArgs e)
+        {
+            var param = Volatile.Read(ref latestParameter);
+            if (!command.CanExecute(param))
+            {
+                return;
+            }
+
+            command.Execute(param);
+        }
     }
 
     /// <summary>
@@ -243,29 +249,30 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         }
 
         object? latestParameter = null;
 
-        // Stable delegate for deterministic unsubscription.
-        void Handler(object? s, EventArgs e)
-        {
-            var param = Volatile.Read(ref latestParameter);
-            if (command.CanExecute(param))
-            {
-                command.Execute(param);
-            }
-        }
-
-        var ret = new CompositeDisposable
-        {
-            commandParameter.Subscribe(x => Volatile.Write(ref latestParameter, x)),
-            Disposable.Create(() => removeHandler(Handler))
-        };
+        CompositeDisposable ret =
+        [
+            commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))),
+            new ActionDisposable(() => removeHandler(Handler))
+        ];
 
         addHandler(Handler);
         return ret;
+
+        void Handler(object? s, EventArgs e)
+        {
+            var param = Volatile.Read(ref latestParameter);
+            if (!command.CanExecute(param))
+            {
+                return;
+            }
+
+            command.Execute(param);
+        }
     }
 
     /// <summary>
@@ -273,7 +280,8 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     private static class DefaultEventCache<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents)]T>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents)]
+        T>
     {
         /// <summary>
         /// Gets the selected default event name for <typeparamref name="T"/>, or <see langword="null"/> if none exists.
@@ -285,11 +293,14 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         /// </summary>
         public static readonly bool HasDefaultEvent = DefaultEventName is not null;
 
+        /// <summary>
+        /// Scans the default events list and returns the name of the first event found on the type, or null if none exist.
+        /// </summary>
+        /// <returns>The name of the first supported default event, or null if none exist.</returns>
         private static string? FindDefaultEventName()
         {
             var type = typeof(T);
 
-            // Avoid LINQ allocations; scan in priority order.
             for (var i = 0; i < DefaultEventsToBind.Length; i++)
             {
                 var name = DefaultEventsToBind[i].Name;

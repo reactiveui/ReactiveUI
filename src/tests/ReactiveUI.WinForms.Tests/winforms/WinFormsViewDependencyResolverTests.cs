@@ -1,19 +1,29 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Builder;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
-
+using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
+/// <summary>
+/// Tests for resolving WinForms views registered for view models.
+/// </summary>
 public sealed class WinFormsViewDependencyResolverTests : IDisposable
 {
-    private readonly IDependencyResolver _resolver;
+    /// <summary>
+    /// The dependency resolver used for the tests.
+    /// </summary>
+    private readonly ModernDependencyResolver _resolver;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WinFormsViewDependencyResolverTests"/> class.
+    /// </summary>
     public WinFormsViewDependencyResolverTests()
     {
         AppBuilder.ResetBuilderStateForTests();
@@ -23,14 +33,18 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         SingleInstanceWithContractExampleView.ResetInstances();
         NeverUsedView.ResetInstances();
 
-        _resolver = new ModernDependencyResolver();
+        _resolver = new();
         _resolver.InitializeSplat();
-        RxAppBuilder.CreateReactiveUIBuilder(_resolver)
+        _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()
             .BuildApp();
         _resolver.RegisterViewsForViewModels(GetType().Assembly);
     }
 
+    /// <summary>
+    /// Tests that registering views for view models registers all expected views.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task RegisterViewsForViewModelShouldRegisterAllViews()
     {
@@ -44,6 +58,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Tests that non-contract view registrations resolve to the correct view type.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task NonContractRegistrationsShouldResolveCorrectly()
     {
@@ -56,15 +74,23 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
     /// <inheritdoc/>
     public void Dispose() => _resolver?.Dispose();
 
+    /// <summary>
+    /// Tests that contract-based view registrations resolve to the correct view type.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractRegistrationsShouldResolveCorrectly()
     {
         using (_resolver.WithResolver())
         {
-            await Assert.That(_resolver.GetService(typeof(IViewFor<ExampleViewModel>), "contract")).IsTypeOf<ContractExampleView>();
+            await Assert.That(_resolver.GetService<IViewFor<ExampleViewModel>>("contract")).IsTypeOf<ContractExampleView>();
         }
     }
 
+    /// <summary>
+    /// Tests that single-instance views are only instantiated once.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SingleInstanceViewsShouldOnlyBeInstantiatedOnce()
     {
@@ -72,10 +98,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         {
             await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(0);
 
-            var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
+            var instance = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>();
             await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(1);
 
-            var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>));
+            var instance2 = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>();
             using (Assert.Multiple())
             {
                 await Assert.That(SingleInstanceExampleView.Instances).IsEqualTo(1);
@@ -85,6 +111,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Tests that single-instance views with a contract resolve correctly and are only instantiated once.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SingleInstanceViewsWithContractShouldResolveCorrectly()
     {
@@ -92,10 +122,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         {
             await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(0);
 
-            var instance = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
+            var instance = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>("contract");
             await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);
 
-            var instance2 = _resolver.GetService(typeof(IViewFor<SingleInstanceExampleViewModel>), "contract");
+            var instance2 = _resolver.GetService<IViewFor<SingleInstanceExampleViewModel>>("contract");
             using (Assert.Multiple())
             {
                 await Assert.That(SingleInstanceWithContractExampleView.Instances).IsEqualTo(1);
@@ -105,6 +135,10 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
         }
     }
 
+    /// <summary>
+    /// Tests that single-instance views are not instantiated until requested.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SingleInstanceViewsShouldOnlyBeInstantiatedWhenRequested()
     {

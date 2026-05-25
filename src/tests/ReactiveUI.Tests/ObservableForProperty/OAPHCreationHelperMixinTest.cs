@@ -1,15 +1,24 @@
-// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
+
+using System.Linq.Expressions;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests.ObservableForProperty;
 
 /// <summary>
 ///     Tests for <see cref="OAPHCreationHelperMixin" />.
 /// </summary>
-public class OAPHCreationHelperMixinTest
+public class OaphCreationHelperMixinTest
 {
+    private const string TestText = "test";
+    private const string NewValueText = "newValue";
+    private const string InitialText = "initial";
+
     /// <summary>
     ///     Tests that internal ObservableToProperty with Expression extracts correct property name.
     /// </summary>
@@ -18,10 +27,10 @@ public class OAPHCreationHelperMixinTest
     public async Task ObservableToProperty_WithExpression_ExtractsCorrectPropertyName()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test").ObserveOn(ImmediateScheduler.Instance);
+        var observable = Observable.Return(TestText).ObserveOn(ImmediateScheduler.Instance);
         string? capturedPropertyName = null;
 
-        source.PropertyChanged += (s, e) => capturedPropertyName = e.PropertyName;
+        source.PropertyChanged += (_, e) => capturedPropertyName = e.PropertyName;
 
         var result = source.ObservableToProperty(
             observable,
@@ -42,34 +51,38 @@ public class OAPHCreationHelperMixinTest
     public async Task ObservableToProperty_WithExpressionAndGetInitialValue_CreatesHelperAndRaisesNotifications()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("newValue").ObserveOn(ImmediateScheduler.Instance);
+        var observable = Observable.Return(NewValueText).ObserveOn(ImmediateScheduler.Instance);
         var changingFired = false;
         var changedFired = false;
 
-        source.PropertyChanging += (s, e) =>
+        source.PropertyChanging += (_, e) =>
         {
-            if (e.PropertyName == nameof(source.TestProperty))
+            if (e.PropertyName != nameof(source.TestProperty))
             {
-                changingFired = true;
+                return;
             }
+
+            changingFired = true;
         };
 
-        source.PropertyChanged += (s, e) =>
+        source.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(source.TestProperty))
+            if (e.PropertyName != nameof(source.TestProperty))
             {
-                changedFired = true;
+                return;
             }
+
+            changedFired = true;
         };
 
         var result = source.ObservableToProperty(
             observable,
             x => x.TestProperty,
-            () => "initial",
+            () => InitialText,
             scheduler: ImmediateScheduler.Instance);
 
         await Assert.That(result).IsNotNull();
-        await Assert.That(result.Value).IsEqualTo("newValue");
+        await Assert.That(result.Value).IsEqualTo(NewValueText);
         await Assert.That(changingFired).IsTrue();
         await Assert.That(changedFired).IsTrue();
 
@@ -105,34 +118,38 @@ public class OAPHCreationHelperMixinTest
     public async Task ObservableToProperty_WithStringNameAndGetInitialValue_CreatesHelper()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("newValue").ObserveOn(ImmediateScheduler.Instance);
+        var observable = Observable.Return(NewValueText).ObserveOn(ImmediateScheduler.Instance);
         var changingFired = false;
         var changedFired = false;
 
-        source.PropertyChanging += (s, e) =>
+        source.PropertyChanging += (_, e) =>
         {
-            if (e.PropertyName == nameof(source.TestProperty))
+            if (e.PropertyName != nameof(source.TestProperty))
             {
-                changingFired = true;
+                return;
             }
+
+            changingFired = true;
         };
 
-        source.PropertyChanged += (s, e) =>
+        source.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(source.TestProperty))
+            if (e.PropertyName != nameof(source.TestProperty))
             {
-                changedFired = true;
+                return;
             }
+
+            changedFired = true;
         };
 
         var result = source.ObservableToProperty(
             observable,
             nameof(source.TestProperty),
-            () => "initial",
+            () => InitialText,
             scheduler: ImmediateScheduler.Instance);
 
         await Assert.That(result).IsNotNull();
-        await Assert.That(result.Value).IsEqualTo("newValue");
+        await Assert.That(result.Value).IsEqualTo(NewValueText);
         await Assert.That(changingFired).IsTrue();
         await Assert.That(changedFired).IsTrue();
 
@@ -172,7 +189,7 @@ public class OAPHCreationHelperMixinTest
         var observable = Observable.Create<string>(observer =>
         {
             subscribed = true;
-            observer.OnNext("test");
+            observer.OnNext(TestText);
             observer.OnCompleted();
             return Disposable.Empty;
         });
@@ -196,12 +213,12 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithExpression_CreatesValidHelper()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test").ObserveOn(ImmediateScheduler.Instance);
+        var observable = Observable.Return(TestText).ObserveOn(ImmediateScheduler.Instance);
 
         var result = observable.ToProperty(source, x => x.TestProperty, scheduler: ImmediateScheduler.Instance);
 
         await Assert.That(result).IsNotNull();
-        await Assert.That(result.Value).IsEqualTo("test");
+        await Assert.That(result.Value).IsEqualTo(TestText);
 
         result.Dispose();
     }
@@ -214,7 +231,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithExpression_ThrowsOnNullProperty()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty(source, (Expression<Func<TestReactiveObject, string>>)null!))
             .Throws<ArgumentNullException>();
@@ -233,11 +250,11 @@ public class OAPHCreationHelperMixinTest
         var result = observable.ToProperty(
             source,
             x => x.TestProperty,
-            "initial",
+            InitialText,
             scheduler: ImmediateScheduler.Instance);
 
         await Assert.That(result).IsNotNull();
-        await Assert.That(result.Value).IsEqualTo("initial");
+        await Assert.That(result.Value).IsEqualTo(InitialText);
 
         result.Dispose();
     }
@@ -250,12 +267,12 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithExpressionAndInitialValue_ThrowsOnNullProperty()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty(
-                source,
-                (Expression<Func<TestReactiveObject, string>>)null!,
-                "initial"))
+            source,
+            (Expression<Func<TestReactiveObject, string>>)null!,
+            InitialText))
             .Throws<ArgumentNullException>();
     }
 
@@ -267,7 +284,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithExpressionAndOut_ReturnsHelperThroughOutParameter()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         var result = observable.ToProperty(source, x => x.TestProperty, out var outResult);
 
@@ -316,7 +333,7 @@ public class OAPHCreationHelperMixinTest
         var observable = Observable.Create<string>(observer =>
         {
             subscribed = true;
-            observer.OnNext("test");
+            observer.OnNext(TestText);
             observer.OnCompleted();
             return Disposable.Empty;
         }).ObserveOn(ImmediateScheduler.Instance);
@@ -336,7 +353,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithStringName_ThrowsOnEmptyPropertyName()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty(source, string.Empty))
             .Throws<ArgumentException>();
@@ -363,7 +380,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithStringName_ThrowsOnNullPropertyName()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty(source, (string)null!))
             .Throws<ArgumentException>();
@@ -376,7 +393,7 @@ public class OAPHCreationHelperMixinTest
     [Test]
     public async Task ToProperty_WithStringName_ThrowsOnNullTarget()
     {
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty<TestReactiveObject, string>(null!, "TestProperty"))
             .Throws<ArgumentNullException>();
@@ -390,7 +407,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithStringName_ThrowsOnWhitespacePropertyName()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         await Assert.That(() => observable.ToProperty(source, "   "))
             .Throws<ArgumentException>();
@@ -409,11 +426,11 @@ public class OAPHCreationHelperMixinTest
         var result = observable.ToProperty(
             source,
             nameof(source.TestProperty),
-            "initial",
+            InitialText,
             scheduler: ImmediateScheduler.Instance);
 
         await Assert.That(result).IsNotNull();
-        await Assert.That(result.Value).IsEqualTo("initial");
+        await Assert.That(result.Value).IsEqualTo(InitialText);
 
         result.Dispose();
     }
@@ -426,7 +443,7 @@ public class OAPHCreationHelperMixinTest
     public async Task ToProperty_WithStringNameAndOut_ReturnsHelperThroughOutParameter()
     {
         var source = new TestReactiveObject();
-        var observable = Observable.Return("test");
+        var observable = Observable.Return(TestText);
 
         var result = observable.ToProperty(source, nameof(source.TestProperty), out var outResult);
 
@@ -439,10 +456,16 @@ public class OAPHCreationHelperMixinTest
     /// <summary>
     ///     Test reactive object for testing.
     /// </summary>
-    private class TestReactiveObject : ReactiveObject
+    private sealed class TestReactiveObject : ReactiveObject
     {
+        /// <summary>
+        /// The backing field for the <see cref="TestProperty" /> property.
+        /// </summary>
         private string? _testProperty;
 
+        /// <summary>
+        /// Gets or sets the test property.
+        /// </summary>
         public string? TestProperty
         {
             get => _testProperty;

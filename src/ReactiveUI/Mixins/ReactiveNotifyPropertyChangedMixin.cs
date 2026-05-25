@@ -1,9 +1,14 @@
-﻿// Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using ReactiveUI.Builder;
+using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -25,8 +30,11 @@ namespace ReactiveUI;
     "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
 public static class ReactiveNotifyPropertyChangedMixin
 {
+    /// <summary>
+    /// Caches the best available property-notification factory for each sender type, property name, and change timing.
+    /// </summary>
     private static readonly
-        MemoizingMRUCache<(Type senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
+        MemoizingMRUCache<(Type? senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
         _notifyFactoryCache =
             new(
                 (t, _) => AppLocator.Current.GetServices<ICreatesObservableForProperty>()
@@ -61,6 +69,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An Observable representing the property change notifications for the given property name.</returns>
     [RequiresUnreferencedCode(
         "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
@@ -84,28 +96,28 @@ public static class ReactiveNotifyPropertyChangedMixin
             expr = parameter;
         }
 
-        var factory = _notifyFactoryCache.Get((item!.GetType(), propertyName, beforeChange))
-                      ?? throw new Exception(
-                          $"Could not find a ICreatesObservableForProperty for {item!.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
+        var factory = _notifyFactoryCache.Get((item.GetType(), propertyName, beforeChange))
+                      ?? throw new InvalidOperationException(
+                          $"Could not find a ICreatesObservableForProperty for {item.GetType()} property {propertyName}. " +
+                          "This should never happen, your service locator is probably broken. Please make sure you have installed " +
+                          "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance.");
 
         // Helper to get current property value without expression analysis.
-        static TValue GetCurrentValue(object sender, string name)
+        static TValue GetCurrentValue(TSender sender, string name)
         {
-            var t = sender.GetType();
+            var t = sender?.GetType();
 #if NETSTANDARD || NETFRAMEWORK
             var prop =
- t.GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
+                t?.GetProperty(
+                    name,
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
 #else
-            var prop = t.GetProperty(
+            var prop = t?.GetProperty(
                 name,
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.FlattenHierarchy);
 #endif
-            if (prop is null)
-            {
-                return default!;
-            }
 
-            var val = prop.GetValue(sender);
+            var val = prop?.GetValue(sender);
             if (val is null)
             {
                 return default!;
@@ -114,49 +126,8 @@ public static class ReactiveNotifyPropertyChangedMixin
             return val is TValue tv ? tv : (TValue)val;
         }
 
-        var core = Observable.Create<IObservedChange<TSender, TValue>>(obs =>
-        {
-            // Emit initial value if requested.
-            if (!skipInitial)
-            {
-                try
-                {
-                    var initial = GetCurrentValue(item!, propertyName);
-                    obs.OnNext(new ObservedChange<TSender, TValue>(item!, expr, initial));
-                }
-                catch (Exception ex)
-                {
-                    obs.OnError(ex);
-                }
-            }
-
-            var subscription = factory
-                .GetNotificationForProperty(item!, expr, propertyName, beforeChange, suppressWarnings: false)
-                .Subscribe(
-                    _ =>
-                    {
-                        try
-                        {
-                            var current = GetCurrentValue(item!, propertyName);
-                            obs.OnNext(new ObservedChange<TSender, TValue>(item!, expr, current));
-                        }
-                        catch (Exception ex)
-                        {
-                            obs.OnError(ex);
-                        }
-                    },
-                    obs.OnError,
-                    obs.OnCompleted);
-
-            return subscription;
-        });
-
-        if (isDistinct)
-        {
-            return core.DistinctUntilChanged(x => x.Value);
-        }
-
-        return core;
+        var notifications = factory.GetNotificationForProperty(item, expr, propertyName, beforeChange, suppressWarnings: false);
+        return new ObservableForPropertySink<TSender, TValue>(item, expr, propertyName, notifications, GetCurrentValue, skipInitial, isDistinct);
     }
 
     /// <summary>
@@ -169,6 +140,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
     [RequiresUnreferencedCode(
         "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName)
@@ -190,6 +165,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
     [RequiresUnreferencedCode(
         "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
@@ -213,6 +192,10 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// <returns>An observable sequence of observed changes for the given property name.</returns>
     [RequiresUnreferencedCode(
         "Creating Expressions requires unreferenced code because the members being referenced by the Expression may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         string propertyName,
@@ -319,6 +302,7 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// notifications for the given property.
     /// </returns>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "False positive, pseudo code.")]
     public static IObservable<IObservedChange<TSender, TValue>> ObservableForProperty<TSender, TValue>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
@@ -371,13 +355,13 @@ public static class ReactiveNotifyPropertyChangedMixin
     public static IObservable<TRet> ObservableForProperty<TSender, TValue, TRet>(
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
-        Func<TValue?, TRet> selector) // TODO: Create Test
+        Func<TValue?, TRet> selector)
         where TSender : class
     {
         ArgumentExceptionHelper.ThrowIfNull(property);
         ArgumentExceptionHelper.ThrowIfNull(selector);
 
-        return item.ObservableForProperty(property, false).Select(x => selector(x.Value));
+        return new ObservedChangeValueSelector<TSender, TValue, TRet>(item.ObservableForProperty(property, false), selector);
     }
 
     /// <summary>
@@ -403,13 +387,13 @@ public static class ReactiveNotifyPropertyChangedMixin
         this TSender? item,
         Expression<Func<TSender, TValue>> property,
         Func<TValue?, TRet> selector,
-        bool beforeChange) // TODO: Create Test
+        bool beforeChange)
         where TSender : class
     {
         ArgumentExceptionHelper.ThrowIfNull(property);
         ArgumentExceptionHelper.ThrowIfNull(selector);
 
-        return item.ObservableForProperty(property, beforeChange).Select(x => selector(x.Value));
+        return new ObservedChangeValueSelector<TSender, TValue, TRet>(item.ObservableForProperty(property, beforeChange), selector);
     }
 
     /// <summary>
@@ -426,9 +410,13 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
-        Expression? expression) // TODO: Create Test
+        Expression? expression)
         => SubscribeToExpressionChain<TSender, TValue>(source, expression, false, true, false, true);
 
     /// <summary>
@@ -446,10 +434,14 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
-        bool beforeChange) // TODO: Create Test
+        bool beforeChange)
         => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, true, false, true);
 
     /// <summary>
@@ -468,11 +460,15 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange,
-        bool skipInitial) // TODO: Create Test
+        bool skipInitial)
         => SubscribeToExpressionChain<TSender, TValue>(source, expression, beforeChange, skipInitial, false, true);
 
     /// <summary>
@@ -492,12 +488,16 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange,
         bool skipInitial,
-        bool suppressWarnings) // TODO: Create Test
+        bool suppressWarnings)
         => SubscribeToExpressionChain<TSender, TValue>(
             source,
             expression,
@@ -524,81 +524,29 @@ public static class ReactiveNotifyPropertyChangedMixin
     /// </returns>
     /// <exception cref="InvalidCastException">If we cannot cast from the target value from the specified last property.</exception>
     [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameter",
+        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public static IObservable<IObservedChange<TSender, TValue>> SubscribeToExpressionChain<TSender, TValue>(
         this TSender? source,
         Expression? expression,
         bool beforeChange,
         bool skipInitial,
         bool suppressWarnings,
-        bool isDistinct) // TODO: Create Test
+        bool isDistinct)
     {
-        IObservable<IObservedChange<object?, object?>> notifier =
-            Observable.Return(new ObservedChange<object?, object?>(null, null, source));
-
-        var chain = Reflection.Rewrite(expression).GetExpressionChain();
-        notifier = chain.Aggregate(
-            notifier,
-            (n, expr) => n
-                .Select(y => NestedObservedChanges(expr, y, beforeChange, suppressWarnings))
-                .Switch());
-
-        if (skipInitial)
-        {
-            notifier = notifier.Skip(1);
-        }
-
-        notifier = notifier.Where(x => x.Sender is not null);
-
-        var r = notifier.Select(x =>
-        {
-            // ensure cast to TValue will succeed, throw useful exception otherwise
-            var val = x.GetValue();
-            if (val is not null && val is not TValue)
-            {
-                throw new InvalidCastException($"Unable to cast from {val.GetType()} to {typeof(TValue)}.");
-            }
-
-            return new ObservedChange<TSender, TValue>(source!, expression, (TValue)val!);
-        });
-
-        return isDistinct ? r.DistinctUntilChanged(x => x.Value) : r;
-    }
-
-    /// <summary>
-    /// Creates an observable sequence that emits observed changes for each member in an expression-based property
-    /// chain, starting from a given source change.
-    /// </summary>
-    /// <remarks>This method uses reflection to evaluate the expression-based member chain. If the source
-    /// value is null, the returned sequence contains only the initial change. Otherwise, it tracks changes for each
-    /// property in the chain. Reflection-based member access may be affected by trimming in some deployment
-    /// scenarios.</remarks>
-    /// <param name="expression">An expression representing the property or member chain to observe for changes.</param>
-    /// <param name="sourceChange">The initial observed change that serves as the starting point for tracking nested property changes.</param>
-    /// <param name="beforeChange">true to observe property values before they change; otherwise, false to observe values after the change.</param>
-    /// <param name="suppressWarnings">true to suppress warnings related to property observation; otherwise, false.</param>
-    /// <returns>An observable sequence of observed changes for each member in the specified property chain. The sequence emits
-    /// an initial change corresponding to the source, followed by subsequent changes as properties in the chain are
-    /// updated.</returns>
-    [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
-    private static IObservable<IObservedChange<object?, object?>> NestedObservedChanges(
-        Expression expression,
-        IObservedChange<object?, object?> sourceChange,
-        bool beforeChange,
-        bool suppressWarnings)
-    {
-        // Make sure a change at a root node propagates events down
-        var kicker = new ObservedChange<object?, object?>(sourceChange.Value, expression, default);
-
-        // Handle null values in the chain
-        if (sourceChange.Value is null)
-        {
-            return Observable.Return(kicker);
-        }
-
-        // Handle non null values in the chain
-        return NotifyForProperty(sourceChange.Value, expression, beforeChange, suppressWarnings)
-            .StartWith(kicker)
-            .Select(static x => new ObservedChange<object?, object?>(x.Sender, x.Expression, x.GetValueOrDefault()));
+        Expression[] links = [.. Reflection.Rewrite(expression).GetExpressionChain()];
+        return new ExpressionChainSink<TSender, TValue>(
+            new(
+                source,
+                expression,
+                links,
+                beforeChange,
+                suppressWarnings,
+                skipInitial,
+                isDistinct,
+                NotifyForProperty));
     }
 
     /// <summary>
@@ -634,7 +582,9 @@ public static class ReactiveNotifyPropertyChangedMixin
         return result switch
         {
             null => throw new InvalidOperationException(
-                $"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}. This should never happen, your service locator is probably broken. Please make sure you have installed the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
+                $"Could not find a ICreatesObservableForProperty for {sender.GetType()} property {propertyName}." +
+                " This should never happen, your service locator is probably broken. Please make sure you have installed " +
+                "the latest version of the ReactiveUI packages for your platform. See https://reactiveui.net/docs/getting-started/installation for guidance."),
             _ => result.GetNotificationForProperty(sender, expression, propertyName, beforeChange, suppressWarnings)
         };
     }
