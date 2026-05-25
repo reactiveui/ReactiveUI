@@ -313,8 +313,6 @@ namespace ReactiveUI
     public sealed class ComponentModelFallbackConverter : ReactiveUI.IBindingFallbackConverter, Splat.IEnableLogger
     {
         public ComponentModelFallbackConverter() { }
-        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode", Justification="The callers of this method ensure getting the converter is trim compatible - i.e." +
-            " the type is not Nullable<T>.")]
         public int GetAffinityForObjects([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType) { }
         public bool TryConvert([System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type fromType, object from, [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.All)] System.Type toType, object? conversionHint, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out object? result) { }
     }
