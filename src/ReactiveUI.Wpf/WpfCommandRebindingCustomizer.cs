@@ -3,8 +3,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ReactiveUI.Internal;
 
 namespace ReactiveUI.Wpf;
 
@@ -43,13 +45,19 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
             return false;
         }
 
-        // Marshal the update onto the owning dispatcher when called off the UI thread, so a background-thread
-        // command rebind doesn't touch the WPF control directly (which throws an InvalidOperationException).
+        // When already on the control's dispatcher thread, update inline. Otherwise marshal through the configured
+        // main-thread scheduler (RxSchedulers.MainThreadScheduler) rather than the control's dispatcher directly, so
+        // a background-thread command rebind is delivered where the consumer/test expects and never touches the WPF
+        // control off-thread (which would throw an InvalidOperationException).
         if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
         {
-            dispatcherObject.Dispatcher.BeginInvoke(
-                () => commandProperty.SetValue(control, command),
-                DispatcherPriority.Normal);
+            RxSchedulers.MainThreadScheduler.Schedule(
+                (Property: commandProperty, Control: control, Command: command),
+                static (_, state) =>
+                {
+                    state.Property.SetValue(state.Control, state.Command);
+                    return EmptyDisposable.Instance;
+                });
         }
         else
         {

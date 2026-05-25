@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Reactive.Concurrency;
 using System.Windows.Threading;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
@@ -28,19 +29,28 @@ internal sealed class WpfPropertyBinderImplementation : PropertyBinderImplementa
     {
         ArgumentExceptionHelper.ThrowIfNull(setter);
 
+        // When already on the view's dispatcher thread, set inline so main-thread binds stay synchronous. Otherwise
+        // marshal through the configured main-thread scheduler (RxSchedulers.MainThreadScheduler) rather than the
+        // view's dispatcher directly, so the binding honours whatever scheduler the consumer/test has configured.
         if (view is not DispatcherObject dispatcherObject || dispatcherObject.CheckAccess())
         {
             setter();
             return;
         }
 
-        dispatcherObject.Dispatcher.BeginInvoke(setter);
+        RxSchedulers.MainThreadScheduler.Schedule(
+            setter,
+            static (_, state) =>
+            {
+                state();
+                return EmptyDisposable.Instance;
+            });
     }
 
     /// <summary>
     /// Emits a single value, inline when already on the view's dispatcher thread (or when the view is not a
-    /// <see cref="DispatcherObject"/>), otherwise marshalled onto the dispatcher. A dedicated fusion of
-    /// <c>Observable.Return</c>/<c>Observable.Create</c> with the dispatcher check — no operator chain.
+    /// <see cref="DispatcherObject"/>), otherwise marshalled onto the configured main-thread scheduler. A dedicated
+    /// fusion of <c>Observable.Return</c>/<c>Observable.Create</c> with the dispatcher check — no operator chain.
     /// </summary>
     /// <param name="dispatcherObject">The dispatcher-affine view, or <see langword="null"/> to emit inline.</param>
     /// <param name="value">The value to emit.</param>
@@ -58,14 +68,17 @@ internal sealed class WpfPropertyBinderImplementation : PropertyBinderImplementa
                 return EmptyDisposable.Instance;
             }
 
-            var operation = dispatcherObject.Dispatcher.BeginInvoke(
-                () =>
+            // Marshal onto the configured main-thread scheduler so a background-thread change is delivered where the
+            // consumer/test expects (RxSchedulers.MainThreadScheduler), instead of going straight to the view's
+            // dispatcher.
+            return RxSchedulers.MainThreadScheduler.Schedule(
+                (observer, value),
+                static (_, state) =>
                 {
-                    observer.OnNext(value);
-                    observer.OnCompleted();
+                    state.observer.OnNext(state.value);
+                    state.observer.OnCompleted();
+                    return EmptyDisposable.Instance;
                 });
-
-            return new ActionDisposable(() => operation.Abort());
         }
     }
 }
