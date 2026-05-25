@@ -300,8 +300,8 @@ public class DependencyObjectObservableForPropertyTest
         var fixture = new DepObjFixture();
 
         // Detach the value-changed handler synchronously on dispose so the assertions below observe the unsubscribe
-        // immediately. In production the handler is removed on the dispatcher (RxSchedulers.MainThreadScheduler);
-        // here there is no running message pump, so an immediate scheduler keeps the test deterministic.
+        // immediately. Production removes the handler on the main thread scheduler, which is the dispatcher; here
+        // there is no running message pump, so an immediate scheduler keeps the test deterministic.
         var binder = new DependencyObjectObservableForProperty { Scheduler = ImmediateScheduler.Instance };
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name!;
