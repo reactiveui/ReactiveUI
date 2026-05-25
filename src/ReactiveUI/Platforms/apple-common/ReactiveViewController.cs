@@ -6,7 +6,6 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Foundation;
 
@@ -90,10 +89,10 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);

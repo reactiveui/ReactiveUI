@@ -6,9 +6,9 @@
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Foundation;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using UIKit;
 
 namespace ReactiveUI;
@@ -153,15 +153,16 @@ public static class ReactiveTableViewSourceExtensions
         Action<TCell>? initializeCellAction,
         Func<ReactiveTableViewSource<TSource>, IDisposable>? initSource)
         where TCell : UITableViewCell =>
-        sourceObservable
-            .Select(src => new[]
-            {
-                new TableSectionInformation<TSource, TCell>(
-                                                            src,
-                                                            cellKey,
-                                                            sizeHint,
-                                                            initializeCellAction),
-            })
+        new SelectObservable<INotifyCollectionChanged, TableSectionInformation<TSource, TCell>[]>(
+                sourceObservable,
+                src =>
+                [
+                    new TableSectionInformation<TSource, TCell>(
+                                                                src,
+                                                                cellKey,
+                                                                sizeHint,
+                                                                initializeCellAction),
+                ])
             .BindTo(tableView, initSource);
 
     /// <summary>

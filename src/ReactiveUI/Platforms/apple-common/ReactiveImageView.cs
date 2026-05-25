@@ -6,7 +6,6 @@
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
 
@@ -109,14 +108,14 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
 
 #if UIKIT
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 #else
     /// <inheritdoc/>
-    public new IObservable<Unit> Activated => _activated.AsObservable();
+    public new IObservable<Unit> Activated => _activated;
 #endif
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();

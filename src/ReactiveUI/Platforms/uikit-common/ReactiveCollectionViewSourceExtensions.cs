@@ -6,9 +6,9 @@
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Foundation;
 using ReactiveUI.Helpers;
+using ReactiveUI.Internal;
 using UIKit;
 
 namespace ReactiveUI;
@@ -144,15 +144,15 @@ public static class ReactiveCollectionViewSourceExtensions
         Action<TCell>? initializeCellAction,
         Func<ReactiveCollectionViewSource<TSource>, IDisposable>? initSource)
         where TCell : UICollectionViewCell =>
-        sourceObservable
-            .Select(
-                    src => new[]
-                    {
-                        new CollectionViewSectionInformation<TSource, TCell>(
-                                                                             src,
-                                                                             cellKey,
-                                                                             initializeCellAction)
-                    })
+        new SelectObservable<INotifyCollectionChanged, CollectionViewSectionInformation<TSource, TCell>[]>(
+                sourceObservable,
+                src =>
+                [
+                    new CollectionViewSectionInformation<TSource, TCell>(
+                                                                         src,
+                                                                         cellKey,
+                                                                         initializeCellAction)
+                ])
             .BindTo(collectionView, initSource);
 
     /// <summary>

@@ -5,7 +5,6 @@
 
 using System.Diagnostics;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
@@ -40,7 +39,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     }
 
     /// <inheritdoc/>
-    public IObservable<bool> IsReloadingData => _isReloadingData.AsObservable();
+    public IObservable<bool> IsReloadingData => _isReloadingData;
 
     /// <summary>Gets or sets the row animation used when inserting sections.</summary>
     public UITableViewRowAnimation InsertSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;

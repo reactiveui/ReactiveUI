@@ -68,6 +68,12 @@
     <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
   </ItemGroup>
+  <!-- WhereObservable/SelectManyObservable are consumed only by uikit-common (CommonReactiveSource, AutoSuspendHelper),
+       so they are included for the UIKit-based Apple TFMs only (macOS uses mac\, not uikit-common) to avoid CA1812. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\WhereObservable.cs" Link="Shared\Platform\WhereObservable.cs"/>
+    <Compile Include="..\Shared\Platform\SelectManyObservable.cs" Link="Shared\Platform\SelectManyObservable.cs"/>
+  </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>

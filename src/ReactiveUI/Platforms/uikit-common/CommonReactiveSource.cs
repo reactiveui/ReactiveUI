@@ -11,7 +11,6 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Foundation;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
@@ -101,15 +100,17 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         // Avoid ObservableForProperty/WhenAnyValue (expression trees); filter by property name instead.
         _mainDisposables.Add(
-            Changing!
-                .Where(static e => e.PropertyName == nameof(SectionInfo))
+            new WhereObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>(
+                    Changing!,
+                    static e => e.PropertyName == nameof(SectionInfo))
                 .Subscribe(
                     _ => SectionInfoChanging(),
                     ex => this.Log().Error(ex, "Error occurred whilst SectionInfo changing.")));
 
         _mainDisposables.Add(
-            Changed!
-                .Where(static e => e.PropertyName == nameof(SectionInfo))
+            new WhereObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>(
+                    Changed!,
+                    static e => e.PropertyName == nameof(SectionInfo))
                 .Subscribe(
                     _ => SectionInfoChanged(SectionInfo),
                     ex => this.Log().Error(ex, "Error occurred when SectionInfo changed.")));
@@ -327,11 +328,13 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                 sectionInfo);
         }
 
-        var sectionChanged =
-            (notifyCollectionChanged is null
+        var sectionChanged = new StartWithObservable<Unit>(
+            notifyCollectionChanged is null
                 ? NeverObservable<Unit>.Instance
-                : notifyCollectionChanged.ObserveCollectionChanges().Select(static _ => Unit.Default))
-            .StartWith(Unit.Default);
+                : new SelectObservable<CollectionChanged, Unit>(
+                    notifyCollectionChanged.ObserveCollectionChanges(),
+                    static _ => Unit.Default),
+            Unit.Default);
 
         var disposables = new CompositeDisposable
         {

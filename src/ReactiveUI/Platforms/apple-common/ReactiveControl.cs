@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
@@ -96,18 +95,18 @@ public class ReactiveControl : UIControl, IReactiveNotifyPropertyChanged<Reactiv
     /// <summary>
     /// Gets a observable when the control is activated.
     /// </summary>
-    public new IObservable<Unit> Activated => _activated.AsObservable();
+    public new IObservable<Unit> Activated => _activated;
 #else
     /// <summary>
     /// Gets a observable when the control is activated.
     /// </summary>
-    public IObservable<Unit> Activated => _activated.AsObservable();
+    public IObservable<Unit> Activated => _activated;
 #endif
 
     /// <summary>
     /// Gets a observable that occurs when the control is deactivated.
     /// </summary>
-    public IObservable<Unit> Deactivated => _deactivated.AsObservable();
+    public IObservable<Unit> Deactivated => _deactivated;
 
 #if UIKIT
     /// <inheritdoc/>

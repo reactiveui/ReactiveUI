@@ -6,7 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using Foundation;
@@ -87,8 +86,8 @@ public class AutoSuspendHelper<
         ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
         RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
-        RxSuspension.SuspensionHost.IsResuming = _finishedLaunching.Select(static _ => Unit.Default);
-        RxSuspension.SuspensionHost.IsUnpausing = _activated.Select(static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsResuming = new SelectObservable<UIApplication, Unit>(_finishedLaunching, static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsUnpausing = new SelectObservable<UIApplication, Unit>(_activated, static _ => Unit.Default);
 
         // Keep a stable delegate instance so we can unsubscribe on Dispose.
         _unhandledExceptionHandler = (_, _) => _untimelyDeath.OnNext(Unit.Default);
@@ -96,7 +95,7 @@ public class AutoSuspendHelper<
 
         RxSuspension.SuspensionHost.ShouldInvalidateState = _untimelyDeath;
 
-        RxSuspension.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
+        RxSuspension.SuspensionHost.ShouldPersistState = new SelectManyObservable<UIApplication, IDisposable>(_backgrounded, app =>
         {
             var taskId = app.BeginBackgroundTask(() => _untimelyDeath.OnNext(Unit.Default));
 
@@ -107,7 +106,7 @@ public class AutoSuspendHelper<
                 return EmptyObservable<IDisposable>.Instance;
             }
 
-            return Observable.Return(Disposable.Create(() => app.EndBackgroundTask(taskId)));
+            return new ReturnObservable<IDisposable>(Disposable.Create(() => app.EndBackgroundTask(taskId)));
         });
     }
 

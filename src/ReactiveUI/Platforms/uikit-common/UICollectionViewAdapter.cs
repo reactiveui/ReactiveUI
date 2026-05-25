@@ -5,7 +5,6 @@
 
 using System.Diagnostics;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
@@ -42,7 +41,7 @@ internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UI
     }
 
     /// <inheritdoc/>
-    public IObservable<bool> IsReloadingData => _isReloadingData.AsObservable();
+    public IObservable<bool> IsReloadingData => _isReloadingData;
 
     /// <inheritdoc/>
     public void ReloadData()
