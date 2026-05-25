@@ -80,14 +80,19 @@ public class CommandBinderImplementation : ICommandBinderImplementation
 
         var vmExpression = Reflection.Rewrite(vmProperty.Body);
         var controlExpression = Reflection.Rewrite(controlProperty.Body);
+        var parameterExpression = Reflection.Rewrite(withParameter.Body);
 
         var source = new SelectObservable<object, TProp>(Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression), static x => (TProp)x!);
+
+        // Observe the parameter through the view's current view model (not the originally supplied one) so the
+        // parameter rebinds when the view model instance is replaced, matching the command source above.
+        var parameter = new SelectObservable<object, TParam?>(Reflection.ViewModelWhenAnyValue(viewModel, view, parameterExpression), static x => (TParam?)x);
 
         var bindingDisposable = BindCommandInternal<TView, TProp, TParam, TControl>(
             source,
             view,
             controlExpression,
-            withParameter.ToObservable(viewModel),
+            parameter,
             toEvent);
 
         return new ReactiveBinding<TView, TProp>(
