@@ -55,12 +55,11 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
         get => _viewModel;
         set
         {
-            if (EqualityComparer<T?>.Default.Equals(_viewModel, value))
+            if (!ReactiveComponentHelpers.SetIfChanged(ref _viewModel, value))
             {
                 return;
             }
 
-            _viewModel = value;
             OnPropertyChanged();
         }
     }
@@ -90,29 +89,20 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        ReactiveComponentHelpers.WireActivationIfSupported(ViewModel, _state);
-        _state.NotifyActivated();
+        ReactiveComponentHelpers.HandleInitialized(ViewModel, _state);
         base.OnInitialized();
     }
 
     /// <inheritdoc/>
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            // These subscriptions are intentionally created here (not OnInitialized) due to framework interop constraints.
-            _state.FirstRenderSubscriptions = ReactiveComponentHelpers.WireViewModelChangeReactivity(
-                () => ViewModel,
-                h => PropertyChanged += h,
-                h => PropertyChanged -= h,
-                nameof(ViewModel),
-                () => InvokeAsync(StateHasChanged));
-
-            // Re-render to pick up any property changes that occurred during activation (OnInitialized)
-            // before these subscriptions were wired.
-            InvokeAsync(StateHasChanged);
-        }
-
+        ReactiveComponentHelpers.HandleFirstRender(
+            firstRender,
+            _state,
+            () => ViewModel,
+            h => PropertyChanged += h,
+            h => PropertyChanged -= h,
+            () => InvokeAsync(StateHasChanged));
         base.OnAfterRender(firstRender);
     }
 
@@ -129,20 +119,6 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     /// <param name="disposing">
     /// <see langword="true"/> to release managed resources; <see langword="false"/> to release unmanaged resources only.
     /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            // Notify deactivation first so observers can perform cleanup while subscriptions are still active.
-            _state.NotifyDeactivated();
-            _state.Dispose();
-        }
-
-        _disposed = true;
-    }
+    protected virtual void Dispose(bool disposing) =>
+        ReactiveComponentHelpers.HandleDispose(ref _disposed, disposing, _state);
 }

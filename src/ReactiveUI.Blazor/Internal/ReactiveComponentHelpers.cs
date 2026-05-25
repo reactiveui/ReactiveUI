@@ -110,4 +110,117 @@ internal static class ReactiveComponentHelpers
             viewModelPropertyName,
             stateHasChangedCallback);
     }
+
+    /// <summary>
+    /// Performs the shared <c>OnInitialized</c> work for a reactive component: wires activation for the current view
+    /// model (when supported) and signals component activation.
+    /// </summary>
+    /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
+    /// <param name="viewModel">The current view model.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void HandleInitialized<T>(T? viewModel, ReactiveComponentState state)
+        where T : class, INotifyPropertyChanged
+    {
+        WireActivationIfSupported(viewModel, state);
+        state.NotifyActivated();
+    }
+
+    /// <summary>
+    /// Performs the shared first-render work for a reactive component: on the first render it wires view-model change
+    /// reactivity (stored on the state) and triggers an initial re-render to surface changes raised during activation.
+    /// </summary>
+    /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
+    /// <param name="firstRender">Whether this is the first render of the component.</param>
+    /// <param name="state">The reactive component state.</param>
+    /// <param name="getCurrentViewModel">A function returning the current view model value.</param>
+    /// <param name="addPropertyChangedHandler">Adds a handler to the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
+    /// <param name="removePropertyChangedHandler">Removes a handler from the component's <see cref="INotifyPropertyChanged.PropertyChanged"/> event.</param>
+    /// <param name="stateHasChangedCallback">A callback that re-renders the component.</param>
+    public static void HandleFirstRender<T>(
+        bool firstRender,
+        ReactiveComponentState state,
+        Func<T?> getCurrentViewModel,
+        Action<PropertyChangedEventHandler> addPropertyChangedHandler,
+        Action<PropertyChangedEventHandler> removePropertyChangedHandler,
+        Action stateHasChangedCallback)
+        where T : class, INotifyPropertyChanged
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        ArgumentNullException.ThrowIfNull(stateHasChangedCallback);
+
+        if (!firstRender)
+        {
+            return;
+        }
+
+        // These subscriptions are intentionally created here (not OnInitialized) due to framework interop constraints.
+        state.FirstRenderSubscriptions = WireViewModelChangeReactivity(
+            getCurrentViewModel,
+            addPropertyChangedHandler,
+            removePropertyChangedHandler,
+            nameof(IViewFor.ViewModel),
+            stateHasChangedCallback);
+
+        // Re-render to pick up any property changes that occurred during activation (OnInitialized)
+        // before these subscriptions were wired.
+        stateHasChangedCallback();
+    }
+
+    /// <summary>
+    /// Performs the shared dispose work for a reactive component: idempotently notifies deactivation and disposes the
+    /// state when disposing managed resources.
+    /// </summary>
+    /// <param name="disposed">The component's disposed flag, set to <see langword="true"/> on first call.</param>
+    /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void HandleDispose(ref bool disposed, bool disposing, ReactiveComponentState state)
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        DeactivateAndDisposeState(disposing, state);
+        disposed = true;
+    }
+
+    /// <summary>
+    /// Notifies deactivation and disposes the state when disposing managed resources. Used by components whose own
+    /// base class already provides dispose idempotency (e.g. <c>OwningComponentBase</c>).
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to release managed resources.</param>
+    /// <param name="state">The reactive component state.</param>
+    public static void DeactivateAndDisposeState(bool disposing, ReactiveComponentState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        if (!disposing)
+        {
+            return;
+        }
+
+        // Notify deactivation first so observers can perform cleanup while subscriptions are still active.
+        state.NotifyDeactivated();
+        state.Dispose();
+    }
+
+    /// <summary>
+    /// Assigns <paramref name="value"/> to <paramref name="field"/> when it differs, reporting whether a change occurred
+    /// so the caller can raise its property-changed notification.
+    /// </summary>
+    /// <typeparam name="T">The view model type.</typeparam>
+    /// <param name="field">The backing field to update.</param>
+    /// <param name="value">The new value.</param>
+    /// <returns><see langword="true"/> when the field changed; otherwise <see langword="false"/>.</returns>
+    public static bool SetIfChanged<T>(ref T? field, T? value)
+        where T : class
+    {
+        if (EqualityComparer<T?>.Default.Equals(field, value))
+        {
+            return false;
+        }
+
+        field = value;
+        return true;
+    }
 }
