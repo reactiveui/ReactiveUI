@@ -11,11 +11,9 @@ using System.Reactive.Disposables.Fluent;
 using System.Reactive.Subjects;
 using DynamicData.Binding;
 
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
 using ReactiveUI.Tests.Xaml.Utilities;
-using Splat;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -450,35 +448,34 @@ public partial class PropertyBindingTest
     [Test]
     public async Task ViewModelToViewBindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
     {
-        using var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder().WithWpf().Build();
+        // Rely on WpfTestExecutor for the WPF registrations and scheduler. It binds RxSchedulers.MainThreadScheduler
+        // to this test's dedicated STA dispatcher (the one DispatcherUtilities.DoEvents() pumps). Rebuilding the
+        // locator here with WithWpf() would instead install the process-wide WpfMainThreadScheduler, whose dispatcher
+        // is cached from the first thread that touched it (an earlier test's now-dead thread), so the marshalled
+        // background-thread update would never be pumped.
+        var vm = new PropertyBindViewModel();
+        var view = new PropertyBindView { ViewModel = vm };
+        using var binding = view.Bind(view.ViewModel, static x => x.Property1, static x => x.SomeTextBox.Text);
 
-        using (locator.WithResolver())
+        Exception? thrown = null;
+        await Task.Run(() =>
         {
-            var vm = new PropertyBindViewModel();
-            var view = new PropertyBindView { ViewModel = vm };
-            using var binding = view.Bind(view.ViewModel, static x => x.Property1, static x => x.SomeTextBox.Text);
-
-            Exception? thrown = null;
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    vm.Property1 = "background update";
-                }
-                catch (Exception ex)
-                {
-                    thrown = ex;
-                }
-            });
-
-            DispatcherUtilities.DoEvents();
-
-            using (Assert.Multiple())
-            {
-                await Assert.That(thrown).IsNull();
-                await Assert.That(view.SomeTextBox.Text).IsEqualTo("background update");
+                vm.Property1 = "background update";
             }
+            catch (Exception ex)
+            {
+                thrown = ex;
+            }
+        });
+
+        DispatcherUtilities.DoEvents();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(thrown).IsNull();
+            await Assert.That(view.SomeTextBox.Text).IsEqualTo("background update");
         }
     }
 
