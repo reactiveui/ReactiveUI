@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 using Splat;
@@ -377,7 +376,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// latest value immediately (StartWith semantics); in deferred mode it stays raw so no value is emitted (and the
     /// initial-value factory is not accessed) until <see cref="Value"/> is first read.
     /// </summary>
-    internal IObservable<T?> Source => _skipInitial ? _sourceObservable : _sourceObservable.StartWith(_lastValue);
+    internal IObservable<T?> Source => _skipInitial ? _sourceObservable : new StartWithObservable<T?>(_sourceObservable, _lastValue);
 
     /// <summary>
     /// Constructs a default ObservableAsPropertyHelper with no initial value and no scheduler.
