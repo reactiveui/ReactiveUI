@@ -74,6 +74,55 @@ Building the full solution requires **Windows** due to Windows-only target frame
 
 ---
 
+## Running Windows/WPF Tests on Linux via Wine
+
+The Windows-only test projects (`ReactiveUI.Wpf.Tests`, `ReactiveUI.WinForms.Tests`) can be **built and run on Linux** through Wine, giving a fast local feedback loop without a Windows VM or waiting on CI. This works because the Windows targeting/runtime packs restore cross-platform (`EnableWindowsTargeting=true`) and Wine can host the .NET Desktop runtime.
+
+> Treat results as a strong signal, not gospel: this is Wine, not Windows. **CI on `windows-latest` is authoritative.** A green run here is high-confidence; investigate a red one before assuming a product bug.
+>
+> **Known Wine limitation — dispatcher thread-affinity:** Wine does **not** enforce WPF `Dispatcher` thread affinity the way Windows does, so `DispatcherObject.CheckAccess()` can return `true` on a non-dispatcher thread. Tests that marshal work from a background thread (e.g. `*FromBackgroundThread*`, anything asserting `Dispatcher.BeginInvoke`/scheduler hand-off after `DispatcherUtilities.DoEvents()`) may behave differently under Wine than on Windows — a Wine pass or fail for those is **not** conclusive. Verify background-thread/marshalling tests on CI. Wine is reliable for the large majority of WPF tests that run on a single (dispatcher) thread.
+
+### 1. One-time runtime + Wine prefix setup
+
+Assemble a Windows .NET Desktop runtime (base runtime gives `dotnet.exe` + host/fxr + `Microsoft.NETCore.App`; the desktop pack adds `Microsoft.WindowsDesktop.App` for WPF/WinForms). Match the version to the net8 windows TFM (bump as the SDK moves):
+
+```bash
+VER=8.0.27
+mkdir -p ~/wine-dotnet8 && cd ~/wine-dotnet8
+curl -fsSL -o /tmp/dnr.zip https://builds.dotnet.microsoft.com/dotnet/Runtime/$VER/dotnet-runtime-$VER-win-x64.zip
+curl -fsSL -o /tmp/wdr.zip https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/$VER/windowsdesktop-runtime-$VER-win-x64.zip
+unzip -oq /tmp/dnr.zip          # dotnet.exe + host/ + shared/Microsoft.NETCore.App
+unzip -oq /tmp/wdr.zip          # + shared/Microsoft.WindowsDesktop.App
+
+export WINEPREFIX=~/.wine-rxui WINEARCH=win64
+wineboot -i
+wine ~/wine-dotnet8/dotnet.exe --list-runtimes   # must list NETCore.App AND WindowsDesktop.App
+```
+
+### 2. Build the Windows-TFM test assembly (on Linux)
+
+The UI test TFMs are gated to Windows in `Directory.Build.props` (`ReactiveUITestingUITargets`), so force a single Windows TFM with a global property. **Clear `obj`/`bin` first** — stale non-Windows assets break the WPF `_wpftmp` markup pass with `NETSDK1005`:
+
+```bash
+cd src
+rm -rf tests/ReactiveUI.Wpf.Tests/obj tests/ReactiveUI.Wpf.Tests/bin
+dotnet build tests/ReactiveUI.Wpf.Tests/ReactiveUI.Wpf.Tests.csproj -c Release \
+  -p:ReactiveUITestingUITargets=net8.0-windows10.0.19041.0 -p:CheckEolTargetFramework=false
+```
+
+### 3. Run under Wine (MTP + TUnit `--treenode-filter`)
+
+```bash
+cd src/tests/ReactiveUI.Wpf.Tests/bin/Release/net8.0-windows10.0.19041.0
+export WINEPREFIX=~/.wine-rxui WINEARCH=win64 WINEDEBUG=-all
+wine ~/wine-dotnet8/dotnet.exe ReactiveUI.Wpf.Tests.dll \
+  --treenode-filter "/*/*/*/ViewModelToViewBindingFromBackgroundThreadDoesNotTouchWpfControlDirectly"
+```
+
+`WINEDEBUG=-all` silences `fixme:`/`err:` chatter; pipe through `grep -viE 'fixme|^err:|wine:'` if needed. WinForms tests work identically (`ReactiveUI.WinForms.Tests`, same TFM override).
+
+---
+
 ## Testing: Microsoft Testing Platform (MTP) + TUnit
 
 This repo uses **Microsoft Testing Platform (MTP)** with **TUnit**. This differs from VSTest.
