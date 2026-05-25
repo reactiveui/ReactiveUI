@@ -232,7 +232,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <remarks>The returned observable emits a new value each time the error state changes. Subscribers
     /// receive the current error state immediately upon subscription, followed by updates as errors are added or
     /// cleared.</remarks>
-    public IObservable<bool> ObserveHasErrors => new SyncProjectObservable<IEnumerable?, bool>(ObserveErrorChanged, _ => HasErrors);
+    public IObservable<bool> ObserveHasErrors => new SelectObservable<IEnumerable?, bool>(ObserveErrorChanged, _ => HasErrors);
 
     /// <summary>
     /// Creates a new instance of ReactiveProperty without requiring RequiresUnreferencedCode attributes.
@@ -354,7 +354,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     public ReactiveProperty<T> AddValidationError(
         Func<IObservable<T?>, IObservable<string?>> validator,
         bool ignoreInitialError) =>
-        AddValidationError(xs => new SyncProjectObservable<string?, IEnumerable?>(validator(xs), static x => (IEnumerable?)x), ignoreInitialError);
+        AddValidationError(xs => new SelectObservable<string?, IEnumerable?>(validator(xs), static x => (IEnumerable?)x), ignoreInitialError);
 
     /// <summary>
     /// Adds asynchronous validation logic to the reactive property using the specified validator function.
@@ -419,7 +419,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="ignoreInitialError">true to ignore validation errors for the initial value; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, IEnumerable?> validator, bool ignoreInitialError) =>
-        AddValidationError(xs => new SyncProjectObservable<T?, IEnumerable?>(xs, x => validator(x)), ignoreInitialError);
+        AddValidationError(xs => new SelectObservable<T?, IEnumerable?>(xs, x => validator(x)), ignoreInitialError);
 
     /// <summary>
     /// Adds a validation rule to the property using the specified validator function.
@@ -440,7 +440,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
     /// <param name="ignoreInitialError">true to suppress validation errors for the initial value of the property; otherwise, false.</param>
     /// <returns>The current ReactiveProperty instance with the validation rule applied.</returns>
     public ReactiveProperty<T> AddValidationError(Func<T?, string?> validator, bool ignoreInitialError) =>
-        AddValidationError(xs => new SyncProjectObservable<T?, string?>(xs, x => validator(x)), ignoreInitialError);
+        AddValidationError(xs => new SelectObservable<T?, string?>(xs, x => validator(x)), ignoreInitialError);
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -809,50 +809,6 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                 /// <inheritdoc/>
                 public void OnCompleted() => parent.OnCompletedAt();
             }
-        }
-    }
-
-    /// <summary>Projects each value of a validator input through a synchronous selector. Specialised to the validator adapters.</summary>
-    /// <typeparam name="TIn">The source element type.</typeparam>
-    /// <typeparam name="TOut">The projected element type.</typeparam>
-    /// <param name="source">The source observable.</param>
-    /// <param name="selector">Projects a source value into a result.</param>
-    private sealed class SyncProjectObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, TOut> selector) : IObservable<TOut>
-    {
-        /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<TOut> observer)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
-            return source.Subscribe(new Sink(observer, selector));
-        }
-
-        /// <summary>Applies the selector to each value and forwards the result.</summary>
-        /// <param name="downstream">The observer receiving projected values.</param>
-        /// <param name="selector">Projects a source value into a result.</param>
-        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, TOut> selector) : IObserver<TIn>
-        {
-            /// <inheritdoc/>
-            public void OnNext(TIn value)
-            {
-                TOut result;
-                try
-                {
-                    result = selector(value);
-                }
-                catch (Exception ex)
-                {
-                    downstream.OnError(ex);
-                    return;
-                }
-
-                downstream.OnNext(result);
-            }
-
-            /// <inheritdoc/>
-            public void OnError(Exception error) => downstream.OnError(error);
-
-            /// <inheritdoc/>
-            public void OnCompleted() => downstream.OnCompleted();
         }
     }
 

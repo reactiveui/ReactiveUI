@@ -272,55 +272,6 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
         }
     }
 
-    /// <summary>Forwards only the values chosen by a chooser. Specialised set-observable filter-map.</summary>
-    /// <typeparam name="TIn">The source element type.</typeparam>
-    /// <typeparam name="TOut">The forwarded element type.</typeparam>
-    /// <param name="source">The source observable.</param>
-    /// <param name="chooser">Maps a source value to (forward, value); when forward is false the value is skipped.</param>
-    private sealed class ChooseObservable<TIn, TOut>(IObservable<TIn> source, Func<TIn, (bool HasValue, TOut Value)> chooser) : IObservable<TOut>
-    {
-        /// <inheritdoc/>
-        public IDisposable Subscribe(IObserver<TOut> observer)
-        {
-            ArgumentExceptionHelper.ThrowIfNull(observer);
-            return source.Subscribe(new Sink(observer, chooser));
-        }
-
-        /// <summary>Applies the chooser to each value and forwards only the chosen ones.</summary>
-        /// <param name="downstream">The observer receiving chosen values.</param>
-        /// <param name="chooser">Maps a source value to (forward, value).</param>
-        private sealed class Sink(IObserver<TOut> downstream, Func<TIn, (bool HasValue, TOut Value)> chooser) : IObserver<TIn>
-        {
-            /// <inheritdoc/>
-            public void OnNext(TIn value)
-            {
-                (bool HasValue, TOut Value) result;
-                try
-                {
-                    result = chooser(value);
-                }
-                catch (Exception ex)
-                {
-                    downstream.OnError(ex);
-                    return;
-                }
-
-                if (!result.HasValue)
-                {
-                    return;
-                }
-
-                downstream.OnNext(result.Value);
-            }
-
-            /// <inheritdoc/>
-            public void OnError(Exception error) => downstream.OnError(error);
-
-            /// <inheritdoc/>
-            public void OnCompleted() => downstream.OnCompleted();
-        }
-    }
-
     /// <summary>
     /// On subscription, wires the host and value change streams to the chained-set handlers. A tailored replacement for
     /// the prior <c>Observable.Create</c>.
