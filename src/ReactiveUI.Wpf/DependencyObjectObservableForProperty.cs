@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
+using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Windows;
 using ReactiveUI.Helpers;
@@ -19,6 +20,21 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
 {
     /// <summary>The affinity returned when the type exposes a matching dependency property.</summary>
     private const int DependencyPropertyAffinity = 4;
+
+    /// <summary>The scheduler used to detach the value-changed handler on disposal, or null to use the default.</summary>
+    private IScheduler? _scheduler;
+
+    /// <summary>
+    /// Gets or sets the scheduler on which the dependency-property value-changed handler is detached when the
+    /// subscription is disposed. The detach must run on the owning dispatcher thread, so this defaults to
+    /// <see cref="RxSchedulers.MainThreadScheduler"/> (the dispatcher in production). Tests can override it with a
+    /// synchronous scheduler (e.g. <see cref="ImmediateScheduler"/>) so the handler is detached inline.
+    /// </summary>
+    internal IScheduler Scheduler
+    {
+        get => _scheduler ?? RxSchedulers.MainThreadScheduler;
+        set => _scheduler = value;
+    }
 
     /// <inheritdoc/>
     public int GetAffinityForObject(Type type, string propertyName) =>
@@ -85,7 +101,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             dependencyPropertyDescriptor.AddValueChanged(sender, handler);
 
             return new ActionDisposable(() =>
-                RxSchedulers.MainThreadScheduler.Schedule(
+                Scheduler.Schedule(
                     (Descriptor: dependencyPropertyDescriptor, Sender: sender, Handler: handler),
                     static (_, state) =>
                     {

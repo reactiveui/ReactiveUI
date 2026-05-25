@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Reactive.Concurrency;
 using System.Windows.Controls;
 
 using DynamicData;
@@ -297,7 +298,11 @@ public class DependencyObjectObservableForPropertyTest
     public async Task GetNotificationForProperty_Disposal_StopsNotifications()
     {
         var fixture = new DepObjFixture();
-        var binder = new DependencyObjectObservableForProperty();
+
+        // Detach the value-changed handler synchronously on dispose so the assertions below observe the unsubscribe
+        // immediately. In production the handler is removed on the dispatcher (RxSchedulers.MainThreadScheduler);
+        // here there is no running message pump, so an immediate scheduler keeps the test deterministic.
+        var binder = new DependencyObjectObservableForProperty { Scheduler = ImmediateScheduler.Instance };
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name!;
 

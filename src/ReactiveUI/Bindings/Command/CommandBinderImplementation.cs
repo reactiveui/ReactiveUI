@@ -213,7 +213,13 @@ public class CommandBinderImplementation : ICommandBinderImplementation
         SwapDisposable currentBinding = new();
         var currentControl = default(TControl);
         var isInitialBind = true;
-        var rebindingCustomizer = AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>();
+
+        // Only use the in-place command rebinding shortcut for Command-property bindings. When binding to an event
+        // (toEvent is set) the customizer would update the control's Command property and short-circuit the real
+        // rebind, leaving the event wired to the previous view model's command. In that case do a full rebind.
+        var rebindingCustomizer = string.IsNullOrEmpty(toEvent)
+            ? AppLocator.Current.GetService<ICreatesCustomizedCommandRebinding>()
+            : null;
         var boxedParameter = new SelectObservable<TParam?, object?>(withParameter, static p => (object?)p);
         var controlValues = new SelectObservable<IObservedChange<TView, object?>, object?>(
             view.SubscribeToExpressionChain<TView, object?>(
