@@ -6,6 +6,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reactive;
+using Splat;
 
 namespace ReactiveUI;
 
@@ -40,9 +41,9 @@ namespace ReactiveUI;
 public static class PropertyBindingMixins
 {
     /// <summary>
-    /// The binder implementation used by all extension methods in this class.
+    /// The fallback binder implementation used when no platform-specific binder is registered.
     /// </summary>
-    private static readonly PropertyBinderImplementation _binderImplementation;
+    private static readonly IPropertyBinderImplementation _defaultBinderImplementation;
 
     /// <summary>
     /// Initializes static members of the <see cref="PropertyBindingMixins"/> class.
@@ -50,7 +51,15 @@ public static class PropertyBindingMixins
     /// <remarks>This static constructor is called automatically to perform type-level initialization before
     /// any static members are accessed or any static methods are invoked. It is not intended to be called directly by
     /// user code.</remarks>
-    static PropertyBindingMixins() => _binderImplementation = new();
+    static PropertyBindingMixins() => _defaultBinderImplementation = new PropertyBinderImplementation();
+
+    /// <summary>
+    /// Gets the binder implementation used by the extension methods in this class. Resolves the registered
+    /// <see cref="IPropertyBinderImplementation"/> (e.g. the WPF/WinForms binder that marshals view updates onto the
+    /// UI thread) from the locator, falling back to the platform-agnostic default when none is registered.
+    /// </summary>
+    private static IPropertyBinderImplementation BinderImplementation =>
+        AppLocator.Current.GetService<IPropertyBinderImplementation>() ?? _defaultBinderImplementation;
 
     /// <summary>
     /// Binds the specified view model property to the given view property.
@@ -166,7 +175,7 @@ public static class PropertyBindingMixins
         IBindingTypeConverter? viewToViewModelConverterOverride)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(
+        BinderImplementation.Bind(
             viewModel,
             view,
             viewModelProperty,
@@ -361,7 +370,7 @@ public static class PropertyBindingMixins
         TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(
+        BinderImplementation.Bind(
             viewModel,
             view,
             viewModelProperty,
@@ -411,7 +420,7 @@ public static class PropertyBindingMixins
         Func<TViewModelPropertyType?, TViewPropertyType> viewModelToViewConverter,
         Func<TViewPropertyType, TViewModelPropertyType?> viewToViewModelConverter)
         where TViewModel : class
-        where TView : class, IViewFor => _binderImplementation.Bind(
+        where TView : class, IViewFor => BinderImplementation.Bind(
             viewModel,
             view,
             viewModelProperty,
@@ -502,7 +511,7 @@ public static class PropertyBindingMixins
         TriggerUpdate triggerUpdate)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.Bind(
+        BinderImplementation.Bind(
             viewModel,
             view,
             viewModelProperty,
@@ -601,7 +610,7 @@ public static class PropertyBindingMixins
         IBindingTypeConverter? viewModelToViewConverterOverride)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.OneWayBind(
+        BinderImplementation.OneWayBind(
             viewModel,
             view,
             viewModelProperty,
@@ -647,7 +656,7 @@ public static class PropertyBindingMixins
         Func<TProp, TOut> selector)
         where TViewModel : class
         where TView : class, IViewFor =>
-        _binderImplementation.OneWayBind(viewModel, view, viewModelProperty, viewProperty, selector);
+        BinderImplementation.OneWayBind(viewModel, view, viewModelProperty, viewProperty, selector);
 
     /// <summary>
     /// BindTo takes an Observable stream and applies it to a target property.
@@ -738,5 +747,5 @@ public static class PropertyBindingMixins
         object? conversionHint,
         IBindingTypeConverter? viewModelToViewConverterOverride)
         where TTarget : class =>
-        _binderImplementation.BindTo(@this, target, property, conversionHint, viewModelToViewConverterOverride);
+        BinderImplementation.BindTo(@this, target, property, conversionHint, viewModelToViewConverterOverride);
 }
