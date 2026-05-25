@@ -17,8 +17,8 @@ jobs:
             installWorkloads: true
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
-            sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/TestResults/**'
-            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
+            sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
             # CPD (copy/paste detection) exclusions:
             #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
             #    demo apps that deliberately parallel each other (each sample reimplements the same
