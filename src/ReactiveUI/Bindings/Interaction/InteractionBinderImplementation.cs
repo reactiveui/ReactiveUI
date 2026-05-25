@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 using Splat;
@@ -27,29 +26,13 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(propertyName);
         ArgumentExceptionHelper.ThrowIfNull(handler);
 
-        var vmExpression = Reflection.Rewrite(propertyName.Body);
-
-        var vmNulls = new ChooseObservable<object?, IInteraction<TInput, TOutput>?>(
-            view.WhenAnyValue(x => x.ViewModel),
-            static x => x is null ? (true, (IInteraction<TInput, TOutput>?)null) : (false, null));
-        var source = new MergeObservable<IInteraction<TInput, TOutput>?>(
-        [
-            new SelectObservable<object, IInteraction<TInput, TOutput>?>(
-                Reflection.ViewModelWhenAnyValue(viewModel, view, vmExpression),
-                static x => (IInteraction<TInput, TOutput>?)x),
-            vmNulls,
-        ]);
-
-        var registration = new SwapDisposable();
-        var subscription = source.Subscribe(new InteractionRegistrationObserver<TInput, TOutput>(
-            registration,
-            x => x is null ? EmptyDisposable.Instance : x.RegisterHandler(handler),
-            this,
-            $"{vmExpression} Interaction Binding received an Exception!"));
-        return new CompositeDisposable(subscription, registration);
+        return BindInteractionCore<TViewModel, TView, TInput, TOutput>(
+            viewModel,
+            view,
+            propertyName,
+            interaction => interaction is null ? EmptyDisposable.Instance : interaction.RegisterHandler(handler));
     }
 
     /// <inheritdoc />
@@ -62,8 +45,39 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         where TViewModel : class
         where TView : class, IViewFor
     {
-        ArgumentExceptionHelper.ThrowIfNull(propertyName);
         ArgumentExceptionHelper.ThrowIfNull(handler);
+
+        return BindInteractionCore<TViewModel, TView, TInput, TOutput>(
+            viewModel,
+            view,
+            propertyName,
+            interaction => interaction is null ? EmptyDisposable.Instance : interaction.RegisterHandler(handler));
+    }
+
+    /// <summary>
+    /// Builds the interaction-binding pipeline shared by the <c>BindInteraction</c> overloads: observes the current and
+    /// reassigned view models, registers the supplied handler against the latest interaction (swapping out the previous
+    /// registration), and tears everything down when disposed.
+    /// </summary>
+    /// <typeparam name="TViewModel">The type of the view model.</typeparam>
+    /// <typeparam name="TView">The type of the view.</typeparam>
+    /// <typeparam name="TInput">The interaction input type.</typeparam>
+    /// <typeparam name="TOutput">The interaction output type.</typeparam>
+    /// <param name="viewModel">The view model containing the interaction.</param>
+    /// <param name="view">The view.</param>
+    /// <param name="propertyName">An expression selecting the interaction on the view model.</param>
+    /// <param name="register">Registers the supplied handler against an interaction (or a no-op for a null interaction).</param>
+    /// <returns>A disposable that tears down the binding.</returns>
+    [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
+    private DisposableBag BindInteractionCore<TViewModel, TView, TInput, TOutput>(
+        TViewModel? viewModel,
+        TView view,
+        Expression<Func<TViewModel, IInteraction<TInput, TOutput>>> propertyName,
+        Func<IInteraction<TInput, TOutput>?, IDisposable> register)
+        where TViewModel : class
+        where TView : class, IViewFor
+    {
+        ArgumentExceptionHelper.ThrowIfNull(propertyName);
 
         var vmExpression = Reflection.Rewrite(propertyName.Body);
 
@@ -81,10 +95,10 @@ public class InteractionBinderImplementation : IInteractionBinderImplementation
         var registration = new SwapDisposable();
         var subscription = source.Subscribe(new InteractionRegistrationObserver<TInput, TOutput>(
             registration,
-            x => x is null ? EmptyDisposable.Instance : x.RegisterHandler(handler),
+            register,
             this,
             $"{vmExpression} Interaction Binding received an Exception!"));
-        return new CompositeDisposable(subscription, registration);
+        return new DisposableBag(subscription, registration);
     }
 
     /// <summary>

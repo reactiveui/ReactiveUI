@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
 using System.Reflection;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
@@ -771,7 +770,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             viewModelExpression,
             changes,
             BindingDirection.TwoWay,
-            new CompositeDisposable(upstreamConnection, setterSubscription));
+            new DisposableBag(upstreamConnection, setterSubscription));
     }
 
     /// <summary>

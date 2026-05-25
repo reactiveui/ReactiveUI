@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Reactive.Disposables;
 using System.Reflection;
 using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
@@ -355,7 +354,7 @@ internal class PropertyBindingExpressionCompiler : IPropertyBindingExpressionCom
                 value => OnValueChanged(context, state, target, observer, value),
                 observer.OnError));
 
-            return new CompositeDisposable(hostDisposable, changeDisposable);
+            return new DisposableBag(hostDisposable, changeDisposable);
         }
 
         /// <summary>
