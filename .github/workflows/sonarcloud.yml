@@ -18,7 +18,10 @@ jobs:
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
-            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**'
+            # Shared/Platform fused Rx-replacement observables are compile-linked into every platform assembly and
+            # only exercisable via platform (WPF/WinForms/MAUI/mobile) tests, so exclude them from coverage like
+            # generated code. The Shared/ root helpers stay measured (covered by the core test suite).
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**'
             # CPD (copy/paste detection) exclusions:
             #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
             #    demo apps that deliberately parallel each other (each sample reimplements the same
