@@ -42,7 +42,7 @@
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4"/>
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.26.0.140279"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913"/>
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)"/>
