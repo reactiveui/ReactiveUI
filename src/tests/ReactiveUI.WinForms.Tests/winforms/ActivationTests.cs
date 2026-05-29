@@ -149,4 +149,35 @@ public class ActivationTests
         parent.Close();
         await Assert.That(userControlDeActivateCount).IsEqualTo(ExpectedSecondCount);
     }
+
+    /// <summary>
+    /// Tests that view activation is skipped in design mode.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ActivationIsSkippedInDesignMode()
+    {
+        using var control = new DesignModeTestControl
+        {
+            Site = new DesignModeSite(),
+        };
+
+        _ = control.Handle;
+
+        await Assert.That(control.Activated).IsFalse();
+    }
+
+    /// <summary>
+    /// Tests that view activation is not skipped outside of design mode.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ActivationIsNotSkippedNotInDesignMode()
+    {
+        using var control = new DesignModeTestControl();
+
+        _ = control.Handle;
+
+        await Assert.That(control.Activated).IsTrue();
+    }
 }
