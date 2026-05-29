@@ -30,19 +30,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
     {
         switch (view)
         {
-            // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
-            // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
-            // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
-            case Control control when GetCachedIsDesignMode(control):
-                break;
             case Control control:
-                return GetActivationForControl(control);
+                // We are very likely being called from control's constructor, which means control.Site is not yet set.
+                // We must delay the design mode check until after one of the activation events fires.
+                return new WhereObservable<bool>(GetActivationForControl(control), _ => !GetCachedIsDesignMode(control));
 
             case null:
                 {
                     this.Log().Warn(
-                                    CultureInfo.InvariantCulture,
-                                    "Expected a view of type System.Windows.Forms.Control it was null");
+                        CultureInfo.InvariantCulture,
+                        "Expected a view of type System.Windows.Forms.Control it was null");
                     break;
                 }
 
@@ -65,6 +62,9 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
     /// <returns>An observable that signals when the control is activated and deactivated.</returns>
     private static MergedDistinctObservable<bool> GetActivationForControl(Control control)
     {
+        // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
+        // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
+        // https://docs.microsoft.com/en-us/dotnet/framework/winforms/order-of-events-in-windows-forms
         var handleDestroyed = new FromEventObservable<bool>(onNext =>
         {
             void Handler(object? sender, EventArgs e) => onNext(false);
