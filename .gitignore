@@ -516,6 +516,7 @@ FodyWeavers.xsd
 # Local .NET SDK acquisition (e.g. dotnet-install scripts) and the per-project
 # analyzer config the SDK emits into the working tree
 .dotnet/
+.dotnet-home/
 *.GeneratedMSBuildEditorConfig.editorconfig
 
 # macOS
