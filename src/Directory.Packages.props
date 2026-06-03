@@ -4,7 +4,7 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
-    <SplatVersion>19.3.1</SplatVersion>
+    <SplatVersion>19.4.1</SplatVersion>
     <TUnitVersion>1.24.18</TUnitVersion>
     <XamarinAndroidXCoreVersion>1.17.0</XamarinAndroidXCoreVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.2</XamarinAndroidXLifecycleLiveDataVersion>
@@ -37,7 +37,7 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)" />
     <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
+    <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="PublicApiGenerator" Version="11.5.4" />
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />

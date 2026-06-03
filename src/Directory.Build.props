@@ -144,8 +144,16 @@
     <None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="LICENSE"/>
     <None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
+  <!-- MinVer (versioning) — replaces Nerdbank.GitVersioning. ReactiveUI release tags are unprefixed
+       (e.g. 23.2.1), so no tag prefix is configured. Floor at the current 23.2 baseline so untagged
+       builds produce 23.2.x-alpha.0.<height> until a 23.2.0 (or later) tag is cut. -->
+  <PropertyGroup>
+    <MinVerAutoIncrement>minor</MinVerAutoIncrement>
+    <MinVerDefaultPreReleaseIdentifiers>alpha.0</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerMinimumMajorMinor>23.2</MinVerMinimumMajorMinor>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all"/>
+    <PackageReference Include="MinVer" PrivateAssets="all"/>
     <PackageReference Include="stylecop.analyzers" PrivateAssets="all"/>
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All"/>
   </ItemGroup>
