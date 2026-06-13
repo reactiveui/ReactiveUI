@@ -81,6 +81,16 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
         /// <summary>Whether <see cref="_last"/> holds a value yet.</summary>
         private bool _hasLast;
 
+        /// <summary>
+        /// When <see langword="true"/>, the next emission that equals <see cref="_last"/> is suppressed
+        /// regardless of <see cref="_isDistinct"/>. Set immediately after the kicker emits during
+        /// <see cref="Level.SetParent"/>: any <c>PropertyChanged</c> event that races the
+        /// subscribe-then-read window has been queued behind <see cref="_gate"/> and will re-emit the
+        /// same value once we release the lock. The suppression collapses that single racing duplicate
+        /// without altering the user-facing distinct semantics.
+        /// </summary>
+        private bool _suppressNextIfSameAsLast;
+
         /// <summary>Latched once this chain subscription has been disposed.</summary>
         private bool _disposed;
 
@@ -139,45 +149,83 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
         /// <param name="value">The value the link produced (the parent for the next level).</param>
         private void SetNextParent(int level, object? value) => _levels[level + 1].SetParent(value);
 
-        /// <summary>Handles a leaf raw emission: applies skip-initial, the non-null-parent filter, the cast and the distinct gate.</summary>
+        /// <summary>Handles a leaf raw emission: applies skip-initial, the non-null-parent filter, the cast, the
+        /// kicker dedup and the distinct gate.</summary>
         /// <param name="parentMissing">Whether the leaf's parent was null (a raw emission that the non-null filter drops).</param>
         /// <param name="value">The leaf value when the parent is present.</param>
-        private void Emit(bool parentMissing, object? value)
+        /// <param name="fromKicker">Whether this emission is the kicker push that <see cref="Level.SetParent"/>
+        /// performs immediately after attaching the link subscription.</param>
+        private void Emit(bool parentMissing, object? value, bool fromKicker = false)
         {
             if (_skipNext)
             {
                 _skipNext = false;
+                _suppressNextIfSameAsLast = false;
                 return;
             }
 
             if (parentMissing)
             {
+                _suppressNextIfSameAsLast = false;
                 return;
             }
 
-            TValue typed;
-            if (value is null)
+            if (!TryConvert(value, out var typed))
             {
-                typed = default!;
-            }
-            else if (value is TValue cast)
-            {
-                typed = cast;
-            }
-            else
-            {
-                _downstream.OnError(new InvalidCastException($"Unable to cast from {value.GetType()} to {typeof(TValue)}."));
                 return;
             }
 
-            if (_isDistinct && _hasLast && EqualityComparer<TValue>.Default.Equals(typed, _last))
+            if (ShouldSuppress(typed, fromKicker))
             {
                 return;
             }
 
             _last = typed;
             _hasLast = true;
+            _suppressNextIfSameAsLast = fromKicker;
             _downstream.OnNext(new ObservedChange<TSender, TValue>(_source!, _expression, typed));
+        }
+
+        /// <summary>Coerces the raw observed value into <typeparamref name="TValue"/>, forwarding a cast error if it
+        /// is neither <see langword="null"/> nor assignable.</summary>
+        /// <param name="value">The raw observed value.</param>
+        /// <param name="typed">The coerced value when conversion succeeds; the default otherwise.</param>
+        /// <returns><see langword="true"/> when the value was converted; <see langword="false"/> when an error has
+        /// been forwarded to the downstream observer.</returns>
+        private bool TryConvert(object? value, out TValue typed)
+        {
+            if (value is null)
+            {
+                typed = default!;
+                return true;
+            }
+
+            if (value is TValue cast)
+            {
+                typed = cast;
+                return true;
+            }
+
+            _downstream.OnError(new InvalidCastException($"Unable to cast from {value.GetType()} to {typeof(TValue)}."));
+            typed = default!;
+            return false;
+        }
+
+        /// <summary>Decides whether the coerced value should be suppressed: collapses a single racing duplicate
+        /// produced by the subscribe-then-read window and then applies the user-facing distinct gate.</summary>
+        /// <param name="typed">The coerced leaf value.</param>
+        /// <param name="fromKicker">Whether this emission is the kicker push (which is never suppressed).</param>
+        /// <returns><see langword="true"/> when the emission must be dropped.</returns>
+        private bool ShouldSuppress(TValue typed, bool fromKicker)
+        {
+            if (!fromKicker && _suppressNextIfSameAsLast && _hasLast && EqualityComparer<TValue>.Default.Equals(typed, _last))
+            {
+                _suppressNextIfSameAsLast = false;
+                return true;
+            }
+
+            _suppressNextIfSameAsLast = false;
+            return _isDistinct && _hasLast && EqualityComparer<TValue>.Default.Equals(typed, _last);
         }
 
         /// <summary>A single chain link's watcher: re-subscribes on parent change and reads the link's value.</summary>
@@ -218,10 +266,14 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
 
                 var link = sink._links[index];
 
-                // Kicker: propagate the current value immediately, then subscribe for updates.
-                Push(ReadValue(parent));
+                // Subscribe-then-read: attach the link subscription before reading the kicker value so
+                // any PropertyChanged that fires between the two steps is queued behind sink._gate
+                // (which our caller holds) rather than silently lost. The Push that follows is marked
+                // as the kicker so the leaf can collapse the single racing duplicate that the queued
+                // notification will deliver once we release the lock.
                 _subscription.Disposable = sink._notify(parent, link, sink._beforeChange, sink._suppressWarnings)
                     .Subscribe(new Observer(this));
+                Push(ReadValue(parent), fromKicker: true);
             }
 
             /// <inheritdoc/>
@@ -274,11 +326,13 @@ internal sealed class ExpressionChainSink<TSender, TValue>(ExpressionChainParame
 
             /// <summary>Forwards this link's value to the next level, or emits it at the leaf.</summary>
             /// <param name="value">The value this link produced.</param>
-            private void Push(object? value)
+            /// <param name="fromKicker">Whether this push originates from the kicker performed at the end of
+            /// <see cref="SetParent"/> (only meaningful at the leaf).</param>
+            private void Push(object? value, bool fromKicker = false)
             {
                 if (isLeaf)
                 {
-                    sink.Emit(parentMissing: false, value);
+                    sink.Emit(parentMissing: false, value, fromKicker);
                 }
                 else
                 {
