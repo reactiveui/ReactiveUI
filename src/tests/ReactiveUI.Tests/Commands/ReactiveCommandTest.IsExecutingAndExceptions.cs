@@ -3,27 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using DynamicData;
-using ReactiveUI.Internal;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Commands;
 
-/// <content>
-///     Tests for IsExecuting behavior, subscription lifecycle, scheduler usage, task cancellation/completion
-///     flows, and ThrownExceptions propagation.
-/// </content>
+/// <summary>
+///     Comprehensive test suite for ReactiveCommand.
+///     Tests cover all factory methods, behaviors, and edge cases.
+///     Organized into logical test groups for maintainability.
+/// </summary>
 public partial class ReactiveCommandTest
 {
-    /// <summary>
-    ///     Verifies that IsExecuting reports true while multiple executions are in flight.
-    /// </summary>
+    /// <summary>Verifies that IsExecuting reports true while multiple executions are in flight.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -32,31 +25,29 @@ public partial class ReactiveCommandTest
         const int DelayMilliseconds = 500;
 
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Unit.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
-        var command = ReactiveCommand.CreateFromObservable(
+        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
+        var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);
-        command.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var executed).Subscribe();
+        var executed = command.Collect();
 
         _ = command.Execute().Subscribe();
         _ = command.Execute().Subscribe();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
-        await Assert.That(command.IsExecuting.FirstAsync().Wait()).IsTrue();
+        await Assert.That(await command.IsExecuting.FirstAsync()).IsTrue();
         await Assert.That(executed).IsEmpty();
     }
 
-    /// <summary>
-    ///     Verifies that IsExecuting behaves as a behavioral observable, immediately yielding its current value.
-    /// </summary>
+    /// <summary>Verifies that IsExecuting behaves as a behavioral observable, immediately yielding its current value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsExecuting_IsBehavioral()
     {
         var command = ReactiveCommand.Create(
             () => { },
-            outputScheduler: ImmediateScheduler.Instance);
-        command.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+            outputScheduler: Sequencer.Immediate);
+        var isExecuting = command.IsExecuting.Collect();
 
         using (Assert.Multiple())
         {
@@ -65,43 +56,39 @@ public partial class ReactiveCommandTest
         }
     }
 
-    /// <summary>
-    ///     Verifies that IsExecuting stays true until the execution observable completes.
-    /// </summary>
+    /// <summary>Verifies that IsExecuting stays true until the execution observable completes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsExecuting_RemainsTrue_UntilExecutionCompletes()
     {
-        var executeSubject = new Subject<Unit>();
+        var executeSubject = new Signal<RxVoid>();
         var command = ReactiveCommand.CreateFromObservable(
             () => executeSubject,
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         command.Execute().Subscribe();
 
-        await Assert.That(command.IsExecuting.FirstAsync().Wait()).IsTrue();
+        await Assert.That(await command.IsExecuting.FirstAsync()).IsTrue();
 
-        executeSubject.OnNext(Unit.Default);
-        await Assert.That(command.IsExecuting.FirstAsync().Wait()).IsTrue();
+        executeSubject.OnNext(RxVoid.Default);
+        await Assert.That(await command.IsExecuting.FirstAsync()).IsTrue();
 
         executeSubject.OnCompleted();
-        await Assert.That(command.IsExecuting.FirstAsync().Wait()).IsFalse();
+        await Assert.That(await command.IsExecuting.FirstAsync()).IsFalse();
     }
 
-    /// <summary>
-    ///     Verifies that IsExecuting ticks true once execution begins.
-    /// </summary>
+    /// <summary>Verifies that IsExecuting ticks true once execution begins.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task IsExecuting_TicksWhileExecuting()
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Unit.Delay(TimeSpan.FromSeconds(1), scheduler);
-        var command = ReactiveCommand.CreateFromObservable(
+        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromSeconds(1), scheduler);
+        var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);
-        command.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
+        var isExecuting = command.IsExecuting.Collect();
 
         command.Execute().Subscribe();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
@@ -116,9 +103,7 @@ public partial class ReactiveCommandTest
         }
     }
 
-    /// <summary>
-    ///     Verifies that disposing a result subscription does not prevent the command from continuing to execute.
-    /// </summary>
+    /// <summary>Verifies that disposing a result subscription does not prevent the command from continuing to execute.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Observable_Subscription_ProperLifecycle()
@@ -126,25 +111,23 @@ public partial class ReactiveCommandTest
         var executed = 0;
         var command = ReactiveCommand.Create(
             () => ++executed,
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var subscription = command.Subscribe(_ => { });
-        await command.Execute();
+        await command.Execute().FirstAsync();
 
         await Assert.That(executed).IsEqualTo(1);
 
         const int ExpectedSecondCount = 2;
 
         subscription.Dispose();
-        await command.Execute();
+        await command.Execute().FirstAsync();
 
         // Should still execute even after subscription disposal
         await Assert.That(executed).IsEqualTo(ExpectedSecondCount);
     }
 
-    /// <summary>
-    ///     Verifies that an async setpoint-driven view model produces the expected debounced values over virtual time.
-    /// </summary>
+    /// <summary>Verifies that an async setpoint-driven view model produces the expected debounced values over virtual time.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -174,56 +157,50 @@ public partial class ReactiveCommandTest
         await Assert.That(fooVm.Foo.Value).IsEqualTo(SetpointValue);
     }
 
-    /// <summary>
-    ///     Verifies that a background command runs its work on the supplied background scheduler.
-    /// </summary>
+    /// <summary>Verifies that a background command runs its work on the supplied background scheduler.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Scheduler_BackgroundCommandUsesBackgroundScheduler()
     {
-        var backgroundScheduler = ImmediateScheduler.Instance;
+        var backgroundScheduler = Sequencer.Immediate;
         var executed = false;
         var command = ReactiveCommand.CreateRunInBackground(
             () => executed = true,
             backgroundScheduler: backgroundScheduler,
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
-        await command.Execute();
+        await command.Execute().FirstAsync();
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies that command results are delivered on the configured output scheduler.
-    /// </summary>
+    /// <summary>Verifies that command results are delivered on the configured output scheduler.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Scheduler_ResultsDeliveredOnOutputScheduler()
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var command = ReactiveCommand.CreateFromObservable(
-            () => SingleValueObservable.Unit,
+            () => SingleValueObservable.Void,
             outputScheduler: scheduler);
         var executed = false;
 
-        command.Execute().ObserveOn(scheduler).Subscribe(_ => executed = true);
+        command.Execute().Subscribe(_ => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies the IsExecuting and exception sequence when a task command is cancelled mid-execution.
-    /// </summary>
+    /// <summary>Verifies the IsExecuting and exception sequence when a task command is cancelled mid-execution.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Task_Cancellation_HandlesProperCancellationFlow()
     {
-        var tcsStarted = new TaskCompletionSource<Unit>();
-        var tcsCaught = new TaskCompletionSource<Unit>();
-        var tcsFinish = new TaskCompletionSource<Unit>();
+        var tcsStarted = new TaskCompletionSource<RxVoid>();
+        var tcsCaught = new TaskCompletionSource<RxVoid>();
+        var tcsFinish = new TaskCompletionSource<RxVoid>();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
 
-        const int LongDelayMilliseconds = 10000;
+        const int LongDelayMilliseconds = 10_000;
         const int WaitTimeoutSeconds = 2;
         const int CompletionDelayMilliseconds = 100;
 
@@ -231,7 +208,7 @@ public partial class ReactiveCommandTest
             async token =>
             {
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, StartedCommandStatus));
-                tcsStarted.TrySetResult(Unit.Default);
+                tcsStarted.TrySetResult(RxVoid.Default);
                 try
                 {
                     await Task.Delay(LongDelayMilliseconds, token);
@@ -239,15 +216,15 @@ public partial class ReactiveCommandTest
                 catch (OperationCanceledException)
                 {
                     statusTrail.Add((Interlocked.Increment(ref position) - 1, CancellingCommandStatus));
-                    tcsCaught.TrySetResult(Unit.Default);
+                    tcsCaught.TrySetResult(RxVoid.Default);
                     await tcsFinish.Task;
                     statusTrail.Add((Interlocked.Increment(ref position) - 1, FinishedCancellingStatus));
                     throw;
                 }
 
-                return Unit.Default;
+                return RxVoid.Default;
             },
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         Exception? exception = null;
         command.ThrownExceptions.Subscribe(ex => exception = ex);
@@ -268,7 +245,7 @@ public partial class ReactiveCommandTest
         await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
-        tcsFinish.TrySetResult(Unit.Default);
+        tcsFinish.TrySetResult(RxVoid.Default);
         await Task.Delay(CompletionDelayMilliseconds);
 
         const int StartedCommandPosition = 2;
@@ -291,21 +268,19 @@ public partial class ReactiveCommandTest
         }
     }
 
-    /// <summary>
-    ///     Verifies the IsExecuting and result sequence when a task command runs to normal completion.
-    /// </summary>
+    /// <summary>Verifies the IsExecuting and result sequence when a task command runs to normal completion.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Task_Completion_HandlesProperCompletionFlow()
     {
-        var tcsStarted = new TaskCompletionSource<Unit>();
-        var tcsFinished = new TaskCompletionSource<Unit>();
-        var tcsContinue = new TaskCompletionSource<Unit>();
+        var tcsStarted = new TaskCompletionSource<RxVoid>();
+        var tcsFinished = new TaskCompletionSource<RxVoid>();
+        var tcsContinue = new TaskCompletionSource<RxVoid>();
         var statusTrail = new List<(int Position, string Status)>();
         var position = 0;
 
-        const int DelayMilliseconds = 1000;
-        const int CancelDelayMilliseconds = 5000;
+        const int DelayMilliseconds = 1_000;
+        const int CancelDelayMilliseconds = 5_000;
         const int CompletionDelayMilliseconds = 100;
         const int WaitTimeoutSeconds = 2;
 
@@ -313,7 +288,7 @@ public partial class ReactiveCommandTest
             async cts =>
             {
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, StartedCommandStatus));
-                tcsStarted.TrySetResult(Unit.Default);
+                tcsStarted.TrySetResult(RxVoid.Default);
                 try
                 {
                     await Task.Delay(DelayMilliseconds, cts);
@@ -327,11 +302,11 @@ public partial class ReactiveCommandTest
                 }
 
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, "finished command"));
-                tcsFinished.TrySetResult(Unit.Default);
+                tcsFinished.TrySetResult(RxVoid.Default);
                 await tcsContinue.Task;
-                return Unit.Default;
+                return RxVoid.Default;
             },
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         Exception? exception = null;
         command.ThrownExceptions.Subscribe(ex => exception = ex);
@@ -351,7 +326,7 @@ public partial class ReactiveCommandTest
         await tcsFinished.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
-        tcsContinue.TrySetResult(Unit.Default);
+        tcsContinue.TrySetResult(RxVoid.Default);
         await Task.Delay(CompletionDelayMilliseconds);
 
         const int StartedCommandPosition = 2;
@@ -373,30 +348,28 @@ public partial class ReactiveCommandTest
         }
     }
 
-    /// <summary>
-    ///     Verifies the IsExecuting and ThrownExceptions sequence when a task command throws.
-    /// </summary>
+    /// <summary>Verifies the IsExecuting and ThrownExceptions sequence when a task command throws.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Task_Exception_HandlesExceptionFlow()
     {
-        var tcsStart = new TaskCompletionSource<Unit>();
+        var tcsStart = new TaskCompletionSource<RxVoid>();
         var command = ReactiveCommand.CreateFromTask(
             async _ =>
             {
                 await tcsStart.Task;
                 throw new InvalidOperationException(TaskExceptionMessage);
             },
-            outputScheduler: ImmediateScheduler.Instance);
-        command.IsExecuting.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var isExecuting).Subscribe();
-        command.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptions).Subscribe();
+            outputScheduler: Sequencer.Immediate);
+        var isExecuting = command.IsExecuting.Collect();
+        var exceptions = command.ThrownExceptions.Collect();
 
         const int DelayMilliseconds = 100;
 
         command.Execute().Subscribe();
 
         await Task.Delay(DelayMilliseconds);
-        tcsStart.SetResult(Unit.Default);
+        tcsStart.SetResult(RxVoid.Default);
         await Task.Delay(DelayMilliseconds);
 
         using (Assert.Multiple())
@@ -408,17 +381,15 @@ public partial class ReactiveCommandTest
         }
     }
 
-    /// <summary>
-    ///     Verifies that exceptions thrown synchronously by the execute lambda are surfaced through ThrownExceptions.
-    /// </summary>
+    /// <summary>Verifies that exceptions thrown synchronously by the execute lambda are surfaced through ThrownExceptions.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrownExceptions_CapturesLambdaExceptions()
     {
-        var command = ReactiveCommand.CreateFromObservable<Unit>(
+        var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => throw new InvalidOperationException("Lambda error"),
-            outputScheduler: ImmediateScheduler.Instance);
-        command.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptions).Subscribe();
+            outputScheduler: Sequencer.Immediate);
+        var exceptions = command.ThrownExceptions.Collect();
 
         command.Execute().Subscribe(_ => { }, _ => { });
 
@@ -427,17 +398,15 @@ public partial class ReactiveCommandTest
         await Assert.That(exceptions[0].Message).IsEqualTo("Lambda error");
     }
 
-    /// <summary>
-    ///     Verifies that errors emitted by the execution observable are surfaced through ThrownExceptions.
-    /// </summary>
+    /// <summary>Verifies that errors emitted by the execution observable are surfaced through ThrownExceptions.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrownExceptions_CapturesObservableExceptions()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            () => Observable.Throw<Unit>(new InvalidOperationException(TestErrorMessage)),
-            outputScheduler: ImmediateScheduler.Instance);
-        command.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptions).Subscribe();
+            () => Signal.Fail<RxVoid>(new InvalidOperationException(TestErrorMessage)),
+            outputScheduler: Sequencer.Immediate);
+        var exceptions = command.ThrownExceptions.Collect();
 
         command.Execute().Subscribe(_ => { }, _ => { });
 
@@ -446,16 +415,14 @@ public partial class ReactiveCommandTest
         await Assert.That(exceptions[0].Message).IsEqualTo(TestErrorMessage);
     }
 
-    /// <summary>
-    ///     Verifies that thrown exceptions are delivered on the configured output scheduler.
-    /// </summary>
+    /// <summary>Verifies that thrown exceptions are delivered on the configured output scheduler.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrownExceptions_DeliveredOnOutputScheduler()
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var command = ReactiveCommand.CreateFromObservable(
-            () => Observable.Throw<Unit>(new InvalidOperationException()),
+            () => Signal.Fail<RxVoid>(new InvalidOperationException()),
             outputScheduler: scheduler);
         Exception? exception = null;
         command.ThrownExceptions.Subscribe(ex => exception = ex);
@@ -465,29 +432,27 @@ public partial class ReactiveCommandTest
         await Assert.That(exception).IsTypeOf<InvalidOperationException>();
     }
 
-    /// <summary>
-    ///     Verifies that exceptions thrown by a task command are propagated through ThrownExceptions.
-    /// </summary>
+    /// <summary>Verifies that exceptions thrown by a task command are propagated through ThrownExceptions.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrownExceptions_PropagatesTaskExceptions()
     {
-        var tcsStart = new TaskCompletionSource<Unit>();
+        var tcsStart = new TaskCompletionSource<RxVoid>();
         var command = ReactiveCommand.CreateFromTask(
             async _ =>
             {
                 await tcsStart.Task;
                 throw new InvalidOperationException(TaskExceptionMessage);
             },
-            outputScheduler: ImmediateScheduler.Instance);
-        command.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptions).Subscribe();
+            outputScheduler: Sequencer.Immediate);
+        var exceptions = command.ThrownExceptions.Collect();
 
         const int DelayMilliseconds = 100;
 
         command.Execute().Subscribe();
 
         await Task.Delay(DelayMilliseconds);
-        tcsStart.SetResult(Unit.Default);
+        tcsStart.SetResult(RxVoid.Default);
         await Task.Delay(DelayMilliseconds);
 
         await Assert.That(exceptions).Count().IsEqualTo(1);

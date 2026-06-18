@@ -3,15 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables;
 using System.Reflection;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// UIKit command binder platform registrations.
-/// </summary>
+#endif
+/// <summary>UIKit command binder platform registrations.</summary>
 /// <remarks>
 /// <para>
 /// This binder registers UIKit-specific command bindings using AOT-friendly event subscription
@@ -27,23 +27,17 @@ namespace ReactiveUI;
 [Preserve(AllMembers = true)]
 public sealed class UIKitCommandBinders : FlexibleCommandBinder
 {
-    /// <summary>
-    /// Cached <c>Enabled</c> property for <see cref="UIControl"/> (used by <see cref="UIControlEnabledProperty"/>).
-    /// </summary>
+    /// <summary>Cached <c>Enabled</c> property for <see cref="UIControl"/> (used by <see cref="UIControlEnabledProperty"/>).</summary>
     private static readonly PropertyInfo UIControlEnabledProperty =
         typeof(UIControl).GetRuntimeProperty(nameof(UIControl.Enabled))
         ?? throw new InvalidOperationException("There is no Enabled property on UIControl which is required for binding.");
 
-    /// <summary>
-    /// Cached <c>Enabled</c> property for <see cref="UIBarButtonItem"/>.
-    /// </summary>
+    /// <summary>Cached <c>Enabled</c> property for <see cref="UIBarButtonItem"/>.</summary>
     private static readonly PropertyInfo UIBarButtonItemEnabledProperty =
         typeof(UIBarButtonItem).GetRuntimeProperty(nameof(UIBarButtonItem.Enabled))
         ?? throw new InvalidOperationException("There is no Enabled property on UIBarButtonItem which is required for binding.");
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.</summary>
     public UIKitCommandBinders()
     {
         // UIControl uses UIKit target-action rather than .NET events.
@@ -60,7 +54,7 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
             {
                 if (t is not UIBarButtonItem item)
                 {
-                    return Disposable.Empty;
+                    return Scope.Empty;
                 }
 
                 return ForEvent(
@@ -73,8 +67,6 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
             });
     }
 
-    /// <summary>
-    /// Gets the shared <see cref="UIKitCommandBinders"/> instance.
-    /// </summary>
+    /// <summary>Gets the shared <see cref="UIKitCommandBinders"/> instance.</summary>
     public static Lazy<UIKitCommandBinders> Instance { get; } = new();
 }

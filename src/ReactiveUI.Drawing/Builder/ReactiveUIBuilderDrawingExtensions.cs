@@ -3,24 +3,26 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Helpers;
-
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Builder;
+#else
 namespace ReactiveUI.Builder;
+#endif
 
-/// <summary>
-/// Drawing-specific extensions for ReactiveUIBuilder.
-/// </summary>
+/// <summary>Drawing-specific extensions for ReactiveUIBuilder.</summary>
 public static class ReactiveUIBuilderDrawingExtensions
 {
-    /// <summary>
-    /// Registers Drawing-specific services.
-    /// </summary>
-    /// <param name="builder">The builder instance.</param>
-    /// <returns>The builder instance for method chaining.</returns>
-    public static IReactiveUIBuilder WithDrawing(this IReactiveUIBuilder builder)
+    /// <summary>Provides ReactiveUI builder extension methods for Drawing.</summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    extension(IReactiveUIBuilder builder)
     {
-        ArgumentExceptionHelper.ThrowIfNull(builder);
+        /// <summary>Registers Drawing-specific services.</summary>
+        /// <returns>The builder instance for method chaining.</returns>
+        public IReactiveUIBuilder WithDrawing()
+        {
+            ArgumentExceptionHelper.ThrowIfNull(builder);
 
-        return builder.WithPlatformModule<Drawing.Registrations>();
+            return builder.WithPlatformModule<Drawing.Registrations>();
+        }
     }
 }

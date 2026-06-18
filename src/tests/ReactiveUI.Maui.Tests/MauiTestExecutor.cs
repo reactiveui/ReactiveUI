@@ -20,21 +20,19 @@ namespace ReactiveUI.Maui.Tests;
 /// </remarks>
 public class MauiTestExecutor : ITestExecutor
 {
-    /// <summary>
-    /// The dispatcher provider that was active before the test, restored on cleanup.
-    /// </summary>
+    /// <summary>The dispatcher provider that was active before the test, restored on cleanup.</summary>
     private IDispatcherProvider? _previousProvider;
 
     /// <inheritdoc/>
-    public virtual async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
+    public virtual async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
-        ArgumentNullException.ThrowIfNull(testAction);
+        ArgumentNullException.ThrowIfNull(action);
 
         Initialize();
 
         try
         {
-            await testAction();
+            await action();
         }
         finally
         {
@@ -42,18 +40,14 @@ public class MauiTestExecutor : ITestExecutor
         }
     }
 
-    /// <summary>
-    /// Initializes the MAUI test environment by setting up the test dispatcher provider.
-    /// </summary>
+    /// <summary>Initializes the MAUI test environment by setting up the test dispatcher provider.</summary>
     protected virtual void Initialize()
     {
         _previousProvider = DispatcherProvider.Current;
         DispatcherProvider.SetCurrent(new TestDispatcherProvider());
     }
 
-    /// <summary>
-    /// Cleans up the MAUI test environment by restoring the previous dispatcher provider.
-    /// </summary>
+    /// <summary>Cleans up the MAUI test environment by restoring the previous dispatcher provider.</summary>
     protected virtual void CleanUp()
     {
         if (_previousProvider is null)

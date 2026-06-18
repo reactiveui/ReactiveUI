@@ -7,8 +7,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Builder.WpfApp.Models;
 
-/// <summary>
-/// Notification that the chat state has changed and observers should refresh.
-/// </summary>
-[SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for chat state-changed signalling.")]
-public sealed class ChatStateChanged;
+/// <summary>Notification that the chat state has changed and observers should refresh.</summary>
+public sealed record ChatStateChanged
+{
+    /// <summary>Gets the moment, in UTC, at which the chat state change was signalled.</summary>
+    [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available all TFMs")]
+    public DateTimeOffset Timestamp { get; init; } =
+#if NET8_0_OR_GREATER
+        TimeProvider.System.GetUtcNow();
+#else
+        DateTimeOffset.UtcNow;
+#endif
+}

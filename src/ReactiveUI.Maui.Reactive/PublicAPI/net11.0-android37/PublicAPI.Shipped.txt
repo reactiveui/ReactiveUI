@@ -1,0 +1,194 @@
+#nullable enable
+ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.Inverse = 2 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.None = 0 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.UseHidden = 4 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(Microsoft.Maui.Hosting.MauiAppBuilder!)
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(Microsoft.Maui.Hosting.MauiAppBuilder!).UseReactiveUI(Microsoft.Maui.Dispatching.IDispatcher! dispatcher) -> Microsoft.Maui.Hosting.MauiAppBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(Microsoft.Maui.Hosting.MauiAppBuilder!).UseReactiveUI(System.Action<ReactiveUI.Reactive.Builder.IReactiveUIBuilder!>! withReactiveUIBuilder) -> Microsoft.Maui.Hosting.MauiAppBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!)
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithMaui() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithMaui(Microsoft.Maui.Dispatching.IDispatcher? dispatcher) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithMauiConverters() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithMauiScheduler() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithMauiScheduler(Microsoft.Maui.Dispatching.IDispatcher? dispatcher) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Maui.ActivationForViewFetcher
+ReactiveUI.Reactive.Maui.ActivationForViewFetcher.ActivationForViewFetcher() -> void
+ReactiveUI.Reactive.Maui.ActivationForViewFetcher.GetActivationForView(ReactiveUI.IActivatableView! view) -> System.IObservable<bool>!
+ReactiveUI.Reactive.Maui.ActivationForViewFetcher.GetAffinityForView(System.Type! view) -> int
+ReactiveUI.Reactive.Maui.AutoSuspendHelper
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.AutoSuspendHelper() -> void
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.Dispose() -> void
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.OnCreate() -> void
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.OnResume() -> void
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.OnSleep() -> void
+ReactiveUI.Reactive.Maui.AutoSuspendHelper.OnStart() -> void
+ReactiveUI.Reactive.Maui.BooleanToVisibilityTypeConverter
+ReactiveUI.Reactive.Maui.BooleanToVisibilityTypeConverter.BooleanToVisibilityTypeConverter() -> void
+ReactiveUI.Reactive.Maui.DisableAnimationAttribute
+ReactiveUI.Reactive.Maui.DisableAnimationAttribute.DisableAnimationAttribute() -> void
+ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>.ReactiveCarouselView() -> void
+ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>.ReactiveContentPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>.ReactiveContentView() -> void
+ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>.ReactiveFlyoutPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.Detail.get -> string?
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.Detail.set -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.DetailColor.get -> Microsoft.Maui.Graphics.Color!
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.DetailColor.set -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.ImageSource.get -> Microsoft.Maui.Controls.ImageSource?
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.ImageSource.set -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.ReactiveImageItemView() -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.Text.get -> string?
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.Text.set -> void
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.TextColor.get -> Microsoft.Maui.Graphics.Color!
+ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.TextColor.set -> void
+ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>.ReactiveMasterDetailPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>.ReactiveMultiPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>.ReactiveNavigationPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.ReactivePage() -> void
+ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>.ReactiveShell() -> void
+ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.Contract.get -> string?
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.Contract.set -> void
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.ReactiveShellContent() -> void
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>.ReactiveTabbedPage() -> void
+ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.Detail.get -> string?
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.Detail.set -> void
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.DetailColor.get -> Microsoft.Maui.Graphics.Color!
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.DetailColor.set -> void
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.ReactiveTextItemView() -> void
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.Text.get -> string?
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.Text.set -> void
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.TextColor.get -> Microsoft.Maui.Graphics.Color!
+ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.TextColor.set -> void
+ReactiveUI.Reactive.Maui.Registrations
+ReactiveUI.Reactive.Maui.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Reactive.Maui.Registrations.Registrations() -> void
+ReactiveUI.Reactive.Maui.Resource
+ReactiveUI.Reactive.Maui.Resource.Resource() -> void
+ReactiveUI.Reactive.Maui.RoutedViewHost
+ReactiveUI.Reactive.Maui.RoutedViewHost.InvalidateCurrentViewModel() -> void
+ReactiveUI.Reactive.Maui.RoutedViewHost.RoutedViewHost() -> void
+ReactiveUI.Reactive.Maui.RoutedViewHost.Router.get -> ReactiveUI.Reactive.RoutingState!
+ReactiveUI.Reactive.Maui.RoutedViewHost.Router.set -> void
+ReactiveUI.Reactive.Maui.RoutedViewHost.SetTitleOnNavigate.get -> bool
+ReactiveUI.Reactive.Maui.RoutedViewHost.SetTitleOnNavigate.set -> void
+ReactiveUI.Reactive.Maui.RoutedViewHost.SyncNavigationStacksAsync() -> System.Threading.Tasks.Task!
+ReactiveUI.Reactive.Maui.RoutedViewHost<TViewModel>
+ReactiveUI.Reactive.Maui.RoutedViewHost<TViewModel>.RoutedViewHost() -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ContractFallbackByPass.get -> bool
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ContractFallbackByPass.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.DefaultContent.get -> Microsoft.Maui.Controls.View!
+ReactiveUI.Reactive.Maui.ViewModelViewHost.DefaultContent.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewContract.get -> string?
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewContract.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewContractObservable.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewLocator.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewModel.get -> object?
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewModelViewHost() -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost<TViewModel>
+ReactiveUI.Reactive.Maui.ViewModelViewHost<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.Maui.ViewModelViewHost<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.Maui.ViewModelViewHost<TViewModel>.ViewModelViewHost() -> void
+ReactiveUI.Reactive.Maui.VisibilityToBooleanTypeConverter
+ReactiveUI.Reactive.Maui.VisibilityToBooleanTypeConverter.VisibilityToBooleanTypeConverter() -> void
+ReactiveUI.Reactive.PlatformOperations
+ReactiveUI.Reactive.PlatformOperations.GetOrientation() -> string?
+ReactiveUI.Reactive.PlatformOperations.PlatformOperations() -> void
+override ReactiveUI.Reactive.Maui.BooleanToVisibilityTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.Reactive.Maui.BooleanToVisibilityTypeConverter.TryConvert(bool from, object? conversionHint, out Microsoft.Maui.Visibility result) -> bool
+override ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Reactive.Maui.RoutedViewHost<TViewModel>.PageForViewModel(ReactiveUI.Reactive.IRoutableViewModel! vm) -> Microsoft.Maui.Controls.Page!
+override ReactiveUI.Reactive.Maui.RoutedViewHost<TViewModel>.PagesForViewModel(ReactiveUI.Reactive.IRoutableViewModel? vm) -> System.IObservable<Microsoft.Maui.Controls.Page!>!
+override ReactiveUI.Reactive.Maui.ViewModelViewHost<TViewModel>.ResolveViewForViewModel(object? viewModel, string? contract) -> void
+override ReactiveUI.Reactive.Maui.VisibilityToBooleanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.Reactive.Maui.VisibilityToBooleanTypeConverter.TryConvert(Microsoft.Maui.Visibility from, object? conversionHint, out bool result) -> bool
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler.get -> System.Reactive.Concurrency.IScheduler!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.UseReactiveUI(this Microsoft.Maui.Hosting.MauiAppBuilder! builder, Microsoft.Maui.Dispatching.IDispatcher! dispatcher) -> Microsoft.Maui.Hosting.MauiAppBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.UseReactiveUI(this Microsoft.Maui.Hosting.MauiAppBuilder! builder, System.Action<ReactiveUI.Reactive.Builder.IReactiveUIBuilder!>! withReactiveUIBuilder) -> Microsoft.Maui.Hosting.MauiAppBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.WithMaui(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.WithMaui(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder, Microsoft.Maui.Dispatching.IDispatcher? dispatcher) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.WithMauiConverters(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.WithMauiScheduler(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.MauiReactiveUIBuilderExtensions.WithMauiScheduler(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder, Microsoft.Maui.Dispatching.IDispatcher? dispatcher) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Maui.AutoSuspendHelper.UntimelyDemise.get -> ReactiveUI.Primitives.Signals.ISignal<System.Reactive.Unit>!
+static readonly ReactiveUI.Reactive.Maui.ReactiveCarouselView<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveContentPage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveContentView<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveFlyoutPage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.DetailColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.DetailProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.ImageSourceProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.TextColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveImageItemView<TViewModel>.TextProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveMasterDetailPage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveMultiPage<TPage, TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveNavigationPage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactivePage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveShell<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.ContractProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveShellContent<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveTabbedPage<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.DetailColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.DetailProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.TextColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ReactiveTextItemView<TViewModel>.TextProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.RoutedViewHost.RouterProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.RoutedViewHost.SetTitleOnNavigateProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ViewModelViewHost.ContractFallbackByPassProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ViewModelViewHost.DefaultContentProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewContractObservableProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Reactive.Maui.ViewModelViewHost.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+virtual ReactiveUI.Reactive.Maui.AutoSuspendHelper.Dispose(bool disposing) -> void
+virtual ReactiveUI.Reactive.Maui.RoutedViewHost.PageForViewModel(ReactiveUI.Reactive.IRoutableViewModel! vm) -> Microsoft.Maui.Controls.Page!
+virtual ReactiveUI.Reactive.Maui.RoutedViewHost.PagesForViewModel(ReactiveUI.Reactive.IRoutableViewModel? vm) -> System.IObservable<Microsoft.Maui.Controls.Page!>!
+virtual ReactiveUI.Reactive.Maui.ViewModelViewHost.ResolveViewForViewModel(object? viewModel, string? contract) -> void

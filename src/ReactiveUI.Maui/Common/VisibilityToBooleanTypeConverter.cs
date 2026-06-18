@@ -12,14 +12,20 @@ using Visibility = Microsoft.Maui.Visibility;
 #endif
 
 #if IS_MAUI
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
+#else
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
+#endif
 
-/// <summary>
-/// Converts <see cref="Visibility"/> to <see cref="bool"/>.
-/// </summary>
+/// <summary>Converts <see cref="Visibility"/> to <see cref="bool"/>.</summary>
 /// <remarks>
 /// <para>
 /// The conversion supports a <see cref="BooleanToVisibilityHint"/> as the conversion hint parameter:

@@ -5,7 +5,5 @@
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A interface routable view model.
-/// </summary>
+/// <summary>A interface routable view model.</summary>
 public interface IRoutableFooViewModel : IRoutableViewModel;

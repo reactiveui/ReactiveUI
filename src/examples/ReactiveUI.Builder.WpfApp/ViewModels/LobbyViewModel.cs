@@ -5,32 +5,20 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using ReactiveUI.Builder.WpfApp.Models;
-using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
-/// <summary>
-/// The lobby view model which lists rooms and allows creating/joining rooms.
-/// </summary>
+/// <summary>The lobby view model which lists rooms and allows creating/joining rooms.</summary>
 public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 {
-    /// <summary>
-    /// The MessageBus contract used to broadcast and listen for room events across instances.
-    /// </summary>
+    /// <summary>The MessageBus contract used to broadcast and listen for room events across instances.</summary>
     private const string RoomsKey = "__rooms__";
 
-    /// <summary>
-    /// Backs the <see cref="Rooms"/> output property, projecting room changes into a snapshot list.
-    /// </summary>
+    /// <summary>Backs the <see cref="Rooms"/> output property, projecting room changes into a snapshot list.</summary>
     private readonly ObservableAsPropertyHelper<IReadOnlyList<ChatRoom>> _rooms;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LobbyViewModel"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LobbyViewModel"/> class.</summary>
     /// <param name="hostScreen">The host screen.</param>
     [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded sample.")]
     public LobbyViewModel(IScreen hostScreen)
@@ -51,7 +39,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         });
 
         // Local changes
-        var localRoomsChanged = MessageBus.Current.Listen<ChatStateChanged>().Select(_ => Unit.Default);
+        var localRoomsChanged = MessageBus.Current.Listen<ChatStateChanged>().Select(_ => RxVoid.Default);
 
         // Remote changes and sync (ignore own events)
         var remoteRoomsChanged = MessageBus.Current
@@ -68,7 +56,8 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
                             var snapshot = GetState().Rooms.ConvertAll(r => r.Name);
                             var response = new RoomEventMessage(Services.RoomEventKind.Add, string.Empty)
                             {
-                                Snapshot = snapshot, InstanceId = Services.AppInstance.Id
+                                Snapshot = snapshot,
+                                InstanceId = Services.AppInstance.Id
                             };
                             MessageBus.Current.SendMessage(response, RoomsKey);
                             break;
@@ -81,19 +70,19 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
                         }
                 }
             })
-            .Select(_ => Unit.Default);
+            .Select(_ => RxVoid.Default);
 
-        RoomsChanged = localRoomsChanged.Merge(remoteRoomsChanged)
-            .Throttle(TimeSpan.FromMilliseconds(50), RxSchedulers.TaskpoolScheduler);
+        RoomsChanged = Signal.Emit(RxVoid.Default)
+            .Concat(Signal.Blend(localRoomsChanged, remoteRoomsChanged)
+                .EmitIfQuiet(TimeSpan.FromMilliseconds(50), RxSchedulers.TaskpoolScheduler));
 
         this.WhenAnyObservable(x => x.RoomsChanged)
-            .StartWith(Unit.Default)
             .Select(_ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Rooms), out _rooms);
 
         // Request a snapshot from peers shortly after activation
-        RxSchedulers.MainThreadScheduler.Schedule(Unit.Default, TimeSpan.FromMilliseconds(500), (_, _) =>
+        RxSchedulers.MainThreadScheduler.Schedule(RxVoid.Default, TimeSpan.FromMilliseconds(500), (_, _) =>
         {
             var req = new RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty)
             {
@@ -101,7 +90,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             };
             Trace.TraceInformation("[Lobby] Broadcasting SyncRequest");
             MessageBus.Current.SendMessage(req, RoomsKey);
-            return Disposable.Empty;
+            return EmptyDisposable.Instance;
         });
     }
 
@@ -111,9 +100,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     /// <inheritdoc />
     public IScreen HostScreen { get; }
 
-    /// <summary>
-    /// Gets or sets the display name for the current user.
-    /// </summary>
+    /// <summary>Gets or sets the display name for the current user.</summary>
     [SuppressMessage(
         "StyleCop.CSharp.LayoutRules",
         "SA1500:Braces should not share line",
@@ -129,9 +116,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     }
 = Environment.MachineName;
 
-    /// <summary>
-    /// Gets or sets the new room name.
-    /// </summary>
+    /// <summary>Gets or sets the new room name.</summary>
     [SuppressMessage(
         "StyleCop.CSharp.LayoutRules",
         "SA1500:Braces should not share line",
@@ -147,9 +132,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     }
 = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the selected combo item used by the WPF binding regression surface.
-    /// </summary>
+    /// <summary>Gets or sets the selected combo item used by the WPF binding regression surface.</summary>
     [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500:Braces should not share line", Justification = "C# 13 field keyword with property initializer")]
     [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1513:Closing brace should be followed by blank line", Justification = "C# 13 field keyword with property initializer")]
     public ChatRoom? SelectedComboItem
@@ -158,40 +141,26 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets the current list of rooms.
-    /// </summary>
+    /// <summary>Gets the current list of rooms.</summary>
     public IReadOnlyList<ChatRoom> Rooms => _rooms.Value;
 
-    /// <summary>
-    /// Gets an observable signaling when the rooms change.
-    /// </summary>
-    public IObservable<Unit> RoomsChanged { get; }
+    /// <summary>Gets an observable signaling when the rooms change.</summary>
+    public IObservable<RxVoid> RoomsChanged { get; }
 
-    /// <summary>
-    /// Gets the command which creates a new room.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> CreateRoom { get; }
+    /// <summary>Gets the command which creates a new room.</summary>
+    public ReactiveCommand<RxVoid, RxVoid> CreateRoom { get; }
 
-    /// <summary>
-    /// Gets the command which deletes a room.
-    /// </summary>
-    public ReactiveCommand<ChatRoom, Unit> DeleteRoom { get; }
+    /// <summary>Gets the command which deletes a room.</summary>
+    public ReactiveCommand<ChatRoom, RxVoid> DeleteRoom { get; }
 
-    /// <summary>
-    /// Gets the command which joins an existing room.
-    /// </summary>
-    public ReactiveCommand<ChatRoom, Unit> JoinRoom { get; }
+    /// <summary>Gets the command which joins an existing room.</summary>
+    public ReactiveCommand<ChatRoom, RxVoid> JoinRoom { get; }
 
-    /// <summary>
-    /// Gets the current persisted chat state from the ReactiveUI suspension host.
-    /// </summary>
+    /// <summary>Gets the current persisted chat state from the ReactiveUI suspension host.</summary>
     /// <returns>The active <see cref="ChatState"/> instance.</returns>
     private static ChatState GetState() => RxSuspension.SuspensionHost.GetAppState<ChatState>();
 
-    /// <summary>
-    /// Applies a remote room event (add, remove, or snapshot) to the local chat state.
-    /// </summary>
+    /// <summary>Applies a remote room event (add, remove, or snapshot) to the local chat state.</summary>
     /// <param name="evt">The room event received from another app instance.</param>
     private static void ApplyRoomEvent(RoomEventMessage evt)
     {
@@ -258,10 +227,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
         RoomName = string.Empty;
     }
 
-    /// <summary>
-    /// Removes the supplied room from the local state and broadcasts the removal to other instances.
-    /// Backs the <see cref="DeleteRoom"/> command.
-    /// </summary>
+    /// <summary>Removes the supplied room from the local state and broadcasts the removal to other instances. Backs the <see cref="DeleteRoom"/> command.</summary>
     /// <param name="room">The room to delete.</param>
     private void DeleteRoomImpl(ChatRoom room)
     {

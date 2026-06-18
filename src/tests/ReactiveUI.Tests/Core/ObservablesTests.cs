@@ -3,19 +3,16 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
+#if !REACTIVE_SHIM
 using ReactiveUI.Internal;
+#endif
 
 namespace ReactiveUI.Tests.Core;
 
-/// <summary>
-///     Tests for Observables static utility class.
-/// </summary>
+/// <summary>Tests for Observables static utility class.</summary>
 public class ObservablesTests
 {
-    /// <summary>
-    ///     Tests that SingleValueObservable.False emits false value.
-    /// </summary>
+    /// <summary>Tests that SingleValueObservable.False emits false value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Observables_False_EmitsFalse()
@@ -30,9 +27,7 @@ public class ObservablesTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    ///     Tests that Observables static members are accessible.
-    /// </summary>
+    /// <summary>Tests that Observables static members are accessible.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Observables_StaticMembers_AreAccessible()
@@ -40,15 +35,13 @@ public class ObservablesTests
         using (Assert.Multiple())
         {
             // Act & Assert
-            await Assert.That(SingleValueObservable.Unit).IsNotNull();
+            await Assert.That(SingleValueObservable.Void).IsNotNull();
             await Assert.That(SingleValueObservable.True).IsNotNull();
             await Assert.That(SingleValueObservable.False).IsNotNull();
         }
     }
 
-    /// <summary>
-    ///     Tests that SingleValueObservable.True emits true value.
-    /// </summary>
+    /// <summary>Tests that SingleValueObservable.True emits true value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Observables_True_EmitsTrue()
@@ -63,20 +56,18 @@ public class ObservablesTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests that SingleValueObservable.Unit emits Unit.Default value.
-    /// </summary>
+    /// <summary>Tests that SingleValueObservable.Void emits RxVoid.Default value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Observables_Unit_EmitsUnitDefault()
     {
         // Arrange
-        Unit? result = null;
+        RxVoid? result = null;
 
         // Act
-        SingleValueObservable.Unit.Subscribe(x => result = x);
+        SingleValueObservable.Void.Subscribe(x => result = x);
 
         // Assert
-        await Assert.That(result).IsEqualTo(Unit.Default);
+        await Assert.That(result).IsEqualTo(RxVoid.Default);
     }
 }

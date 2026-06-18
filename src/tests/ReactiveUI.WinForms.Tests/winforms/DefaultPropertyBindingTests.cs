@@ -5,20 +5,13 @@
 
 using System.Globalization;
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using DynamicData;
 
-using ReactiveUI.Winforms;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests default propery binding.
-/// </summary>
+/// <summary>Tests default propery binding.</summary>
 /// <remarks>
 /// This test fixture is marked as NonParallelizable because it calls RxAppBuilder.EnsureInitialized()
 /// in the constructor, which initializes global static state including the service locator.
@@ -29,24 +22,16 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 
 public class DefaultPropertyBindingTests
 {
-    /// <summary>
-    /// The timeout in seconds used when waiting for binding propagation.
-    /// </summary>
+    /// <summary>The timeout in seconds used when waiting for binding propagation.</summary>
     private const int TimeoutSeconds = 5;
 
-    /// <summary>
-    /// A sample double value used for binding tests.
-    /// </summary>
+    /// <summary>A sample double value used for binding tests.</summary>
     private const double SampleDouble = 123.4;
 
-    /// <summary>
-    /// The expected affinity for a matching panel binding converter.
-    /// </summary>
+    /// <summary>The expected affinity for a matching panel binding converter.</summary>
     private const int ExpectedAffinity = 10;
 
-    /// <summary>
-    /// Tests Winforms creates observable for property works for textboxes.
-    /// </summary>
+    /// <summary>Tests Winforms creates observable for property works for textboxes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForTextboxes()
@@ -59,7 +44,9 @@ public class DefaultPropertyBindingTests
         Expression<Func<TextBox, string>> expression = static x => x.Text;
 
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+        var output = new List<IObservedChange<object, object?>>();
+        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
+            .Subscribe(output.Add);
         await Assert.That(output).IsEmpty();
 
         input.Text = "Foo";
@@ -76,9 +63,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(output).Count().IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Tests that Winform creates observable for property works for components.
-    /// </summary>
+    /// <summary>Tests that Winform creates observable for property works for components.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForComponents()
@@ -90,7 +75,9 @@ public class DefaultPropertyBindingTests
 
         Expression<Func<ToolStripButton, bool>> expression = static x => x.Checked;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+        var output = new List<IObservedChange<object, object?>>();
+        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
+            .Subscribe(output.Add);
         await Assert.That(output).IsEmpty();
 
         input.Checked = true;
@@ -108,9 +95,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(output).Count().IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Tests that winforms creates observable for property works for third party controls.
-    /// </summary>
+    /// <summary>Tests that winforms creates observable for property works for third party controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForPropertyWorksForThirdPartyControls()
@@ -122,7 +107,9 @@ public class DefaultPropertyBindingTests
 
         Expression<Func<ThirdPartyControl, string?>> expression = static x => x.Value;
         var propertyName = expression.Body.GetMemberInfo()?.Name ?? throw new InvalidOperationException("propertyName should not be null.");
-        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var output).Subscribe();
+        var output = new List<IObservedChange<object, object?>>();
+        var dispose = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
+            .Subscribe(output.Add);
         await Assert.That(output).IsEmpty();
 
         input.Value = "Foo";
@@ -139,9 +126,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(output).Count().IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Tests that Winforms controled can bind to View Model.
-    /// </summary>
+    /// <summary>Tests that Winforms controled can bind to View Model.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanBindViewModelToWinformControls()
@@ -157,15 +142,15 @@ public class DefaultPropertyBindingTests
         await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeText);
 
         // Set up observable to wait for ViewModel property change before setting View property
-        var vmPropertyUpdated = vm.WhenAnyValue(static x => x.SomeText)
+        var viewModelPropertyUpdated = vm.WhenAnyValue(static x => x.SomeText)
             .Where(x => x == "Bar2")
-            .FirstAsync()
-            .Timeout(TimeSpan.FromSeconds(TimeoutSeconds));
+            .Timeout(TimeSpan.FromSeconds(TimeoutSeconds))
+            .FirstAsync();
 
         view.Property3.Text = "Bar2";
 
         // Wait for the two-way binding to propagate to the ViewModel
-        await vmPropertyUpdated;
+        await viewModelPropertyUpdated;
         await Assert.That(vm.SomeText).IsEqualTo("Bar2");
 
         _ = view.Bind(vm, static x => x.SomeDouble, static x => x.Property3.Text);
@@ -174,9 +159,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(view.Property3.Text).IsEqualTo(vm.SomeDouble.ToString(CultureInfo.CurrentCulture));
     }
 
-    /// <summary>
-    /// Smoke tests the WinForm controls.
-    /// </summary>
+    /// <summary>Smoke tests the WinForm controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SmokeTestWinformControls()
@@ -184,7 +167,7 @@ public class DefaultPropertyBindingTests
         var vm = new FakeWinformViewModel();
         var view = new FakeWinformsView { ViewModel = vm };
 
-        var disp = new CompositeDisposable(
+        var disp = new MultipleDisposable(
             view.Bind(vm, static x => x.Property1, static x => x.Property1.Text),
             view.Bind(vm, static x => x.Property2, static x => x.Property2.Text),
             view.Bind(vm, static x => x.Property3, static x => x.Property3.Text),
@@ -211,9 +194,7 @@ public class DefaultPropertyBindingTests
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests that PanelSetMethodBindingConverter returns the expected affinity for various object types.
-    /// </summary>
+    /// <summary>Tests that PanelSetMethodBindingConverter returns the expected affinity for various object types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PanelSetMethodBindingConverter_GetAffinityForObjects()
@@ -233,9 +214,7 @@ public class DefaultPropertyBindingTests
         }
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObject returns zero when beforeChanged is requested.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObject returns zero when beforeChanged is requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_BeforeChanged()
@@ -246,9 +225,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObject returns zero for a non-Component type.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObject returns zero for a non-Component type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonComponent()
@@ -259,9 +236,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObject returns zero for a property with no corresponding event.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObject returns zero for a property with no corresponding event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetAffinityForObject_Returns_Zero_For_NonExistent_Event()
@@ -272,9 +247,7 @@ public class DefaultPropertyBindingTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that GetNotificationForProperty throws for a property with no corresponding event.
-    /// </summary>
+    /// <summary>Tests that GetNotificationForProperty throws for a property with no corresponding event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WinformsCreatesObservableForProperty_GetNotificationForProperty_Throws_For_NonExistent_Event()
@@ -288,7 +261,7 @@ public class DefaultPropertyBindingTests
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
         {
             var observable = fixture.GetNotificationForProperty(input, expression.Body, propertyName)
-                .ObserveOn(ImmediateScheduler.Instance);
+                .ObserveOn(Sequencer.Immediate);
 
             // Need to subscribe to actually execute the observable creation
             observable.Subscribe();

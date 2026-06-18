@@ -7,16 +7,22 @@ using System.ComponentModel;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks
 {
+    /// <summary>A test <see cref="ISite"/> that always reports design mode.</summary>
     internal sealed class DesignModeSite : ISite
     {
+        /// <inheritdoc/>
         public IComponent Component { get; } = new Component();
 
+        /// <inheritdoc/>
         public IContainer? Container => null;
 
+        /// <inheritdoc/>
         public bool DesignMode => true;
 
+        /// <inheritdoc/>
         public string? Name { get; set; }
 
+        /// <inheritdoc/>
         public object? GetService(Type serviceType) => null;
     }
 }

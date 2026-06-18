@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Subjects;
 using Foundation;
 
 #if UIKIT
@@ -15,57 +12,47 @@ using NSViewController = UIKit.UIViewController;
 using AppKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// This is a View that is both a NSViewController and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is a View that is both a NSViewController and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyChanged<ReactiveViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewController"/> class.</summary>
     protected ReactiveViewController()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewController"/> class.</summary>
     /// <param name="c">The coder.</param>
     protected ReactiveViewController(NSCoder c)
         : base(c)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewController"/> class.</summary>
     /// <param name="f">The object flag.</param>
     protected ReactiveViewController(NSObjectFlag f)
         : base(f)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewController"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveViewController(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewController"/> class.</summary>
     /// <param name="nibNameOrNull">The name.</param>
     /// <param name="nibBundleOrNull">The bundle.</param>
     protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
@@ -89,10 +76,10 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -114,7 +101,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
         this.ActivateSubviews(true);
     }
 
@@ -122,7 +109,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public override void ViewDidDisappear(bool animated)
     {
         base.ViewDidDisappear(animated);
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
         this.ActivateSubviews(false);
     }
 #else
@@ -130,7 +117,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public override void ViewWillAppear()
     {
         base.ViewWillAppear();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
         this.ActivateSubviews(true);
     }
 
@@ -138,7 +125,7 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
     public override void ViewDidDisappear()
     {
         base.ViewDidDisappear();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
         this.ActivateSubviews(false);
     }
 #endif
@@ -153,76 +140,5 @@ public class ReactiveViewController : NSViewController, IReactiveNotifyPropertyC
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a View that is both a NSViewController and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactiveViewController<TViewModel> : ReactiveViewController, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    /// <summary>The backing field for the <see cref="ViewModel"/> property.</summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveViewController()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="c">The coder.</param>
-    protected ReactiveViewController(NSCoder c)
-        : base(c)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="f">The object flag.</param>
-    protected ReactiveViewController(NSObjectFlag f)
-        : base(f)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveViewController(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="nibNameOrNull">The name.</param>
-    /// <param name="nibBundleOrNull">The bundle.</param>
-    protected ReactiveViewController(string nibNameOrNull, NSBundle nibBundleOrNull)
-        : base(nibNameOrNull, nibBundleOrNull)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

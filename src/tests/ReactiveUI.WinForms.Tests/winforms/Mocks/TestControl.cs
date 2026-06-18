@@ -5,7 +5,5 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A test activatable control.
-/// </summary>
+/// <summary>A test activatable control.</summary>
 public class TestControl : Control, IActivatableView;

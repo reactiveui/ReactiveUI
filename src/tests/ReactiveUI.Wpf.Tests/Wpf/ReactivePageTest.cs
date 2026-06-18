@@ -7,9 +7,7 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="ReactivePage{TViewModel}"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ReactivePage{TViewModel}"/>.</summary>
 /// <remarks>
 /// Note: ReactivePage inherits from System.Windows.Controls.Page which requires a WPF Application to be running.
 /// These tests focus on static members and type inspection that don't require instantiation.
@@ -19,9 +17,7 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public sealed class ReactivePageTest
 {
-    /// <summary>
-    /// Tests that ViewModelProperty dependency property is registered.
-    /// </summary>
+    /// <summary>Tests that ViewModelProperty dependency property is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelProperty_IsRegistered()
@@ -32,9 +28,7 @@ public sealed class ReactivePageTest
         await Assert.That(ReactivePage<TestViewModel>.ViewModelProperty.OwnerType).IsEqualTo(typeof(ReactivePage<TestViewModel>));
     }
 
-    /// <summary>
-    /// Test view model for testing.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test view model for testing.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
 }

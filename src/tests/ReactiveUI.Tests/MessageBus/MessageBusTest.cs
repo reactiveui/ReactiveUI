@@ -3,119 +3,87 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
-using DynamicData;
 using ReactiveUI.Tests.Utilities.MessageBus;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
+#if REACTIVE_SHIM
+using MessageBusType = ReactiveUI.Reactive.MessageBus;
+#else
+using MessageBusType = ReactiveUI.MessageBus;
+#endif
+
 namespace ReactiveUI.Tests.MessageBus;
 
-/// <summary>
-///     Comprehensive test suite for MessageBus.
-///     Tests cover all public methods, contracts, scheduling, and edge cases.
-/// </summary>
+/// <summary>Comprehensive test suite for MessageBus. Tests cover all public methods, contracts, scheduling, and edge cases.</summary>
 [NotInParallel]
 [TestExecutor<WithMessageBusExecutor>]
 public class MessageBusTest
 {
-    /// <summary>
-    ///     A representative integer message value used across the tests.
-    /// </summary>
+    /// <summary>A representative integer message value used across the tests.</summary>
     private const int MessageValue = 42;
 
-    /// <summary>
-    ///     A second representative integer message value used across the tests.
-    /// </summary>
+    /// <summary>A second representative integer message value used across the tests.</summary>
     private const int SecondMessageValue = 100;
 
-    /// <summary>
-    ///     A representative string message used across the tests.
-    /// </summary>
+    /// <summary>A representative string message used across the tests.</summary>
     private const string TestMessage1 = "Test";
 
-    /// <summary>
-    ///     The first representative contract name used across the tests.
-    /// </summary>
+    /// <summary>The first representative contract name used across the tests.</summary>
     private const string Contract1 = "Contract1";
 
-    /// <summary>
-    ///     The second representative contract name used across the tests.
-    /// </summary>
+    /// <summary>The second representative contract name used across the tests.</summary>
     private const string Contract2 = "Contract2";
 
-    /// <summary>
-    ///     A representative string message sent before a state change.
-    /// </summary>
+    /// <summary>A representative string message sent before a state change.</summary>
     private const string BeforeMessage = "Before";
 
-    /// <summary>
-    ///     A representative string message sent after a state change.
-    /// </summary>
+    /// <summary>A representative string message sent after a state change.</summary>
     private const string AfterMessage = "After";
 
-    /// <summary>
-    ///     A representative first ordered string message.
-    /// </summary>
+    /// <summary>A representative first ordered string message.</summary>
     private const string FirstMessage = "First";
 
-    /// <summary>
-    ///     A representative second ordered string message.
-    /// </summary>
+    /// <summary>A representative second ordered string message.</summary>
     private const string SecondTextMessage = "Second";
 
-    /// <summary>
-    ///     A representative third ordered string message.
-    /// </summary>
+    /// <summary>A representative third ordered string message.</summary>
     private const string ThirdMessage = "Third";
 
-    /// <summary>
-    ///     A representative greeting string message.
-    /// </summary>
+    /// <summary>A representative greeting string message.</summary>
     private const string HelloMessage = "Hello";
 
-    /// <summary>
-    ///     A representative world string message.
-    /// </summary>
+    /// <summary>A representative world string message.</summary>
     private const string WorldMessage = "World";
 
-    /// <summary>
-    ///     A representative contract name used for scheduler-scoping tests.
-    /// </summary>
+    /// <summary>A representative contract name used for scheduler-scoping tests.</summary>
     private const string TestContract = "TestContract";
 
-    /// <summary>
-    ///     Tests that MessageBus.Current property can be get and set.
-    ///     Verifies the static Current property accessor functionality.
-    /// </summary>
+    /// <summary>Tests that MessageBus.Current property can be get and set. Verifies the static Current property accessor functionality.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_CanGetAndSet()
     {
-        var customBus = new ReactiveUI.MessageBus();
-        var original = ReactiveUI.MessageBus.Current;
+        var customBus = new MessageBusType();
+        var original = MessageBusType.Current;
 
         try
         {
-            ReactiveUI.MessageBus.Current = customBus;
-            await Assert.That(ReactiveUI.MessageBus.Current).IsEqualTo(customBus);
+            MessageBusType.Current = customBus;
+            await Assert.That(MessageBusType.Current).IsEqualTo(customBus);
         }
         finally
         {
-            ReactiveUI.MessageBus.Current = original;
+            MessageBusType.Current = original;
         }
     }
 
-    /// <summary>
-    ///     Tests that IsRegistered returns true after Listen is called.
-    ///     Verifies that subscribing via Listen registers the type.
-    /// </summary>
+    /// <summary>Tests that IsRegistered returns true after Listen is called. Verifies that subscribing via Listen registers the type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task IsRegistered_AfterListen_ReturnsTrue()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.Listen<int>().Subscribe();
 
@@ -130,7 +98,7 @@ public class MessageBusTest
     [Test]
     public async Task IsRegistered_AfterSendMessage_ReturnsTrue()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage(TestMessage1);
 
@@ -145,20 +113,17 @@ public class MessageBusTest
     [Test]
     public async Task IsRegistered_BeforeMessages_ReturnsFalse()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         await Assert.That(messageBus.IsRegistered(typeof(string))).IsFalse();
     }
 
-    /// <summary>
-    ///     Tests that IsRegistered returns false for different types.
-    ///     Verifies that registration is type-specific.
-    /// </summary>
+    /// <summary>Tests that IsRegistered returns false for different types. Verifies that registration is type-specific.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task IsRegistered_DifferentType_ReturnsFalse()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage(MessageValue);
 
@@ -177,7 +142,7 @@ public class MessageBusTest
     [Test]
     public async Task IsRegistered_WithContract_DistinguishesContracts()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage(TestMessage1, Contract1);
 
@@ -197,7 +162,7 @@ public class MessageBusTest
     [Test]
     public async Task Listen_ColdObservable_NoSideEffects()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         var observable = messageBus.Listen<string>();
 
@@ -216,12 +181,12 @@ public class MessageBusTest
     [Test]
     public async Task Listen_MessagesSentBeforeSubscription_AreNotReceived()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage("Before1");
         messageBus.SendMessage("Before2");
 
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.SendMessage(AfterMessage);
 
@@ -240,8 +205,8 @@ public class MessageBusTest
     [Test]
     public async Task Listen_SkipsInitialValue()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = messageBus.Listen<int>().Collect();
 
         await Assert.That(messages).IsEmpty();
 
@@ -250,16 +215,14 @@ public class MessageBusTest
         await Assert.That(messages[0]).IsEqualTo(MessageValue);
     }
 
-    /// <summary>
-    ///     Tests that unsubscribing from Listen stops receiving messages.
-    ///     Verifies proper subscription disposal and cleanup.
-    /// </summary>
+    /// <summary>Tests that unsubscribing from Listen stops receiving messages. Verifies proper subscription disposal and cleanup.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Listen_Unsubscribe_StopsReceivingMessages()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var subscription = messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = new List<string>();
+        var subscription = messageBus.Listen<string>().Subscribe(messages.Add);
 
         messageBus.SendMessage(BeforeMessage);
         subscription.Dispose();
@@ -280,13 +243,13 @@ public class MessageBusTest
     [Test]
     public async Task ListenIncludeLatest_MessagesSentBeforeSubscription_ReceivesLatest()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage(FirstMessage);
         messageBus.SendMessage(SecondTextMessage);
         messageBus.SendMessage(ThirdMessage);
 
-        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messages = messageBus.ListenIncludeLatest<string>().Collect();
 
         using (Assert.Multiple())
         {
@@ -312,8 +275,8 @@ public class MessageBusTest
     [Test]
     public async Task ListenIncludeLatest_ReceivesInitialValue()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.ListenIncludeLatest<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = messageBus.ListenIncludeLatest<int>().Collect();
 
         await Assert.That(messages).Count().IsEqualTo(1);
         await Assert.That(messages[0]).IsEqualTo(0);
@@ -337,12 +300,12 @@ public class MessageBusTest
     [Test]
     public async Task ListenIncludeLatest_ReceivesLatestMessage()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         messageBus.SendMessage(FirstMessage);
         messageBus.SendMessage(SecondTextMessage);
 
-        messageBus.ListenIncludeLatest<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messages = messageBus.ListenIncludeLatest<string>().Collect();
 
         using (Assert.Multiple())
         {
@@ -359,9 +322,9 @@ public class MessageBusTest
     [Test]
     public async Task RegisterMessageSource_Dispose_StopsSendingMessages()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var source = new Signal<string>();
+        var messages = messageBus.Listen<string>().Collect();
 
         var subscription = messageBus.RegisterMessageSource(source);
 
@@ -376,15 +339,12 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Tests that RegisterMessageSource throws on null source.
-    ///     Verifies proper argument validation in RegisterMessageSource.
-    /// </summary>
+    /// <summary>Tests that RegisterMessageSource throws on null source. Verifies proper argument validation in RegisterMessageSource.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterMessageSource_NullSource_ThrowsArgumentNullException()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
@@ -401,9 +361,9 @@ public class MessageBusTest
     [Test]
     public async Task RegisterMessageSource_ObservableComplete_UnsubscribesCorrectly()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var source = new Signal<string>();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.RegisterMessageSource(source);
 
@@ -429,9 +389,9 @@ public class MessageBusTest
     [Test]
     public async Task RegisterMessageSource_ObservableError_DoesNotBreakBus()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var source = new Signal<string>();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.RegisterMessageSource(source);
 
@@ -457,9 +417,9 @@ public class MessageBusTest
     [Test]
     public async Task RegisterMessageSource_SendsMessagesFromObservable()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var source = new Subject<string>();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var source = new Signal<string>();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.RegisterMessageSource(source);
 
@@ -486,10 +446,10 @@ public class MessageBusTest
     [Test]
     public async Task RegisterMessageSource_WithContract_SendsToCorrectListeners()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        var source = new Subject<int>();
-        messageBus.Listen<int>("MyContract").ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var contractMessages).Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var noContractMessages).Subscribe();
+        var messageBus = new MessageBusType();
+        var source = new Signal<int>();
+        var contractMessages = messageBus.Listen<int>("MyContract").Collect();
+        var noContractMessages = messageBus.Listen<int>().Collect();
 
         const int SecondMessage = 2;
         const int ExpectedCount = 2;
@@ -516,11 +476,11 @@ public class MessageBusTest
     [Test]
     public async Task RegisterScheduler_AffectsMessageDelivery()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler);
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.SendMessage(TestMessage1);
 
@@ -543,14 +503,14 @@ public class MessageBusTest
     [Test]
     public async Task RegisterScheduler_Multiple_OverwritesPrevious()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
         var scheduler1 = TestContext.Current.GetVirtualTimeScheduler();
         var scheduler2 = new VirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler1);
         messageBus.RegisterScheduler<string>(scheduler2);
 
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.SendMessage(TestMessage1);
 
@@ -576,12 +536,12 @@ public class MessageBusTest
     [Test]
     public async Task RegisterScheduler_WithContract_OnlyAffectsContract()
     {
-        var messageBus = new ReactiveUI.MessageBus();
+        var messageBus = new MessageBusType();
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         messageBus.RegisterScheduler<string>(scheduler, TestContract);
-        messageBus.Listen<string>(TestContract).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var contractMessages).Subscribe();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var normalMessages).Subscribe();
+        var contractMessages = messageBus.Listen<string>(TestContract).Collect();
+        var normalMessages = messageBus.Listen<string>().Collect();
 
         messageBus.SendMessage("Contract", TestContract);
         messageBus.SendMessage("Normal");
@@ -602,16 +562,13 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Tests that complex objects work as messages.
-    ///     Verifies support for custom class types as messages.
-    /// </summary>
+    /// <summary>Tests that complex objects work as messages. Verifies support for custom class types as messages.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task SendMessage_ComplexObject_WorksCorrectly()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<TestMessage>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = messageBus.Listen<TestMessage>().Collect();
 
         const int SecondId = 2;
         const int ExpectedCount = 2;
@@ -634,16 +591,13 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Tests concurrent SendMessage calls from multiple threads.
-    ///     Verifies thread-safety of message bus operations.
-    /// </summary>
+    /// <summary>Tests concurrent SendMessage calls from multiple threads. Verifies thread-safety of message bus operations.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task SendMessage_ConcurrentCalls_ThreadSafe()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = messageBus.Listen<int>().Collect();
 
         const int MessageCount = 100;
         var tasks = Enumerable.Range(0, MessageCount).Select(i => Task.Run(() => messageBus.SendMessage(i))).ToArray();
@@ -661,9 +615,9 @@ public class MessageBusTest
     [Test]
     public async Task SendMessage_DifferentTypes_AreIndependent()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var stringMessages).Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var intMessages).Subscribe();
+        var messageBus = new MessageBusType();
+        var stringMessages = messageBus.Listen<string>().Collect();
+        var intMessages = messageBus.Listen<int>().Collect();
 
         const int ExpectedCount = 2;
 
@@ -691,9 +645,9 @@ public class MessageBusTest
     [Test]
     public async Task SendMessage_Listen_NullVsEmptyContract_AreDifferent()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var nullMessages).Subscribe();
-        messageBus.Listen<string>(string.Empty).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var emptyMessages).Subscribe();
+        var messageBus = new MessageBusType();
+        var nullMessages = messageBus.Listen<string>().Collect();
+        var emptyMessages = messageBus.Listen<string>(string.Empty).Collect();
 
         messageBus.SendMessage("Null");
         messageBus.SendMessage("Empty", string.Empty);
@@ -715,8 +669,8 @@ public class MessageBusTest
     [Test]
     public async Task SendMessage_Listen_ReceivesMessage()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages = messageBus.Listen<string>().Collect();
 
         messageBus.SendMessage(HelloMessage);
         messageBus.SendMessage(WorldMessage);
@@ -738,9 +692,9 @@ public class MessageBusTest
     [Test]
     public async Task SendMessage_Listen_WithContract_DistinguishesMessages()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<string>(Contract1).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages1).Subscribe();
-        messageBus.Listen<string>(Contract2).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var messages2).Subscribe();
+        var messageBus = new MessageBusType();
+        var messages1 = messageBus.Listen<string>(Contract1).Collect();
+        var messages2 = messageBus.Listen<string>(Contract2).Collect();
 
         messageBus.SendMessage("Message1", Contract1);
         messageBus.SendMessage("Message2", Contract2);
@@ -765,10 +719,10 @@ public class MessageBusTest
     [Test]
     public async Task SendMessage_MultipleSubscribers_AllReceiveMessage()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber1).Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber2).Subscribe();
-        messageBus.Listen<int>().ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var subscriber3).Subscribe();
+        var messageBus = new MessageBusType();
+        var subscriber1 = messageBus.Listen<int>().Collect();
+        var subscriber2 = messageBus.Listen<int>().Collect();
+        var subscriber3 = messageBus.Listen<int>().Collect();
 
         messageBus.SendMessage(MessageValue);
 
@@ -783,16 +737,13 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Tests that nullable value types work correctly.
-    ///     Verifies support for Nullable&lt;T&gt; message types.
-    /// </summary>
+    /// <summary>Tests that nullable value types work correctly. Verifies support for Nullable&lt;T&gt; message types.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task SendMessage_NullableValueType_WorksCorrectly()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.RegisterScheduler<int?>(ImmediateScheduler.Instance);
+        var messageBus = new MessageBusType();
+        messageBus.RegisterScheduler<int?>(Sequencer.Immediate);
         var messages = new List<int?>();
         messageBus.Listen<int?>().Subscribe(messages.Add);
 
@@ -812,16 +763,13 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Tests that reference type null values work correctly.
-    ///     Verifies support for null reference type messages.
-    /// </summary>
+    /// <summary>Tests that reference type null values work correctly. Verifies support for null reference type messages.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task SendMessage_NullReferenceType_WorksCorrectly()
     {
-        var messageBus = new ReactiveUI.MessageBus();
-        messageBus.RegisterScheduler<string?>(ImmediateScheduler.Instance);
+        var messageBus = new MessageBusType();
+        messageBus.RegisterScheduler<string?>(Sequencer.Immediate);
         var messages = new List<string?>();
         messageBus.Listen<string?>().Subscribe(messages.Add);
 
@@ -840,19 +788,13 @@ public class MessageBusTest
         }
     }
 
-    /// <summary>
-    ///     Test message class for complex object testing.
-    /// </summary>
+    /// <summary>Test message class for complex object testing.</summary>
     private sealed class TestMessage
     {
-        /// <summary>
-        ///     Gets or sets the message identifier.
-        /// </summary>
+        /// <summary>Gets or sets the message identifier.</summary>
         public int Id { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the message text content.
-        /// </summary>
+        /// <summary>Gets or sets the message text content.</summary>
         public string? Text { get; set; }
     }
 }

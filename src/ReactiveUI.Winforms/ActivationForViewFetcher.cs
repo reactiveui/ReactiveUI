@@ -9,7 +9,11 @@ using System.Reflection;
 using ReactiveUI.Internal;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Winforms;
+#else
 namespace ReactiveUI.Winforms;
+#endif
 
 /// <summary>
 /// ActivationForViewFetcher is how ReactiveUI determine when a
@@ -31,9 +35,10 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         switch (view)
         {
             case Control control:
+
                 // We are very likely being called from control's constructor, which means control.Site is not yet set.
                 // We must delay the design mode check until after one of the activation events fires.
-                return new WhereObservable<bool>(GetActivationForControl(control), _ => !GetCachedIsDesignMode(control));
+                return new KeepSignal<bool>(GetActivationForControl(control), _ => !GetCachedIsDesignMode(control));
 
             case null:
                 {
@@ -54,13 +59,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
                 }
         }
 
-        return EmptyObservable<bool>.Instance;
+        return Signal.None<bool>();
     }
 
     /// <summary>Builds the activation observable for a WinForms control, including form lifecycle when applicable.</summary>
     /// <param name="control">The control to observe.</param>
     /// <returns>An observable that signals when the control is activated and deactivated.</returns>
-    private static MergedDistinctObservable<bool> GetActivationForControl(Control control)
+    private static IObservable<bool> GetActivationForControl(Control control)
     {
         // Startup: Control.HandleCreated > Control.BindingContextChanged > Form.Load > Control.VisibleChanged > Form.Activated > Form.Shown
         // Shutdown: Form.Closing > Form.FormClosing > Form.Closed > Form.FormClosed > Form.Deactivate
@@ -89,7 +94,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         if (control is not Form form)
         {
             // Replaces Merge(handleDestroyed, handleCreated, visibleChanged).DistinctUntilChanged().
-            return new(handleDestroyed, handleCreated, visibleChanged);
+            return ReactiveUI.Primitives.LinqExtensions.BlendUnique<bool>(handleDestroyed, handleCreated, visibleChanged);
         }
 
         var formClosed = new FromEventObservable<bool>(onNext =>
@@ -100,7 +105,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher, IEnableLogger
         });
 
         // Replaces Merge(...).Merge(formClosed).DistinctUntilChanged().
-        return new(handleDestroyed, handleCreated, visibleChanged, formClosed);
+        return ReactiveUI.Primitives.LinqExtensions.BlendUnique<bool>(handleDestroyed, handleCreated, visibleChanged, formClosed);
     }
 
     /// <summary>Determines whether the control is currently running at design time.</summary>

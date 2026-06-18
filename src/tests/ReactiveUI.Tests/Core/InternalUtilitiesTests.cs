@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Core;
 
-/// <summary>
-///     Tests for ReactiveUI internal utility classes.
-/// </summary>
+/// <summary>Tests for ReactiveUI internal utility classes.</summary>
 public class InternalUtilitiesTests
 {
-    /// <summary>
-    ///     Tests that NotAWeakReference always holds strong reference even after GC.
-    /// </summary>
+    /// <summary>Tests that NotAWeakReference always holds strong reference even after GC.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NotAWeakReference_AfterGC_StillAlive()
@@ -33,9 +29,7 @@ public class InternalUtilitiesTests
         }
     }
 
-    /// <summary>
-    ///     Tests NotAWeakReference Target and IsAlive properties.
-    /// </summary>
+    /// <summary>Tests NotAWeakReference Target and IsAlive properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NotAWeakReference_Constructor_StoresTarget()

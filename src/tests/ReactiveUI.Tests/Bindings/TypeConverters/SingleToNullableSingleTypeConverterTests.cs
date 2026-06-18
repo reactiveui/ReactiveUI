@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting float to nullable float.
-/// </summary>
+/// <summary>Tests for converting float to nullable float.</summary>
 public class SingleToNullableSingleTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a float value always succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a float value always succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AlwaysSucceeds()
@@ -38,9 +32,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(output).IsEqualTo((float?)Value);
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="float"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="float"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsFloat()
@@ -49,9 +41,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(float));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is nullable <see cref="float"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is nullable <see cref="float"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsSingleNullable()
@@ -60,9 +50,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(converter.ToType).IsEqualTo(typeof(float?));
     }
 
-    /// <summary>
-    /// Verifies that a valid value converts successfully and produces output.
-    /// </summary>
+    /// <summary>Verifies that a valid value converts successfully and produces output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
@@ -76,9 +64,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(result).IsEqualTo((float?)Value);
     }
 
-    /// <summary>
-    /// Verifies that a null value fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null value fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
@@ -91,9 +77,7 @@ public class SingleToNullableSingleTypeConverterTests
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a value of an invalid type fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a value of an invalid type fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()

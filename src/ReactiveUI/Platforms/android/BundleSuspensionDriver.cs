@@ -1,20 +1,19 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Loads and saves application state using the platform bundle.
-/// </summary>
+#endif
+/// <summary>Loads and saves application state using the platform bundle.</summary>
 /// <remarks>
 /// <para>
 /// This driver supports both legacy reflection-based System.Text.Json serialization
@@ -23,9 +22,7 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class BundleSuspensionDriver : ISuspensionDriver
 {
-    /// <summary>
-    /// The bundle key under which the serialized application state is stored.
-    /// </summary>
+    /// <summary>The bundle key under which the serialized application state is stored.</summary>
     private const string StateKey = "__state";
 
     /// <inheritdoc />
@@ -41,14 +38,14 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         {
             if (AutoSuspendHelper.LatestBundle is null)
             {
-                return new ThrowObservable<object?>(
+                return Signal.Fail<object?>(
                     new InvalidOperationException("New bundle detected; no persisted state is available."));
             }
 
             var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
             if (buffer is null)
             {
-                return new ThrowObservable<object?>(
+                return Signal.Fail<object?>(
                     new InvalidOperationException("The persisted state buffer could not be found."));
             }
 
@@ -62,7 +59,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         }
         catch (Exception ex)
         {
-            return new ThrowObservable<object?>(ex);
+            return Signal.Fail<object?>(ex);
         }
     }
 
@@ -75,14 +72,14 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         {
             if (AutoSuspendHelper.LatestBundle is null)
             {
-                return new ThrowObservable<T?>(
+                return Signal.Fail<T?>(
                     new InvalidOperationException("New bundle detected; no persisted state is available."));
             }
 
             var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
             if (buffer is null)
             {
-                return new ThrowObservable<T?>(
+                return Signal.Fail<T?>(
                     new InvalidOperationException("The persisted state buffer could not be found."));
             }
 
@@ -96,7 +93,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         }
         catch (Exception ex)
         {
-            return new ThrowObservable<T?>(ex);
+            return Signal.Fail<T?>(ex);
         }
     }
 
@@ -107,7 +104,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
     [RequiresDynamicCode(
         "Implementations commonly use reflection-based serialization. " +
         "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
-    public IObservable<Unit> SaveState<T>(T state)
+    public IObservable<RxVoid> SaveState<T>(T state)
     {
         try
         {
@@ -115,16 +112,16 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             JsonSerializer.Serialize(stream, state);
 
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
-            return SingleValueObservable.Unit;
+            return SingleValueObservable.Void;
         }
         catch (Exception ex)
         {
-            return new ThrowObservable<Unit>(ex);
+            return Signal.Fail<RxVoid>(ex);
         }
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
+    public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo)
     {
         ArgumentExceptionHelper.ThrowIfNull(typeInfo);
 
@@ -134,25 +131,25 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             JsonSerializer.Serialize(stream, state, typeInfo);
 
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
-            return SingleValueObservable.Unit;
+            return SingleValueObservable.Void;
         }
         catch (Exception ex)
         {
-            return new ThrowObservable<Unit>(ex);
+            return Signal.Fail<RxVoid>(ex);
         }
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> InvalidateState()
+    public IObservable<RxVoid> InvalidateState()
     {
         try
         {
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, []);
-            return SingleValueObservable.Unit;
+            return SingleValueObservable.Void;
         }
         catch (Exception ex)
         {
-            return new ThrowObservable<Unit>(ex);
+            return Signal.Fail<RxVoid>(ex);
         }
     }
 }

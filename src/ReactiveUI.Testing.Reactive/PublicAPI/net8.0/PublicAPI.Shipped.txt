@@ -1,0 +1,64 @@
+#nullable enable
+ReactiveUI.Testing.AppBuilderTestBase
+ReactiveUI.Testing.AppBuilderTestBase.AppBuilderTestBase() -> void
+ReactiveUI.Testing.IBuilder
+ReactiveUI.Testing.IBuilderExtensions
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder)
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TField>(out TField field, TField value) -> TBuilder
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TField>(ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField>! values) -> TBuilder
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TField>(ref System.Collections.Generic.List<TField>? field, TField value) -> TBuilder
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TKey, TField>(ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, System.Collections.Generic.IDictionary<TKey, TField>! keyValuePair) -> TBuilder
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TKey, TField>(ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair) -> TBuilder
+ReactiveUI.Testing.IBuilderExtensions.extension<TBuilder>(TBuilder).With<TKey, TField>(ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, TKey key, TField value) -> TBuilder
+ReactiveUI.Testing.MessageBusExtensions
+ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBus!)
+ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBus!).With(System.Action! block) -> void
+ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBus!).With<TRet>(System.Func<TRet>! block) -> TRet
+ReactiveUI.Testing.MessageBusExtensions.extension(ReactiveUI.Reactive.IMessageBus!).WithMessageBus() -> System.IDisposable!
+ReactiveUI.Testing.RxTest
+ReactiveUI.Testing.SchedulerExtensions
+ReactiveUI.Testing.SchedulerExtensions.extension<T>(T)
+ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).With(System.Action<T>! block) -> void
+ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).With<TRet>(System.Func<T, TRet>! block) -> TRet
+ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).WithAsync(System.Func<T, System.Threading.Tasks.Task!>! block) -> System.Threading.Tasks.Task!
+ReactiveUI.Testing.SchedulerExtensions.extension<T>(T).WithAsync<TRet>(System.Func<T, System.Threading.Tasks.Task<TRet>!>! block) -> System.Threading.Tasks.Task<TRet>!
+ReactiveUI.Testing.TestSchedulerExtensions
+ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!)
+ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).AdvanceByMs(double milliseconds) -> void
+ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).AdvanceToMs(double milliseconds) -> void
+ReactiveUI.Testing.TestSequencer
+ReactiveUI.Testing.TestSequencer.AdvancePhaseAsync() -> System.Threading.Tasks.Task!
+ReactiveUI.Testing.TestSequencer.AdvancePhaseAsync(string! comment) -> System.Threading.Tasks.Task!
+ReactiveUI.Testing.TestSequencer.CompletedPhases.get -> long
+ReactiveUI.Testing.TestSequencer.CurrentPhase.get -> long
+ReactiveUI.Testing.TestSequencer.Dispose() -> void
+ReactiveUI.Testing.TestSequencer.TestSequencer() -> void
+static ReactiveUI.Testing.AppBuilderTestBase.RunAppBuilderTestAsync(System.Action! testBody) -> System.Threading.Tasks.Task!
+static ReactiveUI.Testing.AppBuilderTestBase.RunAppBuilderTestAsync(System.Func<System.Threading.Tasks.Task!>! testBody) -> System.Threading.Tasks.Task!
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TField>(this TBuilder builder, out TField field, TField value) -> TBuilder
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, System.Collections.Generic.IEnumerable<TField>! values) -> TBuilder
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TField>(this TBuilder builder, ref System.Collections.Generic.List<TField>? field, TField value) -> TBuilder
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, System.Collections.Generic.IDictionary<TKey, TField>! keyValuePair) -> TBuilder
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, System.Collections.Generic.KeyValuePair<TKey, TField> keyValuePair) -> TBuilder
+static ReactiveUI.Testing.IBuilderExtensions.With<TBuilder, TKey, TField>(this TBuilder builder, ref System.Collections.Generic.Dictionary<TKey, TField>! dictionary, TKey key, TField value) -> TBuilder
+static ReactiveUI.Testing.MessageBusExtensions.With(this ReactiveUI.Reactive.IMessageBus! messageBus, System.Action! block) -> void
+static ReactiveUI.Testing.MessageBusExtensions.With<TRet>(this ReactiveUI.Reactive.IMessageBus! messageBus, System.Func<TRet>! block) -> TRet
+static ReactiveUI.Testing.MessageBusExtensions.WithMessageBus(this ReactiveUI.Reactive.IMessageBus! messageBus) -> System.IDisposable!
+static ReactiveUI.Testing.RxTest.AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task!>! testBody) -> System.Threading.Tasks.Task!
+static ReactiveUI.Testing.RxTest.AppBuilderTestAsync(System.Func<System.Threading.Tasks.Task!>! testBody, int maxWaitMs) -> System.Threading.Tasks.Task!
+static ReactiveUI.Testing.SchedulerExtensions.With<T, TRet>(this T scheduler, System.Func<T, TRet>! block) -> TRet
+static ReactiveUI.Testing.SchedulerExtensions.With<T>(this T scheduler, System.Action<T>! block) -> void
+static ReactiveUI.Testing.SchedulerExtensions.WithAsync<T, TRet>(this T scheduler, System.Func<T, System.Threading.Tasks.Task<TRet>!>! block) -> System.Threading.Tasks.Task<TRet>!
+static ReactiveUI.Testing.SchedulerExtensions.WithAsync<T>(this T scheduler, System.Func<T, System.Threading.Tasks.Task!>! block) -> System.Threading.Tasks.Task!
+static ReactiveUI.Testing.SchedulerExtensions.WithScheduler(System.Reactive.Concurrency.IScheduler! scheduler) -> System.IDisposable!
+static ReactiveUI.Testing.TestSchedulerExtensions.AdvanceByMs(this Microsoft.Reactive.Testing.TestScheduler! scheduler, double milliseconds) -> void
+static ReactiveUI.Testing.TestSchedulerExtensions.AdvanceToMs(this Microsoft.Reactive.Testing.TestScheduler! scheduler, double milliseconds) -> void
+static ReactiveUI.Testing.TestSchedulerExtensions.FromTimeSpan(System.TimeSpan span) -> long
+static ReactiveUI.Testing.TestSchedulerExtensions.OnCompletedAt<T>(double milliseconds) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+static ReactiveUI.Testing.TestSchedulerExtensions.OnErrorAt<T>(double milliseconds, System.Exception! ex) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+static ReactiveUI.Testing.TestSchedulerExtensions.OnNextAt<T>(double milliseconds, T value) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+static ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).FromTimeSpan(System.TimeSpan span) -> long
+static ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).OnCompletedAt<T>(double milliseconds) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+static ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).OnErrorAt<T>(double milliseconds, System.Exception! ex) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+static ReactiveUI.Testing.TestSchedulerExtensions.extension(Microsoft.Reactive.Testing.TestScheduler!).OnNextAt<T>(double milliseconds, T value) -> Microsoft.Reactive.Testing.Recorded<System.Reactive.Notification<T>!>
+virtual ReactiveUI.Testing.TestSequencer.Dispose(bool disposing) -> void

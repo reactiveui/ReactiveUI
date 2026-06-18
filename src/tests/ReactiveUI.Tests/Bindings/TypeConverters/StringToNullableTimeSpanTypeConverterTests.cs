@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting strings to nullable TimeSpan.
-/// </summary>
+/// <summary>Tests for converting strings to nullable TimeSpan.</summary>
 public class StringToNullableTimeSpanTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToNullableTimeSpanTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
@@ -38,9 +32,7 @@ public class StringToNullableTimeSpanTypeConverterTests
         await Assert.That(output).IsEqualTo(expected);
     }
 
-    /// <summary>
-    /// Verifies that a null input converts to a null result.
-    /// </summary>
+    /// <summary>Verifies that a null input converts to a null result.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsNull()
@@ -53,9 +45,7 @@ public class StringToNullableTimeSpanTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that an empty string converts to a null result.
-    /// </summary>
+    /// <summary>Verifies that an empty string converts to a null result.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsNull()
@@ -68,9 +58,7 @@ public class StringToNullableTimeSpanTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()

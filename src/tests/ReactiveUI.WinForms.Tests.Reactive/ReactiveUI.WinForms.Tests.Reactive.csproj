@@ -1,0 +1,63 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ReactiveUI.WinForms.Tests.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.WinForms.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- ReactiveUI.Tests.Reactive supplies the reactive-compiled shared test infrastructure (ReactiveUI.Tests.Mocks
+       + Test.Utilities, recompiled under REACTIVE_SHIM); it references the ReactiveUI.Reactive engine, not the lean
+       ReactiveUI, so no neutral-RxVoid seam interfaces leak in. TestGuiMocks has no reactive variant, so its source
+       is cross-included here to recompile under REACTIVE_SHIM (referencing the lean project would drag in lean
+       ReactiveUI and shadow the shifted ICanActivate/IScreen). -->
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Tests.Reactive\ReactiveUI.Tests.Reactive.csproj"/>
+    <!-- Splat.Drawing supplies IPlatformModeDetector, used by the cross-included TestGuiMocks ProductionMode.
+         It has no ReactiveUI dependency, so it does not leak the lean assembly. -->
+    <PackageReference Include="Splat.Drawing"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.WinForms.Tests\API\**\*.cs" Link="API\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.TestGuiMocks\**\*.cs" Exclude="..\ReactiveUI.TestGuiMocks\obj\**\*.cs;..\ReactiveUI.TestGuiMocks\bin\**\*.cs" Link="ReactiveUI.TestGuiMocks\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
+        <Using Include="ReactiveUI.Reactive.Winforms"/>
+        <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+        <Compile Include="..\ReactiveUI.WinForms.Tests\winforms\**\*.cs" Link="winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
+      </ItemGroup>
+    </When>
+    <When Condition=" $(TargetFramework.StartsWith('net4'))">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Winforms.Reactive\ReactiveUI.Winforms.Reactive.csproj"/>
+        <Using Include="ReactiveUI.Reactive.Winforms"/>
+        <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+        <PackageReference Include="System.ValueTuple"/>
+        <Compile Include="..\ReactiveUI.WinForms.Tests\winforms\**\*.cs" Link="winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Mobile.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.NonParallel.Mobile.Tests\Mixins\LoggingRegistrationScope.cs" Link="Shared\Infrastructure\LoggingRegistrationScope.cs"/>
+      </ItemGroup>
+    </When>
+  </Choose>
+</Project>

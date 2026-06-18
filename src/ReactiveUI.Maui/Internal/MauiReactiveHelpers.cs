@@ -4,15 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Disposables;
 using ReactiveUI.Internal;
 
 #if IS_WINUI
 using Microsoft.UI.Xaml;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui.Internal;
+#else
 namespace ReactiveUI.Maui.Internal;
+#endif
 
 /// <summary>
 /// Internal helper methods for reactive operations in MAUI controls.
@@ -26,17 +28,17 @@ internal static class MauiReactiveHelpers
     /// </summary>
     /// <param name="source">The object to observe.</param>
     /// <param name="propertyName">The name of the property to observe (use nameof()).</param>
-    /// <returns>An observable that emits Unit when the property changes.</returns>
+    /// <returns>An observable that emits RxVoid when the property changes.</returns>
     /// <remarks>
     /// This method uses Observable.Create for better performance compared to Observable.FromEvent.
     /// It filters PropertyChanged events to only emit when the specified property changes.
     /// </remarks>
-    public static IObservable<Unit> CreatePropertyChangedPulse(INotifyPropertyChanged source, string propertyName)
+    public static IObservable<RxVoid> CreatePropertyChangedPulse(INotifyPropertyChanged source, string propertyName)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(propertyName);
 
-        return new FromEventObservable<Unit>(onNext =>
+        return new FromEventObservable<RxVoid>(onNext =>
         {
             void Handler(object? sender, PropertyChangedEventArgs e)
             {
@@ -46,7 +48,7 @@ internal static class MauiReactiveHelpers
                     return;
                 }
 
-                onNext(Unit.Default);
+                onNext(RxVoid.Default);
             }
 
             source.PropertyChanged += Handler;
@@ -137,26 +139,24 @@ internal static class MauiReactiveHelpers
     }
 #endif
 
-    /// <summary>
-    /// Wires up activation for a view model that supports activation.
-    /// </summary>
+    /// <summary>Wires up activation for a view model that supports activation.</summary>
     /// <param name="viewModel">The view model to activate.</param>
     /// <param name="activatedSignal">Observable that signals when the view is activated.</param>
     /// <param name="deactivatedSignal">Observable that signals when the view is deactivated.</param>
     /// <returns>A disposable that manages the activation subscriptions.</returns>
     public static IDisposable WireActivationIfSupported(
         object? viewModel,
-        IObservable<Unit> activatedSignal,
-        IObservable<Unit> deactivatedSignal)
+        IObservable<RxVoid> activatedSignal,
+        IObservable<RxVoid> deactivatedSignal)
     {
         if (viewModel is not IActivatableViewModel activatable)
         {
             return EmptyDisposable.Instance;
         }
 
-        var activatedSub = activatedSignal.Subscribe(new DelegateObserver<Unit>(_ => activatable.Activator.Activate()));
-        var deactivatedSub = deactivatedSignal.Subscribe(new DelegateObserver<Unit>(_ => activatable.Activator.Deactivate()));
+        var activatedSub = activatedSignal.Subscribe(new DelegateObserver<RxVoid>(_ => activatable.Activator.Activate()));
+        var deactivatedSub = deactivatedSignal.Subscribe(new DelegateObserver<RxVoid>(_ => activatable.Activator.Deactivate()));
 
-        return new CompositeDisposable(activatedSub, deactivatedSub);
+        return new MultipleDisposable(activatedSub, deactivatedSub);
     }
 }

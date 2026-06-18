@@ -7,14 +7,10 @@ using System.Globalization;
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting DateTime to strings.
-/// </summary>
+/// <summary>Tests for converting DateTime to strings.</summary>
 public class DateTimeToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -24,9 +20,7 @@ public class DateTimeToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a DateTime value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a DateTime value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -36,7 +30,7 @@ public class DateTimeToStringTypeConverterTests
     public async Task TryConvert_DateTime_Succeeds()
     {
         var converter = new DateTimeToStringTypeConverter();
-        var value = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Unspecified);
+        var value = new DateTime(2_024, 1, 15, 10, 30, 45, DateTimeKind.Unspecified);
 
         var result = converter.TryConvert(value, null, out var output);
 
@@ -44,9 +38,7 @@ public class DateTimeToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(value.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that the minimum DateTime value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum DateTime value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -64,9 +56,7 @@ public class DateTimeToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(DateTime.MinValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that the maximum DateTime value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum DateTime value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(

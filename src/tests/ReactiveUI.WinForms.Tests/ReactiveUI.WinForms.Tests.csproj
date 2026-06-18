@@ -22,6 +22,7 @@
     <Compile Include="API\**\*.cs"/>
   </ItemGroup>
 
+
   <Choose>
     <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
       <PropertyGroup>
@@ -30,6 +31,8 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
+        <Using Include="ReactiveUI.Winforms"/>
+        <Using Include="ReactiveUI.Builder"/>
         <Compile Include="winforms\**\*.cs"/>
       </ItemGroup>
     </When>
@@ -40,7 +43,8 @@
       </PropertyGroup>
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
-        <PackageReference Include="DynamicData"/>
+        <Using Include="ReactiveUI.Winforms"/>
+        <Using Include="ReactiveUI.Builder"/>
         <PackageReference Include="System.ValueTuple"/>
         <Compile Include="winforms\**\*.cs"/>
         <Compile Include="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\*.cs" Exclude="..\ReactiveUI.NonParallel.Tests\Locator\Mocks\Routable*.cs;..\ReactiveUI.NonParallel.Tests\Locator\Mocks\IRoutable*.cs" Link="Shared\Mocks\%(Filename)%(Extension)"/>

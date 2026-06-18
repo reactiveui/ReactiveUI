@@ -18,12 +18,13 @@ namespace ReactiveUI.Tests.Locator;
 [TestExecutor<AppBuilderTestExecutor>]
 public class ViewMappingBuilderTests
 {
+    /// <summary>The first contract name used when registering view mappings.</summary>
     private const string Contract1 = "contract1";
+
+    /// <summary>The second contract name used when registering view mappings.</summary>
     private const string Contract2 = "contract2";
 
-    /// <summary>
-    ///     Verifies that mapping via the parameterless constructor overload registers a view that can be resolved.
-    /// </summary>
+    /// <summary>Verifies that mapping via the parameterless constructor overload registers a view that can be resolved.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithParameterlessConstructor_ShouldRegisterAndResolveView()
@@ -41,9 +42,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that the parameterless constructor mapping overload supports contract-specific registrations.
-    /// </summary>
+    /// <summary>Verifies that the parameterless constructor mapping overload supports contract-specific registrations.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithParameterlessConstructor_ShouldSupportContracts()
@@ -65,9 +64,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view2).IsTypeOf<AlternateView>();
     }
 
-    /// <summary>
-    ///     Verifies that the parameterless constructor mapping overload returns the builder for fluent chaining.
-    /// </summary>
+    /// <summary>Verifies that the parameterless constructor mapping overload returns the builder for fluent chaining.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithParameterlessConstructor_ShouldReturnBuilder()
@@ -83,9 +80,7 @@ public class ViewMappingBuilderTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    ///     Verifies that multiple parameterless constructor mappings can be chained and resolved.
-    /// </summary>
+    /// <summary>Verifies that multiple parameterless constructor mappings can be chained and resolved.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithParameterlessConstructor_ShouldAllowChaining()
@@ -107,9 +102,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view2).IsTypeOf<AlternateView>();
     }
 
-    /// <summary>
-    ///     Verifies that the factory mapping overload throws when the supplied factory is null.
-    /// </summary>
+    /// <summary>Verifies that the factory mapping overload throws when the supplied factory is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithFactory_ShouldThrowArgumentNullException_WhenFactoryIsNull()
@@ -123,9 +116,7 @@ public class ViewMappingBuilderTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that the factory mapping overload registers a view that can be resolved.
-    /// </summary>
+    /// <summary>Verifies that the factory mapping overload registers a view that can be resolved.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithFactory_ShouldRegisterAndResolveView()
@@ -143,9 +134,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view).IsSameReferenceAs(createdView);
     }
 
-    /// <summary>
-    ///     Verifies that the factory mapping overload supports contract-specific registrations.
-    /// </summary>
+    /// <summary>Verifies that the factory mapping overload supports contract-specific registrations.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithFactory_ShouldSupportContracts()
@@ -169,9 +158,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view2).IsSameReferenceAs(view2Instance);
     }
 
-    /// <summary>
-    ///     Verifies that the factory mapping overload invokes the factory on every resolve, producing new instances.
-    /// </summary>
+    /// <summary>Verifies that the factory mapping overload invokes the factory on every resolve, producing new instances.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithFactory_ShouldCallFactoryOnEachResolve()
@@ -197,9 +184,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view1).IsNotSameReferenceAs(view2);
     }
 
-    /// <summary>
-    ///     Verifies that the factory mapping overload returns the builder for fluent chaining.
-    /// </summary>
+    /// <summary>Verifies that the factory mapping overload returns the builder for fluent chaining.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithFactory_ShouldReturnBuilder()
@@ -215,9 +200,7 @@ public class ViewMappingBuilderTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    ///     Verifies that <c>MapFromServiceLocator</c> resolves the view from the service locator.
-    /// </summary>
+    /// <summary>Verifies that <c>MapFromServiceLocator</c> resolves the view from the service locator.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task MapFromServiceLocator_ShouldResolveViewFromServiceLocator()
@@ -240,9 +223,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view).IsSameReferenceAs(viewInstance);
     }
 
-    /// <summary>
-    ///     Verifies that <c>MapFromServiceLocator</c> supports contract-specific registrations.
-    /// </summary>
+    /// <summary>Verifies that <c>MapFromServiceLocator</c> supports contract-specific registrations.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task MapFromServiceLocator_ShouldSupportContracts()
@@ -273,9 +254,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view2).IsNotNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>MapFromServiceLocator</c> throws when the view is not registered in the service locator.
-    /// </summary>
+    /// <summary>Verifies that <c>MapFromServiceLocator</c> throws when the view is not registered in the service locator.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task MapFromServiceLocator_ShouldThrowInvalidOperationException_WhenViewNotRegistered()
@@ -292,9 +271,7 @@ public class ViewMappingBuilderTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    ///     Verifies that <c>MapFromServiceLocator</c> returns the builder for fluent chaining.
-    /// </summary>
+    /// <summary>Verifies that <c>MapFromServiceLocator</c> returns the builder for fluent chaining.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task MapFromServiceLocator_ShouldReturnBuilder()
@@ -315,9 +292,7 @@ public class ViewMappingBuilderTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    ///     Verifies that multiple <c>MapFromServiceLocator</c> calls can be chained and resolved.
-    /// </summary>
+    /// <summary>Verifies that multiple <c>MapFromServiceLocator</c> calls can be chained and resolved.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task MapFromServiceLocator_ShouldAllowChaining()
@@ -345,9 +320,7 @@ public class ViewMappingBuilderTests
         await Assert.That(view2).IsTypeOf<AlternateView>();
     }
 
-    /// <summary>
-    ///     Verifies that the builder allows mixing parameterless, factory, and service locator registration types.
-    /// </summary>
+    /// <summary>Verifies that the builder allows mixing parameterless, factory, and service locator registration types.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Builder_ShouldAllowMixedRegistrationTypes()
@@ -378,46 +351,34 @@ public class ViewMappingBuilderTests
         await Assert.That(view3).IsTypeOf<AnotherView>();
     }
 
-    /// <summary>
-    ///     Test view model used for testing view mapping builder functionality.
-    /// </summary>
+    /// <summary>Test view model used for testing view mapping builder functionality.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel : ReactiveObject;
 
-    /// <summary>
-    ///     Alternate test view model used for testing multi-mapping scenarios.
-    /// </summary>
+    /// <summary>Alternate test view model used for testing multi-mapping scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class AlternateViewModel : ReactiveObject;
 
-    /// <summary>
-    ///     Third test view model used for testing mixed registration scenarios.
-    /// </summary>
+    /// <summary>Third test view model used for testing mixed registration scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class AnotherViewModel : ReactiveObject;
 
-    /// <summary>
-    ///     Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.
-    /// </summary>
+    /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
     private sealed class TestView : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -425,19 +386,13 @@ public class ViewMappingBuilderTests
         }
     }
 
-    /// <summary>
-    ///     Alternate test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AlternateViewModel" />.
-    /// </summary>
+    /// <summary>Alternate test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AlternateViewModel" />.</summary>
     private sealed class AlternateView : IViewFor<AlternateViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public AlternateViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -445,19 +400,13 @@ public class ViewMappingBuilderTests
         }
     }
 
-    /// <summary>
-    ///     Third test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AnotherViewModel" />.
-    /// </summary>
+    /// <summary>Third test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="AnotherViewModel" />.</summary>
     private sealed class AnotherView : IViewFor<AnotherViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public AnotherViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -465,19 +414,13 @@ public class ViewMappingBuilderTests
         }
     }
 
-    /// <summary>
-    ///     Test view that is intentionally not registered, used to verify failure when resolving unregistered views.
-    /// </summary>
+    /// <summary>Test view that is intentionally not registered, used to verify failure when resolving unregistered views.</summary>
     private sealed class UnregisteredView : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;

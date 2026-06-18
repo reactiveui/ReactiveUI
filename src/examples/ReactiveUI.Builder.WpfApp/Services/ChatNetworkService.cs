@@ -6,50 +6,33 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Reactive.Linq;
 using System.Text.Json;
 using ReactiveUI.Builder.WpfApp.Models;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
-/// <summary>
-/// A simple UDP-based network relay to share chat messages and room events between app instances.
-/// </summary>
+/// <summary>A simple UDP-based network relay to share chat messages and room events between app instances.</summary>
 public sealed class ChatNetworkService : IDisposable
 {
-    /// <summary>
-    /// The MessageBus contract used for room add/remove/sync events.
-    /// </summary>
+    /// <summary>The MessageBus contract used for room add/remove/sync events.</summary>
     private const string RoomsContract = "__rooms__";
 
-    /// <summary>
-    /// The UDP port that all instances send to and listen on.
-    /// </summary>
-    private const int Port = 54545;
+    /// <summary>The UDP port that all instances send to and listen on.</summary>
+    private const int Port = 54_545;
 
-    /// <summary>
-    /// The IPv4 local multicast address used to reach other instances on the same machine/network.
-    /// </summary>
+    /// <summary>The IPv4 local multicast address used to reach other instances on the same machine/network.</summary>
     private static readonly IPAddress MulticastAddress = IPAddress.Parse("239.255.0.1");
 
-    /// <summary>
-    /// The UDP client used to send outgoing packets.
-    /// </summary>
+    /// <summary>The UDP client used to send outgoing packets.</summary>
     private readonly UdpClient _udp; // sender
 
-    /// <summary>
-    /// The multicast endpoint that outgoing packets are addressed to.
-    /// </summary>
+    /// <summary>The multicast endpoint that outgoing packets are addressed to.</summary>
     private readonly IPEndPoint _sendEndpoint;
 
-    /// <summary>
-    /// Signals the background receive loop to stop when the service is disposed.
-    /// </summary>
+    /// <summary>Signals the background receive loop to stop when the service is disposed.</summary>
     private readonly CancellationTokenSource _cts = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatNetworkService"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ChatNetworkService"/> class.</summary>
     public ChatNetworkService()
     {
         _sendEndpoint = new(MulticastAddress, Port);
@@ -61,9 +44,10 @@ public sealed class ChatNetworkService : IDisposable
             _udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, 1);
             _udp.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastLoopback, true);
         }
-        catch
+        catch (SocketException ex)
         {
-            // ignore
+            // Multicast options are best-effort; continue without them if the platform rejects them.
+            Trace.TraceWarning($"[Net] Failed to configure multicast socket options: {ex.Message}");
         }
 
         // Outgoing chat messages (default contract) - only send messages originating from this instance
@@ -81,9 +65,7 @@ public sealed class ChatNetworkService : IDisposable
         Trace.TraceInformation("[Net] ChatNetworkService initialized.");
     }
 
-    /// <summary>
-    /// Starts the background receive loop.
-    /// </summary>
+    /// <summary>Starts the background receive loop.</summary>
     public void Start()
     {
         Trace.TraceInformation("[Net] Starting receive loop...");
@@ -99,9 +81,7 @@ public sealed class ChatNetworkService : IDisposable
         Trace.TraceInformation("[Net] Disposed.");
     }
 
-    /// <summary>
-    /// Configures and binds the supplied listener to the multicast group used by the service.
-    /// </summary>
+    /// <summary>Configures and binds the supplied listener to the multicast group used by the service.</summary>
     /// <param name="listener">The UDP client to configure and bind.</param>
     /// <returns><see langword="true"/> if the listener started successfully; otherwise <see langword="false"/>.</returns>
     private static bool TryStartListener(UdpClient listener)
@@ -125,9 +105,7 @@ public sealed class ChatNetworkService : IDisposable
         }
     }
 
-    /// <summary>
-    /// Deserializes a received packet and routes it to the appropriate handler.
-    /// </summary>
+    /// <summary>Deserializes a received packet and routes it to the appropriate handler.</summary>
     /// <param name="buffer">The raw bytes of the received packet.</param>
     private static void DispatchPacket(byte[] buffer)
     {
@@ -145,9 +123,7 @@ public sealed class ChatNetworkService : IDisposable
         }
     }
 
-    /// <summary>
-    /// Deserializes and republishes a room event, ignoring packets that originated from this instance.
-    /// </summary>
+    /// <summary>Deserializes and republishes a room event, ignoring packets that originated from this instance.</summary>
     /// <param name="buffer">The raw bytes of the received room-event packet.</param>
     private static void HandleRoomEvent(byte[] buffer)
     {
@@ -162,9 +138,7 @@ public sealed class ChatNetworkService : IDisposable
         MessageBus.Current.SendMessage(evt, RoomsContract);
     }
 
-    /// <summary>
-    /// Deserializes and republishes a chat message, ignoring packets that originated from this instance.
-    /// </summary>
+    /// <summary>Deserializes and republishes a chat message, ignoring packets that originated from this instance.</summary>
     /// <param name="buffer">The raw bytes of the received chat packet.</param>
     private static void HandleChatMessage(byte[] buffer)
     {
@@ -211,9 +185,7 @@ public sealed class ChatNetworkService : IDisposable
         }
     }
 
-    /// <summary>
-    /// Serializes the supplied message to JSON and broadcasts it to the multicast endpoint.
-    /// </summary>
+    /// <summary>Serializes the supplied message to JSON and broadcasts it to the multicast endpoint.</summary>
     /// <param name="message">The chat or room message to broadcast.</param>
     private void Send(object message)
     {

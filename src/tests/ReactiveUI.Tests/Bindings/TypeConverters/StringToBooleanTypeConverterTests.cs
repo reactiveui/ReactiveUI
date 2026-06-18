@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting strings to booleans.
-/// </summary>
+/// <summary>Tests for converting strings to booleans.</summary>
 public class StringToBooleanTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that the string "True" converts to a true boolean.
-    /// </summary>
+    /// <summary>Verifies that the string "True" converts to a true boolean.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_TrueString_Succeeds()
@@ -37,9 +31,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(output).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that the string "False" converts to a false boolean.
-    /// </summary>
+    /// <summary>Verifies that the string "False" converts to a false boolean.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_FalseString_Succeeds()
@@ -52,9 +44,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(output).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the lowercase string "true" converts to a true boolean.
-    /// </summary>
+    /// <summary>Verifies that the lowercase string "true" converts to a true boolean.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_TrueLowercase_Succeeds()
@@ -67,9 +57,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(output).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that the lowercase string "false" converts to a false boolean.
-    /// </summary>
+    /// <summary>Verifies that the lowercase string "false" converts to a false boolean.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_FalseLowercase_Succeeds()
@@ -82,9 +70,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(output).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsFalse()
@@ -96,9 +82,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an empty string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an empty string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsFalse()
@@ -110,9 +94,7 @@ public class StringToBooleanTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()

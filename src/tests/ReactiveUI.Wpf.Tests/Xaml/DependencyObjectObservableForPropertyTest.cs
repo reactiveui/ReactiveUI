@@ -4,10 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
 using System.Windows.Controls;
-
-using DynamicData;
 
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -15,26 +12,39 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests for the dependency object property binding.
-/// </summary>
+/// <summary>Tests for the dependency object property binding.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class DependencyObjectObservableForPropertyTest
 {
+    /// <summary>The expected emission count of two.</summary>
     private const int ExpectedCountTwo = 2;
+
+    /// <summary>The expected emission count of three.</summary>
     private const int ExpectedCountThree = 3;
+
+    /// <summary>The expected emission count of four.</summary>
     private const int ExpectedCountFour = 4;
+
+    /// <summary>The expected binding affinity for dependency object properties.</summary>
     private const int ExpectedAffinity = 4;
+
+    /// <summary>The second selected index used in selection tests.</summary>
     private const int SecondSelectedIndex = 2;
+
+    /// <summary>The name of the test string dependency property.</summary>
     private const string TestStringPropertyName = "TestString";
+
+    /// <summary>The first test value emitted during property observation.</summary>
     private const string FooValue = "Foo";
+
+    /// <summary>The second test value emitted during property observation.</summary>
     private const string BarValue = "Bar";
+
+    /// <summary>A generic test value used in property observation.</summary>
     private const string TestValue = "Test";
 
-    /// <summary>
-    /// Runs a smoke test for dependency object observables for property.
-    /// </summary>
+    /// <summary>Runs a smoke test for dependency object observables for property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DependencyObjectObservableForPropertySmokeTest()
@@ -53,11 +63,9 @@ public class DependencyObjectObservableForPropertyTest
         var propertyName = expression.Body.GetMemberInfo()?.Name
                            ?? throw new InvalidOperationException("There is no valid property name");
 
-        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
-                          .WhereNotNull()
+        var disp1 = ObservableMixins.WhereNotNull(binder.GetNotificationForProperty(fixture, expression.Body, propertyName))
                           .Subscribe(results.Add);
-        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
-                          .WhereNotNull()
+        var disp2 = ObservableMixins.WhereNotNull(binder.GetNotificationForProperty(fixture, expression.Body, propertyName))
                           .Subscribe(results.Add);
 
         fixture.TestString = FooValue;
@@ -69,9 +77,7 @@ public class DependencyObjectObservableForPropertyTest
         disp2.Dispose();
     }
 
-    /// <summary>
-    /// Runs a smoke test for derived dependency object observables for property.
-    /// </summary>
+    /// <summary>Runs a smoke test for derived dependency object observables for property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DerivedDependencyObjectObservableForPropertySmokeTest()
@@ -90,11 +96,9 @@ public class DependencyObjectObservableForPropertyTest
         var propertyName = expression.Body.GetMemberInfo()?.Name
                            ?? throw new InvalidOperationException("There is no valid property name");
 
-        var disp1 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
-                          .WhereNotNull()
+        var disp1 = ObservableMixins.WhereNotNull(binder.GetNotificationForProperty(fixture, expression.Body, propertyName))
                           .Subscribe(results.Add);
-        var disp2 = binder.GetNotificationForProperty(fixture, expression.Body, propertyName)
-                          .WhereNotNull()
+        var disp2 = ObservableMixins.WhereNotNull(binder.GetNotificationForProperty(fixture, expression.Body, propertyName))
                           .Subscribe(results.Add);
 
         fixture.TestString = FooValue;
@@ -106,9 +110,7 @@ public class DependencyObjectObservableForPropertyTest
         disp2.Dispose();
     }
 
-    /// <summary>
-    /// Tests WhenAny with dependency object test.
-    /// </summary>
+    /// <summary>Tests WhenAny with dependency object test.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyWithDependencyObjectTest()
@@ -116,10 +118,7 @@ public class DependencyObjectObservableForPropertyTest
         var inputs = new[] { FooValue, BarValue, "Baz" };
         var fixture = new DepObjFixture();
 
-        fixture.WhenAnyValue(static x => x.TestString)
-               .ToObservableChangeSet()
-               .Bind(out var outputs)
-               .Subscribe();
+        var outputs = fixture.WhenAnyValue(static x => x.TestString).Collect();
 
         foreach (var x in inputs)
         {
@@ -135,9 +134,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(outputs.Skip(1)).IsEquivalentTo(inputs);
     }
 
-    /// <summary>
-    /// Tests ListBoxes the selected item test.
-    /// </summary>
+    /// <summary>Tests ListBoxes the selected item test.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ListBoxSelectedItemTest()
@@ -147,10 +144,7 @@ public class DependencyObjectObservableForPropertyTest
         input.Items.Add(BarValue);
         input.Items.Add("Baz");
 
-        input.WhenAnyValue(static x => x.SelectedItem)
-             .ToObservableChangeSet()
-             .Bind(out var output)
-             .Subscribe();
+        var output = input.WhenAnyValue(static x => x.SelectedItem).Collect();
 
         await Assert.That(output).Count().IsEqualTo(1);
 
@@ -161,9 +155,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(output).Count().IsEqualTo(ExpectedCountThree);
     }
 
-    /// <summary>
-    /// Tests GetAffinityForObject returns 0 for non-DependencyObject types.
-    /// </summary>
+    /// <summary>Tests GetAffinityForObject returns 0 for non-DependencyObject types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -176,9 +168,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests GetAffinityForObject returns 4 for valid DependencyProperty.
-    /// </summary>
+    /// <summary>Tests GetAffinityForObject returns 4 for valid DependencyProperty.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -191,9 +181,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests GetAffinityForObject returns 0 for non-existent property.
-    /// </summary>
+    /// <summary>Tests GetAffinityForObject returns 0 for non-existent property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -206,9 +194,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests GetNotificationForProperty throws for null sender.
-    /// </summary>
+    /// <summary>Tests GetNotificationForProperty throws for null sender.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -221,9 +207,7 @@ public class DependencyObjectObservableForPropertyTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests GetNotificationForProperty throws for non-dependency property.
-    /// </summary>
+    /// <summary>Tests GetNotificationForProperty throws for non-dependency property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -237,9 +221,7 @@ public class DependencyObjectObservableForPropertyTest
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Tests GetNotificationForProperty with suppressWarnings parameter.
-    /// </summary>
+    /// <summary>Tests GetNotificationForProperty with suppressWarnings parameter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -260,9 +242,7 @@ public class DependencyObjectObservableForPropertyTest
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests GetNotificationForProperty notifies on dependency property changes.
-    /// </summary>
+    /// <summary>Tests GetNotificationForProperty notifies on dependency property changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -289,9 +269,7 @@ public class DependencyObjectObservableForPropertyTest
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests disposal stops notifications.
-    /// </summary>
+    /// <summary>Tests disposal stops notifications.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -300,7 +278,7 @@ public class DependencyObjectObservableForPropertyTest
         var fixture = new DepObjFixture();
 
         // Detach the handler inline on dispose so the assertions below are deterministic without a running pump.
-        var binder = new DependencyObjectObservableForProperty { Scheduler = ImmediateScheduler.Instance };
+        var binder = new DependencyObjectObservableForProperty { Scheduler = Sequencer.Immediate };
         Expression<Func<DepObjFixture, object?>> expression = static x => x.TestString;
         var propertyName = expression.Body.GetMemberInfo()?.Name!;
 
@@ -320,9 +298,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(results).Count().IsEqualTo(1); // Should still not increase
     }
 
-    /// <summary>
-    /// Tests multiple subscribers receive notifications.
-    /// </summary>
+    /// <summary>Tests multiple subscribers receive notifications.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -357,9 +333,7 @@ public class DependencyObjectObservableForPropertyTest
         disp3.Dispose();
     }
 
-    /// <summary>
-    /// Tests beforeChanged parameter has no effect (not supported for DependencyProperty).
-    /// </summary>
+    /// <summary>Tests beforeChanged parameter has no effect (not supported for DependencyProperty).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -382,9 +356,7 @@ public class DependencyObjectObservableForPropertyTest
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests GetAffinityForObject with beforeChanged parameter.
-    /// </summary>
+    /// <summary>Tests GetAffinityForObject with beforeChanged parameter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -397,9 +369,7 @@ public class DependencyObjectObservableForPropertyTest
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests GetNotificationForProperty observable expression is passed through.
-    /// </summary>
+    /// <summary>Tests GetNotificationForProperty observable expression is passed through.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]
@@ -422,9 +392,7 @@ public class DependencyObjectObservableForPropertyTest
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests with derived dependency object properties.
-    /// </summary>
+    /// <summary>Tests with derived dependency object properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [NotInParallel]

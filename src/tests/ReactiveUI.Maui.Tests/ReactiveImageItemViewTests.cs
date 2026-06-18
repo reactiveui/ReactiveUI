@@ -7,15 +7,11 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for ReactiveImageItemView.
-/// </summary>
+/// <summary>Tests for ReactiveImageItemView.</summary>
 [TestExecutor<MauiTestExecutor>]
 public class ReactiveImageItemViewTests
 {
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_SetAndGet_WorksCorrectly()
@@ -29,9 +25,7 @@ public class ReactiveImageItemViewTests
         await Assert.That(view.ViewModel?.Name).IsEqualTo("Test");
     }
 
-    /// <summary>
-    /// Tests that Text property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Text property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Text_SetAndGet_WorksCorrectly()
@@ -41,9 +35,7 @@ public class ReactiveImageItemViewTests
         await Assert.That(view.Text).IsEqualTo("Test Text");
     }
 
-    /// <summary>
-    /// Tests that Detail property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Detail property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Detail_SetAndGet_WorksCorrectly()
@@ -53,9 +45,7 @@ public class ReactiveImageItemViewTests
         await Assert.That(view.Detail).IsEqualTo("Test Detail");
     }
 
-    /// <summary>
-    /// Tests that ImageSource property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ImageSource property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ImageSource_SetAndGet_WorksCorrectly()
@@ -66,9 +56,7 @@ public class ReactiveImageItemViewTests
         await Assert.That(view.ImageSource).IsEqualTo(imageSource);
     }
 
-    /// <summary>
-    /// Tests that setting ViewModel updates BindingContext.
-    /// </summary>
+    /// <summary>Tests that setting ViewModel updates BindingContext.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_WhenSet_UpdatesBindingContext()
@@ -81,14 +69,10 @@ public class ReactiveImageItemViewTests
         await Assert.That(view.BindingContext).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Test view model.
-    /// </summary>
+    /// <summary>Test view model.</summary>
     private sealed class TestViewModel
     {
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
+        /// <summary>Gets or sets the name.</summary>
         public string? Name { get; set; }
     }
 }

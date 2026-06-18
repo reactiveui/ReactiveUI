@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -32,7 +31,7 @@ public class InteractionBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _interaction = new Interaction<int, int>(ImmediateScheduler.Instance);
+        _interaction = new(Sequencer.Immediate);
         _handler = _interaction.RegisterHandler(static context => context.SetOutput(context.Input));
     }
 

@@ -7,14 +7,10 @@ using System.Globalization;
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting decimals to strings.
-/// </summary>
+/// <summary>Tests for converting decimals to strings.</summary>
 public class DecimalToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -24,9 +20,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a decimal value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a decimal value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_DecimalToString_Succeeds()
@@ -40,9 +34,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123.456");
     }
 
-    /// <summary>
-    /// Verifies that the maximum decimal value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum decimal value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -56,9 +48,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(decimal.MaxValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that the minimum decimal value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum decimal value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -72,9 +62,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(decimal.MinValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a negative decimal value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a negative decimal value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
@@ -88,9 +76,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("-123.456");
     }
 
-    /// <summary>
-    /// Verifies that a numeric conversion hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a numeric conversion hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
@@ -105,9 +91,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("42.50");
     }
 
-    /// <summary>
-    /// Verifies that a currency format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a currency format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_CurrencyFormat()
@@ -121,9 +105,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("C", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that an exponential format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that an exponential format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_ExponentialFormat()
@@ -137,9 +119,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("E2", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a numeric format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a numeric format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_FormatsCorrectly()
@@ -153,9 +133,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("N2", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a percent format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a percent format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_PercentFormat()
@@ -169,9 +147,7 @@ public class DecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("P2", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a zero decimal value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a zero decimal value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Zero_Succeeds()

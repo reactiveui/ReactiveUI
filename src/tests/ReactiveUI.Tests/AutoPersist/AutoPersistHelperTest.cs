@@ -5,9 +5,6 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Subjects;
-using ReactiveUI.Internal;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
@@ -15,31 +12,23 @@ using TUnit.Core.Executors;
 namespace ReactiveUI.Tests.AutoPersist;
 
 /// <summary>
-///     Comprehensive test suite for AutoPersistHelper.
+///     Comprehensive test suite for AutoPersistHelperMixins.
 ///     Tests cover all overloads, throttling, scheduling, and collection behavior.
 /// </summary>
 [NotInParallel]
 [TestExecutor<WithSchedulerExecutor>]
 public class AutoPersistHelperTest
 {
-    /// <summary>
-    ///     Milliseconds to advance the scheduler past initial subscription setup.
-    /// </summary>
+    /// <summary>Milliseconds to advance the scheduler past initial subscription setup.</summary>
     private const int InitialAdvanceMilliseconds = 10;
 
-    /// <summary>
-    ///     The throttle interval, in milliseconds, used by the collection persistence tests.
-    /// </summary>
+    /// <summary>The throttle interval, in milliseconds, used by the collection persistence tests.</summary>
     private const int ThrottleMilliseconds = 100;
 
-    /// <summary>
-    ///     Milliseconds to advance past the throttle interval to allow a save to fire.
-    /// </summary>
+    /// <summary>Milliseconds to advance past the throttle interval to allow a save to fire.</summary>
     private const int PastThrottleMilliseconds = 150;
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject calls onAdd when new item added.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject calls onAdd when new item added.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_AddNewItem_CallsOnAdd()
@@ -61,9 +50,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject handles collection Clear.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject handles collection Clear.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_ClearCollection_CallsOnRemove()
@@ -88,9 +75,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject calls onRemove on disposal.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject calls onRemove on disposal.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_Dispose_CallsOnRemoveForAll()
@@ -115,9 +100,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject calls onAdd for existing items.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject calls onAdd for existing items.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_ExistingItems_CallsOnAdd()
@@ -140,9 +123,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject throws on null collection.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject throws on null collection.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_NullCollection_ThrowsArgumentNullException()
@@ -156,9 +137,7 @@ public class AutoPersistHelperTest
         });
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject throws on null onAdd.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject throws on null onAdd.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_NullOnAdd_ThrowsArgumentNullException()
@@ -172,9 +151,7 @@ public class AutoPersistHelperTest
         });
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject throws on null onRemove.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject throws on null onRemove.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_NullOnRemove_ThrowsArgumentNullException()
@@ -188,9 +165,7 @@ public class AutoPersistHelperTest
         });
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject works with ReadOnlyObservableCollection.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject works with ReadOnlyObservableCollection.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_ReadOnlyCollection_WorksCorrectly()
@@ -213,9 +188,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject calls onRemove when item removed.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject calls onRemove when item removed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_RemoveItem_CallsOnRemove()
@@ -237,9 +210,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that ActOnEveryObject handles collection Replace.
-    /// </summary>
+    /// <summary>Tests that ActOnEveryObject handles collection Replace.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ActOnEveryObject_ReplaceItem_CallsOnRemoveAndOnAdd()
@@ -267,9 +238,7 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist disposes correctly.
-    /// </summary>
+    /// <summary>Tests that AutoPersist disposes correctly.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -284,7 +253,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromSeconds(1));
 
@@ -303,9 +272,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that manual save signal triggers immediate save.
-    /// </summary>
+    /// <summary>Tests that manual save signal triggers immediate save.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -314,35 +281,33 @@ public class AutoPersistHelperTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var fixture = new TestFixture();
-        var manualSave = new Subject<Unit>();
+        var manualSave = new Signal<RxVoid>();
         var saveCount = 0;
 
         fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             manualSave,
             TimeSpan.FromSeconds(1));
 
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
-        manualSave.OnNext(Unit.Default);
+        manualSave.OnNext(RxVoid.Default);
         scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
 
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist with metadata provider works for collections.
-    /// </summary>
+    /// <summary>Tests that AutoPersist with metadata provider works for collections.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
     public async Task AutoPersist_MetadataProvider_WorksCorrectly()
     {
-        var metadataProvider = AutoPersistHelper.CreateMetadataProvider<TestFixture>();
+        var metadataProvider = AutoPersistHelperMixins.CreateMetadataProvider<TestFixture>();
         var fixture = new TestFixture();
         var metadata = metadataProvider(fixture);
 
@@ -351,9 +316,7 @@ public class AutoPersistHelperTest
         await Assert.That(metadata.PersistablePropertyNames).Contains("IsNotNullString");
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist throws for objects without DataContract attribute.
-    /// </summary>
+    /// <summary>Tests that AutoPersist throws for objects without DataContract attribute.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersist_NoDataContract_ThrowsArgumentException()
@@ -362,14 +325,12 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            obj.AutoPersist(_ => SingleValueObservable.Unit);
+            obj.AutoPersist(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist only saves for DataMember properties.
-    /// </summary>
+    /// <summary>Tests that AutoPersist only saves for DataMember properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -384,7 +345,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromSeconds(1));
 
@@ -397,9 +358,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist throws on null doPersist.
-    /// </summary>
+    /// <summary>Tests that AutoPersist throws on null doPersist.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersist_NullDoPersist_ThrowsArgumentNullException()
@@ -413,9 +372,7 @@ public class AutoPersistHelperTest
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist throws on null manualSaveSignal.
-    /// </summary>
+    /// <summary>Tests that AutoPersist throws on null manualSaveSignal.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersist_NullManualSaveSignal_ThrowsArgumentNullException()
@@ -424,14 +381,12 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Unit, null!, TimeSpan.FromSeconds(1));
+            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist with metadata throws on null metadata.
-    /// </summary>
+    /// <summary>Tests that AutoPersist with metadata throws on null metadata.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [SuppressMessage(
@@ -444,14 +399,12 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Unit, null!, TimeSpan.FromSeconds(1));
+            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist saves when a DataMember property changes.
-    /// </summary>
+    /// <summary>Tests that AutoPersist saves when a DataMember property changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -466,7 +419,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromSeconds(1));
 
@@ -477,9 +430,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist respects throttle interval.
-    /// </summary>
+    /// <summary>Tests that AutoPersist respects throttle interval.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -495,7 +446,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromSeconds(ThrottleSeconds));
 
@@ -513,9 +464,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersist with metadata works correctly.
-    /// </summary>
+    /// <summary>Tests that AutoPersist with metadata works correctly.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -524,14 +473,14 @@ public class AutoPersistHelperTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var fixture = new TestFixture();
-        var metadata = AutoPersistHelper.CreateMetadata<TestFixture>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
         fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             metadata,
             TimeSpan.FromSeconds(1));
@@ -543,9 +492,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection adds persistence to collection items.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection adds persistence to collection items.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -560,7 +507,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -576,9 +523,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection throws on null collection.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection throws on null collection.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersistCollection_NullCollection_ThrowsArgumentNullException()
@@ -587,14 +532,12 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.AutoPersistCollection(_ => SingleValueObservable.Unit);
+            collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection throws on null doPersist.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection throws on null doPersist.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersistCollection_NullDoPersist_ThrowsArgumentNullException()
@@ -608,9 +551,7 @@ public class AutoPersistHelperTest
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection throws on null metadata.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection throws on null metadata.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task AutoPersistCollection_NullMetadata_ThrowsArgumentNullException()
@@ -619,14 +560,12 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(_ => SingleValueObservable.Unit, (AutoPersistHelper.AutoPersistMetadata)null!);
+            collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
             await Task.CompletedTask;
         });
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection works with ReadOnlyObservableCollection.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection works with ReadOnlyObservableCollection.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -637,13 +576,13 @@ public class AutoPersistHelperTest
         var innerCollection = new ObservableCollection<TestFixture>();
         var readOnlyCollection = new ReadOnlyObservableCollection<TestFixture>(innerCollection);
         var saveCount = 0;
-        var manualSave = new Subject<Unit>();
+        var manualSave = new Signal<RxVoid>();
 
         readOnlyCollection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -660,9 +599,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection removes persistence when item removed.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection removes persistence when item removed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -678,7 +615,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -692,9 +629,7 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Tests that AutoPersistCollection with metadata works correctly.
-    /// </summary>
+    /// <summary>Tests that AutoPersistCollection with metadata works correctly.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -703,14 +638,14 @@ public class AutoPersistHelperTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var collection = new ObservableCollection<TestFixture>();
-        var metadata = AutoPersistHelper.CreateMetadata<TestFixture>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
         collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             metadata,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -727,14 +662,12 @@ public class AutoPersistHelperTest
         await Assert.That(saveCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that CreateMetadata returns correct metadata.
-    /// </summary>
+    /// <summary>Tests that CreateMetadata returns correct metadata.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task CreateMetadata_ReturnsCorrectMetadata()
     {
-        var metadata = AutoPersistHelper.CreateMetadata<TestFixture>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
 
         using (Assert.Multiple())
         {
@@ -746,14 +679,12 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that CreateMetadata returns metadata with HasDataContract=false for types without DataContract.
-    /// </summary>
+    /// <summary>Tests that CreateMetadata returns metadata with HasDataContract=false for types without DataContract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task CreateMetadata_WithoutDataContract_ReturnsMetadataWithoutContract()
     {
-        var metadata = AutoPersistHelper.CreateMetadata<ObjectWithoutDataContract>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<ObjectWithoutDataContract>();
 
         using (Assert.Multiple())
         {
@@ -763,36 +694,25 @@ public class AutoPersistHelperTest
         }
     }
 
-    /// <summary>
-    ///     Tests that CreateMetadata caches metadata instances.
-    /// </summary>
+    /// <summary>Tests that CreateMetadata caches metadata instances.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task CreateMetadata_CachesMetadata()
     {
-        var metadata1 = AutoPersistHelper.CreateMetadata<TestFixture>();
-        var metadata2 = AutoPersistHelper.CreateMetadata<TestFixture>();
+        var metadata1 = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
+        var metadata2 = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
 
         await Assert.That(metadata1).IsSameReferenceAs(metadata2);
     }
 
-    /// <summary>
-    ///     Test object without DataContract attribute.
-    /// </summary>
+    /// <summary>Test object without DataContract attribute.</summary>
     private sealed class ObjectWithoutDataContract : ReactiveObject
     {
-        /// <summary>
-        ///     The backing field for the test property.
-        /// </summary>
-        private string? _property;
-
-        /// <summary>
-        ///     Gets or sets a test property.
-        /// </summary>
+        /// <summary>Gets or sets a test property.</summary>
         public string? Property
         {
-            get => _property;
-            set => this.RaiseAndSetIfChanged(ref _property, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 }

@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Runtime.Versioning;
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
@@ -25,9 +24,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [SupportedOSPlatform("windows")]
 public class WinFormsTestExecutor : STAThreadExecutor
 {
-    /// <summary>
-    /// The helper that manages WinForms AppBuilder setup and teardown.
-    /// </summary>
+    /// <summary>The helper that manages WinForms AppBuilder setup and teardown.</summary>
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>

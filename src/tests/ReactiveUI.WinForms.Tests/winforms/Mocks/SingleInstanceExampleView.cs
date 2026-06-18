@@ -8,25 +8,17 @@ using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A signle instance example view.
-/// </summary>
+/// <summary>A signle instance example view.</summary>
 [SingleInstanceView]
-public class SingleInstanceExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
+public class SingleInstanceExampleView : ReactiveUserControl<SingleInstanceExampleViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SingleInstanceExampleView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="SingleInstanceExampleView"/> class.</summary>
     public SingleInstanceExampleView() => Instances++;
 
-    /// <summary>
-    /// Gets the instances.
-    /// </summary>
+    /// <summary>Gets the instances.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
 
-    /// <summary>
-    /// Reset the static counter (for test isolation only).
-    /// </summary>
+    /// <summary>Reset the static counter (for test isolation only).</summary>
     internal static void ResetInstances() => Instances = 0;
 }

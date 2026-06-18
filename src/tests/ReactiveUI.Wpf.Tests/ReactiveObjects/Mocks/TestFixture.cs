@@ -5,65 +5,43 @@
 
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using DynamicData.Binding;
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-/// A test fixture.
-/// </summary>
+/// <summary>A test fixture.</summary>
 /// <seealso cref="ReactiveObject" />
 [DataContract]
 public class TestFixture : ReactiveObject
 {
-    /// <summary>
-    /// Backing field for the <see cref="IsNotNullString"/> property.
-    /// </summary>
+    /// <summary>Backing field for the <see cref="IsNotNullString"/> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private string? _isNotNullString;
 
-    /// <summary>
-    /// Backing field for the <see cref="IsOnlyOneWord"/> property.
-    /// </summary>
+    /// <summary>Backing field for the <see cref="IsOnlyOneWord"/> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private string? _isOnlyOneWord;
 
-    /// <summary>
-    /// Backing field for the <see cref="NotSerialized"/> property.
-    /// </summary>
-    private string? _notSerialized;
-
-    /// <summary>
-    /// Backing field for the <see cref="NullableInt"/> property.
-    /// </summary>
+    /// <summary>Backing field for the <see cref="NullableInt"/> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private int? _nullableInt;
 
-    /// <summary>
-    /// Backing field for the <see cref="StackOverflowTrigger"/> property.
-    /// </summary>
+    /// <summary>Backing field for the <see cref="StackOverflowTrigger"/> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private List<string>? _stackOverflowTrigger;
 
-    /// <summary>
-    /// Backing field for the <see cref="UsesExprRaiseSet"/> property.
-    /// </summary>
+    /// <summary>Backing field for the <see cref="UsesExprRaiseSet"/> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private string? _usesExprRaiseSet;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestFixture" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TestFixture" /> class.</summary>
     public TestFixture() => TestCollection = [];
 
-    /// <summary>
-    /// Gets or sets the is not null string.
-    /// </summary>
+    /// <summary>Gets or sets the is not null string.</summary>
     [DataMember]
     [JsonRequired]
     public string? IsNotNullString
@@ -72,9 +50,7 @@ public class TestFixture : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isNotNullString, value);
     }
 
-    /// <summary>
-    /// Gets or sets the is only one word.
-    /// </summary>
+    /// <summary>Gets or sets the is only one word.</summary>
     [DataMember]
     [JsonRequired]
     public string? IsOnlyOneWord
@@ -83,18 +59,14 @@ public class TestFixture : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isOnlyOneWord, value);
     }
 
-    /// <summary>
-    /// Gets or sets the not serialized.
-    /// </summary>
+    /// <summary>Gets or sets the not serialized.</summary>
     public string? NotSerialized
     {
-        get => _notSerialized;
-        set => this.RaiseAndSetIfChanged(ref _notSerialized, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the nullable int.
-    /// </summary>
+    /// <summary>Gets or sets the nullable int.</summary>
     [DataMember]
     [JsonRequired]
     public int? NullableInt
@@ -103,16 +75,12 @@ public class TestFixture : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _nullableInt, value);
     }
 
-    /// <summary>
-    /// Gets or sets the poco property.
-    /// </summary>
+    /// <summary>Gets or sets the poco property.</summary>
     [field: IgnoreDataMember]
     [JsonIgnore]
     public string? PocoProperty { get; set; }
 
-    /// <summary>
-    /// Gets or sets the stack overflow trigger.
-    /// </summary>
+    /// <summary>Gets or sets the stack overflow trigger.</summary>
     [DataMember]
     [JsonRequired]
     public List<string>? StackOverflowTrigger
@@ -121,16 +89,12 @@ public class TestFixture : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _stackOverflowTrigger, value?.ToList());
     }
 
-    /// <summary>
-    /// Gets or sets the test collection.
-    /// </summary>
+    /// <summary>Gets or sets the test collection.</summary>
     [DataMember]
     [JsonRequired]
-    public ObservableCollectionExtended<int> TestCollection { get; set; }
+    public ObservableCollection<int> TestCollection { get; set; }
 
-    /// <summary>
-    /// Gets or sets the uses expr raise set.
-    /// </summary>
+    /// <summary>Gets or sets the uses expr raise set.</summary>
     [DataMember]
     [JsonRequired]
     public string? UsesExprRaiseSet

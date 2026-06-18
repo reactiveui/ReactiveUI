@@ -4,25 +4,24 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using ReactiveUI.Primitives;
+using ReactiveUI.Primitives.Signals;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for ActivationForViewFetcher.
-/// </summary>
+/// <summary>Tests for ActivationForViewFetcher.</summary>
 public class ActivationForViewFetcherTests
 {
+    /// <summary>The affinity value returned for MAUI view types.</summary>
     private const int ExpectedMauiAffinity = 10;
+
+    /// <summary>The affinity value returned for non-MAUI types.</summary>
     private const int ExpectedNonMauiAffinity = 0;
+
+    /// <summary>The expected number of activation-state emissions in the activation test.</summary>
     private const int ExpectedEmissionCount = 3;
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns correct affinity for Page types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns correct affinity for Page types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_PageType_ReturnsCorrectAffinity()
@@ -33,9 +32,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns correct affinity for View types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns correct affinity for View types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_ViewType_ReturnsCorrectAffinity()
@@ -46,9 +43,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns zero for non-MAUI types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns zero for non-MAUI types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_NonMauiType_ReturnsZero()
@@ -59,9 +54,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(ExpectedNonMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView returns observable for ICanActivate views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView returns observable for ICanActivate views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ICanActivateView_ReturnsObservable()
@@ -74,9 +67,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns correct affinity for Cell types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns correct affinity for Cell types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_CellType_ReturnsCorrectAffinity()
@@ -89,9 +80,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView works for Page views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView works for Page views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_PageView_ReturnsDistinctObservable()
@@ -104,9 +93,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView works for View views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView works for View views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ContentView_ReturnsDistinctObservable()
@@ -119,9 +106,7 @@ public class ActivationForViewFetcherTests
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView works for Cell views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView works for Cell views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_CellView_ReturnsObservable()
@@ -134,25 +119,23 @@ public class ActivationForViewFetcherTests
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that activation observable emits true/false for ICanActivate.
-    /// </summary>
+    /// <summary>Tests that activation observable emits true/false for ICanActivate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ICanActivate_EmitsActivationStates()
     {
         var fetcher = new ActivationForViewFetcher();
-        var activatedSubject = new Subject<Unit>();
-        var deactivatedSubject = new Subject<Unit>();
+        var activatedSubject = new Signal<RxVoid>();
+        var deactivatedSubject = new Signal<RxVoid>();
         var view = new TestCanActivateView(activatedSubject, deactivatedSubject);
 
         var activation = fetcher.GetActivationForView(view);
         var values = new List<bool>();
-        activation.ObserveOn(ImmediateScheduler.Instance).Subscribe(values.Add);
+        activation.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
-        activatedSubject.OnNext(Unit.Default);
-        deactivatedSubject.OnNext(Unit.Default);
-        activatedSubject.OnNext(Unit.Default);
+        activatedSubject.OnNext(RxVoid.Default);
+        deactivatedSubject.OnNext(RxVoid.Default);
+        activatedSubject.OnNext(RxVoid.Default);
 
         const int thirdEmissionIndex = 2;
         await Assert.That(values).Count().IsEqualTo(ExpectedEmissionCount);
@@ -161,63 +144,51 @@ public class ActivationForViewFetcherTests
         await Assert.That(values[thirdEmissionIndex]).IsTrue();
     }
 
-    /// <summary>
-    /// Test view that implements ICanActivate.
-    /// </summary>
+    /// <summary>Test view that implements ICanActivate.</summary>
     private sealed class TestActivatableView : IViewFor, ICanActivate
     {
         /// <inheritdoc/>
-        public IObservable<Unit> Activated { get; } = Observable.Never<Unit>();
+        public IObservable<RxVoid> Activated { get; } = Signal.Silent<RxVoid>();
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated { get; } = Observable.Never<Unit>();
+        public IObservable<RxVoid> Deactivated { get; } = Signal.Silent<RxVoid>();
 
         /// <inheritdoc/>
         public object? ViewModel { get; set; }
     }
 
-    /// <summary>
-    /// Test view that implements ICanActivate with controllable subjects.
-    /// </summary>
+    /// <summary>Test view that implements ICanActivate with controllable subjects.</summary>
     private sealed class TestCanActivateView : IViewFor, ICanActivate
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestCanActivateView"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestCanActivateView"/> class.</summary>
         /// <param name="activated">The observable that signals activation.</param>
         /// <param name="deactivated">The observable that signals deactivation.</param>
-        public TestCanActivateView(IObservable<Unit> activated, IObservable<Unit> deactivated)
+        public TestCanActivateView(IObservable<RxVoid> activated, IObservable<RxVoid> deactivated)
         {
             Activated = activated;
             Deactivated = deactivated;
         }
 
         /// <inheritdoc/>
-        public IObservable<Unit> Activated { get; }
+        public IObservable<RxVoid> Activated { get; }
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated { get; }
+        public IObservable<RxVoid> Deactivated { get; }
 
         /// <inheritdoc/>
         public object? ViewModel { get; set; }
     }
 
-    /// <summary>
-    /// Test page that implements IActivatableView.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test page that implements IActivatableView.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestPage : ContentPage, IActivatableView;
 
-    /// <summary>
-    /// Test view that implements IActivatableView.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test view that implements IActivatableView.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestView : ContentView, IActivatableView;
 
-    /// <summary>
-    /// Test cell that implements IActivatableView.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test cell that implements IActivatableView.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
 #pragma warning disable CS0618 // Type or member is obsolete
     private sealed class TestCell : TextCell, IActivatableView;
 #pragma warning restore CS0618 // Type or member is obsolete

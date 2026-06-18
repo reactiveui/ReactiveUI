@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-///     Tests for converting strings to doubles.
-/// </summary>
+/// <summary>Tests for converting strings to doubles.</summary>
 public class StringToDoubleTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an empty string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an empty string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsFalse()
@@ -36,9 +30,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()
@@ -50,9 +42,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that a string in scientific notation converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a string in scientific notation converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ScientificNotation_Succeeds()
@@ -66,9 +56,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts to a double.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts to a double.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_StringToDouble_Succeeds()
@@ -82,9 +70,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that a null string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NullString_ReturnsFalse()
@@ -97,9 +83,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(0.0);
     }
 
-    /// <summary>
-    /// Verifies that a zero value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a zero value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ZeroValue_Succeeds()
@@ -112,9 +96,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(0.0);
     }
 
-    /// <summary>
-    /// Verifies that a negative value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a negative value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
@@ -128,9 +110,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_ValidString_Succeeds()
@@ -144,9 +124,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that an input of an invalid type fails to convert via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that an input of an invalid type fails to convert via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_InvalidType_ReturnsFalse()
@@ -160,9 +138,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_NullInput_ReturnsFalse()
@@ -175,9 +151,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="string"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="string"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsStringType()
@@ -187,9 +161,7 @@ public class StringToDoubleTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(string));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is <see cref="double"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is <see cref="double"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsDoubleType()

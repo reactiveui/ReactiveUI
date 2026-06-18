@@ -10,18 +10,15 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Mixins;
 
-/// <summary>
-///     Tests for MutableDependencyResolverExtensions.
-/// </summary>
+/// <summary>Tests for MutableDependencyResolverExtensions.</summary>
 [NotInParallel]
 [TestExecutor<AppBuilderTestExecutor>]
 public class MutableDependencyResolverExtensionsTests
 {
+    /// <summary>The contract name used when registering views in the tests.</summary>
     private const string TestContract = "TestContract";
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel registers a singleton view.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel registers a singleton view.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelRegistersSingleton()
@@ -38,9 +35,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel returns the resolver for chaining.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel returns the resolver for chaining.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelReturnsResolver()
@@ -51,9 +46,7 @@ public class MutableDependencyResolverExtensionsTests
         await Assert.That(result).IsEqualTo(resolver);
     }
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel resolves the same instance each time.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel resolves the same instance each time.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelReturnsSameInstance()
@@ -72,9 +65,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel supports fluent chaining of registrations.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel supports fluent chaining of registrations.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelSupportsChaining()
@@ -92,9 +83,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel throws when the resolver is null.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel throws when the resolver is null.</summary>
     [Test]
     public void RegisterSingletonViewForViewModelThrowsOnNullResolver()
     {
@@ -102,9 +91,7 @@ public class MutableDependencyResolverExtensionsTests
         Assert.Throws<ArgumentNullException>(() => resolver!.RegisterSingletonViewForViewModel<TestView, TestViewModel>());
     }
 
-    /// <summary>
-    ///     Verifies that RegisterSingletonViewForViewModel registers a singleton view with a contract.
-    /// </summary>
+    /// <summary>Verifies that RegisterSingletonViewForViewModel registers a singleton view with a contract.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterSingletonViewForViewModelWithContractRegistersSingleton()
@@ -121,9 +108,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel resolves a new instance each time.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel resolves a new instance each time.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelCreatesNewInstanceEachTime()
@@ -142,9 +127,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel registers a view.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel registers a view.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelRegistersView()
@@ -161,9 +144,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel returns the resolver for chaining.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel returns the resolver for chaining.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelReturnsResolver()
@@ -174,9 +155,7 @@ public class MutableDependencyResolverExtensionsTests
         await Assert.That(result).IsEqualTo(resolver);
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel supports fluent chaining of registrations.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel supports fluent chaining of registrations.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelSupportsChaining()
@@ -194,9 +173,7 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel throws when the resolver is null.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel throws when the resolver is null.</summary>
     [Test]
     public void RegisterViewForViewModelThrowsOnNullResolver()
     {
@@ -204,9 +181,7 @@ public class MutableDependencyResolverExtensionsTests
         Assert.Throws<ArgumentNullException>(() => resolver!.RegisterViewForViewModel<TestView, TestViewModel>());
     }
 
-    /// <summary>
-    ///     Verifies that RegisterViewForViewModel registers a view with a contract.
-    /// </summary>
+    /// <summary>Verifies that RegisterViewForViewModel registers a view with a contract.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task RegisterViewForViewModelWithContractRegistersView()
@@ -223,14 +198,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Alternate test view.
-    /// </summary>
+    /// <summary>Alternate test view.</summary>
     private sealed class AlternateTestView : IViewFor<AlternateTestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly typed view model.</summary>
         public AlternateTestViewModel? ViewModel { get; set; }
 
         /// <inheritdoc/>
@@ -241,23 +212,17 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Alternate test view model.
-    /// </summary>
+    /// <summary>Alternate test view model.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class AlternateTestViewModel : ReactiveObject;
 
-    /// <summary>
-    ///     Test view.
-    /// </summary>
+    /// <summary>Test view.</summary>
     private sealed class TestView : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
         /// <inheritdoc/>
@@ -268,12 +233,10 @@ public class MutableDependencyResolverExtensionsTests
         }
     }
 
-    /// <summary>
-    ///     Test view model.
-    /// </summary>
+    /// <summary>Test view model.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel : ReactiveObject;
 }

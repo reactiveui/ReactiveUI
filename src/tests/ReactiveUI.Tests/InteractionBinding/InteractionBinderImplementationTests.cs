@@ -4,21 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.Tests.InteractionBinding;
 
-/// <summary>
-/// Tests for the interaction binder implementation.
-/// </summary>
+/// <summary>Tests for the interaction binder implementation.</summary>
 public class InteractionBinderImplementationTests
 {
-    /// <summary>
-    ///     Tests to confirm nested interaction should receive output from observable handler.
-    /// </summary>
+    /// <summary>Tests to confirm nested interaction should receive output from observable handler.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task NestedInteractionShouldReceiveOutputFromObservableHandler()
@@ -32,7 +25,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         var isDeletionConfirmed = await vm.InteractionViewModel.Interaction1.Handle("123");
@@ -40,9 +33,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to confirm nested interaction should receive output from task handler.
-    /// </summary>
+    /// <summary>Tests to confirm nested interaction should receive output from task handler.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task NestedInteractionShouldReceiveOutputFromTaskHandler()
@@ -64,9 +55,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Test that confirms nested view model should be garbage collected when overwritten.
-    /// </summary>
+    /// <summary>Test that confirms nested view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NestedViewModelShouldBeGarbageCollectedWhenOverwritten()
@@ -82,7 +71,7 @@ public class InteractionBinderImplementationTests
                 input =>
                 {
                     input.SetOutput(true);
-                    return Observable.Return(Unit.Default);
+                    return Signal.Emit(RxVoid.Default);
                 });
             vm.InteractionViewModel = new();
 
@@ -97,9 +86,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
-    /// <summary>
-    ///     Test that we receive output from the observable handler.
-    /// </summary>
+    /// <summary>Test that we receive output from the observable handler.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task ReceiveOutputFromObservableHandler()
@@ -113,7 +100,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         var isDeletionConfirmed = await vm.Interaction1.Handle("123");
@@ -121,9 +108,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Test that checks that the receive output from observable handler when view model was initially null.
-    /// </summary>
+    /// <summary>Test that checks that the receive output from observable handler when view model was initially null.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task ReceiveOutputFromObservableHandlerWhenViewModelWasInitiallyNull()
@@ -137,7 +122,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         view.ViewModel = new();
@@ -147,9 +132,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests that make sure that the we receive output from task handler.
-    /// </summary>
+    /// <summary>Tests that make sure that the we receive output from task handler.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task ReceiveOutputFromTaskHandler()
@@ -171,9 +154,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Test that checks that the receive output from task handler when view model was initially null.
-    /// </summary>
+    /// <summary>Test that checks that the receive output from task handler when view model was initially null.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task ReceiveOutputFromTaskHandlerWhenViewModelWasInitiallyNull()
@@ -197,9 +178,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to make sure that it registers the observable handler to newly assigned nested view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it registers the observable handler to newly assigned nested view model.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task RegisterObservableHandlerToNewlyAssignedNestedViewModel()
@@ -213,7 +192,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         vm.InteractionViewModel = new();
@@ -223,9 +202,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to make sure that it registers the observable handler to newly assigned view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it registers the observable handler to newly assigned view model.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task RegisterObservableHandlerToNewlyAssignedViewModel()
@@ -239,7 +216,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         view.ViewModel = new();
@@ -249,9 +226,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to make sure that it registers the task handler to newly assigned nested view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it registers the task handler to newly assigned nested view model.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     [SuppressMessage(
@@ -269,7 +244,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         vm.InteractionViewModel = new();
@@ -279,9 +254,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to make sure that it registers the task handler to newly assigned view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it registers the task handler to newly assigned view model.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task RegisterTaskHandlerToNewlyAssignedViewModel()
@@ -305,9 +278,7 @@ public class InteractionBinderImplementationTests
         await Assert.That(isDeletionConfirmed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the observable handler from overwritten nested view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the observable handler from overwritten nested view model.</summary>
     [Test]
     public void UnregisterObservableHandlerFromOverwrittenNestedViewModel()
     {
@@ -321,7 +292,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         view.ViewModel.InteractionViewModel = new();
@@ -330,9 +301,7 @@ public class InteractionBinderImplementationTests
             firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the observable handler from overwritten view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the observable handler from overwritten view model.</summary>
     [Test]
     public void UnregisterObservableHandlerFromOverwrittenViewModel()
     {
@@ -345,7 +314,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         view.ViewModel = new();
@@ -354,9 +323,7 @@ public class InteractionBinderImplementationTests
             vm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the observable handler when binding is disposed.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the observable handler when binding is disposed.</summary>
     [Test]
     public void UnregisterObservableHandlerWhenBindingIsDisposed()
     {
@@ -369,7 +336,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         disposable.Dispose();
@@ -378,9 +345,7 @@ public class InteractionBinderImplementationTests
             vm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the observable handler when view model is set to null.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the observable handler when view model is set to null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task UnregisterObservableHandlerWhenViewModelIsSetToNull()
@@ -394,7 +359,7 @@ public class InteractionBinderImplementationTests
             input =>
             {
                 input.SetOutput(true);
-                return Observable.Return(Unit.Default);
+                return Signal.Emit(RxVoid.Default);
             });
 
         view.ViewModel = null;
@@ -403,9 +368,7 @@ public class InteractionBinderImplementationTests
             .Throws<UnhandledInteractionException<string, bool>>();
     }
 
-    /// <summary>
-    ///     Test to confirm that unregistering the task handler from overwritten nested view model.
-    /// </summary>
+    /// <summary>Test to confirm that unregistering the task handler from overwritten nested view model.</summary>
     [Test]
     public void UnregisterTaskHandlerFromOverwrittenNestedViewModel()
     {
@@ -428,9 +391,7 @@ public class InteractionBinderImplementationTests
             firstInteractionVm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the task handler from overwritten view model.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the task handler from overwritten view model.</summary>
     [Test]
     public void UnregisterTaskHandlerFromOverwrittenViewModel()
     {
@@ -452,9 +413,7 @@ public class InteractionBinderImplementationTests
             vm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the task handler when binding is disposed.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the task handler when binding is disposed.</summary>
     [Test]
     public void UnregisterTaskHandlerWhenBindingIsDisposed()
     {
@@ -476,9 +435,7 @@ public class InteractionBinderImplementationTests
             vm.Interaction1.Handle("123").ToTask());
     }
 
-    /// <summary>
-    ///     Tests to make sure that it unregisters the task handler when view model is set to null.
-    /// </summary>
+    /// <summary>Tests to make sure that it unregisters the task handler when view model is set to null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task UnregisterTaskHandlerWhenViewModelIsSetToNull()
@@ -501,9 +458,7 @@ public class InteractionBinderImplementationTests
             .Throws<UnhandledInteractionException<string, bool>>();
     }
 
-    /// <summary>
-    ///     Test that confirms the view model should be garbage collected when overwritten.
-    /// </summary>
+    /// <summary>Test that confirms the view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()

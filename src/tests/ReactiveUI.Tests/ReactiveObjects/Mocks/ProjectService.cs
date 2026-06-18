@@ -5,15 +5,11 @@
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-///     Project Service.
-/// </summary>
+/// <summary>Project Service.</summary>
 /// <seealso cref="ReactiveObject" />
 public class ProjectService : ReactiveObject
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ProjectService" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ProjectService" /> class.</summary>
     public ProjectService()
     {
         Projects.Add(Guid.NewGuid(), new() { Name = "Dummy1" });
@@ -29,13 +25,9 @@ public class ProjectService : ReactiveObject
         ProjectsNullable.Add(Guid.NewGuid(), null);
     }
 
-    /// <summary>
-    ///     Gets the projects.
-    /// </summary>
+    /// <summary>Gets the projects.</summary>
     public Dictionary<Guid, Project> Projects { get; } = [];
 
-    /// <summary>
-    ///     Gets the projects nullable.
-    /// </summary>
+    /// <summary>Gets the projects nullable.</summary>
     public Dictionary<Guid, Project?> ProjectsNullable { get; } = [];
 }

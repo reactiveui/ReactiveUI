@@ -3,22 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-/// A fake nested view model.
-/// </summary>
+/// <summary>A fake nested view model.</summary>
 public class FakeNestedViewModel : ReactiveObject
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeNestedViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FakeNestedViewModel" /> class.</summary>
     public FakeNestedViewModel() => NestedCommand = ReactiveCommand.Create(static () => { });
 
-    /// <summary>
-    /// Gets or sets the nested command.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> NestedCommand { get; protected set; }
+    /// <summary>Gets the nested command.</summary>
+    public ReactiveCommand<RxVoid, RxVoid> NestedCommand { get; protected set; }
 }

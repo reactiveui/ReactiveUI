@@ -17,4 +17,9 @@
     <ProjectReference Include="..\..\ReactiveUI.Drawing\ReactiveUI.Drawing.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+  </ItemGroup>
+
 </Project>

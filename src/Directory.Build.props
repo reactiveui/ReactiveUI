@@ -1,4 +1,15 @@
 <Project>
+  <!-- RxReactiveSeam: true when this project is on the System.Reactive ('.Reactive') side of the migration seam.
+       A project qualifies when its name ends with 'Reactive', OR when it is the WPF XAML markup-compile temp
+       project of such a leaf. That temp project is named '<leaf>.Reactive_<hash>_wpftmp' — note it does NOT end
+       with 'Reactive' — so without matching the 'Reactive_' infix the _wpftmp pass would be treated as lean and
+       lose the reactive usings/REACTIVE_SHIM, breaking XAML-bearing .Reactive leaves (e.g. ReactiveUI.Wpf.Tests.Reactive).
+       Lean leaves and their _wpftmp ('ReactiveUI...' contains 'Reactive' followed by 'UI', never 'Reactive_') stay lean.
+       Consumed by ReactiveShim.props and tests/Directory.Build.props. -->
+  <PropertyGroup>
+    <RxReactiveSeam Condition="$(MSBuildProjectName.EndsWith('Reactive')) or $(MSBuildProjectName.Contains('Reactive_'))">true</RxReactiveSeam>
+  </PropertyGroup>
+
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Platform>AnyCPU</Platform>
@@ -12,7 +23,7 @@
     <DefaultPackageDescription>A MVVM framework that integrates with the Reactive Extensions for .NET to create elegant, testable User Interfaces that run on any mobile or desktop platform. Supports Xamarin.iOS, Xamarin.Android, Xamarin.Mac, Xamarin Forms, Xamarin.TVOS, Tizen, WPF, Windows Forms, Universal Windows Platform (UWP) and the Uno Platform.</DefaultPackageDescription>
     <PackageDescription>$(DefaultPackageDescription)</PackageDescription>
     <Owners>anaisbetts;ghuntley</Owners>
-    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net462;winui;maui;tizen;unoplatform</PackageTags>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;xamarin;android;ios;mac;forms;monodroid;monotouch;xamarin.android;xamarin.ios;xamarin.forms;xamarin.mac;xamarin.tvos;wpf;net;netstandard;net462;winui;maui;unoplatform</PackageTags>
     <PackageReleaseNotes>https://github.com/reactiveui/ReactiveUI/releases</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/reactiveui/reactiveui</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -38,15 +49,13 @@
 
     <WarningsAsErrors>nullable;CS4014</WarningsAsErrors>
 
-    <!-- NETSDK1202: net*-android EOL-support notice. Suppressed for now while the Android TFMs are migrated. -->
-    <NoWarn>$(NoWarn);NETSDK1202</NoWarn>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
     <!-- Enable building Windows-specific targets on non-Windows platforms -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <IsTestProject>$(MSBuildProjectName.EndsWith('.Tests'))</IsTestProject>
+    <IsTestProject Condition="'$(IsTestProject)' == ''">$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '(^|\\.)Tests(\\.Reactive)?$'))</IsTestProject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
@@ -57,26 +66,26 @@
 
   <PropertyGroup>
     <!-- Granular Target Framework definitions for cross-platform builds -->
-    <ReactiveUICoreTargets>net8.0;net9.0;net10.0</ReactiveUICoreTargets>
+    <ReactiveUICoreTargets>net8.0;net9.0;net10.0;net11.0</ReactiveUICoreTargets>
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
     <ReactiveUIFrameworkTargets>net462;net472;net481</ReactiveUIFrameworkTargets>
-    <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
-    <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
-    <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUIWinUITargets>
+    <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
+    <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
+    <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIWinUITargets>
     <!-- net9 mobile (iOS/tvOS/macOS/maccatalyst) support ended 12 May 2026; target net10 only. -->
-    <ReactiveUIAppleTargets>net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst</ReactiveUIAppleTargets>
-    <!-- The Xamarin.AndroidX.* packages dropped support for the default (low) Android platform version and now
-         require net9.0-android35.0 / net10.0-android36.0. Only the net10 Android pack is available on the current
-         SDK band, and net9.0-android clamps to API 21 (no net9 pack), so Android targets net10 only here. -->
-    <ReactiveUIAndroidTargets>net10.0-android</ReactiveUIAndroidTargets>
+    <ReactiveUIAppleTargets>net10.0-ios;net10.0-tvos;net10.0-macos;net10.0-maccatalyst;net11.0-ios;net11.0-tvos;net11.0-macos;net11.0-maccatalyst</ReactiveUIAppleTargets>
+    <!-- net10 pins the compile-SDK to API 36 (Android 16) and net11 to API 37, the latest released stable levels,
+         both above Google Play's API 35 floor. The minimum supported API (minSdk) is set per project via
+         SupportedOSPlatformVersion to API 35, matching Google Play's current floor (older versions are not supported). -->
+    <ReactiveUIAndroidTargets>net10.0-android36.0;net11.0-android37</ReactiveUIAndroidTargets>
 
     <!-- Windows-only targets (combines Framework + Windows targets) - conditioned -->
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
     <ReactiveUIWindowsOnlyTargets>$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets)</ReactiveUIWindowsOnlyTargets>
 
     <ReactiveUITestTargets>net8.0;net9.0;net10.0</ReactiveUITestTargets>
-    <ReactiveUITestTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestTargets>
+    <ReactiveUITestTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUITestTargets>
 
     <!--    <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveUIMauiTestTargets>-->
     <ReactiveUIMauiTestTargets>$(ReactiveUIMauiTestTargets);net9.0;net10.0</ReactiveUIMauiTestTargets>
@@ -86,17 +95,17 @@
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
-    <ReactiveUIModernTargets>net8.0;net9.0;net10.0</ReactiveUIModernTargets>
+    <ReactiveUIModernTargets>net8.0;net9.0;net10.0;net11.0</ReactiveUIModernTargets>
 
     <!-- Testing target frameworks for non-platform tests (core .NET + .NET Framework) -->
-    <ReactiveUITestingTargets>net8.0;net9.0;net10.0</ReactiveUITestingTargets>
+    <ReactiveUITestingTargets>net8.0;net9.0;net10.0;net11.0</ReactiveUITestingTargets>
 
     <!-- Testing target frameworks for UI platform tests. Windows-specific TFMs only on Windows: off-Windows
          these test projects fall back to the plain net TFMs so they run on the Linux/macOS CI legs (their
          Windows-only project references are gated behind a -windows10.0.19041.0 <When> condition). Building them
          as net*-windows off-Windows would produce assemblies the runner cannot launch (no Microsoft.WindowsDesktop.App). -->
     <ReactiveUITestingUITargets>$(ReactiveUITestingTargets)</ReactiveUITestingUITargets>
-    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0</ReactiveUITestingUITargets>
+    <ReactiveUITestingUITargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUITestingUITargets>
 
     <!-- Start with core targets available on all platforms -->
     <ReactiveUIFinalTargetFrameworks>$(ReactiveUICoreTargets)</ReactiveUIFinalTargetFrameworks>
@@ -140,12 +149,45 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+    <Features>$(Features);runtime-async=on</Features>
+  </PropertyGroup>
+  <!-- Alias Lock to the dedicated System.Threading.Lock on .NET 9+ (faster EnterScope fast path),
+     and to a plain object elsewhere (the lock statement falls back to Monitor). -->
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))">
+    <Using Include="System.Threading.Lock" Alias="Lock" />
+  </ItemGroup>
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))">
+    <Using Include="System.Object" Alias="Lock" />
+  </ItemGroup>
+
+  <!-- ArgumentExceptionHelper.ThrowIfNull(...) resolves straight to the runtime's optimized
+       ArgumentNullException.ThrowIfNull on .NET 8.0+, and to the inline ArgumentValidation polyfill on
+       older targets. Call sites stay identical across TFMs; only the bound symbol changes. Guards that have
+       no framework equivalent (ThrowIfNullOrWhiteSpace/ThrowIfNotOfType) call ArgumentValidation directly. -->
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+    <Using Include="System.ArgumentNullException" Alias="ArgumentExceptionHelper" />
+  </ItemGroup>
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+    <Using Include="ReactiveUI.Helpers.ArgumentValidation" Alias="ArgumentExceptionHelper" />
+  </ItemGroup>
+
   <ItemGroup Condition="$(IsTestProject)">
     <PackageReference Include="TUnit"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
-    <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="Verify.TUnit"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Public-API tracking (RS0016/RS0017/RS0037). Re-enabled now the System.Reactive→Primitives seam
+         split has landed; baselines are regenerated with tools/generate-publicapi.*. tests/benchmarks/examples
+         stay off via their own Directory.Build.props. -->
+    <TrackPublicApi Condition="'$(TrackPublicApi)' == ''">true</TrackPublicApi>
+    <TrackPublicApi Condition="'$(IsTestProject)' == 'true'">false</TrackPublicApi>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TrackPublicApi)' == 'true'">
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="all" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\PublicAPI\$(TargetFramework)\PublicAPI.*.txt" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsTestProject)' != 'true'">
@@ -170,12 +212,20 @@
 
   <ItemGroup>
     <PackageReference Include="MinVer" PrivateAssets="all"/>
-    <PackageReference Include="stylecop.analyzers" PrivateAssets="all"/>
+    <PackageReference Include="StyleSharp.Analyzers" PrivateAssets="all"/>
     <PackageReference Include="Roslynator.Analyzers" PrivateAssets="All"/>
-    <PackageReference Include="Blazor.Common.Analyzers" PrivateAssets="All"/>
     <PackageReference Include="SonarAnalyzer.CSharp" PrivateAssets="all"/>
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json"/>
+
+  <!-- Polyfills: the Core/leaf split has no IVT between shipping assemblies (Primitives split rule), so each
+       ReactiveUI assembly compiles its own internal copy of the BCL polyfills it needs. The sources are guarded
+       with #if !NET, so the include is gated to the net4 TFMs (net5+ ship these types). Keeping them internal
+       and per-assembly avoids the cross-assembly ambiguity that an IVT-shared single copy would cause. -->
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('ReactiveUI')) and $(TargetFramework.StartsWith('net4'))">
+    <Compile Include="$(MSBuildThisFileDirectory)Polyfills\*.cs" Link="Polyfills\%(Filename)%(Extension)"/>
   </ItemGroup>
+
+  <!-- ReactiveUI.Primitives migration seam (lean/.Reactive shim aliases + REACTIVE_SHIM + bridge-analyzer
+       strip). Factored into its own file to keep this one readable. -->
+  <Import Project="$(MSBuildThisFileDirectory)ReactiveShim.props" />
 </Project>

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Subjects;
 using ReactiveUI.Tests.Mocks;
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -11,20 +10,21 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests with the command binding implementation.
-/// </summary>
+/// <summary>Tests with the command binding implementation.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class CommandBindingImplementationTests
 {
+    /// <summary>The first value used when exercising command parameter wireup.</summary>
     private const int FirstValue = 42;
+
+    /// <summary>The second value used when exercising command parameter wireup.</summary>
     private const int SecondValue = 13;
+
+    /// <summary>The initial value used when exercising command parameter wireup.</summary>
     private const int InitialValue = 10;
 
-    /// <summary>
-    /// Tests the command bind by name wireup.
-    /// </summary>
+    /// <summary>Tests the command bind by name wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindByNameWireup()
@@ -44,9 +44,7 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.Command).IsNull();
     }
 
-    /// <summary>
-    /// Tests the command bind nested command wireup.
-    /// </summary>
+    /// <summary>Tests the command bind nested command wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindNestedCommandWireup()
@@ -63,16 +61,14 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.Command).IsEqualTo(view.ViewModel.NestedViewModel.NestedCommand);
     }
 
-    /// <summary>
-    /// Tests the command bind sets initial enabled state true.
-    /// </summary>
+    /// <summary>Tests the command bind sets initial enabled state true.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindSetsInitialEnabledState_True()
     {
         var view = new CommandBindView { ViewModel = new() };
 
-        var canExecute1 = new BehaviorSubject<bool>(true);
+        var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
         view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
@@ -80,16 +76,14 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.IsEnabled).IsTrue();
     }
 
-    /// <summary>
-    /// Tests the command bind sets disables command when can execute changed.
-    /// </summary>
+    /// <summary>Tests the command bind sets disables command when can execute changed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindSetsDisablesCommandWhenCanExecuteChanged()
     {
         var view = new CommandBindView { ViewModel = new() };
 
-        var canExecute1 = new BehaviorSubject<bool>(true);
+        var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
         view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
@@ -101,16 +95,14 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.IsEnabled).IsFalse();
     }
 
-    /// <summary>
-    /// Tests the command bind sets initial enabled state false.
-    /// </summary>
+    /// <summary>Tests the command bind sets initial enabled state false.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindSetsInitialEnabledState_False()
     {
         var view = new CommandBindView { ViewModel = new() };
 
-        var canExecute1 = new BehaviorSubject<bool>(false);
+        var canExecute1 = new BehaviorSignal<bool>(false);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
         view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
@@ -118,16 +110,14 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.IsEnabled).IsFalse();
     }
 
-    /// <summary>
-    /// Tests the command bind raises can execute changed on bind.
-    /// </summary>
+    /// <summary>Tests the command bind raises can execute changed on bind.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindRaisesCanExecuteChangedOnBind()
     {
         var view = new CommandBindView { ViewModel = new() };
 
-        var canExecute1 = new BehaviorSubject<bool>(true);
+        var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
         view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
@@ -135,15 +125,13 @@ public class CommandBindingImplementationTests
         await Assert.That(view.Command1.IsEnabled).IsTrue();
 
         // Now  change to a disabled cmd
-        var canExecute2 = new BehaviorSubject<bool>(false);
+        var canExecute2 = new BehaviorSignal<bool>(false);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute2);
 
         await Assert.That(view.Command1.IsEnabled).IsFalse();
     }
 
-    /// <summary>
-    /// Tests the command bind with parameter expression.
-    /// </summary>
+    /// <summary>Tests the command bind with parameter expression.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindWithParameterExpression()
@@ -164,9 +152,7 @@ public class CommandBindingImplementationTests
         await Assert.That(received).IsEqualTo(SecondValue);
     }
 
-    /// <summary>
-    /// Tests the command bind with delay set vm parameter expression.
-    /// </summary>
+    /// <summary>Tests the command bind with delay set vm parameter expression.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindWithDelaySetVmParameterExpression()
@@ -190,9 +176,7 @@ public class CommandBindingImplementationTests
         await Assert.That(received).IsEqualTo(SecondValue);
     }
 
-    /// <summary>
-    /// Tests the command bind with delay set vm parameter no inpc expression.
-    /// </summary>
+    /// <summary>Tests the command bind with delay set vm parameter no inpc expression.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindWithDelaySetVmParameterNoInpcExpression()
@@ -217,9 +201,7 @@ public class CommandBindingImplementationTests
         await Assert.That(received).IsEqualTo(SecondValue);
     }
 
-    /// <summary>
-    /// Tests the command bind with parameter observable.
-    /// </summary>
+    /// <summary>Tests the command bind with parameter observable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindWithParameterObservable()

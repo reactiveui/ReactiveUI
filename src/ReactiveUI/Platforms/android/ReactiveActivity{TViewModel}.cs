@@ -5,31 +5,25 @@
 
 using Android.Runtime;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// This is an Activity that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 public class ReactiveActivity<TViewModel> : ReactiveActivity, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {
-    /// <summary>
-    /// The backing field for the view model.
-    /// </summary>
+    /// <summary>The backing field for the view model.</summary>
     private TViewModel? _viewModel;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.</summary>
     protected ReactiveActivity()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveActivity{TViewModel}"/> class.</summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
     protected ReactiveActivity(in IntPtr handle, JniHandleOwnership ownership)

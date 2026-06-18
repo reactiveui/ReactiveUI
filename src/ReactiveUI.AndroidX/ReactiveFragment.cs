@@ -5,32 +5,24 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// This is a Fragment that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is a Fragment that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 [ExcludeFromCodeCoverage]
 public class ReactiveFragment : global::AndroidX.Fragment.App.Fragment,
     IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
 {
-    /// <summary>
-    /// The subject that signals when the fragment is activated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _activated = new();
+    /// <summary>The subject that signals when the fragment is activated.</summary>
+    private readonly Signal<RxVoid> _activated = new();
 
-    /// <summary>
-    /// The subject that signals when the fragment is deactivated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _deactivated = new();
+    /// <summary>The subject that signals when the fragment is deactivated.</summary>
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveFragment"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveFragment"/> class.</summary>
     protected ReactiveFragment()
     {
     }
@@ -44,15 +36,11 @@ public class ReactiveFragment : global::AndroidX.Fragment.App.Fragment,
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-    /// <summary>
-    /// Gets a signal when the fragment is activated.
-    /// </summary>
-    public IObservable<Unit> Activated => _activated;
+    /// <summary>Gets a signal when the fragment is activated.</summary>
+    public IObservable<RxVoid> Activated => _activated;
 
-    /// <summary>
-    /// Gets a signal when the fragment is deactivated.
-    /// </summary>
-    public IObservable<Unit> Deactivated => _deactivated;
+    /// <summary>Gets a signal when the fragment is deactivated.</summary>
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveFragment>> Changing => this.GetChangingObservable();
@@ -73,14 +61,14 @@ public class ReactiveFragment : global::AndroidX.Fragment.App.Fragment,
     public override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     public override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>

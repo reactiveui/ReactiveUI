@@ -5,13 +5,9 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// Custom event args for testing generic event handlers.
-/// </summary>
+/// <summary>Custom event args for testing generic event handlers.</summary>
 public class CustomEventArgs : EventArgs
 {
-    /// <summary>
-    /// Gets or sets a test value.
-    /// </summary>
+    /// <summary>Gets or sets a test value.</summary>
     public int Value { get; set; }
 }

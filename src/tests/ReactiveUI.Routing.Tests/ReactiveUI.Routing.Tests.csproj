@@ -1,0 +1,20 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingTargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DynamicData"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
+    <ProjectReference Include="..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj"/>
+  </ItemGroup>
+</Project>

@@ -6,11 +6,12 @@
 using System.Collections.Specialized;
 using AndroidX.RecyclerView.Widget;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// An adapter for the Android <see cref="RecyclerView"/>.
-/// </summary>
+#endif
+/// <summary>An adapter for the Android <see cref="RecyclerView"/>.</summary>
 /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
 /// <typeparam name="TCollection">The type of collection.</typeparam>
 /// <remarks>

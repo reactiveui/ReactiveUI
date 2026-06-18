@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,12 +6,18 @@
 using System.Diagnostics.CodeAnalysis;
 using Android.Content;
 using Android.Views;
-using ReactiveUI.Helpers;
 using Splat;
-using static ReactiveUI.ControlFetcherMixin;
+#if REACTIVE_SHIM
+using static ReactiveUI.Reactive.ControlFetcherMixins;
+#else
+using static ReactiveUI.ControlFetcherMixins;
+#endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Base class implementing the Android ViewHolder pattern.
 /// <para>
@@ -25,14 +31,10 @@ namespace ReactiveUI;
 /// </summary>
 public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
 {
-    /// <summary>
-    /// The backing view instance owned by this host.
-    /// </summary>
+    /// <summary>The backing view instance owned by this host.</summary>
     private View? _view;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LayoutViewHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LayoutViewHost"/> class.</summary>
     /// <remarks>
     /// This constructor performs no inflation or wiring and exists to support
     /// derived types that manage view creation manually.
@@ -41,10 +43,7 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating
-    /// a layout resource.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating a layout resource.</summary>
     /// <param name="context">The Android context.</param>
     /// <param name="layoutId">The layout resource identifier.</param>
     /// <param name="parent">The parent view group.</param>
@@ -70,10 +69,7 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         View = Inflate(context, layoutId, parent, attachToRoot);
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating
-    /// a layout resource and invoking an explicit, AOT-safe binder.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LayoutViewHost"/> class by inflating a layout resource and invoking an explicit, AOT-safe binder.</summary>
     /// <param name="context">The Android context.</param>
     /// <param name="layoutId">The layout resource identifier.</param>
     /// <param name="parent">The parent view group.</param>
@@ -169,9 +165,7 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         }
     }
 
-    /// <summary>
-    /// Implicitly converts a <see cref="LayoutViewHost"/> to its backing <see cref="View"/>.
-    /// </summary>
+    /// <summary>Implicitly converts a <see cref="LayoutViewHost"/> to its backing <see cref="View"/>.</summary>
     /// <param name="host">The host instance.</param>
     public static implicit operator View?(LayoutViewHost host)
     {
@@ -179,15 +173,11 @@ public abstract class LayoutViewHost : ILayoutViewHost, IEnableLogger
         return host._view;
     }
 
-    /// <summary>
-    /// Gets the backing <see cref="View"/> for this host as a friendly alternate to the implicit operator.
-    /// </summary>
+    /// <summary>Gets the backing <see cref="View"/> for this host as a friendly alternate to the implicit operator.</summary>
     /// <returns>The backing <see cref="View"/> instance, or <see langword="null"/> if none has been assigned.</returns>
     public View? ToView() => _view;
 
-    /// <summary>
-    /// Inflates an Android layout resource into a <see cref="View"/> using the provided context.
-    /// </summary>
+    /// <summary>Inflates an Android layout resource into a <see cref="View"/> using the provided context.</summary>
     /// <param name="context">The Android context used to obtain a <see cref="LayoutInflater"/>.</param>
     /// <param name="layoutId">The layout resource identifier to inflate.</param>
     /// <param name="parent">

@@ -5,7 +5,5 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A test form that is activatable but does not implement ICanActivate.
-/// </summary>
+/// <summary>A test form that is activatable but does not implement ICanActivate.</summary>
 public class TestFormNotCanActivate : Form, IActivatableView;

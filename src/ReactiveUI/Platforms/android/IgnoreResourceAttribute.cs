@@ -3,10 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Attribute that marks a resource to be ignored.
-/// </summary>
+#endif
+/// <summary>Attribute that marks a resource to be ignored.</summary>
 [AttributeUsage(AttributeTargets.All)]
 public sealed class IgnoreResourceAttribute : Attribute;

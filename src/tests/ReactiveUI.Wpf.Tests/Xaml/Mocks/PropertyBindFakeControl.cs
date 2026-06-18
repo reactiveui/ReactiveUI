@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,50 +9,36 @@ using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A fake view for property binding.
-/// </summary>
+/// <summary>A fake view for property binding.</summary>
 public class PropertyBindFakeControl : Control
 {
-    /// <summary>
-    /// The null hating string property.
-    /// </summary>
+    /// <summary>The null hating string property.</summary>
     public static readonly DependencyProperty NullHatingStringProperty =
         DependencyProperty.Register("NullHatingString", typeof(string), typeof(PropertyBindFakeControl), new(string.Empty));
 
-    /// <summary>
-    /// The nullable double property.
-    /// </summary>
+    /// <summary>The nullable double property.</summary>
     public static readonly DependencyProperty NullableDoubleProperty =
         DependencyProperty.Register("NullableDouble", typeof(double?), typeof(PropertyBindFakeControl), new(null));
 
-    /// <summary>
-    /// The just a double property.
-    /// </summary>
+    /// <summary>The just a double property.</summary>
     public static readonly DependencyProperty JustADoubleProperty =
         DependencyProperty.Register("JustADouble", typeof(double), typeof(PropertyBindFakeControl), new(0.0));
 
-    /// <summary>
-    /// Gets or sets the nullable double.
-    /// </summary>
+    /// <summary>Gets or sets the nullable double.</summary>
     public double? NullableDouble
     {
         get => (double?)GetValue(NullableDoubleProperty);
         set => SetValue(NullableDoubleProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the just a double.
-    /// </summary>
+    /// <summary>Gets or sets the just a double.</summary>
     public double JustADouble
     {
         get => (double)GetValue(JustADoubleProperty);
         set => SetValue(JustADoubleProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the null hating string.
-    /// </summary>
+    /// <summary>Gets or sets the null hating string.</summary>
     public string NullHatingString
     {
         get => (string)GetValue(NullHatingStringProperty);

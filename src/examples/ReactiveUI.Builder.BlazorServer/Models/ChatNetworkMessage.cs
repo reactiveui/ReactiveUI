@@ -5,21 +5,15 @@
 
 namespace ReactiveUI.Builder.BlazorServer.Models;
 
-/// <summary>
-/// Network message payload used to broadcast chat messages.
-/// </summary>
+/// <summary>Network message payload used to broadcast chat messages.</summary>
 public sealed class ChatNetworkMessage
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatNetworkMessage"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ChatNetworkMessage"/> class.</summary>
     public ChatNetworkMessage()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatNetworkMessage" /> class with values.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ChatNetworkMessage" /> class with values.</summary>
     /// <param name="roomId">The unique identifier for the room.</param>
     /// <param name="roomName">The human-readable room name used as the MessageBus contract.</param>
     /// <param name="sender">The sender name.</param>
@@ -34,33 +28,21 @@ public sealed class ChatNetworkMessage
         Timestamp = timestamp;
     }
 
-    /// <summary>
-    /// Gets or sets the room ID.
-    /// </summary>
+    /// <summary>Gets or sets the room ID.</summary>
     public string RoomId { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the room name.
-    /// </summary>
+    /// <summary>Gets or sets the room name.</summary>
     public string RoomName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the sender.
-    /// </summary>
+    /// <summary>Gets or sets the sender.</summary>
     public string Sender { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the message text.
-    /// </summary>
+    /// <summary>Gets or sets the message text.</summary>
     public string Text { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the timestamp.
-    /// </summary>
+    /// <summary>Gets or sets the timestamp.</summary>
     public DateTimeOffset Timestamp { get; set; }
 
-    /// <summary>
-    /// Gets or sets the originating app instance id.
-    /// </summary>
+    /// <summary>Gets or sets the originating app instance id.</summary>
     public Guid InstanceId { get; set; }
 }

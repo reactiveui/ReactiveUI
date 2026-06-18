@@ -15,15 +15,11 @@ using Splat.Ninject;
 
 namespace ReactiveUI.Splat.Tests;
 
-/// <summary>
-/// Tests for checking the splat adapters register ReactiveUI services.
-/// </summary>
+/// <summary>Tests for checking the splat adapters register ReactiveUI services.</summary>
 [NotInParallel] // These tests modify global state (Locator.CurrentMutable)
 public class SplatAdapterTests
 {
-    /// <summary>
-    /// Should register ReactiveUI binding type converters.
-    /// </summary>
+    /// <summary>Should register ReactiveUI binding type converters.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
@@ -45,9 +41,7 @@ public class SplatAdapterTests
         }
     }
 
-    /// <summary>
-    /// Should register ReactiveUI creates command bindings.
-    /// </summary>
+    /// <summary>Should register ReactiveUI creates command bindings.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DryIocDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
@@ -72,9 +66,7 @@ public class SplatAdapterTests
         }
     }
 
-    /// <summary>
-    /// Should register ReactiveUI binding type converters.
-    /// </summary>
+    /// <summary>Should register ReactiveUI binding type converters.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AutofacDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
@@ -97,9 +89,7 @@ public class SplatAdapterTests
         }
     }
 
-    /// <summary>
-    /// Should register ReactiveUI creates command bindings.
-    /// </summary>
+    /// <summary>Should register ReactiveUI creates command bindings.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AutofacDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()
@@ -126,9 +116,7 @@ public class SplatAdapterTests
         }
     }
 
-    /// <summary>
-    /// Should register ReactiveUI binding type converters.
-    /// </summary>
+    /// <summary>Should register ReactiveUI binding type converters.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task NinjectDependencyResolver_Should_Register_ReactiveUI_BindingTypeConverters()
@@ -150,9 +138,7 @@ public class SplatAdapterTests
         }
     }
 
-    /// <summary>
-    /// Should register ReactiveUI creates command bindings.
-    /// </summary>
+    /// <summary>Should register ReactiveUI creates command bindings.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task NinjectDependencyResolver_Should_Register_ReactiveUI_CreatesCommandBinding()

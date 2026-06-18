@@ -18,7 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Primitives.Advanced" />
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\..\ReactiveUI\Polyfills\**\*.cs" Link="Polyfills\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 </Project>

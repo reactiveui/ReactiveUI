@@ -8,9 +8,7 @@ using ReactiveUI.Builder;
 
 namespace ReactiveUI.Samples.Wpf;
 
-/// <summary>
-/// Application entry point demonstrating ReactiveUI builder initialization for WPF.
-/// </summary>
+/// <summary>Application entry point demonstrating ReactiveUI builder initialization for WPF.</summary>
 public partial class App : Application
 {
     /// <inheritdoc/>

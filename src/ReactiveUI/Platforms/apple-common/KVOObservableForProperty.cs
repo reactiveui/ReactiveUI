@@ -9,14 +9,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Foundation;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Provides change notifications for Cocoa <see cref="NSObject"/> instances using Key-Value Observing (KVO).
-/// </summary>
+#endif
+/// <summary>Provides change notifications for Cocoa <see cref="NSObject"/> instances using Key-Value Observing (KVO).</summary>
 [Preserve(AllMembers = true)]
 [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "KVO is an established acronym and the public type name cannot change without a breaking API change.")]
 public sealed class KVOObservableForProperty : ICreatesObservableForProperty
@@ -90,9 +89,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             beforeChanged);
     }
 
-    /// <summary>
-    /// Subscribes to KVO change notifications using a pre-resolved observation key (KVO key path).
-    /// </summary>
+    /// <summary>Subscribes to KVO change notifications using a pre-resolved observation key (KVO key path).</summary>
     /// <remarks>
     /// <para>
     /// This helper wires NSObject AddObserver/RemoveObserver patterns
@@ -141,9 +138,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         return new KeyValueObservingObservable(obj, expression, observationKey, beforeChanged);
     }
 
-    /// <summary>
-    /// Determines whether the specified member name is declared on the type hierarchy rooted at <see cref="NSObject"/>.
-    /// </summary>
+    /// <summary>Determines whether the specified member name is declared on the type hierarchy rooted at <see cref="NSObject"/>.</summary>
     /// <param name="type">The runtime type to inspect.</param>
     /// <param name="propertyName">The member name to test.</param>
     /// <returns>
@@ -178,9 +173,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         return false;
     }
 
-    /// <summary>
-    /// Maps a .NET property name to an Objective-C selector / KVO key path using reflection over the runtime type.
-    /// </summary>
+    /// <summary>Maps a .NET property name to an Objective-C selector / KVO key path using reflection over the runtime type.</summary>
     /// <remarks>
     /// <para>
     /// This method inspects the runtime type for an exported selector attribute on the getter, and falls back to a
@@ -262,15 +255,13 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         private readonly string _observationKey;
 
         /// <summary>
-        /// <see langword="true"/> to request <see cref="NSKeyValueObservingOptions.Old"/> notifications
-        /// (before-changed); <see langword="false"/> to request <see cref="NSKeyValueObservingOptions.New"/>
-        /// notifications (after-changed).
+        /// Indicates the requested KVO timing: <see langword="true"/> requests
+        /// <see cref="NSKeyValueObservingOptions.Old"/> notifications (before-changed);
+        /// <see langword="false"/> requests <see cref="NSKeyValueObservingOptions.New"/> notifications (after-changed).
         /// </summary>
         private readonly bool _beforeChanged;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KeyValueObservingObservable"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="KeyValueObservingObservable"/> class.</summary>
         /// <param name="obj">The NSObject instance to observe. Must not be <see langword="null"/>.</param>
         /// <param name="expression">The expression describing the observed member. Must not be <see langword="null"/>.</param>
         /// <param name="observationKey">The Cocoa KVO key path. Must not be <see langword="null"/>.</param>

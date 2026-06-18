@@ -7,13 +7,9 @@ using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny.Mockups;
 
-/// <summary>
-///     A non-observable test fixture used to verify behaviour with plain CLR objects.
-/// </summary>
+/// <summary>A non-observable test fixture used to verify behaviour with plain CLR objects.</summary>
 public class NonObservableTestFixture
 {
-    /// <summary>
-    ///     Gets or sets the child fixture.
-    /// </summary>
+    /// <summary>Gets or sets the child fixture.</summary>
     public TestFixture? Child { get; set; }
 }

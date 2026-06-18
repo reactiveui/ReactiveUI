@@ -7,20 +7,17 @@ namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 
 using Expression = System.Linq.Expressions.Expression;
 
-/// <summary>
-/// Test mock for <see cref="IBindingHookEvaluator"/>.
-/// </summary>
+/// <summary>Test mock for <see cref="IBindingHookEvaluator"/>.</summary>
 /// <remarks>
 /// This mock provides configurable behavior for testing binding hook evaluation
 /// without requiring registered Splat hooks.
 /// </remarks>
 internal sealed class MockBindingHookEvaluator : IBindingHookEvaluator
 {
+    /// <summary>The value returned from <see cref="EvaluateBindingHooks{TViewModel, TView}"/>.</summary>
     private bool _returnValue = true;
 
-    /// <summary>
-    /// Configures the return value for <see cref="EvaluateBindingHooks{TViewModel, TView}"/>.
-    /// </summary>
+    /// <summary>Configures the return value for <see cref="EvaluateBindingHooks{TViewModel, TView}"/>.</summary>
     /// <param name="value">True to allow binding; false to reject binding.</param>
     public void SetReturnValue(bool value) => _returnValue = value;
 
@@ -28,14 +25,14 @@ internal sealed class MockBindingHookEvaluator : IBindingHookEvaluator
     public bool EvaluateBindingHooks<TViewModel, TView>(
         TViewModel? viewModel,
         TView view,
-        Expression vmExpression,
+        Expression viewModelExpression,
         Expression viewExpression,
         BindingDirection direction)
         where TViewModel : class
         where TView : class, IViewFor
     {
         ArgumentNullException.ThrowIfNull(view);
-        ArgumentNullException.ThrowIfNull(vmExpression);
+        ArgumentNullException.ThrowIfNull(viewModelExpression);
         ArgumentNullException.ThrowIfNull(viewExpression);
 
         return _returnValue;

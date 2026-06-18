@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A routable view.
-/// </summary>
+/// <summary>A routable view.</summary>
 public class RoutableFooView : IViewFor<IRoutableFooViewModel>
 {
     /// <inheritdoc/>

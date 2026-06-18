@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.AOT.Tests;
 
-/// <summary>
-/// Test activatable view model for AOT testing.
-/// </summary>
+/// <summary>Test activatable view model for AOT testing.</summary>
 internal sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
 {
     /// <inheritdoc/>

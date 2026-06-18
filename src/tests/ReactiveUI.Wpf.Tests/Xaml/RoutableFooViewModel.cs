@@ -8,10 +8,8 @@ using ReactiveUI.Tests.Xaml.Mocks;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// A routable view model.
-/// </summary>
-public class RoutableFooViewModel : ReactiveUI.ReactiveObject, IRoutableFooViewModel
+/// <summary>A routable view model.</summary>
+public class RoutableFooViewModel : ReactiveObject, IRoutableFooViewModel
 {
     /// <inheritdoc/>
     public IScreen HostScreen { get; set; } = new TestScreen();

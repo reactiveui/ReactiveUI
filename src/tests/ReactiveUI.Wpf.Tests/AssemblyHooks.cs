@@ -7,18 +7,14 @@ using Splat;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-/// Assembly-level hooks for WPF test initialization and cleanup.
-/// </summary>
+/// <summary>Assembly-level hooks for WPF test initialization and cleanup.</summary>
 /// <remarks>
 /// Note: App builder initialization is handled per-test via WpfAppBuilderScope,
 /// not at the assembly level, to ensure proper isolation between tests.
 /// </remarks>
 public static class AssemblyHooks
 {
-    /// <summary>
-    /// Called before any tests in this assembly start.
-    /// </summary>
+    /// <summary>Called before any tests in this assembly start.</summary>
     [Before(Assembly)]
     public static void AssemblySetup()
     {
@@ -26,9 +22,7 @@ public static class AssemblyHooks
         ModeDetector.OverrideModeDetector(new TestModeDetector());
     }
 
-    /// <summary>
-    /// Called after all tests in this assembly complete.
-    /// </summary>
+    /// <summary>Called after all tests in this assembly complete.</summary>
     [After(Assembly)]
     public static void AssemblyTeardown()
     {
@@ -38,9 +32,7 @@ public static class AssemblyHooks
         GC.Collect();
     }
 
-    /// <summary>
-    /// Mode detector that always indicates we're in a unit test runner.
-    /// </summary>
+    /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {
         /// <inheritdoc/>

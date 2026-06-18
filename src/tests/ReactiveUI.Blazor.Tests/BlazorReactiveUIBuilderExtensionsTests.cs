@@ -4,45 +4,35 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Concurrency;
 using ReactiveUI.Builder;
 using Splat;
 
 namespace ReactiveUI.Blazor.Tests;
 
-/// <summary>
-/// Tests for the <see cref="BlazorReactiveUIBuilderExtensions"/> class.
-/// These tests verify the Blazor-specific builder extensions for configuring ReactiveUI.
-/// </summary>
+/// <summary>Tests for the <see cref="BlazorReactiveUIBuilderExtensions"/> class. These tests verify the Blazor-specific builder extensions for configuring ReactiveUI.</summary>
 public class BlazorReactiveUIBuilderExtensionsTests
 {
-    /// <summary>
-    /// Verifies that BlazorMainThreadScheduler returns CurrentThreadScheduler.Instance.
-    /// </summary>
+    /// <summary>Verifies that BlazorMainThreadScheduler returns the current-thread sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
-    public async Task BlazorMainThreadScheduler_ReturnsCurrentThreadScheduler()
+    public async Task BlazorMainThreadScheduler_ReturnsCurrentThreadSequencer()
     {
         var scheduler = BlazorReactiveUIBuilderExtensions.BlazorMainThreadScheduler;
 
-        await Assert.That(scheduler).IsSameReferenceAs(CurrentThreadScheduler.Instance);
+        await Assert.That(scheduler).IsSameReferenceAs(Sequencer.CurrentThread);
     }
 
-    /// <summary>
-    /// Verifies that BlazorWasmScheduler returns WasmScheduler.Default.
-    /// </summary>
+    /// <summary>Verifies that BlazorWasmScheduler returns the configured WASM sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
-    public async Task BlazorWasmScheduler_ReturnsWasmScheduler()
+    public async Task BlazorWasmScheduler_ReturnsConfiguredSequencer()
     {
         var scheduler = BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler;
 
-        await Assert.That(scheduler).IsSameReferenceAs(WasmScheduler.Default);
+        await Assert.That(scheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
     }
 
-    /// <summary>
-    /// Verifies that WithBlazor calls WithBlazorScheduler and WithPlatformModule.
-    /// </summary>
+    /// <summary>Verifies that WithBlazor calls WithBlazorScheduler and WithPlatformModule.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazor_ConfiguresBlazorSchedulerAndPlatformModule()
@@ -53,13 +43,11 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         await Assert.That(result).IsSameReferenceAs(builder);
         await Assert.That(builder.MainThreadSchedulerSet).IsTrue();
-        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(CurrentThreadScheduler.Instance);
+        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(Sequencer.CurrentThread);
         await Assert.That(builder.PlatformModuleCalled).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that WithBlazor throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Verifies that WithBlazor throws ArgumentNullException when builder is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazor_ThrowsArgumentNullException_WhenBuilderIsNull()
@@ -71,9 +59,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
         await Assert.That(exception.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// Verifies that WithBlazorScheduler sets the main thread scheduler to CurrentThreadScheduler.
-    /// </summary>
+    /// <summary>Verifies that WithBlazorScheduler sets the main thread sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazorScheduler_SetsMainThreadScheduler()
@@ -84,12 +70,10 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         await Assert.That(result).IsSameReferenceAs(builder);
         await Assert.That(builder.MainThreadSchedulerSet).IsTrue();
-        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(CurrentThreadScheduler.Instance);
+        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(Sequencer.CurrentThread);
     }
 
-    /// <summary>
-    /// Verifies that WithBlazorScheduler throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Verifies that WithBlazorScheduler throws ArgumentNullException when builder is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazorScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
@@ -101,9 +85,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
         await Assert.That(exception.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// Verifies that WithBlazorWasmScheduler sets the main thread scheduler to WasmScheduler.
-    /// </summary>
+    /// <summary>Verifies that WithBlazorWasmScheduler sets the configured WASM sequencer.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazorWasmScheduler_SetsMainThreadScheduler()
@@ -114,12 +96,10 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         await Assert.That(result).IsSameReferenceAs(builder);
         await Assert.That(builder.MainThreadSchedulerSet).IsTrue();
-        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(WasmScheduler.Default);
+        await Assert.That(builder.MainThreadScheduler).IsSameReferenceAs(BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler);
     }
 
-    /// <summary>
-    /// Verifies that WithBlazorWasmScheduler throws ArgumentNullException when builder is null.
-    /// </summary>
+    /// <summary>Verifies that WithBlazorWasmScheduler throws ArgumentNullException when builder is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task WithBlazorWasmScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
@@ -131,45 +111,33 @@ public class BlazorReactiveUIBuilderExtensionsTests
         await Assert.That(exception.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// A test implementation of IReactiveUIBuilder for testing purposes.
-    /// </summary>
+    /// <summary>A test implementation of IReactiveUIBuilder for testing purposes.</summary>
     [SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",
         Justification = "Mock must match interface generic methods that take no argument of the type parameter.")]
     private sealed class TestReactiveUIBuilder : IReactiveUIBuilder
     {
-        /// <summary>
-        /// Gets the main thread scheduler that was set on the builder.
-        /// </summary>
-        public IScheduler? MainThreadScheduler { get; private set; }
+        /// <summary>Gets the main thread scheduler that was set on the builder.</summary>
+        public ISequencer? MainThreadScheduler { get; private set; }
 
-        /// <summary>
-        /// Gets the task pool scheduler that was set on the builder.
-        /// </summary>
-        public IScheduler? TaskpoolScheduler { get; private set; }
+        /// <summary>Gets the task pool scheduler that was set on the builder.</summary>
+        public ISequencer? TaskpoolScheduler { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the main thread scheduler was set.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the main thread scheduler was set.</summary>
         public bool MainThreadSchedulerSet { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the task pool scheduler was set.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the task pool scheduler was set.</summary>
         public bool TaskpoolSchedulerSet { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the platform module registration was called.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the platform module registration was called.</summary>
         public bool PlatformModuleCalled { get; private set; }
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler) => WithMainThreadScheduler(scheduler, true);
+        public IReactiveUIBuilder WithMainThreadScheduler(ISequencer scheduler) => WithMainThreadScheduler(scheduler, true);
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithMainThreadScheduler(IScheduler scheduler, bool setRxApp)
+        public IReactiveUIBuilder WithMainThreadScheduler(ISequencer scheduler, bool setRxApp)
         {
             MainThreadScheduler = scheduler;
             MainThreadSchedulerSet = true;
@@ -222,7 +190,7 @@ public class BlazorReactiveUIBuilderExtensionsTests
 
         /// <inheritdoc/>
         public IReactiveUIBuilder ForCustomPlatform(
-            IScheduler mainThreadScheduler,
+            ISequencer mainThreadScheduler,
             Action<IMutableDependencyResolver> platformServices) => throw new NotSupportedException();
 
         /// <inheritdoc/>
@@ -263,10 +231,10 @@ public class BlazorReactiveUIBuilderExtensionsTests
             throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler) => WithTaskPoolScheduler(scheduler, true);
+        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler) => WithTaskPoolScheduler(scheduler, true);
 
         /// <inheritdoc/>
-        public IReactiveUIBuilder WithTaskPoolScheduler(IScheduler scheduler, bool setRxApp)
+        public IReactiveUIBuilder WithTaskPoolScheduler(ISequencer scheduler, bool setRxApp)
         {
             TaskpoolScheduler = scheduler;
             TaskpoolSchedulerSet = true;

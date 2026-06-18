@@ -4,32 +4,22 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive.Disposables;
 using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Winforms;
+#else
 namespace ReactiveUI.Winforms;
+#endif
 
-/// <summary>
-/// A control host which will handling routing between different ViewModels and Views.
-/// </summary>
+/// <summary>A control host which will handling routing between different ViewModels and Views.</summary>
 [DefaultProperty("ViewModel")]
 public partial class RoutedControlHost : UserControl, IReactiveObject
 {
     /// <summary>Holds the subscriptions created during construction so they can be disposed together.</summary>
-    private readonly CompositeDisposable _disposables = [];
+    private readonly MultipleDisposable _disposables = [];
 
-    /// <summary>Backing field for the routing state.</summary>
-    private RoutingState? _router;
-
-    /// <summary>Backing field for the default content shown when no view model is set.</summary>
-    private Control? _defaultContent;
-
-    /// <summary>Backing field for the view contract observable.</summary>
-    private IObservable<string>? _viewContractObservable;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RoutedControlHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="RoutedControlHost"/> class.</summary>
     public RoutedControlHost()
     {
         InitializeComponent();
@@ -42,9 +32,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>
-    /// Gets or sets the default content.
-    /// </summary>
+    /// <summary>Gets or sets the default content.</summary>
     /// <value>
     /// The default content.
     /// </value>
@@ -53,36 +41,30 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Control? DefaultContent
     {
-        get => _defaultContent;
-        set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
-    /// </summary>
+    /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     [Category("ReactiveUI")]
     [Description("The router.")]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public RoutingState? Router
     {
-        get => _router;
-        set => this.RaiseAndSetIfChanged(ref _router, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view contract observable.
-    /// </summary>
+    /// <summary>Gets or sets the view contract observable.</summary>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IObservable<string>? ViewContractObservable
     {
-        get => _viewContractObservable;
-        set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view locator.
-    /// </summary>
+    /// <summary>Gets or sets the view locator.</summary>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IViewLocator? ViewLocator { get; set; }
@@ -93,9 +75,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
+    /// <summary>Clean up any resources being used.</summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
@@ -108,9 +88,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Prepares a control for hosting by docking it to fill the host.
-    /// </summary>
+    /// <summary>Prepares a control for hosting by docking it to fill the host.</summary>
     /// <param name="view">The control to initialize.</param>
     /// <returns>The same control, docked to fill.</returns>
     private static Control InitView(Control view)
@@ -145,7 +123,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
             _defaultContentSubscription = host.WhenAnyValue<RoutedControlHost, Control?>(nameof(DefaultContent))
                 .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
 
-            host.ViewContractObservable = new ReturnObservable<string>(null!);
+            host.ViewContractObservable = Signal.Emit<string>(null!);
 
             // Router.CurrentViewModel + ViewContractObservable -> resolve and host the matching view.
             _viewModelContract = new(
@@ -209,10 +187,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
             _host.ResumeLayout();
         }
 
-        /// <summary>
-        /// Removes every hosted control, disposing resolved views as they are removed while leaving the reusable
-        /// <see cref="DefaultContent"/> intact.
-        /// </summary>
+        /// <summary>Removes every hosted control, disposing resolved views as they are removed while leaving the reusable <see cref="DefaultContent"/> intact.</summary>
         private void ClearHostedViews()
         {
             // Iterate in reverse: disposing a control detaches it from the Controls collection.

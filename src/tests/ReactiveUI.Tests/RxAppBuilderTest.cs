@@ -4,20 +4,19 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using Splat;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="RxAppBuilder" />.
-/// </summary>
+/// <summary>Tests for <see cref="RxAppBuilder" />.</summary>
 public class RxAppBuilderTest
 {
-    /// <summary>
-    ///     Tests that CreateReactiveUIBuilder throws for null resolver.
-    /// </summary>
+    /// <summary>Tests that CreateReactiveUIBuilder throws for null resolver.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateReactiveUIBuilder_NullResolver_Throws()
@@ -28,9 +27,7 @@ public class RxAppBuilderTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that CreateReactiveUIBuilder returns a builder.
-    /// </summary>
+    /// <summary>Tests that CreateReactiveUIBuilder returns a builder.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateReactiveUIBuilder_ReturnsBuilder()
@@ -41,9 +38,7 @@ public class RxAppBuilderTest
         await Assert.That(builder).IsTypeOf<ReactiveUIBuilder>();
     }
 
-    /// <summary>
-    ///     Tests that CreateReactiveUIBuilder with resolver returns a builder.
-    /// </summary>
+    /// <summary>Tests that CreateReactiveUIBuilder with resolver returns a builder.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateReactiveUIBuilder_WithResolver_ReturnsBuilder()
@@ -56,9 +51,7 @@ public class RxAppBuilderTest
         await Assert.That(builder).IsTypeOf<ReactiveUIBuilder>();
     }
 
-    /// <summary>
-    ///     Test resolver for testing.
-    /// </summary>
+    /// <summary>Test resolver for testing.</summary>
     [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
     private sealed class TestResolver : IMutableDependencyResolver, IReadonlyDependencyResolver
     {
@@ -152,9 +145,7 @@ public class RxAppBuilderTest
             // No-op: this test resolver does not store registrations.
         }
 
-        /// <summary>
-        ///     Records a non-generic constant registration.
-        /// </summary>
+        /// <summary>Records a non-generic constant registration.</summary>
         /// <param name="value">The constant value to register.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
@@ -167,7 +158,7 @@ public class RxAppBuilderTest
         /// <inheritdoc/>
         public void RegisterLazySingleton<
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-            T>(Func<T?> factory)
+        T>(Func<T?> valueFactory)
             where T : class
         {
             // No-op: this test resolver does not store registrations.
@@ -176,17 +167,15 @@ public class RxAppBuilderTest
         /// <inheritdoc/>
         public void RegisterLazySingleton<
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-            T>(
-            Func<T?> factory,
+        T>(
+            Func<T?> valueFactory,
             string? contract)
             where T : class
         {
             // No-op: this test resolver does not store registrations.
         }
 
-        /// <summary>
-        ///     Records a non-generic lazy singleton registration.
-        /// </summary>
+        /// <summary>Records a non-generic lazy singleton registration.</summary>
         /// <param name="factory">The factory that produces the value.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
@@ -198,20 +187,20 @@ public class RxAppBuilderTest
 
         /// <inheritdoc/>
         public IDisposable ServiceRegistrationCallback(Type serviceType, Action<IDisposable> callback) =>
-            Disposable.Empty;
+            Scope.Empty;
 
         /// <inheritdoc/>
         public IDisposable ServiceRegistrationCallback(
             Type serviceType,
             string? contract,
-            Action<IDisposable> callback) => Disposable.Empty;
+            Action<IDisposable> callback) => Scope.Empty;
 
         /// <inheritdoc/>
-        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Disposable.Empty;
+        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Scope.Empty;
 
         /// <inheritdoc/>
         public IDisposable ServiceRegistrationCallback<T>(string? contract, Action<IDisposable> callback) =>
-            Disposable.Empty;
+            Scope.Empty;
 
         /// <inheritdoc/>
         public void UnregisterAll(Type? serviceType)

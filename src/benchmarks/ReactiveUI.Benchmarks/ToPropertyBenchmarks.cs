@@ -3,15 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks the <c>ToProperty</c> / <see cref="ObservableAsPropertyHelper{T}"/> pipeline: helper construction and
-/// per-change value propagation into the derived property.
-/// </summary>
+/// <summary>Benchmarks the <c>ToProperty</c> / <see cref="ObservableAsPropertyHelper{T}"/> pipeline: helper construction and per-change value propagation into the derived property.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class ToPropertyBenchmarks
@@ -35,9 +31,10 @@ public class ToPropertyBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
-        _doubled = _viewModel.WhenAnyValue(x => x.Count)
-            .Select(static count => count * Multiplier)
+        _viewModel = new();
+        _doubled = BenchmarkLinq.Select(
+                _viewModel.WhenAnyValue(x => x.Count),
+                static count => count * Multiplier)
             .ToProperty(_viewModel, DerivedPropertyName);
     }
 
@@ -50,8 +47,9 @@ public class ToPropertyBenchmarks
     [Benchmark]
     public int Create()
     {
-        using var helper = _viewModel.WhenAnyValue(x => x.Count)
-            .Select(static count => count * Multiplier)
+        using var helper = BenchmarkLinq.Select(
+                _viewModel.WhenAnyValue(x => x.Count),
+                static count => count * Multiplier)
             .ToProperty(_viewModel, DerivedPropertyName);
         return helper.Value;
     }

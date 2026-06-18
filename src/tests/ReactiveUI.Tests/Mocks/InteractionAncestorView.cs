@@ -5,18 +5,14 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-///     A ancestor view.
-/// </summary>
+/// <summary>A ancestor view.</summary>
 public class InteractionAncestorView : ReactiveObject, IViewFor<InteractionAncestorViewModel>
 {
-    private InteractionAncestorViewModel? _viewModel;
-
     /// <inheritdoc />
     public InteractionAncestorViewModel? ViewModel
     {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <inheritdoc />

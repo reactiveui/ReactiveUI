@@ -7,7 +7,5 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf.Mocks;
 
-/// <summary>
-/// A mock user control that is activatable for WPF view tests.
-/// </summary>
+/// <summary>A mock user control that is activatable for WPF view tests.</summary>
 public class WpfTestUserControl : UserControl, IActivatableView;

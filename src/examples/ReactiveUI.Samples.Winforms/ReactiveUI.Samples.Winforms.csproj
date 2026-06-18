@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\ReactiveUI.Winforms\ReactiveUI.Winforms.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+  </ItemGroup>
+
 </Project>

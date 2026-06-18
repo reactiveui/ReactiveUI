@@ -5,30 +5,22 @@
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="ReactiveShellContent{TViewModel}"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ReactiveShellContent{TViewModel}"/>.</summary>
 public class ReactiveShellContentTest
 {
-    /// <summary>
-    /// Tests that ViewModelProperty BindableProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ViewModelProperty BindableProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelProperty_IsRegistered() =>
         await Assert.That(ReactiveShellContent<TestViewModel>.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ContractProperty BindableProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ContractProperty BindableProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractProperty_IsRegistered() =>
         await Assert.That(ReactiveShellContent<TestViewModel>.ContractProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_SetAndGet_WorksCorrectly()
@@ -41,9 +33,7 @@ public class ReactiveShellContentTest
         await Assert.That(content.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that Contract property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Contract property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Contract_SetAndGet_WorksCorrectly()
@@ -54,9 +44,7 @@ public class ReactiveShellContentTest
         await Assert.That(content.Contract).IsEqualTo(contract);
     }
 
-    /// <summary>
-    /// Tests that ViewModel can be null.
-    /// </summary>
+    /// <summary>Tests that ViewModel can be null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_CanBeNull()
@@ -66,9 +54,7 @@ public class ReactiveShellContentTest
         await Assert.That(content.ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Tests that Contract can be null.
-    /// </summary>
+    /// <summary>Tests that Contract can be null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Contract_CanBeNull()
@@ -78,9 +64,7 @@ public class ReactiveShellContentTest
         await Assert.That(content.Contract).IsNull();
     }
 
-    /// <summary>
-    /// Test view model for testing.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test view model for testing.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
 }

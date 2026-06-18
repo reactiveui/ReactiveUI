@@ -2,21 +2,26 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 #if IS_MAUI
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
+#else
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
+#endif
 
-/// <summary>
-/// A <see cref="UserControl"/> that is reactive.
-/// </summary>
+/// <summary>A <see cref="UserControl"/> that is reactive.</summary>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="UserControl"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -49,7 +54,6 @@ namespace ReactiveUI;
 /// <code>
 /// <![CDATA[
 /// internal class YourViewBase : ReactiveUserControl<YourViewModel> { /* No code needed here */ }
-///
 /// public partial class YourView : YourViewBase
 /// {
 ///     /* Your code */
@@ -82,25 +86,21 @@ public partial class ReactiveUserControl<TViewModel> :
         UserControl, IViewFor<TViewModel>
         where TViewModel : class
 {
-    /// <summary>
-    /// The view model dependency property.
-    /// </summary>
+    /// <summary>The shared view model dependency property for this closed generic control type.</summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactiveUserControl<TViewModel>),
             new(null));
 
-    /// <summary>
-    /// Gets the binding root view model.
-    /// </summary>
+    /// <summary>Gets the binding root view model.</summary>
     public TViewModel? BindingRoot => ViewModel;
 
     /// <inheritdoc/>
     public TViewModel? ViewModel
     {
-        get => (TViewModel)GetValue(ViewModelProperty);
+        get => (TViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
     }
 

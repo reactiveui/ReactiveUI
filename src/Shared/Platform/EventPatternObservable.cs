@@ -5,7 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using ReactiveUI.Helpers;
+using ReactiveUI.Primitives.Disposables;
 
 namespace ReactiveUI.Internal;
 

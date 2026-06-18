@@ -8,26 +8,17 @@ using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-///     Project.
-/// </summary>
+/// <summary>A reactive project model used for serialization tests.</summary>
 /// <seealso cref="ReactiveObject" />
 [DataContract]
 public class Project : ReactiveObject
 {
-    /// <summary>
-    ///     The backing field for the <see cref="Name" /> property.
-    /// </summary>
-    private string? _name;
-
-    /// <summary>
-    ///     Gets or sets the name.
-    /// </summary>
+    /// <summary>Gets or sets the name.</summary>
     [DataMember]
     [JsonRequired]
     public string? Name
     {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

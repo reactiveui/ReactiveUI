@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured Maui leaf: recompiles the ReactiveUI.Maui source against the
+         ReactiveUI.Reactive engine (which now carries android + apple + windows platform legs). REACTIVE_SHIM
+         (from the 'Reactive' name suffix in Directory.Build.props) flips the namespaces to ReactiveUI.Reactive.*. -->
+    <TargetFrameworks>$(ReactiveMauiTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Maui.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.Maui</RootNamespace>
+    <PackageId>ReactiveUI.Maui.Reactive</PackageId>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Microsoft Maui, recompiled against System.Reactive.</PackageDescription>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;maui;android;ios;mac;windows;net</PackageTags>
+    <UseMaui>true</UseMaui>
+    <DefineConstants>$(DefineConstants);IS_MAUI</DefineConstants>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.57</WindowsSdkPackageVersion>
+    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::IsOsPlatform('OSX')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <PackageReference Include="Microsoft.Windows.CsWinRT"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls"/>
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
+    <PackageReference Include="ReactiveUI.Primitives.Maui.Reactive"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+  </ItemGroup>
+  <Import Project="..\ReactiveUI.Maui\build\SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows')) and $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
+  <!-- The same ReactiveUI.Maui source the lean package ships, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Maui\**\*.cs" Exclude="..\ReactiveUI.Maui\obj\**\*.cs;..\ReactiveUI.Maui\bin\**\*.cs" Link="ReactiveUI.Maui\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+  </ItemGroup>
+  <!-- Mirrors the lean Maui Compile Remove list (root RoutedViewHost/ViewModelViewHost are used, the Common
+       variants and the empty WinUI stub are not). -->
+  <ItemGroup>
+    <Compile Remove="..\ReactiveUI.Maui\Common\RoutedViewHost.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\Common\RoutedViewHost{TViewModel}.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\Common\ViewModelViewHost.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\Common\ViewModelViewHost{TViewModel}.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\WinUI\DispatcherQueueScheduler.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\WinUI\TransitioningContentControl.Empty.cs"/>
+  </ItemGroup>
+</Project>

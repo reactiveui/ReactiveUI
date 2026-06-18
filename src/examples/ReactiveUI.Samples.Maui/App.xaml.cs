@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// MAUI application shell that creates the initial navigation window.
-/// </summary>
+/// <summary>MAUI application shell that creates the initial navigation window.</summary>
 public partial class App
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="App"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="App"/> class.</summary>
     public App() => InitializeComponent();
 
     /// <inheritdoc/>

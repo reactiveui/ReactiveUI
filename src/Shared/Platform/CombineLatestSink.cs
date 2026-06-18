@@ -3,13 +3,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Helpers;
-
 namespace ReactiveUI.Internal;
 
-/// <summary>
-/// A sink that combines the latest value from two sources.
-/// </summary>
+/// <summary>A sink that combines the latest value from two sources.</summary>
 /// <typeparam name="TFirst">The first source's element type.</typeparam>
 /// <typeparam name="TSecond">The second source's element type.</typeparam>
 internal sealed class CombineLatestSink<TFirst, TSecond> : IDisposable

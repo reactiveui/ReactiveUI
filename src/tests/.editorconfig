@@ -1,11 +1,6 @@
 [*.cs]
 
 ###################
-# StyleCop Analyzers (SA) - Documentation Rules
-###################
-dotnet_diagnostic.SA1600.severity = none # Elements must be documented
-
-###################
 # Code Analysis (CA) - Disable rules for test projects
 ###################
 dotnet_diagnostic.CA1001.severity = none # Owns disposable fields

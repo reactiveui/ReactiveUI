@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Helpers;
-
 #if UIKIT
 using NSView = UIKit.UIView;
 using NSViewController = UIKit.UIViewController;
@@ -12,47 +10,52 @@ using NSViewController = UIKit.UIViewController;
 using AppKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Extension methods for activating and deactivating subviews on a view controller.
-/// </summary>
+#endif
+/// <summary>Extension methods for activating and deactivating subviews on a view controller.</summary>
 internal static class UIViewControllerMixins
 {
-    /// <summary>
-    /// Recursively activates or deactivates all subviews of the given view controller's root view.
-    /// </summary>
-    /// <param name="controller">The view controller whose subviews to activate or deactivate.</param>
-    /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
-    internal static void ActivateSubviews(this NSViewController controller, bool activate)
+    /// <summary>Provides subview activation extension members for a view.</summary>
+    /// <param name="masterView">The view whose subviews to activate or deactivate.</param>
+    extension(NSView masterView)
     {
-        ArgumentExceptionHelper.ThrowIfNull(controller);
-
-        if (controller.View is null)
+        /// <summary>Recursively activates or deactivates all subviews of the given view.</summary>
+        /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
+        private void ActivateSubviews(bool activate)
         {
-            throw new ArgumentException("The view on the controller is null.", nameof(controller));
-        }
+            ArgumentExceptionHelper.ThrowIfNull(masterView);
 
-        controller.View.ActivateSubviews(activate);
+            foreach (var view in masterView.Subviews)
+            {
+                if (view is ICanForceManualActivation subview)
+                {
+                    subview.Activate(activate);
+                }
+
+                view.ActivateSubviews(activate);
+            }
+        }
     }
 
-    /// <summary>
-    /// Recursively activates or deactivates all subviews of the given view.
-    /// </summary>
-    /// <param name="masterView">The view whose subviews to activate or deactivate.</param>
-    /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
-    private static void ActivateSubviews(this NSView masterView, bool activate)
+    /// <summary>Provides subview activation extension members for a view controller.</summary>
+    /// <param name="controller">The view controller whose subviews to activate or deactivate.</param>
+    extension(NSViewController controller)
     {
-        ArgumentExceptionHelper.ThrowIfNull(masterView);
-
-        foreach (var view in masterView.Subviews)
+        /// <summary>Recursively activates or deactivates all subviews of the given view controller's root view.</summary>
+        /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
+        internal void ActivateSubviews(bool activate)
         {
-            if (view is ICanForceManualActivation subview)
+            ArgumentExceptionHelper.ThrowIfNull(controller);
+
+            if (controller.View is null)
             {
-                subview.Activate(activate);
+                throw new ArgumentException("The view on the controller is null.", nameof(controller));
             }
 
-            view.ActivateSubviews(activate);
+            controller.View.ActivateSubviews(activate);
         }
     }
 }

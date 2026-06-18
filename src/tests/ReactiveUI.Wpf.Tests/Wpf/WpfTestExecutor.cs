@@ -3,10 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using System.Runtime.Versioning;
 using System.Windows.Threading;
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Wpf;
@@ -28,9 +26,7 @@ namespace ReactiveUI.Tests.Wpf;
 [SupportedOSPlatform("windows")]
 public class WpfTestExecutor : STAThreadExecutor
 {
-    /// <summary>
-    /// Helper that manages app builder setup and teardown for the test.
-    /// </summary>
+    /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
@@ -54,8 +50,8 @@ public class WpfTestExecutor : STAThreadExecutor
         // never pumps. Binding this executor's dedicated STA dispatcher concretely keeps marshalled work on the
         // dispatcher the test pumps. Initialize and the test body run on the same dedicated thread (see
         // DedicatedThreadExecutor), so Dispatcher.CurrentDispatcher here is that thread's dispatcher.
-        RxSchedulers.MainThreadScheduler = new DispatcherScheduler(Dispatcher.CurrentDispatcher);
-        RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+        RxSchedulers.MainThreadScheduler = new DispatcherSequencer(Dispatcher.CurrentDispatcher);
+        RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
     }
 
     /// <inheritdoc/>

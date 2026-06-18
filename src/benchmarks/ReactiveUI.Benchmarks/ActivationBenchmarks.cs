@@ -23,7 +23,7 @@ public class ActivationBenchmarks
 
     /// <summary>Creates the activatable view model and wires its <c>WhenActivated</c> block.</summary>
     [GlobalSetup]
-    public void Setup() => _viewModel = new ActivatableBenchmarkViewModel();
+    public void Setup() => _viewModel = new();
 
     /// <summary>Measures repeated activate + deactivate cycles.</summary>
     [Benchmark]

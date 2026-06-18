@@ -4,19 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.Commands;
 
-/// <summary>
-///     Tests for command binding creation.
-/// </summary>
+/// <summary>Tests for command binding creation.</summary>
 public class CreatesCommandBindingTests
 {
-    /// <summary>
-    ///     Test that makes sure events binder binds to explicit event.
-    /// </summary>
+    /// <summary>Test that makes sure events binder binds to explicit event.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task EventBinderBindsToExplicitEvent()
@@ -35,7 +30,7 @@ public class CreatesCommandBindingTests
         var disposable = fixture.BindCommandToObject<TestFixture, PropertyChangedEventArgs>(
             cmd,
             input,
-            Observable.Return((object)5),
+            Signal.Emit((object)5),
             "PropertyChanged");
         input.IsNotNullString = "Foo";
         await Assert.That(wasCalled).IsTrue();

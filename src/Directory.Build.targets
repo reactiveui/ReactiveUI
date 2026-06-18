@@ -7,6 +7,17 @@
     <EnableVSTestReferences>false</EnableVSTestReferences>
   </PropertyGroup>
 
+  <!-- WPF markup-compile (PresentationBuildTasks) spawns a temporary '<name>_hash_wpftmp' project to resolve
+       XAML-referenced types. It inherits OutputType=Exe from the Microsoft.Testing.Platform test project but does
+       NOT include the MTP-generated entry point, so csc fails the temp pass with CS5001 ("no static Main"). The
+       temp assembly is only used for XAML type resolution, so give the markup pass a library output; the real Exe
+       test assembly (with its MTP entry point) is still produced by the second markup-compile pass. This must live
+       in Directory.Build.targets (imported after the generated temp project body) so it wins over the OutputType the
+       temp project sets for itself. Scoped to test temp projects so the WinExe sample apps' markup pass is untouched. -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('_wpftmp')) and $(MSBuildProjectName.Contains('Tests'))">
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <DefineConstants>$(DefineConstants);NET_461;XAML</DefineConstants>
   </PropertyGroup>

@@ -7,15 +7,11 @@ using Splat;
 
 namespace ReactiveUI.Tests.Wpf.Mocks.CanExecuteMock;
 
-/// <summary>
-/// Always False Mode Detector.
-/// </summary>
+/// <summary>Always False Mode Detector.</summary>
 /// <seealso cref="IModeDetector" />
 public class AlwaysFalseModeDetector : IModeDetector
 {
-    /// <summary>
-    /// Gets a value indicating whether the current library or application is running through a unit test.
-    /// </summary>
+    /// <summary>Gets a value indicating whether the current library or application is running through a unit test.</summary>
     /// <returns>
     /// If we are currently running in a unit test.
     /// </returns>

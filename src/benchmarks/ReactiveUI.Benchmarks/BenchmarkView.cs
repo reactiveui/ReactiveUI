@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// A minimal view bound to <see cref="BenchmarkViewModel"/>, used to exercise one-way and two-way bindings.
-/// </summary>
+/// <summary>A minimal view bound to <see cref="BenchmarkViewModel"/>, used to exercise one-way and two-way bindings.</summary>
 internal sealed class BenchmarkView : ReactiveObject, IViewFor<BenchmarkViewModel>
 {
     /// <summary>Gets or sets the bound view model.</summary>

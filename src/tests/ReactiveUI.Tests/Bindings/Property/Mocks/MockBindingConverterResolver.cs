@@ -5,23 +5,21 @@
 
 namespace ReactiveUI.Tests.Bindings.Property.Mocks;
 
-/// <summary>
-/// Test mock for <see cref="IBindingConverterResolver"/>.
-/// </summary>
+/// <summary>Test mock for <see cref="IBindingConverterResolver"/>.</summary>
 /// <remarks>
 /// This mock uses simple dictionary-based lookups for testing binding converter resolution
 /// without requiring the full Splat/RxConverters infrastructure.
 /// </remarks>
 internal sealed class MockBindingConverterResolver : IBindingConverterResolver
 {
+    /// <summary>The registered type converters keyed by source and target type.</summary>
     private readonly Dictionary<(Type From, Type To), object?> _converters = [];
 
+    /// <summary>The registered set-method converters keyed by source and target type.</summary>
     private readonly Dictionary<(Type? From, Type? To), Func<object?, object?, object?[]?, object?>?>
         _setMethodConverters = [];
 
-    /// <summary>
-    /// Registers a converter for testing.
-    /// </summary>
+    /// <summary>Registers a converter for testing.</summary>
     /// <param name="fromType">The source type.</param>
     /// <param name="toType">The target type.</param>
     /// <param name="converter">The converter instance to return.</param>
@@ -34,9 +32,7 @@ internal sealed class MockBindingConverterResolver : IBindingConverterResolver
         _converters[(fromType, toType)] = converter;
     }
 
-    /// <summary>
-    /// Registers a set-method converter for testing.
-    /// </summary>
+    /// <summary>Registers a set-method converter for testing.</summary>
     /// <param name="fromType">The source type (may be null).</param>
     /// <param name="toType">The target type (may be null).</param>
     /// <param name="converter">The converter function to return.</param>

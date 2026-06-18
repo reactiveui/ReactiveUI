@@ -4,50 +4,38 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
+using ReactiveUI.Primitives.Signals;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="ViewModelViewHost"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ViewModelViewHost"/>.</summary>
 public class ViewModelViewHostTest
 {
-    /// <summary>
-    /// Tests that ViewModelProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ViewModelProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that DefaultContentProperty is registered.
-    /// </summary>
+    /// <summary>Tests that DefaultContentProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContentProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost.DefaultContentProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewContractObservableProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ViewContractObservableProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContractObservableProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost.ViewContractObservableProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ContractFallbackByPassProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ContractFallbackByPassProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractFallbackByPassProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost.ContractFallbackByPassProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_SetAndGet_WorksCorrectly()
@@ -60,9 +48,7 @@ public class ViewModelViewHostTest
         await Assert.That(host.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that DefaultContent property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that DefaultContent property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContent_SetAndGet_WorksCorrectly()
@@ -75,9 +61,7 @@ public class ViewModelViewHostTest
         await Assert.That(host.DefaultContent).IsEqualTo(defaultContent);
     }
 
-    /// <summary>
-    /// Tests that ContractFallbackByPass property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ContractFallbackByPass property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractFallbackByPass_SetAndGet_WorksCorrectly()
@@ -91,9 +75,7 @@ public class ViewModelViewHostTest
         await Assert.That(host.ContractFallbackByPass).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that ViewLocator property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewLocator property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewLocator_SetAndGet_WorksCorrectly()
@@ -106,24 +88,20 @@ public class ViewModelViewHostTest
         await Assert.That(host.ViewLocator).IsEqualTo(viewLocator);
     }
 
-    /// <summary>
-    /// Tests that ViewContractObservable property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewContractObservable property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContractObservable_SetAndGet_WorksCorrectly()
     {
         var host = new ViewModelViewHost();
-        var observable = Observable.Return("contract");
+        var observable = Signal.Emit("contract");
 
         host.ViewContractObservable = observable;
 
         await Assert.That(host.ViewContractObservable).IsEqualTo(observable);
     }
 
-    /// <summary>
-    /// Tests that ResolveViewForViewModel resolves the view and sets the content.
-    /// </summary>
+    /// <summary>Tests that ResolveViewForViewModel resolves the view and sets the content.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ResolveViewForViewModel_ResolvesAndSetsContent()
@@ -139,9 +117,7 @@ public class ViewModelViewHostTest
         await Assert.That(view.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that DefaultContent is shown when ViewModel is null.
-    /// </summary>
+    /// <summary>Tests that DefaultContent is shown when ViewModel is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContent_IsShown_WhenViewModelIsNull()
@@ -158,15 +134,11 @@ public class ViewModelViewHostTest
         await Assert.That(host.Content).IsEqualTo(defaultContent);
     }
 
-    /// <summary>
-    /// Test view model for testing.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test view model for testing.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
 
-    /// <summary>
-    /// Test view that implements IViewFor for testing.
-    /// </summary>
+    /// <summary>Test view that implements IViewFor for testing.</summary>
     private sealed class TestView : ContentView, IViewFor<TestViewModel>
     {
         /// <inheritdoc/>
@@ -180,23 +152,17 @@ public class ViewModelViewHostTest
         }
     }
 
-    /// <summary>
-    /// Mock view locator that always resolves to a fixed view for testing.
-    /// </summary>
+    /// <summary>Mock view locator that always resolves to a fixed view for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",
         Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
     private sealed class MockViewLocator : IViewLocator
     {
-        /// <summary>
-        /// The view to always resolve to.
-        /// </summary>
+        /// <summary>The view to always resolve to.</summary>
         private readonly IViewFor _view;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MockViewLocator"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MockViewLocator"/> class.</summary>
         /// <param name="view">The view to always resolve to.</param>
         public MockViewLocator(IViewFor view) => _view = view;
 
@@ -214,7 +180,7 @@ public class ViewModelViewHostTest
         [RequiresDynamicCode(
             "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
             "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? viewModel, string? contract) => _view;
+        public IViewFor? ResolveView(object? instance, string? contract) => _view;
 
         /// <inheritdoc/>
         [RequiresUnreferencedCode(
@@ -222,23 +188,17 @@ public class ViewModelViewHostTest
         [RequiresDynamicCode(
             "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
             "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
-        public IViewFor? ResolveView(object? viewModel) => _view;
+        public IViewFor? ResolveView(object? instance) => _view;
     }
 
-    /// <summary>
-    /// Testable ViewModelViewHost that exposes the protected view model resolution.
-    /// </summary>
+    /// <summary>Testable ViewModelViewHost that exposes the protected view model resolution.</summary>
     private sealed class TestableViewModelViewHost : ViewModelViewHost
     {
-        /// <summary>
-        /// Simulates a view model change by resolving the view for the current view model.
-        /// </summary>
+        /// <summary>Simulates a view model change by resolving the view for the current view model.</summary>
         public void SimulateViewModelChange() => ResolveViewForViewModel(ViewModel, ViewContract);
     }
 
-    /// <summary>
-    /// Test view locator for testing.
-    /// </summary>
+    /// <summary>Test view locator for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",

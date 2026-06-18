@@ -10,11 +10,13 @@ using System.Runtime.Versioning;
 using Android.OS;
 using Android.Text;
 using Android.Views;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
+using ReactiveUI.Primitives.Disposables;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Provides property change notifications for a curated set of Android widget types which are not generally observable
 /// through standard property change mechanisms.
@@ -40,14 +42,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     /// </summary>
     private const int TimePickerHourMinuteApiLevel = 23;
 
-    /// <summary>
-    /// The initial capacity used for the per-property list of candidate widget types.
-    /// </summary>
+    /// <summary>The initial capacity used for the per-property list of candidate widget types.</summary>
     private const int CandidateTypesInitialCapacity = 2;
 
-    /// <summary>
-    /// Stores observable factory functions keyed by (widget type, property name).
-    /// </summary>
+    /// <summary>Stores observable factory functions keyed by (widget type, property name).</summary>
     /// <remarks>
     /// This table is immutable after type initialization and is safe for concurrent reads.
     /// </remarks>
@@ -56,23 +54,18 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             (Type ViewType, string PropertyName),
             Func<object, Expression, IObservable<IObservedChange<object, object?>>>> DispatchTable;
 
-    /// <summary>
-    /// Stores, per property name, the set of widget types that can produce notifications for that property.
-    /// </summary>
+    /// <summary>Stores, per property name, the set of widget types that can produce notifications for that property.</summary>
     /// <remarks>
     /// This index supports efficient affinity checks and dispatch selection without scanning the entire dispatch table.
     /// </remarks>
     private static readonly FrozenDictionary<string, Type[]> TypesByPropertyName;
 
-    /// <summary>
-    /// Initializes static members of the <see cref="AndroidObservableForWidgets"/> class.
-    /// Initializes the static dispatch tables for the supported Android widgets.
-    /// </summary>
+    /// <summary>Initializes static members of the <see cref="AndroidObservableForWidgets"/> class. Initializes the static dispatch tables for the supported Android widgets.</summary>
     /// <remarks>
     /// This constructor runs once and constructs immutable lookup tables for fast concurrent reads.
     /// </remarks>
     [ObsoletedOSPlatform("android23.0")]
-    [SupportedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android35.0")]
     static AndroidObservableForWidgets()
     {
         var items = new[]
@@ -215,14 +208,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
         if (beforeChanged)
         {
-            return NeverObservable<IObservedChange<object, object?>>.Instance;
+            return ReactiveUI.Primitives.Signals.Signal.Silent<IObservedChange<object, object?>>();
         }
 
         var senderType = sender.GetType();
 
         if (!TypesByPropertyName.TryGetValue(propertyName, out var candidates))
         {
-            return NeverObservable<IObservedChange<object, object?>>.Instance;
+            return ReactiveUI.Primitives.Signals.Signal.Silent<IObservedChange<object, object?>>();
         }
 
         for (var i = 0; i < candidates.Length; i++)
@@ -236,15 +229,13 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
 
             return DispatchTable.TryGetValue((candidateType, propertyName), out var factory)
                 ? factory(sender, expression)
-                : NeverObservable<IObservedChange<object, object?>>.Instance;
+                : ReactiveUI.Primitives.Signals.Signal.Silent<IObservedChange<object, object?>>();
         }
 
-        return NeverObservable<IObservedChange<object, object?>>.Instance;
+        return ReactiveUI.Primitives.Signals.Signal.Silent<IObservedChange<object, object?>>();
     }
 
-    /// <summary>
-    /// Creates a dispatch item for selection changes on <see cref="AdapterView"/> instances.
-    /// </summary>
+    /// <summary>Creates a dispatch item for selection changes on <see cref="AdapterView"/> instances.</summary>
     /// <remarks>
     /// Adapter selection is represented by two distinct events: <see cref="AdapterView.ItemSelected"/> and
     /// <see cref="AdapterView.NothingSelected"/>. This dispatch item merges both into a single observable sequence.
@@ -262,16 +253,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             (x, ex) => new AdapterSelectionObservable((AdapterView)x, ex));
     }
 
-    /// <summary>
-    /// Creates a dispatch item for the <see cref="TimePicker"/> hour property that is compatible with the current OS level.
-    /// </summary>
+    /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> hour property that is compatible with the current OS level.</summary>
     /// <remarks>
     /// Android introduced <see cref="TimePicker.Hour"/> at API level 23. Earlier OS versions use
     /// <see cref="TimePicker.CurrentHour"/>.
     /// </remarks>
     /// <returns>A dispatch item for observing the hour value on a <see cref="TimePicker"/>.</returns>
     [ObsoletedOSPlatform("android23.0")]
-    [SupportedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android35.0")]
     private static DispatchItem CreateTimePickerHourFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
@@ -288,16 +277,14 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             static (v, h) => v.TimeChanged -= h);
     }
 
-    /// <summary>
-    /// Creates a dispatch item for the <see cref="TimePicker"/> minute property that is compatible with the current OS level.
-    /// </summary>
+    /// <summary>Creates a dispatch item for the <see cref="TimePicker"/> minute property that is compatible with the current OS level.</summary>
     /// <remarks>
     /// Android introduced <see cref="TimePicker.Minute"/> at API level 23. Earlier OS versions use
     /// <see cref="TimePicker.CurrentMinute"/>.
     /// </remarks>
     /// <returns>A dispatch item for observing the minute value on a <see cref="TimePicker"/>.</returns>
     [ObsoletedOSPlatform("android23.0")]
-    [SupportedOSPlatform("android23.0")]
+    [SupportedOSPlatform("android35.0")]
     private static DispatchItem CreateTimePickerMinuteFromWidget()
     {
         if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
@@ -314,9 +301,7 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             static (v, h) => v.TimeChanged -= h);
     }
 
-    /// <summary>
-    /// Creates a dispatch item for a widget type and property by subscribing to a widget event.
-    /// </summary>
+    /// <summary>Creates a dispatch item for a widget type and property by subscribing to a widget event.</summary>
     /// <remarks>
     /// <para>
     /// The observable produced by the dispatch item emits a change record when the widget event fires.
@@ -417,14 +402,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
         }
     }
 
-    /// <summary>
-    /// Represents a single dispatch table entry for a widget type and property.
-    /// </summary>
+    /// <summary>Represents a single dispatch table entry for a widget type and property.</summary>
     private sealed record DispatchItem
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DispatchItem"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="DispatchItem"/> class.</summary>
         /// <param name="type">The widget type for which observation is supported.</param>
         /// <param name="property">The property name that is observable for the widget type.</param>
         /// <param name="func">The observable factory function.</param>
@@ -434,19 +415,13 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
             Func<object, Expression, IObservable<IObservedChange<object, object?>>> func) =>
             (Type, Property, Func) = (type, property, func);
 
-        /// <summary>
-        /// Gets the widget type for which observation is supported.
-        /// </summary>
+        /// <summary>Gets the widget type for which observation is supported.</summary>
         public Type Type { get; }
 
-        /// <summary>
-        /// Gets the property name that is observable for the widget type.
-        /// </summary>
+        /// <summary>Gets the property name that is observable for the widget type.</summary>
         public string? Property { get; }
 
-        /// <summary>
-        /// Gets the observable factory function for the widget type and property.
-        /// </summary>
+        /// <summary>Gets the observable factory function for the widget type and property.</summary>
         public Func<object, Expression, IObservable<IObservedChange<object, object?>>> Func { get; }
     }
 }

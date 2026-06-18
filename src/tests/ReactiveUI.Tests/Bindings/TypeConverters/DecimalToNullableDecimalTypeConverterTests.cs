@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting decimal to nullable decimal.
-/// </summary>
+/// <summary>Tests for converting decimal to nullable decimal.</summary>
 public class DecimalToNullableDecimalTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a decimal value always succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a decimal value always succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AlwaysSucceeds()
@@ -38,9 +32,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(output).IsEqualTo((decimal?)Value);
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="decimal"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="decimal"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsDecimal()
@@ -49,9 +41,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(decimal));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is nullable <see cref="decimal"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is nullable <see cref="decimal"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsDecimalNullable()
@@ -60,9 +50,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(converter.ToType).IsEqualTo(typeof(decimal?));
     }
 
-    /// <summary>
-    /// Verifies that a valid value converts successfully and produces output.
-    /// </summary>
+    /// <summary>Verifies that a valid value converts successfully and produces output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
@@ -76,9 +64,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(result).IsEqualTo((decimal?)Value);
     }
 
-    /// <summary>
-    /// Verifies that a null value fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null value fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
@@ -91,9 +77,7 @@ public class DecimalToNullableDecimalTypeConverterTests
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a value of an invalid type fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a value of an invalid type fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()

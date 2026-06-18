@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting longs to strings.
-/// </summary>
+/// <summary>Tests for converting longs to strings.</summary>
 public class LongToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class LongToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a long value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a long value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_LongToString_Succeeds()
@@ -38,9 +32,7 @@ public class LongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123456789012");
     }
 
-    /// <summary>
-    /// Verifies that the maximum long value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum long value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -54,9 +46,7 @@ public class LongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(long.MaxValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that the minimum long value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum long value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -70,9 +60,7 @@ public class LongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(long.MinValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that a conversion hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a conversion hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()

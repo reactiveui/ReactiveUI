@@ -3,27 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Mocks;
 using Splat;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for the WPF View Resolver.
-/// </summary>
+/// <summary>Tests for the WPF View Resolver.</summary>
 /// <seealso cref="IDisposable" />
 public sealed class WpfViewDependencyResolverTests : IDisposable
 {
-    /// <summary>
-    /// The dependency resolver under test.
-    /// </summary>
+    /// <summary>The dependency resolver under test.</summary>
     private readonly ModernDependencyResolver _resolver;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WpfViewDependencyResolverTests"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="WpfViewDependencyResolverTests"/> class.</summary>
     public WpfViewDependencyResolverTests()
     {
         _resolver = new();
@@ -34,9 +27,7 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
             .BuildApp();
     }
 
-    /// <summary>
-    /// Tests that  Register views for view model should register all views.
-    /// </summary>
+    /// <summary>Tests that  Register views for view model should register all views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<STAThreadExecutor>]

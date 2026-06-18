@@ -7,14 +7,10 @@ using System.Windows.Threading;
 
 namespace ReactiveUI.Tests.Xaml.Utilities;
 
-/// <summary>
-/// Helper utility to handle dispatcher in tests.
-/// </summary>
+/// <summary>Helper utility to handle dispatcher in tests.</summary>
 public static class DispatcherUtilities
 {
-    /// <summary>
-    /// Makes the dispatcher perform the events to keep it running.
-    /// </summary>
+    /// <summary>Makes the dispatcher perform the events to keep it running.</summary>
     public static void DoEvents()
     {
         var frame = new DispatcherFrame();
@@ -22,9 +18,7 @@ public static class DispatcherUtilities
         Dispatcher.PushFrame(frame);
     }
 
-    /// <summary>
-    /// Gets the frame to exit.
-    /// </summary>
+    /// <summary>Gets the frame to exit.</summary>
     /// <param name="f">Unused frame object..</param>
     /// <returns>Unused return value.</returns>
     public static object? ExitFrame(object f)

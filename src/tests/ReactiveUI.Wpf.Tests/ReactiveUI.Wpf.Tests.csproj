@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DynamicData"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
     <ProjectReference Include="..\ReactiveUI.TestGuiMocks\ReactiveUI.TestGuiMocks.csproj"/>
   </ItemGroup>
@@ -31,6 +27,7 @@
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
+    <Using Include="ReactiveUI.Builder" />
   </ItemGroup>
 
   <Choose>
@@ -42,6 +39,8 @@
       <ItemGroup>
         <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj"/>
         <ProjectReference Include="..\..\ReactiveUI.Blend\ReactiveUI.Blend.csproj"/>
+        <Using Include="ReactiveUI.Blend"/>
+        <Using Include="ReactiveUI.Wpf.Binding"/>
         <Compile Include="Wpf\**\*.cs"/>
         <Compile Include="Xaml\**\*.cs"/>
         <Compile Include="WhenAny\**\*.cs"/>

@@ -7,8 +7,6 @@ using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A view model that is contracted.
-/// </summary>
+/// <summary>A view model that is contracted.</summary>
 [ViewContract("contract")]
-public class ContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<ExampleViewModel>;
+public class ContractExampleView : ReactiveUserControl<ExampleViewModel>;

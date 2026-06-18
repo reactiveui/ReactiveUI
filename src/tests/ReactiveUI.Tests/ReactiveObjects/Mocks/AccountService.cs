@@ -5,15 +5,11 @@
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-///     Account Service.
-/// </summary>
+/// <summary>Account Service.</summary>
 /// <seealso cref="ReactiveObject" />
 public class AccountService : ReactiveObject
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="AccountService" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AccountService" /> class.</summary>
     public AccountService()
     {
         AccountUsers.Add(Guid.NewGuid(), new() { LastName = "Harris" });
@@ -26,13 +22,9 @@ public class AccountService : ReactiveObject
         AccountUsersNullable.Add(Guid.NewGuid(), null);
     }
 
-    /// <summary>
-    ///     Gets the account users.
-    /// </summary>
+    /// <summary>Gets the account users.</summary>
     public Dictionary<Guid, AccountUser> AccountUsers { get; } = [];
 
-    /// <summary>
-    ///     Gets the account users nullable.
-    /// </summary>
+    /// <summary>Gets the account users nullable.</summary>
     public Dictionary<Guid, AccountUser?> AccountUsersNullable { get; } = [];
 }

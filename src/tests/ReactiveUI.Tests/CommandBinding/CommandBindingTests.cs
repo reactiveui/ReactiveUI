@@ -4,20 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Windows.Input;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.CommandBinding;
 
-/// <summary>
-///     Tests for command binding.
-/// </summary>
+/// <summary>Tests for command binding.</summary>
 /// <remarks>
 ///     This test fixture is marked as NotInParallel because tests call
 ///     Locator.CurrentMutable to register ICreatesCommandBinding implementations,
@@ -27,9 +25,7 @@ namespace ReactiveUI.Tests.CommandBinding;
 [TestExecutor<CommandBindingExecutorTests>]
 public class CommandBindingTests
 {
-    /// <summary>
-    /// Verifies that the command binder binds a command to a control event so the command executes when the event is raised.
-    /// </summary>
+    /// <summary>Verifies that the command binder binds a command to a control event so the command executes when the event is raised.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderImplementation_Should_Bind_Command_To_Event()
@@ -43,7 +39,7 @@ public class CommandBindingTests
             view,
             vm => vm.Command,
             v => v.Control,
-            Observable.Return((object?)null),
+            Signal.Emit((object?)null),
             "Click");
 
         await Assert.That(disp).IsNotNull();
@@ -56,9 +52,7 @@ public class CommandBindingTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that the command binder uses a custom <see cref="ICreatesCommandBinding" /> when the target has affinity for it.
-    /// </summary>
+    /// <summary>Verifies that the command binder uses a custom <see cref="ICreatesCommandBinding" /> when the target has affinity for it.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderImplementation_Should_Use_Custom_Binder()
@@ -73,15 +67,13 @@ public class CommandBindingTests
             view,
             vm => vm.Command,
             v => v.CustomControl,
-            Observable.Return((object?)null));
+            Signal.Emit((object?)null));
 
         await Assert.That(disp).IsNotNull();
         await Assert.That(FakeCustomBinder.BindCalled).IsTrue();
     }
 
-    /// <summary>
-    /// Provides test execution support for command binding scenarios using the ReactiveUI framework.
-    /// </summary>
+    /// <summary>Provides test execution support for command binding scenarios using the ReactiveUI framework.</summary>
     public class CommandBindingExecutorTests : BaseAppBuilderTestExecutor
     {
         /// <inheritdoc />
@@ -90,7 +82,7 @@ public class CommandBindingTests
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(context);
 
-            var scheduler = ImmediateScheduler.Instance;
+            var scheduler = Sequencer.Immediate;
 
             builder
                 .WithMainThreadScheduler(scheduler)
@@ -101,41 +93,27 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// A fake control exposing an event used to test event-based command binding.
-    /// </summary>
+    /// <summary>A fake control exposing an event used to test event-based command binding.</summary>
     private sealed class FakeControl
     {
-        /// <summary>
-        /// Occurs when the control is clicked.
-        /// </summary>
+        /// <summary>Occurs when the control is clicked.</summary>
         public event EventHandler? Click;
 
-        /// <summary>
-        /// Raises the <see cref="Click" /> event.
-        /// </summary>
+        /// <summary>Raises the <see cref="Click" /> event.</summary>
         public void RaiseClick() => Click?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    /// A fake <see cref="ICreatesCommandBinding" /> used to verify custom binder selection.
-    /// </summary>
+    /// <summary>A fake <see cref="ICreatesCommandBinding" /> used to verify custom binder selection.</summary>
     [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
     private sealed class FakeCustomBinder : ICreatesCommandBinding
     {
-        /// <summary>
-        /// The high affinity returned for <see cref="FakeCustomControl" />.
-        /// </summary>
+        /// <summary>The high affinity returned for <see cref="FakeCustomControl" />.</summary>
         private const int HighAffinity = 100;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FakeCustomBinder" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="FakeCustomBinder" /> class.</summary>
         public FakeCustomBinder() => BindCalled = false;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether a bind method was invoked.
-        /// </summary>
+        /// <summary>Gets or sets a value indicating whether a bind method was invoked.</summary>
         public static bool BindCalled { get; set; }
 
         /// <inheritdoc />
@@ -144,7 +122,7 @@ public class CommandBindingTests
             where T : class
         {
             BindCalled = true;
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
         /// <inheritdoc />
@@ -157,7 +135,7 @@ public class CommandBindingTests
             where T : class
         {
             BindCalled = true;
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
         /// <inheritdoc />
@@ -171,7 +149,7 @@ public class CommandBindingTests
             where TEventArgs : EventArgs
         {
             BindCalled = true;
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
         /// <inheritdoc />
@@ -179,42 +157,27 @@ public class CommandBindingTests
             typeof(T) == typeof(FakeCustomControl) ? HighAffinity : 0;
     }
 
-    /// <summary>
-    /// A fake control type for which <see cref="FakeCustomBinder" /> has affinity.
-    /// </summary>
+    /// <summary>A fake control type for which <see cref="FakeCustomBinder" /> has affinity.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class FakeCustomControl;
 
-    /// <summary>
-    /// A fake view exposing controls used in command binding tests.
-    /// </summary>
+    /// <summary>A fake view exposing controls used in command binding tests.</summary>
     private sealed class FakeView : ReactiveObject, IViewFor<FakeViewModel>
     {
-        /// <summary>
-        /// The backing field for the <see cref="ViewModel" /> property.
-        /// </summary>
-        private FakeViewModel? _viewModel;
-
-        /// <summary>
-        /// Gets the standard control under test.
-        /// </summary>
+        /// <summary>Gets the standard control under test.</summary>
         public FakeControl Control { get; } = new();
 
-        /// <summary>
-        /// Gets the custom control under test.
-        /// </summary>
+        /// <summary>Gets the custom control under test.</summary>
         public FakeCustomControl CustomControl { get; } = new();
 
-        /// <summary>
-        /// Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets or sets the view model.</summary>
         public FakeViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc />
@@ -225,14 +188,10 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// A fake view model exposing a command used in command binding tests.
-    /// </summary>
+    /// <summary>A fake view model exposing a command used in command binding tests.</summary>
     private sealed class FakeViewModel : ReactiveObject
     {
-        /// <summary>
-        /// Gets the command under test.
-        /// </summary>
-        public ReactiveCommand<Unit, Unit> Command { get; } = ReactiveCommand.Create(() => { });
+        /// <summary>Gets the command under test.</summary>
+        public ReactiveCommand<RxVoid, RxVoid> Command { get; } = ReactiveCommand.Create(() => { });
     }
 }

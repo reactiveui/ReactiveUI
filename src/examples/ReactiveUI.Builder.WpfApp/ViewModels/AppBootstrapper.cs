@@ -5,16 +5,12 @@
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
-/// <summary>
-/// AppBootstrapper.
-/// </summary>
+/// <summary>The root screen that hosts the router and bootstraps navigation for the application.</summary>
 /// <seealso cref="ReactiveObject" />
 /// <seealso cref="IScreen" />
 public class AppBootstrapper : ReactiveObject, IScreen
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppBootstrapper"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AppBootstrapper"/> class.</summary>
     public AppBootstrapper()
     {
         Router = new();
@@ -23,8 +19,6 @@ public class AppBootstrapper : ReactiveObject, IScreen
         Router.Navigate.Execute(new LobbyViewModel(this)).Subscribe();
     }
 
-    /// <summary>
-    /// Gets the Router associated with this Screen.
-    /// </summary>
+    /// <summary>Gets the Router associated with this Screen.</summary>
     public RoutingState Router { get; }
 }

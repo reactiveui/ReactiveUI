@@ -1,0 +1,66 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Type-agnostic core: the seam-free (no RxVoid/ISequencer in public API) layer of ReactiveUI,
+         compiled once and referenced by both the lean ReactiveUI leaf and the ReactiveUI.Reactive leaf.
+         Keeps the ReactiveUI root namespace so split-out types stay where consumers expect them. -->
+    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Core</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <PackageId>ReactiveUI.Core</PackageId>
+    <PackageDescription>Type-agnostic core shared by ReactiveUI and ReactiveUI.Reactive.</PackageDescription>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
+    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard')) or $(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.ComponentModel.Annotations"/>
+    <PackageReference Include="System.Text.Json"/>
+  </ItemGroup>
+
+  <!-- Cross-lib helper sources from src/Shared. Core owns the non-platform helpers (the leaves and
+       platform libs reach them via the Core reference + IVT). EventPatternObservable is consumed by
+       core's CreatesCommandBindingViaEvent, so it is linked here too. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives" ExcludeAssets="analyzers" />
+    <PackageReference Include="Splat" />
+  </ItemGroup>
+
+  <!-- No IVT to the shipping leaves: boundary-crossing Core members are public (Primitives split rule).
+       This also lets each leaf own its polyfill copy without colliding with Core's. IVT is tests-only. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Reactive.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Test.Utilities"/>
+    <InternalsVisibleTo Include="ReactiveUI.TestGuiMocks"/>
+    <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Uno"/>
+    <InternalsVisibleTo Include="ReactiveUI.Uno.WinUI"/>
+    <InternalsVisibleTo Include="ReactiveUI.Builder.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.AOT.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Maui.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Avalonia"/>
+  </ItemGroup>
+</Project>

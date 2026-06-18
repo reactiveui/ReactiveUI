@@ -7,14 +7,10 @@ using System.Globalization;
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting doubles to strings.
-/// </summary>
+/// <summary>Tests for converting doubles to strings.</summary>
 public class DoubleToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -24,9 +20,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a double value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a double value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_DoubleToString_Succeeds()
@@ -40,9 +34,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that the maximum double value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum double value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -56,9 +48,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(double.MaxValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that the minimum double value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum double value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -72,9 +62,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(double.MinValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a negative double value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a negative double value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
@@ -88,9 +76,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a numeric conversion hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a numeric conversion hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
@@ -105,9 +91,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("42.50");
     }
 
-    /// <summary>
-    /// Verifies that a custom precision format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a custom precision format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_CustomPrecision()
@@ -121,9 +105,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("0.0000", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a general format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a general format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_GeneralFormat()
@@ -137,9 +119,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("G", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a round-trip format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a round-trip format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_RoundTripFormat()
@@ -153,9 +133,7 @@ public class DoubleToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(Value.ToString("R", CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that a scientific format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a scientific format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_ScientificFormat()

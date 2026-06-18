@@ -7,8 +7,6 @@ using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// Another view.
-/// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
-public class AnotherView : ReactiveUI.Winforms.ReactiveUserControl<AnotherViewModel>;
+/// <summary>Another view.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
+public class AnotherView : ReactiveUserControl<AnotherViewModel>;

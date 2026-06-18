@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured WPF leaf: recompiles the shared WPF source (ReactiveUI.Wpf.Shared) against
+         System.Reactive's Unit (RxVoid) and the ReactiveUI.Reactive engine. REACTIVE_SHIM + the RxVoid alias
+         come from Directory.Build.props via the 'Reactive' name suffix. -->
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Wpf.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive</RootNamespace>
+    <PackageId>ReactiveUI.WPF.Reactive</PackageId>
+    <UseWpf>true</UseWpf>
+    <PackageDescription>ReactiveUI WPF extensions recompiled against System.Reactive's Unit for seamless interop with System.Reactive consumers.</PackageDescription>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;wpf;net;netframework;netcore</PackageTags>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+
+  <!-- Neutral (non-seam) namespaces used by the recompiled shared source: ReactiveUI.Internal (DelegateObserver
+       and other unshifted plumbing) and ReactiveUI.Primitives.Disposables. They do not differ between the lean
+       and .Reactive sides, so they live here per-csproj rather than in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.Wpf.Reactive"/>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+  </ItemGroup>
+
+  <!-- The same shared WPF seam source the lean leaf compiles, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Wpf.Shared\**\*.cs" Link="ReactiveUI.Wpf.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <!-- Internal plumbing + platform sinks compiled per-assembly (internal, no cross-assembly clash). -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
+    <Compile Include="..\Shared\Platform\IdleTimeoutObservable.cs" Link="Shared\Platform\IdleTimeoutObservable.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests.Reactive"/>
+  </ItemGroup>
+</Project>

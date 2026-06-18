@@ -15,8 +15,14 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
   <!-- Packages only on Windows -->
   <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.WinUI"/>
     <PackageReference Include="Microsoft.WindowsAppSDK"/>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
   </ItemGroup>
@@ -31,26 +37,12 @@
     <Compile Include="..\ReactiveUI.Maui\Registrations.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
-    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
-    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
-    <Compile Include="..\Shared\OnceDisposable.cs" Link="Shared\OnceDisposable.cs"/>
-    <Compile Include="..\Shared\DisposableSlotHelper.cs" Link="Shared\DisposableSlotHelper.cs"/>
+    <Compile Remove="..\ReactiveUI.Maui\WinUI\DispatcherQueueScheduler.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
-    <Compile Include="..\ReactiveUI\Internal\Disposables\MutableDisposable.cs" Link="Shared\MutableDisposable.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SelectObservable.cs" Link="Shared\Platform\SelectObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SelectManyObservable.cs" Link="Shared\Platform\SelectManyObservable.cs"/>
-    <Compile Include="..\Shared\Platform\WhereObservable.cs" Link="Shared\Platform\WhereObservable.cs"/>
-    <Compile Include="..\Shared\Platform\MergedObservable.cs" Link="Shared\Platform\MergedObservable.cs"/>
-    <Compile Include="..\Shared\Platform\DistinctUntilChangedObservable.cs" Link="Shared\Platform\DistinctUntilChangedObservable.cs"/>
-    <Compile Include="..\Shared\Platform\StartWithObservable.cs" Link="Shared\Platform\StartWithObservable.cs"/>
-    <Compile Include="..\Shared\Platform\DoObservable.cs" Link="Shared\Platform\DoObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SwitchObservable.cs" Link="Shared\Platform\SwitchObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SkipWhileObservable.cs" Link="Shared\Platform\SkipWhileObservable.cs"/>
-    <Compile Include="..\Shared\Platform\CombineLatestObservable.cs" Link="Shared\Platform\CombineLatestObservable.cs"/>
     <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
-    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
-    <Compile Include="..\Shared\Platform\NeverObservable.cs" Link="Shared\Platform\NeverObservable.cs"/>
   </ItemGroup>
 </Project>

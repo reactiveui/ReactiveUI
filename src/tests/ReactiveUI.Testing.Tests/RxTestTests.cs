@@ -8,22 +8,24 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
 
-/// <summary>
-///     Tests for <see cref="RxTest"/> which provides utilities for testing ReactiveUI
-///     application builder scenarios with proper isolation.
-/// </summary>
+/// <summary>Tests for <see cref="RxTest"/> which provides utilities for testing ReactiveUI application builder scenarios with proper isolation.</summary>
 [NotInParallel]
 [TestExecutor<AppBuilderTestExecutor>]
 public class RxTestTests
 {
+    /// <summary>The expected number of sequential test body invocations.</summary>
     private const int ExpectedSequentialCallCount = 3;
-    private const int CustomTimeoutMilliseconds = 5000;
-    private const int ShortTimeoutMilliseconds = 100;
-    private const int DelayLongerThanTimeoutMilliseconds = 2000;
 
-    /// <summary>
-    /// Verifies that the AppBuilderTestAsync method executes the provided test body as expected.
-    /// </summary>
+    /// <summary>The custom timeout, in milliseconds, used for test execution.</summary>
+    private const int CustomTimeoutMilliseconds = 5_000;
+
+    /// <summary>The short timeout, in milliseconds, used to trigger timeout scenarios.</summary>
+    private const int ShortTimeoutMilliseconds = 100;
+
+    /// <summary>The delay, in milliseconds, that is longer than the configured timeout.</summary>
+    private const int DelayLongerThanTimeoutMilliseconds = 2_000;
+
+    /// <summary>Verifies that the AppBuilderTestAsync method executes the provided test body as expected.</summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ExecutesTestBody()
@@ -42,18 +44,14 @@ public class RxTestTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that AppBuilderTestAsync throws an ArgumentNullException when the testBody parameter is null.
-    /// </summary>
+    /// <summary>Verifies that AppBuilderTestAsync throws an ArgumentNullException when the testBody parameter is null.</summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ThrowsArgumentNullException_WhenTestBodyIsNull() =>
         await Assert.That(() => RxTest.AppBuilderTestAsync(null!))
             .Throws<ArgumentException>();
 
-    /// <summary>
-    /// Verifies that exceptions thrown within the AppBuilderTestAsync delegate are properly propagated to the caller.
-    /// </summary>
+    /// <summary>Verifies that exceptions thrown within the AppBuilderTestAsync delegate are properly propagated to the caller.</summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the delegate passed to AppBuilderTestAsync throws an InvalidOperationException.</exception>
     [Test]
@@ -113,9 +111,7 @@ public class RxTestTests
         await Assert.That(count).IsEqualTo(ExpectedSequentialCallCount);
     }
 
-    /// <summary>
-    /// Verifies that the AppBuilderTestAsync method resets its builder state between test executions.
-    /// </summary>
+    /// <summary>Verifies that the AppBuilderTestAsync method resets its builder state between test executions.</summary>
     /// <remarks>This test ensures that state changes in one invocation of AppBuilderTestAsync do not affect
     /// subsequent invocations, maintaining test isolation.</remarks>
     /// <returns>A task that represents the asynchronous test operation.</returns>
@@ -138,9 +134,7 @@ public class RxTestTests
         await Assert.That(secondTestExecuted).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that the AppBuilderTestAsync method completes execution within the specified custom timeout.
-    /// </summary>
+    /// <summary>Verifies that the AppBuilderTestAsync method completes execution within the specified custom timeout.</summary>
     /// <remarks>This test ensures that the provided delegate is executed and completes within the given
     /// timeout period. It is intended to validate timeout handling in asynchronous test scenarios.</remarks>
     /// <returns>A task that represents the asynchronous test operation.</returns>
@@ -163,9 +157,7 @@ public class RxTestTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that AppBuilderTestAsync throws a TimeoutException when the test action exceeds the specified timeout.
-    /// </summary>
+    /// <summary>Verifies that AppBuilderTestAsync throws a TimeoutException when the test action exceeds the specified timeout.</summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
     [Test]
     public async Task AppBuilderTestAsync_ThrowsTimeoutException_WhenTestExceedsTimeout() =>

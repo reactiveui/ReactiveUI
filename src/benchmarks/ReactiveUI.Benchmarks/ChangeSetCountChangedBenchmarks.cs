@@ -3,14 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 using DynamicData;
 
 namespace ReactiveUI.Benchmarks;
 
 /// <summary>
-/// Benchmarks <c>ChangeSetMixin.CountChanged</c> over the navigation change-set stream: each navigation changes the
+/// Benchmarks <c>ChangeSetMixins.CountChanged</c> over the navigation change-set stream: each navigation changes the
 /// count, so the count-changed filter forwards on every push.
 /// </summary>
 [MemoryDiagnoser]
@@ -36,9 +35,9 @@ public class ChangeSetCountChangedBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _router = new RoutingState(ImmediateScheduler.Instance);
-        _viewModel = new NavigableViewModel();
-        _subscription = _router.NavigationChanged.CountChanged().Subscribe(_sink);
+        _router = new(Sequencer.Immediate);
+        _viewModel = new();
+        _subscription = _router.NavigationChanged().CountChanged().Subscribe(_sink);
     }
 
     /// <summary>Disposes the subscription and clears the stack.</summary>

@@ -7,14 +7,10 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// WithInstance tests for arities fifteen and sixteen.
-/// </content>
+/// <summary>WithInstance tests for arities fifteen and sixteen.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Verifies that the 15-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_15_Types_invokes_action()
@@ -91,9 +87,7 @@ public partial class BuilderInstanceMixinsTests
             s15);
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -130,9 +124,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -213,9 +205,7 @@ public partial class BuilderInstanceMixinsTests
             s15);
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -256,9 +246,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_16_Types_invokes_action()
@@ -339,9 +327,7 @@ public partial class BuilderInstanceMixinsTests
             s16);
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -379,9 +365,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -466,9 +450,7 @@ public partial class BuilderInstanceMixinsTests
             s16);
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(

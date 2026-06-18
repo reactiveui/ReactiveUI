@@ -5,17 +5,14 @@
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Interaction logic for MockWindow.xaml.
-/// </summary>
+/// <summary>Interaction logic for MockWindow.xaml.</summary>
 [ExcludeFromViewRegistration]
 public partial class MockWindow
 {
-    private const int OffScreenPosition = -10000;
+    /// <summary>The off-screen coordinate used to hide the window during tests.</summary>
+    private const int OffScreenPosition = -10_000;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MockWindow"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="MockWindow"/> class.</summary>
     public MockWindow()
     {
         InitializeComponent();

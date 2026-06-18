@@ -1,4 +1,8 @@
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Winforms;
+#else
 namespace ReactiveUI.Winforms;
+#endif
 
 partial class ReactiveUserControl<TViewModel>
     where TViewModel : class

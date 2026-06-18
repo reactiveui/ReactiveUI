@@ -3,19 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Winforms;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Tests.Platforms.WinForms;
 
-/// <summary>
-/// Tests for the WinForms ReactiveUI builder registration.
-/// </summary>
+/// <summary>Tests for the WinForms ReactiveUI builder registration.</summary>
 public class ReactiveUIBuilderWinFormsTests
 {
-    /// <summary>
-    /// Verifies that WithWinForms registers the WinForms platform services.
-    /// </summary>
+    /// <summary>Verifies that WithWinForms registers the WinForms platform services.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithWinForms_Should_Register_WinForms_Services()
@@ -33,9 +28,7 @@ public class ReactiveUIBuilderWinFormsTests
         await Assert.That(activationFetcher).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that combining core services with WinForms registers all required services.
-    /// </summary>
+    /// <summary>Verifies that combining core services with WinForms registers all required services.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithCoreServices_AndWinForms_Should_Register_All_Services()

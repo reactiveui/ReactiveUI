@@ -9,14 +9,10 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Blazor;
 
-/// <summary>
-/// Tests for registering Blazor platform services through the ReactiveUI builder.
-/// </summary>
+/// <summary>Tests for registering Blazor platform services through the ReactiveUI builder.</summary>
 public class ReactiveUIBuilderBlazorTests
 {
-    /// <summary>
-    /// Verifies that the Blazor builder registers platform operations and binding type converters.
-    /// </summary>
+    /// <summary>Verifies that the Blazor builder registers platform operations and binding type converters.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithBlazorExecutor>]
@@ -29,9 +25,7 @@ public class ReactiveUIBuilderBlazorTests
         await Assert.That(typeConverters).IsNotEmpty();
     }
 
-    /// <summary>
-    /// Verifies that combining core and Blazor services registers both core and platform services.
-    /// </summary>
+    /// <summary>Verifies that combining core and Blazor services registers both core and platform services.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithBlazorExecutor>]
@@ -44,9 +38,7 @@ public class ReactiveUIBuilderBlazorTests
         await Assert.That(platformOperations).IsNotNull();
     }
 
-    /// <summary>
-    /// Executor that builds the app with Blazor platform services registered.
-    /// </summary>
+    /// <summary>Executor that builds the app with Blazor platform services registered.</summary>
     internal sealed class WithBlazorExecutor : BuilderTestExecutorBase
     {
         /// <inheritdoc/>

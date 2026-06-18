@@ -7,9 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks the <c>WhenAnyObservable</c> sink: per-value propagation through a live subscription and cold subscribe.
-/// </summary>
+/// <summary>Benchmarks the <c>WhenAnyObservable</c> sink: per-value propagation through a live subscription and cold subscribe.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class WhenAnyObservableBenchmarks

@@ -1,0 +1,125 @@
+#nullable enable
+ReactiveUI.AutoDataTemplateBindingHook
+ReactiveUI.AutoDataTemplateBindingHook.AutoDataTemplateBindingHook() -> void
+ReactiveUI.AutoDataTemplateBindingHook.ExecuteHook(object? source, object! target, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewProperties, ReactiveUI.BindingDirection direction) -> bool
+ReactiveUI.BooleanToVisibilityHint
+ReactiveUI.BooleanToVisibilityHint.Inverse = 2 -> ReactiveUI.BooleanToVisibilityHint
+ReactiveUI.BooleanToVisibilityHint.None = 0 -> ReactiveUI.BooleanToVisibilityHint
+ReactiveUI.BooleanToVisibilityHint.UseHidden = 4 -> ReactiveUI.BooleanToVisibilityHint
+ReactiveUI.BooleanToVisibilityTypeConverter
+ReactiveUI.BooleanToVisibilityTypeConverter.BooleanToVisibilityTypeConverter() -> void
+ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions
+ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!)
+ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWinUI() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWinUIConverters() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWinUIScheduler() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.DependencyObjectObservableForProperty
+ReactiveUI.DependencyObjectObservableForProperty.DependencyObjectObservableForProperty() -> void
+ReactiveUI.DependencyObjectObservableForProperty.GetAffinityForObject(System.Type! type, string! propertyName) -> int
+ReactiveUI.DependencyObjectObservableForProperty.GetAffinityForObject(System.Type? type, string! propertyName, bool beforeChanged) -> int
+ReactiveUI.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged, bool suppressWarnings) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.PlatformOperations
+ReactiveUI.PlatformOperations.GetOrientation() -> string?
+ReactiveUI.PlatformOperations.PlatformOperations() -> void
+ReactiveUI.ReactivePage<TViewModel>
+ReactiveUI.ReactivePage<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.ReactivePage<TViewModel>.ReactivePage() -> void
+ReactiveUI.ReactivePage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.ReactivePage<TViewModel>.ViewModel.set -> void
+ReactiveUI.ReactiveUserControl<TViewModel>
+ReactiveUI.ReactiveUserControl<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.ReactiveUserControl<TViewModel>.ReactiveUserControl() -> void
+ReactiveUI.ReactiveUserControl<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.ReactiveUserControl<TViewModel>.ViewModel.set -> void
+ReactiveUI.RoutedViewHost
+ReactiveUI.RoutedViewHost.DefaultContent.get -> object!
+ReactiveUI.RoutedViewHost.DefaultContent.set -> void
+ReactiveUI.RoutedViewHost.RoutedViewHost() -> void
+ReactiveUI.RoutedViewHost.Router.get -> ReactiveUI.Reactive.RoutingState!
+ReactiveUI.RoutedViewHost.Router.set -> void
+ReactiveUI.RoutedViewHost.ViewContract.get -> string?
+ReactiveUI.RoutedViewHost.ViewContract.set -> void
+ReactiveUI.RoutedViewHost.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.RoutedViewHost.ViewContractObservable.set -> void
+ReactiveUI.RoutedViewHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.RoutedViewHost.ViewLocator.set -> void
+ReactiveUI.RoutedViewHost<TViewModel>
+ReactiveUI.RoutedViewHost<TViewModel>.DefaultContent.get -> object!
+ReactiveUI.RoutedViewHost<TViewModel>.DefaultContent.set -> void
+ReactiveUI.RoutedViewHost<TViewModel>.RoutedViewHost() -> void
+ReactiveUI.RoutedViewHost<TViewModel>.Router.get -> ReactiveUI.Reactive.RoutingState!
+ReactiveUI.RoutedViewHost<TViewModel>.Router.set -> void
+ReactiveUI.RoutedViewHost<TViewModel>.ViewContract.get -> string?
+ReactiveUI.RoutedViewHost<TViewModel>.ViewContract.set -> void
+ReactiveUI.RoutedViewHost<TViewModel>.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.RoutedViewHost<TViewModel>.ViewContractObservable.set -> void
+ReactiveUI.RoutedViewHost<TViewModel>.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.RoutedViewHost<TViewModel>.ViewLocator.set -> void
+ReactiveUI.TransitioningContentControl
+ReactiveUI.TransitioningContentControl.TransitioningContentControl() -> void
+ReactiveUI.ViewModelViewHost
+ReactiveUI.ViewModelViewHost.ContractFallbackByPass.get -> bool
+ReactiveUI.ViewModelViewHost.ContractFallbackByPass.set -> void
+ReactiveUI.ViewModelViewHost.DefaultContent.get -> object!
+ReactiveUI.ViewModelViewHost.DefaultContent.set -> void
+ReactiveUI.ViewModelViewHost.ViewContract.get -> string?
+ReactiveUI.ViewModelViewHost.ViewContract.set -> void
+ReactiveUI.ViewModelViewHost.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.ViewModelViewHost.ViewContractObservable.set -> void
+ReactiveUI.ViewModelViewHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.ViewModelViewHost.ViewLocator.set -> void
+ReactiveUI.ViewModelViewHost.ViewModel.get -> object?
+ReactiveUI.ViewModelViewHost.ViewModel.set -> void
+ReactiveUI.ViewModelViewHost.ViewModelViewHost() -> void
+ReactiveUI.ViewModelViewHost<TViewModel>
+ReactiveUI.ViewModelViewHost<TViewModel>.ContractFallbackByPass.get -> bool
+ReactiveUI.ViewModelViewHost<TViewModel>.ContractFallbackByPass.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.DefaultContent.get -> object!
+ReactiveUI.ViewModelViewHost<TViewModel>.DefaultContent.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewContract.get -> string?
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewContract.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewContractObservable.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewLocator.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewModel.set -> void
+ReactiveUI.ViewModelViewHost<TViewModel>.ViewModelViewHost() -> void
+ReactiveUI.VisibilityToBooleanTypeConverter
+ReactiveUI.VisibilityToBooleanTypeConverter.VisibilityToBooleanTypeConverter() -> void
+ReactiveUI.WinUI.ActivationForViewFetcher
+ReactiveUI.WinUI.ActivationForViewFetcher.ActivationForViewFetcher() -> void
+ReactiveUI.WinUI.ActivationForViewFetcher.GetActivationForView(ReactiveUI.IActivatableView! view) -> System.IObservable<bool>!
+ReactiveUI.WinUI.ActivationForViewFetcher.GetAffinityForView(System.Type! view) -> int
+ReactiveUI.WinUI.Registrations
+ReactiveUI.WinUI.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.WinUI.Registrations.Registrations() -> void
+override ReactiveUI.BooleanToVisibilityTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.BooleanToVisibilityTypeConverter.TryConvert(bool from, object? conversionHint, out Microsoft.UI.Xaml.Visibility result) -> bool
+override ReactiveUI.VisibilityToBooleanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.VisibilityToBooleanTypeConverter.TryConvert(Microsoft.UI.Xaml.Visibility from, object? conversionHint, out bool result) -> bool
+static ReactiveUI.AutoDataTemplateBindingHook.DefaultItemTemplate.get -> System.Lazy<Microsoft.UI.Xaml.DataTemplate!>!
+static ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.WinUIMainThreadScheduler.get -> System.Reactive.Concurrency.IScheduler!
+static ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.WithWinUI(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.WithWinUIConverters(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.WinUIReactiveUIBuilderExtensions.WithWinUIScheduler(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static readonly ReactiveUI.ReactivePage<TViewModel>.ViewModelProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ReactiveUserControl<TViewModel>.ViewModelProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost.DefaultContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost.RouterProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost.ViewContractObservableProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost<TViewModel>.DefaultContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost<TViewModel>.RouterProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.RoutedViewHost<TViewModel>.ViewContractObservableProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost.ContractFallbackByPassProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost.DefaultContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost.ViewContractObservableProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost.ViewModelProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost<TViewModel>.ContractFallbackByPassProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost<TViewModel>.DefaultContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost<TViewModel>.ViewContractObservableProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly ReactiveUI.ViewModelViewHost<TViewModel>.ViewModelProperty -> Microsoft.UI.Xaml.DependencyProperty!
+virtual ReactiveUI.ViewModelViewHost.ResolveViewForViewModel(object? viewModel, string? contract) -> void
+virtual ReactiveUI.ViewModelViewHost<TViewModel>.ResolveViewForViewModel(TViewModel? viewModel, string? contract) -> void

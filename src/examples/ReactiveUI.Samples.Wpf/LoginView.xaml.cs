@@ -4,10 +4,9 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Wpf;
 
@@ -17,9 +16,7 @@ namespace ReactiveUI.Samples.Wpf;
 /// </summary>
 public partial class LoginView : ReactiveUserControl<LoginViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoginView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LoginView"/> class.</summary>
     [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "WhenActivated/binding setup requires 'this'; single-threaded sample.")]
     public LoginView()
     {
@@ -38,7 +35,7 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
                 .DisposeWith(d);
 
             // WPF PasswordBox doesn't support data binding, so marshal changes manually.
-            Observable.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+            Signal.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                     h => Password.PasswordChanged += h,
                     h => Password.PasswordChanged -= h)
                 .Select(_ => Password.Password)

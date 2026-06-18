@@ -7,9 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks the property-binding sinks: cold one-way/two-way binding setup and view-model to view propagation.
-/// </summary>
+/// <summary>Benchmarks the property-binding sinks: cold one-way/two-way binding setup and view-model to view propagation.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class BindBenchmarks
@@ -33,11 +31,11 @@ public class BindBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _oneWayViewModel = new BenchmarkViewModel();
+        _oneWayViewModel = new();
         var oneWayView = new BenchmarkView { ViewModel = _oneWayViewModel };
         _oneWayBinding = oneWayView.OneWayBind(_oneWayViewModel, x => x.First, x => x.FirstText);
 
-        _twoWayViewModel = new BenchmarkViewModel();
+        _twoWayViewModel = new();
         var twoWayView = new BenchmarkView { ViewModel = _twoWayViewModel };
         _twoWayBinding = twoWayView.Bind(_twoWayViewModel, x => x.First, x => x.FirstText);
     }

@@ -5,22 +5,16 @@
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="ReactivePage{TViewModel}"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ReactivePage{TViewModel}"/>.</summary>
 public class ReactivePageTest
 {
-    /// <summary>
-    /// Tests that ViewModelProperty is registered.
-    /// </summary>
+    /// <summary>Tests that ViewModelProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelProperty_IsRegistered() =>
         await Assert.That(ReactivePage<TestViewModel>.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_SetAndGet_WorksCorrectly()
@@ -33,9 +27,7 @@ public class ReactivePageTest
         await Assert.That(page.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that IViewFor.ViewModel works correctly.
-    /// </summary>
+    /// <summary>Tests that IViewFor.ViewModel works correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IViewForViewModel_SetAndGet_WorksCorrectly()
@@ -48,9 +40,7 @@ public class ReactivePageTest
         await Assert.That(page.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that BindingRoot returns the ViewModel.
-    /// </summary>
+    /// <summary>Tests that BindingRoot returns the ViewModel.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindingRoot_ReturnsViewModel()
@@ -63,9 +53,7 @@ public class ReactivePageTest
         await Assert.That(page.BindingRoot).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that ViewModel can be null.
-    /// </summary>
+    /// <summary>Tests that ViewModel can be null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_CanBeNull()
@@ -76,9 +64,7 @@ public class ReactivePageTest
         await Assert.That(page.BindingRoot).IsNull();
     }
 
-    /// <summary>
-    /// Tests that setting BindingContext updates ViewModel.
-    /// </summary>
+    /// <summary>Tests that setting BindingContext updates ViewModel.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindingContext_UpdatesViewModel()
@@ -91,9 +77,7 @@ public class ReactivePageTest
         await Assert.That(page.ViewModel).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Tests that setting ViewModel updates BindingContext.
-    /// </summary>
+    /// <summary>Tests that setting ViewModel updates BindingContext.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_UpdatesBindingContext()
@@ -106,12 +90,10 @@ public class ReactivePageTest
         await Assert.That(page.BindingContext).IsEqualTo(viewModel);
     }
 
-    /// <summary>
-    /// Test view model for testing.
-    /// </summary>
+    /// <summary>Test view model for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
 }

@@ -8,14 +8,10 @@ using ReactiveUI.Builder;
 
 namespace ReactiveUI.Maui.Tests.Builder;
 
-/// <summary>
-/// Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.
-/// </summary>
+/// <summary>Tests for <see cref="MauiReactiveUIBuilderExtensions"/>.</summary>
 public class MauiReactiveUIBuilderExtensionsTest
 {
-    /// <summary>
-    /// Tests that MauiMainThreadScheduler is not null.
-    /// </summary>
+    /// <summary>Tests that MauiMainThreadScheduler is not null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task MauiMainThreadScheduler_IsNotNull() =>
@@ -57,9 +53,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     }
 #endif
 
-    /// <summary>
-    /// Tests that WithMauiScheduler returns the builder instance.
-    /// </summary>
+    /// <summary>Tests that WithMauiScheduler returns the builder instance.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithMauiScheduler_ReturnsBuilder()
@@ -72,9 +66,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         await Assert.That(result).IsEqualTo(builder);
     }
 
-    /// <summary>
-    /// Tests that WithMauiScheduler throws for null builder.
-    /// </summary>
+    /// <summary>Tests that WithMauiScheduler throws for null builder.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithMauiScheduler_NullBuilder_Throws()
@@ -85,9 +77,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that WithMaui throws for null builder.
-    /// </summary>
+    /// <summary>Tests that WithMaui throws for null builder.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithMaui_NullBuilder_Throws()
@@ -98,9 +88,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that UseReactiveUI with action throws for null builder.
-    /// </summary>
+    /// <summary>Tests that UseReactiveUI with action throws for null builder.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task UseReactiveUI_WithAction_NullBuilder_Throws()
@@ -111,9 +99,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that UseReactiveUI with dispatcher throws for null builder.
-    /// </summary>
+    /// <summary>Tests that UseReactiveUI with dispatcher throws for null builder.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task UseReactiveUI_WithDispatcher_NullBuilder_Throws()
@@ -124,9 +110,7 @@ public class MauiReactiveUIBuilderExtensionsTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that WithMauiScheduler with custom dispatcher works.
-    /// </summary>
+    /// <summary>Tests that WithMauiScheduler with custom dispatcher works.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithMauiScheduler_WithCustomDispatcher_ConfiguresScheduler()
@@ -139,9 +123,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that WithMaui configures the builder properly.
-    /// </summary>
+    /// <summary>Tests that WithMaui configures the builder properly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithMaui_ConfiguresBuilder()
@@ -154,9 +136,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         await Assert.That(result).IsEqualTo(builder);
     }
 
-    /// <summary>
-    /// Test dispatcher for testing.
-    /// </summary>
+    /// <summary>Test dispatcher for testing.</summary>
     private sealed class TestDispatcher : Microsoft.Maui.Dispatching.IDispatcher
     {
         /// <inheritdoc/>
@@ -180,9 +160,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
     }
 
-    /// <summary>
-    /// Test dispatcher timer for testing.
-    /// </summary>
+    /// <summary>Test dispatcher timer for testing.</summary>
     private sealed class TestDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
     {
         /// <inheritdoc/>

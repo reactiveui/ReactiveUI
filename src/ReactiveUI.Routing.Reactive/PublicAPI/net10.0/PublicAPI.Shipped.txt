@@ -1,0 +1,23 @@
+#nullable enable
+ReactiveUI.DynamicDataAutoPersistMixins
+ReactiveUI.DynamicDataAutoPersistMixins.extension<TItem>(System.IObservable<DynamicData.IChangeSet<TItem>!>!)
+ReactiveUI.DynamicDataAutoPersistMixins.extension<TItem>(System.IObservable<DynamicData.IChangeSet<TItem>!>!).ActOnEveryObject(System.Action<TItem>! onAdd, System.Action<TItem>! onRemove) -> System.IDisposable!
+ReactiveUI.DynamicDataChangeSetMixins
+ReactiveUI.DynamicDataChangeSetMixins.extension(DynamicData.IChangeSet!)
+ReactiveUI.DynamicDataChangeSetMixins.extension(DynamicData.IChangeSet!).HasCountChanged() -> bool
+ReactiveUI.DynamicDataChangeSetMixins.extension(System.IObservable<DynamicData.IChangeSet!>!)
+ReactiveUI.DynamicDataChangeSetMixins.extension(System.IObservable<DynamicData.IChangeSet!>!).CountChanged() -> System.IObservable<DynamicData.IChangeSet!>!
+ReactiveUI.DynamicDataChangeSetMixins.extension<T>(System.IObservable<DynamicData.IChangeSet<T>!>!)
+ReactiveUI.DynamicDataChangeSetMixins.extension<T>(System.IObservable<DynamicData.IChangeSet<T>!>!).CountChanged() -> System.IObservable<DynamicData.IChangeSet<T>!>!
+ReactiveUI.DynamicDataInteropMixins
+ReactiveUI.DynamicDataInteropMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!)
+ReactiveUI.DynamicDataInteropMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!).ToDynamicDataChangeSet() -> System.IObservable<DynamicData.IChangeSet<T>!>!
+ReactiveUI.RoutingStateDynamicDataMixins
+ReactiveUI.RoutingStateDynamicDataMixins.extension(ReactiveUI.Reactive.RoutingState!)
+ReactiveUI.RoutingStateDynamicDataMixins.extension(ReactiveUI.Reactive.RoutingState!).NavigationChanged() -> System.IObservable<DynamicData.IChangeSet<ReactiveUI.Reactive.IRoutableViewModel!>!>!
+static ReactiveUI.DynamicDataAutoPersistMixins.ActOnEveryObject<TItem>(this System.IObservable<DynamicData.IChangeSet<TItem>!>! this, System.Action<TItem>! onAdd, System.Action<TItem>! onRemove) -> System.IDisposable!
+static ReactiveUI.DynamicDataChangeSetMixins.CountChanged(this System.IObservable<DynamicData.IChangeSet!>! changeSet) -> System.IObservable<DynamicData.IChangeSet!>!
+static ReactiveUI.DynamicDataChangeSetMixins.CountChanged<T>(this System.IObservable<DynamicData.IChangeSet<T>!>! changeSet) -> System.IObservable<DynamicData.IChangeSet<T>!>!
+static ReactiveUI.DynamicDataChangeSetMixins.HasCountChanged(this DynamicData.IChangeSet! changeSet) -> bool
+static ReactiveUI.DynamicDataInteropMixins.ToDynamicDataChangeSet<T>(this System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>! source) -> System.IObservable<DynamicData.IChangeSet<T>!>!
+static ReactiveUI.RoutingStateDynamicDataMixins.NavigationChanged(this ReactiveUI.Reactive.RoutingState! routingState) -> System.IObservable<DynamicData.IChangeSet<ReactiveUI.Reactive.IRoutableViewModel!>!>!

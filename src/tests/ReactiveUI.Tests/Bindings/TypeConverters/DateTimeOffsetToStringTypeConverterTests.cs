@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting DateTimeOffset to strings.
-/// </summary>
+/// <summary>Tests for converting DateTimeOffset to strings.</summary>
 public class DateTimeOffsetToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,15 +18,13 @@ public class DateTimeOffsetToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a DateTimeOffset value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a DateTimeOffset value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_DateTimeOffset_Succeeds()
     {
         var converter = new DateTimeOffsetToStringTypeConverter();
-        var value = new DateTimeOffset(2024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
+        var value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
 
         var result = converter.TryConvert(value, null, out var output);
 
@@ -38,9 +32,7 @@ public class DateTimeOffsetToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(value.ToString());
     }
 
-    /// <summary>
-    /// Verifies that the minimum DateTimeOffset value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum DateTimeOffset value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -54,9 +46,7 @@ public class DateTimeOffsetToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(DateTimeOffset.MinValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that the maximum DateTimeOffset value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum DateTimeOffset value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()

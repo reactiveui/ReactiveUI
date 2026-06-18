@@ -9,23 +9,17 @@ using TUnit.Core;
 
 namespace ReactiveUI.Splat.Tests;
 
-/// <summary>
-/// Assembly-level hooks for test initialization and cleanup.
-/// </summary>
+/// <summary>Assembly-level hooks for test initialization and cleanup.</summary>
 public static class AssemblyHooks
 {
-    /// <summary>
-    /// Called before any tests in this assembly start.
-    /// </summary>
+    /// <summary>Called before any tests in this assembly start.</summary>
     [Before(Assembly)]
     public static void AssemblySetup() =>
 
         // Override ModeDetector to ensure we're detected as being in a unit test runner
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-    /// <summary>
-    /// Called after all tests in this assembly complete.
-    /// </summary>
+    /// <summary>Called after all tests in this assembly complete.</summary>
     [After(Assembly)]
     public static void AssemblyTeardown()
     {
@@ -35,9 +29,7 @@ public static class AssemblyHooks
         GC.Collect();
     }
 
-    /// <summary>
-    /// Mode detector that always indicates we're in a unit test runner.
-    /// </summary>
+    /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {
         /// <inheritdoc/>

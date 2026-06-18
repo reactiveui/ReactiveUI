@@ -5,32 +5,28 @@
 
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
+#if REACTIVE_SHIM
+using WinFormsViewModelViewHost = ReactiveUI.Reactive.Winforms.ViewModelControlHost;
+#else
 using WinFormsViewModelViewHost = ReactiveUI.Winforms.ViewModelControlHost;
+#endif
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for the WinForms view model view host (ViewModelControlHost).
-/// </summary>
+/// <summary>Tests for the WinForms view model view host (ViewModelControlHost).</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class WinFormsViewModelViewHostTests
 {
-    /// <summary>
-    /// Enables view caching before each test.
-    /// </summary>
+    /// <summary>Enables view caching before each test.</summary>
     [Before(Test)]
     public void SetUp() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = true;
 
-    /// <summary>
-    /// Disables view caching after each test.
-    /// </summary>
+    /// <summary>Disables view caching after each test.</summary>
     [After(Test)]
     public void TearDown() => WinFormsViewModelViewHost.DefaultCacheViewsEnabled = false;
 
-    /// <summary>
-    /// Tests that setting the view model adds the resolved view to the host controls.
-    /// </summary>
+    /// <summary>Tests that setting the view model adds the resolved view to the host controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SettingViewModelShouldAddTheViewtoItsControls()
@@ -50,9 +46,7 @@ public class WinFormsViewModelViewHostTests
         }
     }
 
-    /// <summary>
-    /// Tests that the host disposes the previous view when the view model changes and caching is disabled.
-    /// </summary>
+    /// <summary>Tests that the host disposes the previous view when the view model changes and caching is disabled.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldDisposePreviousView()
@@ -76,9 +70,7 @@ public class WinFormsViewModelViewHostTests
         await Assert.That(isDisposed).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that the host shows the default content when the view model is null.
-    /// </summary>
+    /// <summary>Tests that the host shows the default content when the view model is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldSetDefaultContentWhenViewModelIsNull()
@@ -94,9 +86,7 @@ public class WinFormsViewModelViewHostTests
         }
     }
 
-    /// <summary>
-    /// Tests that the host caches the view when caching is enabled.
-    /// </summary>
+    /// <summary>Tests that the host caches the view when caching is enabled.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldCacheViewWhenEnabled()
@@ -115,9 +105,7 @@ public class WinFormsViewModelViewHostTests
         await Assert.That(ReferenceEquals(cachedView, target.Content)).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that the host does not cache the view when caching is disabled.
-    /// </summary>
+    /// <summary>Tests that the host does not cache the view when caching is disabled.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldNotCacheViewWhenDisabled()

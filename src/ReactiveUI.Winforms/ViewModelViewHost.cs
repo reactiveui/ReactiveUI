@@ -1,18 +1,19 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Winforms;
+#else
 namespace ReactiveUI.Winforms;
+#endif
 
-/// <summary>
-/// A view model control host which will find and host the View for a ViewModel.
-/// </summary>
+/// <summary>A view model control host which will find and host the View for a ViewModel.</summary>
 /// <remarks>
 /// This class uses reflection to determine view model types at runtime through ViewLocator.
 /// For AOT-compatible scenarios, use ViewModelControlHost&lt;TViewModel&gt; instead.
@@ -24,26 +25,15 @@ namespace ReactiveUI.Winforms;
 public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewFor
 {
     /// <summary>Holds the subscriptions created during setup so they can be disposed together.</summary>
-    private readonly CompositeDisposable _disposables = [];
-#pragma warning disable IDE0032 // Use auto property
-    /// <summary>Backing field for the default content shown when no view model is set.</summary>
-    private Control? _defaultContent;
-
-    /// <summary>Backing field for the view contract observable.</summary>
-    private IObservable<string>? _viewContractObservable;
-
-    /// <summary>Backing field for the hosted view model.</summary>
-    private object? _viewModel;
+    private readonly MultipleDisposable _disposables = [];
 
     /// <summary>Backing field for the currently displayed content.</summary>
     private object? _content;
-#pragma warning restore IDE0032 // Use auto property
+
     /// <summary>Backing field indicating whether resolved views are cached and reused.</summary>
     private bool _cacheViews;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewModelControlHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ViewModelControlHost"/> class.</summary>
     public ViewModelControlHost()
     {
         InitializeComponent();
@@ -57,31 +47,23 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>
-    /// Gets or sets a value indicating whether [default cache views enabled].
-    /// </summary>
+    /// <summary>Gets or sets a value indicating whether [default cache views enabled].</summary>
     public static bool DefaultCacheViewsEnabled { get; set; }
 
-    /// <summary>
-    /// Gets the current view.
-    /// </summary>
+    /// <summary>Gets the current view.</summary>
     public Control? CurrentView => _content as Control;
 
-    /// <summary>
-    /// Gets or sets the default content.
-    /// </summary>
+    /// <summary>Gets or sets the default content.</summary>
     [Category("ReactiveUI")]
     [Description("The default control when no viewmodel is specified")]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Control? DefaultContent
     {
-        get => _defaultContent;
-        set => this.RaiseAndSetIfChanged(ref _defaultContent, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view contract observable.
-    /// </summary>
+    /// <summary>Gets or sets the view contract observable.</summary>
     /// <value>
     /// The view contract observable.
     /// </value>
@@ -89,13 +71,11 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IObservable<string>? ViewContractObservable
     {
-        get => _viewContractObservable;
-        set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view locator.
-    /// </summary>
+    /// <summary>Gets or sets the view locator.</summary>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IViewLocator? ViewLocator { get; set; }
@@ -107,13 +87,11 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public object? ViewModel
     {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the content.
-    /// </summary>
+    /// <summary>Gets the content.</summary>
     [Category("ReactiveUI")]
     [Description("The Current View")]
     [Bindable(true)]
@@ -124,9 +102,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         protected set => this.RaiseAndSetIfChanged(ref _content, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether to cache views.
-    /// </summary>
+    /// <summary>Gets or sets a value indicating whether to cache views.</summary>
     [Category("ReactiveUI")]
     [Description("Cache Views")]
     [Bindable(true)]
@@ -143,9 +119,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
+    /// <summary>Clean up any resources being used.</summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
@@ -158,9 +132,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Replaces the currently visible control with the supplied view, docked to fill the host.
-    /// </summary>
+    /// <summary>Replaces the currently visible control with the supplied view, docked to fill the host.</summary>
     /// <param name="view">The control to display.</param>
     private void SwapHostedView(Control view)
     {
@@ -179,9 +151,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         ResumeLayout();
     }
 
-    /// <summary>
-    /// Resolves and displays the content for the supplied view model and contract.
-    /// </summary>
+    /// <summary>Resolves and displays the content for the supplied view model and contract.</summary>
     /// <param name="viewModel">The current view model, or null.</param>
     /// <param name="contract">The view contract.</param>
     private void UpdateContentForViewModel(object? viewModel, string contract)
@@ -213,9 +183,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
         Content = view;
     }
 
-    /// <summary>
-    /// Reuses the cached view for the supplied view model when caching is enabled and the types match.
-    /// </summary>
+    /// <summary>Reuses the cached view for the supplied view model when caching is enabled and the types match.</summary>
     /// <param name="viewModel">The current view model.</param>
     /// <returns>true if the cached view was reused; otherwise, false.</returns>
     private bool TryReuseCachedView(object viewModel)
@@ -272,7 +240,7 @@ public partial class ViewModelControlHost : UserControl, IReactiveObject, IViewF
             _defaultContentSubscription = host.WhenAnyValue<ViewModelControlHost, Control?>(nameof(DefaultContent))
                 .Subscribe(new DelegateObserver<Control?>(OnDefaultContentChanged));
 
-            host.ViewContractObservable = new ReturnObservable<string>(string.Empty);
+            host.ViewContractObservable = Signal.Emit<string>(string.Empty);
 
             // ViewModel + ViewContractObservable -> resolve and show the matching view.
             _viewModelContract = new(

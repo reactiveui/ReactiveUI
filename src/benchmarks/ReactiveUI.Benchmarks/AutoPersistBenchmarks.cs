@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Linq;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -30,10 +28,10 @@ public class AutoPersistBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
+        _viewModel = new();
         _persistence = _viewModel.AutoPersist(
-            static _ => Observable.Return(Unit.Default),
-            new AutoPersistHelper.AutoPersistMetadata(true, new HashSet<string> { nameof(BenchmarkViewModel.Count) }),
+            static _ => Signal.Emit(RxVoid.Default),
+            new(true, new HashSet<string> { nameof(BenchmarkViewModel.Count) }),
             TimeSpan.FromMilliseconds(1));
     }
 

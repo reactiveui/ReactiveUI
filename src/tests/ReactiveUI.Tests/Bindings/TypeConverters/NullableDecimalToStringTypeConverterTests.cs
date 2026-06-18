@@ -7,14 +7,10 @@ using System.Globalization;
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable decimal to strings.
-/// </summary>
+/// <summary>Tests for converting nullable decimal to strings.</summary>
 public class NullableDecimalToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -24,9 +20,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a nullable decimal to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a nullable decimal to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_DecimalNullableToString_Succeeds()
@@ -40,9 +34,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123.456");
     }
 
-    /// <summary>
-    /// Verifies that converting the maximum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the maximum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -56,9 +48,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(decimal.MaxValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that converting the minimum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the minimum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -72,9 +62,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(decimal.MinValue.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that converting a negative value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a negative value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
@@ -88,9 +76,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("-123.456");
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NullValue_ReturnsTrue()
@@ -102,9 +88,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that a conversion hint is used to format the output.
-    /// </summary>
+    /// <summary>Verifies that a conversion hint is used to format the output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
@@ -119,9 +103,7 @@ public class NullableDecimalToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("42.50");
     }
 
-    /// <summary>
-    /// Verifies that converting zero succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting zero succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Zero_Succeeds()

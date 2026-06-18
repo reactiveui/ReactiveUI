@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Core;
 
-/// <summary>
-///     Tests for ReactiveUI data structure types.
-/// </summary>
+/// <summary>Tests for ReactiveUI data structure types.</summary>
 public class DataStructureTests
 {
-    /// <summary>
-    ///     Tests ObservedChange constructor and properties.
-    /// </summary>
+    /// <summary>Tests ObservedChange constructor and properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservedChange_Constructor_StoresAllValues()
@@ -37,9 +33,7 @@ public class DataStructureTests
         }
     }
 
-    /// <summary>
-    ///     Tests ReactivePropertyChangedEventArgs constructor and properties.
-    /// </summary>
+    /// <summary>Tests ReactivePropertyChangedEventArgs constructor and properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactivePropertyChangedEventArgs_Constructor_StoresValues()

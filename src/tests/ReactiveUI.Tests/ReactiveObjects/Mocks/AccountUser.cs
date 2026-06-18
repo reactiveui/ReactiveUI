@@ -8,26 +8,17 @@ using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-///     Account User.
-/// </summary>
+/// <summary>Account User.</summary>
 /// <seealso cref="ReactiveObject" />
 [DataContract]
 public class AccountUser : ReactiveObject
 {
-    /// <summary>
-    ///     The backing field for the <see cref="LastName" /> property.
-    /// </summary>
-    private string? _lastName;
-
-    /// <summary>
-    ///     Gets or sets the last name.
-    /// </summary>
+    /// <summary>Gets or sets the last name.</summary>
     [DataMember]
     [JsonRequired]
     public string? LastName
     {
-        get => _lastName;
-        set => this.RaiseAndSetIfChanged(ref _lastName, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

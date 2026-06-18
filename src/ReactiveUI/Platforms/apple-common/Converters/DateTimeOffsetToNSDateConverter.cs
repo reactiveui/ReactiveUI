@@ -9,9 +9,7 @@ using Foundation;
 
 namespace ReactiveUI;
 
-/// <summary>
-/// Converts <see cref="DateTimeOffset"/> to <see cref="NSDate"/>.
-/// </summary>
+/// <summary>Converts <see cref="DateTimeOffset"/> to <see cref="NSDate"/>.</summary>
 public sealed class DateTimeOffsetToNSDateConverter : BindingTypeConverter<DateTimeOffset, NSDate>
 {
     /// <summary>The affinity score returned for supported type pairs.</summary>

@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured WinForms leaf: recompiles the ReactiveUI.Winforms source against the
+         ReactiveUI.Reactive engine. REACTIVE_SHIM (from the 'Reactive' name suffix in Directory.Build.props)
+         flips the namespaces to ReactiveUI.Reactive.*; the seam global usings line up the engine types. -->
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Winforms.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.Winforms</RootNamespace>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Forms, recompiled against System.Reactive.</PackageDescription>
+    <PackageId>ReactiveUI.WinForms.Reactive</PackageId>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;winforms;net;net472;</PackageTags>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces used by the recompiled shared source; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.WinForms.Reactive"/>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+  </ItemGroup>
+
+  <!-- The same ReactiveUI.Winforms source the lean package ships, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Winforms\**\*.cs" Exclude="..\ReactiveUI.Winforms\obj\**\*.cs;..\ReactiveUI.Winforms\bin\**\*.cs" Link="ReactiveUI.Winforms\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\Shared\Platform\CombineLatestSink.cs" Link="Shared\Platform\CombineLatestSink.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests.Reactive"/>
+  </ItemGroup>
+</Project>

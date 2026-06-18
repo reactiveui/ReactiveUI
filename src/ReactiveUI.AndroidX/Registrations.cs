@@ -4,14 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using Android.OS;
-using ReactiveUI.Helpers;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// AndroidX platform registrations.
-/// </summary>
+#endif
+/// <summary>AndroidX platform registrations.</summary>
 /// <seealso cref="IWantsToRegisterStuff" />
 public class Registrations : IWantsToRegisterStuff
 {
@@ -25,7 +25,6 @@ public class Registrations : IWantsToRegisterStuff
         new PlatformRegistrations().Register(registrar);
 
         // AndroidX specific registrations could be added here if needed in the future.
-
         // Ensure a SynchronizationContext exists on Android when not in unit tests.
         if (ModeDetector.InUnitTestRunner() || Looper.MyLooper() is not null)
         {

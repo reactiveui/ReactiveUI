@@ -7,8 +7,6 @@ using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A view whose name does not match its view model name.
-/// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
-public class ViewWithoutMatchingName : ReactiveUI.Winforms.ReactiveUserControl<ViewModelWithWeirdName>;
+/// <summary>A view whose name does not match its view model name.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
+public class ViewWithoutMatchingName : ReactiveUserControl<ViewModelWithWeirdName>;

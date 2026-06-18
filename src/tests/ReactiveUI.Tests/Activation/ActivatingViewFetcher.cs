@@ -3,24 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.Activation;
 
-/// <summary>
-///     Simulates an activating view fetcher.
-/// </summary>
+/// <summary>Simulates an activating view fetcher.</summary>
 public class ActivatingViewFetcher : IActivationForViewFetcher
 {
-    /// <summary>
-    /// The affinity value for the ActivatingView.
-    /// </summary>
+    /// <summary>The affinity value for the ActivatingView.</summary>
     private const int LargeAffinity = 100;
 
-    /// <summary>
-    ///     Gets an Observable which will activate the View.
-    ///     This is called after the GetAffinityForView method.
-    /// </summary>
+    /// <summary>Gets an Observable which will activate the View. This is called after the GetAffinityForView method.</summary>
     /// <param name="view">The view to get the activation observable for.</param>
     /// <returns>
     ///     An Observable that will return if Activation was successful.
@@ -33,7 +24,7 @@ public class ActivatingViewFetcher : IActivationForViewFetcher
             throw new ArgumentNullException(nameof(view));
         }
 
-        return av.Loaded.Select(static _ => true).Merge(av.Unloaded.Select(static _ => false));
+        return Signal.Blend(av.Loaded.Select(static _ => true), av.Unloaded.Select(static _ => false));
     }
 
     /// <summary>

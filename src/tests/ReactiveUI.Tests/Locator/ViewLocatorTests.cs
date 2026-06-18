@@ -4,7 +4,11 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using Splat;
 using Splat.Builder;
@@ -21,10 +25,7 @@ namespace ReactiveUI.Tests.Locator;
 [TestExecutor<AppBuilderTestExecutor>]
 public class ViewLocatorTests
 {
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> can be configured using
-    ///     the builder's ConfigureViewLocator method to map and resolve views.
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> can be configured using the builder's ConfigureViewLocator method to map and resolve views.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_CanBeConfigured_EndToEnd()
@@ -44,10 +45,7 @@ public class ViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> can resolve views
-    ///     using the default view locator registration mechanism.
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> can resolve views using the default view locator registration mechanism.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_CanResolveViews_ViaServiceLocator()
@@ -65,10 +63,7 @@ public class ViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> returns a default <see cref="IViewLocator" />
-    ///     when ReactiveUI is initialized with core services.
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a default <see cref="IViewLocator" /> when ReactiveUI is initialized with core services.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_ReturnsDefaultViewLocator()
@@ -80,10 +75,7 @@ public class ViewLocatorTests
         await Assert.That(current).IsTypeOf<DefaultViewLocator>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> returns a new instance
-    ///     after ReactiveUI is reset and re-initialized.
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a new instance after ReactiveUI is reset and re-initialized.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_ReturnsNewInstance_AfterReinitialization()
@@ -103,10 +95,7 @@ public class ViewLocatorTests
         await Assert.That(current2).IsTypeOf<DefaultViewLocator>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> returns the same instance
-    ///     when called multiple times (singleton behavior).
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns the same instance when called multiple times (singleton behavior).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_ReturnsSameInstance_WhenCalledMultipleTimes()
@@ -117,16 +106,12 @@ public class ViewLocatorTests
         await Assert.That(ReferenceEquals(current1, current2)).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="ViewLocator.Current" /> returns a valid locator
-    ///     when ReactiveUI is properly initialized.
-    /// </summary>
+    /// <summary>Verifies that <see cref="ViewLocator.Current" /> returns a valid locator when ReactiveUI is properly initialized.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Current_ReturnsValidLocator_WhenInitialized()
     {
         // Arrange - AppBuilderTestExecutor ensures proper initialization
-
         // Act
         var locator = ViewLocator.Current;
 
@@ -135,19 +120,13 @@ public class ViewLocatorTests
         await Assert.That(locator).IsTypeOf<DefaultViewLocator>();
     }
 
-    /// <summary>
-    ///     Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.
-    /// </summary>
+    /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
     private sealed class TestView : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -155,12 +134,10 @@ public class ViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Test view model used for testing view locator functionality.
-    /// </summary>
+    /// <summary>Test view model used for testing view locator functionality.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel : ReactiveObject;
 }

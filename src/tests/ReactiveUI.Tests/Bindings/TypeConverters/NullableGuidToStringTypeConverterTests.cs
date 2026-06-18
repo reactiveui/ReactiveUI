@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable Guid to strings.
-/// </summary>
+/// <summary>Tests for converting nullable Guid to strings.</summary>
 public class NullableGuidToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class NullableGuidToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a GUID value to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a GUID value to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Guid_Succeeds()
@@ -38,9 +32,7 @@ public class NullableGuidToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("12345678-1234-1234-1234-123456789abc");
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds and yields a null string.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds and yields a null string.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsNullString()

@@ -6,10 +6,12 @@
 #if WINUI_TARGET
 using Microsoft.UI.Xaml.Controls;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
+#endif
 
-/// <summary>
-/// A control with a single transition.
-/// </summary>
+/// <summary>A control with a single transition.</summary>
 public partial class TransitioningContentControl : ContentControl;
 #endif

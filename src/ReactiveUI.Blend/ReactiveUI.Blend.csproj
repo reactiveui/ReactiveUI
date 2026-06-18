@@ -8,6 +8,11 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;Blend;wpf;net;</PackageTags>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces used by the shared source; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.NonParallel.Tests"/>
     <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests"/>
@@ -16,9 +21,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
-    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
-    <Compile Include="..\ReactiveUI\Polyfills\**\*.cs" Link="Polyfills\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs"/>

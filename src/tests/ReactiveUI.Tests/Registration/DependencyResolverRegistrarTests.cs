@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using Splat;
 
 namespace ReactiveUI.Tests.Registration;
@@ -16,10 +15,7 @@ namespace ReactiveUI.Tests.Registration;
 /// </summary>
 public class DependencyResolverRegistrarTests
 {
-    /// <summary>
-    ///     Verifies that the constructor throws <see cref="ArgumentNullException" />
-    ///     when the resolver parameter is null.
-    /// </summary>
+    /// <summary>Verifies that the constructor throws <see cref="ArgumentNullException" /> when the resolver parameter is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Constructor_NullResolver_ThrowsArgumentNullException() =>
@@ -29,9 +25,7 @@ public class DependencyResolverRegistrarTests
             await Task.CompletedTask;
         });
 
-    /// <summary>
-    ///     Verifies that the constructor succeeds when passed a valid resolver.
-    /// </summary>
+    /// <summary>Verifies that the constructor succeeds when passed a valid resolver.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Constructor_ValidResolver_Succeeds()
@@ -42,10 +36,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(registrar).IsNotNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterConstant</c>
-    ///     calls the underlying resolver's RegisterConstant method without a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterConstant</c> calls the underlying resolver's RegisterConstant method without a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterConstant_WithoutContract_CallsResolverRegisterConstant()
@@ -61,10 +52,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterConstantCalls[0].Contract).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterConstant</c>
-    ///     calls the underlying resolver's RegisterConstant method with a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterConstant</c> calls the underlying resolver's RegisterConstant method with a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterConstant_WithContract_CallsResolverRegisterConstantWithContract()
@@ -81,10 +69,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterConstantCalls[0].Contract).IsEqualTo(Contract);
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterConstant</c>
-    ///     throws <see cref="ArgumentNullException" /> when the factory is null.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterConstant</c> throws <see cref="ArgumentNullException" /> when the factory is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterConstant_NullFactory_ThrowsArgumentNullException()
@@ -99,10 +84,7 @@ public class DependencyResolverRegistrarTests
         });
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterLazySingleton</c>
-    ///     calls the underlying resolver's RegisterLazySingleton method without a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterLazySingleton</c> calls the underlying resolver's RegisterLazySingleton method without a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterLazySingleton_WithoutContract_CallsResolverRegisterLazySingleton()
@@ -118,10 +100,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterLazySingletonCalls[0].Contract).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterLazySingleton</c>
-    ///     calls the underlying resolver's RegisterLazySingleton method with a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterLazySingleton</c> calls the underlying resolver's RegisterLazySingleton method with a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterLazySingleton_WithContract_CallsResolverRegisterLazySingletonWithContract()
@@ -138,10 +117,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterLazySingletonCalls[0].Contract).IsEqualTo(Contract);
     }
 
-    /// <summary>
-    ///     Verifies that <c>RegisterLazySingleton</c>
-    ///     throws <see cref="ArgumentNullException" /> when the factory is null.
-    /// </summary>
+    /// <summary>Verifies that <c>RegisterLazySingleton</c> throws <see cref="ArgumentNullException" /> when the factory is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RegisterLazySingleton_NullFactory_ThrowsArgumentNullException()
@@ -156,10 +132,7 @@ public class DependencyResolverRegistrarTests
         });
     }
 
-    /// <summary>
-    ///     Verifies that <c>Register</c>
-    ///     calls the underlying resolver's Register method without a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>Register</c> calls the underlying resolver's Register method without a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Register_WithoutContract_CallsResolverRegister()
@@ -175,10 +148,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterCalls[0].Contract).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Register</c>
-    ///     calls the underlying resolver's Register method with a contract.
-    /// </summary>
+    /// <summary>Verifies that <c>Register</c> calls the underlying resolver's Register method with a contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Register_WithContract_CallsResolverRegisterWithContract()
@@ -195,10 +165,7 @@ public class DependencyResolverRegistrarTests
         await Assert.That(resolver.RegisterCalls[0].Contract).IsEqualTo(Contract);
     }
 
-    /// <summary>
-    ///     Verifies that <c>Register</c>
-    ///     throws <see cref="ArgumentNullException" /> when the factory is null.
-    /// </summary>
+    /// <summary>Verifies that <c>Register</c> throws <see cref="ArgumentNullException" /> when the factory is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Register_NullFactory_ThrowsArgumentNullException()
@@ -213,34 +180,24 @@ public class DependencyResolverRegistrarTests
         });
     }
 
-    /// <summary>
-    ///     Test service class used for testing registration.
-    /// </summary>
+    /// <summary>Test service class used for testing registration.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestService;
 
-    /// <summary>
-    ///     Mock implementation of <see cref="IMutableDependencyResolver"/> for testing.
-    /// </summary>
+    /// <summary>Mock implementation of <see cref="IMutableDependencyResolver"/> for testing.</summary>
     [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
     private sealed class MockDependencyResolver : IMutableDependencyResolver, IDisposable
     {
-        /// <summary>
-        /// Gets the recorded calls to RegisterConstant.
-        /// </summary>
+        /// <summary>Gets the recorded calls to RegisterConstant.</summary>
         public List<(object Service, string? Contract)> RegisterConstantCalls { get; } = [];
 
-        /// <summary>
-        /// Gets the recorded calls to RegisterLazySingleton.
-        /// </summary>
+        /// <summary>Gets the recorded calls to RegisterLazySingleton.</summary>
         public List<(object Factory, string? Contract)> RegisterLazySingletonCalls { get; } = [];
 
-        /// <summary>
-        /// Gets the recorded calls to Register.
-        /// </summary>
+        /// <summary>Gets the recorded calls to Register.</summary>
         public List<(object Factory, string? Contract)> RegisterCalls { get; } = [];
 
         /// <inheritdoc />
@@ -272,16 +229,14 @@ public class DependencyResolverRegistrarTests
             // No-op: this mock only records the factory-based Register overloads exercised by the tests.
         }
 
-        /// <summary>
-        /// Records a non-generic constant registration when the value is not null.
-        /// </summary>
+        /// <summary>Records a non-generic constant registration when the value is not null.</summary>
         /// <param name="value">The constant value to register.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
         public void RegisterConstant(object? value, Type? serviceType, string? contract)
         {
             _ = serviceType;
-            if (value == null)
+            if (value is null)
             {
                 return;
             }
@@ -293,7 +248,7 @@ public class DependencyResolverRegistrarTests
         public void RegisterConstant<T>(T? value)
             where T : class
         {
-            if (value == null)
+            if (value is null)
             {
                 return;
             }
@@ -305,7 +260,7 @@ public class DependencyResolverRegistrarTests
         public void RegisterConstant<T>(T? value, string? contract)
             where T : class
         {
-            if (value == null)
+            if (value is null)
             {
                 return;
             }
@@ -313,9 +268,7 @@ public class DependencyResolverRegistrarTests
             RegisterConstantCalls.Add((value, contract));
         }
 
-        /// <summary>
-        /// Records a non-generic lazy singleton registration.
-        /// </summary>
+        /// <summary>Records a non-generic lazy singleton registration.</summary>
         /// <param name="factory">The factory that produces the value.</param>
         /// <param name="serviceType">The service type to register against.</param>
         /// <param name="contract">The optional contract.</param>
@@ -328,16 +281,16 @@ public class DependencyResolverRegistrarTests
         /// <inheritdoc />
         public void RegisterLazySingleton<
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-            T>(Func<T?> factory)
+        T>(Func<T?> valueFactory)
             where T : class =>
-            RegisterLazySingletonCalls.Add((factory, null));
+            RegisterLazySingletonCalls.Add((valueFactory, null));
 
         /// <inheritdoc />
         public void RegisterLazySingleton<
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-            T>(Func<T?> factory, string? contract)
+        T>(Func<T?> valueFactory, string? contract)
             where T : class =>
-            RegisterLazySingletonCalls.Add((factory, contract));
+            RegisterLazySingletonCalls.Add((valueFactory, contract));
 
         /// <inheritdoc />
         public bool HasRegistration(Type? serviceType, string? contract) => false;
@@ -402,25 +355,34 @@ public class DependencyResolverRegistrarTests
         /// <inheritdoc />
         public IDisposable
             ServiceRegistrationCallback(Type serviceType, string? contract, Action<IDisposable> callback) =>
-            Disposable.Empty;
+            Scope.Empty;
 
         /// <inheritdoc />
         public IDisposable ServiceRegistrationCallback(Type serviceType, Action<IDisposable> callback) =>
-            Disposable.Empty;
+            Scope.Empty;
 
         /// <inheritdoc />
-        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Disposable.Empty;
+        public IDisposable ServiceRegistrationCallback<T>(Action<IDisposable> callback) => Scope.Empty;
 
         /// <inheritdoc />
         public IDisposable ServiceRegistrationCallback<T>(string? contract, Action<IDisposable> callback) =>
-            Disposable.Empty;
+            Scope.Empty;
 
+        /// <summary>Gets the registered service for the given type and contract; this stub always returns <see langword="null"/>.</summary>
+        /// <param name="serviceType">The requested service type.</param>
+        /// <param name="contract">The optional registration contract.</param>
+        /// <returns>Always <see langword="null"/>.</returns>
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
         public object? GetService(Type? serviceType, string? contract) => null;
 
+        /// <summary>Gets the registered services for the given type and contract; this stub always returns an empty sequence.</summary>
+        /// <param name="serviceType">The requested service type.</param>
+        /// <param name="contract">The optional registration contract.</param>
+        /// <returns>An empty sequence.</returns>
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
         public IEnumerable<object> GetServices(Type? serviceType, string? contract) => [];
 
+        /// <inheritdoc />
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
         public void Dispose()
         {

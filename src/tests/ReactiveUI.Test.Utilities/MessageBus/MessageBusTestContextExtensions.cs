@@ -5,19 +5,25 @@
 
 namespace ReactiveUI.Tests.Utilities.MessageBus;
 
-/// <summary>
-///     Extensions for accessing message bus from TestContext.
-/// </summary>
+#if REACTIVE_SHIM
+using MessageBusType = ReactiveUI.Reactive.MessageBus;
+#else
+using MessageBusType = ReactiveUI.MessageBus;
+#endif
+
+/// <summary>Extensions for accessing message bus from TestContext.</summary>
 public static class MessageBusTestContextExtensions
 {
-    /// <summary>
-    ///     Gets the message bus configured for this test.
-    /// </summary>
+    /// <summary>Provides message bus accessors for <see cref="TestContext"/>.</summary>
     /// <param name="context">The test context.</param>
-    /// <returns>The message bus instance.</returns>
-    public static IMessageBus GetMessageBus(this TestContext context)
+    extension(TestContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
-        return (IMessageBus)(context.StateBag.Items["MessageBus"] ?? new ReactiveUI.MessageBus());
+        /// <summary>Gets the message bus configured for this test.</summary>
+        /// <returns>The message bus instance.</returns>
+        public IMessageBus GetMessageBus()
+        {
+            ArgumentNullException.ThrowIfNull(context);
+            return (IMessageBus)(context.StateBag.Items["MessageBus"] ?? new MessageBusType());
+        }
     }
 }

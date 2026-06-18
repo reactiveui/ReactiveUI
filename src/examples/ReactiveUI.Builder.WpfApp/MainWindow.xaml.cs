@@ -8,23 +8,17 @@ using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml.
-/// </summary>
+/// <summary>Interaction logic for MainWindow.xaml.</summary>
 public partial class MainWindow : IViewFor<ViewModels.AppBootstrapper>
 {
-    /// <summary>
-    /// The view model property.
-    /// </summary>
+    /// <summary>The view model property.</summary>
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
         nameof(ViewModel),
         typeof(ViewModels.AppBootstrapper),
         typeof(MainWindow),
         new(null));
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MainWindow"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="MainWindow"/> class.</summary>
     public MainWindow()
     {
         InitializeComponent();

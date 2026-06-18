@@ -4,21 +4,16 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for ContentControlBindingHook.
-/// </summary>
+/// <summary>Tests for ContentControlBindingHook.</summary>
 [TestExecutor<WinFormsTestExecutor>]
 [NotInParallel]
 public class ContentControlBindingHookTests
 {
-    /// <summary>
-    /// Tests that ExecuteHook throws when the current view properties accessor is null.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook throws when the current view properties accessor is null.</summary>
     [Test]
     public void ExecuteHook_Throws_When_GetCurrentViewProperties_Is_Null()
     {
@@ -27,9 +22,7 @@ public class ContentControlBindingHookTests
             hook.ExecuteHook(null, new(), () => [], null!, BindingDirection.OneWay));
     }
 
-    /// <summary>
-    /// Tests that ExecuteHook returns true when the sender is not a panel.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook returns true when the sender is not a panel.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExecuteHook_Returns_True_When_Sender_Is_Not_Panel()
@@ -52,9 +45,7 @@ public class ContentControlBindingHookTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that ExecuteHook returns true when the sender is a panel.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook returns true when the sender is a panel.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExecuteHook_Returns_True_When_Sender_Is_Panel()
@@ -77,9 +68,7 @@ public class ContentControlBindingHookTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that ExecuteHook returns true when the bound property is not Controls.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook returns true when the bound property is not Controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExecuteHook_Returns_True_When_Property_Is_Not_Controls()
@@ -102,9 +91,7 @@ public class ContentControlBindingHookTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that ExecuteHook returns true when the view properties are empty.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook returns true when the view properties are empty.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExecuteHook_Returns_True_When_ViewProperties_Is_Empty()
@@ -121,9 +108,7 @@ public class ContentControlBindingHookTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that ExecuteHook returns true when the sender is a panel and the property is Controls.
-    /// </summary>
+    /// <summary>Tests that ExecuteHook returns true when the sender is a panel and the property is Controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]

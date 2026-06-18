@@ -4,46 +4,31 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.AOT.Tests;
 
-/// <summary>
-/// Observable string based observation tests.
-/// </summary>
+/// <summary>Observable string based observation tests.</summary>
 [TestExecutor<AppBuilderTestExecutor>]
 public class StringBasedObservationTests
 {
-    /// <summary>
-    /// The initial integer value assigned before observation begins.
-    /// </summary>
+    /// <summary>The initial integer value assigned before observation begins.</summary>
     private const int InitialIntValue = 5;
 
-    /// <summary>
-    /// The first changed integer value, repeated to verify distinct filtering.
-    /// </summary>
+    /// <summary>The first changed integer value, repeated to verify distinct filtering.</summary>
     private const int FirstChangedIntValue = 7;
 
-    /// <summary>
-    /// The second changed integer value.
-    /// </summary>
+    /// <summary>The second changed integer value.</summary>
     private const int SecondChangedIntValue = 9;
 
-    /// <summary>
-    /// The first integer value used by the before-change test.
-    /// </summary>
+    /// <summary>The first integer value used by the before-change test.</summary>
     private const int BeforeChangeFirstValue = 2;
 
-    /// <summary>
-    /// The second integer value used by the before-change test.
-    /// </summary>
+    /// <summary>The second integer value used by the before-change test.</summary>
     private const int BeforeChangeSecondValue = 3;
 
-    /// <summary>
-    /// Observables for property string name emits initial then changes.
-    /// </summary>
+    /// <summary>Observables for property string name emits initial then changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -66,9 +51,7 @@ public class StringBasedObservationTests
         await Assert.That(values).IsEquivalentTo([InitialIntValue, FirstChangedIntValue, SecondChangedIntValue]);
     }
 
-    /// <summary>
-    /// Observables for property before change emits before setter.
-    /// </summary>
+    /// <summary>Observables for property before change emits before setter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -90,9 +73,7 @@ public class StringBasedObservationTests
         await Assert.That(before).IsEquivalentTo([1, BeforeChangeFirstValue]);
     }
 
-    /// <summary>
-    /// Whens any value string name works and is distinct.
-    /// </summary>
+    /// <summary>Whens any value string name works and is distinct.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -114,9 +95,7 @@ public class StringBasedObservationTests
         await Assert.That(values).IsEquivalentTo(["a", "b", "c"]);
     }
 
-    /// <summary>
-    /// Whens any value string name not distinct when requested.
-    /// </summary>
+    /// <summary>Whens any value string name not distinct when requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -137,40 +116,24 @@ public class StringBasedObservationTests
         await Assert.That(values).IsEquivalentTo(["x", "y", "y"]);
     }
 
-    /// <summary>
-    /// Sample reactive object used to exercise string-based property observation.
-    /// </summary>
+    /// <summary>Sample reactive object used to exercise string-based property observation.</summary>
     private sealed class Sample : ReactiveObject
     {
-        /// <summary>
-        /// Backing field for <see cref="IntValue"/>.
-        /// </summary>
-        private int _intValue;
-
-        /// <summary>
-        /// Backing field for <see cref="Name"/>.
-        /// </summary>
-        private string? _name;
-
-        /// <summary>
-        /// Gets or sets the integer value.
-        /// </summary>
+        /// <summary>Gets or sets the integer value.</summary>
         public int IntValue
         {
-            get => _intValue;
-            set => this.RaiseAndSetIfChanged(ref _intValue, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the name value.
-        /// </summary>
+        /// <summary>Gets or sets the name value.</summary>
         public string? Name
         {
-            get => _name;
+            get;
             set
             {
                 // Using RaisePropertyChanged to ensure property change notification
-                _name = value;
+                field = value;
                 this.RaisePropertyChanged(nameof(Name));
             }
         }

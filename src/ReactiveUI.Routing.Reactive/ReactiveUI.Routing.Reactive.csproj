@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- DynamicData-flavoured routing/change-set interop recompiled against the ReactiveUI.Reactive engine.
+         This keeps DynamicData + System.Reactive out of the engine assembly itself while still allowing the
+         shim benchmark and consumer projects to compare the same routing/change-set surface. -->
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Routing.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <PackageId>ReactiveUI.Routing.Reactive</PackageId>
+    <PackageDescription>Observable change-set projections of ReactiveUI.Reactive navigation stacks and collections, for comparing the shimmed System.Reactive path.</PackageDescription>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Routing\**\*.cs" Exclude="..\ReactiveUI.Routing\obj\**\*.cs;..\ReactiveUI.Routing\bin\**\*.cs" Link="ReactiveUI.Routing\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" />
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Routing.Reactive.Tests"/>
+  </ItemGroup>
+</Project>

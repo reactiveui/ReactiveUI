@@ -4,21 +4,19 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace ReactiveUI.Tests.Activation;
 
-/// <summary>
-///     Tests for the <see cref="CanActivateViewFetcher" />.
-/// </summary>
+#if REACTIVE_SHIM
+using ICanActivateContract = ReactiveUI.Reactive.ICanActivate;
+#else
+using ICanActivateContract = ReactiveUI.ICanActivate;
+#endif
+
+/// <summary>Tests for the <see cref="CanActivateViewFetcher" />.</summary>
 public class CanActivateViewFetcherTests
 {
-    /// <summary>
-    ///     Verifies an activate/deactivate/activate cycle emits the expected sequence.
-    /// </summary>
+    /// <summary>Verifies an activate/deactivate/activate cycle emits the expected sequence.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ActivateDeactivateCycle_EmitsCorrectSequence()
@@ -27,7 +25,7 @@ public class CanActivateViewFetcherTests
         var view = new TestCanActivateView();
         var results = new List<bool>();
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(results.Add);
 
         const int ExpectedCount = 3;
@@ -42,9 +40,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(results[ThirdIndex]).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies repeated activations each emit a value.
-    /// </summary>
+    /// <summary>Verifies repeated activations each emit a value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_MultipleActivations_EmitsEachTime()
@@ -53,7 +49,7 @@ public class CanActivateViewFetcherTests
         var view = new TestCanActivateView();
         var results = new List<bool>();
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(results.Add);
 
         const int ExpectedCount = 3;
@@ -65,9 +61,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(results).IsEquivalentTo([true, true, true]);
     }
 
-    /// <summary>
-    ///     Verifies repeated deactivations each emit a value.
-    /// </summary>
+    /// <summary>Verifies repeated deactivations each emit a value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_MultipleDeactivations_EmitsEachTime()
@@ -76,7 +70,7 @@ public class CanActivateViewFetcherTests
         var view = new TestCanActivateView();
         var results = new List<bool>();
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(results.Add);
 
         const int ExpectedCount = 3;
@@ -88,9 +82,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(results).IsEquivalentTo([false, false, false]);
     }
 
-    /// <summary>
-    ///     Verifies an activated view emits true.
-    /// </summary>
+    /// <summary>Verifies an activated view emits true.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_WithActivatedView_ReturnsTrue()
@@ -99,7 +91,7 @@ public class CanActivateViewFetcherTests
         var view = new TestCanActivateView();
         bool? result = null;
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(x => result = x);
 
         view.Activate();
@@ -107,9 +99,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies a deactivated view emits false.
-    /// </summary>
+    /// <summary>Verifies a deactivated view emits false.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_WithDeactivatedView_ReturnsFalse()
@@ -118,7 +108,7 @@ public class CanActivateViewFetcherTests
         var view = new TestCanActivateView();
         bool? result = null;
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(x => result = x);
 
         view.Deactivate();
@@ -126,9 +116,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    ///     Verifies a view that does not implement <see cref="ICanActivate" /> emits false.
-    /// </summary>
+    /// <summary>Verifies a view that does not implement <see cref="ICanActivate" /> emits false.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_WithNonICanActivate_ReturnsFalse()
@@ -137,15 +125,13 @@ public class CanActivateViewFetcherTests
         var view = new TestNonActivatableView();
         bool? result = null;
 
-        var activation = fetcher.GetActivationForView(view).ObserveOn(ImmediateScheduler.Instance);
+        var activation = fetcher.GetActivationForView(view).ObserveOn(Sequencer.Immediate);
         using var subscription = activation.Subscribe(x => result = x);
 
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    ///     Verifies the affinity is 10 for the <see cref="ICanActivate" /> type.
-    /// </summary>
+    /// <summary>Verifies the affinity is 10 for the <see cref="ICanActivate" /> type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_WithICanActivate_Returns10()
@@ -155,9 +141,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.ExactType);
     }
 
-    /// <summary>
-    ///     Verifies the affinity is 10 for a type derived from <see cref="ICanActivate" />.
-    /// </summary>
+    /// <summary>Verifies the affinity is 10 for a type derived from <see cref="ICanActivate" />.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_WithICanActivateDerivative_Returns10()
@@ -167,9 +151,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.ExactType);
     }
 
-    /// <summary>
-    ///     Verifies the affinity is 0 for a non-activatable view.
-    /// </summary>
+    /// <summary>Verifies the affinity is 0 for a non-activatable view.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_WithNonActivatableView_Returns0()
@@ -179,9 +161,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Verifies the affinity is 0 for a type that does not implement <see cref="ICanActivate" />.
-    /// </summary>
+    /// <summary>Verifies the affinity is 0 for a type that does not implement <see cref="ICanActivate" />.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_WithNonICanActivate_Returns0()
@@ -191,32 +171,26 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     A test view that implements <see cref="ICanActivate" /> and can be activated and deactivated on demand.
-    /// </summary>
-    private sealed class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivate
+    /// <summary>A test view that implements <see cref="ICanActivate" /> and can be activated and deactivated on demand.</summary>
+    private sealed class TestCanActivateView : ReactiveObject, IViewFor<TestViewModel>, ICanActivateContract
     {
-        private readonly Subject<Unit> _activated = new();
-        private readonly Subject<Unit> _deactivated = new();
-        private TestViewModel? _viewModel;
+        /// <summary>The subject used to signal that the view has been activated.</summary>
+        private readonly Signal<RxVoid> _activated = new();
 
-        /// <summary>
-        ///     Gets an observable that signals when the view is activated.
-        /// </summary>
-        public IObservable<Unit> Activated => _activated;
+        /// <summary>The subject used to signal that the view has been deactivated.</summary>
+        private readonly Signal<RxVoid> _deactivated = new();
 
-        /// <summary>
-        ///     Gets an observable that signals when the view is deactivated.
-        /// </summary>
-        public IObservable<Unit> Deactivated => _deactivated;
+        /// <summary>Gets an observable that signals when the view is activated.</summary>
+        public IObservable<RxVoid> Activated => _activated;
 
-        /// <summary>
-        ///     Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets an observable that signals when the view is deactivated.</summary>
+        public IObservable<RxVoid> Deactivated => _deactivated;
+
+        /// <summary>Gets or sets the view model.</summary>
         public TestViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc />
@@ -226,31 +200,21 @@ public class CanActivateViewFetcherTests
             set => ViewModel = (TestViewModel?)value;
         }
 
-        /// <summary>
-        ///     Signals that the view has been activated.
-        /// </summary>
-        public void Activate() => _activated.OnNext(Unit.Default);
+        /// <summary>Signals that the view has been activated.</summary>
+        public void Activate() => _activated.OnNext(RxVoid.Default);
 
-        /// <summary>
-        ///     Signals that the view has been deactivated.
-        /// </summary>
-        public void Deactivate() => _deactivated.OnNext(Unit.Default);
+        /// <summary>Signals that the view has been deactivated.</summary>
+        public void Deactivate() => _deactivated.OnNext(RxVoid.Default);
     }
 
-    /// <summary>
-    ///     A test view that does not implement <see cref="ICanActivate" />.
-    /// </summary>
+    /// <summary>A test view that does not implement <see cref="ICanActivate" />.</summary>
     private sealed class TestNonActivatableView : ReactiveObject, IViewFor<TestViewModel>
     {
-        private TestViewModel? _viewModel;
-
-        /// <summary>
-        ///     Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets or sets the view model.</summary>
         public TestViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc />
@@ -261,12 +225,10 @@ public class CanActivateViewFetcherTests
         }
     }
 
-    /// <summary>
-    ///     A simple view model used by the test views.
-    /// </summary>
+    /// <summary>A simple view model used by the test views.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel : ReactiveObject;
 }

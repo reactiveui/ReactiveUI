@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable double to double.
-/// </summary>
+/// <summary>Tests for converting nullable double to double.</summary>
 public class NullableDoubleToDoubleTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class NullableDoubleToDoubleTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a value succeeds and yields the underlying value.
-    /// </summary>
+    /// <summary>Verifies that converting a value succeeds and yields the underlying value.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithValue_Succeeds()
@@ -39,9 +33,7 @@ public class NullableDoubleToDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo(Value);
     }
 
-    /// <summary>
-    /// Verifies that converting a null value fails.
-    /// </summary>
+    /// <summary>Verifies that converting a null value fails.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsFalse()
@@ -54,9 +46,7 @@ public class NullableDoubleToDoubleTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the converter source type is nullable double.
-    /// </summary>
+    /// <summary>Verifies that the converter source type is nullable double.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsDoubleNullable()
@@ -65,9 +55,7 @@ public class NullableDoubleToDoubleTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(double?));
     }
 
-    /// <summary>
-    /// Verifies that the converter target type is double.
-    /// </summary>
+    /// <summary>Verifies that the converter target type is double.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsDouble()

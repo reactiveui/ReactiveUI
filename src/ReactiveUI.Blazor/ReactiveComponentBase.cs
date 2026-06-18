@@ -1,20 +1,24 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Blazor.Internal;
+#else
 using ReactiveUI.Blazor.Internal;
+#endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor;
+#else
 namespace ReactiveUI.Blazor;
-
-/// <summary>
-/// A base component for handling property changes and updating the Blazor view appropriately.
-/// </summary>
+#endif
+/// <summary>A base component for handling property changes and updating the Blazor view appropriately.</summary>
 /// <typeparam name="T">The type of view model. Must support <see cref="INotifyPropertyChanged"/>.</typeparam>
 /// <remarks>
 /// <para>
@@ -30,19 +34,10 @@ namespace ReactiveUI.Blazor;
 public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPropertyChanged, ICanActivate, IDisposable
     where T : class, INotifyPropertyChanged
 {
-    /// <summary>
-    /// Encapsulates reactive state and lifecycle management for this component.
-    /// </summary>
+    /// <summary>Encapsulates reactive state and lifecycle management for this component.</summary>
     private readonly ReactiveComponentState _state = new();
 
-    /// <summary>
-    /// Backing field for <see cref="ViewModel"/>.
-    /// </summary>
-    private T? _viewModel;
-
-    /// <summary>
-    /// Indicates whether the instance has been disposed.
-    /// </summary>
+    /// <summary>Indicates whether the instance has been disposed.</summary>
     private bool _disposed;
 
     /// <inheritdoc />
@@ -52,10 +47,10 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     [Parameter]
     public T? ViewModel
     {
-        get => _viewModel;
+        get => field;
         set
         {
-            if (!ReactiveComponentHelpers.SetIfChanged(ref _viewModel, value))
+            if (!ReactiveComponentHelpers.SetIfChanged(ref field, value))
             {
                 return;
             }
@@ -72,14 +67,12 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> Activated => _state.Activated;
+    public IObservable<RxVoid> Activated => _state.Activated;
 
     /// <inheritdoc />
-    public IObservable<Unit> Deactivated => _state.Deactivated;
+    public IObservable<RxVoid> Deactivated => _state.Deactivated;
 
-    /// <summary>
-    /// Disposes the component and releases managed resources.
-    /// </summary>
+    /// <summary>Disposes the component and releases managed resources.</summary>
     public void Dispose()
     {
         Dispose(true);
@@ -106,16 +99,12 @@ public class ReactiveComponentBase<T> : ComponentBase, IViewFor<T>, INotifyPrope
         base.OnAfterRender(firstRender);
     }
 
-    /// <summary>
-    /// Invokes the property changed event.
-    /// </summary>
+    /// <summary>Invokes the property changed event.</summary>
     /// <param name="propertyName">The name of the changed property.</param>
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new(propertyName));
 
-    /// <summary>
-    /// Releases managed resources used by the component.
-    /// </summary>
+    /// <summary>Releases managed resources used by the component.</summary>
     /// <param name="disposing">
     /// <see langword="true"/> to release managed resources; <see langword="false"/> to release unmanaged resources only.
     /// </param>

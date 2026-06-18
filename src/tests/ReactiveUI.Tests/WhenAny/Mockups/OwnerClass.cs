@@ -5,20 +5,14 @@
 
 namespace ReactiveUI.Tests.WhenAny.Mockups;
 
-/// <summary>
-///     Owner Class.
-/// </summary>
+/// <summary>Owner Class.</summary>
 /// <seealso cref="ReactiveObject" />
 public class OwnerClass : ReactiveObject
 {
-    private string? _name;
-
-    /// <summary>
-    ///     Gets or sets the name.
-    /// </summary>
+    /// <summary>Gets or sets the name.</summary>
     public string? Name
     {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

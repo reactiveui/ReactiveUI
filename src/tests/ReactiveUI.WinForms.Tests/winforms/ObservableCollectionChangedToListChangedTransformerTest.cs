@@ -5,31 +5,41 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
-using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for <see cref="ObservableCollectionChangedToListChangedTransformer"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ObservableCollectionChangedToListChangedExtensions"/>.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 
 public class ObservableCollectionChangedToListChangedTransformerTest
 {
+    /// <summary>The index reported by a reset list change.</summary>
     private const int ResetIndex = -1;
+
+    /// <summary>The value two used in the tests.</summary>
     private const int Two = 2;
+
+    /// <summary>The value three used in the tests.</summary>
     private const int Three = 3;
+
+    /// <summary>The value four used in the tests.</summary>
     private const int Four = 4;
+
+    /// <summary>The value five used in the tests.</summary>
     private const int Five = 5;
+
+    /// <summary>The value six used in the tests.</summary>
     private const int Six = 6;
+
+    /// <summary>The value seven used in the tests.</summary>
     private const int Seven = 7;
+
+    /// <summary>The value eight used in the tests.</summary>
     private const int Eight = 8;
 
-    /// <summary>
-    /// Tests that Reset action produces ListChangedType.Reset.
-    /// </summary>
+    /// <summary>Tests that Reset action produces ListChangedType.Reset.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_Reset_ProducesResetEvent()
@@ -43,9 +53,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results[0].NewIndex).IsEqualTo(ResetIndex);
     }
 
-    /// <summary>
-    /// Tests that Replace action produces ListChangedType.ItemChanged.
-    /// </summary>
+    /// <summary>Tests that Replace action produces ListChangedType.ItemChanged.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_Replace_ProducesItemChangedEvent()
@@ -63,9 +71,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results[0].NewIndex).IsEqualTo(Two);
     }
 
-    /// <summary>
-    /// Tests that Remove action produces ListChangedType.ItemDeleted events.
-    /// </summary>
+    /// <summary>Tests that Remove action produces ListChangedType.ItemDeleted events.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_Remove_ProducesItemDeletedEvents()
@@ -85,9 +91,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results[Two].NewIndex).IsEqualTo(Seven);
     }
 
-    /// <summary>
-    /// Tests that Add action produces ListChangedType.ItemAdded events.
-    /// </summary>
+    /// <summary>Tests that Add action produces ListChangedType.ItemAdded events.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_Add_ProducesItemAddedEvents()
@@ -106,9 +110,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results[1].NewIndex).IsEqualTo(Four);
     }
 
-    /// <summary>
-    /// Tests that Move action produces ListChangedType.ItemMoved event.
-    /// </summary>
+    /// <summary>Tests that Move action produces ListChangedType.ItemMoved event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_Move_ProducesItemMovedEvent()
@@ -128,9 +130,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results[0].OldIndex).IsEqualTo(Two);
     }
 
-    /// <summary>
-    /// Tests that Remove with empty items list produces no events.
-    /// </summary>
+    /// <summary>Tests that Remove with empty items list produces no events.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_RemoveWithEmptyList_ProducesNoEvents()
@@ -143,9 +143,7 @@ public class ObservableCollectionChangedToListChangedTransformerTest
         await Assert.That(results).IsEmpty();
     }
 
-    /// <summary>
-    /// Tests that Add with empty items list produces no events.
-    /// </summary>
+    /// <summary>Tests that Add with empty items list produces no events.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AsListChangedEventArgs_AddWithEmptyList_ProducesNoEvents()

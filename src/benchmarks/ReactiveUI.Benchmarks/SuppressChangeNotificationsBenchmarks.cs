@@ -31,7 +31,7 @@ public class SuppressChangeNotificationsBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
+        _viewModel = new();
         _subscription = _viewModel.Changed.Subscribe(_sink);
     }
 

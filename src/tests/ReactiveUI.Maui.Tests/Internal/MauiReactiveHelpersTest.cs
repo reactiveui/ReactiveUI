@@ -9,14 +9,10 @@ using ReactiveUI.Maui.Internal;
 
 namespace ReactiveUI.Maui.Tests.Internal;
 
-/// <summary>
-/// Tests for MauiReactiveHelpers.
-/// </summary>
+/// <summary>Tests for MauiReactiveHelpers.</summary>
 public sealed class MauiReactiveHelpersTest
 {
-    /// <summary>
-    /// Tests that CreatePropertyChangedPulse emits when the property changes.
-    /// </summary>
+    /// <summary>Tests that CreatePropertyChangedPulse emits when the property changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_EmitsWhenPropertyChanges()
@@ -31,9 +27,7 @@ public sealed class MauiReactiveHelpersTest
         await Assert.That(changes).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Tests that CreatePropertyChangedPulse does not emit for other properties.
-    /// </summary>
+    /// <summary>Tests that CreatePropertyChangedPulse does not emit for other properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreatePropertyChangedPulse_DoesNotEmitForOtherProperties()
@@ -48,9 +42,7 @@ public sealed class MauiReactiveHelpersTest
         await Assert.That(changes).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that CreatePropertyValueObservable emits initial and subsequent values.
-    /// </summary>
+    /// <summary>Tests that CreatePropertyValueObservable emits initial and subsequent values.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreatePropertyValueObservable_EmitsInitialAndSubsequentValues()
@@ -72,35 +64,24 @@ public sealed class MauiReactiveHelpersTest
         await Assert.That(values[1]).IsEqualTo("Updated");
     }
 
-    /// <summary>
-    /// Test view model that raises property change notifications.
-    /// </summary>
+    /// <summary>Test view model that raises property change notifications.</summary>
     private sealed class TestViewModel : INotifyPropertyChanged
     {
-        /// <summary>
-        /// The backing field for <see cref="Name"/>.
-        /// </summary>
-        private string? _name;
-
         /// <inheritdoc/>
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
+        /// <summary>Gets or sets the name.</summary>
         public string? Name
         {
-            get => _name;
+            get;
             set
             {
-                _name = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
 
-        /// <summary>
-        /// Raises the <see cref="PropertyChanged"/> event.
-        /// </summary>
+        /// <summary>Raises the <see cref="PropertyChanged"/> event.</summary>
         /// <param name="propertyName">The name of the property that changed.</param>
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
             PropertyChanged?.Invoke(this, new(propertyName));

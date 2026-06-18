@@ -3,19 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>
-/// Arity-2 WhenAny and WhenAnyValue overload tests.
-/// </content>
+/// <summary>Tests for the WhenAny and WhenAnyValue mixin overloads.</summary>
 public partial class WhenAnyMixinTests
 {
-    /// <summary>
-    ///     Verifies the WhenAny overload for 2 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAny overload for 2 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_2Props_Sel()
@@ -25,13 +18,11 @@ public partial class WhenAnyMixinTests
         vm.WhenAny(
             x => x.Property1,
             x => x.Property2,
-            (_, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAny overload for 2 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the WhenAny overload for 2 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_2Props_Sel_Dist()
@@ -42,13 +33,11 @@ public partial class WhenAnyMixinTests
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAny overload for 2 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAny overload for 2 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_2Props_Sel_Str()
@@ -58,13 +47,11 @@ public partial class WhenAnyMixinTests
         vm.WhenAny<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
-            (_, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAny overload for 2 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAny overload for 2 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_2Props_Sel_Str_Dist()
@@ -75,13 +62,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyValue overload for 2 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyValue overload for 2 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Sel()
@@ -91,13 +76,11 @@ public partial class WhenAnyMixinTests
         vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2,
-            (_, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyValue overload for 2 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyValue overload for 2 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Sel_Dist()
@@ -108,13 +91,11 @@ public partial class WhenAnyMixinTests
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAnyValue overload for 2 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAnyValue overload for 2 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Sel_Str()
@@ -124,13 +105,11 @@ public partial class WhenAnyMixinTests
         vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
-            (_, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAnyValue overload for 2 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAnyValue overload for 2 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Sel_Str_Dist()
@@ -141,13 +120,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple expression-based WhenAnyValue overload for 2 properties.
-    /// </summary>
+    /// <summary>Verifies the tuple expression-based WhenAnyValue overload for 2 properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Tuple_Expr()
@@ -156,13 +133,11 @@ public partial class WhenAnyMixinTests
         var list = new List<(string?, string?)>();
         vm.WhenAnyValue(
             x => x.Property1,
-            x => x.Property2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            x => x.Property2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple expression-based WhenAnyValue overload for 2 properties with a distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the tuple expression-based WhenAnyValue overload for 2 properties with a distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Tuple_Expr_Dist()
@@ -172,13 +147,11 @@ public partial class WhenAnyMixinTests
         vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple string-based WhenAnyValue overload for 2 properties.
-    /// </summary>
+    /// <summary>Verifies the tuple string-based WhenAnyValue overload for 2 properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Tuple_Str()
@@ -187,13 +160,11 @@ public partial class WhenAnyMixinTests
         var list = new List<(string?, string?)>();
         vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
-            nameof(WhenAnyArityTestViewModel.Property2)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            nameof(WhenAnyArityTestViewModel.Property2)).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple string-based WhenAnyValue overload for 2 properties with a distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the tuple string-based WhenAnyValue overload for 2 properties with a distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_2Props_Tuple_Str_Dist()
@@ -203,7 +174,7 @@ public partial class WhenAnyMixinTests
         vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 }

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Xaml;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -12,15 +11,11 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Contains unit tests for the <see cref="DefaultViewLocator"/> class, verifying view resolution behavior in WPF scenarios.
-/// </summary>
+/// <summary>Contains unit tests for the <see cref="DefaultViewLocator"/> class, verifying view resolution behavior in WPF scenarios.</summary>
 [NotInParallel]
 public class DefaultViewLocatorTests
 {
-    /// <summary>
-    /// Tests that whether this instance [can resolve view from view model with IRoutableViewModel].
-    /// </summary>
+    /// <summary>Tests that whether this instance [can resolve view from view model with IRoutableViewModel].</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanResolveViewFromViewModelWithIRoutableViewModelType()
@@ -41,9 +36,7 @@ public class DefaultViewLocatorTests
         await Assert.That(result).IsTypeOf<RoutableFooView>();
     }
 
-    /// <summary>
-    /// Tests that make sure this instance [can resolve custom view with Map].
-    /// </summary>
+    /// <summary>Tests that make sure this instance [can resolve custom view with Map].</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<Executor<RoutableFooCustomView, RoutableFooViewModel>>]
@@ -64,18 +57,14 @@ public class DefaultViewLocatorTests
         await Assert.That(result).IsTypeOf<RoutableFooCustomView>();
     }
 
-    /// <summary>
-    /// A test executor that registers a single view/view model pair before running the test.
-    /// </summary>
+    /// <summary>A test executor that registers a single view/view model pair before running the test.</summary>
     /// <typeparam name="TView">The view type to register.</typeparam>
     /// <typeparam name="TViewModel">The view model type associated with the view.</typeparam>
     public sealed class Executor<TView, TViewModel> : STAThreadExecutor
         where TView : class, IViewFor<TViewModel>, new()
         where TViewModel : class, IReactiveObject
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc />

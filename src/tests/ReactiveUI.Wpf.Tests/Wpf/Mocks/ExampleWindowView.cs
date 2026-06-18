@@ -5,7 +5,5 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-/// A window view for <see cref="ExampleWindowViewModel"/>.
-/// </summary>
+/// <summary>A window view for <see cref="ExampleWindowViewModel"/>.</summary>
 public class ExampleWindowView : ReactiveWindow<ExampleWindowViewModel>;

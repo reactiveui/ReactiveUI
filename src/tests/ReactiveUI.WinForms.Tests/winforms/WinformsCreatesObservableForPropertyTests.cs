@@ -5,29 +5,20 @@
 
 using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for WinformsCreatesObservableForProperty.
-/// </summary>
+/// <summary>Tests for WinformsCreatesObservableForProperty.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 
 public class WinformsCreatesObservableForPropertyTests
 {
-    /// <summary>
-    /// The expected affinity for a Component property that exposes a Changed event.
-    /// </summary>
+    /// <summary>The expected affinity for a Component property that exposes a Changed event.</summary>
     private const int ExpectedComponentAffinity = 8;
 
-    /// <summary>
-    /// Tests that GetAffinityForObject returns correct affinity for Component types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObject returns correct affinity for Component types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObject_ComponentType_ReturnsCorrectAffinity()
@@ -39,9 +30,7 @@ public class WinformsCreatesObservableForPropertyTests
         await Assert.That(affinity).IsEqualTo(ExpectedComponentAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObject returns 0 for non-Component types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObject returns 0 for non-Component types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObject_NonComponentType_ReturnsZero()
@@ -52,9 +41,7 @@ public class WinformsCreatesObservableForPropertyTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that GetNotificationForProperty sends notifications when property changes.
-    /// </summary>
+    /// <summary>Tests that GetNotificationForProperty sends notifications when property changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetNotificationForProperty_PropertyChanged_SendsNotification()
@@ -68,7 +55,7 @@ public class WinformsCreatesObservableForPropertyTests
             testComponent,
             expression,
             nameof(TestComponent.TestProperty))
-            .ObserveOn(ImmediateScheduler.Instance);
+            .ObserveOn(Sequencer.Immediate);
 
         observable.Subscribe(change => receivedChange = change);
 
@@ -79,9 +66,7 @@ public class WinformsCreatesObservableForPropertyTests
         await Assert.That(receivedChange!.Sender).IsEqualTo(testComponent);
     }
 
-    /// <summary>
-    /// Tests that GetNotificationForProperty throws when event not found.
-    /// </summary>
+    /// <summary>Tests that GetNotificationForProperty throws when event not found.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetNotificationForProperty_NoEvent_ThrowsInvalidOperationException()
@@ -98,7 +83,7 @@ public class WinformsCreatesObservableForPropertyTests
                 testComponent,
                 expression,
                 nameof(TestComponentWithoutEvent.PropertyWithoutEvent))
-                .ObserveOn(ImmediateScheduler.Instance);
+                .ObserveOn(Sequencer.Immediate);
 
             // Subscribe to execute the observable - this is where the exception will be thrown
             observable.Subscribe();
@@ -112,24 +97,16 @@ public class WinformsCreatesObservableForPropertyTests
         await Assert.That(caughtException).IsTypeOf<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Test component with a property that has a Changed event.
-    /// </summary>
+    /// <summary>Test component with a property that has a Changed event.</summary>
     private sealed class TestComponent : Component
     {
-        /// <summary>
-        /// Backing field for the test property.
-        /// </summary>
+        /// <summary>Backing field for the test property.</summary>
         private string? _testProperty;
 
-        /// <summary>
-        /// Occurs when test property changed.
-        /// </summary>
+        /// <summary>Occurs when test property changed.</summary>
         public event EventHandler? TestPropertyChanged;
 
-        /// <summary>
-        /// Gets or sets the test property.
-        /// </summary>
+        /// <summary>Gets or sets the test property.</summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? TestProperty
         {
@@ -147,14 +124,10 @@ public class WinformsCreatesObservableForPropertyTests
         }
     }
 
-    /// <summary>
-    /// Test component with a property that does NOT have a Changed event.
-    /// </summary>
+    /// <summary>Test component with a property that does NOT have a Changed event.</summary>
     private sealed class TestComponentWithoutEvent : Component
     {
-        /// <summary>
-        /// Gets or sets a property without a corresponding Changed event.
-        /// </summary>
+        /// <summary>Gets or sets a property without a corresponding Changed event.</summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? PropertyWithoutEvent { get; set; }
     }

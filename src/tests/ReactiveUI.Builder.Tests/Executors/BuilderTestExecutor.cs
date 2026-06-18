@@ -5,11 +5,9 @@
 
 namespace ReactiveUI.Builder.Tests.Executors;
 
-/// <summary>
-/// Standard test executor for Builder tests that resets state and bootstraps core services.
-/// </summary>
+/// <summary>Standard test executor for Builder tests that resets state and bootstraps core services.</summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Major Code Smell",
-    "S2094:Classes should not be empty",
+    "SST1436:Classes should not be empty",
     Justification = "Marker type for tests.")]
 public sealed class BuilderTestExecutor : BuilderTestExecutorBase;

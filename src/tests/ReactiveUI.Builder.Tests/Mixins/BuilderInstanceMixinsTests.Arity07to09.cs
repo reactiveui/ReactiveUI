@@ -7,14 +7,10 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// WithInstance tests for arities seven through nine.
-/// </content>
+/// <summary>WithInstance tests for arities seven through nine.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Verifies that the 7-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_7_Types_invokes_action()
@@ -86,9 +82,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured7).IsSameReferenceAs(s7);
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_7_Types_skips_when_null()
@@ -113,9 +107,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -191,9 +183,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured7).IsSameReferenceAs(s7);
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -222,9 +212,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -308,9 +296,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured8).IsSameReferenceAs(s8);
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -340,9 +326,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -430,9 +414,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured8).IsSameReferenceAs(s8);
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -466,9 +448,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_9_Types_invokes_action()
@@ -521,9 +501,7 @@ public partial class BuilderInstanceMixinsTests
             s9);
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -554,9 +532,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -613,9 +589,7 @@ public partial class BuilderInstanceMixinsTests
             s9);
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(

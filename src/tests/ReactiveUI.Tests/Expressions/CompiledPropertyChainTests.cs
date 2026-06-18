@@ -7,17 +7,16 @@ using System.Linq.Expressions;
 
 namespace ReactiveUI.Tests.Expressions;
 
-/// <summary>
-/// Tests for the internal compiled property chain classes.
-/// </summary>
+/// <summary>Tests for the internal compiled property chain classes.</summary>
 public class CompiledPropertyChainTests
 {
+    /// <summary>The value assigned to a nested property in compiled property chain tests.</summary>
     private const string NestedValueText = "nested";
+
+    /// <summary>The value assigned to a simple property in compiled property chain tests.</summary>
     private const string ValueText = "value";
 
-    /// <summary>
-    /// Verifies that the compiled property chain reads a value from a simple property.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain reads a value from a simple property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_WithSimpleProperty_GetsValue()
@@ -33,9 +32,7 @@ public class CompiledPropertyChainTests
         await Assert.That(value).IsEqualTo("test");
     }
 
-    /// <summary>
-    /// Verifies that the compiled property chain reads a value through a nested property.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain reads a value through a nested property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_WithNestedProperty_GetsValue()
@@ -51,9 +48,7 @@ public class CompiledPropertyChainTests
         await Assert.That(value).IsEqualTo(NestedValueText);
     }
 
-    /// <summary>
-    /// Verifies that the compiled property chain returns false when an intermediate value is null.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain returns false when an intermediate value is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_WithNullIntermediate_ReturnsFalse()
@@ -68,9 +63,7 @@ public class CompiledPropertyChainTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the compiled property chain returns false when the source object is null.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain returns false when the source object is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_WithNullSource_ReturnsFalse()
@@ -84,9 +77,7 @@ public class CompiledPropertyChainTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that TryGetAllValues returns the observed change for every link in the chain.
-    /// </summary>
+    /// <summary>Verifies that TryGetAllValues returns the observed change for every link in the chain.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_TryGetAllValues_ReturnsAllChanges()
@@ -104,9 +95,7 @@ public class CompiledPropertyChainTests
         await Assert.That(changeValues[1].Value).IsEqualTo(NestedValueText);
     }
 
-    /// <summary>
-    /// Verifies that TryGetAllValues returns false when an intermediate value in the chain is null.
-    /// </summary>
+    /// <summary>Verifies that TryGetAllValues returns false when an intermediate value in the chain is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_TryGetAllValues_WithNullIntermediate_ReturnsFalse()
@@ -124,9 +113,7 @@ public class CompiledPropertyChainTests
         await Assert.That(changeValues[0].Value).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that constructing a compiled property chain with an empty chain throws.
-    /// </summary>
+    /// <summary>Verifies that constructing a compiled property chain with an empty chain throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChain_Constructor_WithEmptyChain_Throws()
@@ -137,9 +124,7 @@ public class CompiledPropertyChainTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Verifies that the compiled property chain setter writes a value to a simple property.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain setter writes a value to a simple property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithSimpleProperty_SetsValue()
@@ -155,9 +140,7 @@ public class CompiledPropertyChainTests
         await Assert.That(obj.Name).IsEqualTo("newValue");
     }
 
-    /// <summary>
-    /// Verifies that the compiled property chain setter writes a value through a nested property.
-    /// </summary>
+    /// <summary>Verifies that the compiled property chain setter writes a value through a nested property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithNestedProperty_SetsValue()
@@ -173,9 +156,7 @@ public class CompiledPropertyChainTests
         await Assert.That(obj.Child!.Name).IsEqualTo("nestedValue");
     }
 
-    /// <summary>
-    /// Verifies that the setter throws on a null source when configured to throw.
-    /// </summary>
+    /// <summary>Verifies that the setter throws on a null source when configured to throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithNullSource_ShouldThrowTrue_Throws()
@@ -189,9 +170,7 @@ public class CompiledPropertyChainTests
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Verifies that the setter returns false on a null source when configured not to throw.
-    /// </summary>
+    /// <summary>Verifies that the setter returns false on a null source when configured not to throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithNullSource_ShouldThrowFalse_ReturnsFalse()
@@ -205,9 +184,7 @@ public class CompiledPropertyChainTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the setter returns false when an intermediate value in the chain is null.
-    /// </summary>
+    /// <summary>Verifies that the setter returns false when an intermediate value in the chain is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithNullIntermediate_ReturnsFalse()
@@ -222,9 +199,7 @@ public class CompiledPropertyChainTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the setter traverses a deeply nested chain before writing the value.
-    /// </summary>
+    /// <summary>Verifies that the setter traverses a deeply nested chain before writing the value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithDeepNesting_TraversesCorrectly()
@@ -240,9 +215,7 @@ public class CompiledPropertyChainTests
         await Assert.That(obj.Child!.Child!.Name).IsEqualTo("deepValue");
     }
 
-    /// <summary>
-    /// Verifies that the setter writes directly to a single-level property.
-    /// </summary>
+    /// <summary>Verifies that the setter writes directly to a single-level property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_WithSingleLevelProperty_SetsDirectly()
@@ -258,9 +231,7 @@ public class CompiledPropertyChainTests
         await Assert.That(obj.Name).IsEqualTo("directValue");
     }
 
-    /// <summary>
-    /// Verifies that constructing a compiled property chain setter with an empty chain throws.
-    /// </summary>
+    /// <summary>Verifies that constructing a compiled property chain setter with an empty chain throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompiledPropertyChainSetter_Constructor_WithEmptyChain_Throws()
@@ -271,42 +242,24 @@ public class CompiledPropertyChainTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// A reactive view model used as the target of compiled property chain tests.
-    /// </summary>
+    /// <summary>A reactive view model used as the target of compiled property chain tests.</summary>
     private sealed class TestViewModel : ReactiveObject
     {
-        /// <summary>
-        /// The backing field for the <see cref="Name"/> property.
-        /// </summary>
-        private string? _name;
-
-        /// <summary>
-        /// The backing field for the <see cref="Child"/> property.
-        /// </summary>
-        private TestViewModel? _child;
-
-        /// <summary>
-        /// Gets or sets the name value.
-        /// </summary>
+        /// <summary>Gets or sets the name value.</summary>
         public string? Name
         {
-            get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the nested child view model.
-        /// </summary>
+        /// <summary>Gets or sets the nested child view model.</summary>
         public TestViewModel? Child
         {
-            get => _child;
-            set => this.RaiseAndSetIfChanged(ref _child, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets a read-only property value.
-        /// </summary>
+        /// <summary>Gets a read-only property value.</summary>
         public string ReadOnlyProperty { get; } = "readonly";
     }
 }

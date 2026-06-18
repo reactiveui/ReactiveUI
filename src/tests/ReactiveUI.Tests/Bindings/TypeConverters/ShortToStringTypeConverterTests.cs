@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting shorts to strings.
-/// </summary>
+/// <summary>Tests for converting shorts to strings.</summary>
 public class ShortToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class ShortToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that the maximum short value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum short value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -38,9 +32,7 @@ public class ShortToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(short.MaxValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that the minimum short value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum short value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -54,15 +46,13 @@ public class ShortToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(short.MinValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that a short value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a short value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ShortToString_Succeeds()
     {
         var converter = new ShortToStringTypeConverter();
-        const short Value = 12345;
+        const short Value = 12_345;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -70,9 +60,7 @@ public class ShortToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("12345");
     }
 
-    /// <summary>
-    /// Verifies that a conversion hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a conversion hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()

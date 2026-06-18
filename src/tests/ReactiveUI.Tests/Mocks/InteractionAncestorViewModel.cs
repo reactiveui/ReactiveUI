@@ -5,22 +5,17 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-///     A ancestor view model.
-/// </summary>
+/// <summary>A ancestor view model.</summary>
 /// <seealso cref="ReactiveObject" />
 public class InteractionAncestorViewModel : ReactiveObject
 {
+    /// <summary>Backing field for the bound interaction view model.</summary>
     private InteractionBindViewModel _interactionBindViewModel;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="InteractionAncestorViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="InteractionAncestorViewModel" /> class.</summary>
     public InteractionAncestorViewModel() => _interactionBindViewModel = new();
 
-    /// <summary>
-    ///     Gets or sets the interaction view model.
-    /// </summary>
+    /// <summary>Gets or sets the interaction view model.</summary>
     public InteractionBindViewModel InteractionViewModel
     {
         get => _interactionBindViewModel;

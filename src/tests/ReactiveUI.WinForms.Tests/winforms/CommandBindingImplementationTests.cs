@@ -8,34 +8,40 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Checks the command bindings.
-/// </summary>
+/// <summary>Checks the command bindings.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class CommandBindingImplementationTests
 {
+    /// <summary>The initial command parameter value used by the tests.</summary>
     private const int InitialParameter = 2;
+
+    /// <summary>The expected result after a single parameterized command execution.</summary>
     private const int ExpectedSingleParameterResult = 10;
+
+    /// <summary>The expected result after a doubled parameterized command execution.</summary>
     private const int ExpectedDoubleParameterResult = 20;
+
+    /// <summary>The expected result after rebinding the parameterized command.</summary>
     private const int ExpectedRebindParameterResult = 4;
+
+    /// <summary>The expected invocation count when a command is executed twice.</summary>
     private const int ExpectedInvokeCountTwo = 2;
 
-    /// <summary>
-    /// Tests the command bind by name wireup.
-    /// </summary>
+    /// <summary>Tests the command bind by name wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindByNameWireup()
     {
         var vm = new WinformCommandBindViewModel();
         var view = new WinformCommandBindView { ViewModel = vm };
-        var fixture = new CommandBinderImplementation();
 
         var invokeCount = 0;
         vm.Command1.Subscribe(_ => ++invokeCount);
 
-        var disp = fixture.BindCommand(vm, view, x => x.Command1, x => x.Command1);
+        // The parameterless command bind is exposed via the view mixin; the binder implementation only offers
+        // the with-parameter overloads (exercised by the other tests in this fixture).
+        var disp = view.BindCommand(vm, x => x.Command1, x => x.Command1);
 
         view.Command1.PerformClick();
 
@@ -49,9 +55,7 @@ public class CommandBindingImplementationTests
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests the command bind by name wireup with a parameter.
-    /// </summary>
+    /// <summary>Tests the command bind by name wireup with a parameter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindByNameWireupWithParameter()
@@ -95,9 +99,7 @@ public class CommandBindingImplementationTests
         disp.Dispose();
     }
 
-    /// <summary>
-    /// Tests the command bind to an explicit event wireup with a parameter.
-    /// </summary>
+    /// <summary>Tests the command bind to an explicit event wireup with a parameter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindToExplicitEventWireupWithParameter()

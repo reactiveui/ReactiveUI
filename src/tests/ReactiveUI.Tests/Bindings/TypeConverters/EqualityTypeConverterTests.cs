@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-///     Tests for the EqualityTypeConverter which compares objects for equality.
-/// </summary>
+/// <summary>Tests for the EqualityTypeConverter which compares objects for equality.</summary>
 public class EqualityTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter source type is <see cref="object"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="object"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsObjectType()
@@ -21,9 +17,7 @@ public class EqualityTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(object));
     }
 
-    /// <summary>
-    /// Verifies the converter reports an affinity of 1.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 1.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns1()
@@ -33,9 +27,7 @@ public class EqualityTypeConverterTests
         await Assert.That(affinity).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Verifies the converter target type is <see cref="bool"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is <see cref="bool"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsBoolType()
@@ -44,9 +36,7 @@ public class EqualityTypeConverterTests
         await Assert.That(converter.ToType).IsEqualTo(typeof(bool));
     }
 
-    /// <summary>
-    /// Verifies that two null values are considered equal.
-    /// </summary>
+    /// <summary>Verifies that two null values are considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_BothNull_ReturnsTrue()
@@ -60,9 +50,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that two different integers are not considered equal.
-    /// </summary>
+    /// <summary>Verifies that two different integers are not considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_DifferentIntegers_ReturnsFalse()
@@ -78,9 +66,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that values of different types are not considered equal.
-    /// </summary>
+    /// <summary>Verifies that values of different types are not considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_DifferentTypes_ReturnsFalse()
@@ -96,9 +82,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that two different string values are not considered equal.
-    /// </summary>
+    /// <summary>Verifies that two different string values are not considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_DifferentValues_ReturnsFalse()
@@ -113,9 +97,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that two equal integers are considered equal.
-    /// </summary>
+    /// <summary>Verifies that two equal integers are considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_EqualIntegers_ReturnsTrue()
@@ -130,9 +112,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that two equal strings are considered equal.
-    /// </summary>
+    /// <summary>Verifies that two equal strings are considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_EqualStrings_ReturnsTrue()
@@ -147,9 +127,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that two equal values are considered equal.
-    /// </summary>
+    /// <summary>Verifies that two equal values are considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_EqualValues_ReturnsTrue()
@@ -164,9 +142,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that a null conversion hint falls back to null comparison.
-    /// </summary>
+    /// <summary>Verifies that a null conversion hint falls back to null comparison.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_NoConversionHint_UseNullComparison()
@@ -181,9 +157,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that comparing a value against null is not considered equal.
-    /// </summary>
+    /// <summary>Verifies that comparing a value against null is not considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_OneNull_ReturnsFalse()
@@ -201,9 +175,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output2!).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the same reference is considered equal to itself.
-    /// </summary>
+    /// <summary>Verifies that the same reference is considered equal to itself.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_ReferenceEquality_ReturnsTrue()
@@ -218,9 +190,7 @@ public class EqualityTypeConverterTests
         await Assert.That((bool)output!).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that two structurally equal values are considered equal.
-    /// </summary>
+    /// <summary>Verifies that two structurally equal values are considered equal.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_ValueEquality_ReturnsTrue()

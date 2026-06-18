@@ -3,32 +3,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Input;
 using ReactiveUI.Builder.WpfApp.Models;
+using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
 
-/// <summary>
-/// Lobby (rooms listing) view.
-/// </summary>
+/// <summary>Lobby (rooms listing) view.</summary>
 public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
 {
-    /// <summary>
-    /// The view model dependency property.
-    /// </summary>
+    /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
         nameof(ViewModel),
         typeof(ViewModels.LobbyViewModel),
         typeof(LobbyView),
         new(null));
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LobbyView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LobbyView"/> class.</summary>
     public LobbyView()
     {
         InitializeComponent();
@@ -41,7 +33,7 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
 
             RoomsList.MouseDoubleClick += Dbl;
             RoomsList.KeyDown += Enter;
-            Disposable.Create(() =>
+            new ActionDisposable(() =>
             {
                 RoomsList.MouseDoubleClick -= Dbl;
                 RoomsList.KeyDown -= Enter;
@@ -81,9 +73,7 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
         }
     }
 
-    /// <summary>
-    /// Gets or sets the view model.
-    /// </summary>
+    /// <summary>Gets or sets the view model.</summary>
     public ViewModels.LobbyViewModel? ViewModel
     {
         get => (ViewModels.LobbyViewModel?)GetValue(ViewModelProperty);

@@ -7,9 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks <see cref="MessageBus"/> throughput: sending messages to a live listener and cold listener subscription.
-/// </summary>
+/// <summary>Benchmarks <see cref="MessageBus"/> throughput: sending messages to a live listener and cold listener subscription.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class MessageBusBenchmarks
@@ -30,7 +28,7 @@ public class MessageBusBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _bus = new MessageBus();
+        _bus = new();
         _subscription = _bus.Listen<int>().Subscribe(_sink);
     }
 

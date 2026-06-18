@@ -8,66 +8,59 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests to make sure the activation works correctly.
-/// </summary>
+/// <summary>Tests to make sure the activation works correctly.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class ActivationTests
 {
+    /// <summary>The expected affinity returned for supported WinForms view types.</summary>
     private const int ExpectedAffinity = 10;
+
+    /// <summary>The expected number of activation notifications on the second pass.</summary>
     private const int ExpectedSecondCount = 2;
 
-    /// <summary>
-    /// Tests activations for view fetcher supports default winforms components.
-    /// </summary>
+    /// <summary>Tests activations for view fetcher supports default winforms components.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ActivationForViewFetcherSupportsDefaultWinformsComponents()
     {
-        var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
+        var target = new ActivationForViewFetcher();
         foreach (var c in new[] { typeof(Control), typeof(UserControl), typeof(Form) })
         {
             await Assert.That(target.GetAffinityForView(c)).IsEqualTo(ExpectedAffinity);
         }
     }
 
-    /// <summary>
-    /// Tests that determines whether this instance [can fetch activator for form].
-    /// </summary>
+    /// <summary>Tests that determines whether this instance [can fetch activator for form].</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanFetchActivatorForForm()
     {
         var form = new TestForm();
-        var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
+        var target = new ActivationForViewFetcher();
         var formActivator = target.GetActivationForView(form);
 
         await Assert.That(formActivator).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that determines whether this instance [can fetch activator for control].
-    /// </summary>
+    /// <summary>Tests that determines whether this instance [can fetch activator for control].</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanFetchActivatorForControl()
     {
         var control = new TestControl();
-        var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
+        var target = new ActivationForViewFetcher();
         var activator = target.GetActivationForView(control);
 
         await Assert.That(activator).IsNotNull();
     }
 
-    /// <summary>
-    /// Smokes the test windows form.
-    /// </summary>
+    /// <summary>Smokes the test windows form.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SmokeTestWindowsForm()
     {
-        var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
+        var target = new ActivationForViewFetcher();
         using var form = new TestForm();
         var formActivator = target.GetActivationForView(form);
 
@@ -108,14 +101,12 @@ public class ActivationTests
         await Assert.That(formDeActivateCount).IsEqualTo(ExpectedSecondCount);
     }
 
-    /// <summary>
-    /// Smokes the test user control.
-    /// </summary>
+    /// <summary>Smokes the test user control.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SmokeTestUserControl()
     {
-        var target = new ReactiveUI.Winforms.ActivationForViewFetcher();
+        var target = new ActivationForViewFetcher();
         using var userControl = new TestControl();
         using var parent = new TestForm();
         var userControlActivator = target.GetActivationForView(userControl);
@@ -150,9 +141,7 @@ public class ActivationTests
         await Assert.That(userControlDeActivateCount).IsEqualTo(ExpectedSecondCount);
     }
 
-    /// <summary>
-    /// Tests that view activation is skipped in design mode.
-    /// </summary>
+    /// <summary>Tests that view activation is skipped in design mode.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ActivationIsSkippedInDesignMode()
@@ -167,9 +156,7 @@ public class ActivationTests
         await Assert.That(control.Activated).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that view activation is not skipped outside of design mode.
-    /// </summary>
+    /// <summary>Tests that view activation is not skipped outside of design mode.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ActivationIsNotSkippedNotInDesignMode()

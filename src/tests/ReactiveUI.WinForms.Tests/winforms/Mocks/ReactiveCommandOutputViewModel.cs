@@ -3,9 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
 /// <summary>
@@ -14,13 +11,11 @@ namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 /// </summary>
 public class ReactiveCommandOutputViewModel : ReactiveObject
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCommandOutputViewModel"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCommandOutputViewModel"/> class.</summary>
     public ReactiveCommandOutputViewModel() =>
         NavigateCommand = ReactiveCommand.CreateFromObservable(
-            (string page) => Observable.Return(page),
-            outputScheduler: ImmediateScheduler.Instance);
+            (string page) => Signal.Emit(page),
+            outputScheduler: Sequencer.Immediate);
 
     /// <summary>
     /// Gets a command that simulates navigation and returns the page name.

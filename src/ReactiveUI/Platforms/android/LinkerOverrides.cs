@@ -6,23 +6,26 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Versioning;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Provides a container for methods used to preserve specific Android UI components during linking.
-/// </summary>
+#endif
+/// <summary>Provides a container for methods used to preserve specific Android UI components during linking.</summary>
 /// <remarks>This class is intended for internal use to ensure that certain Android UI types and their members are
 /// not removed by the linker. It is not intended to be used directly in application code.</remarks>
 [Preserve(AllMembers = true)]
 internal class LinkerOverrides
 {
-    /// <summary>
-    /// Preserves the following Android UI types and their members.
-    /// </summary>
-    [ObsoletedOSPlatform("android30.0")]
-    [SupportedOSPlatform("android23.0")]
+    /// <summary>Preserves the following Android UI types and their members.</summary>
+    [SupportedOSPlatform("android35.0")]
+    [SuppressMessage(
+        "Interoperability",
+        "CA1422:Validate platform compatibility",
+        Justification = "Linker preservation method references deprecated Android widgets solely to keep their members; it is never invoked.")]
     [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Used by linker.")]
     [SuppressMessage("Major Bug", "S1656:Variables should not be self-assigned", Justification = "Used by linker.")]
+    [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
     [SuppressMessage(
         "Style",

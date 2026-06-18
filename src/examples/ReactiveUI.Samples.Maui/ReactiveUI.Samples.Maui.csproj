@@ -38,6 +38,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
   </ItemGroup>

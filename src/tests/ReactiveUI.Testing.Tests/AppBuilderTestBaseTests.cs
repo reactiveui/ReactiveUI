@@ -8,18 +8,12 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
 
-/// <summary>
-///     Tests for <see cref="AppBuilderTestBase"/> which provides a base class for testing
-///     ReactiveUI application builder scenarios.
-/// </summary>
+/// <summary>Tests for <see cref="AppBuilderTestBase"/> which provides a base class for testing ReactiveUI application builder scenarios.</summary>
 [NotInParallel]
 [TestExecutor<AppBuilderTestExecutor>]
 public class AppBuilderTestBaseTests
 {
-    /// <summary>
-    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/>
-    /// executes an asynchronous test body successfully.
-    /// </summary>
+    /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/> executes an asynchronous test body successfully.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithAsyncTestBody_ExecutesTest()
@@ -38,10 +32,7 @@ public class AppBuilderTestBaseTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
-    /// executes a synchronous test body successfully.
-    /// </summary>
+    /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/> executes a synchronous test body successfully.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithSyncTestBody_ExecutesTest()
@@ -56,10 +47,7 @@ public class AppBuilderTestBaseTests
         await Assert.That(executed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/>
-    /// propagates exceptions thrown by the asynchronous test body.
-    /// </summary>
+    /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Func{Task})"/> propagates exceptions thrown by the asynchronous test body.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithAsyncTestBody_PropagatesExceptions() =>
@@ -74,10 +62,7 @@ public class AppBuilderTestBaseTests
             });
         }).Throws<InvalidOperationException>();
 
-    /// <summary>
-    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
-    /// propagates exceptions thrown by the synchronous test body.
-    /// </summary>
+    /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/> propagates exceptions thrown by the synchronous test body.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_WithSyncTestBody_PropagatesExceptions() =>
@@ -85,10 +70,7 @@ public class AppBuilderTestBaseTests
         // Act & Assert
         await Assert.That(async () => await TestHelper.RunAppBuilderTestAsync(() => throw new InvalidOperationException("Test exception"))).Throws<InvalidOperationException>();
 
-    /// <summary>
-    /// Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/>
-    /// can be called multiple times sequentially without interference.
-    /// </summary>
+    /// <summary>Verifies that <see cref="AppBuilderTestBase.RunAppBuilderTestAsync(Action)"/> can be called multiple times sequentially without interference.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task RunAppBuilderTestAsync_AllowsMultipleSequentialCalls()
@@ -106,22 +88,16 @@ public class AppBuilderTestBaseTests
         await Assert.That(executionCount).IsEqualTo(expectedExecutionCount);
     }
 
-    /// <summary>
-    /// Test helper that inherits from AppBuilderTestBase.
-    /// </summary>
+    /// <summary>Test helper that inherits from AppBuilderTestBase.</summary>
     private sealed class TestHelper : AppBuilderTestBase
     {
-        /// <summary>
-        /// Exposes the protected asynchronous app builder test runner for testing.
-        /// </summary>
+        /// <summary>Exposes the protected asynchronous app builder test runner for testing.</summary>
         /// <param name="testBody">The asynchronous test body to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Func<Task> testBody) =>
             AppBuilderTestBase.RunAppBuilderTestAsync(testBody);
 
-        /// <summary>
-        /// Exposes the protected synchronous app builder test runner for testing.
-        /// </summary>
+        /// <summary>Exposes the protected synchronous app builder test runner for testing.</summary>
         /// <param name="testBody">The synchronous test body to execute.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public static new Task RunAppBuilderTestAsync(Action testBody) =>

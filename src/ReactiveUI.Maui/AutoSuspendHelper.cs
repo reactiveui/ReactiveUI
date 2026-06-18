@@ -3,16 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Subjects;
-using ReactiveUI.Internal;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 
-/// <summary>
-/// Helps manage .NET MAUI application lifecycle events.
-/// </summary>
+/// <summary>Helps manage .NET MAUI application lifecycle events.</summary>
 /// <remarks>
 /// <para>
 /// Instantiate this class to wire <see cref="RxSuspension.SuspensionHost"/> to MAUI's <see cref="Microsoft.Maui.Controls.Application"/>
@@ -27,7 +26,6 @@ namespace ReactiveUI.Maui;
 /// public partial class App : Application
 /// {
 ///   private readonly AutoSuspendHelper _autoSuspendHelper;
-///
 ///   public App()
 ///   {
 ///     _autoSuspendHelper = new AutoSuspendHelper();
@@ -38,11 +36,8 @@ namespace ReactiveUI.Maui;
 ///     InitializeComponent();
 ///     MainPage = new MainView();
 ///   }
-///
 ///   protected override void OnStart() => _autoSuspendHelper.OnStart();
-///
 ///   protected override void OnResume() => _autoSuspendHelper.OnResume();
-///
 ///   protected override void OnSleep() => _autoSuspendHelper.OnSleep();
 /// }
 /// ]]>
@@ -51,40 +46,26 @@ namespace ReactiveUI.Maui;
 /// </remarks>
 public class AutoSuspendHelper : IEnableLogger, IDisposable
 {
-    /// <summary>
-    /// Signals that the application is going to the background.
-    /// </summary>
-    private readonly BroadcastSubject<IDisposable> _onSleep = new();
+    /// <summary>Signals that the application is going to the background.</summary>
+    private readonly Signal<IDisposable> _onSleep = new();
 
-    /// <summary>
-    /// Signals that the application is launching fresh.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _onLaunchingNew = new();
+    /// <summary>Signals that the application is launching fresh.</summary>
+    private readonly Signal<RxVoid> _onLaunchingNew = new();
 
-    /// <summary>
-    /// Signals that the application is returning to the foreground.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _onResume = new();
+    /// <summary>Signals that the application is returning to the foreground.</summary>
+    private readonly Signal<RxVoid> _onResume = new();
 
-    /// <summary>
-    /// Signals that the application is starting.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _onStart = new();
+    /// <summary>Signals that the application is starting.</summary>
+    private readonly Signal<RxVoid> _onStart = new();
 
-    /// <summary>
-    /// To detect redundant calls.
-    /// </summary>
+    /// <summary>To detect redundant calls.</summary>
     private bool _disposedValue;
 
-    /// <summary>
-    /// Initializes static members of the <see cref="AutoSuspendHelper"/> class.
-    /// </summary>
+    /// <summary>Initializes static members of the <see cref="AutoSuspendHelper"/> class.</summary>
     static AutoSuspendHelper() => AppDomain.CurrentDomain.UnhandledException +=
-        static (_, _) => UntimelyDemise.OnNext(Unit.Default);
+        static (_, _) => UntimelyDemise.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper"/> class.</summary>
     public AutoSuspendHelper()
     {
         RxSuspension.SuspensionHost.IsLaunchingNew = _onLaunchingNew;
@@ -94,31 +75,20 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         RxSuspension.SuspensionHost.ShouldInvalidateState = UntimelyDemise;
     }
 
-    /// <summary>
-    /// Gets a subject to indicate whether the application has crashed.
-    /// </summary>
-    public static ISubject<Unit> UntimelyDemise { get; } = new BroadcastSubject<Unit>();
+    /// <summary>Gets a subject to indicate whether the application has crashed.</summary>
+    public static ISignal<RxVoid> UntimelyDemise { get; } = new Signal<RxVoid>();
 
-    /// <summary>
-    /// Call this method in the constructor of your .NET MAUI
-    /// <see cref="Microsoft.Maui.Controls.Application" />.
-    /// </summary>
-    public void OnCreate() => _onLaunchingNew.OnNext(Unit.Default);
+    /// <summary>Call this method in the constructor of your .NET MAUI <see cref="Microsoft.Maui.Controls.Application" />.</summary>
+    public void OnCreate() => _onLaunchingNew.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnStart" /> to relay MAUI's start notification.
-    /// </summary>
-    public void OnStart() => _onStart.OnNext(Unit.Default);
+    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnStart" /> to relay MAUI's start notification.</summary>
+    public void OnStart() => _onStart.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> when the app is going to the background.
-    /// </summary>
+    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> when the app is going to the background.</summary>
     public void OnSleep() => _onSleep.OnNext(EmptyDisposable.Instance);
 
-    /// <summary>
-    /// Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> when the app returns to the foreground.
-    /// </summary>
-    public void OnResume() => _onResume.OnNext(Unit.Default);
+    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> when the app returns to the foreground.</summary>
+    public void OnResume() => _onResume.OnNext(RxVoid.Default);
 
     /// <inheritdoc />
     public void Dispose()
@@ -128,9 +98,7 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Disposes of the items inside the class.
-    /// </summary>
+    /// <summary>Disposes of the items inside the class.</summary>
     /// <param name="disposing">If we are disposing of managed objects or not.</param>
     protected virtual void Dispose(bool disposing)
     {

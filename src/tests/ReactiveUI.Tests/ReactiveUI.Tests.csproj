@@ -10,9 +10,6 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DynamicData"/>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>

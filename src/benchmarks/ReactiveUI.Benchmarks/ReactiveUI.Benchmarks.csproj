@@ -21,6 +21,12 @@
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+    <Using Include="ReactiveUI.Primitives.LinqExtensions" Alias="BenchmarkLinq" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Routing\ReactiveUI.Routing.csproj" />
   </ItemGroup>
 </Project>

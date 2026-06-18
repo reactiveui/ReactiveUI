@@ -4,20 +4,19 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using Foundation;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
+using ReactiveUI.Primitives;
 using Splat;
 using UIKit;
 
 using NSAction = System.Action;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Bridges iOS lifecycle notifications into <see cref="RxSuspension.SuspensionHost"/> so applications can persist and
 /// restore state without manually wiring UIKit events.
@@ -36,16 +35,16 @@ public class AutoSuspendHelper<
         where T : UIApplicationDelegate
 {
     /// <summary>Subject that fires when the application finishes launching.</summary>
-    private readonly Subject<UIApplication> _finishedLaunching = new();
+    private readonly Signal<UIApplication> _finishedLaunching = new();
 
     /// <summary>Subject that fires when the application becomes active.</summary>
-    private readonly Subject<UIApplication> _activated = new();
+    private readonly Signal<UIApplication> _activated = new();
 
     /// <summary>Subject that fires when the application enters the background.</summary>
-    private readonly Subject<UIApplication> _backgrounded = new();
+    private readonly Signal<UIApplication> _backgrounded = new();
 
     /// <summary>Subject that fires when an unhandled exception signals an untimely process death.</summary>
-    private readonly Subject<Unit> _untimelyDeath = new();
+    private readonly Signal<RxVoid> _untimelyDeath = new();
 
     /// <summary>The cached handler used to subscribe and later unsubscribe from <see cref="AppDomain.UnhandledException"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
@@ -53,9 +52,7 @@ public class AutoSuspendHelper<
     /// <summary>Whether this instance has already been disposed.</summary>
     private bool _isDisposed;
 
-    /// <summary>
-    /// Initializes static members of the <see cref="AutoSuspendHelper{T}"/> class.
-    /// </summary>
+    /// <summary>Initializes static members of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <remarks>
     /// <para>
     /// This validation runs exactly once per closed generic type and avoids repeated reflection and cache/lock overhead.
@@ -76,37 +73,35 @@ public class AutoSuspendHelper<
             nameof(DidEnterBackground));
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <param name="appDelegate">The application delegate instance that forwards lifecycle methods.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="appDelegate"/> is <see langword="null"/>.</exception>
     public AutoSuspendHelper(T appDelegate)
     {
         ArgumentExceptionHelper.ThrowIfNull(appDelegate);
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
-        RxSuspension.SuspensionHost.IsResuming = new SelectObservable<UIApplication, Unit>(_finishedLaunching, static _ => Unit.Default);
-        RxSuspension.SuspensionHost.IsUnpausing = new SelectObservable<UIApplication, Unit>(_activated, static _ => Unit.Default);
+        RxSuspension.SuspensionHost.IsLaunchingNew = Signal.Silent<RxVoid>();
+        RxSuspension.SuspensionHost.IsResuming = new MapSignal<UIApplication, RxVoid>(_finishedLaunching, static _ => RxVoid.Default);
+        RxSuspension.SuspensionHost.IsUnpausing = new MapSignal<UIApplication, RxVoid>(_activated, static _ => RxVoid.Default);
 
         // Keep a stable delegate instance so we can unsubscribe on Dispose.
-        _unhandledExceptionHandler = (_, _) => _untimelyDeath.OnNext(Unit.Default);
+        _unhandledExceptionHandler = (_, _) => _untimelyDeath.OnNext(RxVoid.Default);
         AppDomain.CurrentDomain.UnhandledException += _unhandledExceptionHandler;
 
         RxSuspension.SuspensionHost.ShouldInvalidateState = _untimelyDeath;
 
-        RxSuspension.SuspensionHost.ShouldPersistState = new SelectManyObservable<UIApplication, IDisposable>(_backgrounded, app =>
+        RxSuspension.SuspensionHost.ShouldPersistState = _backgrounded.SelectMany(app =>
         {
-            var taskId = app.BeginBackgroundTask(() => _untimelyDeath.OnNext(Unit.Default));
+            var taskId = app.BeginBackgroundTask(() => _untimelyDeath.OnNext(RxVoid.Default));
 
             // NB: We're being force-killed, signal invalidate instead.
             if (taskId == UIApplication.BackgroundTaskInvalid)
             {
-                _untimelyDeath.OnNext(Unit.Default);
-                return EmptyObservable<IDisposable>.Instance;
+                _untimelyDeath.OnNext(RxVoid.Default);
+                return Signal.None<IDisposable>();
             }
 
-            return new ReturnObservable<IDisposable>(Disposable.Create(() => app.EndBackgroundTask(taskId)));
+            return Signal.Emit<IDisposable>(Scope.Create(() => app.EndBackgroundTask(taskId)));
         });
     }
 
@@ -116,10 +111,7 @@ public class AutoSuspendHelper<
     /// </summary>
     public IDictionary<string, string>? LaunchOptions { get; private set; }
 
-    /// <summary>
-    /// Notifies the helper that <see cref="UIApplicationDelegate.FinishedLaunching(UIApplication, NSDictionary)"/> was
-    /// invoked so it can propagate the <see cref="ISuspensionHost.IsResuming"/> observable.
-    /// </summary>
+    /// <summary>Notifies the helper that launching finished so it can propagate <see cref="ISuspensionHost.IsResuming"/>.</summary>
     /// <param name="application">The application instance.</param>
     /// <param name="launchOptions">The launch options dictionary.</param>
     public void FinishedLaunching(UIApplication application, NSDictionary launchOptions)
@@ -140,7 +132,12 @@ public class AutoSuspendHelper<
             for (int i = 0; i < keys.Length; i++)
             {
                 var k = keys[i];
-                var keyString = k?.ToString() ?? string.Empty;
+                if (k is null)
+                {
+                    continue;
+                }
+
+                var keyString = k.ToString() ?? string.Empty;
 
                 // NSDictionary keys are unique by contract.
                 dict[keyString] = launchOptions[k]?.ToString() ?? string.Empty;
@@ -154,9 +151,7 @@ public class AutoSuspendHelper<
         _finishedLaunching.OnNext(application);
     }
 
-    /// <summary>
-    /// Notifies the helper that <see cref="UIApplicationDelegate.OnActivated(UIApplication)"/> occurred.
-    /// </summary>
+    /// <summary>Notifies the helper that <see cref="UIApplicationDelegate.OnActivated(UIApplication)"/> occurred.</summary>
     /// <param name="application">The application instance.</param>
     public void OnActivated(UIApplication application)
     {
@@ -164,10 +159,7 @@ public class AutoSuspendHelper<
         _activated.OnNext(application);
     }
 
-    /// <summary>
-    /// Notifies the helper that <see cref="UIApplicationDelegate.DidEnterBackground(UIApplication)"/> was raised so that
-    /// persistence can begin.
-    /// </summary>
+    /// <summary>Notifies the helper that <see cref="UIApplicationDelegate.DidEnterBackground(UIApplication)"/> was raised so that persistence can begin.</summary>
     /// <param name="application">The application instance.</param>
     public void DidEnterBackground(UIApplication application)
     {
@@ -182,9 +174,7 @@ public class AutoSuspendHelper<
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Releases managed resources held by the helper.
-    /// </summary>
+    /// <summary>Releases managed resources held by the helper.</summary>
     /// <param name="isDisposing">Whether to release managed resources.</param>
     protected virtual void Dispose(bool isDisposing)
     {

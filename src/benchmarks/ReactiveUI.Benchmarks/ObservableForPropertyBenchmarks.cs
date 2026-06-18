@@ -31,7 +31,7 @@ public class ObservableForPropertyBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
+        _viewModel = new();
         _subscription = _viewModel.ObservableForProperty(x => x.First).Subscribe(_sink);
     }
 

@@ -3,11 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 
-/// <summary>
-/// Attribute that disables animation for a view.
-/// </summary>
+/// <summary>Attribute that disables animation for a view.</summary>
 /// <seealso cref="Attribute" />
 [AttributeUsage(AttributeTargets.All)]
 public sealed class DisableAnimationAttribute : Attribute;

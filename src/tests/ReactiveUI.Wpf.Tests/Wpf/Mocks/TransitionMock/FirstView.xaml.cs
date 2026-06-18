@@ -7,13 +7,9 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf.Mocks.TransitionMock;
 
-/// <summary>
-/// Interaction logic for FirstView.xaml.
-/// </summary>
+/// <summary>Interaction logic for FirstView.xaml.</summary>
 public partial class FirstView : UserControl
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FirstView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FirstView"/> class.</summary>
     public FirstView() => InitializeComponent();
 }

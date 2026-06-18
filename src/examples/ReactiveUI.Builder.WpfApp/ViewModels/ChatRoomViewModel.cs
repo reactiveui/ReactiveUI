@@ -5,31 +5,20 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Linq;
 using ReactiveUI.Builder.WpfApp.Models;
-using ReactiveUI.Helpers;
 
 namespace ReactiveUI.Builder.WpfApp.ViewModels;
 
-/// <summary>
-/// View model for a single chat room.
-/// </summary>
+/// <summary>View model for a single chat room.</summary>
 public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
 {
-    /// <summary>
-    /// The chat room model whose messages this view model displays and appends to.
-    /// </summary>
+    /// <summary>The chat room model whose messages this view model displays and appends to.</summary>
     private readonly ChatRoom _room;
 
-    /// <summary>
-    /// The display name of the local user, used as the sender for outgoing messages.
-    /// </summary>
+    /// <summary>The display name of the local user, used as the sender for outgoing messages.</summary>
     private readonly string _user;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatRoomViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ChatRoomViewModel" /> class.</summary>
     /// <param name="hostScreen">The host screen.</param>
     /// <param name="room">The room.</param>
     /// <param name="user">The user.</param>
@@ -50,7 +39,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
         MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
             .Where(msg => msg.InstanceId != Services.AppInstance.Id)
-            .Throttle(TimeSpan.FromMilliseconds(33))
+            .EmitIfQuiet(TimeSpan.FromMilliseconds(33))
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .Subscribe(msg =>
             {
@@ -65,19 +54,13 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     /// <inheritdoc />
     public IScreen HostScreen { get; }
 
-    /// <summary>
-    /// Gets the room name.
-    /// </summary>
+    /// <summary>Gets the room name.</summary>
     public string RoomName => _room.Name;
 
-    /// <summary>
-    /// Gets the messages.
-    /// </summary>
+    /// <summary>Gets the messages.</summary>
     public IReadOnlyList<ChatMessage> Messages => _room.Messages;
 
-    /// <summary>
-    /// Gets or sets the message text.
-    /// </summary>
+    /// <summary>Gets or sets the message text.</summary>
     [SuppressMessage(
         "StyleCop.CSharp.LayoutRules",
         "SA1500:Braces should not share line",
@@ -93,15 +76,10 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
     }
 = string.Empty;
 
-    /// <summary>
-    /// Gets command to send a message.
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SendMessage { get; }
+    /// <summary>Gets command to send a message.</summary>
+    public ReactiveCommand<RxVoid, RxVoid> SendMessage { get; }
 
-    /// <summary>
-    /// Adds the current <see cref="MessageText"/> to the room, broadcasts it to other instances over the
-    /// <see cref="MessageBus"/>, and clears the input. Backs the <see cref="SendMessage"/> command.
-    /// </summary>
+    /// <summary>Adds <see cref="MessageText"/> to the room, broadcasts it over the <see cref="MessageBus"/>, clears the input, and backs <see cref="SendMessage"/>.</summary>
     [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available all TFMs")]
     private void SendMessageImpl()
     {

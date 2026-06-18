@@ -4,9 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using CoreGraphics;
 
 #if UIKIT
@@ -19,8 +16,11 @@ using NSView = UIKit.UIView;
 using AppKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// This is an  ImageView that is both and ImageView and has a ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -28,21 +28,17 @@ namespace ReactiveUI;
 public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyChanged<ReactiveImageView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     protected ReactiveImageView()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     protected ReactiveImageView(CGRect frame)
         : base(frame)
@@ -50,27 +46,21 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     }
 
 #if UIKIT
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="image">The image.</param>
     protected ReactiveImageView(NSImage image)
         : base(image)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="t">The flag.</param>
     protected ReactiveImageView(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="image">The image.</param>
     /// <param name="highlightedImage">The highlighted image.</param>
     protected ReactiveImageView(NSImage image, NSImage highlightedImage)
@@ -78,9 +68,7 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveImageView(NSCoder coder)
         : base(coder)
@@ -88,9 +76,7 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     }
 #endif
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveImageView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveImageView"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveImageView(in IntPtr handle)
         : base(handle)
@@ -108,14 +94,14 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
 
 #if UIKIT
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 #else
     /// <inheritdoc/>
-    public new IObservable<Unit> Activated => _activated;
+    public new IObservable<RxVoid> Activated => _activated;
 #endif
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc />
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveImageView>> Changing => this.GetChangingObservable();
@@ -137,21 +123,23 @@ public abstract class ReactiveImageView : NSImageView, IReactiveNotifyPropertyCh
     public override void WillMoveToSuperview(NSView? newsuper)
 #else
     /// <inheritdoc/>
-    public override void ViewWillMoveToSuperview(NSView? newsuper)
+    public override void ViewWillMoveToSuperview(NSView? newSuperview)
 #endif
     {
 #if UIKIT
         base.WillMoveToSuperview(newsuper);
+        var superview = newsuper;
 #else
-        base.ViewWillMoveToSuperview(newsuper);
+        base.ViewWillMoveToSuperview(newSuperview);
+        var superview = newSuperview;
 #endif
-        (newsuper is not null ? _activated : _deactivated).OnNext(Unit.Default);
+        (superview is not null ? _activated : _deactivated).OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool shouldActivate) =>
+    void ICanForceManualActivation.Activate(bool isActivating) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-            (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
+            (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

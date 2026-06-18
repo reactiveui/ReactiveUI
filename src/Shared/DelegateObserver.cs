@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.Internal;
 
-/// <summary>
-/// Delegate-backed observer used internally where a one-shot anonymous subscriber is convenient.
-/// </summary>
+/// <summary>Delegate-backed observer used internally where a one-shot anonymous subscriber is convenient.</summary>
 /// <typeparam name="T">The element type.</typeparam>
 /// <param name="onNext">Per-value callback.</param>
 /// <param name="onError">Error callback.</param>

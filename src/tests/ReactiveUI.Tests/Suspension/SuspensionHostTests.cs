@@ -3,21 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.Suspension;
 
-/// <summary>
-///     Tests for SuspensionHost.
-/// </summary>
+/// <summary>Tests for SuspensionHost.</summary>
 public class SuspensionHostTests
 {
-    /// <summary>
-    ///     Verifies setting AppState raises a PropertyChanged notification.
-    /// </summary>
+    /// <summary>Verifies setting AppState raises a PropertyChanged notification.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppState_PropertyChanged_RaisesNotification()
@@ -40,9 +31,7 @@ public class SuspensionHostTests
         await Assert.That(propertyChanged).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies AppState returns the value that was set.
-    /// </summary>
+    /// <summary>Verifies AppState returns the value that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppState_SetAndGet_ReturnsCorrectValue()
@@ -55,9 +44,7 @@ public class SuspensionHostTests
         await Assert.That(host.AppState).IsSameReferenceAs(state);
     }
 
-    /// <summary>
-    ///     Verifies the default observables produced by the constructor error when subscribed to.
-    /// </summary>
+    /// <summary>Verifies the default observables produced by the constructor error when subscribed to.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_DefaultObservables_ThrowExceptionOnSubscribe()
@@ -70,9 +57,7 @@ public class SuspensionHostTests
         await Assert.That(gotError).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies CreateNewAppState returns the factory that was set and produces the expected state.
-    /// </summary>
+    /// <summary>Verifies CreateNewAppState returns the factory that was set and produces the expected state.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateNewAppState_SetAndGet_ReturnsCorrectFunc()
@@ -84,9 +69,7 @@ public class SuspensionHostTests
         await Assert.That(host.CreateNewAppState!()).IsTypeOf<DummyAppState>();
     }
 
-    /// <summary>
-    ///     Verifies calling Dispose more than once does not throw.
-    /// </summary>
+    /// <summary>Verifies calling Dispose more than once does not throw.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_CalledMultipleTimes_DoesNotThrow()
@@ -98,9 +81,7 @@ public class SuspensionHostTests
         await Assert.That(host.Dispose).ThrowsNothing();
     }
 
-    /// <summary>
-    ///     Verifies Dispose disposes all internal subjects without error.
-    /// </summary>
+    /// <summary>Verifies Dispose disposes all internal subjects without error.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_DisposesAllSubjects()
@@ -108,11 +89,11 @@ public class SuspensionHostTests
         // Set observables before disposal
         var host = new SuspensionHost
         {
-            IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            IsResuming = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            IsUnpausing = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            ShouldPersistState = Observable.Return(Disposable.Empty, ImmediateScheduler.Instance),
-            ShouldInvalidateState = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
+            IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            IsResuming = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            IsUnpausing = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            ShouldPersistState = Signal.Emit(Scope.Empty, Sequencer.Immediate),
+            ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
         };
 
         host.Dispose();
@@ -121,9 +102,7 @@ public class SuspensionHostTests
         await Assert.That(host).IsNotNull();
     }
 
-    /// <summary>
-    ///     Verifies IsLaunchingNew returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsLaunchingNew returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsLaunchingNew_SetAndGet_ReturnsCorrectObservable()
@@ -131,16 +110,14 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        host.IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsLaunchingNew.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies IsResuming returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsResuming returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsResuming_SetAndGet_ReturnsCorrectObservable()
@@ -148,16 +125,14 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        host.IsResuming = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsResuming = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsResuming.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies IsUnpausing returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsUnpausing returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsUnpausing_SetAndGet_ReturnsCorrectObservable()
@@ -165,16 +140,14 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        host.IsUnpausing = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsUnpausing = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsUnpausing.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies ShouldInvalidateState returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies ShouldInvalidateState returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldInvalidateState_SetAndGet_ReturnsCorrectObservable()
@@ -182,25 +155,23 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var wasTriggered = false;
 
-        host.ShouldInvalidateState = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.ShouldInvalidateState.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies ShouldPersistState returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies ShouldPersistState returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldPersistState_SetAndGet_ReturnsCorrectObservable()
     {
         using var host = new SuspensionHost();
         var wasTriggered = false;
-        var disposable = Disposable.Empty;
+        var disposable = Scope.Empty;
 
-        host.ShouldPersistState = Observable.Return(disposable, ImmediateScheduler.Instance);
+        host.ShouldPersistState = Signal.Emit(disposable, Sequencer.Immediate);
 
         using var subscription = host.ShouldPersistState.Subscribe(_ => wasTriggered = true);
 

@@ -14,14 +14,10 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
 
-/// <summary>
-/// Assembly-level hooks for test initialization and cleanup.
-/// </summary>
+/// <summary>Assembly-level hooks for test initialization and cleanup.</summary>
 public static class AssemblyHooks
 {
-    /// <summary>
-    /// Called before any tests in this assembly start.
-    /// </summary>
+    /// <summary>Called before any tests in this assembly start.</summary>
     [Before(Assembly)]
     public static void AssemblySetup() =>
 
@@ -29,9 +25,7 @@ public static class AssemblyHooks
         // App builder initialization is handled per-test via test executors.
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-    /// <summary>
-    /// Called after all tests in this assembly complete.
-    /// </summary>
+    /// <summary>Called after all tests in this assembly complete.</summary>
     [After(Assembly)]
     public static void AssemblyTeardown()
     {
@@ -41,9 +35,7 @@ public static class AssemblyHooks
         GC.Collect();
     }
 
-    /// <summary>
-    /// Mode detector that always indicates we're in a unit test runner.
-    /// </summary>
+    /// <summary>Mode detector that always indicates we're in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {
         /// <inheritdoc/>

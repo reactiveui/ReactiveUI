@@ -9,9 +9,7 @@ using Foundation;
 
 namespace ReactiveUI;
 
-/// <summary>
-/// Converts <see cref="NSDate"/> to nullable <see cref="DateTime"/>.
-/// </summary>
+/// <summary>Converts <see cref="NSDate"/> to nullable <see cref="DateTime"/>.</summary>
 public sealed class NSDateToNullableDateTimeConverter : BindingTypeConverter<NSDate, DateTime?>
 {
     /// <summary>The affinity score returned for supported type pairs.</summary>

@@ -13,6 +13,11 @@
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>
   <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Advanced" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="RandomTests.cs"/>
     <Compile Remove="Platforms\**\*.cs"/>
     <None Include="Platforms\**\*.cs"/>

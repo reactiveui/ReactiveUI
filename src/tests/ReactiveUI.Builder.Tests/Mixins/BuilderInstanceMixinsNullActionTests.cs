@@ -8,15 +8,11 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <summary>
-/// Tests that the instance-based WithInstance overloads gracefully handle a null action.
-/// </summary>
+/// <summary>Tests that the instance-based WithInstance overloads gracefully handle a null action.</summary>
 [TestExecutor<NullActionTestExecutor>]
 public class BuilderInstanceMixinsNullActionTests
 {
-    /// <summary>
-    /// Verifies that the 1-type WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_1_Type_handles_null_action()
@@ -28,9 +24,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_2_Types_handles_null_action()
@@ -42,9 +36,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_3_Types_handles_null_action()
@@ -56,9 +48,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_4_Types_handles_null_action()
@@ -71,9 +61,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_5_Types_handles_null_action()
@@ -92,9 +80,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_6_Types_handles_null_action()
@@ -114,9 +100,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_7_Types_handles_null_action()
@@ -137,9 +121,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_8_Types_handles_null_action()
@@ -161,9 +143,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_9_Types_handles_null_action()
@@ -187,9 +167,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 10-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 10-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_10_Types_handles_null_action()
@@ -213,9 +191,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 11-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 11-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_11_Types_handles_null_action()
@@ -239,9 +215,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 12-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 12-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_12_Types_handles_null_action()
@@ -266,9 +240,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 13-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 13-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_13_Types_handles_null_action()
@@ -294,9 +266,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 14-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 14-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_14_Types_handles_null_action()
@@ -323,9 +293,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_15_Types_handles_null_action()
@@ -353,9 +321,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance overload returns the same builder when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance overload returns the same builder when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_16_Types_handles_null_action()
@@ -384,9 +350,7 @@ public class BuilderInstanceMixinsNullActionTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Executor that registers all instance services then builds the app for the null-action tests.
-    /// </summary>
+    /// <summary>Executor that registers all instance services then builds the app for the null-action tests.</summary>
     internal sealed class NullActionTestExecutor : BuilderTestExecutorBase
     {
         /// <inheritdoc/>
@@ -416,147 +380,115 @@ public class BuilderInstanceMixinsNullActionTests
         }
     }
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService01;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService02;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService03;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService04;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService05;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService06;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService07;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService08;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService09;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService10;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService11;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService12;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService13;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService14;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService15;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService16;
 }

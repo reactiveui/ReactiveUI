@@ -1,0 +1,136 @@
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Reflection;
+#if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
+using System.ComponentModel.DataAnnotations;
+#endif
+
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
+namespace ReactiveUI;
+#endif
+/// <summary>Provides extension methods for adding validation and observing validation errors on ReactiveProperty instances.</summary>
+/// <remarks>These mixins enable integration of DataAnnotations-based validation and error observation with
+/// ReactiveProperty. Some methods may use reflection and are not compatible with ahead-of-time (AOT) compilation; refer
+/// to individual method documentation for details.</remarks>
+public static class ReactivePropertyMixins
+{
+    /// <summary>Provides validation and error-observation extension members for <see cref="ReactiveProperty{T}"/>.</summary>
+    /// <typeparam name="T">The type of the value held by the reactive property.</typeparam>
+    /// <param name="self">The reactive property the validation members operate on. Cannot be null.</param>
+    extension<T>(ReactiveProperty<T> self)
+    {
+#if !XAMARINIOS && !XAMARINMAC && !XAMARINTVOS && !MONOANDROID
+        /// <summary>
+        /// Adds DataAnnotations-based validation to the specified reactive property using the validation attributes defined
+        /// on the property.
+        /// </summary>
+        /// <remarks>This method uses reflection to discover DataAnnotations attributes and is not compatible with
+        /// trimming or AOT scenarios. For environments where reflection is restricted, use manual validation instead. The
+        /// validation logic is based on the attributes applied to the property referenced by the selector
+        /// expression.</remarks>
+        /// <param name="selfSelector">An expression that selects the reactive property to be validated. This is used to discover validation attributes
+        /// and display metadata. Cannot be null.</param>
+        /// <returns>The same reactive property instance with validation enabled based on the discovered validation attributes.</returns>
+        [RequiresUnreferencedCode(
+            "DataAnnotations validation uses reflection to discover attributes and is not trim-safe. Use manual validation for AOT scenarios.")]
+        public ReactiveProperty<T> AddValidation(
+            Expression<Func<ReactiveProperty<T>?>> selfSelector)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(selfSelector);
+            ArgumentExceptionHelper.ThrowIfNull(self);
+
+            var memberExpression = (MemberExpression)selfSelector.Body;
+            var propertyInfo = (PropertyInfo)memberExpression.Member;
+            var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+            var attrs = propertyInfo.GetCustomAttributes<ValidationAttribute>().ToArray();
+
+            ValidationContext context = new(self, null, null)
+            {
+                DisplayName = display?.GetName() ?? propertyInfo.Name,
+                MemberName = nameof(ReactiveProperty<T>.Value)
+            };
+
+            if (attrs.Length != 0)
+            {
+                self.AddValidationError(x =>
+                {
+                    List<ValidationResult> validationResults = [];
+                    if (Validator.TryValidateValue(x!, context, validationResults, attrs))
+                    {
+                        return null;
+                    }
+
+                    return validationResults[0].ErrorMessage;
+                });
+            }
+
+            return self;
+        }
+#endif
+
+        /// <summary>
+        /// Returns an observable sequence that emits the first validation error message, if any, from the specified
+        /// reactive property whenever its error state changes.
+        /// </summary>
+        /// <returns>An observable sequence of strings representing the first validation error message, or null if there are no
+        /// errors.</returns>
+        public IObservable<string?> ObserveValidationErrors()
+        {
+            ArgumentExceptionHelper.ThrowIfNull(self);
+
+            return new ValidationErrorObservable(self.ObserveErrorChanged);
+        }
+    }
+
+    /// <summary>
+    /// A fused sink that projects each error collection to its first <see cref="string"/> message (or <see langword="null"/>) —
+    /// replacing the <c>Select(x =&gt; x?.OfType&lt;string&gt;()?.FirstOrDefault())</c> used by
+    /// <see cref="ObserveValidationErrors{T}"/>.
+    /// </summary>
+    /// <param name="source">The source stream of error collections.</param>
+    private sealed class ValidationErrorObservable(IObservable<IEnumerable?> source) : IObservable<string?>
+    {
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<string?> observer)
+        {
+            ArgumentExceptionHelper.ThrowIfNull(observer);
+            return source.Subscribe(new Sink(observer));
+        }
+
+        /// <summary>Projects each error collection to its first string message and forwards it.</summary>
+        /// <param name="downstream">The observer that receives the projected error messages.</param>
+        private sealed class Sink(IObserver<string?> downstream) : IObserver<IEnumerable?>
+        {
+            /// <inheritdoc/>
+            public void OnNext(IEnumerable? value)
+            {
+                string? message;
+                try
+                {
+                    message = value?.OfType<string>().FirstOrDefault();
+                }
+                catch (Exception ex)
+                {
+                    downstream.OnError(ex);
+                    return;
+                }
+
+                downstream.OnNext(message);
+            }
+
+            /// <inheritdoc/>
+            public void OnError(Exception error) => downstream.OnError(error);
+
+            /// <inheritdoc/>
+            public void OnCompleted() => downstream.OnCompleted();
+        }
+    }
+}

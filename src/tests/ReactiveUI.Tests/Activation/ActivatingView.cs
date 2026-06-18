@@ -3,75 +3,55 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
+#if REACTIVE_SHIM
+using ICanActivateContract = ReactiveUI.Reactive.ICanActivate;
+#else
+using ICanActivateContract = ReactiveUI.ICanActivate;
+#endif
 
 namespace ReactiveUI.Tests.Activation;
 
-/// <summary>
-///     A view which simulates a activation.
-/// </summary>
-public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, ICanActivate, IDisposable
+/// <summary>A view which simulates a activation.</summary>
+public sealed class ActivatingView : ReactiveObject, IViewFor<ActivatingViewModel>, ICanActivateContract, IDisposable
 {
-    private ActivatingViewModel? _viewModel;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ActivatingView" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ActivatingView" /> class.</summary>
     public ActivatingView() =>
         this.WhenActivated(d =>
         {
             IsActiveCount++;
-            d(Disposable.Create(() => IsActiveCount--));
+            d(Scope.Create(() => IsActiveCount--));
         });
 
-    /// <summary>
-    ///     Gets an observable that signals when the view is activated.
-    /// </summary>
-    public IObservable<Unit> Activated => Loaded;
+    /// <summary>Gets an observable that signals when the view is activated.</summary>
+    public IObservable<RxVoid> Activated => Loaded;
 
-    /// <summary>
-    ///     Gets an observable that signals when the view is deactivated.
-    /// </summary>
-    public IObservable<Unit> Deactivated => Unloaded;
+    /// <summary>Gets an observable that signals when the view is deactivated.</summary>
+    public IObservable<RxVoid> Deactivated => Unloaded;
 
-    /// <summary>
-    ///     Gets the loaded.
-    /// </summary>
-    public Subject<Unit> Loaded { get; } = new();
+    /// <summary>Gets the loaded.</summary>
+    public Signal<RxVoid> Loaded { get; } = new();
 
-    /// <summary>
-    ///     Gets the unloaded.
-    /// </summary>
-    public Subject<Unit> Unloaded { get; } = new();
+    /// <summary>Gets the unloaded.</summary>
+    public Signal<RxVoid> Unloaded { get; } = new();
 
-    /// <summary>
-    ///     Gets or sets the active count.
-    /// </summary>
+    /// <summary>Gets or sets the active count.</summary>
     public int IsActiveCount { get; set; }
 
-    /// <summary>
-    ///     Gets or sets the view model.
-    /// </summary>
+    /// <summary>Gets or sets the view model.</summary>
     public ActivatingViewModel? ViewModel
     {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    ///     Gets or sets the view model.
-    /// </summary>
+    /// <summary>Gets or sets the view model.</summary>
     object? IViewFor.ViewModel
     {
         get => ViewModel;
         set => ViewModel = (ActivatingViewModel?)value;
     }
 
-    /// <summary>
-    ///     Releases unmanaged and - optionally - managed resources.
-    /// </summary>
+    /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     public void Dispose()
     {
         Loaded.Dispose();

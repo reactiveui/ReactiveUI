@@ -5,29 +5,25 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// This is a TabBar that is both an TabBar and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is a TabBar that is both an TabBar and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 public abstract class ReactiveTabBarController : UITabBarController, IReactiveNotifyPropertyChanged<ReactiveTabBarController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.</summary>
     /// <param name="nibName">The name.</param>
     /// <param name="bundle">The bundle.</param>
     protected ReactiveTabBarController(string nibName, NSBundle bundle)
@@ -35,36 +31,28 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveTabBarController(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.</summary>
     /// <param name="t">The object flag.</param>
     protected ReactiveTabBarController(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveTabBarController(NSCoder coder)
         : base(coder)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTabBarController"/> class.</summary>
     protected ReactiveTabBarController()
     {
     }
@@ -85,10 +73,10 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <summary>
     /// When this method is called, an object will not fire change
@@ -103,7 +91,7 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
         this.ActivateSubviews(true);
     }
 
@@ -111,7 +99,7 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
     public override void ViewDidDisappear(bool animated)
     {
         base.ViewDidDisappear(animated);
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
         this.ActivateSubviews(false);
     }
 
@@ -131,77 +119,5 @@ public abstract class ReactiveTabBarController : UITabBarController, IReactiveNo
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a TabBar that is both an TabBar and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactiveTabBarController<TViewModel> : ReactiveTabBarController, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="nibName">The name.</param>
-    /// <param name="bundle">The bundle.</param>
-    protected ReactiveTabBarController(string nibName, NSBundle bundle)
-        : base(nibName, bundle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveTabBarController(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveTabBarController(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The coder.</param>
-    protected ReactiveTabBarController(NSCoder coder)
-        : base(coder)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTabBarController{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveTabBarController()
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

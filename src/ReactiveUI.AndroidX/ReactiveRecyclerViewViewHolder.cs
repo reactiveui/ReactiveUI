@@ -5,20 +5,19 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.
-/// </summary>
+#endif
+/// <summary>A <see cref="RecyclerView.ViewHolder"/> implementation that binds to a reactive view model.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 [RequiresUnreferencedCode(
     "Android property discovery uses reflection over generated resource types that may be trimmed.")]
@@ -28,36 +27,13 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     ICanActivate
     where TViewModel : class, IReactiveObject
 {
-    /// <summary>
-    /// Gets all public accessible properties.
-    /// </summary>
-    [SuppressMessage(
-        "StyleCop.CSharp.MaintainabilityRules",
-        "SA1401: Field should be private",
-        Justification = "Legacy reasons")]
-    [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
-    [IgnoreDataMember]
-    [JsonIgnore]
-    protected Lazy<PropertyInfo[]>? AllPublicProperties;
+    /// <summary>The subject that signals when the view is activated.</summary>
+    private readonly Signal<RxVoid> _activated = new();
 
-    /// <summary>
-    /// The subject that signals when the view is activated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _activated = new();
+    /// <summary>The subject that signals when the view is deactivated.</summary>
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// The subject that signals when the view is deactivated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _deactivated = new();
-
-    /// <summary>
-    /// The backing field for the view model.
-    /// </summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveRecyclerViewViewHolder{TViewModel}"/> class.</summary>
     /// <param name="view">The view.</param>
     protected ReactiveRecyclerViewViewHolder(View view)
         : base(view)
@@ -104,7 +80,7 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
-    /// <para>Gets an observable that signals that this ViewHolder has been selected.</para>
+    /// Gets an observable that signals that this ViewHolder has been selected.
     /// <para>
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
     /// and corresponds to the <see cref="RecyclerView.ViewHolder.AbsoluteAdapterPosition"/> property.
@@ -113,13 +89,13 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public IObservable<int> Selected { get; }
 
     /// <summary>
-    /// <para>Gets an observable that signals that this ViewHolder has been selected.</para>
+    /// Gets an observable that signals that this ViewHolder has been selected.
     /// <para>The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.</para>
     /// </summary>
     public IObservable<TViewModel?> SelectedWithViewModel { get; }
 
     /// <summary>
-    /// <para>Gets an observable that signals that this ViewHolder has been long-clicked.</para>
+    /// Gets an observable that signals that this ViewHolder has been long-clicked.
     /// <para>
     /// The <see cref="int"/> is the position of this ViewHolder in the <see cref="RecyclerView"/>
     /// and corresponds to the <see cref="RecyclerView.ViewHolder.AbsoluteAdapterPosition"/> property.
@@ -128,32 +104,28 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public IObservable<int> LongClicked { get; }
 
     /// <summary>
-    /// <para>Gets an observable that signals that this ViewHolder has been long-clicked.</para>
+    /// Gets an observable that signals that this ViewHolder has been long-clicked.
     /// <para>The <see cref="IObservable{TViewModel}"/> is the ViewModel of this ViewHolder in the <see cref="RecyclerView"/>.</para>
     /// </summary>
     public IObservable<TViewModel?> LongClickedWithViewModel { get; }
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
-    /// <summary>
-    /// Gets the current view being shown.
-    /// </summary>
+    /// <summary>Gets the current view being shown.</summary>
     public View View => ItemView;
 
     /// <inheritdoc/>
     public TViewModel? ViewModel
     {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets an observable which signals when exceptions are thrown.
-    /// </summary>
+    /// <summary>Gets an observable which signals when exceptions are thrown.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
@@ -177,12 +149,15 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveRecyclerViewViewHolder<TViewModel>>> Changed =>
         this.GetChangedObservable();
 
+    /// <summary>Gets or sets the lazily-computed set of public properties used by legacy reflection-based wiring.</summary>
+    [IgnoreDataMember]
+    [JsonIgnore]
+    protected Lazy<PropertyInfo[]>? AllPublicProperties { get; set; }
+
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-    /// <summary>
-    /// Gets if change notifications via the INotifyPropertyChanged interface are being sent.
-    /// </summary>
+    /// <summary>Gets if change notifications via the INotifyPropertyChanged interface are being sent.</summary>
     /// <returns>A value indicating whether change notifications are enabled or not.</returns>
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
@@ -207,32 +182,24 @@ public class ReactiveRecyclerViewViewHolder<TViewModel> : RecyclerView.ViewHolde
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Sets up the reactive object after deserialization.
-    /// </summary>
+    /// <summary>Sets up the reactive object after deserialization.</summary>
     /// <param name="sc">The streaming context.</param>
     [OnDeserialized]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObj();
 
-    /// <summary>
-    /// Sets up the reactive object by initializing the public property cache.
-    /// </summary>
+    /// <summary>Sets up the reactive object by initializing the public property cache.</summary>
     private void SetupRxObj() =>
         AllPublicProperties = new(() => [.. GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)]);
 
-    /// <summary>
-    /// Handles the view being attached to the window and signals activation.
-    /// </summary>
+    /// <summary>Handles the view being attached to the window and signals activation.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The event arguments.</param>
     private void OnViewAttachedToWindow(object? sender, View.ViewAttachedToWindowEventArgs args) =>
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Handles the view being detached from the window and signals deactivation.
-    /// </summary>
+    /// <summary>Handles the view being detached from the window and signals deactivation.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The event arguments.</param>
     private void OnViewDetachedFromWindow(object? sender, View.ViewDetachedFromWindowEventArgs args) =>
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
 }

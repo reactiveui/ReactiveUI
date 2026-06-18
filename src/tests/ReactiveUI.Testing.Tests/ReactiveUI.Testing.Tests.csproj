@@ -9,11 +9,17 @@
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
     <ProjectReference Include="..\..\ReactiveUI.Testing\ReactiveUI.Testing.csproj"/>
-    <ProjectReference Include="..\..\ReactiveUI.Testing.Reactive\ReactiveUI.Testing.Reactive.csproj"/>
+    <ProjectReference Include="..\..\ReactiveUI.Testing.Reactive\ReactiveUI.Testing.Reactive.csproj" Aliases="reactive_testing" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="API\**\*.txt" CopyToOutputDirectory="PreserveNewest" LinkBase="/"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Advanced" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
   </ItemGroup>
 
 </Project>

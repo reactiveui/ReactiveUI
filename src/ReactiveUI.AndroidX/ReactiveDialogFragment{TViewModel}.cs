@@ -3,8 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
+#endif
 /// <summary>
 /// This is a DialogFragment that is both a DialogFragment and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -13,14 +16,10 @@ namespace ReactiveUI.AndroidX;
 public class ReactiveDialogFragment<TViewModel> : ReactiveDialogFragment, IViewFor<TViewModel>, ICanActivate
     where TViewModel : class
 {
-    /// <summary>
-    /// The backing field for the view model.
-    /// </summary>
+    /// <summary>The backing field for the view model.</summary>
     private TViewModel? _viewModel;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveDialogFragment{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveDialogFragment{TViewModel}"/> class.</summary>
     protected ReactiveDialogFragment()
     {
     }

@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
@@ -27,7 +25,7 @@ public class CommandCanExecuteBenchmarks
     private BenchmarkViewModel _viewModel = null!;
 
     /// <summary>The command whose canExecute is driven by the view model.</summary>
-    private ReactiveCommand<Unit, Unit> _command = null!;
+    private ReactiveCommand<RxVoid, RxVoid> _command = null!;
 
     /// <summary>The standing canExecute subscription.</summary>
     private IDisposable _subscription = null!;
@@ -36,11 +34,11 @@ public class CommandCanExecuteBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
+        _viewModel = new();
         _command = ReactiveCommand.Create(
             static () => { },
             _viewModel.WhenAnyValue(x => x.Count, static count => (count & 1) == 0),
-            ImmediateScheduler.Instance);
+            Sequencer.Immediate);
         _subscription = _command.CanExecute.Subscribe(_sink);
     }
 

@@ -8,19 +8,22 @@ using System.Linq.Expressions;
 
 namespace ReactiveUI.Tests.Expressions;
 
-/// <summary>
-/// Advanced tests for Reflection class focusing on uncovered code paths and internal classes.
-/// </summary>
+/// <summary>Advanced tests for Reflection class focusing on uncovered code paths and internal classes.</summary>
 public class ReflectionAdvancedTests
 {
+    /// <summary>The caller name used when exercising caller-based reflection helpers.</summary>
     private const string TestCallerName = "TestCaller";
+
+    /// <summary>The dictionary key used in indexer reflection tests.</summary>
     private const string KeyText = "key";
+
+    /// <summary>The name of the default indexer property.</summary>
     private const string ItemPropertyName = "Item";
+
+    /// <summary>The value stored against the dictionary key in reflection tests.</summary>
     private const int DictionaryValue = 42;
 
-    /// <summary>
-    /// Verifies that a complex nested expression is rewritten to a member access.
-    /// </summary>
+    /// <summary>Verifies that a complex nested expression is rewritten to a member access.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithComplexExpression_SimplifiesExpression()
@@ -34,9 +37,7 @@ public class ReflectionAdvancedTests
         await Assert.That(rewritten.NodeType).IsEqualTo(ExpressionType.MemberAccess);
     }
 
-    /// <summary>
-    /// Verifies that a Convert expression is unwrapped during rewriting.
-    /// </summary>
+    /// <summary>Verifies that a Convert expression is unwrapped during rewriting.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithConvertExpression_UnwrapsConvert()
@@ -50,9 +51,7 @@ public class ReflectionAdvancedTests
         await Assert.That(rewritten).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that converting an index expression to property names includes the indexer key.
-    /// </summary>
+    /// <summary>Verifies that converting an index expression to property names includes the indexer key.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_WithIndexExpression_IncludesIndexer()
@@ -68,9 +67,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result).Contains("Item[testKey]");
     }
 
-    /// <summary>
-    /// Verifies that converting a nested property expression returns the full dotted path.
-    /// </summary>
+    /// <summary>Verifies that converting a nested property expression returns the full dotted path.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_WithNestedProperty_ReturnsFullPath()
@@ -82,9 +79,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result).IsEqualTo("Nested.Property");
     }
 
-    /// <summary>
-    /// Verifies that a value fetcher throws when the field value is null.
-    /// </summary>
+    /// <summary>Verifies that a value fetcher throws when the field value is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_WithNullFieldValue_ThrowsInvalidOperationException()
@@ -98,9 +93,7 @@ public class ReflectionAdvancedTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Verifies that a value fetcher reads a value through a property indexer.
-    /// </summary>
+    /// <summary>Verifies that a value fetcher reads a value through a property indexer.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_WithPropertyIndexer_ReturnsIndexerValue()
@@ -115,9 +108,7 @@ public class ReflectionAdvancedTests
         await Assert.That(value).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that requesting a value fetcher for an unsupported member type throws.
-    /// </summary>
+    /// <summary>Verifies that requesting a value fetcher for an unsupported member type throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherOrThrow_WithUnsupportedMemberType_Throws()
@@ -128,9 +119,7 @@ public class ReflectionAdvancedTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Verifies that requesting a value setter for an unsupported member type throws.
-    /// </summary>
+    /// <summary>Verifies that requesting a value setter for an unsupported member type throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterOrThrow_WithUnsupportedMemberType_Throws()
@@ -141,9 +130,7 @@ public class ReflectionAdvancedTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Verifies that a value setter writes a value through a property indexer.
-    /// </summary>
+    /// <summary>Verifies that a value setter writes a value through a property indexer.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterForProperty_WithPropertyIndexer_SetsIndexerValue()
@@ -158,9 +145,7 @@ public class ReflectionAdvancedTests
         await Assert.That(dict[KeyText]).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that getting all values returns false when a chain link is null.
-    /// </summary>
+    /// <summary>Verifies that getting all values returns false when a chain link is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetAllValuesForPropertyChain_WithNullInChain_ReturnsFalse()
@@ -175,9 +160,7 @@ public class ReflectionAdvancedTests
         await Assert.That(changeValues).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that getting all values returns every value for a valid chain.
-    /// </summary>
+    /// <summary>Verifies that getting all values returns every value for a valid chain.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetAllValuesForPropertyChain_WithValidChain_ReturnsAllValues()
@@ -194,9 +177,7 @@ public class ReflectionAdvancedTests
         await Assert.That(changeValues[1].Value).IsEqualTo("nestedValue");
     }
 
-    /// <summary>
-    /// Verifies that getting all values for an empty chain throws.
-    /// </summary>
+    /// <summary>Verifies that getting all values for an empty chain throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetAllValuesForPropertyChain_WithEmptyChain_Throws()
@@ -208,9 +189,7 @@ public class ReflectionAdvancedTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Verifies that setting a value through a valid chain succeeds.
-    /// </summary>
+    /// <summary>Verifies that setting a value through a valid chain succeeds.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_WithValidChain_SetsValue()
@@ -225,9 +204,7 @@ public class ReflectionAdvancedTests
         await Assert.That(obj.Nested!.Property).IsEqualTo("newValue");
     }
 
-    /// <summary>
-    /// Verifies that setting a value returns false on a null intermediate when not configured to throw.
-    /// </summary>
+    /// <summary>Verifies that setting a value returns false on a null intermediate when not configured to throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_WithShouldThrowFalse_AndNullIntermediate_ReturnsFalse()
@@ -241,9 +218,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that setting a value with an empty chain throws.
-    /// </summary>
+    /// <summary>Verifies that setting a value with an empty chain throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_WithEmptyChain_Throws()
@@ -255,9 +230,7 @@ public class ReflectionAdvancedTests
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Verifies that resolving a type by its assembly-qualified name returns the type.
-    /// </summary>
+    /// <summary>Verifies that resolving a type by its assembly-qualified name returns the type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_WithAssemblyQualifiedName_ReturnsType()
@@ -270,9 +243,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result).IsEqualTo(typeof(string));
     }
 
-    /// <summary>
-    /// Verifies that type resolution caches and returns the same reference on repeated calls.
-    /// </summary>
+    /// <summary>Verifies that type resolution caches and returns the same reference on repeated calls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_CachesResults()
@@ -285,9 +256,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result1).IsSameReferenceAs(result2);
     }
 
-    /// <summary>
-    /// Verifies that the overload check passes when the methods are overloaded.
-    /// </summary>
+    /// <summary>Verifies that the overload check passes when the methods are overloaded.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_WithOverloadedMethods_DoesNotThrow()
@@ -298,9 +267,7 @@ public class ReflectionAdvancedTests
             Reflection.ThrowIfMethodsNotOverloaded(TestCallerName, type, nameof(DerivedTestClass.TestMethod))).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Verifies that the overload check throws when the method is missing.
-    /// </summary>
+    /// <summary>Verifies that the overload check throws when the method is missing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_WithMissingMethod_Throws()
@@ -311,9 +278,7 @@ public class ReflectionAdvancedTests
             .Throws<Exception>();
     }
 
-    /// <summary>
-    /// Verifies that the overload check accepts an object instance and validates its methods.
-    /// </summary>
+    /// <summary>Verifies that the overload check accepts an object instance and validates its methods.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_WithObject_ChecksMethods()
@@ -324,9 +289,7 @@ public class ReflectionAdvancedTests
             Reflection.ThrowIfMethodsNotOverloaded(TestCallerName, obj, nameof(DerivedTestClass.TestMethod))).ThrowsNothing();
     }
 
-    /// <summary>
-    /// Verifies that the overload check throws when the object is null.
-    /// </summary>
+    /// <summary>Verifies that the overload check throws when the object is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_WithNullObject_Throws()
@@ -337,9 +300,7 @@ public class ReflectionAdvancedTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Verifies that the overload check throws when the methods array is null.
-    /// </summary>
+    /// <summary>Verifies that the overload check throws when the methods array is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_WithNullMethodsArray_Throws()
@@ -350,9 +311,7 @@ public class ReflectionAdvancedTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Verifies that IsStatic returns true for a static property.
-    /// </summary>
+    /// <summary>Verifies that IsStatic returns true for a static property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsStatic_WithStaticProperty_ReturnsTrue()
@@ -364,9 +323,7 @@ public class ReflectionAdvancedTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that IsStatic returns true for a get-only static property.
-    /// </summary>
+    /// <summary>Verifies that IsStatic returns true for a get-only static property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsStatic_WithGetOnlyStaticProperty_ReturnsTrue()
@@ -378,61 +335,32 @@ public class ReflectionAdvancedTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// A sample class used as the target of advanced reflection tests.
-    /// </summary>
+    /// <summary>A sample class used as the target of advanced reflection tests.</summary>
     public class TestClass
     {
-        /// <summary>
-        /// A nullable field used for reflection-based fetcher tests.
-        /// </summary>
-        [SuppressMessage(
-            "StyleCop.CSharp.MaintainabilityRules",
-            "SA1401:Fields should be private",
-            Justification = "Public field required for reflection tests")]
-        [SuppressMessage(
-            "Design",
-            "CA1051:Do not declare visible instance fields",
-            Justification = "Public field required for reflection tests")]
-        [SuppressMessage(
-            "Minor Code Smell",
-            "S2357:Fields should be private",
-            Justification = "Public field required for reflection tests")]
+        /// <summary>A nullable field used for reflection-based fetcher tests.</summary>
+        [SuppressMessage("Maintainability", "SST1401:Field should be private", Justification = "Public field required for reflection tests")]
         public string? NullableField;
 
-        /// <summary>
-        /// Gets or sets a static property.
-        /// </summary>
+        /// <summary>Gets or sets a static property.</summary>
         public static string? StaticProperty { get; set; }
 
-        /// <summary>
-        /// Gets a get-only static property.
-        /// </summary>
+        /// <summary>Gets a get-only static property.</summary>
         public static string StaticGetOnlyProperty { get; } = "static";
 
-        /// <summary>
-        /// Gets a sample dictionary used for indexer tests.
-        /// </summary>
+        /// <summary>Gets a sample dictionary used for indexer tests.</summary>
         public Dictionary<string, int> Dictionary { get; } = new() { { KeyText, DictionaryValue } };
 
-        /// <summary>
-        /// Gets or sets a nested instance.
-        /// </summary>
+        /// <summary>Gets or sets a nested instance.</summary>
         public TestClass? Nested { get; set; }
 
-        /// <summary>
-        /// Gets or sets a sample property.
-        /// </summary>
+        /// <summary>Gets or sets a sample property.</summary>
         public string? Property { get; set; }
 
-        /// <summary>
-        /// Gets a read-only property value.
-        /// </summary>
+        /// <summary>Gets a read-only property value.</summary>
         public string ReadOnlyProperty { get; } = "readonly";
 
-        /// <summary>
-        /// An instance method used to exercise unsupported member type handling.
-        /// </summary>
+        /// <summary>An instance method used to exercise unsupported member type handling.</summary>
         [SuppressMessage(
             "Microsoft.Performance",
             "CA1822:Mark members as static",
@@ -443,14 +371,10 @@ public class ReflectionAdvancedTests
         }
     }
 
-    /// <summary>
-    /// A derived class that hides <see cref="TestClass.TestMethod"/> for overload-check tests.
-    /// </summary>
+    /// <summary>A derived class that hides <see cref="TestClass.TestMethod"/> for overload-check tests.</summary>
     public class DerivedTestClass : TestClass
     {
-        /// <summary>
-        /// An instance method that hides the base method for overload-check tests.
-        /// </summary>
+        /// <summary>An instance method that hides the base method for overload-check tests.</summary>
         [SuppressMessage(
             "Microsoft.Performance",
             "CA1822:Mark members as static",

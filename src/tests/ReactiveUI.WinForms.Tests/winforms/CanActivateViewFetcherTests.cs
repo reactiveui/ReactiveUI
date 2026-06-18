@@ -3,26 +3,23 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Linq;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests to make sure the can activate view fetcher works correctly.
-/// </summary>
+/// <summary>Tests to make sure the can activate view fetcher works correctly.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 public class CanActivateViewFetcherTests
 {
+    /// <summary>The state value representing an activated view.</summary>
     private const short ActivatedState = 1;
+
+    /// <summary>The state value representing a deactivated view.</summary>
     private const short DeactivatedState = 2;
 
-    /// <summary>
-    /// Tests return negative for ICanActivate.
-    /// </summary>
+    /// <summary>Tests return negative for ICanActivate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanNotFetchActivatorForNonCanActivateableForm()
@@ -33,9 +30,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Tests return positive for ICanActivate.
-    /// </summary>
+    /// <summary>Tests return positive for ICanActivate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanGetActivationForViewForCanActivateableFormActivated()
@@ -45,9 +40,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests return negative for ICanActivate.
-    /// </summary>
+    /// <summary>Tests return negative for ICanActivate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CanGetActivationForViewForCanActivateableFormDeactivated()
@@ -57,9 +50,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Tests return positive for ICanActivate.
-    /// </summary>
+    /// <summary>Tests return positive for ICanActivate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReturnPositiveForICanActivate()
@@ -69,9 +60,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsGreaterThan(0);
     }
 
-    /// <summary>
-    /// Tests return positive for ICanActivate derivatives.
-    /// </summary>
+    /// <summary>Tests return positive for ICanActivate derivatives.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReturnPositiveForICanActivateDerivatives()
@@ -81,9 +70,7 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsGreaterThan(0);
     }
 
-    /// <summary>
-    /// Tests return zero for non ICanActivate derivatives.
-    /// </summary>
+    /// <summary>Tests return zero for non ICanActivate derivatives.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReturnZeroForNonICanActivateDerivatives()
@@ -93,15 +80,13 @@ public class CanActivateViewFetcherTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// A stub implementing <see cref="ICanActivate"/> used to verify affinity for derivatives.
-    /// </summary>
+    /// <summary>A stub implementing <see cref="ICanActivate"/> used to verify affinity for derivatives.</summary>
     private sealed class CanActivateStub : ICanActivate
     {
         /// <inheritdoc/>
-        public IObservable<Unit> Activated { get; } = Observable.Empty<Unit>();
+        public IObservable<RxVoid> Activated { get; } = Signal.None<RxVoid>(Sequencer.Immediate);
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated { get; } = Observable.Empty<Unit>();
+        public IObservable<RxVoid> Deactivated { get; } = Signal.None<RxVoid>(Sequencer.Immediate);
     }
 }

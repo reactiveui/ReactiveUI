@@ -5,30 +5,34 @@
 
 using System.Collections;
 using System.ComponentModel;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Text.Json;
-using DynamicData;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities;
 
 namespace ReactiveUI.Tests.ReactiveObjects;
 
-/// <summary>
-///     Tests for <see cref="ReactiveObject" /> change notification behavior.
-/// </summary>
+/// <summary>Tests for <see cref="ReactiveObject" /> change notification behavior.</summary>
 public class ReactiveObjectTests
 {
+    /// <summary>The "Foo" text value used in property change tests.</summary>
     private const string FooText = "Foo";
+
+    /// <summary>The "Bar" text value used in property change tests.</summary>
     private const string BarText = "Bar";
+
+    /// <summary>The "Baz" text value used in property change tests.</summary>
     private const string BazText = "Baz";
+
+    /// <summary>The property name for the IsNotNullString property.</summary>
     private const string IsNotNullStringName = "IsNotNullString";
+
+    /// <summary>The property name for the IsOnlyOneWord property.</summary>
     private const string IsOnlyOneWordName = "IsOnlyOneWord";
+
+    /// <summary>The property name for the NullableInt property.</summary>
     private const string NullableIntName = "NullableInt";
 
-    /// <summary>
-    ///     Test that changing values should always arrive before changed.
-    /// </summary>
+    /// <summary>Test that changing values should always arrive before changed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ChangingShouldAlwaysArriveBeforeChanged()
@@ -71,9 +75,7 @@ public class ReactiveObjectTests
         }
     }
 
-    /// <summary>
-    ///     Test that deferring the notifications dont show up until undeferred.
-    /// </summary>
+    /// <summary>Test that deferring the notifications dont show up until undeferred.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DeferredNotificationsDontShowUpUntilUndeferred()
@@ -83,8 +85,8 @@ public class ReactiveObjectTests
         const int ThirdInt = 6;
         const int ExpectedCountAfterUndefer = 3;
         var fixture = new TestFixture();
-        fixture.Changing.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changing).Subscribe();
-        fixture.Changed.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changed).Subscribe();
+        var changing = fixture.Changing.Collect();
+        var changed = fixture.Changed.Collect();
         var propertyChangingEvents = new List<PropertyChangingEventArgs>();
         fixture.PropertyChanging += (_, args) => propertyChangingEvents.Add(args);
         var propertyChangedEvents = new List<PropertyChangedEventArgs>();
@@ -135,9 +137,7 @@ public class ReactiveObjectTests
         }
     }
 
-    /// <summary>
-    ///     Test that exceptions thrown in subscribers should marshal to thrown exceptions.
-    /// </summary>
+    /// <summary>Test that exceptions thrown in subscribers should marshal to thrown exceptions.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExceptionsThrownInSubscribersShouldMarshalToThrownExceptions()
@@ -145,15 +145,13 @@ public class ReactiveObjectTests
         var fixture = new TestFixture { IsOnlyOneWord = FooText };
 
         fixture.Changed.Subscribe(static _ => throw new InvalidOperationException("Die!"));
-        fixture.ThrownExceptions.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var exceptionList).Subscribe();
+        var exceptionList = fixture.ThrownExceptions.Collect();
 
         fixture.IsOnlyOneWord = BarText;
         await Assert.That(exceptionList).Count().IsEqualTo(1);
     }
 
-    /// <summary>
-    ///     Tests that ObservableForProperty using expression.
-    /// </summary>
+    /// <summary>Tests that ObservableForProperty using expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableForPropertyUsingExpression()
@@ -161,7 +159,7 @@ public class ReactiveObjectTests
         const int ExpectedCount = 2;
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<IObservedChange<TestFixture, string?>>();
-        fixture.ObservableForProperty(x => x.IsNotNullString).WhereNotNull().Subscribe(output.Add);
+        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsNotNullString)).Subscribe(output.Add);
 
         fixture.IsNotNullString = BarText;
         fixture.IsNotNullString = BazText;
@@ -183,9 +181,7 @@ public class ReactiveObjectTests
         }
     }
 
-    /// <summary>
-    ///     Test raises and set using expression.
-    /// </summary>
+    /// <summary>Test raises and set using expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task RaiseAndSetUsingExpression()
@@ -206,9 +202,7 @@ public class ReactiveObjectTests
         await Assert.That(output[0]).IsEqualTo("UsesExprRaiseSet");
     }
 
-    /// <summary>
-    ///     Test that change notifications can be suppressed and re-enabled, including after serialization.
-    /// </summary>
+    /// <summary>Test that change notifications can be suppressed and re-enabled, including after serialization.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactiveObjectCanSuppressChangeNotifications()
@@ -234,9 +228,7 @@ public class ReactiveObjectTests
         await Assert.That(deser.AreChangeNotificationsEnabled()).IsTrue();
     }
 
-    /// <summary>
-    ///     Test that ReactiveObject shouldn't serialize anything extra.
-    /// </summary>
+    /// <summary>Test that ReactiveObject shouldn't serialize anything extra.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactiveObjectShouldntSerializeAnythingExtra()
@@ -247,9 +239,9 @@ public class ReactiveObjectTests
 
         using (Assert.Multiple())
         {
-            // Should look something like:
-            // {IsNotNullStringName:FooText,IsOnlyOneWordName:BazText,NullableIntName:null,"StackOverflowTrigger":null,"TestCollection":[],"UsesExprRaiseSet":null}
-            // PocoProperty is excluded because it lacks [DataMember] attribute
+            // The serialized JSON is expected to contain IsNotNullString, IsOnlyOneWord, NullableInt,
+            // StackOverflowTrigger, TestCollection and UsesExprRaiseSet members.
+            // PocoProperty is excluded because it lacks the DataMember attribute.
             const int ExpectedCommaCount = 5;
             const int ExpectedColonCount = 6;
             const int ExpectedQuoteCount = 16;
@@ -259,9 +251,7 @@ public class ReactiveObjectTests
         }
     }
 
-    /// <summary>
-    ///     Tests to make sure that ReactiveObject doesn't rethrow exceptions.
-    /// </summary>
+    /// <summary>Tests to make sure that ReactiveObject doesn't rethrow exceptions.</summary>
     [Test]
     public void ReactiveObjectShouldRethrowException()
     {
@@ -272,9 +262,7 @@ public class ReactiveObjectTests
         Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
     }
 
-    /// <summary>
-    ///     Performs a ReactiveObject smoke test.
-    /// </summary>
+    /// <summary>Performs a ReactiveObject smoke test.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReactiveObjectSmokeTest()
@@ -300,9 +288,7 @@ public class ReactiveObjectTests
         await results.AssertAreEqual(output);
     }
 
-    /// <summary>
-    ///     Asserts that every supplied collection has the expected element count.
-    /// </summary>
+    /// <summary>Asserts that every supplied collection has the expected element count.</summary>
     /// <param name="expected">The expected count.</param>
     /// <param name="collections">The collections to check.</param>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>

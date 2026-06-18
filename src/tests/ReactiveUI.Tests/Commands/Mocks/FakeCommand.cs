@@ -7,38 +7,26 @@ using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Commands.Mocks;
 
-/// <summary>
-///     A fake command that can be executed as part of a test.
-/// </summary>
+/// <summary>A fake command that can be executed as part of a test.</summary>
 public class FakeCommand : ICommand
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="FakeCommand" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FakeCommand" /> class.</summary>
     public FakeCommand()
     {
         CanExecuteParameter = null;
         ExecuteParameter = null;
     }
 
-    /// <summary>
-    ///     Occurs when changes occur that affect whether or not the command should execute.
-    /// </summary>
+    /// <summary>Occurs when changes occur that affect whether or not the command should execute.</summary>
     public event EventHandler? CanExecuteChanged;
 
-    /// <summary>
-    ///     Gets the can execute parameter.
-    /// </summary>
+    /// <summary>Gets the can execute parameter.</summary>
     public object? CanExecuteParameter { get; private set; }
 
-    /// <summary>
-    ///     Gets the execute parameter.
-    /// </summary>
+    /// <summary>Gets the execute parameter.</summary>
     public object? ExecuteParameter { get; private set; }
 
-    /// <summary>
-    ///     Defines the method that determines whether the command can execute in its current state.
-    /// </summary>
+    /// <summary>Defines the method that determines whether the command can execute in its current state.</summary>
     /// <param name="parameter">
     ///     Data used by the command.  If the command does not require data to be passed, this object can
     ///     be set to <see langword="null" />.
@@ -52,18 +40,14 @@ public class FakeCommand : ICommand
         return true;
     }
 
-    /// <summary>
-    ///     Defines the method to be called when the command is invoked.
-    /// </summary>
+    /// <summary>Defines the method to be called when the command is invoked.</summary>
     /// <param name="parameter">
     ///     Data used by the command.  If the command does not require data to be passed, this object can
     ///     be set to <see langword="null" />.
     /// </param>
     public void Execute(object? parameter) => ExecuteParameter = parameter;
 
-    /// <summary>
-    ///     Notifies the can execute changed.
-    /// </summary>
+    /// <summary>Notifies the can execute changed.</summary>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     protected virtual void NotifyCanExecuteChanged(EventArgs e) => CanExecuteChanged?.Invoke(this, e);
 }

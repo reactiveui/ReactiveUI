@@ -5,12 +5,10 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
 using Foundation;
 using ObjCRuntime;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 #if UIKIT
@@ -19,12 +17,12 @@ using UIKit;
 using AppKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// An <see cref="ICreatesCommandBinding"/> implementation that binds commands using Cocoa's
-/// Target/Action mechanism.
-/// </summary>
+#endif
+/// <summary>An <see cref="ICreatesCommandBinding"/> implementation that binds commands using Cocoa's Target/Action mechanism.</summary>
 /// <remarks>
 /// <para>
 /// Many Cocoa controls (buttons, menu items, toolbar items, etc.) participate in the Target/Action pattern.
@@ -39,20 +37,14 @@ namespace ReactiveUI;
 /// </remarks>
 public class TargetActionCommandBinder : ICreatesCommandBinding
 {
-    /// <summary>
-    /// The affinity score returned when the object type is a valid Target/Action host.
-    /// </summary>
+    /// <summary>The affinity score returned when the object type is a valid Target/Action host.</summary>
     private const int TargetActionAffinity = 4;
 
 #if UIKIT
-    /// <summary>
-    /// The set of Cocoa types that are valid Target/Action hosts in UIKit builds.
-    /// </summary>
+    /// <summary>The set of Cocoa types that are valid Target/Action hosts in UIKit builds.</summary>
     private static readonly Type[] ValidTypes = [typeof(UIControl)];
 #else
-    /// <summary>
-    /// The set of Cocoa types that are valid Target/Action hosts in AppKit builds.
-    /// </summary>
+    /// <summary>The set of Cocoa types that are valid Target/Action hosts in AppKit builds.</summary>
     private static readonly Type[] ValidTypes =
     [
         typeof(NSControl),
@@ -63,9 +55,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     ];
 #endif
 
-    /// <summary>
-    /// Cache of runtime property setters used to apply Target/Action/Enabled on Cocoa objects.
-    /// </summary>
+    /// <summary>Cache of runtime property setters used to apply Target/Action/Enabled on Cocoa objects.</summary>
     /// <remarks>
     /// <para>
     /// This is stable type metadata and is therefore cached indefinitely. Eviction provides no value here and
@@ -79,6 +69,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     private static readonly ConcurrentDictionary<Type, Setters> PropertySetterCache = new();
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The candidate target type.</typeparam>
+    /// <param name="hasEventTarget">A value indicating whether an explicit event target was supplied.</param>
+    /// <returns>The affinity score for binding a command to the candidate type.</returns>
     [SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",
@@ -113,6 +106,11 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// <see cref="ICommand.CanExecute(object?)"/> and <see cref="ICommand.CanExecuteChanged"/>.
     /// </para>
     /// </remarks>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
@@ -128,10 +126,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
@@ -165,7 +163,7 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         setters.TargetSetter.Invoke(target, ctlDelegate, null);
 
         // Ensure we always detach target (and action if applicable) on dispose.
-        var detach = Disposable.Create(() =>
+        var detach = Scope.Create(() =>
         {
             // Clear Target first to stop invocation, then clear Action (if available).
             setters.TargetSetter.Invoke(target, null, null);
@@ -176,9 +174,9 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         if (setters.EnabledSetter is null)
         {
             // Still track parameters so command execution uses the latest, but do not attempt Enabled sync.
-            return new CompositeDisposable(
+            return new MultipleDisposable(
                 detach,
-                commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x)));
+                commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x))));
         }
 
         // Initial enabled state.
@@ -193,15 +191,15 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
                 command.CanExecuteChanged += Handler;
                 return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
             })
-            .Subscribe(x =>
+            .Subscribe(new DelegateObserver<bool>(x =>
             {
                 setters.EnabledSetter.Invoke(target, x, null);
                 ctlDelegate.IsEnabled = x;
-            });
+            }));
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             detach,
-            commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x)),
+            commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x))),
             canExecuteChangedSub);
     }
 
@@ -210,6 +208,13 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
     /// This overload binds to a named .NET event. It is reflection-based and therefore not trimming-safe.
     /// Prefer the add/remove handler overload when you can supply delegates.
     /// </remarks>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <typeparam name="TEventArgs">The event args type of the named event.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <param name="eventName">The name of the event to subscribe to.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
         "Major Code Smell",
@@ -226,20 +231,20 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
         ArgumentExceptionHelper.ThrowIfNull(eventName);
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
         // Stable handler for deterministic unsubscription is provided by EventPatternObservable.
         var evt = new EventPatternObservable<TEventArgs>(target, eventName);
 
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
-        var evtSub = evt.Subscribe(_ =>
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
+        var evtSub = evt.Subscribe(new DelegateObserver<TEventArgs>(_ =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -248,15 +253,23 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        });
+        }));
 
-        return new CompositeDisposable(paramSub, evtSub);
+        return new MultipleDisposable(paramSub, evtSub);
     }
 
     /// <inheritdoc/>
     /// <remarks>
     /// This overload is fully AOT-compatible and should be preferred when an explicit event subscription API is available.
     /// </remarks>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <typeparam name="TEventArgs">The event args type of the subscribed event.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <param name="addHandler">Adds the event handler to the target.</param>
+    /// <param name="removeHandler">Removes the event handler from the target.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
             DynamicallyAccessedMemberTypes.PublicProperties |
@@ -276,10 +289,10 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
 
         if (command is null)
         {
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
@@ -294,17 +307,15 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
         addHandler(Handler);
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             paramSub,
-            Disposable.Create(() => removeHandler(Handler)));
+            Scope.Create(() => removeHandler(Handler)));
     }
 
-    /// <summary>
-    /// Creates and caches property setters required for Target/Action binding on the specified runtime type.
-    /// </summary>
+    /// <summary>Creates and caches property setters required for Target/Action binding on the specified runtime type.</summary>
     /// <param name="type">The runtime type to inspect.</param>
     /// <returns>The cached setter bundle.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the runtime type does not expose a required <c>Target</c> property.</exception>
@@ -327,17 +338,16 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
             EnabledSetter: enabledProp is not null ? Reflection.GetValueSetterForProperty(enabledProp) : null);
     }
 
-    /// <summary>
-    /// Represents the set of cached setters required to wire Target/Action and optionally Enabled.
-    /// </summary>
+    /// <summary>Represents the set of cached setters required to wire Target/Action and optionally Enabled.</summary>
+    /// <param name="ActionSetter">The setter for the <c>Action</c> property, or <see langword="null"/> when the type has no <c>Action</c> property.</param>
+    /// <param name="TargetSetter">The setter for the required <c>Target</c> property.</param>
+    /// <param name="EnabledSetter">The setter for the optional <c>Enabled</c> property, or <see langword="null"/> when the type has no <c>Enabled</c> property.</param>
     private readonly record struct Setters(
         Action<object?, object?, object?[]?>? ActionSetter,
         Action<object?, object?, object?[]?> TargetSetter,
         Action<object?, object?, object?[]?>? EnabledSetter);
 
-    /// <summary>
-    /// Delegate object installed as the Cocoa Target for the <c>theAction:</c> selector.
-    /// </summary>
+    /// <summary>Delegate object installed as the Cocoa Target for the <c>theAction:</c> selector.</summary>
     /// <remarks>
     /// This object must remain alive for the binding lifetime; it is referenced by the bound control's <c>Target</c>.
     /// </remarks>
@@ -346,37 +356,27 @@ public class TargetActionCommandBinder : ICreatesCommandBinding
         /// <summary>The action block invoked when the Cocoa control fires the bound selector.</summary>
         private Action<NSObject> _block;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ControlDelegate"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ControlDelegate"/> class.</summary>
         /// <param name="block">The action invoked when the control fires the bound selector.</param>
         public ControlDelegate(Action<NSObject> block) => _block = block;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the command is currently executable.
-        /// </summary>
+        /// <summary>Gets or sets a value indicating whether the command is currently executable.</summary>
         /// <remarks>
         /// On AppKit, this is used by <c>validateMenuItem:</c> to control menu item enabled state.
         /// </remarks>
         public bool IsEnabled { get; set; }
 
-        /// <summary>
-        /// Replaces the action invoked by <see cref="TheAction(NSObject)"/>.
-        /// </summary>
+        /// <summary>Replaces the action invoked by <see cref="TheAction(NSObject)"/>.</summary>
         /// <param name="block">The new block to invoke.</param>
         public void SetBlock(Action<NSObject> block) => _block = block;
 
-        /// <summary>
-        /// Selector invoked by Cocoa controls for Target/Action.
-        /// </summary>
+        /// <summary>Selector invoked by Cocoa controls for Target/Action.</summary>
         /// <param name="sender">The sender object.</param>
         [Export("theAction:")]
         public void TheAction(NSObject sender) => _block(sender);
 
 #if !UIKIT
-        /// <summary>
-        /// AppKit menu item validation hook used to enable/disable menu items.
-        /// </summary>
+        /// <summary>AppKit menu item validation hook used to enable/disable menu items.</summary>
         /// <param name="menuItem">The menu item being validated.</param>
         /// <returns><see langword="true"/> if the item should be enabled; otherwise <see langword="false"/>.</returns>
         [Export("validateMenuItem:")]

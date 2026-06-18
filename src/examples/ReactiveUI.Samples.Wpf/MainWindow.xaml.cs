@@ -5,13 +5,9 @@
 
 namespace ReactiveUI.Samples.Wpf;
 
-/// <summary>
-/// Main application window that hosts the login view.
-/// </summary>
+/// <summary>Main application window that hosts the login view.</summary>
 public partial class MainWindow
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MainWindow"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="MainWindow"/> class.</summary>
     public MainWindow() => InitializeComponent();
 }

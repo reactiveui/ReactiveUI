@@ -1,0 +1,150 @@
+#nullable enable
+ReactiveUI.Reactive.ActivationForViewFetcher
+ReactiveUI.Reactive.ActivationForViewFetcher.ActivationForViewFetcher() -> void
+ReactiveUI.Reactive.ActivationForViewFetcher.GetActivationForView(ReactiveUI.IActivatableView! view) -> System.IObservable<bool>!
+ReactiveUI.Reactive.ActivationForViewFetcher.GetAffinityForView(System.Type! view) -> int
+ReactiveUI.Reactive.AutoDataTemplateBindingHook
+ReactiveUI.Reactive.AutoDataTemplateBindingHook.AutoDataTemplateBindingHook() -> void
+ReactiveUI.Reactive.AutoDataTemplateBindingHook.ExecuteHook(object? source, object! target, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewProperties, ReactiveUI.BindingDirection direction) -> bool
+ReactiveUI.Reactive.AutoSuspendHelper
+ReactiveUI.Reactive.AutoSuspendHelper.AutoSuspendHelper(System.Windows.Application! app) -> void
+ReactiveUI.Reactive.AutoSuspendHelper.IdleTimeout.get -> System.TimeSpan
+ReactiveUI.Reactive.AutoSuspendHelper.IdleTimeout.set -> void
+ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.Inverse = 2 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.None = 0 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityHint.UseHidden = 4 -> ReactiveUI.Reactive.BooleanToVisibilityHint
+ReactiveUI.Reactive.BooleanToVisibilityTypeConverter
+ReactiveUI.Reactive.BooleanToVisibilityTypeConverter.BooleanToVisibilityTypeConverter() -> void
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!)
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWpf() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWpfConverters() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithWpfScheduler() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(Splat.Builder.IAppBuilder!)
+ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.extension(Splat.Builder.IAppBuilder!).WithWpf() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.DependencyObjectObservableForProperty
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.DependencyObjectObservableForProperty() -> void
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.GetAffinityForObject(System.Type! type, string! propertyName) -> int
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.GetAffinityForObject(System.Type? type, string! propertyName, bool beforeChanged) -> int
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Reactive.DependencyObjectObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged, bool suppressWarnings) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Reactive.PlatformOperations
+ReactiveUI.Reactive.PlatformOperations.GetOrientation() -> string?
+ReactiveUI.Reactive.PlatformOperations.PlatformOperations() -> void
+ReactiveUI.Reactive.ReactivePage<TViewModel>
+ReactiveUI.Reactive.ReactivePage<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.Reactive.ReactivePage<TViewModel>.ReactivePage() -> void
+ReactiveUI.Reactive.ReactivePage<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.ReactivePage<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.ReactiveUserControl<TViewModel>
+ReactiveUI.Reactive.ReactiveUserControl<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.Reactive.ReactiveUserControl<TViewModel>.ReactiveUserControl() -> void
+ReactiveUI.Reactive.ReactiveUserControl<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.ReactiveUserControl<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.ReactiveWindow<TViewModel>
+ReactiveUI.Reactive.ReactiveWindow<TViewModel>.BindingRoot.get -> TViewModel?
+ReactiveUI.Reactive.ReactiveWindow<TViewModel>.ReactiveWindow() -> void
+ReactiveUI.Reactive.ReactiveWindow<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.ReactiveWindow<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.RoutedViewHost
+ReactiveUI.Reactive.RoutedViewHost.DefaultContent.get -> object!
+ReactiveUI.Reactive.RoutedViewHost.DefaultContent.set -> void
+ReactiveUI.Reactive.RoutedViewHost.RoutedViewHost() -> void
+ReactiveUI.Reactive.RoutedViewHost.Router.get -> ReactiveUI.Reactive.RoutingState!
+ReactiveUI.Reactive.RoutedViewHost.Router.set -> void
+ReactiveUI.Reactive.RoutedViewHost.ViewContract.get -> string?
+ReactiveUI.Reactive.RoutedViewHost.ViewContract.set -> void
+ReactiveUI.Reactive.RoutedViewHost.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.Reactive.RoutedViewHost.ViewContractObservable.set -> void
+ReactiveUI.Reactive.RoutedViewHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.Reactive.RoutedViewHost.ViewLocator.set -> void
+ReactiveUI.Reactive.TransitioningContentControl
+ReactiveUI.Reactive.TransitioningContentControl.Direction.get -> ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.Direction.set -> void
+ReactiveUI.Reactive.TransitioningContentControl.Duration.get -> System.TimeSpan
+ReactiveUI.Reactive.TransitioningContentControl.Duration.set -> void
+ReactiveUI.Reactive.TransitioningContentControl.Transition.get -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.Transition.set -> void
+ReactiveUI.Reactive.TransitioningContentControl.TransitionCompleted -> System.Windows.RoutedEventHandler?
+ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection.Down = 1 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection.Left = 2 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection.Right = 3 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection.Up = 0 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionDirection
+ReactiveUI.Reactive.TransitioningContentControl.TransitionStarted -> System.Windows.RoutedEventHandler?
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType.Bounce = 4 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType.Drop = 3 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType.Fade = 0 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType.Move = 1 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitionType.Slide = 2 -> ReactiveUI.Reactive.TransitioningContentControl.TransitionType
+ReactiveUI.Reactive.TransitioningContentControl.TransitioningContentControl() -> void
+ReactiveUI.Reactive.ValidationBindingMixins
+ReactiveUI.Reactive.ValidationBindingMixins.extension<TView>(TView!)
+ReactiveUI.Reactive.ValidationBindingMixins.extension<TView>(TView!).BindWithValidation<TViewModel, TVProp, TType>(TViewModel! viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel!, TType?>!>! viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView!, TVProp>!>! frameworkElementSelector) -> ReactiveUI.IReactiveBinding<TView!, TType>!
+ReactiveUI.Reactive.ViewModelViewHost
+ReactiveUI.Reactive.ViewModelViewHost.ContractFallbackByPass.get -> bool
+ReactiveUI.Reactive.ViewModelViewHost.ContractFallbackByPass.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.DefaultContent.get -> object!
+ReactiveUI.Reactive.ViewModelViewHost.DefaultContent.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.ViewContract.get -> string?
+ReactiveUI.Reactive.ViewModelViewHost.ViewContract.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.ViewContractObservable.get -> System.IObservable<string?>!
+ReactiveUI.Reactive.ViewModelViewHost.ViewContractObservable.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.Reactive.ViewModelViewHost.ViewLocator.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.ViewModel.get -> object?
+ReactiveUI.Reactive.ViewModelViewHost.ViewModel.set -> void
+ReactiveUI.Reactive.ViewModelViewHost.ViewModelViewHost() -> void
+ReactiveUI.Reactive.VisibilityToBooleanTypeConverter
+ReactiveUI.Reactive.VisibilityToBooleanTypeConverter.VisibilityToBooleanTypeConverter() -> void
+ReactiveUI.Reactive.Wpf.Registrations
+ReactiveUI.Reactive.Wpf.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Reactive.Wpf.Registrations.Registrations() -> void
+ReactiveUI.Reactive.WpfViewForMixins
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!)
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).GetIsDesignMode() -> bool
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated() -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block) -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block, ReactiveUI.IViewFor! view) -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block) -> System.IDisposable!
+ReactiveUI.Reactive.WpfViewForMixins.extension<TView>(TView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+override ReactiveUI.Reactive.BooleanToVisibilityTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.Reactive.BooleanToVisibilityTypeConverter.TryConvert(bool from, object? conversionHint, out System.Windows.Visibility result) -> bool
+override ReactiveUI.Reactive.TransitioningContentControl.OnApplyTemplate() -> void
+override ReactiveUI.Reactive.TransitioningContentControl.OnContentChanged(object! oldContent, object! newContent) -> void
+override ReactiveUI.Reactive.VisibilityToBooleanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.Reactive.VisibilityToBooleanTypeConverter.TryConvert(System.Windows.Visibility from, object? conversionHint, out bool result) -> bool
+static ReactiveUI.Reactive.AutoDataTemplateBindingHook.DefaultItemTemplate.get -> System.Lazy<System.Windows.DataTemplate!>!
+static ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.WithWpf(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.WithWpf(this Splat.Builder.IAppBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.WithWpfConverters(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.WithWpfScheduler(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.WpfReactiveUIBuilderExtensions.WpfMainThreadScheduler.get -> System.Reactive.Concurrency.IScheduler!
+static ReactiveUI.Reactive.ValidationBindingMixins.BindWithValidation<TView, TViewModel, TVProp, TType>(this TView! view, TViewModel! viewModel, System.Linq.Expressions.Expression<System.Func<TViewModel!, TType?>!>! viewModelPropertySelector, System.Linq.Expressions.Expression<System.Func<TView!, TVProp>!>! frameworkElementSelector) -> ReactiveUI.IReactiveBinding<TView!, TType>!
+static ReactiveUI.Reactive.WpfViewForMixins.GetIsDesignMode<TView>(this TView! item) -> bool
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Action<System.Action<System.IDisposable!>!>! block) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Action<System.Action<System.IDisposable!>!>! block, ReactiveUI.IViewFor! view) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block) -> System.IDisposable!
+static ReactiveUI.Reactive.WpfViewForMixins.WhenActivated<TView>(this TView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, ReactiveUI.IViewFor? view) -> System.IDisposable!
+static readonly ReactiveUI.Reactive.ReactivePage<TViewModel>.ViewModelProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ReactiveUserControl<TViewModel>.ViewModelProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ReactiveWindow<TViewModel>.ViewModelProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.RoutedViewHost.DefaultContentProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.RoutedViewHost.RouterProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.RoutedViewHost.ViewContractObservableProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.TransitioningContentControl.TransitionDirectionProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.TransitioningContentControl.TransitionDurationProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.TransitioningContentControl.TransitionProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ViewModelViewHost.ContractFallbackByPassProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ViewModelViewHost.DefaultContentProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ViewModelViewHost.ViewContractObservableProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.ViewModelViewHost.ViewModelProperty -> System.Windows.DependencyProperty!
+virtual ReactiveUI.Reactive.ViewModelViewHost.ResolveViewForViewModel(object? viewModel, string? contract) -> void

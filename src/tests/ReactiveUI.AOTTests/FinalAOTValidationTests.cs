@@ -3,12 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using Splat;
 
 namespace ReactiveUI.AOT.Tests;
@@ -19,30 +13,22 @@ namespace ReactiveUI.AOT.Tests;
 /// </summary>
 public class FinalAOTValidationTests
 {
-    /// <summary>
-    /// The minimum input length used by the validation interaction.
-    /// </summary>
+    /// <summary>The minimum input length used by the validation interaction.</summary>
     private const int MinimumInputLength = 3;
 
-    /// <summary>
-    /// The parameter value passed to the parameterized command.
-    /// </summary>
+    /// <summary>The parameter value passed to the parameterized command.</summary>
     private const int CommandParameterValue = 42;
 
-    /// <summary>
-    /// The expected minimum number of tested features.
-    /// </summary>
+    /// <summary>The expected minimum number of tested features.</summary>
     private const int ExpectedFeatureCount = 13;
 
-    /// <summary>
-    /// Comprehensive test that validates all the AOT-compatible patterns work together.
-    /// </summary>
+    /// <summary>Comprehensive test that validates all the AOT-compatible patterns work together.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompleteAOTCompatibleWorkflow_WorksSeamlessly()
     {
         // 1. Create objects using AOT-compatible patterns
-        var scheduler = CurrentThreadScheduler.Instance;
+        var scheduler = Sequencer.CurrentThread;
         var property = new ReactiveProperty<string>("initial", scheduler, false, false);
         var obj = new TestReactiveObject();
 
@@ -62,7 +48,7 @@ public class FinalAOTValidationTests
 
         // 5. Test the complete workflow
         property.Value = "test value";
-        var validationResult = interaction.Handle("long string").Wait();
+        var validationResult = await interaction.Handle("long string").FirstAsync();
         messageBus.SendMessage("workflow complete");
 
         using (Assert.Multiple())
@@ -88,7 +74,7 @@ public class FinalAOTValidationTests
     public async Task ReactiveCommand_CompleteWorkflow_WorksWithSuppression()
     {
         // Use CurrentThreadScheduler to ensure synchronous execution
-        var scheduler = CurrentThreadScheduler.Instance;
+        var scheduler = Sequencer.CurrentThread;
 
         // Test all types of ReactiveCommand creation
         var simpleCommand = ReactiveCommand.Create(() => "executed", outputScheduler: scheduler);
@@ -97,7 +83,7 @@ public class FinalAOTValidationTests
             () => Task.FromResult("async result"),
             outputScheduler: scheduler);
         var observableCommand = ReactiveCommand.CreateFromObservable(
-            () => Observable.Return("observable result"),
+            () => Signal.Emit("observable result"),
             outputScheduler: scheduler);
 
         // Test command execution
@@ -112,10 +98,10 @@ public class FinalAOTValidationTests
         observableCommand.Subscribe(r => observableResult = r);
 
         // Execute commands and wait for completion
-        simpleCommand.Execute().Wait();
-        paramCommand.Execute(CommandParameterValue).Wait();
-        taskCommand.Execute().Wait();
-        observableCommand.Execute().Wait();
+        simpleCommand.Execute().GetAwaiter().GetResult();
+        paramCommand.Execute(CommandParameterValue).GetAwaiter().GetResult();
+        taskCommand.Execute().GetAwaiter().GetResult();
+        observableCommand.Execute().GetAwaiter().GetResult();
 
         using (Assert.Multiple())
         {
@@ -126,8 +112,8 @@ public class FinalAOTValidationTests
             await Assert.That(observableResult).IsEqualTo("observable result");
 
             // Test command states
-            await Assert.That(simpleCommand.CanExecute.FirstAsync().Wait()).IsTrue();
-            await Assert.That(simpleCommand.IsExecuting.FirstAsync().Wait()).IsFalse();
+            await Assert.That(await simpleCommand.CanExecute.FirstAsync()).IsTrue();
+            await Assert.That(await simpleCommand.IsExecuting.FirstAsync()).IsFalse();
         }
     }
 
@@ -139,7 +125,7 @@ public class FinalAOTValidationTests
     [Test]
     public async Task MixedAOTScenario_ComplexApplication_Works()
     {
-        var scheduler = CurrentThreadScheduler.Instance;
+        var scheduler = Sequencer.CurrentThread;
         var viewModel = new TestActivatableViewModel();
 
         // AOT-compatible: Activation
@@ -151,20 +137,20 @@ public class FinalAOTValidationTests
             activationCount++;
 
             // AOT-compatible: Property with explicit scheduler
-            var property = new ReactiveProperty<string>("initial", scheduler, false, false)
-                .DisposeWith(d);
+            var property = new ReactiveProperty<string>("initial", scheduler, false, false);
+            property.DisposeWith(d);
 
             // AOT-incompatible but properly suppressed: ReactiveCommand
-            var command = ReactiveCommand.Create(() => property.Value = "updated")
-                .DisposeWith(d);
+            var command = ReactiveCommand.Create(() => property.Value = "updated");
+            command.DisposeWith(d);
 
             // AOT-compatible: Interactions
-            var interaction = new Interaction<Unit, bool>();
+            var interaction = new Interaction<RxVoid, bool>();
             interaction.RegisterHandler(ctx => ctx.SetOutput(true));
 
             // Execute mixed workflow
             command.Execute().Subscribe();
-            interactionResult = interaction.Handle(Unit.Default).Wait();
+            interactionResult = interaction.Handle(RxVoid.Default).GetAwaiter().GetResult();
             propertyValue = property.Value;
         });
 
@@ -180,9 +166,7 @@ public class FinalAOTValidationTests
         viewModel.Activator.Deactivate();
     }
 
-    /// <summary>
-    /// Tests that verify dependency injection patterns work in AOT scenarios.
-    /// </summary>
+    /// <summary>Tests that verify dependency injection patterns work in AOT scenarios.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DependencyInjection_AdvancedScenarios_WorkInAOT()
@@ -190,13 +174,13 @@ public class FinalAOTValidationTests
         var resolver = Locator.CurrentMutable;
 
         // Register services
-        resolver.Register<IScheduler>(static () => CurrentThreadScheduler.Instance);
+        resolver.Register<ISequencer>(static () => Sequencer.CurrentThread);
         resolver.RegisterConstant("test service");
 
         // Create a factory that uses registered services
         resolver.Register<Func<ReactiveProperty<string>>>(static () => static () =>
         {
-            var scheduler = Locator.Current.GetService<IScheduler>();
+            var scheduler = Locator.Current.GetService<ISequencer>();
             var initialValue = Locator.Current.GetService<string>();
             return new(initialValue ?? string.Empty, scheduler, false, false);
         });
@@ -209,25 +193,26 @@ public class FinalAOTValidationTests
         property.Dispose();
     }
 
-    /// <summary>
-    /// Tests that demonstrate error handling and disposal patterns in AOT scenarios.
-    /// </summary>
+    /// <summary>Tests that demonstrate error handling and disposal patterns in AOT scenarios.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ErrorHandlingAndDisposal_PatternsWork_InAOT()
     {
-        var disposables = new CompositeDisposable();
-        var scheduler = CurrentThreadScheduler.Instance;
+        var disposables = new MultipleDisposable();
+        var scheduler = Sequencer.CurrentThread;
 
         try
         {
             // Create observables with proper disposal
-            var source = new BehaviorSubject<string>("test").DisposeWith(disposables);
-            var property = new ReactiveProperty<string>(string.Empty, scheduler, false, false).DisposeWith(disposables);
+            var source = new StateSignal<string>("test");
+            source.DisposeWith(disposables);
+
+            var property = new ReactiveProperty<string>(string.Empty, scheduler, false, false);
+            property.DisposeWith(disposables);
 
             // Connect with error handling
             source
-                .Catch<string, Exception>(ex => Observable.Return($"Error: {ex.Message}"))
+                .Recover<string, Exception>(ex => Signal.Emit($"Error: {ex.Message}"))
                 .Subscribe(value => property.Value = value)
                 .DisposeWith(disposables);
 
@@ -243,9 +228,7 @@ public class FinalAOTValidationTests
         }
     }
 
-    /// <summary>
-    /// Final validation that all key ReactiveUI patterns have been tested for AOT compatibility.
-    /// </summary>
+    /// <summary>Final validation that all key ReactiveUI patterns have been tested for AOT compatibility.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task AllKeyReactiveUIFeatures_TestedForAOT()

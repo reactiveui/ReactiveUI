@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="UnhandledInteractionException{TInput, TOutput}" />.
-/// </summary>
+/// <summary>Tests for <see cref="UnhandledInteractionException{TInput, TOutput}" />.</summary>
 public class UnhandledInteractionExceptionTest
 {
-    /// <summary>
-    ///     Tests that parameterless constructor creates exception.
-    /// </summary>
+    /// <summary>Tests that parameterless constructor creates exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_Parameterless_CreatesException()
@@ -24,9 +20,7 @@ public class UnhandledInteractionExceptionTest
         await Assert.That(exception.Interaction).IsNull();
     }
 
-    /// <summary>
-    ///     Tests that constructor with interaction and input sets properties.
-    /// </summary>
+    /// <summary>Tests that constructor with interaction and input sets properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WithInteractionAndInput_SetsProperties()
@@ -41,9 +35,7 @@ public class UnhandledInteractionExceptionTest
         await Assert.That(exception.Message).Contains("Failed to find a registration");
     }
 
-    /// <summary>
-    ///     Tests that constructor with message creates exception.
-    /// </summary>
+    /// <summary>Tests that constructor with message creates exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WithMessage_SetsMessage()
@@ -55,9 +47,7 @@ public class UnhandledInteractionExceptionTest
         await Assert.That(exception.Message).IsEqualTo(Message);
     }
 
-    /// <summary>
-    ///     Tests that constructor with message and inner exception creates exception.
-    /// </summary>
+    /// <summary>Tests that constructor with message and inner exception creates exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WithMessageAndInnerException_SetsProperties()
@@ -71,9 +61,7 @@ public class UnhandledInteractionExceptionTest
         await Assert.That(exception.InnerException).IsEqualTo(innerException);
     }
 
-    /// <summary>
-    ///     Tests that exception can be thrown and caught.
-    /// </summary>
+    /// <summary>Tests that exception can be thrown and caught.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Exception_CanBeThrownAndCaught()
@@ -85,9 +73,7 @@ public class UnhandledInteractionExceptionTest
             .Throws<UnhandledInteractionException<string, int>>();
     }
 
-    /// <summary>
-    ///     Tests that Input property returns the input value.
-    /// </summary>
+    /// <summary>Tests that Input property returns the input value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Input_ReturnsInputValue()
@@ -100,9 +86,7 @@ public class UnhandledInteractionExceptionTest
         await Assert.That(exception.Input).IsEqualTo(Input);
     }
 
-    /// <summary>
-    ///     Tests that Interaction property returns the interaction.
-    /// </summary>
+    /// <summary>Tests that Interaction property returns the interaction.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Interaction_ReturnsInteraction()

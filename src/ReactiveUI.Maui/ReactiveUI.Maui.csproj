@@ -15,6 +15,11 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.17763.0'))">10.0.17763.57</WindowsSdkPackageVersion>
@@ -36,37 +41,19 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
+    <PackageReference Include="ReactiveUI.Primitives.Maui"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
-    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
-    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
-    <Compile Include="..\Shared\OnceDisposable.cs" Link="Shared\OnceDisposable.cs"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
-    <Compile Include="..\Shared\Broadcaster.cs" Link="Shared\Broadcaster.cs"/>
-    <Compile Include="..\Shared\BroadcastSubject.cs" Link="Shared\BroadcastSubject.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SelectObservable.cs" Link="Shared\Platform\SelectObservable.cs"/>
-    <Compile Include="..\Shared\Platform\MergedObservable.cs" Link="Shared\Platform\MergedObservable.cs"/>
-    <Compile Include="..\Shared\Platform\DistinctUntilChangedObservable.cs" Link="Shared\Platform\DistinctUntilChangedObservable.cs"/>
-    <Compile Include="..\Shared\Platform\StartWithObservable.cs" Link="Shared\Platform\StartWithObservable.cs"/>
-    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
-    <Compile Include="..\Shared\Platform\NeverObservable.cs" Link="Shared\Platform\NeverObservable.cs"/>
-    <Compile Include="..\Shared\Platform\EmptyObservable.cs" Link="Shared\Platform\EmptyObservable.cs"/>
-    <Compile Include="..\Shared\Platform\ThrowObservable.cs" Link="Shared\Platform\ThrowObservable.cs"/>
-    <Compile Include="..\Shared\Platform\CombineLatestSink.cs" Link="Shared\Platform\CombineLatestSink.cs"/>
-  </ItemGroup>
-  <!-- Windows TFM only: DispatcherQueueScheduler (WINUI_TARGET) needs the multiple-assignment disposable. Kept
-       windows-conditional so it isn't an uninstantiated internal (CA1812) on the non-Windows Maui targets. -->
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <Compile Include="..\Shared\DisposableSlotHelper.cs" Link="Shared\DisposableSlotHelper.cs"/>
-    <Compile Include="..\ReactiveUI\Internal\Disposables\MutableDisposable.cs" Link="Shared\MutableDisposable.cs"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Common\RoutedViewHost.cs"/>
     <Compile Remove="Common\RoutedViewHost{TViewModel}.cs"/>
     <Compile Remove="Common\ViewModelViewHost.cs"/>
     <Compile Remove="Common\ViewModelViewHost{TViewModel}.cs"/>
+    <Compile Remove="WinUI\DispatcherQueueScheduler.cs"/>
     <Compile Remove="WinUI\TransitioningContentControl.Empty.cs"/>
   </ItemGroup>
 </Project>

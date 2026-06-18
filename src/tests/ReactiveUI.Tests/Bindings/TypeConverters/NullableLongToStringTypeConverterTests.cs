@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable long to strings.
-/// </summary>
+/// <summary>Tests for converting nullable long to strings.</summary>
 public class NullableLongToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class NullableLongToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a nullable long to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a nullable long to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_LongNullableToString_Succeeds()
@@ -38,9 +32,7 @@ public class NullableLongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123456789012");
     }
 
-    /// <summary>
-    /// Verifies that converting the maximum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the maximum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -54,9 +46,7 @@ public class NullableLongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(long.MaxValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that converting the minimum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the minimum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -70,9 +60,7 @@ public class NullableLongToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(long.MinValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NullValue_ReturnsTrue()
@@ -84,9 +72,7 @@ public class NullableLongToStringTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that a conversion hint is used to format the output.
-    /// </summary>
+    /// <summary>Verifies that a conversion hint is used to format the output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()

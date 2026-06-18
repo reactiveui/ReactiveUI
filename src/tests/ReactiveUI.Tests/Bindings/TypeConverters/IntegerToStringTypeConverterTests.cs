@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-///     Tests for converting integers to strings.
-/// </summary>
+/// <summary>Tests for converting integers to strings.</summary>
 public class IntegerToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an int value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that an int value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_IntToString_Succeeds()
@@ -38,9 +32,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123456");
     }
 
-    /// <summary>
-    /// Verifies that the maximum int value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the maximum int value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -54,9 +46,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(int.MaxValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that the minimum int value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that the minimum int value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -70,9 +60,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(int.MinValue.ToString());
     }
 
-    /// <summary>
-    /// Verifies that a negative int value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a negative int value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
@@ -86,9 +74,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("-123456");
     }
 
-    /// <summary>
-    /// Verifies that a numeric conversion hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a numeric conversion hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
@@ -103,9 +89,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("00000042");
     }
 
-    /// <summary>
-    /// Verifies that a custom format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a custom format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_CustomFormat()
@@ -119,9 +103,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("042");
     }
 
-    /// <summary>
-    /// Verifies that an uppercase hexadecimal format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that an uppercase hexadecimal format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_HexFormat()
@@ -135,9 +117,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("FF");
     }
 
-    /// <summary>
-    /// Verifies that a lowercase hexadecimal format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a lowercase hexadecimal format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_HexFormatLowercase()
@@ -151,9 +131,7 @@ public class IntegerToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("000000ff");
     }
 
-    /// <summary>
-    /// Verifies that a number format string hint applies the expected formatting.
-    /// </summary>
+    /// <summary>Verifies that a number format string hint applies the expected formatting.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithStringFormatHint_NumberFormat()

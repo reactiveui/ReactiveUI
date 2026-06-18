@@ -5,18 +5,14 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-///     A bind view.
-/// </summary>
+/// <summary>A bind view.</summary>
 public class InteractionBindView : ReactiveObject, IViewFor<InteractionBindViewModel>
 {
-    private InteractionBindViewModel? _viewModel;
-
     /// <inheritdoc />
     public InteractionBindViewModel? ViewModel
     {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
     /// <inheritdoc />

@@ -7,14 +7,10 @@ using System.Linq.Expressions;
 
 namespace ReactiveUI.Tests.Expressions;
 
-/// <summary>
-/// Tests for the Reflection.Rewrite expression rewriting logic.
-/// </summary>
+/// <summary>Tests for the Reflection.Rewrite expression rewriting logic.</summary>
 public class ExpressionRewriterTests
 {
-    /// <summary>
-    /// Verifies that an array index expression is rewritten to an Index node.
-    /// </summary>
+    /// <summary>Verifies that an array index expression is rewritten to an Index node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithArrayIndex_ReturnsIndexExpression()
@@ -26,9 +22,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
-    /// <summary>
-    /// Verifies that a non-constant array index throws a not supported exception.
-    /// </summary>
+    /// <summary>Verifies that a non-constant array index throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithArrayIndexNonConstant_Throws()
     {
@@ -38,9 +32,7 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
-    /// <summary>
-    /// Verifies that an array length expression is rewritten to a Length member access.
-    /// </summary>
+    /// <summary>Verifies that an array length expression is rewritten to a Length member access.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithArrayLength_ReturnsMemberAccess()
@@ -55,9 +47,7 @@ public class ExpressionRewriterTests
         await Assert.That(memberExpr.Member.Name).IsEqualTo("Length");
     }
 
-    /// <summary>
-    /// Verifies that a constant expression is preserved as a Constant node.
-    /// </summary>
+    /// <summary>Verifies that a constant expression is preserved as a Constant node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithConstant_ReturnsConstantExpression()
@@ -69,9 +59,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Constant);
     }
 
-    /// <summary>
-    /// Verifies that a Convert expression is unwrapped to its underlying member access.
-    /// </summary>
+    /// <summary>Verifies that a Convert expression is unwrapped to its underlying member access.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithConvert_ReturnsUnderlyingExpression()
@@ -84,9 +72,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
     }
 
-    /// <summary>
-    /// Verifies that an index expression with constant arguments is rewritten to an Index node.
-    /// </summary>
+    /// <summary>Verifies that an index expression with constant arguments is rewritten to an Index node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithIndexExpression_ValidatesConstantArguments()
@@ -98,9 +84,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
-    /// <summary>
-    /// Verifies that an index expression with non-constant arguments throws a not supported exception.
-    /// </summary>
+    /// <summary>Verifies that an index expression with non-constant arguments throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithIndexExpressionNonConstantArguments_Throws()
     {
@@ -114,9 +98,7 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
     }
 
-    /// <summary>
-    /// Verifies that a list indexer expression is rewritten to an Index node.
-    /// </summary>
+    /// <summary>Verifies that a list indexer expression is rewritten to an Index node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithListIndexer_ReturnsIndexExpression()
@@ -128,9 +110,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
-    /// <summary>
-    /// Verifies that a non-constant list indexer throws a not supported exception.
-    /// </summary>
+    /// <summary>Verifies that a non-constant list indexer throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithListIndexerNonConstant_Throws()
     {
@@ -140,9 +120,7 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
-    /// <summary>
-    /// Verifies that a member access expression is preserved as a MemberAccess node.
-    /// </summary>
+    /// <summary>Verifies that a member access expression is preserved as a MemberAccess node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithMemberAccess_ReturnsMemberExpression()
@@ -154,9 +132,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
     }
 
-    /// <summary>
-    /// Verifies that a method call without a special name throws a not supported exception.
-    /// </summary>
+    /// <summary>Verifies that a method call without a special name throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithMethodCallNonSpecialName_Throws()
     {
@@ -165,9 +141,7 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
-    /// <summary>
-    /// Verifies that a nested member access expression is preserved as a MemberAccess node.
-    /// </summary>
+    /// <summary>Verifies that a nested member access expression is preserved as a MemberAccess node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithNestedMemberAccess_ReturnsMemberExpression()
@@ -179,16 +153,12 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.MemberAccess);
     }
 
-    /// <summary>
-    /// Verifies that rewriting a null expression throws an argument null exception.
-    /// </summary>
+    /// <summary>Verifies that rewriting a null expression throws an argument null exception.</summary>
     [Test]
     public void Rewrite_WithNullExpression_Throws() =>
         Assert.Throws<ArgumentNullException>(() => Reflection.Rewrite(null));
 
-    /// <summary>
-    /// Verifies that a parameter expression is preserved as a Parameter node.
-    /// </summary>
+    /// <summary>Verifies that a parameter expression is preserved as a Parameter node.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithParameterExpression_ReturnsParameterExpression()
@@ -200,9 +170,7 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Parameter);
     }
 
-    /// <summary>
-    /// Verifies that a unary expression that is neither ArrayLength nor Convert throws.
-    /// </summary>
+    /// <summary>Verifies that a unary expression that is neither ArrayLength nor Convert throws.</summary>
     [Test]
     public void Rewrite_WithUnaryExpressionNotArrayLengthOrConvert_Throws()
     {
@@ -214,9 +182,7 @@ public class ExpressionRewriterTests
         Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(notExpr));
     }
 
-    /// <summary>
-    /// Verifies that an unsupported binary expression throws with a helpful message.
-    /// </summary>
+    /// <summary>Verifies that an unsupported binary expression throws with a helpful message.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithUnsupportedBinaryExpression_ThrowsWithHelpfulMessage()
@@ -228,9 +194,7 @@ public class ExpressionRewriterTests
         await Assert.That(ex.Message).Contains("Did you meant to use expressions");
     }
 
-    /// <summary>
-    /// Verifies that an unsupported expression throws with a descriptive message.
-    /// </summary>
+    /// <summary>Verifies that an unsupported expression throws with a descriptive message.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_WithUnsupportedExpression_Throws()
@@ -242,15 +206,22 @@ public class ExpressionRewriterTests
         await Assert.That(ex.Message).Contains("Add");
     }
 
-    /// <summary>
-    /// A sample class used as the target of expression rewriting tests.
-    /// </summary>
+    /// <summary>A sample class used as the target of expression rewriting tests.</summary>
     private sealed class TestClass
     {
+        /// <summary>The second element value of the sample array.</summary>
         private const int ArraySecondElement = 2;
+
+        /// <summary>The third element value of the sample array.</summary>
         private const int ArrayThirdElement = 3;
+
+        /// <summary>The first element value of the sample list.</summary>
         private const int ListFirstElement = 4;
+
+        /// <summary>The second element value of the sample list.</summary>
         private const int ListSecondElement = 5;
+
+        /// <summary>The third element value of the sample list.</summary>
         private const int ListThirdElement = 6;
 
         /// <summary>
@@ -259,29 +230,19 @@ public class ExpressionRewriterTests
         /// </summary>
         public int Index { get; set; } = 1;
 
-        /// <summary>
-        /// Gets a sample array.
-        /// </summary>
+        /// <summary>Gets a sample array.</summary>
         public int[] Array { get; } = [1, ArraySecondElement, ArrayThirdElement];
 
-        /// <summary>
-        /// Gets a sample list.
-        /// </summary>
+        /// <summary>Gets a sample list.</summary>
         public List<int> List { get; } = [ListFirstElement, ListSecondElement, ListThirdElement];
 
-        /// <summary>
-        /// Gets or sets a nested instance.
-        /// </summary>
+        /// <summary>Gets or sets a nested instance.</summary>
         public TestClass? Nested { get; set; } = null!;
 
-        /// <summary>
-        /// Gets or sets a sample property.
-        /// </summary>
+        /// <summary>Gets or sets a sample property.</summary>
         public string? Property { get; set; } = null!;
 
-        /// <summary>
-        /// Returns the value of <see cref="Property"/>.
-        /// </summary>
+        /// <summary>Returns the value of <see cref="Property"/>.</summary>
         /// <returns>The property value.</returns>
         public string? GetValue() => Property;
     }

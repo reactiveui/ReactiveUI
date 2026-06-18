@@ -7,14 +7,10 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <summary>
-/// Tests for the instance- and extension-based WithInstance overloads on the builder.
-/// </summary>
+/// <summary>Tests for the instance- and extension-based WithInstance overloads on the builder.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Registers nine test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers nine test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -61,9 +57,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s9, typeof(InstanceService09));
     }
 
-    /// <summary>
-    /// Registers ten test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers ten test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -114,9 +108,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s10, typeof(InstanceService10));
     }
 
-    /// <summary>
-    /// Registers eleven test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers eleven test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -171,9 +163,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s11, typeof(InstanceService11));
     }
 
-    /// <summary>
-    /// Registers twelve test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers twelve test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -232,9 +222,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s12, typeof(InstanceService12));
     }
 
-    /// <summary>
-    /// Registers thirteen test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers thirteen test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -297,9 +285,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s13, typeof(InstanceService13));
     }
 
-    /// <summary>
-    /// Registers fourteen test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers fourteen test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -366,9 +352,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s14, typeof(InstanceService14));
     }
 
-    /// <summary>
-    /// Registers fifteen test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers fifteen test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -439,9 +423,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s15, typeof(InstanceService15));
     }
 
-    /// <summary>
-    /// Registers sixteen test service instances on the resolver and returns the created instances.
-    /// </summary>
+    /// <summary>Registers sixteen test service instances on the resolver and returns the created instances.</summary>
     /// <param name="resolver">The resolver to register the services on.</param>
     /// <param name="s1">The created instance for service 1.</param>
     /// <param name="s2">The created instance for service 2.</param>
@@ -516,147 +498,115 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(s16, typeof(InstanceService16));
     }
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService01;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService02;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService03;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService04;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService05;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService06;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService07;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService08;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService09;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService10;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService11;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService12;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService13;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService14;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService15;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class InstanceService16;
 }

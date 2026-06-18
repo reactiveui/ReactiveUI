@@ -3,8 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Utilities.Schedulers;
@@ -24,7 +27,7 @@ public class WithSchedulerExecutor : BaseAppBuilderTestExecutor
         // Ensure TestContext.Current is set in case of async flow issues
         context.RestoreExecutionContext();
 
-        var scheduler = ImmediateScheduler.Instance;
+        var scheduler = Sequencer.Immediate;
 
         // Store scheduler in StateBag for retrieval by tests
         context.StateBag.Items["Scheduler"] = scheduler;

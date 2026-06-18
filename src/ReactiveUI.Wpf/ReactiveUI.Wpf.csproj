@@ -1,5 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- Lean WPF leaf: compiles the shared WPF source (ReactiveUI.Wpf.Shared) against the lean ReactiveUI
+         (RxVoid = ReactiveUI.Primitives.RxVoid). The .Reactive sibling recompiles the same source against
+         System.Reactive's Unit. -->
     <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
     <PackageDescription>Contains the ReactiveUI platform specific extensions for Windows Presentation Foundation (WPF)</PackageDescription>
     <PackageId>ReactiveUI.WPF</PackageId>
@@ -11,29 +14,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.Wpf"/>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
   </ItemGroup>
 
+  <!-- The shared WPF seam source, compiled here with the lean RxVoid identity. -->
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
-    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
-    <Compile Include="..\Shared\EmptyDisposable.cs" Link="Shared\EmptyDisposable.cs"/>
+    <Compile Include="..\ReactiveUI.Wpf.Shared\**\*.cs" Link="ReactiveUI.Wpf.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <!-- The shared source carries no per-file usings for the namespaces it shifts between leaves; the lean
+       leaf imports the unshifted forms here. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Builder"/>
+    <Using Include="ReactiveUI.Interfaces"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+
+  <!-- Internal plumbing + platform sinks compiled per-assembly (no IVT between shipping libs; internal so the
+       per-leaf copies stay assembly-private). Multicast subjects come from the ReactiveUI.Primitives package
+       (Signal&lt;T&gt;), so they are NOT recompiled here. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
     <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
-    <Compile Include="..\Shared\Broadcaster.cs" Link="Shared\Broadcaster.cs"/>
-    <Compile Include="..\Shared\BroadcastSubject.cs" Link="Shared\BroadcastSubject.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
-    <Compile Include="..\Shared\Platform\MergedDistinctObservable.cs" Link="Shared\Platform\MergedDistinctObservable.cs"/>
-    <Compile Include="..\Shared\Platform\EmptyObservable.cs" Link="Shared\Platform\EmptyObservable.cs"/>
-    <Compile Include="..\Shared\Platform\NeverObservable.cs" Link="Shared\Platform\NeverObservable.cs"/>
-    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
-    <Compile Include="..\Shared\Platform\StartWithObservable.cs" Link="Shared\Platform\StartWithObservable.cs"/>
-    <Compile Include="..\Shared\Platform\DoObservable.cs" Link="Shared\Platform\DoObservable.cs"/>
-    <Compile Include="..\Shared\Platform\DistinctUntilChangedObservable.cs" Link="Shared\Platform\DistinctUntilChangedObservable.cs"/>
-    <Compile Include="..\Shared\Platform\CombineLatestObservable.cs" Link="Shared\Platform\CombineLatestObservable.cs"/>
     <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
-    <Compile Include="..\Shared\Platform\MergedObservable.cs" Link="Shared\Platform\MergedObservable.cs"/>
     <Compile Include="..\Shared\Platform\IdleTimeoutObservable.cs" Link="Shared\Platform\IdleTimeoutObservable.cs"/>
-    <Compile Include="..\ReactiveUI\Polyfills\**\*.cs" Link="Polyfills\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
 
   <ItemGroup>

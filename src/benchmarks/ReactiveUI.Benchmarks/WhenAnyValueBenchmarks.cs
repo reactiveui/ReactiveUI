@@ -49,9 +49,9 @@ public class WhenAnyValueBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _arity1ViewModel = new BenchmarkViewModel();
-        _arity2ViewModel = new BenchmarkViewModel();
-        _arity3ViewModel = new BenchmarkViewModel();
+        _arity1ViewModel = new();
+        _arity2ViewModel = new();
+        _arity3ViewModel = new();
 
         _arity1Subscription = _arity1ViewModel.WhenAnyValue(x => x.First).Subscribe(_arity1Sink);
         _arity2Subscription = _arity2ViewModel.WhenAnyValue(x => x.First, x => x.Second, (first, second) => (first, second)).Subscribe(_arity2Sink);

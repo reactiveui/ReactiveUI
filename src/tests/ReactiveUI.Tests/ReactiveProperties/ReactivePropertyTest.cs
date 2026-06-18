@@ -5,54 +5,59 @@
 
 using System.Collections;
 using System.ComponentModel;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveProperties.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.ReactiveProperties;
 
-/// <summary>
-/// Tests for <see cref="ReactiveProperty{T}"/> covering value, subscription and validation behaviour.
-/// </summary>
+/// <summary>Tests for <see cref="ReactiveProperty{T}"/> covering value, subscription and validation behaviour.</summary>
 public class ReactivePropertyTest
 {
+    /// <summary>The name of the Value property.</summary>
     private const string ValuePropertyName = "Value";
+
+    /// <summary>The capitalized error text used in validation tests.</summary>
     private const string ErrorValue = "Error";
+
+    /// <summary>The lower-case error text used in validation tests.</summary>
     private const string ErrorLowerValue = "error";
+
+    /// <summary>The first sample value used in subscription tests.</summary>
     private const string ReactiveUiValue = "ReactiveUI";
+
+    /// <summary>The second sample value used in subscription tests.</summary>
     private const string ReactiveUiSecondValue = "ReactiveUI 2";
+
+    /// <summary>The required-value validation error message.</summary>
     private const string RequiredErrorValue = "required";
+
+    /// <summary>The error text with an exclamation used in validation tests.</summary>
     private const string ExclaimErrorValue = "error!";
 
-    /// <summary>
-    /// Verifies that explicitly checking validation surfaces an error that was not yet evaluated.
-    /// </summary>
+    /// <summary>Verifies that explicitly checking validation surfaces an error that was not yet evaluated.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task CheckValidation()
     {
         var minValue = 0;
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
             .AddValidationError(x => x < minValue ? ErrorValue : null);
-        await Assert.That(rp.GetErrors(ValuePropertyName) == null).IsTrue();
+        await Assert.That(rp.GetErrors(ValuePropertyName) is null).IsTrue();
 
         minValue = 1;
-        await Assert.That(rp.GetErrors(ValuePropertyName) == null).IsTrue();
+        await Assert.That(rp.GetErrors(ValuePropertyName) is null).IsTrue();
 
         rp.CheckValidation();
         await Assert.That(rp.GetErrors(ValuePropertyName)?.OfType<string>()).IsEquivalentTo([ErrorValue]);
     }
 
-    /// <summary>
-    /// Verifies that the default value is raised to subscribers on subscription.
-    /// </summary>
+    /// <summary>Verifies that the default value is raised to subscribers on subscription.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task DefaultValueIsRaisedOnSubscribe()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false);
         await Assert.That(rp.Value).IsNull();
         var receivedValue = false;
         rp.Subscribe(x => receivedValue = true);
@@ -60,14 +65,12 @@ public class ReactivePropertyTest
         await Assert.That(receivedValue).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies the errors changed event is raised when the value changes.
-    /// </summary>
+    /// <summary>Verifies the errors changed event is raised when the value changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ErrorsChanged_EventIsRaised()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null);
 
         DataErrorsChangedEventArgs? eventArgs = null;
@@ -80,14 +83,12 @@ public class ReactivePropertyTest
         await Assert.That(eventArgs).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies the initial error is ignored but a later value update produces an error.
-    /// </summary>
+    /// <summary>Verifies the initial error is ignored but a later value update produces an error.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task IgnoreInitErrorAndUpdateValue()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
@@ -95,14 +96,12 @@ public class ReactivePropertyTest
         await Assert.That(rp.HasErrors).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies the initial error is ignored but invoking validation surfaces the error.
-    /// </summary>
+    /// <summary>Verifies the initial error is ignored but invoking validation surfaces the error.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task IgnoreInitialErrorAndCheckValidation()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
@@ -110,28 +109,24 @@ public class ReactivePropertyTest
         await Assert.That(rp.HasErrors).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies the initial value is stored and raised to subscribers.
-    /// </summary>
+    /// <summary>Verifies the initial value is stored and raised to subscribers.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task InitialValue()
     {
-        using var rp = new ReactiveProperty<string>(ReactiveUiValue, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<string>(ReactiveUiValue, Sequencer.Immediate, false, false);
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiValue);
         string? received = null;
         rp.Subscribe(x => received = x);
         await Assert.That(received).IsEqualTo(ReactiveUiValue);
     }
 
-    /// <summary>
-    /// Verifies that the current value is skipped on subscribe when skip-current is enabled.
-    /// </summary>
+    /// <summary>Verifies that the current value is skipped on subscribe when skip-current is enabled.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task InitialValueSkipCurrent()
     {
-        using var rp = new ReactiveProperty<string>(ReactiveUiValue, ImmediateScheduler.Instance, true, false);
+        using var rp = new ReactiveProperty<string>(ReactiveUiValue, Sequencer.Immediate, true, false);
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiValue);
 
         // current value should be skipped
@@ -142,16 +137,14 @@ public class ReactivePropertyTest
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiSecondValue);
     }
 
-    /// <summary>
-    /// Verifies that multiple subscribers each receive the current value and subsequent changes.
-    /// </summary>
+    /// <summary>Verifies that multiple subscribers each receive the current value and subsequent changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task MultipleSubscribersGetCurrentValue()
     {
         const int ThirdValue = 2;
         const int FourthValue = 3;
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false);
         var collector1 = new List<int>();
         var collector2 = new List<int>();
         var obs = rp;
@@ -179,15 +172,13 @@ public class ReactivePropertyTest
         await Assert.That(collector2).IsEquivalentTo([ThirdValue, FourthValue]);
     }
 
-    /// <summary>
-    /// Verifies that the observable error stream emits the error and the cleared state.
-    /// </summary>
+    /// <summary>Verifies that the observable error stream emits the error and the cleared state.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ObserveErrors()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
-            .AddValidationError(x => x == null ? ErrorValue : null);
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
+            .AddValidationError(x => x is null ? ErrorValue : null);
 
         const int ExpectedEmissionCount = 2;
         var results = new List<IEnumerable?>();
@@ -196,18 +187,16 @@ public class ReactivePropertyTest
 
         await Assert.That(results.Count).IsEqualTo(ExpectedEmissionCount);
         await Assert.That(results[0]?.OfType<string>()).IsEquivalentTo([ErrorValue]);
-        await Assert.That(results[1] == null).IsTrue();
+        await Assert.That(results[1] is null).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that the observable has-errors stream emits the true and false states.
-    /// </summary>
+    /// <summary>Verifies that the observable has-errors stream emits the true and false states.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ObserveHasError()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
-            .AddValidationError(x => x == null ? ErrorValue : null);
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
+            .AddValidationError(x => x is null ? ErrorValue : null);
 
         const int ExpectedEmissionCount = 2;
         var results = new List<bool>();
@@ -219,9 +208,7 @@ public class ReactivePropertyTest
         await Assert.That(results[1]).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that observing validation errors reports each distinct error message as the value changes.
-    /// </summary>
+    /// <summary>Verifies that observing validation errors reports each distinct error message as the value changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ObserveValidationErrors_HandlesMultipleErrors()
@@ -240,9 +227,7 @@ public class ReactivePropertyTest
         await Assert.That(errors[^1]).IsEqualTo("5over");
     }
 
-    /// <summary>
-    /// Verifies that observing validation errors returns and clears the required error message.
-    /// </summary>
+    /// <summary>Verifies that observing validation errors returns and clears the required error message.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ObserveValidationErrors_ReturnsErrorMessages()
@@ -265,9 +250,7 @@ public class ReactivePropertyTest
         await Assert.That(errors[^1]).IsEqualTo(ExclaimErrorValue);
     }
 
-    /// <summary>
-    /// Verifies that observing validation errors throws when the property is null.
-    /// </summary>
+    /// <summary>Verifies that observing validation errors throws when the property is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ObserveValidationErrors_ThrowsOnNull()
@@ -277,14 +260,12 @@ public class ReactivePropertyTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Verifies that refreshing re-emits the current value even when duplicates are not allowed.
-    /// </summary>
+    /// <summary>Verifies that refreshing re-emits the current value even when duplicates are not allowed.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Refresh()
     {
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false);
         var collector = new List<int>();
         rp.Subscribe(collector.Add);
 
@@ -295,14 +276,12 @@ public class ReactivePropertyTest
         await Assert.That(collector).IsEquivalentTo([0, 0]);
     }
 
-    /// <summary>
-    /// Verifies that setting the value updates it and raises it to later subscribers.
-    /// </summary>
+    /// <summary>Verifies that setting the value updates it and raises it to later subscribers.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task SetValueRaisesEvents()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false);
         await Assert.That(rp.Value).IsNull();
         rp.Value = ReactiveUiValue;
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiValue);
@@ -311,9 +290,7 @@ public class ReactivePropertyTest
         await Assert.That(received).IsEqualTo(ReactiveUiValue);
     }
 
-    /// <summary>
-    /// Verifies that subscribing with a null observer returns a non-null disposable.
-    /// </summary>
+    /// <summary>Verifies that subscribing with a null observer returns a non-null disposable.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Subscribe_WithNullObserver_ReturnsEmptyDisposable()
@@ -324,30 +301,26 @@ public class ReactivePropertyTest
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that a large number of subscribers all receive events within an acceptable startup time.
-    /// </summary>
+    /// <summary>Verifies that a large number of subscribers all receive events within an acceptable startup time.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TestMultipleSubstribers()
     {
-        const int SubscriberCount = 1000;
-        const int MaxStartupTimeMs = 2000;
+        const int SubscriberCount = 1_000;
+        const int MaxStartupTimeMs = 2_000;
         using var vm = new SubcribeTestViewModel(SubscriberCount);
         await Assert.That(vm.SubscriberCount).IsEqualTo(SubscriberCount);
         await Assert.That(vm.StartupTime).IsLessThan(MaxStartupTimeMs);
         await Assert.That(vm.SubscriberEvents).IsEqualTo(SubscriberCount);
     }
 
-    /// <summary>
-    /// Verifies the error changed stream emits as the value transitions between valid and invalid.
-    /// </summary>
+    /// <summary>Verifies the error changed stream emits as the value transitions between valid and invalid.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationErrorChangedTest()
     {
         var errors = new List<IEnumerable?>();
-        using var rprop = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rprop = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrWhiteSpace(x) ? ErrorLowerValue : null);
 
         // old version behavior
@@ -357,7 +330,7 @@ public class ReactivePropertyTest
 
         rprop.Value = "OK";
         await Assert.That(errors.Count).IsEqualTo(1);
-        await Assert.That(errors[^1] == null).IsTrue();
+        await Assert.That(errors[^1] is null).IsTrue();
 
         const int AfterRevalidationCount = 2;
         rprop.Value = null;
@@ -365,14 +338,12 @@ public class ReactivePropertyTest
         await Assert.That(errors[^1]?.OfType<string>()).IsEquivalentTo([ErrorLowerValue]);
     }
 
-    /// <summary>
-    /// Verifies the initial error is ignored but refreshing surfaces the error.
-    /// </summary>
+    /// <summary>Verifies the initial error is ignored but refreshing surfaces the error.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationIgnoreInitialErrorAndRefresh()
     {
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrEmpty(x) ? ErrorLowerValue : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse();
@@ -380,9 +351,7 @@ public class ReactivePropertyTest
         await Assert.That(rp.HasErrors).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies the required validation attribute reports and clears errors as the value changes.
-    /// </summary>
+    /// <summary>Verifies the required validation attribute reports and clears errors as the value changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationIsRequiredIsCorrectlyHandled()
@@ -390,7 +359,7 @@ public class ReactivePropertyTest
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
         target.IsRequiredProperty
-                    .ObserveErrorChanged.Where(x => x != null).Subscribe(errors.Add);
+                    .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
 
         await Assert.That(errors.Count).IsEqualTo(1);
         await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo([ExclaimErrorValue]);
@@ -407,9 +376,7 @@ public class ReactivePropertyTest
         await Assert.That(target.IsRequiredProperty.HasErrors).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies the string length validation attribute reports and clears errors as the value changes.
-    /// </summary>
+    /// <summary>Verifies the string length validation attribute reports and clears errors as the value changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationLengthIsCorrectlyHandled()
@@ -417,14 +384,14 @@ public class ReactivePropertyTest
         var target = new ReactivePropertyVm();
         IEnumerable? error = null;
         target.LengthLessThanFiveProperty
-                    .ObserveErrorChanged.ObserveOn(ImmediateScheduler.Instance).Subscribe(x => error = x);
+                    .ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
         await Assert.That(error!.OfType<string>().First()).IsEqualTo(RequiredErrorValue);
 
         target.LengthLessThanFiveProperty.Value = "a";
         await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         target.LengthLessThanFiveProperty.Value = "aaaaaa";
         await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
@@ -436,9 +403,7 @@ public class ReactivePropertyTest
         await Assert.That(error!.OfType<string>().First()).IsEqualTo(RequiredErrorValue);
     }
 
-    /// <summary>
-    /// Verifies that task-based validation reports and clears errors as the value changes.
-    /// </summary>
+    /// <summary>Verifies that task-based validation reports and clears errors as the value changes.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationTaskTest()
@@ -446,7 +411,7 @@ public class ReactivePropertyTest
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
         target.TaskValidationTestProperty
-                    .ObserveErrorChanged.Where(x => x != null).Subscribe(errors.Add);
+                    .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
         await Assert.That(errors.Count).IsEqualTo(1);
         await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo([RequiredErrorValue]);
 
@@ -460,24 +425,22 @@ public class ReactivePropertyTest
         await Assert.That(errors.Count).IsEqualTo(AfterRevalidationErrorCount);
     }
 
-    /// <summary>
-    /// Verifies that asynchronous validation reports an error when the value is invalid.
-    /// </summary>
+    /// <summary>Verifies that asynchronous validation reports an error when the value is invalid.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationWithAsyncFailedCase()
     {
         const string ErrorMessage = "error occured!!";
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(x => string.IsNullOrEmpty(x) ? null : ErrorMessage);
 
         IEnumerable? error = null;
         rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
-        rp.Value = "dummy"; //--- push value to trigger validation error
+        rp.Value = "dummy"; // --- push value to trigger validation error
 
         await Assert.That(rp.HasErrors).IsTrue();
         await Assert.That(error).IsNotNull();
@@ -485,34 +448,30 @@ public class ReactivePropertyTest
         await Assert.That(rp.GetErrors(ValuePropertyName)!.OfType<string>()).IsEquivalentTo([ErrorMessage]);
     }
 
-    /// <summary>
-    /// Verifies that asynchronous validation reports no error when the value is valid.
-    /// </summary>
+    /// <summary>Verifies that asynchronous validation reports no error when the value is valid.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationWithAsyncSuccessCase()
     {
         var tcs = new TaskCompletionSource<string?>();
-        using var rp = new ReactiveProperty<string>(null, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false)
             .AddValidationError(_ => tcs.Task);
 
         IEnumerable? error = null;
         rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         rp.Value = "dummy";
         tcs.SetResult(null);
         await Task.Yield();
 
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that throttled asynchronous validation reports the error only after the throttle window elapses.
-    /// </summary>
+    /// <summary>Verifies that throttled asynchronous validation reports the error only after the throttle window elapses.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -520,11 +479,19 @@ public class ReactivePropertyTest
     {
         const double FirstAdvanceMs = 300;
         const double SecondAdvanceMs = 700;
-        const double ThirdAdvanceMs = 1100;
-        const double FinalAdvanceMs = 2500;
+        const double ThirdAdvanceMs = 1_100;
+        const double FinalAdvanceMs = 2_500;
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
         using var rp = new ReactiveProperty<string>(null, scheduler, false, false)
-            .AddValidationError(xs => xs.Throttle(TimeSpan.FromSeconds(1), scheduler).Select(x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
+#if REACTIVE_SHIM
+            .AddValidationError(xs => ReactiveUI.Primitives.Reactive.LinqExtensions
+                .Calm(xs, TimeSpan.FromSeconds(1), scheduler)
+                .Select(x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
+#else
+            .AddValidationError(xs => ReactiveUI.Primitives.LinqExtensions
+                .Calm(xs, TimeSpan.FromSeconds(1), scheduler)
+                .Select(x => string.IsNullOrEmpty(x) ? RequiredErrorValue : null));
+#endif
 
         IEnumerable? error = null;
         rp.ObserveErrorChanged.Subscribe(x => error = x);
@@ -532,22 +499,22 @@ public class ReactivePropertyTest
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(0)));
         rp.Value = string.Empty;
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(FirstAdvanceMs)));
         rp.Value = "a";
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(SecondAdvanceMs)));
         rp.Value = "b";
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(ThirdAdvanceMs)));
         rp.Value = string.Empty;
         await Assert.That(rp.HasErrors).IsFalse();
-        await Assert.That(error == null).IsTrue();
+        await Assert.That(error is null).IsTrue();
 
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(FinalAdvanceMs)));
         await Assert.That(rp.HasErrors).IsTrue();
@@ -555,9 +522,7 @@ public class ReactivePropertyTest
         await Assert.That(error!.OfType<string>()).IsEquivalentTo([RequiredErrorValue]);
     }
 
-    /// <summary>
-    /// Verifies that a custom validation error message is produced with the property name substituted.
-    /// </summary>
+    /// <summary>Verifies that a custom validation error message is produced with the property name substituted.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationWithCustomErrorMessage()
@@ -572,9 +537,7 @@ public class ReactivePropertyTest
         await Assert.That(errorMessage).IsEqualTo("Custom validation error message for CustomValidationErrorMessageProperty");
     }
 
-    /// <summary>
-    /// Verifies that a custom validation error message uses the configured display name.
-    /// </summary>
+    /// <summary>Verifies that a custom validation error message uses the configured display name.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationWithCustomErrorMessageWithDisplayName()
@@ -589,9 +552,7 @@ public class ReactivePropertyTest
         await Assert.That(errorMessage).IsEqualTo("Custom validation error message for CustomName");
     }
 
-    /// <summary>
-    /// Verifies that a custom validation error message is sourced from a resource.
-    /// </summary>
+    /// <summary>Verifies that a custom validation error message is sourced from a resource.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValidationWithCustomErrorMessageWithResource()
@@ -606,16 +567,14 @@ public class ReactivePropertyTest
         await Assert.That(errorMessage).IsEqualTo("Oops!? FromResource is required.");
     }
 
-    /// <summary>
-    /// Verifies that subscribers receive each distinct value when the value updates multiple times.
-    /// </summary>
+    /// <summary>Verifies that subscribers receive each distinct value when the value updates multiple times.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValueUpdatesMultipleTimesWithDifferentValues()
     {
         const int ThirdValue = 2;
         const int FourthValue = 3;
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false);
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false);
         var collector = new List<int>();
         rp.Subscribe(collector.Add);
 
@@ -635,14 +594,12 @@ public class ReactivePropertyTest
         await Assert.That(collector).IsEquivalentTo([0, 1, ThirdValue, FourthValue]);
     }
 
-    /// <summary>
-    /// Verifies that subscribers receive each emission when duplicate values are allowed.
-    /// </summary>
+    /// <summary>Verifies that subscribers receive each emission when duplicate values are allowed.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ValueUpdatesMultipleTimesWithSameValues()
     {
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, true);
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, true);
         var collector = new List<int>();
         rp.Subscribe(collector.Add);
 

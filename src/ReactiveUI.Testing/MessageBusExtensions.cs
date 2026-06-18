@@ -3,72 +3,62 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
-
 namespace ReactiveUI.Testing;
 
-/// <summary>
-/// Message bus testing extensions.
-/// </summary>
+/// <summary>Message bus testing extensions.</summary>
 public static class MessageBusExtensions
 {
-    /// <summary>
-    /// The lock object used to serialize access to the shared message bus while it is overridden.
-    /// </summary>
-    private static readonly object mbGate = 42;
+    /// <summary>The lock object used to serialize access to the shared message bus while it is overridden.</summary>
+    private static readonly object messageBusGate = 42;
 
-    /// <summary>
-    /// Override the default Message Bus during the specified block.
-    /// </summary>
-    /// <typeparam name="TRet">The return type.</typeparam>
+    /// <summary>Provides testing extension members for <see cref="IMessageBus"/>.</summary>
     /// <param name="messageBus">The message bus to use for the block.</param>
-    /// <param name="block">The function to execute.</param>
-    /// <returns>The return value of the function.</returns>
-    public static TRet With<TRet>(this IMessageBus messageBus, Func<TRet> block)
+    extension(IMessageBus messageBus)
     {
-        ArgumentExceptionHelper.ThrowIfNull(block);
-
-        using (messageBus.WithMessageBus())
+        /// <summary>Override the default Message Bus during the specified block.</summary>
+        /// <typeparam name="TRet">The return type.</typeparam>
+        /// <param name="block">The function to execute.</param>
+        /// <returns>The return value of the function.</returns>
+        public TRet With<TRet>(Func<TRet> block)
         {
-            return block();
+            ArgumentExceptionHelper.ThrowIfNull(block);
+
+            using (messageBus.WithMessageBus())
+            {
+                return block();
+            }
         }
-    }
 
-    /// <summary>
-    /// Override the default Message Bus during the specified block.
-    /// </summary>
-    /// <param name="messageBus">The message bus to use for the block.</param>
-    /// <param name="block">The action to execute.</param>
-    public static void With(this IMessageBus messageBus, Action block)
-    {
-        ArgumentExceptionHelper.ThrowIfNull(block);
-
-        using (messageBus.WithMessageBus())
+        /// <summary>Override the default Message Bus during the specified block.</summary>
+        /// <param name="block">The action to execute.</param>
+        public void With(Action block)
         {
-            block();
+            ArgumentExceptionHelper.ThrowIfNull(block);
+
+            using (messageBus.WithMessageBus())
+            {
+                block();
+            }
         }
-    }
 
-    /// <summary>
-    /// WithMessageBus allows you to override the default Message Bus
-    /// implementation until the object returned is disposed. If a
-    /// message bus is not specified, a default empty one is created.
-    /// </summary>
-    /// <param name="messageBus">The message bus to use, or null to create
-    /// a new one using the default implementation.</param>
-    /// <returns>An object that when disposed, restores the original
-    /// message bus.</returns>
-    public static IDisposable WithMessageBus(this IMessageBus messageBus)
-    {
-        var origMessageBus = MessageBus.Current;
-
-        Monitor.Enter(mbGate);
-        MessageBus.Current = messageBus;
-        return new ActionDisposable(() =>
+        /// <summary>
+        /// WithMessageBus allows you to override the default Message Bus
+        /// implementation until the object returned is disposed. If a
+        /// message bus is not specified, a default empty one is created.
+        /// </summary>
+        /// <returns>An object that when disposed, restores the original
+        /// message bus.</returns>
+        public IDisposable WithMessageBus()
         {
-            MessageBus.Current = origMessageBus;
-            Monitor.Exit(mbGate);
-        });
+            var origMessageBus = MessageBus.Current;
+
+            Monitor.Enter(messageBusGate);
+            MessageBus.Current = messageBus;
+            return new ActionDisposable(() =>
+            {
+                MessageBus.Current = origMessageBus;
+                Monitor.Exit(messageBusGate);
+            });
+        }
     }
 }

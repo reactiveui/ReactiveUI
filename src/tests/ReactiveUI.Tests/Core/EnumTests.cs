@@ -7,14 +7,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Tests.Core;
 
-/// <summary>
-///     Tests for ReactiveUI enum types to ensure backwards compatibility.
-/// </summary>
+/// <summary>Tests for ReactiveUI enum types to ensure backwards compatibility.</summary>
 public class EnumTests
 {
-    /// <summary>
-    ///     Tests BindingDirection enum values for backwards compatibility.
-    /// </summary>
+    /// <summary>Tests BindingDirection enum values for backwards compatibility.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -33,9 +29,7 @@ public class EnumTests
         }
     }
 
-    /// <summary>
-    ///     Tests TriggerUpdate enum values for backwards compatibility.
-    /// </summary>
+    /// <summary>Tests TriggerUpdate enum values for backwards compatibility.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(

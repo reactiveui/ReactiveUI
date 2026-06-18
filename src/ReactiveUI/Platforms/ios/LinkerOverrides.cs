@@ -6,20 +6,20 @@
 using System.Diagnostics.CodeAnalysis;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Cocoa;
+#else
 namespace ReactiveUI.Cocoa;
-
-/// <summary>
-/// This class exists to force the MT linker to include properties called by RxUI via reflection.
-/// </summary>
+#endif
+/// <summary>This class exists to force the MT linker to include properties called by RxUI via reflection.</summary>
 [Preserve(AllMembers = true)]
 [SuppressMessage("Major Code Smell", "S1656:Useless self-assignment", Justification = "Self-assignments force the linker to preserve these members.")]
 [SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "Self-assignments force the linker to preserve these members.")]
 internal class LinkerOverrides
 {
-    /// <summary>
-    /// Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.
-    /// </summary>
+    /// <summary>Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.</summary>
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
+    [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
     public void KeepMe()
     {
         // UIButton
@@ -40,7 +40,7 @@ internal class LinkerOverrides
         var tf = new UITextField();
         tf.Text = tf.Text;
 
-        // var UIImageView
+        // UIImageView
         var iv = new UIImageView();
         iv.Image = iv.Image;
 

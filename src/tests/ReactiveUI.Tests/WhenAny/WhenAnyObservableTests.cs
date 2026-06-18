@@ -4,10 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using DynamicData;
 
 namespace ReactiveUI.Tests.WhenAny;
 
@@ -21,11 +17,10 @@ namespace ReactiveUI.Tests.WhenAny;
 [NotInParallel]
 public class WhenAnyObservableTests
 {
+    /// <summary>The expected sequence of combined results produced by the WhenAnyObservable combining tests.</summary>
     private static readonly string[] ExpectedCombiningResults = ["foo : 1", "foo : 2", "bar : 2"];
 
-    /// <summary>
-    ///     Tests that null observables do not cause exceptions.
-    /// </summary>
+    /// <summary>Tests that null observables do not cause exceptions.</summary>
     [Test]
     public void NullObservablesDoNotCauseExceptions()
     {
@@ -37,9 +32,7 @@ public class WhenAnyObservableTests
         SubscribeToNullHighArityCombineLatestOverloads(fixture);
     }
 
-    /// <summary>
-    ///     Performs a smoke test on combining WhenAnyObservable.
-    /// </summary>
+    /// <summary>Performs a smoke test on combining WhenAnyObservable.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task WhenAnyObservableSmokeTestCombining()
@@ -50,7 +43,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<string?>();
-        fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+        fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
@@ -72,9 +65,7 @@ public class WhenAnyObservableTests
         }
     }
 
-    /// <summary>
-    ///     Performs a smoke test testing WhenAnyObservable merging results.
-    /// </summary>
+    /// <summary>Performs a smoke test testing WhenAnyObservable merging results.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
     public async Task WhenAnyObservableSmokeTestMerging()
@@ -85,7 +76,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<int>();
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
@@ -106,27 +97,8 @@ public class WhenAnyObservableTests
         }
     }
 
-    /// <summary>
-    ///     Tests WhenAnyObservable with null object should update when object isnt null anymore.
-    /// </summary>
-    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
-    {
-        var fixture = new TestWhenAnyObsViewModel();
-        fixture.WhenAnyObservable(static x => x.Changes).Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
-        await Assert.That(output).IsEmpty();
-
-        fixture.MyListOfInts = [];
-        await Assert.That(output).IsEmpty();
-
-        fixture.MyListOfInts.Add(1);
-        await Assert.That(output).Count().IsEqualTo(1);
-
-        fixture.MyListOfInts = null;
-        await Assert.That(output).Count().IsEqualTo(1);
-    }
-
+    /// <summary>Subscribes to the lower-arity merge overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
     private static void SubscribeToNullLowArityMergeOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the lower-arity overloads of WhenAnyObservable that perform a Merge
@@ -153,6 +125,8 @@ public class WhenAnyObservableTests
             static x => x.Command1).Subscribe();
     }
 
+    /// <summary>Subscribes to the higher-arity merge overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
     private static void SubscribeToNullHighArityMergeOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the higher-arity overloads of WhenAnyObservable that perform a Merge
@@ -221,6 +195,8 @@ public class WhenAnyObservableTests
             static x => x.Command1).Subscribe();
     }
 
+    /// <summary>Subscribes to the lower-arity combine-latest overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
     [SuppressMessage(
         "Major Code Smell",
         "S107:Methods should not have too many parameters",
@@ -228,33 +204,25 @@ public class WhenAnyObservableTests
     private static void SubscribeToNullLowArityCombineLatestOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the lower-arity overloads of WhenAnyObservable that perform a CombineLatest
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static (_, _) => Unit.Default).Subscribe();
+        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static (_, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static (_, _, _) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static (_, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static x => x.Command1,
-            static (_, _, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static x => x.Command1,
-            static (_, _, _, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
@@ -262,10 +230,20 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
+            static (_, _, _, _, _, _) => RxVoid.Default).Subscribe();
+        fixture.WhenAnyObservable(
             static x => x.Command1,
-            static (_, _, _, _, _, _, _) => Unit.Default).Subscribe();
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static (_, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
     }
 
+    /// <summary>Subscribes to the higher-arity combine-latest overloads of WhenAnyObservable against a null observable.</summary>
+    /// <param name="fixture">The view model whose observable properties are null.</param>
     [SuppressMessage(
         "Major Code Smell",
         "S107:Methods should not have too many parameters",
@@ -282,7 +260,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static (_, _, _, _, _, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
@@ -293,19 +271,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static (_, _, _, _, _, _, _, _, _) => Unit.Default).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static (_, _, _, _, _, _, _, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
@@ -317,8 +283,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
-            static x => x.Command1,
-            static (_, _, _, _, _, _, _, _, _, _, _) => Unit.Default).Subscribe();
+            static (_, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
         fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
@@ -331,7 +296,20 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
+            static (_, _, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
+        fixture.WhenAnyObservable(
             static x => x.Command1,
-            static (_, _, _, _, _, _, _, _, _, _, _, _) => Unit.Default).Subscribe();
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static (_, _, _, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
     }
 }

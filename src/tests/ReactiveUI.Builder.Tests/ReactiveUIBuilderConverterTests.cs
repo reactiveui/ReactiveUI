@@ -8,15 +8,11 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests;
 
-/// <summary>
-/// Tests for ReactiveUIBuilder converter registration methods.
-/// </summary>
+/// <summary>Tests for ReactiveUIBuilder converter registration methods.</summary>
 [NotInParallel]
 public class ReactiveUIBuilderConverterTests
 {
-    /// <summary>
-    /// Verifies that registering a typed converter returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering a typed converter returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithConverter_TypedConverter_ReturnsBuilderForChaining()
@@ -29,9 +25,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null typed converter throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null typed converter throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithConverter_TypedConverter_WithNull_Throws()
     {
@@ -41,9 +35,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithConverter((BindingTypeConverter<int, string>)null!));
     }
 
-    /// <summary>
-    /// Verifies that registering a converter via the interface returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering a converter via the interface returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithConverter_GenericInterface_ReturnsBuilderForChaining()
@@ -56,9 +48,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null interface converter throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null interface converter throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithConverter_GenericInterface_WithNull_Throws()
     {
@@ -68,9 +58,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithConverter((IBindingTypeConverter)null!));
     }
 
-    /// <summary>
-    /// Verifies that registering a typed converter factory returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering a typed converter factory returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithConverter_TypedFactory_ReturnsBuilderForChaining()
@@ -82,9 +70,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null typed converter factory throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null typed converter factory throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithConverter_TypedFactory_WithNull_Throws()
     {
@@ -94,9 +80,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithConverter((Func<BindingTypeConverter<int, string>>)null!));
     }
 
-    /// <summary>
-    /// Verifies that registering an interface converter factory returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering an interface converter factory returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithConverter_InterfaceFactory_ReturnsBuilderForChaining()
@@ -108,9 +92,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null interface converter factory throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null interface converter factory throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithConverter_InterfaceFactory_WithNull_Throws()
     {
@@ -120,9 +102,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithConverter((Func<IBindingTypeConverter>)null!));
     }
 
-    /// <summary>
-    /// Verifies that copying converters from a null resolver throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that copying converters from a null resolver throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithConvertersFrom_WithNull_Throws()
     {
@@ -132,9 +112,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithConvertersFrom(null!));
     }
 
-    /// <summary>
-    /// Verifies that copying converters from a resolver returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that copying converters from a resolver returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithConvertersFrom_ReturnsBuilderForChaining()
@@ -147,9 +125,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a fallback converter instance returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering a fallback converter instance returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithFallbackConverter_Instance_ReturnsBuilderForChaining()
@@ -162,9 +138,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null fallback converter instance throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null fallback converter instance throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithFallbackConverter_Instance_WithNull_Throws()
     {
@@ -174,9 +148,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithFallbackConverter((IBindingFallbackConverter)null!));
     }
 
-    /// <summary>
-    /// Verifies that registering a fallback converter factory returns the same builder for chaining.
-    /// </summary>
+    /// <summary>Verifies that registering a fallback converter factory returns the same builder for chaining.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithFallbackConverter_Factory_ReturnsBuilderForChaining()
@@ -188,9 +160,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Verifies that registering a null fallback converter factory throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that registering a null fallback converter factory throws <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void WithFallbackConverter_Factory_WithNull_Throws()
     {
@@ -200,9 +170,7 @@ public class ReactiveUIBuilderConverterTests
             builder.WithFallbackConverter((Func<IBindingFallbackConverter>)null!));
     }
 
-    /// <summary>
-    /// Verifies that calling WithFallbackConverter on an interface-typed builder does not recurse (regression for issue 4293).
-    /// </summary>
+    /// <summary>Verifies that calling WithFallbackConverter on an interface-typed builder does not recurse (regression for issue 4293).</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -223,9 +191,7 @@ public class ReactiveUIBuilderConverterTests
         await Assert.That(result).IsSameReferenceAs(builder);
     }
 
-    /// <summary>
-    /// Test typed converter that converts an <see cref="int"/> to a <see cref="string"/>.
-    /// </summary>
+    /// <summary>Test typed converter that converts an <see cref="int"/> to a <see cref="string"/>.</summary>
     private sealed class TestTypedConverter : BindingTypeConverter<int, string>
     {
         /// <inheritdoc/>
@@ -239,9 +205,7 @@ public class ReactiveUIBuilderConverterTests
         }
     }
 
-    /// <summary>
-    /// Test binding converter that converts a <see cref="bool"/> to a <see cref="string"/>.
-    /// </summary>
+    /// <summary>Test binding converter that converts a <see cref="bool"/> to a <see cref="string"/>.</summary>
     private sealed class TestBindingConverter : IBindingTypeConverter
     {
         /// <inheritdoc/>
@@ -257,13 +221,11 @@ public class ReactiveUIBuilderConverterTests
         public bool TryConvertTyped(object? from, object? conversionHint, out object? result)
         {
             result = from?.ToString();
-            return from != null;
+            return from is not null;
         }
     }
 
-    /// <summary>
-    /// Test fallback converter that passes the source value through unchanged.
-    /// </summary>
+    /// <summary>Test fallback converter that passes the source value through unchanged.</summary>
     private sealed class TestFallbackConverter : IBindingFallbackConverter
     {
         /// <inheritdoc/>

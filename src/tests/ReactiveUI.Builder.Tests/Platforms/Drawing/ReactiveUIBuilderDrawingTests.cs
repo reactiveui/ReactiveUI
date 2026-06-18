@@ -9,14 +9,10 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Builder.Tests.Platforms.Drawing;
 
-/// <summary>
-/// Tests for registering drawing platform services through the ReactiveUI builder.
-/// </summary>
+/// <summary>Tests for registering drawing platform services through the ReactiveUI builder.</summary>
 public class ReactiveUIBuilderDrawingTests
 {
-    /// <summary>
-    /// Verifies that the drawing builder registers binding type converters.
-    /// </summary>
+    /// <summary>Verifies that the drawing builder registers binding type converters.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [TestExecutor<WithDrawingExecutor>]
@@ -26,9 +22,7 @@ public class ReactiveUIBuilderDrawingTests
         await Assert.That(bindingConverters).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that calling WithDrawing on a null builder throws <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that calling WithDrawing on a null builder throws <see cref="ArgumentNullException"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithDrawing_ThrowsArgumentNullException_WhenBuilderIsNull()
@@ -40,9 +34,7 @@ public class ReactiveUIBuilderDrawingTests
         await Assert.That(exception.ParamName).IsEqualTo("builder");
     }
 
-    /// <summary>
-    /// Executor that builds the app with drawing platform services registered.
-    /// </summary>
+    /// <summary>Executor that builds the app with drawing platform services registered.</summary>
     internal sealed class WithDrawingExecutor : BuilderTestExecutorBase
     {
         /// <inheritdoc/>

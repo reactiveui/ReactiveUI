@@ -3,48 +3,33 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
-/// <summary>
-/// Cross-process instance counter. Used to determine when the last instance closes.
-/// </summary>
+/// <summary>Cross-process instance counter. Used to determine when the last instance closes.</summary>
 public sealed class AppLifetimeCoordinator : IDisposable
 {
-    /// <summary>
-    /// The name of the shared memory-mapped file that holds the running instance count.
-    /// </summary>
+    /// <summary>The name of the shared memory-mapped file that holds the running instance count.</summary>
     private const string MapName = "ReactiveUI.Builder.WpfApp.InstanceCounter";
 
-    /// <summary>
-    /// The name of the system-wide mutex used to serialize updates to the instance count.
-    /// </summary>
+    /// <summary>The name of the system-wide mutex used to serialize updates to the instance count.</summary>
     private const string MutexName = "ReactiveUI.Builder.WpfApp.InstanceMutex";
 
-    /// <summary>
-    /// The size, in bytes, of the shared counter (a single 32-bit integer).
-    /// </summary>
+    /// <summary>The size, in bytes, of the shared counter (a single 32-bit integer).</summary>
     private const int CounterByteSize = 4;
 
-    /// <summary>
-    /// The maximum time to wait when acquiring the mutex before giving up.
-    /// </summary>
+    /// <summary>The maximum time to wait when acquiring the mutex before giving up.</summary>
     private static readonly TimeSpan LockTimeout = TimeSpan.FromMilliseconds(500);
 
-    /// <summary>
-    /// The shared memory-mapped file backing the cross-process instance counter.
-    /// </summary>
+    /// <summary>The shared memory-mapped file backing the cross-process instance counter.</summary>
     private readonly MemoryMappedFile _mmf;
 
-    /// <summary>
-    /// The named mutex guarding read/modify/write access to the counter.
-    /// </summary>
+    /// <summary>The named mutex guarding read/modify/write access to the counter.</summary>
     private readonly Mutex _mutex;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppLifetimeCoordinator"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AppLifetimeCoordinator"/> class.</summary>
     public AppLifetimeCoordinator()
     {
         _mutex = new(false, MutexName, out _);
@@ -60,15 +45,11 @@ public sealed class AppLifetimeCoordinator : IDisposable
         }
     }
 
-    /// <summary>
-    /// Increments the instance count.
-    /// </summary>
+    /// <summary>Increments the instance count.</summary>
     /// <returns>The new count after incrementing.</returns>
     public int Increment() => UpdateCount(static c => c + 1);
 
-    /// <summary>
-    /// Decrements the instance count.
-    /// </summary>
+    /// <summary>Decrements the instance count.</summary>
     /// <returns>The new count after decrementing (0 means last instance is closing).</returns>
     public int Decrement() => UpdateCount(static c => Math.Max(0, c - 1));
 
@@ -115,9 +96,15 @@ public sealed class AppLifetimeCoordinator : IDisposable
                 {
                     _mutex.ReleaseMutex();
                 }
-                catch
+                catch (ApplicationException ex)
                 {
-                    // ignore
+                    // The mutex was not held by the current thread (e.g. acquired in an abandoned state).
+                    Trace.TraceWarning($"[Lifetime] Failed to release mutex: {ex.Message}");
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    // The coordinator is being disposed concurrently; nothing further to release.
+                    Trace.TraceWarning($"[Lifetime] Mutex already disposed during release: {ex.Message}");
                 }
             }
         }

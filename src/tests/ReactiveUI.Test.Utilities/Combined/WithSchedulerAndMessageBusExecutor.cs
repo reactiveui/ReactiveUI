@@ -3,35 +3,36 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+using MessageBusType = ReactiveUI.Reactive.MessageBus;
+#else
 using ReactiveUI.Builder;
+using MessageBusType = ReactiveUI.MessageBus;
+#endif
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Utilities.Combined;
 
-/// <summary>
-///     Test executor that sets up both scheduler and message bus overrides.
-/// </summary>
+/// <summary>Test executor that sets up both scheduler and message bus overrides.</summary>
 public class WithSchedulerAndMessageBusExecutor : BaseAppBuilderTestExecutor
 {
-    /// <summary>
-    ///     The message bus captured before the test, restored during cleanup.
-    /// </summary>
+    /// <summary>The message bus captured before the test, restored during cleanup.</summary>
     private IMessageBus? _previousBus;
 
     /// <inheritdoc />
-    public override async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
+    public override async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
         try
         {
-            await base.ExecuteTest(context, testAction);
+            await base.ExecuteTest(context, action);
         }
         finally
         {
             // Restore previous message bus
             if (_previousBus is not null)
             {
-                ReactiveUI.MessageBus.Current = _previousBus;
+                MessageBusType.Current = _previousBus;
             }
         }
     }
@@ -42,11 +43,11 @@ public class WithSchedulerAndMessageBusExecutor : BaseAppBuilderTestExecutor
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(context);
 
-        var scheduler = ImmediateScheduler.Instance;
-        var messageBus = new ReactiveUI.MessageBus();
+        var scheduler = Sequencer.Immediate;
+        var messageBus = new MessageBusType();
 
         // Save previous bus for restoration
-        _previousBus = ReactiveUI.MessageBus.Current;
+        _previousBus = MessageBusType.Current;
 
         // Store test utilities in context
         context.StateBag.Items["Scheduler"] = scheduler;

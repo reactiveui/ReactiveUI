@@ -50,6 +50,37 @@ the <a href="https://reactiveui.net/docs/getting-started/installation/">Installa
 | Any           | [ReactiveUI.Validation][ValDocs]     | [![ValBadge]][ValCore]       |
 | Any           | [ReactiveUI.Extensions][ExtDocs]     | [![ExtBadge]][Ext]           |
 
+## Choosing a distribution: ReactiveUI.Primitives or System.Reactive
+
+ReactiveUI ships in **two interchangeable distributions with an identical public API**, both built on the **same
+ReactiveUI.Primitives engine and the same high-performance custom schedulers/sinks**. The only difference is which
+reactive **interop types** appear in the public API — so you pick a distribution, you don't rewrite code:
+
+| You want… | Reference these packages | Public reactive types |
+|---|---|---|
+| The new, lighter default (no System.Reactive dependency) | `ReactiveUI`, `ReactiveUI.Wpf`, `ReactiveUI.WinForms`, `ReactiveUI.WinUI`, `ReactiveUI.Maui`, `ReactiveUI.Blazor`, `ReactiveUI.AndroidX`, … | ReactiveUI.Primitives — `RxVoid`, `ISequencer`, `Signal<T>` |
+| Drop-in interop with existing System.Reactive code | `ReactiveUI.Reactive`, `ReactiveUI.Wpf.Reactive`, `ReactiveUI.WinForms.Reactive`, `ReactiveUI.WinUI.Reactive`, `ReactiveUI.Maui.Reactive`, `ReactiveUI.Blazor.Reactive`, … | System.Reactive — `Unit`, `IScheduler` |
+
+The `.Reactive` family is **not "old ReactiveUI"** — it runs on the exact same Primitives engine and custom
+schedulers as the default and simply surfaces `System.Reactive.Unit`/`IScheduler` (and `Subject<T>`) so it composes
+with code that already uses System.Reactive.
+
+The **default** distribution drops the System.Reactive dependency for a smaller closure and a better trimming/AOT
+story, and is markedly faster on the hottest MVVM paths — in representative micro-benchmarks roughly **3–4× faster**
+on `WhenAnyValue`/`ToProperty` subscribe and emit, with **5–13× less allocation** (for example `WhenAnyValue` emit
+drops from ~6.8 MB to ~0.5 MB per run, and `ToProperty` construction from ~7.3 µs to ~1.0 µs). The fast schedulers
+now live in ReactiveUI.Primitives and back both distributions.
+
+If you take the default packages, note the public reactive types change: `IScheduler` → `ISequencer`,
+`System.Reactive.Unit` → `RxVoid`, and `Subject<T>`/`BehaviorSubject<T>` → `Signal<T>`/`BehaviorSignal<T>`. To upgrade
+with **zero source changes**, reference the matching `*.Reactive` packages instead — they keep `IScheduler`, `Unit`
+and `Subject<T>`.
+
+Core routing (`RoutingState`, `IScreen`, `RoutedViewHost`) stays in the main package, but the **DynamicData** change-set
+routing/collection/auto-persist helpers now live in a separate **`ReactiveUI.Routing`** package (`ReactiveUI.Routing.Reactive`
+for the System.Reactive flavor), so core no longer depends on DynamicData. Add `ReactiveUI.Routing` if you use those
+extensions.
+
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg

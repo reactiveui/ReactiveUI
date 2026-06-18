@@ -2,7 +2,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
 #if HAS_MAUI || HAS_WPF || HAS_WINUI || HAS_UNO
 namespace ReactiveUI.Tests.Bindings.Converters;
 

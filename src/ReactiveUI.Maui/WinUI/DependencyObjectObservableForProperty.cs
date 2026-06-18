@@ -1,8 +1,7 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -16,16 +15,16 @@ using Microsoft.UI.Xaml;
 using ReactiveUI.Internal;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
+#endif
 
-/// <summary>
-/// Creates a observable for a property if available that is based on a DependencyProperty.
-/// </summary>
+/// <summary>Creates an observable for a property if available that is based on a DependencyProperty.</summary>
 public class DependencyObjectObservableForProperty : ICreatesObservableForProperty
 {
-    /// <summary>
-    /// The binding affinity returned for objects that expose a matching DependencyProperty.
-    /// </summary>
+    /// <summary>The binding affinity returned for objects that expose a matching DependencyProperty.</summary>
     private const int DependencyPropertyAffinity = 6;
 
     /// <inheritdoc/>
@@ -85,8 +84,8 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return ret.GetNotificationForProperty(sender, expression, propertyName, beforeChanged, suppressWarnings);
         }
 
-        var dpFetcher = GetDependencyPropertyFetcher(type, propertyName);
-        if (dpFetcher is null)
+        var dependencyPropertyFetcher = GetDependencyPropertyFetcher(type, propertyName);
+        if (dependencyPropertyFetcher is null)
         {
             this.Log().Warn(
                 CultureInfo.InvariantCulture,
@@ -103,15 +102,13 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             var handler = new DependencyPropertyChangedCallback((_, _) =>
                 onNext(new ObservedChange<object, object?>(sender, expression, default)));
 
-            var dependencyProperty = dpFetcher();
+            var dependencyProperty = dependencyPropertyFetcher();
             var token = depSender.RegisterPropertyChangedCallback(dependencyProperty, handler);
             return new ActionDisposable(() => depSender.UnregisterPropertyChangedCallback(dependencyProperty, token));
         });
     }
 
-    /// <summary>
-    /// Walks the type hierarchy to find a static property with the specified name.
-    /// </summary>
+    /// <summary>Walks the type hierarchy to find a static property with the specified name.</summary>
     /// <param name="typeInfo">The type to start searching from.</param>
     /// <param name="propertyName">The name of the property to locate.</param>
     /// <returns>The matching static <see cref="PropertyInfo"/>, or <see langword="null"/> if none is found.</returns>
@@ -133,9 +130,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
-    /// <summary>
-    /// Walks the type hierarchy to find a static field with the specified name.
-    /// </summary>
+    /// <summary>Walks the type hierarchy to find a static field with the specified name.</summary>
     /// <param name="typeInfo">The type to start searching from.</param>
     /// <param name="propertyName">The name of the field to locate.</param>
     /// <returns>The matching static <see cref="FieldInfo"/>, or <see langword="null"/> if none is found.</returns>
@@ -157,9 +152,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         return null;
     }
 
-    /// <summary>
-    /// Builds a fetcher that resolves the <see cref="DependencyProperty"/> backing the named property.
-    /// </summary>
+    /// <summary>Builds a fetcher that resolves the <see cref="DependencyProperty"/> backing the named property.</summary>
     /// <param name="type">The type that declares the property.</param>
     /// <param name="propertyName">The name of the property whose backing DependencyProperty is required.</param>
     /// <returns>A function that returns the <see cref="DependencyProperty"/>, or <see langword="null"/> if it cannot be resolved.</returns>

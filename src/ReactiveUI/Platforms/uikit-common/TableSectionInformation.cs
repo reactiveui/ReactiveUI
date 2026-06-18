@@ -8,12 +8,12 @@ using System.Diagnostics.CodeAnalysis;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Class used to extract a common API between <see cref="UITableView"/>
-/// and <see cref="UITableViewCell"/>.
-/// </summary>
+#endif
+/// <summary>Class used to extract a common API between <see cref="UITableView"/> and <see cref="UITableViewCell"/>.</summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
 [SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "Type parameter is part of the public generic API and preserves call-site type safety.")]
 public class TableSectionInformation<TSource> : ISectionInformation<UITableViewCell>
@@ -27,86 +27,14 @@ public class TableSectionInformation<TSource> : ISectionInformation<UITableViewC
     /// <inheritdoc/>
     public Func<object?, NSString>? CellKeySelector { get; protected set; }
 
-    /// <summary>
-    /// Gets or sets the size hint.
-    /// </summary>
+    /// <summary>Gets the size hint.</summary>
     public float SizeHint { get; protected set; }
 
-    /// <summary>
-    /// Gets or sets the header of this section.
-    /// </summary>
+    /// <summary>Gets or sets the header of this section.</summary>
     /// <value>The header, or null if a header shouldn't be used.</value>
     public TableSectionHeader? Header { get; set; }
 
-    /// <summary>
-    /// Gets or sets the footer of this section.
-    /// </summary>
+    /// <summary>Gets or sets the footer of this section.</summary>
     /// <value>The footer, or null if a footer shouldn't be used.</value>
     public TableSectionHeader? Footer { get; set; }
-}
-
-/// <summary>
-/// Class used to extract a common API between <see cref="UICollectionView"/>
-/// and <see cref="UICollectionViewCell"/>.
-/// </summary>
-/// <typeparam name="TSource">The type of the source.</typeparam>
-/// <typeparam name="TCell">The type of the cell.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public class TableSectionInformation<TSource, TCell> : TableSectionInformation<TSource>
-    where TCell : UITableViewCell
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
-    /// </summary>
-    /// <param name="collection">The collection.</param>
-    /// <param name="cellKeySelector">The cell key selector.</param>
-    /// <param name="sizeHint">The size hint.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint)
-        : this(collection, cellKeySelector, sizeHint, null)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
-    /// </summary>
-    /// <param name="collection">The collection.</param>
-    /// <param name="cellKeySelector">The cell key selector.</param>
-    /// <param name="sizeHint">The size hint.</param>
-    /// <param name="initializeCellAction">The initialize cell action.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, Func<object?, NSString>? cellKeySelector, float sizeHint, Action<TCell>? initializeCellAction)
-    {
-        Collection = collection;
-        SizeHint = sizeHint;
-        CellKeySelector = cellKeySelector;
-
-        if (initializeCellAction is null)
-        {
-            return;
-        }
-
-        InitializeCellAction = cell => initializeCellAction((TCell)cell);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
-    /// </summary>
-    /// <param name="collection">The collection.</param>
-    /// <param name="cellKey">The cell key.</param>
-    /// <param name="sizeHint">The size hint.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint)
-        : this(collection, _ => cellKey, sizeHint, null)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TableSectionInformation{TSource, TCell}"/> class.
-    /// </summary>
-    /// <param name="collection">The collection.</param>
-    /// <param name="cellKey">The cell key.</param>
-    /// <param name="sizeHint">The size hint.</param>
-    /// <param name="initializeCellAction">The initialize cell action.</param>
-    public TableSectionInformation(INotifyCollectionChanged collection, NSString cellKey, float sizeHint, Action<TCell>? initializeCellAction)
-        : this(collection, _ => cellKey, sizeHint, initializeCellAction)
-    {
-    }
 }

@@ -6,32 +6,30 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 
-/// <summary>
-/// Reactive Flyout Page.
-/// </summary>
+/// <summary>Reactive Flyout Page.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="FlyoutPage" />
 /// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveFlyoutPage<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]
-    TViewModel> : FlyoutPage, IViewFor<TViewModel>
+TViewModel> : FlyoutPage, IViewFor<TViewModel>
     where TViewModel : class
 {
-    /// <summary>
-    /// The view model bindable property.
-    /// </summary>
+    /// <summary>The view model bindable property.</summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
         nameof(ViewModel),
         typeof(TViewModel),
         typeof(ReactiveFlyoutPage<TViewModel>),
         propertyChanged: OnViewModelChanged);
 
-    /// <summary>
-    /// Gets or sets the ViewModel to display.
-    /// </summary>
+    /// <summary>Gets or sets the ViewModel to display.</summary>
     public TViewModel? ViewModel
     {
         get => (TViewModel)GetValue(ViewModelProperty);
@@ -52,9 +50,7 @@ public class ReactiveFlyoutPage<
         ViewModel = BindingContext as TViewModel;
     }
 
-    /// <summary>
-    /// Updates the binding context when the view model changes.
-    /// </summary>
+    /// <summary>Updates the binding context when the view model changes.</summary>
     /// <param name="bindableObject">The bindable object whose property changed.</param>
     /// <param name="oldValue">The previous value.</param>
     /// <param name="newValue">The new value.</param>

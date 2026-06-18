@@ -3,82 +3,76 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
+#if REACTIVE_SHIM
+using Microsoft.Reactive.Testing;
+#else
+using ReactiveUI.Primitives.Concurrency;
+#endif
 
 namespace ReactiveUI.Tests.Utilities.Schedulers;
 
-/// <summary>
-///     Lightweight virtual time scheduler for testing.
-///     Provides deterministic time control without heavyweight dependencies.
-/// </summary>
-public sealed class VirtualTimeScheduler : IScheduler
+/// <summary>Lightweight virtual time scheduler for testing. Provides deterministic time control without heavyweight dependencies.</summary>
+public sealed class VirtualTimeScheduler : ISequencer
 {
-    /// <summary>
-    ///     The actions scheduled for execution, keyed by their virtual due time.
-    /// </summary>
-    private readonly SortedList<DateTimeOffset, List<Action>> _scheduledItems = [];
+#if REACTIVE_SHIM
+    /// <summary>The underlying reactive test scheduler.</summary>
+    private readonly TestScheduler _scheduler = new();
+#else
+    /// <summary>The underlying deterministic virtual-time sequencer.</summary>
+    private readonly VirtualClock _clock = new();
+#endif
 
-    /// <summary>
-    ///     The current virtual time.
-    /// </summary>
-    private DateTimeOffset _now = DateTimeOffset.MinValue;
+    /// <summary>Gets the current virtual time.</summary>
+    public DateTimeOffset Now =>
+#if REACTIVE_SHIM
+        _scheduler.Now;
+#else
+        _clock.Now;
+#endif
 
-    /// <summary>
-    ///     Gets the current virtual time.
-    /// </summary>
-    public DateTimeOffset Now => _now;
+#if REACTIVE_SHIM
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, Func<ISequencer, TState, IDisposable> action) =>
+        _scheduler.Schedule(state, action);
 
-    /// <summary>
-    ///     Schedules an action to be executed immediately.
-    /// </summary>
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<ISequencer, TState, IDisposable> action) =>
+        _scheduler.Schedule(state, dueTime, action);
+
+    /// <inheritdoc/>
+    public IDisposable Schedule<TState>(
+        TState state,
+        DateTimeOffset dueTime,
+        Func<ISequencer, TState, IDisposable> action) =>
+        _scheduler.Schedule(state, dueTime, action);
+#else
+    /// <summary>Gets the current monotonic timestamp.</summary>
+    public long Timestamp => _clock.Timestamp;
+
+    /// <inheritdoc/>
+    public void Schedule(IWorkItem item) => _clock.Schedule(item);
+
+    /// <inheritdoc/>
+    public void Schedule(IWorkItem item, long dueTimestamp) => _clock.Schedule(item, dueTimestamp);
+
+    /// <summary>Schedules an action to be executed immediately.</summary>
     /// <typeparam name="TState">The type of state passed to the action.</typeparam>
     /// <param name="state">State passed to the action to be executed.</param>
     /// <param name="action">Action to be executed.</param>
     /// <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-    public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
-        return Schedule(state, TimeSpan.Zero, action);
-    }
+    public IDisposable Schedule<TState>(TState state, Func<ISequencer, TState, IDisposable> action) =>
+        _clock.Schedule(state, action);
 
-    /// <summary>
-    ///     Schedules an action to be executed after the specified due time.
-    /// </summary>
+    /// <summary>Schedules an action to be executed after the specified due time.</summary>
     /// <typeparam name="TState">The type of state passed to the action.</typeparam>
     /// <param name="state">State passed to the action to be executed.</param>
     /// <param name="dueTime">Relative time after which to execute the action.</param>
     /// <param name="action">Action to be executed.</param>
     /// <returns>The disposable object used to cancel the scheduled action (best effort).</returns>
-    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
+    public IDisposable Schedule<TState>(TState state, TimeSpan dueTime, Func<ISequencer, TState, IDisposable> action) =>
+        _clock.Schedule(state, dueTime, action);
 
-        var scheduledTime = _now.Add(dueTime);
-
-        if (!_scheduledItems.TryGetValue(scheduledTime, out var actions))
-        {
-            actions = [];
-            _scheduledItems[scheduledTime] = actions;
-        }
-
-        var cancelled = false;
-        actions.Add(() =>
-        {
-            if (cancelled)
-            {
-                return;
-            }
-
-            action(this, state);
-        });
-
-        return Disposable.Create(() => cancelled = true);
-    }
-
-    /// <summary>
-    ///     Schedules an action to be executed at the specified due time.
-    /// </summary>
+    /// <summary>Schedules an action to be executed at the specified due time.</summary>
     /// <typeparam name="TState">The type of state passed to the action.</typeparam>
     /// <param name="state">State passed to the action to be executed.</param>
     /// <param name="dueTime">Absolute time at which to execute the action.</param>
@@ -87,100 +81,39 @@ public sealed class VirtualTimeScheduler : IScheduler
     public IDisposable Schedule<TState>(
         TState state,
         DateTimeOffset dueTime,
-        Func<IScheduler, TState, IDisposable> action)
-    {
-        ArgumentNullException.ThrowIfNull(action);
+        Func<ISequencer, TState, IDisposable> action) =>
+        _clock.Schedule(state, dueTime, action);
+#endif
 
-        if (!_scheduledItems.TryGetValue(dueTime, out var actions))
-        {
-            actions = [];
-            _scheduledItems[dueTime] = actions;
-        }
-
-        var cancelled = false;
-        actions.Add(() =>
-        {
-            if (cancelled)
-            {
-                return;
-            }
-
-            action(this, state);
-        });
-
-        return Disposable.Create(() => cancelled = true);
-    }
-
-    /// <summary>
-    ///     Advances virtual time by the specified duration, executing all scheduled actions.
-    /// </summary>
+    /// <summary>Advances virtual time by the specified duration, executing all scheduled actions.</summary>
     /// <param name="time">The time span to advance.</param>
     public void AdvanceBy(TimeSpan time)
     {
-        var targetTime = _now.Add(time);
-        while (_scheduledItems.Count > 0 && _scheduledItems.Keys[0] <= targetTime)
-        {
-            var scheduledTime = _scheduledItems.Keys[0];
-            var actions = _scheduledItems[scheduledTime];
-            _scheduledItems.RemoveAt(0);
-
-            _now = scheduledTime;
-
-            // Execute all actions scheduled for this time
-            foreach (var action in actions)
-            {
-                action();
-            }
-        }
-
-        _now = targetTime;
+#if REACTIVE_SHIM
+        _scheduler.AdvanceBy(time.Ticks);
+#else
+        _clock.AdvanceBy(time);
+#endif
     }
 
-    /// <summary>
-    ///     Advances virtual time to the specified absolute time, executing all scheduled actions.
-    /// </summary>
+    /// <summary>Advances virtual time to the specified absolute time, executing all scheduled actions.</summary>
     /// <param name="time">The absolute time to advance to.</param>
     public void AdvanceTo(DateTimeOffset time)
     {
-        if (time < _now)
-        {
-            throw new ArgumentException("Cannot advance to a time in the past", nameof(time));
-        }
-
-        while (_scheduledItems.Count > 0 && _scheduledItems.Keys[0] <= time)
-        {
-            var scheduledTime = _scheduledItems.Keys[0];
-            var actions = _scheduledItems[scheduledTime];
-            _scheduledItems.RemoveAt(0);
-
-            _now = scheduledTime;
-
-            foreach (var action in actions)
-            {
-                action();
-            }
-        }
-
-        _now = time;
+#if REACTIVE_SHIM
+        _scheduler.AdvanceTo((time - DateTimeOffset.MinValue).Ticks);
+#else
+        _clock.AdvanceTo(time);
+#endif
     }
 
-    /// <summary>
-    ///     Runs all scheduled actions until there are no more.
-    /// </summary>
+    /// <summary>Runs all scheduled actions until there are no more.</summary>
     public void Start()
     {
-        while (_scheduledItems.Count > 0)
-        {
-            var scheduledTime = _scheduledItems.Keys[0];
-            var actions = _scheduledItems[scheduledTime];
-            _scheduledItems.RemoveAt(0);
-
-            _now = scheduledTime;
-
-            foreach (var action in actions)
-            {
-                action();
-            }
-        }
+#if REACTIVE_SHIM
+        _scheduler.Start();
+#else
+        _clock.Start();
+#endif
     }
 }

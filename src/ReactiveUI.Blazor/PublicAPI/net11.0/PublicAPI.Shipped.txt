@@ -1,0 +1,66 @@
+#nullable enable
+ReactiveUI.Blazor.PlatformOperations
+ReactiveUI.Blazor.PlatformOperations.GetOrientation() -> string?
+ReactiveUI.Blazor.PlatformOperations.PlatformOperations() -> void
+ReactiveUI.Blazor.ReactiveComponentBase<T>
+ReactiveUI.Blazor.ReactiveComponentBase<T>.Activated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveComponentBase<T>.Deactivated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveComponentBase<T>.Dispose() -> void
+ReactiveUI.Blazor.ReactiveComponentBase<T>.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Blazor.ReactiveComponentBase<T>.ReactiveComponentBase() -> void
+ReactiveUI.Blazor.ReactiveComponentBase<T>.ViewModel.get -> T?
+ReactiveUI.Blazor.ReactiveComponentBase<T>.ViewModel.set -> void
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.Activated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.Deactivated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.Dispose() -> void
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.ReactiveInjectableComponentBase() -> void
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.ViewModel.get -> T?
+ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.ViewModel.set -> void
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.Activated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.Deactivated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.Dispose() -> void
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.ReactiveLayoutComponentBase() -> void
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.ViewModel.get -> T?
+ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.ViewModel.set -> void
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.Activated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.Deactivated.get -> System.IObservable<ReactiveUI.Primitives.RxVoid>!
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.ReactiveOwningComponentBase() -> void
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.ViewModel.get -> T?
+ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.ViewModel.set -> void
+ReactiveUI.Blazor.Registrations
+ReactiveUI.Blazor.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Blazor.Registrations.Registrations() -> void
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!)
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithBlazor() -> ReactiveUI.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithBlazorScheduler() -> ReactiveUI.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithBlazorWasm() -> ReactiveUI.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithBlazorWasmScheduler() -> ReactiveUI.Builder.IReactiveUIBuilder!
+override ReactiveUI.Blazor.ReactiveComponentBase<T>.OnAfterRender(bool firstRender) -> void
+override ReactiveUI.Blazor.ReactiveComponentBase<T>.OnInitialized() -> void
+override ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.OnAfterRender(bool firstRender) -> void
+override ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.OnInitialized() -> void
+override ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.OnAfterRender(bool firstRender) -> void
+override ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.OnInitialized() -> void
+override ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.Dispose(bool disposing) -> void
+override ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.OnAfterRender(bool firstRender) -> void
+override ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.OnInitialized() -> void
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.BlazorMainThreadScheduler.get -> ReactiveUI.Primitives.Concurrency.ISequencer!
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.BlazorWasmScheduler.get -> ReactiveUI.Primitives.Concurrency.ISequencer!
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.WithBlazor(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.WithBlazorScheduler(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.WithBlazorWasm(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.BlazorReactiveUIBuilderExtensions.WithBlazorWasmScheduler(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+virtual ReactiveUI.Blazor.ReactiveComponentBase<T>.Dispose(bool disposing) -> void
+virtual ReactiveUI.Blazor.ReactiveComponentBase<T>.OnPropertyChanged(string? propertyName = null) -> void
+virtual ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.Dispose(bool disposing) -> void
+virtual ReactiveUI.Blazor.ReactiveInjectableComponentBase<T>.OnPropertyChanged(string? propertyName = null) -> void
+virtual ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.Dispose(bool disposing) -> void
+virtual ReactiveUI.Blazor.ReactiveLayoutComponentBase<T>.OnPropertyChanged(string? propertyName = null) -> void
+virtual ReactiveUI.Blazor.ReactiveOwningComponentBase<T>.OnPropertyChanged(string? propertyName = null) -> void

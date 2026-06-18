@@ -4,20 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Bindings.CommandBindings;
 
-/// <summary>
-/// Tests for <see cref="CreatesCommandBindingViaCommandParameter"/> command binding behavior.
-/// </summary>
+/// <summary>Tests for <see cref="CreatesCommandBindingViaCommandParameter"/> command binding behavior.</summary>
 public class CreatesCommandBindingViaCommandParameterTests
 {
-    /// <summary>
-    /// Verifies that disposing the binding restores the original command and command parameter.
-    /// </summary>
+    /// <summary>Verifies that disposing the binding restores the original command and command parameter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_RestoresOriginalValuesOnDispose()
@@ -31,7 +25,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         target.CommandParameter = OriginalParameter;
 
         var newCommand = ReactiveCommand.Create(() => { });
-        using (var binding = binder.BindCommandToObject(newCommand, target, Observable.Return<object?>("new")))
+        using (var binding = binder.BindCommandToObject(newCommand, target, Signal.Emit<object?>("new")))
         {
             await Assert.That(target.Command).IsEqualTo(newCommand);
             await Assert.That(target.CommandParameter).IsEqualTo("new");
@@ -41,9 +35,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(target.CommandParameter).IsEqualTo(OriginalParameter);
     }
 
-    /// <summary>
-    /// Verifies that the command parameter is set from the observable sequence.
-    /// </summary>
+    /// <summary>Verifies that the command parameter is set from the observable sequence.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_SetsCommandParameterFromObservable()
@@ -53,7 +45,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         const int InitialParameter = 42;
         const int UpdatedParameter = 100;
         var command = ReactiveCommand.Create<int>(_ => { });
-        var parameter = new BehaviorSubject<object?>(InitialParameter);
+        var parameter = new BehaviorSignal<object?>(InitialParameter);
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
 
@@ -63,9 +55,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(target.CommandParameter).IsEqualTo(UpdatedParameter);
     }
 
-    /// <summary>
-    /// Verifies that the target's command property is set to the bound command.
-    /// </summary>
+    /// <summary>Verifies that the target's command property is set to the bound command.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_SetsCommandProperty()
@@ -74,14 +64,12 @@ public class CreatesCommandBindingViaCommandParameterTests
         var target = new CommandControl();
         var command = ReactiveCommand.Create(() => { });
 
-        using var binding = binder.BindCommandToObject(command, target, Observable.Return<object?>(null));
+        using var binding = binder.BindCommandToObject(command, target, Signal.Emit<object?>(null));
 
         await Assert.That(target.Command).IsEqualTo(command);
     }
 
-    /// <summary>
-    /// Verifies that the command parameter is updated each time the observable emits a new value.
-    /// </summary>
+    /// <summary>Verifies that the command parameter is updated each time the observable emits a new value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_UpdatesParameterMultipleTimes()
@@ -89,7 +77,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
         var command = ReactiveCommand.Create<string>(_ => { });
-        var parameter = new BehaviorSubject<object?>("first");
+        var parameter = new BehaviorSignal<object?>("first");
 
         using var binding = binder.BindCommandToObject(command, target, parameter);
 
@@ -102,9 +90,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(target.CommandParameter).IsEqualTo("third");
     }
 
-    /// <summary>
-    /// Verifies that binding with an explicit event name returns an empty disposable.
-    /// </summary>
+    /// <summary>Verifies that binding with an explicit event name returns an empty disposable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithEventName_ReturnsEmptyDisposable()
@@ -116,7 +102,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var binding = binder.BindCommandToObject<CommandControl, EventArgs>(
             command,
             target,
-            Observable.Return<object?>(null),
+            Signal.Emit<object?>(null),
             "SomeEvent");
 
         // Event-name binding is unsupported by this binder, so it returns a no-op disposable. The contract is just
@@ -124,9 +110,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(binding).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that binding a null command leaves the target command property null.
-    /// </summary>
+    /// <summary>Verifies that binding a null command leaves the target command property null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindCommandToObject_WithNullCommand_Succeeds()
@@ -134,14 +118,12 @@ public class CreatesCommandBindingViaCommandParameterTests
         var binder = new CreatesCommandBindingViaCommandParameter();
         var target = new CommandControl();
 
-        using var binding = binder.BindCommandToObject(null, target, Observable.Return<object?>(null));
+        using var binding = binder.BindCommandToObject(null, target, Signal.Emit<object?>(null));
 
         await Assert.That(target.Command).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that binding to a null target throws an <see cref="ArgumentNullException"/>.
-    /// </summary>
+    /// <summary>Verifies that binding to a null target throws an <see cref="ArgumentNullException"/>.</summary>
     [Test]
     public void BindCommandToObject_WithNullTarget_Throws()
     {
@@ -149,12 +131,10 @@ public class CreatesCommandBindingViaCommandParameterTests
         var command = ReactiveCommand.Create(() => { });
 
         Assert.Throws<ArgumentNullException>(() =>
-            binder.BindCommandToObject<CommandControl>(command, null, Observable.Return<object?>(null)));
+            binder.BindCommandToObject<CommandControl>(command, null, Signal.Emit<object?>(null)));
     }
 
-    /// <summary>
-    /// Verifies that the generic affinity check returns 5 for targets with command and command parameter properties.
-    /// </summary>
+    /// <summary>Verifies that the generic affinity check returns 5 for targets with command and command parameter properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_Generic_WithCommandAndCommandParameter_Returns5()
@@ -164,9 +144,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
     }
 
-    /// <summary>
-    /// Verifies that the generic affinity check returns 0 when an event target is requested.
-    /// </summary>
+    /// <summary>Verifies that the generic affinity check returns 0 when an event target is requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_Generic_WithEventTarget_Returns0()
@@ -176,9 +154,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Verifies that the affinity check returns 5 for targets with command and command parameter properties.
-    /// </summary>
+    /// <summary>Verifies that the affinity check returns 5 for targets with command and command parameter properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     [SuppressMessage(
@@ -192,9 +168,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.Explicit);
     }
 
-    /// <summary>
-    /// Verifies that the affinity check returns 0 when an event target is requested.
-    /// </summary>
+    /// <summary>Verifies that the affinity check returns 0 when an event target is requested.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     [SuppressMessage(
@@ -208,9 +182,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Verifies that the affinity check returns 0 when only a command property is present.
-    /// </summary>
+    /// <summary>Verifies that the affinity check returns 0 when only a command property is present.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_WithOnlyCommandProperty_Returns0()
@@ -220,9 +192,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Verifies that the affinity check returns 0 for targets without a command property.
-    /// </summary>
+    /// <summary>Verifies that the affinity check returns 0 for targets without a command property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task GetAffinityForObject_WithoutCommandProperty_Returns0()
@@ -232,30 +202,20 @@ public class CreatesCommandBindingViaCommandParameterTests
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Test control exposing both a command and a command parameter property.
-    /// </summary>
+    /// <summary>Test control exposing both a command and a command parameter property.</summary>
     private sealed class CommandControl
     {
-        /// <summary>
-        /// Gets or sets the command.
-        /// </summary>
+        /// <summary>Gets or sets the command.</summary>
         public ICommand? Command { get; set; }
 
-        /// <summary>
-        /// Gets or sets the command parameter.
-        /// </summary>
+        /// <summary>Gets or sets the command parameter.</summary>
         public object? CommandParameter { get; set; }
     }
 
-    /// <summary>
-    /// Test control exposing only a command property.
-    /// </summary>
+    /// <summary>Test control exposing only a command property.</summary>
     private sealed class OnlyCommandControl
     {
-        /// <summary>
-        /// Gets or sets the command.
-        /// </summary>
+        /// <summary>Gets or sets the command.</summary>
         public ICommand? Command { get; set; }
     }
 }

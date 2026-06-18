@@ -3,25 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="ObservableMixins" />.
-/// </summary>
+/// <summary>Tests for <see cref="ObservableMixins" />.</summary>
 public class ObservableMixinsTest
 {
-    /// <summary>
-    ///     Tests that WhereNotNull emits all non-null values.
-    /// </summary>
+    /// <summary>Tests that WhereNotNull emits all non-null values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_EmitsAllNonNullValues()
     {
-        var subject = new Subject<int?>();
+        var subject = new Signal<int?>();
         var results = new List<int?>();
 
         const int SecondValue = 2;
@@ -29,7 +21,7 @@ public class ObservableMixinsTest
         const int ExpectedCount = 3;
         const int ThirdIndex = 2;
 
-        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -41,17 +33,15 @@ public class ObservableMixinsTest
         await Assert.That(results[ThirdIndex]).IsEqualTo(ThirdValue);
     }
 
-    /// <summary>
-    ///     Tests that WhereNotNull filters out null values.
-    /// </summary>
+    /// <summary>Tests that WhereNotNull filters out null values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_FiltersNullValues()
     {
-        var subject = new Subject<string?>();
+        var subject = new Signal<string?>();
         var results = new List<string>();
 
-        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext("value1");
         subject.OnNext(null);
@@ -67,17 +57,15 @@ public class ObservableMixinsTest
         await Assert.That(results[ThirdIndex]).IsEqualTo("value3");
     }
 
-    /// <summary>
-    ///     Tests that WhereNotNull emits nothing when only nulls are sent.
-    /// </summary>
+    /// <summary>Tests that WhereNotNull emits nothing when only nulls are sent.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_WithOnlyNulls_EmitsNothing()
     {
-        var subject = new Subject<string?>();
+        var subject = new Signal<string?>();
         var results = new List<string>();
 
-        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(null);
         subject.OnNext(null);
@@ -86,19 +74,17 @@ public class ObservableMixinsTest
         await Assert.That(results).Count().IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Tests that WhereNotNull works with reference types.
-    /// </summary>
+    /// <summary>Tests that WhereNotNull works with reference types.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhereNotNull_WorksWithReferenceTypes()
     {
-        var subject = new Subject<TestClass?>();
+        var subject = new Signal<TestClass?>();
         var results = new List<TestClass>();
         var obj1 = new TestClass { Value = "test1" };
         var obj2 = new TestClass { Value = "test2" };
 
-        subject.WhereNotNull().ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(obj1);
         subject.OnNext(null);
@@ -110,14 +96,10 @@ public class ObservableMixinsTest
         await Assert.That(results[1]).IsEqualTo(obj2);
     }
 
-    /// <summary>
-    ///     Test class for reference type testing.
-    /// </summary>
+    /// <summary>Test class for reference type testing.</summary>
     private sealed class TestClass
     {
-        /// <summary>
-        ///     Gets or sets the test value.
-        /// </summary>
+        /// <summary>Gets or sets the test value.</summary>
         public string? Value { get; set; }
     }
 }

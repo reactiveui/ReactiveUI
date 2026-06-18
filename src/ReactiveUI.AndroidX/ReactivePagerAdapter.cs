@@ -5,13 +5,15 @@
 
 using Android.Views;
 using AndroidX.ViewPager.Widget;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 using Splat;
 using Object = Java.Lang.Object;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
+#endif
 /// <summary>
 /// ReactivePagerAdapter is a PagerAdapter that will interface with a
 /// Observable change set, in a similar fashion to ReactiveTableViewSource.
@@ -29,9 +31,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     /// <summary>Optional initializer invoked for each created view.</summary>
     private readonly Action<TViewModel, View>? _viewInitializer;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.</summary>
     /// <param name="changeSet">The change set to page.</param>
     /// <param name="viewCreator">A function which will create the view.</param>
     public ReactivePagerAdapter(
@@ -41,9 +41,7 @@ public class ReactivePagerAdapter<TViewModel> : PagerAdapter, IEnableLogger
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactivePagerAdapter{TViewModel}"/> class.</summary>
     /// <param name="changeSet">The change set to page.</param>
     /// <param name="viewCreator">A function which will create the view.</param>
     /// <param name="viewInitializer">A action which will initialize a view.</param>

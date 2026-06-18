@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// A minimal routable view model used to drive <see cref="RoutingState"/> navigation benchmarks.
-/// </summary>
+/// <summary>A minimal routable view model used to drive <see cref="RoutingState"/> navigation benchmarks.</summary>
 internal sealed class NavigableViewModel : ReactiveObject, IRoutableViewModel
 {
     /// <inheritdoc/>
