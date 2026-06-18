@@ -123,10 +123,10 @@ public class MauiReactiveUIBuilderExtensionsTest
         await Assert.That(dispatcher.DispatchCount).IsEqualTo(1);
     }
 
-    /// <summary>Tests that MauiDispatcherSequencer schedules delayed actions using a timer.</summary>
+    /// <summary>Tests that MauiDispatcherSequencer schedules delayed actions through the dispatcher's native DispatchDelayed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
-    public async Task MauiDispatcherSequencer_ScheduleWithDelay_UsesTimer()
+    public async Task MauiDispatcherSequencer_ScheduleWithDelay_UsesDispatchDelayed()
     {
         var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(resolver, resolver);
@@ -137,28 +137,29 @@ public class MauiReactiveUIBuilderExtensionsTest
         var executed = false;
         scheduler.Schedule(TimeSpan.FromMilliseconds(100), () => executed = true);
 
-        await Assert.That(dispatcher.CreatedTimers.Count).IsEqualTo(1);
-        var timer = dispatcher.CreatedTimers[0];
+        // Delays are routed through IDispatcher.DispatchDelayed (the dispatcher's native delayed dispatch),
+        // not a created timer, and the forwarded delay is the remaining time until the due timestamp.
+        await Assert.That(dispatcher.DelayedDispatches.Count).IsEqualTo(1);
+        var (delay, callback) = dispatcher.DelayedDispatches[0];
+        using (Assert.Multiple())
+        {
+            await Assert.That(delay).IsGreaterThan(TimeSpan.Zero);
+            await Assert.That(delay).IsLessThanOrEqualTo(TimeSpan.FromMilliseconds(100));
+        }
 
-        await Assert.That(timer.IsStarted).IsTrue();
-        await Assert.That(timer.Interval).IsEqualTo(TimeSpan.FromMilliseconds(100));
-        await Assert.That(timer.IsRepeating).IsFalse();
-
-        // Simulate timer tick
-        timer.FireTick();
-
+        // Invoking the delayed callback runs the scheduled work.
+        callback();
         await Assert.That(executed).IsTrue();
-        await Assert.That(timer.IsStarted).IsFalse(); // Should stop after tick
     }
 
-    /// <summary>Mock dispatcher that records dispatch calls and created timers for testing.</summary>
+    /// <summary>Mock dispatcher that records immediate and delayed dispatch calls for testing.</summary>
     private sealed class MockDispatcher : Microsoft.Maui.Dispatching.IDispatcher
     {
         /// <summary>Gets the number of times <see cref="Dispatch"/> has been called.</summary>
         public int DispatchCount { get; private set; }
 
-        /// <summary>Gets the timers created by this dispatcher.</summary>
-        public List<MockDispatcherTimer> CreatedTimers { get; } = [];
+        /// <summary>Gets the delayed dispatches recorded by <see cref="DispatchDelayed"/>.</summary>
+        public List<(TimeSpan Delay, Action Action)> DelayedDispatches { get; } = [];
 
         /// <inheritdoc/>
         public bool IsDispatchRequired => true; // Force Dispatch call
@@ -172,50 +173,14 @@ public class MauiReactiveUIBuilderExtensionsTest
         }
 
         /// <inheritdoc/>
-        public bool DispatchDelayed(TimeSpan delay, Action action) => throw new NotSupportedException();
-
-        /// <inheritdoc/>
-        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer()
+        public bool DispatchDelayed(TimeSpan delay, Action action)
         {
-            var timer = new MockDispatcherTimer();
-            CreatedTimers.Add(timer);
-            return timer;
-        }
-    }
-
-    /// <summary>Mock dispatcher timer that allows manual tick firing for testing.</summary>
-    private sealed class MockDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
-    {
-        /// <inheritdoc/>
-        public event EventHandler? Tick;
-
-        /// <inheritdoc/>
-        public TimeSpan Interval { get; set; }
-
-        /// <inheritdoc/>
-        public bool IsRepeating { get; set; }
-
-        /// <inheritdoc/>
-        public bool IsRunning { get; private set; }
-
-        /// <summary>Gets a value indicating whether the timer has been started.</summary>
-        public bool IsStarted { get; private set; }
-
-        /// <inheritdoc/>
-        public void Start()
-        {
-            IsStarted = true;
-            IsRunning = true;
+            DelayedDispatches.Add((delay, action));
+            return true;
         }
 
         /// <inheritdoc/>
-        public void Stop()
-        {
-            IsRunning = false;
-            IsStarted = false;
-        }
-
-        /// <summary>Manually fires the <see cref="Tick"/> event.</summary>
-        public void FireTick() => Tick?.Invoke(this, EventArgs.Empty);
+        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() =>
+            throw new NotSupportedException("MauiDispatcherSequencer schedules delays via DispatchDelayed, not CreateTimer.");
     }
 }
