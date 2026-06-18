@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageVersion Include="Akavache.Sqlite3" Version="12.0.12"/>
     <PackageVersion Include="Akavache.SystemTextJson" Version="12.0.12"/>
-    <PackageVersion Include="Blazor.Common.Analyzers" Version="2.0.0"/>
+    <PackageVersion Include="Blazor.Common.Analyzers" Version="2.1.0"/>
     <PackageVersion Include="bunit" Version="2.7.2"/>
     <PackageVersion Include="DynamicData" Version="9.4.31"/>
     <PackageVersion Include="JetBrains.DotMemoryUnit" Version="3.2.20220510"/>
