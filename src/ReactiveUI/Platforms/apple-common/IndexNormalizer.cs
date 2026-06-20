@@ -5,9 +5,12 @@
 
 using System.Diagnostics;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary> takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
+#endif
+/// <summary> Takes a batch of updates in their natural order (i.e. the order they occurred in the client code) and normalizes them to
 /// something iOS can consume when performing batch updates to a table or collection view
 /// iOS requires that all deletes be specified first with indexes relative to the source data *before* any insertions are applied
 /// it then requires insertions be specified next relative to the source data *after* any deletions are applied
@@ -16,9 +19,7 @@ namespace ReactiveUI;
 /// </summary>
 public static class IndexNormalizer
 {
-    /// <summary>
-    /// Normalizes the specified updates.
-    /// </summary>
+    /// <summary>Normalizes the specified updates.</summary>
     /// <param name="updates">The updates.</param>
     /// <returns>A list updates.</returns>
     public static IList<Update?> Normalize(IEnumerable<Update> updates)
@@ -69,9 +70,7 @@ public static class IndexNormalizer
         }
     }
 
-    /// <summary>
-    /// Calculates the normalized index for an update, taking prior and subsequent updates into account.
-    /// </summary>
+    /// <summary>Calculates the normalized index for an update, taking prior and subsequent updates into account.</summary>
     /// <param name="updates">The full list of updates.</param>
     /// <param name="updateIndex">The index of the update whose normalized index is being calculated.</param>
     /// <returns>The normalized index for the update at <paramref name="updateIndex"/>.</returns>
@@ -85,9 +84,7 @@ public static class IndexNormalizer
             _ => throw new NotSupportedException(),
         };
 
-    /// <summary>
-    /// Calculates the index for an addition update.
-    /// </summary>
+    /// <summary>Calculates the index for an addition update.</summary>
     /// <remarks>
     /// The formula is:
     ///   Ia = Io + Na - Nd
@@ -127,9 +124,7 @@ public static class IndexNormalizer
         return runningCalculation;
     }
 
-    /// <summary>
-    /// Calculates the index for a deletion update.
-    /// </summary>
+    /// <summary>Calculates the index for a deletion update.</summary>
     /// <remarks>
     /// The formula is:
     ///    Id = Io + Nd - Na

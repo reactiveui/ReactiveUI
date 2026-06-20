@@ -1,0 +1,25 @@
+#nullable enable
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.AutoResubscribeOnError.get -> bool
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.AutoResubscribeOnError.set -> void
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.FollowObservableStateBehavior() -> void
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.SchedulerOverride.get -> System.Reactive.Concurrency.IScheduler?
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.SchedulerOverride.set -> void
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.StateObservable.get -> System.IObservable<string!>!
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.StateObservable.set -> void
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.TargetObject.get -> System.Windows.FrameworkElement!
+ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.TargetObject.set -> void
+ReactiveUI.Reactive.Blend.ObservableTrigger
+ReactiveUI.Reactive.Blend.ObservableTrigger.AutoResubscribeOnError.get -> bool
+ReactiveUI.Reactive.Blend.ObservableTrigger.AutoResubscribeOnError.set -> void
+ReactiveUI.Reactive.Blend.ObservableTrigger.Observable.get -> System.IObservable<object!>!
+ReactiveUI.Reactive.Blend.ObservableTrigger.Observable.set -> void
+ReactiveUI.Reactive.Blend.ObservableTrigger.ObservableTrigger() -> void
+ReactiveUI.Reactive.Blend.ObservableTrigger.SchedulerOverride.get -> System.Reactive.Concurrency.IScheduler?
+ReactiveUI.Reactive.Blend.ObservableTrigger.SchedulerOverride.set -> void
+override ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.OnDetaching() -> void
+static ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.OnStateObservableChanged(System.Windows.DependencyObject? sender, System.Windows.DependencyPropertyChangedEventArgs e) -> void
+static ReactiveUI.Reactive.Blend.ObservableTrigger.OnObservableChanged(System.Windows.DependencyObject! sender, System.Windows.DependencyPropertyChangedEventArgs e) -> void
+static readonly ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.StateObservableProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.Blend.FollowObservableStateBehavior.TargetObjectProperty -> System.Windows.DependencyProperty!
+static readonly ReactiveUI.Reactive.Blend.ObservableTrigger.ObservableProperty -> System.Windows.DependencyProperty!

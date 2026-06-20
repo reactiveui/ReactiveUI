@@ -7,19 +7,13 @@ using System.Windows.Input;
 
 namespace ReactiveUI.Tests.Commands.Mocks;
 
-/// <summary>
-///     A ReactiveObject which hosts a command.
-/// </summary>
+/// <summary>A ReactiveObject which hosts a command.</summary>
 public class CommandHolder : ReactiveObject
 {
-    private ICommand? _theCommand;
-
-    /// <summary>
-    ///     Gets or sets the command.
-    /// </summary>
+    /// <summary>Gets or sets the command.</summary>
     public ICommand? TheCommand
     {
-        get => _theCommand;
-        set => this.RaiseAndSetIfChanged(ref _theCommand, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

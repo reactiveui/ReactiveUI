@@ -5,18 +5,16 @@
 
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 using NSViewController = UIKit.UIViewController;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// A <see cref="ReactiveNavigationController"/> that observes a <see cref="RoutingState"/> and mirrors its
-/// navigation stack into UIKit.
-/// </summary>
+#endif
+/// <summary>A <see cref="ReactiveNavigationController"/> that observes a <see cref="RoutingState"/> and mirrors its navigation stack into UIKit.</summary>
 /// <remarks>
 /// <para>
 /// Use <see cref="RoutedViewHost"/> inside iOS or Mac Catalyst applications to keep push/pop transitions aligned with
@@ -58,24 +56,19 @@ namespace ReactiveUI;
 public class RoutedViewHost : ReactiveNavigationController
 {
     /// <summary>The disposable that tracks the current title-update subscription.</summary>
-    private readonly SerialDisposable _titleUpdater;
+    private readonly SwapDisposable _titleUpdater;
 
     /// <summary>The backing field for the <see cref="Router"/> property.</summary>
     private RoutingState? _router;
 
-    /// <summary>The backing field for the <see cref="ViewContractObservable"/> property.</summary>
-    private IObservable<string?>? _viewContractObservable;
-
     /// <summary>Whether the current navigation event was initiated by the router rather than the user.</summary>
     private bool _routerInstigated;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     public RoutedViewHost()
     {
-        ViewContractObservable = new ReturnObservable<string?>(null);
-        _titleUpdater = new SerialDisposable();
+        ViewContractObservable = Signal.Emit<string?>(null);
+        _titleUpdater = new SwapDisposable();
 
         _ = this.WhenActivated(d =>
         {
@@ -99,20 +92,14 @@ public class RoutedViewHost : ReactiveNavigationController
         set => this.RaiseAndSetIfChanged(ref _router, value);
     }
 
-    /// <summary>
-    /// Gets or sets the observable contract used when resolving views. When <see langword="null"/>, the default contract
-    /// is applied.
-    /// </summary>
+    /// <summary>Gets or sets the observable contract used when resolving views. When <see langword="null"/>, the default contract is applied.</summary>
     public IObservable<string?>? ViewContractObservable
     {
-        get => _viewContractObservable;
-        set => this.RaiseAndSetIfChanged(ref _viewContractObservable, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the <see cref="IViewLocator"/> used to translate <see cref="IRoutableViewModel"/> instances into
-    /// UIKit view controllers. Defaults to <see cref="ViewLocator.Current"/>.
-    /// </summary>
+    /// <summary>Gets or sets the <see cref="IViewLocator"/> used to resolve view controllers for view models.</summary>
     public IViewLocator? ViewLocator { get; set; }
 
     /// <inheritdoc/>
@@ -127,9 +114,9 @@ public class RoutedViewHost : ReactiveNavigationController
             return;
         }
 
-        // A view is being pushed directly against the nav controller rather than via the router;
-        // sync the router state so the two stacks stay aligned. Views that don't implement
-        // IViewFor<IRoutableViewModel> are silently ignored.
+        // A view is being pushed directly against the nav controller rather than via the router, so
+        // sync the router state to keep the two stacks aligned. Views that don't implement
+        // IViewFor of IRoutableViewModel are silently ignored.
         var view = (IViewFor)viewController;
         var viewModel = (IRoutableViewModel?)view.ViewModel;
         if (viewModel is null)
@@ -163,10 +150,7 @@ public class RoutedViewHost : ReactiveNavigationController
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Creates a subscription that keeps <paramref name="viewController"/>'s navigation-item title in sync with the
-    /// current view model's <see cref="IRoutableViewModel.UrlPathSegment"/>.
-    /// </summary>
+    /// <summary>Keeps <paramref name="viewController"/>'s navigation title in sync with the view model.</summary>
     /// <param name="router">The routing state providing the current view model.</param>
     /// <param name="viewController">The view controller whose title is updated.</param>
     /// <returns>A disposable that represents the title-update subscription.</returns>
@@ -183,9 +167,7 @@ public class RoutedViewHost : ReactiveNavigationController
         this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))
             .SwitchSelect(static router => router.NavigationStack.ObserveCollectionChanges());
 
-    /// <summary>
-    /// Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.
-    /// </summary>
+    /// <summary>Subscribes to the initial router state and pushes any pre-existing view models onto the navigation stack.</summary>
     /// <returns>A disposable that represents the subscription.</returns>
     private IDisposable SubscribeToInitialStack() =>
         this.WhenAnyValue<RoutedViewHost, RoutingState?>(nameof(Router))

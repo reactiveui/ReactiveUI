@@ -8,9 +8,13 @@
     <PackageId>ReactiveUI.Testing</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;</PackageTags>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
-    <Compile Include="..\Shared\ActionDisposable.cs" Link="Shared\ActionDisposable.cs"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>

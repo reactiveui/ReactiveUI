@@ -5,59 +5,41 @@
 
 namespace ReactiveUI.Testing;
 
-/// <summary>
-/// Test Sequencer.
-/// </summary>
+/// <summary>Test Sequencer.</summary>
 /// <seealso cref="IDisposable" />
 public class TestSequencer : IDisposable
 {
-    /// <summary>
-    /// The number of participants that must reach the barrier before a phase advances.
-    /// </summary>
+    /// <summary>The number of participants that must reach the barrier before a phase advances.</summary>
     private const int ParticipantCount = 2;
 
-    /// <summary>
-    /// The barrier used to synchronize the test phases between participants.
-    /// </summary>
+    /// <summary>The barrier used to synchronize the test phases between participants.</summary>
     private readonly Barrier _phaseSync;
 
-    /// <summary>
-    /// A value indicating whether this instance has already been disposed.
-    /// </summary>
+    /// <summary>A value indicating whether this instance has already been disposed.</summary>
     private bool _disposedValue;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestSequencer"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TestSequencer"/> class.</summary>
     public TestSequencer() => _phaseSync = new(ParticipantCount);
 
-    /// <summary>
-    /// Gets the number of completed phases.
-    /// </summary>
+    /// <summary>Gets the number of completed phases.</summary>
     /// <value>
     /// The completed phases.
     /// </value>
     public long CompletedPhases => _phaseSync.CurrentPhaseNumber;
 
-    /// <summary>
-    /// Gets the current phase.
-    /// </summary>
+    /// <summary>Gets the current phase.</summary>
     /// <value>
     /// The current phase.
     /// </value>
     public long CurrentPhase { get; private set; }
 
-    /// <summary>
-    /// Advances this phase instance.
-    /// </summary>
+    /// <summary>Advances this phase instance.</summary>
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
     /// </returns>
     public Task AdvancePhaseAsync() => AdvancePhaseAsync(string.Empty);
 
-    /// <summary>
-    /// Advances this phase instance.
-    /// </summary>
+    /// <summary>Advances this phase instance.</summary>
     /// <param name="comment">The comment for Test visual identification Purposes only.</param>
     /// <returns>
     /// A <see cref="Task" /> representing the asynchronous operation.
@@ -76,9 +58,7 @@ public class TestSequencer : IDisposable
         await Task.Yield();
     }
 
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -86,9 +66,7 @@ public class TestSequencer : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Releases unmanaged and - optionally - managed resources.
-    /// </summary>
+    /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {

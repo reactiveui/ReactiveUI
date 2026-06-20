@@ -8,15 +8,11 @@ using BenchmarkDotNet.Running;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Hosts the BenchmarkDotNet entry point for the ReactiveUI micro-benchmark suite.
-/// </summary>
+/// <summary>Hosts the BenchmarkDotNet entry point for the ReactiveUI micro-benchmark suite.</summary>
 [ExcludeFromCodeCoverage]
 public static class Program
 {
-    /// <summary>
-    /// The entry point. Forwards command-line arguments (filters, exporters, profilers) to the benchmark switcher.
-    /// </summary>
+    /// <summary>The entry point. Forwards command-line arguments (filters, exporters, profilers) to the benchmark switcher.</summary>
     /// <param name="args">The command-line arguments forwarded to BenchmarkDotNet.</param>
     public static void Main(string[] args) =>
         BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);

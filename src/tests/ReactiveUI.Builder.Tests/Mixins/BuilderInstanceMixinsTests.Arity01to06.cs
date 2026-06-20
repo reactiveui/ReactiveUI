@@ -7,14 +7,10 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// WithInstance tests for arities one through six.
-/// </content>
+/// <summary>WithInstance tests for arities one through six.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Verifies that the 1-type WithInstance builder instance method invokes the action with the resolved instance.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance builder instance method invokes the action with the resolved instance.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_1_Type_invokes_action()
@@ -33,9 +29,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured1).IsSameReferenceAs(s1);
     }
 
-    /// <summary>
-    /// Verifies that the 1-type WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_1_Type_skips_when_null()
@@ -52,9 +46,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 1-type WithInstance extension method invokes the action with the resolved instance.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance extension method invokes the action with the resolved instance.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -77,9 +69,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured1).IsSameReferenceAs(s1);
     }
 
-    /// <summary>
-    /// Verifies that the 1-type WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -100,9 +90,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_2_Types_invokes_action()
@@ -131,9 +119,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured2).IsSameReferenceAs(s2);
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_2_Types_skips_when_null()
@@ -150,9 +136,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -185,9 +169,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured2).IsSameReferenceAs(s2);
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -208,9 +190,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_3_Types_invokes_action()
@@ -246,9 +226,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured3).IsSameReferenceAs(s3);
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_3_Types_skips_when_null()
@@ -265,9 +243,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -307,9 +283,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured3).IsSameReferenceAs(s3);
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -330,9 +304,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_4_Types_invokes_action()
@@ -375,9 +347,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured4).IsSameReferenceAs(s4);
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_4_Types_skips_when_null()
@@ -395,9 +365,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -444,9 +412,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured4).IsSameReferenceAs(s4);
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -468,9 +434,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_5_Types_invokes_action()
@@ -526,9 +490,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured5).IsSameReferenceAs(s5);
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_5_Types_skips_when_null()
@@ -551,9 +513,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -613,9 +573,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured5).IsSameReferenceAs(s5);
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -642,9 +600,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance builder instance method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance builder instance method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_6_Types_invokes_action()
@@ -708,9 +664,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured6).IsSameReferenceAs(s6);
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance builder instance method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance builder instance method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Builder_WithInstance_6_Types_skips_when_null()
@@ -734,9 +688,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(invoked).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance extension method invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance extension method invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -804,9 +756,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured6).IsSameReferenceAs(s6);
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance extension method skips the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance extension method skips the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(

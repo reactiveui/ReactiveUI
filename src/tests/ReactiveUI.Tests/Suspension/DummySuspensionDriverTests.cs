@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Suspension;
 
-/// <summary>
-///     Tests for DummySuspensionDriver.
-/// </summary>
+/// <summary>Tests for DummySuspensionDriver.</summary>
 public class DummySuspensionDriverTests
 {
-    /// <summary>
-    ///     Tests that DummySuspensionDriver InvalidateState returns observable.
-    /// </summary>
+    /// <summary>Tests that DummySuspensionDriver InvalidateState returns observable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DummySuspensionDriver_InvalidateState_ReturnsObservable()
@@ -27,9 +23,7 @@ public class DummySuspensionDriverTests
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    ///     Tests that DummySuspensionDriver LoadState returns observable.
-    /// </summary>
+    /// <summary>Tests that DummySuspensionDriver LoadState returns observable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DummySuspensionDriver_LoadState_ReturnsObservable()
@@ -44,9 +38,7 @@ public class DummySuspensionDriverTests
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    ///     Tests that DummySuspensionDriver SaveState handles null state.
-    /// </summary>
+    /// <summary>Tests that DummySuspensionDriver SaveState handles null state.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DummySuspensionDriver_SaveState_NullState_ReturnsObservable()
@@ -61,9 +53,7 @@ public class DummySuspensionDriverTests
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    ///     Tests that DummySuspensionDriver SaveState returns observable.
-    /// </summary>
+    /// <summary>Tests that DummySuspensionDriver SaveState returns observable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DummySuspensionDriver_SaveState_ReturnsObservable()

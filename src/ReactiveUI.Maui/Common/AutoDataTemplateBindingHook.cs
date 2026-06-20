@@ -2,7 +2,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
-
 #if WINUI_TARGET
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
@@ -11,7 +10,11 @@ using Microsoft.UI.Xaml.Markup;
 // so a bare DataTemplate would be ambiguous with Microsoft.Maui.Controls.DataTemplate.
 using DataTemplate = Microsoft.UI.Xaml.DataTemplate;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// AutoDataTemplateBindingHook is a binding hook that checks ItemsControls
@@ -20,9 +23,7 @@ namespace ReactiveUI;
 /// </summary>
 public class AutoDataTemplateBindingHook : IPropertyBindingHook
 {
-    /// <summary>
-    /// Gets the default item template.
-    /// </summary>
+    /// <summary>Gets the default item template.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
         const string template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +

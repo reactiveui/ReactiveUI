@@ -17,4 +17,12 @@
     <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="ReactiveUI.Builder" />
+    <Using Include="ReactiveUI.Primitives.Advanced" />
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
 </Project>

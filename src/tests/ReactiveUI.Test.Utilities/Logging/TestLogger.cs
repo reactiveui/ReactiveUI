@@ -9,10 +9,7 @@ using Splat;
 
 namespace ReactiveUI.Tests.Utilities.Logging;
 
-/// <summary>
-///     Provides a test implementation of the ILogger interface for capturing and inspecting log messages during unit
-///     tests.
-/// </summary>
+/// <summary>Provides a test implementation of the ILogger interface for capturing and inspecting log messages during unit tests.</summary>
 /// <remarks>
 ///     TestLogger records log messages in memory, allowing test code to verify logging behavior without
 ///     external dependencies. The logger is initialized with an empty message collection and the log level set to Debug.
@@ -20,18 +17,14 @@ namespace ReactiveUI.Tests.Utilities.Logging;
 /// </remarks>
 public class TestLogger : ILogger
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="TestLogger" /> class with default settings.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TestLogger" /> class with default settings.</summary>
     public TestLogger()
     {
         Messages = [];
         Level = LogLevel.Debug;
     }
 
-    /// <summary>
-    ///     Gets the collection of log messages recorded by the logger.
-    /// </summary>
+    /// <summary>Gets the collection of log messages recorded by the logger.</summary>
     /// <remarks>
     ///     Each entry in the collection contains the message text, the associated type, and the log
     ///     level. The collection is read-only; to add messages, use the appropriate logging methods provided by the

@@ -7,19 +7,13 @@ using Microsoft.Maui;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="BooleanToVisibilityTypeConverter"/>.
-/// </summary>
+/// <summary>Tests for <see cref="BooleanToVisibilityTypeConverter"/>.</summary>
 public sealed class BooleanToVisibilityTypeConverterTest
 {
-    /// <summary>
-    /// The expected affinity returned by the converter.
-    /// </summary>
+    /// <summary>The expected affinity returned by the converter.</summary>
     private const int ExpectedAffinity = 2;
 
-    /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity for bool to Visibility.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObjects returns correct affinity for bool to Visibility.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinityForBoolToVisibility()
@@ -31,9 +25,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity for Visibility to bool.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObjects returns correct affinity for Visibility to bool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -46,9 +38,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts true to Visibility.Visible.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts true to Visibility.Visible.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsTrueToVisible()
@@ -61,9 +51,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts false to Visibility.Collapsed.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts false to Visibility.Collapsed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsFalseToCollapsed()
@@ -76,9 +64,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint inverts the conversion.
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint inverts the conversion.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseHint_InvertsConversion()
@@ -92,9 +78,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
     }
 
 #if !HAS_UNO && !HAS_WINUI && !IS_MAUI
-    /// <summary>
-    /// Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed (WPF only).
-    /// </summary>
+    /// <summary>Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed (WPF only).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithUseHiddenHint_UsesHidden()
@@ -108,9 +92,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
     }
 #endif
 
-    /// <summary>
-    /// Tests that TryConvert converts Visibility to bool.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts Visibility to bool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsVisibilityToBool()
@@ -130,9 +112,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(resultCollapsed).IsTypeOf<bool>();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with non-bool input for boolean converter.
-    /// </summary>
+    /// <summary>Tests that TryConvert with non-bool input for boolean converter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -146,9 +126,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint on Visibility to bool.
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint on Visibility to bool.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_VisibilityToBoolWithInverse_InvertsResult()
@@ -165,9 +143,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
     }
 
 #if !HAS_UNO && !HAS_WINUI && !IS_MAUI
-    /// <summary>
-    /// Tests that TryConvert with both Inverse and UseHidden hints (WPF only).
-    /// </summary>
+    /// <summary>Tests that TryConvert with both Inverse and UseHidden hints (WPF only).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseAndUseHidden_WorksCorrectly()

@@ -4,14 +4,10 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests.ReactiveProperties;
 
-/// <summary>
-/// Tests for the observable-based, asynchronous, and multi-rule validation overloads of <see cref="ReactiveProperty{T}"/>.
-/// </summary>
+/// <summary>Tests for the observable-based, asynchronous, and multi-rule validation overloads of <see cref="ReactiveProperty{T}"/>.</summary>
 public class ReactivePropertyValidationTests
 {
     /// <summary>Error message produced by the observable-based validator.</summary>
@@ -31,7 +27,7 @@ public class ReactivePropertyValidationTests
     [Test]
     public async Task ObservableValidator_SurfacesError()
     {
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
             .AddValidationError(xs => xs.Select(static x => x < 0 ? ObservableError : null));
 
         await Assert.That(rp.HasErrors).IsFalse();
@@ -47,7 +43,7 @@ public class ReactivePropertyValidationTests
     [Test]
     public async Task AsyncValidator_SurfacesError()
     {
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
             .AddValidationError(static x => Task.FromResult<string?>(x < 0 ? AsyncError : null));
 
         rp.Value = -1;
@@ -60,7 +56,7 @@ public class ReactivePropertyValidationTests
     [Test]
     public async Task MultipleValidators_AggregateErrors()
     {
-        using var rp = new ReactiveProperty<int>(0, ImmediateScheduler.Instance, false, false)
+        using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false)
             .AddValidationError(static x => x < 0 ? NegativeError : null)
             .AddValidationError(static x => x > 0 ? PositiveError : null);
 

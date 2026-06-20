@@ -7,19 +7,13 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A button for custom clicking.
-/// </summary>
+/// <summary>A button for custom clicking.</summary>
 public class CustomClickButton : Button
 {
-    /// <summary>
-    /// Occurs when [custom click].
-    /// </summary>
+    /// <summary>Occurs when [custom click].</summary>
     public event EventHandler<EventArgs>? CustomClick;
 
-    /// <summary>
-    /// Raises the custom click.
-    /// </summary>
+    /// <summary>Raises the custom click.</summary>
     public void RaiseCustomClick() =>
         CustomClick?.Invoke(this, EventArgs.Empty);
 }

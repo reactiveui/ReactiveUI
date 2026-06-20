@@ -1,25 +1,25 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 // System.Reactive pulls in WindowsBase (System.Windows.Input), so MouseEventArgs is ambiguous with WPF's; the
 // Windows Forms command binder always means the Forms type.
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Winforms;
+#else
 namespace ReactiveUI.Winforms;
+#endif
 
-/// <summary>
-/// Default command binder for Windows Forms controls that connects an <see cref="ICommand"/> to an event on a target object.
-/// </summary>
+/// <summary>Default command binder for Windows Forms controls that connects an <see cref="ICommand"/> to an event on a target object.</summary>
 /// <remarks>
 /// <para>
 /// This binder supports a small set of conventional "default" events (for example, <c>Click</c>, <c>MouseUp</c>),
@@ -32,19 +32,13 @@ namespace ReactiveUI.Winforms;
 /// </remarks>
 public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
 {
-    /// <summary>
-    /// The affinity returned when the target is a known Windows Forms control with an event target.
-    /// </summary>
+    /// <summary>The affinity returned when the target is a known Windows Forms control with an event target.</summary>
     private const int EventTargetAffinity = 6;
 
-    /// <summary>
-    /// The affinity returned when the target exposes one of the conventional default events.
-    /// </summary>
+    /// <summary>The affinity returned when the target exposes one of the conventional default events.</summary>
     private const int DefaultEventAffinity = 4;
 
-    /// <summary>
-    /// The conventional default events to bind to, listed in priority order.
-    /// </summary>
+    /// <summary>The conventional default events to bind to, listed in priority order.</summary>
     private static readonly List<(string name, Type type)> _defaultEventsToBind =
     [
         ("Click", typeof(EventArgs)),
@@ -59,7 +53,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
-        T>(bool hasEventTarget)
+    T>(bool hasEventTarget)
     {
         var isWinformControl = typeof(Control).IsAssignableFrom(typeof(T));
 
@@ -98,7 +92,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
                                     DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents)]
-        T>(ICommand? command, T? target, IObservable<object?> commandParameter)
+    T>(ICommand? command, T? target, IObservable<object?> commandParameter)
         where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -166,7 +160,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(command);
         ArgumentExceptionHelper.ThrowIfNull(target);
 
-        var ret = new CompositeDisposable();
+        var ret = new MultipleDisposable();
 
         object? latestParameter = null;
         var targetType = target.GetType();
@@ -229,7 +223,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
                                     DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents)]
-        T, TEventArgs>(
+    T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -260,7 +254,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var ret = new CompositeDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
+        var ret = new MultipleDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
 
         addHandler(Handler);
         ret.Add(new ActionDisposable(() => removeHandler(Handler)));
@@ -307,7 +301,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
                                     DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents)]
-        T>(
+    T>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -337,7 +331,7 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var ret = new CompositeDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
+        var ret = new MultipleDisposable { commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParameter, x))) };
 
         addHandler(Handler);
         ret.Add(new ActionDisposable(() => removeHandler(Handler)));

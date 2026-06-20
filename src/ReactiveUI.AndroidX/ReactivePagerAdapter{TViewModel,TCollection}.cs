@@ -6,8 +6,11 @@
 using System.Collections.Specialized;
 using Android.Views;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
+#endif
 /// <summary>
 /// ReactivePagerAdapter is a PagerAdapter that will interface with a
 /// Observable change set, in a similar fashion to ReactiveTableViewSource.

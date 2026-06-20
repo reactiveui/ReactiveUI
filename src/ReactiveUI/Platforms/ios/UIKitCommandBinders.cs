@@ -7,53 +7,40 @@ using System.Reflection;
 
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// UI Kit command binder platform registrations.
-/// </summary>
+#endif
+/// <summary>UI Kit command binder platform registrations.</summary>
 [Preserve(AllMembers = true)]
 public sealed class UIKitCommandBinders : FlexibleCommandBinder
 {
-    /// <summary>
-    /// The reflected property name used to control enabled state across UIKit types.
-    /// </summary>
+    /// <summary>The reflected property name used to control enabled state across UIKit types.</summary>
     private const string EnabledPropertyName = "Enabled";
 
-    /// <summary>
-    /// Binding affinity score for <see cref="UIControl"/> (base type, lower priority).
-    /// </summary>
+    /// <summary>Binding affinity score for <see cref="UIControl"/> (base type, lower priority).</summary>
     private const int UIControlAffinityScore = 9;
 
-    /// <summary>
-    /// Binding affinity score for specific <see cref="UIControl"/> subtypes (higher priority than the base type).
-    /// </summary>
+    /// <summary>Binding affinity score for specific <see cref="UIControl"/> subtypes (higher priority than the base type).</summary>
     private const int UIControlSubtypeAffinityScore = 10;
 
-    /// <summary>
-    /// Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.
-    /// </summary>
+    /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.</summary>
     private static readonly PropertyInfo UIControlEnabledProperty =
         typeof(UIControl).GetRuntimeProperty(EnabledPropertyName) ??
         throw new InvalidOperationException("There is no Enabled property on UIControl which is needed for binding.");
 
-    /// <summary>
-    /// Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.
-    /// </summary>
+    /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIControl.Enabled"/>.</summary>
     private static readonly PropertyInfo UIRefreshControlEnabledProperty =
         typeof(UIRefreshControl).GetRuntimeProperty(EnabledPropertyName) ??
         throw new InvalidOperationException("There is no Enabled property on UIRefreshControl which is needed for binding.");
 
-    /// <summary>
-    /// Cached <see cref="PropertyInfo"/> for <see cref="UIBarButtonItem.Enabled"/>.
-    /// </summary>
+    /// <summary>Cached <see cref="PropertyInfo"/> for <see cref="UIBarButtonItem.Enabled"/>.</summary>
     private static readonly PropertyInfo UIBarButtonItemEnabledProperty =
         typeof(UIBarButtonItem).GetRuntimeProperty(EnabledPropertyName) ??
         throw new InvalidOperationException("There is no Enabled property on UIBarButtonItem which is needed for binding.");
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="UIKitCommandBinders"/> class.</summary>
     public UIKitCommandBinders()
     {
         // UIControl: prefer the AOT-safe target-action helper (no string event name).
@@ -65,7 +52,7 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
                 cmd,
                 (UIRefreshControl)t!,
                 cp,
-                addHandler: h => ((UIRefreshControl)t!).ValueChanged += h,   // see note below
+                addHandler: h => ((UIRefreshControl)t!).ValueChanged += h, // see note below
                 removeHandler: h => ((UIRefreshControl)t!).ValueChanged -= h,
                 UIRefreshControlEnabledProperty));
 
@@ -80,8 +67,6 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
                 UIBarButtonItemEnabledProperty));
     }
 
-    /// <summary>
-    /// Gets a lazily-initialized singleton instance of <see cref="UIKitCommandBinders"/>.
-    /// </summary>
+    /// <summary>Gets a lazily-initialized singleton instance of <see cref="UIKitCommandBinders"/>.</summary>
     public static Lazy<UIKitCommandBinders> Instance { get; } = new();
 }

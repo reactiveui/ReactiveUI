@@ -7,21 +7,15 @@ using Splat;
 
 namespace ReactiveUI.Builder.Maui.Tests;
 
-/// <summary>
-/// Assembly-level hooks for test initialization and cleanup.
-/// </summary>
+/// <summary>Assembly-level hooks for test initialization and cleanup.</summary>
 public static class AssemblyHooks
 {
-    /// <summary>
-    /// Called before any tests in this assembly start.
-    /// </summary>
+    /// <summary>Called before any tests in this assembly start.</summary>
     [Before(Assembly)]
     public static void AssemblySetup() =>
         ModeDetector.OverrideModeDetector(new TestModeDetector());
 
-    /// <summary>
-    /// Called after all tests in this assembly complete.
-    /// </summary>
+    /// <summary>Called after all tests in this assembly complete.</summary>
     [After(Assembly)]
     public static void AssemblyTeardown()
     {
@@ -30,14 +24,10 @@ public static class AssemblyHooks
         GC.Collect();
     }
 
-    /// <summary>
-    /// Mode detector implementation that always reports being in a unit test runner.
-    /// </summary>
+    /// <summary>Mode detector implementation that always reports being in a unit test runner.</summary>
     private sealed class TestModeDetector : IModeDetector
     {
-        /// <summary>
-        /// Indicates whether the code is running in a unit test runner.
-        /// </summary>
+        /// <summary>Indicates whether the code is running in a unit test runner.</summary>
         /// <returns>Always returns <see langword="true"/> to force test mode behavior.</returns>
         public bool? InUnitTestRunner() => true;
     }

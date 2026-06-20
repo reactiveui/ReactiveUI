@@ -6,22 +6,19 @@
 using System.Reflection;
 using Android.Views;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Android implementation that provides binding to an ICommand in the ViewModel to a control in the View.
-/// </summary>
+#endif
+/// <summary>Android implementation that provides binding to an ICommand in the ViewModel to a control in the View.</summary>
 [Preserve(AllMembers = true)]
 public sealed class AndroidCommandBinders : FlexibleCommandBinder
 {
-    /// <summary>
-    /// The binding affinity used when registering the <see cref="View.Click"/> command binding.
-    /// </summary>
+    /// <summary>The binding affinity used when registering the <see cref="View.Click"/> command binding.</summary>
     private const int ViewClickBindingAffinity = 9;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AndroidCommandBinders"/> class.</summary>
     /// <exception cref="InvalidOperationException">
     /// Thrown when the <c>Enabled</c> property cannot be found on <see cref="View"/>, which is required for binding.
     /// </exception>

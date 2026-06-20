@@ -3,15 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
 using Microsoft.Maui.Controls;
+using ReactiveUI.Primitives.Signals;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for the generic <see cref="ViewModelViewHost{TViewModel}"/>.
-/// </summary>
+/// <summary>Tests for the generic <see cref="ViewModelViewHost{TViewModel}"/>.</summary>
 [NotInParallel]
 [TestExecutor<MauiTestExecutor>]
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -20,46 +18,34 @@ namespace ReactiveUI.Maui.Tests;
     Justification = "Test exercises a generic overload with explicit type arguments.")]
 public class ViewModelViewHostGenericTests
 {
-    /// <summary>
-    /// The contract string used for view contract tests.
-    /// </summary>
+    /// <summary>The contract string used for view contract tests.</summary>
     private const string TestContract = "TestContract";
 
-    /// <summary>
-    /// Tests that ViewModelProperty is registered for the generic type.
-    /// </summary>
+    /// <summary>Tests that ViewModelProperty is registered for the generic type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost<TestViewModel>.ViewModelProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that DefaultContentProperty is registered for the generic type.
-    /// </summary>
+    /// <summary>Tests that DefaultContentProperty is registered for the generic type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContentProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost<TestViewModel>.DefaultContentProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewContractObservableProperty is registered for the generic type.
-    /// </summary>
+    /// <summary>Tests that ViewContractObservableProperty is registered for the generic type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContractObservableProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost<TestViewModel>.ViewContractObservableProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ContractFallbackByPassProperty is registered for the generic type.
-    /// </summary>
+    /// <summary>Tests that ContractFallbackByPassProperty is registered for the generic type.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractFallbackByPassProperty_IsRegistered() =>
         await Assert.That(ViewModelViewHost<TestViewModel>.ContractFallbackByPassProperty).IsNotNull();
 
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_CanBeSetAndRetrieved()
@@ -70,9 +56,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
     }
 
-    /// <summary>
-    /// Tests that ViewModel property through IViewFor interface works correctly.
-    /// </summary>
+    /// <summary>Tests that ViewModel property through IViewFor interface works correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IViewFor_ViewModel_CanBeSetAndRetrieved()
@@ -83,9 +67,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
     }
 
-    /// <summary>
-    /// Tests that DefaultContent can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that DefaultContent can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContent_CanBeSetAndRetrieved()
@@ -96,9 +78,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.DefaultContent).IsSameReferenceAs(defaultView);
     }
 
-    /// <summary>
-    /// Tests that ViewContract can be set (updates ViewContractObservable).
-    /// </summary>
+    /// <summary>Tests that ViewContract can be set (updates ViewContractObservable).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContract_CanBeSet()
@@ -110,9 +90,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewContractObservable).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that ContractFallbackByPass can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ContractFallbackByPass can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ContractFallbackByPass_CanBeSetAndRetrieved()
@@ -122,9 +100,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ContractFallbackByPass).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that ViewLocator can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewLocator can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewLocator_CanBeSetAndRetrieved()
@@ -135,9 +111,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewLocator).IsSameReferenceAs(locator);
     }
 
-    /// <summary>
-    /// Tests that DefaultContent getter returns null when not set.
-    /// </summary>
+    /// <summary>Tests that DefaultContent getter returns null when not set.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DefaultContent_WhenNotSet_ReturnsNull()
@@ -147,9 +121,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.DefaultContent).IsNull();
     }
 
-    /// <summary>
-    /// Tests that ViewContract setter updates ViewContractObservable.
-    /// </summary>
+    /// <summary>Tests that ViewContract setter updates ViewContractObservable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContract_WhenSet_UpdatesViewContractObservable()
@@ -163,22 +135,18 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewContractObservable).IsNotSameReferenceAs(originalObservable);
     }
 
-    /// <summary>
-    /// Tests that constructor initializes ViewContractObservable in unit test mode.
-    /// </summary>
+    /// <summary>Tests that constructor initializes ViewContractObservable in unit test mode.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_InUnitTestMode_InitializesViewContractObservable()
     {
         var host = new ViewModelViewHost<TestViewModel>();
 
-        // In unit test mode, ViewContractObservable should be set to Observable.Never
+        // In unit test mode, ViewContractObservable should be initialized to a silent observable.
         await Assert.That(host.ViewContractObservable).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that multiple ViewModel assignments update the property.
-    /// </summary>
+    /// <summary>Tests that multiple ViewModel assignments update the property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_MultipleAssignments_UpdatesProperty()
@@ -195,9 +163,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel2);
     }
 
-    /// <summary>
-    /// Tests that setting IViewFor.ViewModel to null works.
-    /// </summary>
+    /// <summary>Tests that setting IViewFor.ViewModel to null works.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IViewFor_ViewModel_CanBeSetToNull()
@@ -210,9 +176,7 @@ public class ViewModelViewHostGenericTests
         await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsNull();
     }
 
-    /// <summary>
-    /// Tests that IViewFor.ViewModel setter works correctly.
-    /// </summary>
+    /// <summary>Tests that IViewFor.ViewModel setter works correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IViewFor_ViewModelSetter_WorksCorrectly()
@@ -226,36 +190,25 @@ public class ViewModelViewHostGenericTests
         await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsSameReferenceAs(viewModel);
     }
 
-    /// <summary>
-    /// Tests that ViewContractObservable can be set.
-    /// </summary>
+    /// <summary>Tests that ViewContractObservable can be set.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewContractObservable_CanBeSet()
     {
-        var observable = Observable.Return(TestContract);
+        var observable = Signal.Emit(TestContract);
         var host = new ViewModelViewHost<TestViewModel> { ViewContractObservable = observable };
 
         await Assert.That(host.ViewContractObservable).IsSameReferenceAs(observable);
     }
 
-    /// <summary>
-    /// Test view model.
-    /// </summary>
+    /// <summary>Test view model.</summary>
     private sealed class TestViewModel : ReactiveObject
     {
-        /// <summary>
-        /// The backing field for <see cref="Name"/>.
-        /// </summary>
-        private string? _name;
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
+        /// <summary>Gets or sets the name.</summary>
         public string? Name
         {
-            get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 }

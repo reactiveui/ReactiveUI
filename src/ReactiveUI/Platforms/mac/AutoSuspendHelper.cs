@@ -4,22 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using AppKit;
 using Foundation;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Bridges <see cref="NSApplication"/> lifecycle notifications into <see cref="RxSuspension.SuspensionHost"/> on macOS.
-/// </summary>
+#endif
+/// <summary>Bridges <see cref="NSApplication"/> lifecycle notifications into <see cref="RxSuspension.SuspensionHost"/> on macOS.</summary>
 /// <typeparam name="T">The concrete <see cref="NSApplicationDelegate"/> type.</typeparam>
 /// <remarks>
 /// <para>
@@ -35,7 +30,6 @@ namespace ReactiveUI;
 /// public class AppDelegate : NSApplicationDelegate
 /// {
 ///     private AutoSuspendHelper? _suspensionHelper;
-///
 ///     public override void DidFinishLaunching(NSNotification notification)
 ///     {
 ///         _suspensionHelper ??= new AutoSuspendHelper(this);
@@ -51,39 +45,25 @@ namespace ReactiveUI;
 public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] T> : IEnableLogger, IDisposable
     where T : NSApplicationDelegate
 {
-    /// <summary>
-    /// Emits disposables used by <see cref="ISuspensionHost.ShouldPersistState"/> subscribers to delimit persistence work.
-    /// </summary>
-    private readonly Subject<IDisposable> _shouldPersistState = new();
+    /// <summary>Emits disposables used by <see cref="ISuspensionHost.ShouldPersistState"/> subscribers to delimit persistence work.</summary>
+    private readonly Signal<IDisposable> _shouldPersistState = new();
 
-    /// <summary>
-    /// Emits values to indicate the application is resuming from a prior persisted state.
-    /// </summary>
-    private readonly Subject<Unit> _isResuming = new();
+    /// <summary>Emits values to indicate the application is resuming from a prior persisted state.</summary>
+    private readonly Signal<RxVoid> _isResuming = new();
 
-    /// <summary>
-    /// Emits values to indicate the application is becoming active again after being backgrounded/hidden.
-    /// </summary>
-    private readonly Subject<Unit> _isUnpausing = new();
+    /// <summary>Emits values to indicate the application is becoming active again after being backgrounded/hidden.</summary>
+    private readonly Signal<RxVoid> _isUnpausing = new();
 
-    /// <summary>
-    /// Emits values to indicate an unexpected termination, prompting state invalidation.
-    /// </summary>
-    private readonly Subject<Unit> _untimelyDemise = new();
+    /// <summary>Emits values to indicate an unexpected termination, prompting state invalidation.</summary>
+    private readonly Signal<RxVoid> _untimelyDemise = new();
 
-    /// <summary>
-    /// Cached handler so we can unsubscribe during <see cref="Dispose()"/>.
-    /// </summary>
+    /// <summary>Cached handler so we can unsubscribe during <see cref="Dispose()"/>.</summary>
     private readonly UnhandledExceptionEventHandler _unhandledExceptionHandler;
 
-    /// <summary>
-    /// Tracks whether this instance has been disposed.
-    /// </summary>
+    /// <summary>Tracks whether this instance has been disposed.</summary>
     private bool _isDisposed;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AutoSuspendHelper{T}"/> class.</summary>
     /// <param name="appDelegate">The application delegate.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="appDelegate"/> is <see langword="null"/>.
@@ -98,21 +78,19 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         // Developer-time guard. Cache the result per delegate runtime type to avoid repeated reflection.
         EnsureMethodsNotOverloadedCached();
 
-        RxSuspension.SuspensionHost.IsLaunchingNew = NeverObservable<Unit>.Instance;
+        RxSuspension.SuspensionHost.IsLaunchingNew = Signal.Silent<RxVoid>();
         RxSuspension.SuspensionHost.IsResuming = _isResuming;
         RxSuspension.SuspensionHost.IsUnpausing = _isUnpausing;
         RxSuspension.SuspensionHost.ShouldPersistState = _shouldPersistState;
 
         // Keep a stable delegate instance so we can unsubscribe on Dispose.
-        _unhandledExceptionHandler = (_, _) => _untimelyDemise.OnNext(Unit.Default);
+        _unhandledExceptionHandler = (_, _) => _untimelyDemise.OnNext(RxVoid.Default);
         AppDomain.CurrentDomain.UnhandledException += _unhandledExceptionHandler;
 
         RxSuspension.SuspensionHost.ShouldInvalidateState = _untimelyDemise;
     }
 
-    /// <summary>
-    /// Handles the application termination request.
-    /// </summary>
+    /// <summary>Handles the application termination request.</summary>
     /// <param name="sender">The application instance requesting termination.</param>
     /// <returns>
     /// <see cref="NSApplicationTerminateReply.Later"/> to delay termination until persistence completes.
@@ -129,14 +107,12 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         // Ensure the persist notification is emitted on the main thread, as callers typically interact with AppKit.
         RxSchedulers.MainThreadScheduler.Schedule(() =>
             _shouldPersistState.OnNext(
-                Disposable.Create(() => sender.ReplyToApplicationShouldTerminate(true))));
+                Scope.Create(() => sender.ReplyToApplicationShouldTerminate(true))));
 
         return NSApplicationTerminateReply.Later;
     }
 
-    /// <summary>
-    /// Notifies the helper that the application finished launching.
-    /// </summary>
+    /// <summary>Notifies the helper that the application finished launching.</summary>
     /// <param name="notification">The launch notification.</param>
     /// <remarks>
     /// Signals <see cref="ISuspensionHost.IsResuming"/> so state drivers load the last persisted <see cref="ISuspensionHost.AppState"/>.
@@ -144,25 +120,21 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     public void DidFinishLaunching(NSNotification notification)
     {
         ThrowIfDisposed();
-        _isResuming.OnNext(Unit.Default);
+        _isResuming.OnNext(RxVoid.Default);
     }
 
-    /// <summary>
-    /// Notifies the helper that the application resigned active state.
-    /// </summary>
+    /// <summary>Notifies the helper that the application resigned active state.</summary>
     /// <param name="notification">The resign-active notification.</param>
     /// <remarks>
-    /// Requests an asynchronous save by emitting <see cref="Disposable.Empty"/> via <see cref="ISuspensionHost.ShouldPersistState"/>.
+    /// Requests an asynchronous save by emitting <see cref="Scope.Empty"/> via <see cref="ISuspensionHost.ShouldPersistState"/>.
     /// </remarks>
     public void DidResignActive(NSNotification notification)
     {
         ThrowIfDisposed();
-        _shouldPersistState.OnNext(Disposable.Empty);
+        _shouldPersistState.OnNext(Scope.Empty);
     }
 
-    /// <summary>
-    /// Notifies the helper that the application became active.
-    /// </summary>
+    /// <summary>Notifies the helper that the application became active.</summary>
     /// <param name="notification">The become-active notification.</param>
     /// <remarks>
     /// Signals <see cref="ISuspensionHost.IsUnpausing"/> so subscribers can refresh transient UI when the app regains focus.
@@ -170,12 +142,10 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     public void DidBecomeActive(NSNotification notification)
     {
         ThrowIfDisposed();
-        _isUnpausing.OnNext(Unit.Default);
+        _isUnpausing.OnNext(RxVoid.Default);
     }
 
-    /// <summary>
-    /// Notifies the helper that the application was hidden.
-    /// </summary>
+    /// <summary>Notifies the helper that the application was hidden.</summary>
     /// <param name="notification">The hide notification.</param>
     /// <remarks>
     /// Initiates a quick save when the app is hidden, mirroring the behavior of <see cref="DidResignActive"/>.
@@ -184,7 +154,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     public void DidHide(NSNotification notification)
     {
         ThrowIfDisposed();
-        _shouldPersistState.OnNext(Disposable.Empty);
+        _shouldPersistState.OnNext(Scope.Empty);
     }
 
     /// <inheritdoc />
@@ -194,9 +164,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Releases resources held by this helper.
-    /// </summary>
+    /// <summary>Releases resources held by this helper.</summary>
     /// <param name="isDisposing">If <see langword="true"/>, disposes managed resources.</param>
     protected virtual void Dispose(bool isDisposing)
     {
@@ -221,9 +189,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         _untimelyDemise.Dispose();
     }
 
-    /// <summary>
-    /// Performs the "methods must be implemented" guard once per application delegate runtime type.
-    /// </summary>
+    /// <summary>Performs the "methods must be implemented" guard once per application delegate runtime type.</summary>
     /// <exception cref="Exception">
     /// Thrown when required lifecycle methods are not declared on appDelegate's runtime type.
     /// </exception>
@@ -252,17 +218,13 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         MethodForwardingValidationCache.MarkValidated(type);
     }
 
-    /// <summary>
-    /// Throws if this instance has been disposed.
-    /// </summary>
+    /// <summary>Throws if this instance has been disposed.</summary>
     /// <exception cref="ObjectDisposedException">Thrown when the instance is disposed.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed() =>
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-    /// <summary>
-    /// Stores a process-wide cache of which delegate types have been validated for lifecycle forwarding.
-    /// </summary>
+    /// <summary>Stores a process-wide cache of which delegate types have been validated for lifecycle forwarding.</summary>
     /// <remarks>
     /// Uses a single gate because this is cold-path initialization and the number of delegate types is tiny.
     /// </remarks>
@@ -279,9 +241,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         /// <summary>Tracks which delegate types have already passed the lifecycle method validation check.</summary>
         private static readonly Dictionary<Type, byte> Validated = [];
 
-        /// <summary>
-        /// Returns whether the specified delegate type has been validated.
-        /// </summary>
+        /// <summary>Returns whether the specified delegate type has been validated.</summary>
         /// <param name="type">The delegate runtime type.</param>
         /// <returns><see langword="true"/> if the type has been validated; otherwise <see langword="false"/>.</returns>
         public static bool IsValidated(Type type)
@@ -292,9 +252,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
             }
         }
 
-        /// <summary>
-        /// Marks the specified delegate type as validated.
-        /// </summary>
+        /// <summary>Marks the specified delegate type as validated.</summary>
         /// <param name="type">The delegate runtime type.</param>
         public static void MarkValidated(Type type)
         {

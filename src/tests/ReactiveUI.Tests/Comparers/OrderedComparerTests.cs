@@ -7,14 +7,10 @@ using System.Diagnostics;
 
 namespace ReactiveUI.Tests.Comparers;
 
-/// <summary>
-/// Tests for the <see cref="OrderedComparer{T}" /> functionality.
-/// </summary>
+/// <summary>Tests for the <see cref="OrderedComparer{T}" /> functionality.</summary>
 public class OrderedComparerTests
 {
-    /// <summary>
-    ///     Test for checking that chaining the onto regular IComparable works.
-    /// </summary>
+    /// <summary>Test for checking that chaining the onto regular IComparable works.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ChainOntoRegularIComparables()
@@ -29,9 +25,7 @@ public class OrderedComparerTests
         await Assert.That(items.SequenceEqual(["aaa", "AAA", "aaaa", "abb"], StringComparer.Ordinal)).IsTrue();
     }
 
-    /// <summary>
-    ///     A test which determines if customer comparers work.
-    /// </summary>
+    /// <summary>A test which determines if customer comparers work.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CustomComparerTest()
@@ -54,9 +48,7 @@ public class OrderedComparerTests
         await Assert.That(items.SequenceEqual(["AAA", "AAA", "abb", "aaaa"], StringComparer.OrdinalIgnoreCase)).IsTrue();
     }
 
-    /// <summary>
-    ///     A general smoke test.
-    /// </summary>
+    /// <summary>A general smoke test.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SmokeTest()
@@ -95,9 +87,7 @@ public class OrderedComparerTests
         await Assert.That(employees.SequenceEqual([adam, carol, xavier, bob, alice])).IsTrue();
     }
 
-    /// <summary>
-    ///     Test that checks it works with anonymous types.
-    /// </summary>
+    /// <summary>Test that checks it works with anonymous types.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WorksWithAnonymousTypes()
@@ -109,25 +99,17 @@ public class OrderedComparerTests
         await Assert.That(items.Select(static x => x.FirstLetter).SequenceEqual("abc")).IsTrue();
     }
 
-    /// <summary>
-    /// A sample employee record used as test data for sorting.
-    /// </summary>
+    /// <summary>A sample employee record used as test data for sorting.</summary>
     [DebuggerDisplay("{Name}")]
     private sealed class Employee
     {
-        /// <summary>
-        /// Gets the age of the employee.
-        /// </summary>
+        /// <summary>Gets the age of the employee.</summary>
         public int Age { get; init; }
 
-        /// <summary>
-        /// Gets the name of the employee.
-        /// </summary>
+        /// <summary>Gets the name of the employee.</summary>
         public string? Name { get; init; }
 
-        /// <summary>
-        /// Gets the salary of the employee.
-        /// </summary>
+        /// <summary>Gets the salary of the employee.</summary>
         public int Salary { get; init; }
     }
 }

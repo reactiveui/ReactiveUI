@@ -5,13 +5,9 @@
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// Application shell providing Shell navigation for the MAUI sample.
-/// </summary>
+/// <summary>Application shell providing Shell navigation for the MAUI sample.</summary>
 public partial class AppShell : Shell
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppShell"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AppShell"/> class.</summary>
     public AppShell() => InitializeComponent();
 }

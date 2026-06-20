@@ -3,25 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using ReactiveUI.Maui;
 using Splat;
 using Splat.Builder;
 
 namespace ReactiveUI.Builder.Maui.Tests.Activation;
 
-/// <summary>
-/// Tests for the activation for view fetcher.
-/// </summary>
+/// <summary>Tests for the activation for view fetcher.</summary>
 public sealed class ActivationForViewFetcherTests
 {
+    /// <summary>The delay, in milliseconds, allowed for activation changes to propagate.</summary>
     private const int PropagationDelayMilliseconds = 50;
 
-    /// <summary>
-    /// Verifies that a page and its child view activate and deactivate via the fetcher.
-    /// </summary>
+    /// <summary>Verifies that a page and its child view activate and deactivate via the fetcher.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PageAndChildViewActivateAndDeactivate()
@@ -82,106 +76,84 @@ public sealed class ActivationForViewFetcherTests
         }
     }
 
-    /// <summary>
-    /// Test page that tracks activation count.
-    /// </summary>
+    /// <summary>Test page that tracks activation count.</summary>
     private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView, ICanActivate
     {
-        private readonly Subject<Unit> _activated = new();
-        private readonly Subject<Unit> _deactivated = new();
+        /// <summary>The subject that signals page activation.</summary>
+        private readonly Signal<RxVoid> _activated = new();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestPage"/> class.
-        /// </summary>
+        /// <summary>The subject that signals page deactivation.</summary>
+        private readonly Signal<RxVoid> _deactivated = new();
+
+        /// <summary>Initializes a new instance of the <see cref="TestPage"/> class.</summary>
         public TestPage() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Disposable.Create(() => ActivationCount--));
+            d(Scope.Create(() => ActivationCount--));
         });
 
         /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated;
+        public IObservable<RxVoid> Activated => _activated;
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated;
+        public IObservable<RxVoid> Deactivated => _deactivated;
 
-        /// <summary>
-        /// Gets the current activation count.
-        /// </summary>
+        /// <summary>Gets the current activation count.</summary>
         public int ActivationCount { get; private set; }
 
-        /// <summary>
-        /// Manually trigger activation for testing.
-        /// </summary>
-        public void Activate() => _activated.OnNext(Unit.Default);
+        /// <summary>Manually trigger activation for testing.</summary>
+        public void Activate() => _activated.OnNext(RxVoid.Default);
 
-        /// <summary>
-        /// Manually trigger deactivation for testing.
-        /// </summary>
-        public void Deactivate() => _deactivated.OnNext(Unit.Default);
+        /// <summary>Manually trigger deactivation for testing.</summary>
+        public void Deactivate() => _deactivated.OnNext(RxVoid.Default);
     }
 
-    /// <summary>
-    /// Test view that tracks activation count.
-    /// </summary>
+    /// <summary>Test view that tracks activation count.</summary>
     private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView, ICanActivate
     {
-        private readonly Subject<Unit> _activated = new();
-        private readonly Subject<Unit> _deactivated = new();
+        /// <summary>The subject that signals view activation.</summary>
+        private readonly Signal<RxVoid> _activated = new();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestView"/> class.
-        /// </summary>
+        /// <summary>The subject that signals view deactivation.</summary>
+        private readonly Signal<RxVoid> _deactivated = new();
+
+        /// <summary>Initializes a new instance of the <see cref="TestView"/> class.</summary>
         public TestView() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Disposable.Create(() => ActivationCount--));
+            d(Scope.Create(() => ActivationCount--));
         });
 
         /// <inheritdoc/>
-        public IObservable<Unit> Activated => _activated;
+        public IObservable<RxVoid> Activated => _activated;
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => _deactivated;
+        public IObservable<RxVoid> Deactivated => _deactivated;
 
-        /// <summary>
-        /// Gets the current activation count.
-        /// </summary>
+        /// <summary>Gets the current activation count.</summary>
         public int ActivationCount { get; private set; }
 
-        /// <summary>
-        /// Manually trigger activation for testing.
-        /// </summary>
-        public void Activate() => _activated.OnNext(Unit.Default);
+        /// <summary>Manually trigger activation for testing.</summary>
+        public void Activate() => _activated.OnNext(RxVoid.Default);
 
-        /// <summary>
-        /// Manually trigger deactivation for testing.
-        /// </summary>
-        public void Deactivate() => _deactivated.OnNext(Unit.Default);
+        /// <summary>Manually trigger deactivation for testing.</summary>
+        public void Deactivate() => _deactivated.OnNext(RxVoid.Default);
     }
 
-    /// <summary>
-    /// Test view model that tracks activation count.
-    /// </summary>
+    /// <summary>Test view model that tracks activation count.</summary>
     private sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.</summary>
         public TestActivatableViewModel() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Disposable.Create(() => ActivationCount--));
+            d(Scope.Create(() => ActivationCount--));
         });
 
-        /// <summary>
-        /// Gets the view model activator.
-        /// </summary>
+        /// <summary>Gets the view model activator.</summary>
         public ViewModelActivator Activator { get; } = new();
 
-        /// <summary>
-        /// Gets the current activation count.
-        /// </summary>
+        /// <summary>Gets the current activation count.</summary>
         public int ActivationCount { get; private set; }
     }
 }

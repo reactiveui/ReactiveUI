@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting double to nullable double.
-/// </summary>
+/// <summary>Tests for converting double to nullable double.</summary>
 public class DoubleToNullableDoubleTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class DoubleToNullableDoubleTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a double value always succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a double value always succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AlwaysSucceeds()
@@ -38,9 +32,7 @@ public class DoubleToNullableDoubleTypeConverterTests
         await Assert.That(output).IsEqualTo((double?)Value);
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="double"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="double"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsDouble()
@@ -49,9 +41,7 @@ public class DoubleToNullableDoubleTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(double));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is nullable <see cref="double"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is nullable <see cref="double"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsDoubleNullable()

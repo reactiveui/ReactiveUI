@@ -1,0 +1,10 @@
+#nullable enable
+ReactiveUI.Reactive.Builder.ReactiveUIBuilderDrawingExtensions
+ReactiveUI.Reactive.Builder.ReactiveUIBuilderDrawingExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!)
+ReactiveUI.Reactive.Builder.ReactiveUIBuilderDrawingExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder!).WithDrawing() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Drawing.Registrations
+ReactiveUI.Reactive.Drawing.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Reactive.Drawing.Registrations.Registrations() -> void
+ReactiveUI.Reactive.Drawing.Resource
+ReactiveUI.Reactive.Drawing.Resource.Resource() -> void
+static ReactiveUI.Reactive.Builder.ReactiveUIBuilderDrawingExtensions.WithDrawing(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!

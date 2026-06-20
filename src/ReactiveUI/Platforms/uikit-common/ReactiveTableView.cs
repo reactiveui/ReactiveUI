@@ -5,65 +5,52 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// This is a TableView that is both an TableView and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is a TableView that is both an TableView and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 [SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
 public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     protected ReactiveTableView()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     /// <param name="t">The object flag.</param>
     protected ReactiveTableView(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveTableView(NSCoder coder)
         : base(coder)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     protected ReactiveTableView(CGRect frame)
         : base(frame)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     /// <param name="style">The table view style.</param>
     protected ReactiveTableView(CGRect frame, UITableViewStyle style)
@@ -71,9 +58,7 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableView"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveTableView(in IntPtr handle)
         : base(handle)
@@ -96,10 +81,10 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -114,13 +99,13 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
     public override void WillMoveToSuperview(UIView? newsuper)
     {
         base.WillMoveToSuperview(newsuper);
-        (newsuper is not null ? _activated : _deactivated).OnNext(Unit.Default);
+        (newsuper is not null ? _activated : _deactivated).OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool shouldActivate) =>
+    void ICanForceManualActivation.Activate(bool isActivating) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-                                               (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
+                                               (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -132,86 +117,5 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a TableView that is both an TableView and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveTableView<TViewModel> : ReactiveTableView, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveTableView()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveTableView(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The pointer.</param>
-    protected ReactiveTableView(NSCoder coder)
-        : base(coder)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="frame">The frame.</param>
-    protected ReactiveTableView(CGRect frame)
-        : base(frame)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="frame">The frmae.</param>
-    /// <param name="style">The ui view style.</param>
-    protected ReactiveTableView(CGRect frame, UITableViewStyle style)
-        : base(frame, style)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveTableView(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

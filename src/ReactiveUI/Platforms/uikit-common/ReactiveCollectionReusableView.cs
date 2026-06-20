@@ -5,14 +5,15 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// This is a UICollectionReusableView that is both an UICollectionReusableView and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -21,48 +22,38 @@ namespace ReactiveUI;
 public abstract class ReactiveCollectionReusableView : UICollectionReusableView, IReactiveNotifyPropertyChanged<ReactiveCollectionReusableView>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     protected ReactiveCollectionReusableView(CGRect frame)
         : base(frame)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     protected ReactiveCollectionReusableView()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveCollectionReusableView(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     /// <param name="t">The object flag.</param>
     protected ReactiveCollectionReusableView(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionReusableView"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveCollectionReusableView(NSCoder coder)
         : base(coder)
@@ -85,10 +76,10 @@ public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -127,14 +118,14 @@ public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
     public override void WillMoveToSuperview(UIView? newsuper)
     {
         base.WillMoveToSuperview(newsuper);
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     public override void RemoveFromSuperview()
     {
         base.RemoveFromSuperview();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
@@ -147,76 +138,5 @@ public abstract class ReactiveCollectionReusableView : UICollectionReusableView,
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a UICollectionReusableView that is both an UICollectionReusableView and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactiveCollectionReusableView<TViewModel> : ReactiveCollectionReusableView, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
-    /// </summary>
-    protected ReactiveCollectionReusableView()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionReusableView(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveCollectionReusableView(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The coder.</param>
-    protected ReactiveCollectionReusableView(NSCoder coder)
-        : base(coder)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionReusableView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="frame">The frame.</param>
-    protected ReactiveCollectionReusableView(CGRect frame)
-        : base(frame)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

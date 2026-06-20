@@ -4,19 +4,13 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 
 namespace ReactiveUI.Tests;
 
-/// <content>
-///     High-arity (8 to 12 property) WhenAnyDynamic selector tests.
-/// </content>
+/// <summary>Tests for WhenAnyDynamic methods in VariadicTemplates.cs.</summary>
 public partial class WhenAnyDynamicTest
 {
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 8 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -45,15 +39,13 @@ public partial class WhenAnyDynamicTest
             property6,
             property7,
             property8,
-            (_, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed enabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -83,15 +75,13 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             (_, _, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed disabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 8 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -121,15 +111,13 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             (_, _, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 9 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -160,15 +148,13 @@ public partial class WhenAnyDynamicTest
             property7,
             property8,
             property9,
-            (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed enabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -200,15 +186,13 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             (_, _, _, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed disabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 9 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -240,15 +224,13 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             (_, _, _, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 10 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -281,15 +263,13 @@ public partial class WhenAnyDynamicTest
             property8,
             property9,
             property10,
-            (_, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed enabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -323,15 +303,13 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             (_, _, _, _, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed disabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 10 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -365,15 +343,13 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             (_, _, _, _, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 11 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -408,15 +384,13 @@ public partial class WhenAnyDynamicTest
             property9,
             property10,
             property11,
-            (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed enabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -452,15 +426,13 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             (_, _, _, _, _, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed disabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 11 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -496,15 +468,13 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             (_, _, _, _, _, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 12 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -541,15 +511,13 @@ public partial class WhenAnyDynamicTest
             property10,
             property11,
             property12,
-            (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed enabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed enabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -587,15 +555,13 @@ public partial class WhenAnyDynamicTest
             property11,
             property12,
             (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed disabled.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyDynamic overload for 12 properties with a selector and distinct-until-changed disabled.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -633,7 +599,7 @@ public partial class WhenAnyDynamicTest
             property11,
             property12,
             (_, _, _, _, _, _, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
         vm.Property1 = "a";
         await Assert.That(list).Count().IsGreaterThan(1);

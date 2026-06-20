@@ -8,9 +8,9 @@ using Android.Runtime;
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// Android application entry point.
-/// </summary>
+/// <summary>Android application entry point.</summary>
+/// <param name="handle">The application handle.</param>
+/// <param name="ownership">The ownership of the handle.</param>
 [Application]
 public class MainApplication(IntPtr handle, JniHandleOwnership ownership) : MauiApplication(handle, ownership)
 {

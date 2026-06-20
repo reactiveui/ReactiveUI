@@ -5,24 +5,16 @@
 
 namespace ReactiveUI.Samples.Winforms;
 
-/// <summary>
-/// Main application form that hosts the login view.
-/// </summary>
+/// <summary>Main application form that hosts the login view.</summary>
 public sealed class MainForm : Form
 {
-    /// <summary>
-    /// The width of the main window client area, in pixels.
-    /// </summary>
+    /// <summary>The width of the main window client area, in pixels.</summary>
     private const int WindowWidth = 300;
 
-    /// <summary>
-    /// The height of the main window client area, in pixels.
-    /// </summary>
+    /// <summary>The height of the main window client area, in pixels.</summary>
     private const int WindowHeight = 200;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MainForm"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="MainForm"/> class.</summary>
     public MainForm()
     {
         Text = "ReactiveUI WinForms Login Sample";

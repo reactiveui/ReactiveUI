@@ -4,13 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Disposables.Fluent;
 using Microsoft.AspNetCore.Components;
 using ReactiveUI.Internal;
+using ReactiveUI.Primitives;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor.Internal;
+#else
 namespace ReactiveUI.Blazor.Internal;
-
+#endif
 /// <summary>
 /// Internal helper methods for reactive Blazor components.
 /// Provides shared functionality for activation wiring and view model change reactivity.
@@ -27,9 +29,7 @@ namespace ReactiveUI.Blazor.Internal;
 /// </remarks>
 internal static class ReactiveComponentHelpers
 {
-    /// <summary>
-    /// Wires ReactiveUI activation semantics to the specified view model if it implements <see cref="IActivatableViewModel"/>.
-    /// </summary>
+    /// <summary>Wires ReactiveUI activation semantics to the specified view model if it implements <see cref="IActivatableViewModel"/>.</summary>
     /// <typeparam name="T">The view model type that implements <see cref="INotifyPropertyChanged"/>.</typeparam>
     /// <param name="viewModel">The view model to wire activation for.</param>
     /// <param name="state">The reactive component state that provides activation/deactivation observables.</param>
@@ -53,11 +53,11 @@ internal static class ReactiveComponentHelpers
 
         // Subscribe to component activation and trigger view model activation.
         state.Activated
-            .Subscribe(new DelegateObserver<Unit>(_ => avm.Activator.Activate()))
+            .Subscribe(new DelegateObserver<RxVoid>(_ => avm.Activator.Activate()))
             .DisposeWith(state.LifetimeDisposables);
 
         // Deactivation subscription does not need disposal tracking beyond component lifetime.
-        state.Deactivated.Subscribe(new DelegateObserver<Unit>(_ => avm.Activator.Deactivate()));
+        state.Deactivated.Subscribe(new DelegateObserver<RxVoid>(_ => avm.Activator.Deactivate()));
     }
 
     /// <summary>

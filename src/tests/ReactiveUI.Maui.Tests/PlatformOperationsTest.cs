@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="PlatformOperations"/>.
-/// </summary>
+/// <summary>Tests for <see cref="PlatformOperations"/>.</summary>
 public class PlatformOperationsTest
 {
-    /// <summary>
-    /// Tests that GetOrientation returns null on MAUI.
-    /// </summary>
+    /// <summary>Tests that GetOrientation returns null on MAUI.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetOrientation_ReturnsNull()

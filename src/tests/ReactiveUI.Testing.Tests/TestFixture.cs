@@ -5,28 +5,18 @@
 
 namespace ReactiveUI.Testing.Tests;
 
-/// <summary>
-/// Test fixture.
-/// </summary>
+/// <summary>Test fixture.</summary>
 public class TestFixture
 {
-    /// <summary>
-    /// Gets or sets the count.
-    /// </summary>
+    /// <summary>Gets or sets the count.</summary>
     public int Count { get; set; }
 
-    /// <summary>
-    /// Gets or sets the name.
-    /// </summary>
+    /// <summary>Gets or sets the name.</summary>
     public string? Name { get; set; }
 
-    /// <summary>
-    /// Gets or sets the tests.
-    /// </summary>
+    /// <summary>Gets or sets the tests.</summary>
     public IEnumerable<string>? Tests { get; set; }
 
-    /// <summary>
-    /// Gets the variables.
-    /// </summary>
+    /// <summary>Gets the variables.</summary>
     public Dictionary<string, string>? Variables { get; init; }
 }

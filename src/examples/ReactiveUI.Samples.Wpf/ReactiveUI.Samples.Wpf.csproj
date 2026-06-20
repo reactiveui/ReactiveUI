@@ -17,5 +17,10 @@
     <ProjectReference Include="..\..\ReactiveUI.Wpf\ReactiveUI.Wpf.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
 
 </Project>

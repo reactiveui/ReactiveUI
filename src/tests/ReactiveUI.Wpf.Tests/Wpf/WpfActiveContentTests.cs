@@ -3,12 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Windows;
-
-using DynamicData;
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Wpf.Mocks.ViewModelViewHosts;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -16,20 +11,23 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Wpf Active Content Tests.
-/// </summary>
+/// <summary>Wpf Active Content Tests.</summary>
 [NotInParallel]
 public class WpfActiveContentTests
 {
+    /// <summary>The expected count when two items are present.</summary>
     private const int TwoItems = 2;
+
+    /// <summary>The expected count when three items are present.</summary>
     private const int ThreeItems = 3;
+
+    /// <summary>The result value produced by the save command.</summary>
     private const int SaveResultValue = 2;
+
+    /// <summary>The result value produced by the invalidate command.</summary>
     private const int InvalidateResultValue = 3;
 
-    /// <summary>
-    /// Validates binding logic for a list-backed view.
-    /// </summary>
+    /// <summary>Validates binding logic for a list-backed view.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -81,9 +79,7 @@ public class WpfActiveContentTests
         }
     }
 
-    /// <summary>
-    /// Verifies that ViewB is resolved when registered with the correct contract.
-    /// </summary>
+    /// <summary>Verifies that ViewB is resolved when registered with the correct contract.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<ViewBRegisteredExecutor>]
@@ -104,9 +100,7 @@ public class WpfActiveContentTests
         await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.ViewB>();
     }
 
-    /// <summary>
-    /// Verifies that View0 is used as fallback when ViewB is not registered.
-    /// </summary>
+    /// <summary>Verifies that View0 is used as fallback when ViewB is not registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<View0FallbackExecutor>]
@@ -128,9 +122,7 @@ public class WpfActiveContentTests
         await Assert.That(host.Content).IsAssignableTo<FakeViewWithContract.View0>();
     }
 
-    /// <summary>
-    /// Verifies that no view is resolved when fallback bypass is enabled and ViewB is not registered.
-    /// </summary>
+    /// <summary>Verifies that no view is resolved when fallback bypass is enabled and ViewB is not registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<NoneWithBypassExecutor>]
@@ -151,9 +143,7 @@ public class WpfActiveContentTests
         await Assert.That(host.Content).IsNull();
     }
 
-    /// <summary>
-    /// Verifies the dummy suspension driver calls.
-    /// </summary>
+    /// <summary>Verifies the dummy suspension driver calls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task DummySuspensionDriverTest()
@@ -170,14 +160,10 @@ public class WpfActiveContentTests
         await Assert.That(invalidateResult).IsEqualTo(InvalidateResultValue);
     }
 
-    /// <summary>
-    /// A test executor that registers the default, ContractA and ContractB views.
-    /// </summary>
+    /// <summary>A test executor that registers the default, ContractA and ContractB views.</summary>
     public class ViewBRegisteredExecutor : STAThreadExecutor
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -192,8 +178,8 @@ public class WpfActiveContentTests
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
-                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithMainThreadScheduler(Sequencer.Immediate)
+                    .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
             });
         }
@@ -206,14 +192,10 @@ public class WpfActiveContentTests
         }
     }
 
-    /// <summary>
-    /// A test executor that registers the default and ContractA views to test fallback resolution.
-    /// </summary>
+    /// <summary>A test executor that registers the default and ContractA views to test fallback resolution.</summary>
     public class View0FallbackExecutor : STAThreadExecutor
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -227,8 +209,8 @@ public class WpfActiveContentTests
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithMainThreadScheduler(Sequencer.Immediate)
+                    .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
             });
         }
@@ -241,14 +223,10 @@ public class WpfActiveContentTests
         }
     }
 
-    /// <summary>
-    /// A test executor that registers the default and ContractA views for bypass-resolution tests.
-    /// </summary>
+    /// <summary>A test executor that registers the default and ContractA views for bypass-resolution tests.</summary>
     public class NoneWithBypassExecutor : STAThreadExecutor
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -262,8 +240,8 @@ public class WpfActiveContentTests
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
-                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithMainThreadScheduler(Sequencer.Immediate)
+                    .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
             });
         }
@@ -276,14 +254,10 @@ public class WpfActiveContentTests
         }
     }
 
-    /// <summary>
-    /// A test executor that registers the default, ContractA and ContractB views.
-    /// </summary>
+    /// <summary>A test executor that registers the default, ContractA and ContractB views.</summary>
     public class ExecutorBIfViewBIsRegistered : STAThreadExecutor
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -298,8 +272,8 @@ public class WpfActiveContentTests
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewB(), FakeViewWithContract.ContractB))
-                    .WithMainThreadScheduler(ImmediateScheduler.Instance)
-                    .WithTaskPoolScheduler(ImmediateScheduler.Instance)
+                    .WithMainThreadScheduler(Sequencer.Immediate)
+                    .WithTaskPoolScheduler(Sequencer.Immediate)
                     .WithCoreServices();
             });
         }

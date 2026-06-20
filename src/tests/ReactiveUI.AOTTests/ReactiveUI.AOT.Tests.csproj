@@ -18,4 +18,10 @@
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
 </Project>

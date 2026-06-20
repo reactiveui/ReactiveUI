@@ -8,21 +8,17 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="AutoSuspendHelper"/>.
-/// </summary>
+/// <summary>Tests for <see cref="AutoSuspendHelper"/>.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class AutoSuspendHelperTest
 {
-    /// <summary>
-    /// Tests that AutoSuspendHelper can be created with Application.Current.
-    /// </summary>
+    /// <summary>Tests that AutoSuspendHelper can be created with Application.Current.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_CreatesInstanceWithApplication()
     {
-        if (Application.Current == null)
+        if (Application.Current is null)
         {
             _ = new Application();
         }
@@ -33,14 +29,12 @@ public class AutoSuspendHelperTest
         await Assert.That(helper.IdleTimeout).IsEqualTo(TimeSpan.FromSeconds(15.0));
     }
 
-    /// <summary>
-    /// Tests that IdleTimeout property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that IdleTimeout property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task IdleTimeout_CanBeSetAndRetrieved()
     {
-        if (Application.Current == null)
+        if (Application.Current is null)
         {
             _ = new Application();
         }

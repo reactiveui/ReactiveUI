@@ -1,20 +1,24 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Blazor.Internal;
+#else
 using ReactiveUI.Blazor.Internal;
+#endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor;
+#else
 namespace ReactiveUI.Blazor;
-
-/// <summary>
-/// A base component for handling property changes and updating the Blazor view appropriately.
-/// </summary>
+#endif
+/// <summary>A base component for handling property changes and updating the Blazor view appropriately.</summary>
 /// <typeparam name="T">The type of view model. Must support <see cref="INotifyPropertyChanged"/>.</typeparam>
 /// <remarks>
 /// <para>
@@ -35,29 +39,20 @@ public class ReactiveOwningComponentBase<T>
     : OwningComponentBase<T>, IViewFor<T>, INotifyPropertyChanged, ICanActivate
     where T : class, INotifyPropertyChanged
 {
-    /// <summary>
-    /// Encapsulates reactive state and lifecycle management for this component.
-    /// </summary>
+    /// <summary>Encapsulates reactive state and lifecycle management for this component.</summary>
     private readonly ReactiveComponentState _state = new();
-
-    /// <summary>
-    /// Backing field for <see cref="ViewModel"/>.
-    /// </summary>
-    private T? _viewModel;
 
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>
-    /// Gets or sets the view model associated with this component.
-    /// </summary>
+    /// <summary>Gets or sets the view model associated with this component.</summary>
     [Parameter]
     public T? ViewModel
     {
-        get => _viewModel;
+        get => field;
         set
         {
-            if (!ReactiveComponentHelpers.SetIfChanged(ref _viewModel, value))
+            if (!ReactiveComponentHelpers.SetIfChanged(ref field, value))
             {
                 return;
             }
@@ -74,10 +69,10 @@ public class ReactiveOwningComponentBase<T>
     }
 
     /// <inheritdoc />
-    public IObservable<Unit> Activated => _state.Activated;
+    public IObservable<RxVoid> Activated => _state.Activated;
 
     /// <inheritdoc />
-    public IObservable<Unit> Deactivated => _state.Deactivated;
+    public IObservable<RxVoid> Deactivated => _state.Deactivated;
 
     /// <inheritdoc />
     protected override void OnInitialized()
@@ -87,7 +82,6 @@ public class ReactiveOwningComponentBase<T>
     }
 
     /// <inheritdoc/>
-#if NET6_0_OR_GREATER
     [RequiresUnreferencedCode(
         "OnAfterRender wires reactive subscriptions that may not be trimming-safe in all environments.")]
     [SuppressMessage(
@@ -98,7 +92,6 @@ public class ReactiveOwningComponentBase<T>
         "Trimming",
         "IL2046:'RequiresUnreferencedCodeAttribute' annotations must match across all interface implementations or overrides.",
         Justification = "ComponentBase is an external reference")]
-#endif
     protected override void OnAfterRender(bool firstRender)
     {
         ReactiveComponentHelpers.HandleFirstRender(
@@ -111,9 +104,7 @@ public class ReactiveOwningComponentBase<T>
         base.OnAfterRender(firstRender);
     }
 
-    /// <summary>
-    /// Invokes the property changed event.
-    /// </summary>
+    /// <summary>Invokes the property changed event.</summary>
     /// <param name="propertyName">The name of the changed property.</param>
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new(propertyName));

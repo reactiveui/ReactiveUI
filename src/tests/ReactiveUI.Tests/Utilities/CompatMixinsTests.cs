@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Utilities;
 
-/// <summary>
-///     Tests for CompatMixins utility methods.
-/// </summary>
+/// <summary>Tests for CompatMixins utility methods.</summary>
 public class CompatMixinsTests
 {
-    /// <summary>
-    ///     Tests that Run extension method processes all items.
-    /// </summary>
+    /// <summary>Tests that Run extension method processes all items.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Run_ProcessesAllItems()
@@ -30,9 +26,7 @@ public class CompatMixinsTests
         await Assert.That(processedItems).IsEquivalentTo(Enumerable.Range(1, SequenceLength).Select(x => x * Multiplier));
     }
 
-    /// <summary>
-    ///     Tests that SkipLast with count greater than collection returns empty.
-    /// </summary>
+    /// <summary>Tests that SkipLast with count greater than collection returns empty.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SkipLast_CountGreaterThanCollection_ReturnsEmpty()
@@ -49,9 +43,7 @@ public class CompatMixinsTests
         await Assert.That(result).IsEmpty();
     }
 
-    /// <summary>
-    ///     Tests that SkipLast extension method removes last N items.
-    /// </summary>
+    /// <summary>Tests that SkipLast extension method removes last N items.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SkipLast_RemovesLastNItems()
@@ -69,9 +61,7 @@ public class CompatMixinsTests
         await Assert.That(result).IsEquivalentTo(Enumerable.Range(1, ExpectedLength));
     }
 
-    /// <summary>
-    ///     Tests that SkipLast with zero count returns all items.
-    /// </summary>
+    /// <summary>Tests that SkipLast with zero count returns all items.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SkipLast_ZeroCount_ReturnsAllItems()

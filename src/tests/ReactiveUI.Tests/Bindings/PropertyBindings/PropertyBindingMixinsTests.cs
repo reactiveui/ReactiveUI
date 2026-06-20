@@ -3,23 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Subjects;
-
 namespace ReactiveUI.Tests.Bindings.PropertyBindings;
 
-/// <summary>
-/// Tests for the property binding mixin extension methods (Bind, OneWayBind, and BindTo).
-/// </summary>
+/// <summary>Tests for the property binding mixin extension methods (Bind, OneWayBind, and BindTo).</summary>
 public class PropertyBindingMixinsTests
 {
+    /// <summary>The initial text value used by the binding tests.</summary>
     private const string InitialText = "Initial";
+
+    /// <summary>The text value applied to represent a change.</summary>
     private const string ChangedText = "Changed";
+
+    /// <summary>The text value applied to represent an update.</summary>
     private const string UpdatedText = "Updated";
 
-    /// <summary>
-    /// Verifies that a two-way binding stops updating the view after it is disposed.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding stops updating the view after it is disposed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_AfterDispose_StopsUpdating()
@@ -36,9 +34,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    /// Verifies that a two-way binding propagates changes in both directions.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding propagates changes in both directions.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_WithBasicProperties_UpdatesBothDirections()
@@ -60,9 +56,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo(ChangedText);
     }
 
-    /// <summary>
-    /// Verifies that a two-way binding applies the supplied conversion functions in each direction.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding applies the supplied conversion functions in each direction.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_WithConverters_ConvertsValues()
@@ -85,17 +79,15 @@ public class PropertyBindingMixinsTests
         await Assert.That(viewModel.Count).IsEqualTo(UpdatedCount);
     }
 
-    /// <summary>
-    /// Verifies that a two-way binding with a null view model does not throw.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding with a null view model does not throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_WithNullViewModel_DoesNotThrow()
     {
         var view = new TestView();
 
-        using var binding = view.Bind<TestViewModel, TestView, string?, string?>(
-            null,
+        using var binding = view.Bind(
+            (TestViewModel?)null,
             vm => vm.Name!,
             v => v.NameText!);
 
@@ -103,16 +95,14 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a two-way binding with a signal only pushes view changes back when the signal fires.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding with a signal only pushes view changes back when the signal fires.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_WithSignalViewUpdate_UpdatesOnSignal()
     {
         var viewModel = new TestViewModel { Name = InitialText };
         var view = new TestView { ViewModel = viewModel };
-        var signal = new Subject<Unit>();
+        var signal = new Signal<RxVoid>();
 
         using var binding = view.Bind(
             viewModel,
@@ -127,13 +117,11 @@ public class PropertyBindingMixinsTests
         await Assert.That(viewModel.Name).IsEqualTo(InitialText);
 
         // Signal the update
-        signal.OnNext(Unit.Default);
+        signal.OnNext(RxVoid.Default);
         await Assert.That(viewModel.Name).IsEqualTo(UpdatedText);
     }
 
-    /// <summary>
-    /// Verifies that a two-way binding automatically converts between differing property types.
-    /// </summary>
+    /// <summary>Verifies that a two-way binding automatically converts between differing property types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Bind_WithTypeConverter_ConvertsTypes()
@@ -155,15 +143,13 @@ public class PropertyBindingMixinsTests
         await Assert.That(viewModel.Count).IsEqualTo(UpdatedCount);
     }
 
-    /// <summary>
-    /// Verifies that a BindTo binding stops updating the target after it is disposed.
-    /// </summary>
+    /// <summary>Verifies that a BindTo binding stops updating the target after it is disposed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindTo_AfterDispose_StopsUpdating()
     {
         var target = new TestViewModel();
-        var source = new BehaviorSubject<string>(InitialText);
+        var source = new BehaviorSignal<string>(InitialText);
 
         using (var binding = source.BindTo(target, t => t.Name))
         {
@@ -174,15 +160,13 @@ public class PropertyBindingMixinsTests
         await Assert.That(target.Name).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    /// Verifies that a BindTo binding updates the target property as the source observable emits.
-    /// </summary>
+    /// <summary>Verifies that a BindTo binding updates the target property as the source observable emits.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindTo_UpdatesTargetProperty()
     {
         var target = new TestViewModel();
-        var source = new BehaviorSubject<string>(InitialText);
+        var source = new BehaviorSignal<string>(InitialText);
 
         using var binding = source.BindTo(target, t => t.Name);
 
@@ -195,9 +179,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(target.Name).IsEqualTo("Final");
     }
 
-    /// <summary>
-    /// Verifies that a BindTo binding applies the supplied converter override before setting the target.
-    /// </summary>
+    /// <summary>Verifies that a BindTo binding applies the supplied converter override before setting the target.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task BindTo_WithConverter_ConvertsValue()
@@ -205,12 +187,12 @@ public class PropertyBindingMixinsTests
         const int InitialValue = 42;
         const int UpdatedValue = 100;
         var target = new TestViewModel();
-        var source = new BehaviorSubject<int>(InitialValue);
+        var source = new BehaviorSignal<int>(InitialValue);
 
         using var binding = source.BindTo(
             target,
             t => t.Name,
-            vmToViewConverterOverride: new FuncBindingTypeConverter<int, string>(i => $"Number: {i}"));
+            viewModelToViewConverterOverride: new FuncBindingTypeConverter<int, string>(i => $"Number: {i}"));
 
         await Assert.That(target.Name).IsEqualTo("Number: 42");
 
@@ -218,9 +200,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(target.Name).IsEqualTo("Number: 100");
     }
 
-    /// <summary>
-    /// Verifies that a one-way binding stops updating the view after it is disposed.
-    /// </summary>
+    /// <summary>Verifies that a one-way binding stops updating the view after it is disposed.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task OneWayBind_AfterDispose_StopsUpdating()
@@ -237,9 +217,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    /// Verifies that a one-way binding updates the view but does not propagate view changes to the view model.
-    /// </summary>
+    /// <summary>Verifies that a one-way binding updates the view but does not propagate view changes to the view model.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task OneWayBind_UpdatesViewOnly()
@@ -260,26 +238,22 @@ public class PropertyBindingMixinsTests
         await Assert.That(viewModel.Name).IsEqualTo(UpdatedText);
     }
 
-    /// <summary>
-    /// Verifies that a one-way binding with a null view model does not throw.
-    /// </summary>
+    /// <summary>Verifies that a one-way binding with a null view model does not throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task OneWayBind_WithNullViewModel_DoesNotThrow()
     {
         var view = new TestView();
 
-        using var binding = view.OneWayBind<TestViewModel, TestView, string?, string?>(
-            null,
+        using var binding = view.OneWayBind(
+            (TestViewModel?)null,
             vm => vm.Name!,
             v => v.NameText!);
 
         await Assert.That(view.NameText).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a one-way binding applies the supplied selector to transform the value.
-    /// </summary>
+    /// <summary>Verifies that a one-way binding applies the supplied selector to transform the value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task OneWayBind_WithSelector_TransformsValue()
@@ -301,9 +275,7 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo("The count is: 100");
     }
 
-    /// <summary>
-    /// Verifies that a one-way binding automatically converts between differing property types.
-    /// </summary>
+    /// <summary>Verifies that a one-way binding automatically converts between differing property types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task OneWayBind_WithTypeConverter_ConvertsTypes()
@@ -324,19 +296,18 @@ public class PropertyBindingMixinsTests
         await Assert.That(view.NameText).IsEqualTo("100");
     }
 
-    /// <summary>
-    /// Test binding type converter that delegates conversion to a supplied function.
-    /// </summary>
+    /// <summary>Test binding type converter that delegates conversion to a supplied function.</summary>
     /// <typeparam name="TFrom">The source type.</typeparam>
     /// <typeparam name="TTo">The target type.</typeparam>
     private sealed class FuncBindingTypeConverter<TFrom, TTo> : IBindingTypeConverter
     {
+        /// <summary>The affinity reported so this converter is preferred during selection.</summary>
         private const int HighAffinity = 100;
+
+        /// <summary>The conversion function applied to source values.</summary>
         private readonly Func<TFrom, TTo> _converter;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FuncBindingTypeConverter{TFrom, TTo}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="FuncBindingTypeConverter{TFrom, TTo}"/> class.</summary>
         /// <param name="converter">The conversion function to apply.</param>
         public FuncBindingTypeConverter(Func<TFrom, TTo> converter) => _converter = converter;
 
@@ -363,30 +334,21 @@ public class PropertyBindingMixinsTests
         }
     }
 
-    /// <summary>
-    /// Test helper view class.
-    /// </summary>
+    /// <summary>Test helper view class.</summary>
     private sealed class TestView : ReactiveObject, IViewFor<TestViewModel>
     {
-        private string? _nameText;
-        private TestViewModel? _viewModel;
-
-        /// <summary>
-        /// Gets or sets the text displayed for the bound name.
-        /// </summary>
+        /// <summary>Gets or sets the text displayed for the bound name.</summary>
         public string? NameText
         {
-            get => _nameText;
-            set => this.RaiseAndSetIfChanged(ref _nameText, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets or sets the view model.</summary>
         public TestViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc/>
@@ -397,30 +359,21 @@ public class PropertyBindingMixinsTests
         }
     }
 
-    /// <summary>
-    /// Test helper view model class.
-    /// </summary>
+    /// <summary>Test helper view model class.</summary>
     private sealed class TestViewModel : ReactiveObject
     {
-        private int _count;
-        private string? _name;
-
-        /// <summary>
-        /// Gets or sets the count value.
-        /// </summary>
+        /// <summary>Gets or sets the count value.</summary>
         public int Count
         {
-            get => _count;
-            set => this.RaiseAndSetIfChanged(ref _count, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the name value.
-        /// </summary>
+        /// <summary>Gets or sets the name value.</summary>
         public string? Name
         {
-            get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 }

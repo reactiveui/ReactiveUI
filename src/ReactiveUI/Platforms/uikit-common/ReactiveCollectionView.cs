@@ -5,15 +5,15 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// This is a UICollectionView that is both an UICollectionView and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -23,14 +23,12 @@ public abstract class ReactiveCollectionView
     : UICollectionView, IReactiveNotifyPropertyChanged<ReactiveCollectionView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.</summary>
     /// <param name="frame">The frame.</param>
     /// <param name="layout">The ui collection view layout.</param>
     protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout)
@@ -38,27 +36,21 @@ public abstract class ReactiveCollectionView
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveCollectionView(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.</summary>
     /// <param name="t">The object flag.</param>
     protected ReactiveCollectionView(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveCollectionView"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveCollectionView(NSCoder coder)
         : base(coder)
@@ -81,10 +73,10 @@ public abstract class ReactiveCollectionView
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <summary>
     /// When this method is called, an object will not fire change
@@ -99,14 +91,14 @@ public abstract class ReactiveCollectionView
     public override void WillMoveToSuperview(UIView? newsuper)
     {
         base.WillMoveToSuperview(newsuper);
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     public override void RemoveFromSuperview()
     {
         base.RemoveFromSuperview();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
@@ -116,9 +108,9 @@ public abstract class ReactiveCollectionView
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
     /// <inheritdoc/>
-    void ICanForceManualActivation.Activate(bool shouldActivate) =>
+    void ICanForceManualActivation.Activate(bool isActivating) =>
         RxSchedulers.MainThreadScheduler.Schedule(() =>
-                                               (shouldActivate ? _activated : _deactivated).OnNext(Unit.Default));
+                                               (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -130,70 +122,5 @@ public abstract class ReactiveCollectionView
         }
 
         base.Dispose(disposing);
-    }
-}
-
-/// <summary>
-/// This is a UICollectionView that is both an UICollectionView and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
-/// <typeparam name="TViewModel">The view model type.</typeparam>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Classes with the same class names within.")]
-public abstract class ReactiveCollectionView<TViewModel> : ReactiveCollectionView, IViewFor<TViewModel>
-    where TViewModel : class
-{
-    /// <summary>The backing store for the <see cref="ViewModel"/> property.</summary>
-    private TViewModel? _viewModel;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="handle">The pointer.</param>
-    protected ReactiveCollectionView(in IntPtr handle)
-        : base(handle)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="t">The object flag.</param>
-    protected ReactiveCollectionView(NSObjectFlag t)
-        : base(t)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="coder">The coder.</param>
-    protected ReactiveCollectionView(NSCoder coder)
-        : base(coder)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveCollectionView{TViewModel}"/> class.
-    /// </summary>
-    /// <param name="frame">The frame.</param>
-    /// <param name="layout">The ui collection view layout.</param>
-    protected ReactiveCollectionView(CGRect frame, UICollectionViewLayout layout)
-        : base(frame, layout)
-    {
-    }
-
-    /// <inheritdoc/>
-    public TViewModel? ViewModel
-    {
-        get => _viewModel;
-        set => this.RaiseAndSetIfChanged(ref _viewModel, value);
-    }
-
-    /// <inheritdoc/>
-    object? IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = (TViewModel)value!;
     }
 }

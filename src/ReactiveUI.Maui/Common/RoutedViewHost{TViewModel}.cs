@@ -5,15 +5,21 @@
 
 #if WINUI_TARGET
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
 using Microsoft.UI.Xaml;
-
 using ReactiveUI.Internal;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Maui.Internal;
+#else
 using ReactiveUI.Maui.Internal;
+#endif
+using ReactiveUI.Primitives;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
+#endif
 
 /// <summary>
 /// This control hosts the View associated with a Router, and will display
@@ -27,33 +33,25 @@ public partial class RoutedViewHost<
     : TransitioningContentControl, IActivatableView, IEnableLogger
     where TViewModel : class, IRoutableViewModel
 {
-    /// <summary>
-    /// The router dependency property.
-    /// </summary>
+    /// <summary>The router dependency property.</summary>
     public static readonly DependencyProperty RouterProperty =
-        DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost<TViewModel>), new PropertyMetadata(null));
+        DependencyProperty.Register("Router", typeof(RoutingState), typeof(RoutedViewHost<TViewModel>), new(null));
 
-    /// <summary>
-    /// The default content property.
-    /// </summary>
+    /// <summary>The default content property.</summary>
     public static readonly DependencyProperty DefaultContentProperty =
-        DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost<TViewModel>), new PropertyMetadata(null));
+        DependencyProperty.Register("DefaultContent", typeof(object), typeof(RoutedViewHost<TViewModel>), new(null));
 
-    /// <summary>
-    /// The view contract observable property.
-    /// </summary>
+    /// <summary>The view contract observable property.</summary>
     public static readonly DependencyProperty ViewContractObservableProperty =
-        DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost<TViewModel>), new PropertyMetadata(new ReturnObservable<string?>(null)));
+        DependencyProperty.Register("ViewContractObservable", typeof(IObservable<string>), typeof(RoutedViewHost<TViewModel>), new(Signal.Emit<string?>(null)));
 
     /// <summary>The subscriptions created during construction, disposed together.</summary>
-    private readonly CompositeDisposable _subscriptions = [];
+    private readonly MultipleDisposable _subscriptions = [];
 
     /// <summary>The most recently observed view contract.</summary>
     private string? _viewContract;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RoutedViewHost{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost{TViewModel}"/> class.</summary>
     [SuppressMessage("Major Bug", "S3366:Do not call overridable methods in constructors", Justification = "Wires reactive bindings to this control's own dependency properties during construction.")]
     public RoutedViewHost()
     {
@@ -77,18 +75,18 @@ public partial class RoutedViewHost<
         }
 
         ViewContractObservable = ModeDetector.InUnitTestRunner()
-            ? NeverObservable<string>.Instance
+            ? Signal.Silent<string>()
 
             // Replaces FromEvent(SizeChanged).StartWith(platformGetter()).DistinctUntilChanged().
-            : new DistinctUntilChangedObservable<string?>(
-                new StartWithObservable<string?>(
+            : new StartWithObservable<string?>(
                     new FromEventObservable<string?>(onNext =>
                     {
                         void Handler(object sender, SizeChangedEventArgs e) => onNext(platformGetter());
                         SizeChanged += Handler;
                         return new ActionDisposable(() => SizeChanged -= Handler);
                     }),
-                    platformGetter()));
+                    platformGetter())
+                .DistinctUntilChanged();
 
         // Observe Router property changes using DependencyProperty (AOT-friendly)
         var routerChanged = MauiReactiveHelpers.CreatePropertyValueObservable(
@@ -106,59 +104,49 @@ public partial class RoutedViewHost<
 
         // Observe current view model from router. Replaces Where(...).SelectMany(r => r.CurrentViewModel).StartWith(null).
         var currentViewModel = new StartWithObservable<IRoutableViewModel?>(
-            new SelectManyObservable<RoutingState?, IRoutableViewModel>(
-                new WhereObservable<RoutingState?>(routerChanged, static router => router is not null),
-                static router => router!.CurrentViewModel),
+            new KeepSignal<RoutingState?>(routerChanged, static router => router is not null)
+                .SelectMany(static router => router!.CurrentViewModel),
             null);
 
         // Flatten the ViewContractObservable observable-of-observable.
         // Replaces SelectMany(x => x ?? Return(null)).Do(x => _viewContract = x).StartWith(ViewContract).
         var viewContract = new StartWithObservable<string?>(
-            new DoObservable<string?>(
-                new SelectManyObservable<IObservable<string?>, string?>(
-                    viewContractObservableChanged,
-                    static x => x ?? new ReturnObservable<string?>(null)),
-                x => _viewContract = x),
+            viewContractObservableChanged
+                .SelectMany(static x => x ?? Signal.Emit<string?>(null))
+                .Do(x => _viewContract = x),
             ViewContract);
 
-        var vmAndContract = new CombineLatestObservable<IRoutableViewModel?, string?, (IRoutableViewModel? viewModel, string? contract)>(
-            currentViewModel,
-            viewContract,
-            static (viewModel, contract) => (viewModel, contract));
+        var viewModelAndContract = currentViewModel
+            .CombineLatest(
+                viewContract,
+                static (viewModel, contract) => (viewModel, contract));
 
         // Subscribe directly without WhenActivated
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-        new DistinctUntilChangedObservable<(IRoutableViewModel? viewModel, string? contract)>(vmAndContract)
+        viewModelAndContract.DistinctUntilChanged()
             .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
                 ResolveViewForViewModel,
                 RxState.DefaultExceptionHandler.OnNext))
             .DisposeWith(_subscriptions);
     }
 
-    /// <summary>
-    /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
-    /// </summary>
+    /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     public RoutingState Router
     {
         get => (RoutingState)GetValue(RouterProperty);
         set => SetValue(RouterProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the content displayed whenever there is no page currently
-    /// routed.
-    /// </summary>
+    /// <summary>Gets or sets the content displayed whenever there is no page currently routed.</summary>
     public object DefaultContent
     {
         get => GetValue(DefaultContentProperty);
         set => SetValue(DefaultContentProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view contract observable.
-    /// </summary>
+    /// <summary>Gets or sets the view contract observable.</summary>
     /// <value>
     /// The view contract observable.
     /// </value>
@@ -168,9 +156,7 @@ public partial class RoutedViewHost<
         set => SetValue(ViewContractObservableProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the view contract.
-    /// </summary>
+    /// <summary>Gets or sets the view contract.</summary>
     [SuppressMessage(
         "Critical Bug",
         "S4275:Getters and setters should access the expected fields",
@@ -178,12 +164,10 @@ public partial class RoutedViewHost<
     public string? ViewContract
     {
         get => _viewContract;
-        set => ViewContractObservable = new ReturnObservable<string?>(value);
+        set => ViewContractObservable = Signal.Emit<string?>(value);
     }
 
-    /// <summary>
-    /// Gets or sets the view locator.
-    /// </summary>
+    /// <summary>Gets or sets the view locator.</summary>
     /// <value>
     /// The view locator.
     /// </value>

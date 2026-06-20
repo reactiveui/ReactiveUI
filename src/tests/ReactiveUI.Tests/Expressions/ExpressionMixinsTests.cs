@@ -8,14 +8,10 @@ using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.Expressions;
 
-/// <summary>
-///     Tests for ExpressionMixins utility methods.
-/// </summary>
+/// <summary>Tests for ExpressionMixins utility methods.</summary>
 public class ExpressionMixinsTests
 {
-    /// <summary>
-    ///     Tests that GetMemberInfo handles nested property access.
-    /// </summary>
+    /// <summary>Tests that GetMemberInfo handles nested property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetMemberInfo_NestedPropertyExpression_ReturnsPropertyName()
@@ -31,9 +27,7 @@ public class ExpressionMixinsTests
         await Assert.That(memberInfo!.Name).IsEqualTo("Length");
     }
 
-    /// <summary>
-    ///     Tests that GetMemberInfo returns correct member name.
-    /// </summary>
+    /// <summary>Tests that GetMemberInfo returns correct member name.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetMemberInfo_PropertyExpression_ReturnsPropertyName()

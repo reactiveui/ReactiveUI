@@ -7,130 +7,72 @@ using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A fake view model.
-/// </summary>
+/// <summary>A fake view model.</summary>
 /// <remarks>
 /// Initializes a new instance of the <see cref="FakeWinformViewModel"/> class.
 /// </remarks>
 /// <param name="screen">The screen.</param>
 public class FakeWinformViewModel(IScreen? screen = null) : ReactiveObject, IRoutableViewModel
 {
-    /// <summary>
-    /// Backing field for the boolean property.
-    /// </summary>
-    private bool _someBooleanProperty;
-
-    /// <summary>
-    /// Backing field for the integer property.
-    /// </summary>
-    private int _someInteger;
-
-    /// <summary>
-    /// Backing field for the text property.
-    /// </summary>
-    private string? _someText;
-
-    /// <summary>
-    /// Backing field for the double property.
-    /// </summary>
-    private double _someDouble;
-
-    /// <summary>
-    /// Backing field for property 1.
-    /// </summary>
-    private string? _property1;
-
-    /// <summary>
-    /// Backing field for property 2.
-    /// </summary>
-    private string? _property2;
-
-    /// <summary>
-    /// Backing field for property 3.
-    /// </summary>
-    private string? _property3;
-
-    /// <summary>
-    /// Backing field for property 4.
-    /// </summary>
-    private string? _property4;
-
     /// <inheritdoc/>
     public string UrlPathSegment => "fake";
 
     /// <inheritdoc/>
     public IScreen HostScreen { get; } = screen ?? new TestScreen();
 
-    /// <summary>
-    /// Gets or sets some integer.
-    /// </summary>
+    /// <summary>Gets or sets some integer.</summary>
     public int SomeInteger
     {
-        get => _someInteger;
-        set => this.RaiseAndSetIfChanged(ref _someInteger, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets some text.
-    /// </summary>
+    /// <summary>Gets or sets some text.</summary>
     public string? SomeText
     {
-        get => _someText;
-        set => this.RaiseAndSetIfChanged(ref _someText, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets some double.
-    /// </summary>
+    /// <summary>Gets or sets some double.</summary>
     public double SomeDouble
     {
-        get => _someDouble;
-        set => this.RaiseAndSetIfChanged(ref _someDouble, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the property1.
-    /// </summary>
+    /// <summary>Gets or sets the property1.</summary>
     public string? Property1
     {
-        get => _property1;
-        set => this.RaiseAndSetIfChanged(ref _property1, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the property2.
-    /// </summary>
+    /// <summary>Gets or sets the property2.</summary>
     public string? Property2
     {
-        get => _property2;
-        set => this.RaiseAndSetIfChanged(ref _property2, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the property3.
-    /// </summary>
+    /// <summary>Gets or sets the property3.</summary>
     public string? Property3
     {
-        get => _property3;
-        set => this.RaiseAndSetIfChanged(ref _property3, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets the property4.
-    /// </summary>
+    /// <summary>Gets or sets the property4.</summary>
     public string? Property4
     {
-        get => _property4;
-        set => this.RaiseAndSetIfChanged(ref _property4, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether [boolean property].
-    /// </summary>
+    /// <summary>Gets or sets a value indicating whether [boolean property].</summary>
     public bool BooleanProperty
     {
-        get => _someBooleanProperty;
-        set => this.RaiseAndSetIfChanged(ref _someBooleanProperty, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

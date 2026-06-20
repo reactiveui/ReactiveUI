@@ -4,46 +4,34 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
 using Android.Content;
 using Android.Runtime;
 using AndroidX.AppCompat.App;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// This is an Activity that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     IReactiveNotifyPropertyChanged<ReactiveAppCompatActivity>, IHandleObservableErrors
 {
-    /// <summary>
-    /// The subject that signals when the activity is activated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _activated = new();
+    /// <summary>The subject that signals when the activity is activated.</summary>
+    private readonly Signal<RxVoid> _activated = new();
 
-    /// <summary>
-    /// The subject that signals when the activity is deactivated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _deactivated = new();
+    /// <summary>The subject that signals when the activity is deactivated.</summary>
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// The subject that signals activity results.
-    /// </summary>
-    private readonly BroadcastSubject<(int requestCode, Result result, Intent? intent)> _activityResult = new();
+    /// <summary>The subject that signals activity results.</summary>
+    private readonly Signal<(int requestCode, Result result, Intent? intent)> _activityResult = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.</summary>
     protected ReactiveAppCompatActivity()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveAppCompatActivity" /> class.</summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
     protected ReactiveAppCompatActivity(in IntPtr handle, JniHandleOwnership ownership)
@@ -68,25 +56,19 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-    /// <summary>
-    /// Gets a signal when activated.
-    /// </summary>
+    /// <summary>Gets a signal when activated.</summary>
     /// <value>
     /// The activated.
     /// </value>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
-    /// <summary>
-    /// Gets a signal when deactivated.
-    /// </summary>
+    /// <summary>Gets a signal when deactivated.</summary>
     /// <value>
     /// The deactivated.
     /// </value>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
-    /// <summary>
-    /// Gets the activity result.
-    /// </summary>
+    /// <summary>Gets the activity result.</summary>
     /// <value>
     /// The activity result.
     /// </value>
@@ -102,9 +84,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-    /// <summary>
-    /// Starts the activity for result asynchronously.
-    /// </summary>
+    /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="intent">The intent.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
@@ -118,9 +98,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
         return ret;
     }
 
-    /// <summary>
-    /// Starts the activity for result asynchronously.
-    /// </summary>
+    /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="type">The type.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
@@ -138,14 +116,14 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
     protected override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     protected override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>

@@ -4,13 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
 using Android.Runtime;
 using AndroidX.Preference;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
+#endif
 /// <summary>
 /// This is a PreferenceFragment that is both an Activity and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -18,26 +19,18 @@ namespace ReactiveUI.AndroidX;
 public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     IReactiveNotifyPropertyChanged<ReactivePreferenceFragment>, IReactiveObject, IHandleObservableErrors
 {
-    /// <summary>
-    /// The subject that signals when the fragment is activated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _activated = new();
+    /// <summary>The subject that signals when the fragment is activated.</summary>
+    private readonly Signal<RxVoid> _activated = new();
 
-    /// <summary>
-    /// The subject that signals when the fragment is deactivated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _deactivated = new();
+    /// <summary>The subject that signals when the fragment is deactivated.</summary>
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.</summary>
     protected ReactivePreferenceFragment()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactivePreferenceFragment"/> class.</summary>
     /// <param name="handle">The handle.</param>
     /// <param name="ownership">The ownership.</param>
     protected ReactivePreferenceFragment(in IntPtr handle, JniHandleOwnership ownership)
@@ -62,15 +55,11 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-    /// <summary>
-    /// Gets a signal when the fragment is activated.
-    /// </summary>
-    public IObservable<Unit> Activated => _activated;
+    /// <summary>Gets a signal when the fragment is activated.</summary>
+    public IObservable<RxVoid> Activated => _activated;
 
-    /// <summary>
-    /// Gets a signal when the fragment is deactivated.
-    /// </summary>
-    public IObservable<Unit> Deactivated => _deactivated;
+    /// <summary>Gets a signal when the fragment is deactivated.</summary>
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
@@ -85,14 +74,14 @@ public abstract class ReactivePreferenceFragment : PreferenceFragmentCompat,
     public override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     public override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>

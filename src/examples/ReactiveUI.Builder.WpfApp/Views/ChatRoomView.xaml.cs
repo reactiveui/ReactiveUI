@@ -4,36 +4,30 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables.Fluent;
 using System.Windows;
 using ReactiveUI.Builder.WpfApp.ViewModels;
+using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Builder.WpfApp.Views;
 
-/// <summary>
-/// Chat room view.
-/// </summary>
+/// <summary>Chat room view.</summary>
 public partial class ChatRoomView : IViewFor<ChatRoomViewModel>
 {
-    /// <summary>
-    /// The view model dependency property.
-    /// </summary>
+    /// <summary>The view model dependency property.</summary>
     public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
         nameof(ViewModel),
         typeof(ChatRoomViewModel),
         typeof(ChatRoomView),
         new(null));
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatRoomView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ChatRoomView"/> class.</summary>
     [SuppressMessage("Reliability", "S3366:Don't expose 'this' in constructors", Justification = "WhenActivated/binding setup requires 'this'; single-threaded sample.")]
     public ChatRoomView()
     {
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            // Map ViewModel to DataContext for XAML bindings like {Binding RoomName}
+            // Map the ViewModel onto the DataContext so XAML bindings such as RoomName resolve correctly.
             this.WhenAnyValue<ChatRoomView, ChatRoomViewModel>(nameof(ViewModel)).BindTo(this, v => v.DataContext)
                 .DisposeWith(d);
 
@@ -46,9 +40,7 @@ public partial class ChatRoomView : IViewFor<ChatRoomViewModel>
         });
     }
 
-    /// <summary>
-    /// Gets or sets the view model.
-    /// </summary>
+    /// <summary>Gets or sets the view model.</summary>
     public ChatRoomViewModel? ViewModel
     {
         get => (ChatRoomViewModel?)GetValue(ViewModelProperty);

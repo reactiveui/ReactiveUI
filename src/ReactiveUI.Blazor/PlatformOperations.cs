@@ -3,11 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor;
+#else
 namespace ReactiveUI.Blazor;
-
-/// <summary>
-/// Returns the current orientation of the device on Windows.
-/// </summary>
+#endif
+/// <summary>Returns the current orientation of the device on Windows.</summary>
 public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>

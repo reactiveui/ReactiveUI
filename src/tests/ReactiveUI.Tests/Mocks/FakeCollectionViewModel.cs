@@ -5,16 +5,13 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-///     A mock view model.
-/// </summary>
+/// <summary>A mock view model.</summary>
 public class FakeCollectionViewModel : ReactiveObject
 {
+    /// <summary>Backing helper that projects the model number as a string.</summary>
     private readonly ObservableAsPropertyHelper<string?> _numberAsString;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="FakeCollectionViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FakeCollectionViewModel" /> class.</summary>
     /// <param name="model">The model.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
@@ -30,13 +27,9 @@ public class FakeCollectionViewModel : ReactiveObject
             out _numberAsString);
     }
 
-    /// <summary>
-    ///     Gets the number as string.
-    /// </summary>
+    /// <summary>Gets the number as string.</summary>
     public string? NumberAsString => _numberAsString.Value;
 
-    /// <summary>
-    ///     Gets or sets the model.
-    /// </summary>
+    /// <summary>Gets the model.</summary>
     public FakeCollectionModel Model { get; protected set; }
 }

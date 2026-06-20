@@ -4,23 +4,22 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
-using System.Reactive.Concurrency;
-using System.Reactive.Subjects;
 using Foundation;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Adapter that wraps a <see cref="UITableView"/> and implements <see cref="IUICollViewAdapter{TView,TCell}"/>.
-/// </summary>
+#endif
+/// <summary>Adapter that wraps a <see cref="UITableView"/> and implements <see cref="IUICollViewAdapter{TView,TCell}"/>.</summary>
 internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewCell>, IDisposable
 {
     /// <summary>The underlying table view being adapted.</summary>
     private readonly UITableView _view;
 
     /// <summary>Subject that tracks whether a data reload is currently in progress.</summary>
-    private readonly BehaviorSubject<bool> _isReloadingData;
+    private readonly BehaviorSignal<bool> _isReloadingData;
 
     /// <summary>The number of <see cref="ReloadData"/> calls that have not yet completed on the main thread.</summary>
     private int _inFlightReloads;
@@ -28,14 +27,12 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     /// <summary>Whether this instance has already been disposed.</summary>
     private bool _isDisposed;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UITableViewAdapter"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="UITableViewAdapter"/> class.</summary>
     /// <param name="view">The table view to adapt.</param>
     internal UITableViewAdapter(UITableView view)
     {
         _view = view;
-        _isReloadingData = new BehaviorSubject<bool>(false);
+        _isReloadingData = new BehaviorSignal<bool>(false);
     }
 
     /// <inheritdoc/>
@@ -131,9 +128,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Releases managed and unmanaged resources held by this instance.
-    /// </summary>
+    /// <summary>Releases managed and unmanaged resources held by this instance.</summary>
     /// <param name="disposing"><see langword="true"/> when called from <see cref="Dispose()"/>; <see langword="false"/> when called from a finalizer.</param>
     protected virtual void Dispose(bool disposing)
     {
@@ -150,9 +145,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
         _isDisposed = true;
     }
 
-    /// <summary>
-    /// Decrements the in-flight reload counter and signals completion when all reloads are done.
-    /// </summary>
+    /// <summary>Decrements the in-flight reload counter and signals completion when all reloads are done.</summary>
     private void FinishReloadData()
     {
         --_inFlightReloads;

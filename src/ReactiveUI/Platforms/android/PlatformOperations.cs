@@ -6,11 +6,12 @@
 using Android.Content;
 using Android.Views;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Returns the current orientation of the device on Android.
-/// </summary>
+#endif
+/// <summary>Returns the current orientation of the device on Android.</summary>
 public class PlatformOperations : IPlatformOperations
 {
     /// <inheritdoc/>

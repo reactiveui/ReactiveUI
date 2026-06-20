@@ -4,13 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Subjects;
 using AppKit;
 using Foundation;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// This is a NSWindowController that is both a NSWindowController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -18,32 +19,26 @@ namespace ReactiveUI;
 public class ReactiveWindowController : NSWindowController, IReactiveNotifyPropertyChanged<ReactiveWindowController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal window activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal window deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="window">The window.</param>
     protected ReactiveWindowController(NSWindow window)
         : base(window)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="windowNibName">Name of the window nib.</param>
     protected ReactiveWindowController(string windowNibName)
         : base(windowNibName)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="windowNibName">Name of the window nib.</param>
     /// <param name="owner">The owner.</param>
     protected ReactiveWindowController(string windowNibName, NSObject owner)
@@ -51,36 +46,28 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveWindowController(NSCoder coder)
         : base(coder)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="t">The t.</param>
     protected ReactiveWindowController(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     /// <param name="handle">The handle.</param>
     protected ReactiveWindowController(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveWindowController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveWindowController"/> class.</summary>
     protected ReactiveWindowController()
     {
     }
@@ -101,10 +88,10 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -148,9 +135,9 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
         // notification to support (de)activation
         NSNotificationCenter
             .DefaultCenter
-            .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(Unit.Default), Window);
+            .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(RxVoid.Default), Window);
 
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>

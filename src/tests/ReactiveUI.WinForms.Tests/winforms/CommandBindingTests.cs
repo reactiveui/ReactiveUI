@@ -3,28 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using ReactiveUI.Winforms;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Command binding tests.
-/// </summary>
+/// <summary>Command binding tests.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 
 public class CommandBindingTests
 {
+    /// <summary>The command parameter value used by the binding tests.</summary>
     private const int CommandParameter = 5;
 
-    /// <summary>
-    /// Tests that the command binder binds to button.
-    /// </summary>
+    /// <summary>Tests that the command binder binds to button.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task CommandBinderBindsToButtonAsync()
@@ -47,7 +40,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -59,9 +52,7 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// Tests that the command binder binds to custom control.
-    /// </summary>
+    /// <summary>Tests that the command binder binds to custom control.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderBindsToCustomControl()
@@ -76,7 +67,7 @@ public class CommandBindingTests
                 ea = x;
                 commandExecuted = true;
             },
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var input = new CustomClickableControl();
 
@@ -86,7 +77,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableControl>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -98,9 +89,7 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// Tests that the command binder binds to custom component.
-    /// </summary>
+    /// <summary>Tests that the command binder binds to custom component.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderBindsToCustomComponent()
@@ -115,7 +104,7 @@ public class CommandBindingTests
                 ea = x;
                 commandExecuted = true;
             },
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var input = new CustomClickableComponent();
 
@@ -125,7 +114,7 @@ public class CommandBindingTests
             await Assert.That(fixture.GetAffinityForObject<CustomClickableComponent>(false)).IsGreaterThan(0);
         }
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter)))
         {
             input.PerformClick();
 
@@ -137,21 +126,19 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// Tests that the command binder affects enabled.
-    /// </summary>
+    /// <summary>Tests that the command binder affects enabled.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderAffectsEnabledState()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var canExecute = new Subject<bool>();
+        var canExecute = new Signal<bool>();
         canExecute.OnNext(true);
 
         var cmd = ReactiveCommand.Create(static () => { }, canExecute);
         var input = new Button();
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter)))
         {
             canExecute.OnNext(true);
             await Assert.That(input.Enabled).IsTrue();
@@ -161,21 +148,19 @@ public class CommandBindingTests
         }
     }
 
-    /// <summary>
-    /// Tests that the command binder affects enabled state for components.
-    /// </summary>
+    /// <summary>Tests that the command binder affects enabled state for components.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBinderAffectsEnabledStateForComponents()
     {
         var fixture = new CreatesWinformsCommandBinding();
-        var canExecute = new Subject<bool>();
+        var canExecute = new Signal<bool>();
         canExecute.OnNext(true);
 
         var cmd = ReactiveCommand.Create(static () => { }, canExecute);
         var input = new ToolStripButton(); // ToolStripButton is a Component, not a Control
 
-        using (fixture.BindCommandToObject(cmd, input, Observable.Return((object)CommandParameter)))
+        using (fixture.BindCommandToObject(cmd, input, Signal.Emit((object)CommandParameter)))
         {
             canExecute.OnNext(true);
             await Assert.That(input.Enabled).IsTrue();

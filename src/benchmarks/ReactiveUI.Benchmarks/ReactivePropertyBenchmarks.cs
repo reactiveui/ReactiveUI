@@ -3,15 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks <see cref="ReactiveProperty{T}"/> on the immediate scheduler: value propagation through a live
-/// subscription and cold construction.
-/// </summary>
+/// <summary>Benchmarks <see cref="ReactiveProperty{T}"/> on the immediate scheduler: value propagation through a live subscription and cold construction.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class ReactivePropertyBenchmarks
@@ -23,7 +19,7 @@ public class ReactivePropertyBenchmarks
     private readonly NoopObserver<int> _sink = new();
 
     /// <summary>The notification scheduler shared by setup and construction (held so the benchmarks use instance state).</summary>
-    private readonly IScheduler _scheduler = ImmediateScheduler.Instance;
+    private readonly ISequencer _scheduler = Sequencer.Immediate;
 
     /// <summary>The reactive property under test.</summary>
     private ReactiveProperty<int> _property = null!;
@@ -69,5 +65,5 @@ public class ReactivePropertyBenchmarks
     /// <summary>Creates a distinct, immediate-scheduled integer reactive property.</summary>
     /// <param name="scheduler">The notification scheduler.</param>
     /// <returns>The new reactive property.</returns>
-    private static ReactiveProperty<int> CreateProperty(IScheduler scheduler) => new(0, scheduler, false, false);
+    private static ReactiveProperty<int> CreateProperty(ISequencer scheduler) => new(0, scheduler, false, false);
 }

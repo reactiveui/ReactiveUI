@@ -4,23 +4,23 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Subjects;
+using ReactiveUI.Primitives.Signals;
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="ActivationForViewFetcher"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ActivationForViewFetcher"/>.</summary>
 public class ActivationForViewFetcherTest
 {
+    /// <summary>The affinity value returned for MAUI view types.</summary>
     private const int ExpectedMauiAffinity = 10;
+
+    /// <summary>The affinity value returned for non-MAUI types.</summary>
     private const int ExpectedNonMauiAffinity = 0;
+
+    /// <summary>The delay, in milliseconds, allowed for activation changes to propagate.</summary>
     private const int ActivationDelayMilliseconds = 50;
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for Page types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for Page types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_PageType_Returns10()
@@ -32,9 +32,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for ContentPage types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for ContentPage types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_ContentPageType_Returns10()
@@ -46,9 +44,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for View types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for View types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_ViewType_Returns10()
@@ -60,9 +56,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for Label types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for Label types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_LabelType_Returns10()
@@ -74,9 +68,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for Cell types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for Cell types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_CellType_Returns10()
@@ -88,9 +80,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for ViewCell types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for ViewCell types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_ViewCellType_Returns10()
@@ -104,9 +94,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 0 for non-MAUI types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 0 for non-MAUI types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForView_NonMauiType_Returns0()
@@ -118,9 +106,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(ExpectedNonMauiAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView returns observable for ICanActivate views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView returns observable for ICanActivate views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ICanActivateView_ReturnsObservable()
@@ -133,9 +119,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView with ICanActivate emits activation changes.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView with ICanActivate emits activation changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_ICanActivate_EmitsActivationChanges()
@@ -146,20 +130,18 @@ public class ActivationForViewFetcherTest
 
         fetcher.GetActivationForView(view).Subscribe(results.Add);
 
-        view.ActivateSubject.OnNext(Unit.Default);
+        view.ActivateSubject.OnNext(RxVoid.Default);
         await Task.Delay(ActivationDelayMilliseconds);
 
         await Assert.That(results).Contains(true);
 
-        view.DeactivateSubject.OnNext(Unit.Default);
+        view.DeactivateSubject.OnNext(RxVoid.Default);
         await Task.Delay(ActivationDelayMilliseconds);
 
         await Assert.That(results).Contains(false);
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView returns observable for non-activatable views.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView returns observable for non-activatable views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetActivationForView_NonActivatableView_ReturnsObservable()
@@ -172,31 +154,23 @@ public class ActivationForViewFetcherTest
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Test view that implements ICanActivate for testing.
-    /// </summary>
+    /// <summary>Test view that implements ICanActivate for testing.</summary>
     private sealed class TestCanActivateView : IActivatableView, ICanActivate
     {
-        /// <summary>
-        /// Gets the subject used to trigger activation.
-        /// </summary>
-        public Subject<Unit> ActivateSubject { get; } = new();
+        /// <summary>Gets the subject used to trigger activation.</summary>
+        public Signal<RxVoid> ActivateSubject { get; } = new();
 
-        /// <summary>
-        /// Gets the subject used to trigger deactivation.
-        /// </summary>
-        public Subject<Unit> DeactivateSubject { get; } = new();
+        /// <summary>Gets the subject used to trigger deactivation.</summary>
+        public Signal<RxVoid> DeactivateSubject { get; } = new();
 
         /// <inheritdoc/>
-        public IObservable<Unit> Activated => ActivateSubject;
+        public IObservable<RxVoid> Activated => ActivateSubject;
 
         /// <inheritdoc/>
-        public IObservable<Unit> Deactivated => DeactivateSubject;
+        public IObservable<RxVoid> Deactivated => DeactivateSubject;
     }
 
-    /// <summary>
-    /// Test non-activatable view for testing.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test non-activatable view for testing.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestNonActivatableView : IActivatableView;
 }

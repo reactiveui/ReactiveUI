@@ -5,9 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using DynamicData;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using ReactiveUI.Tests.WhenAny.Mockups;
@@ -15,14 +12,10 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>
-///     ObservableForProperty and SubscribeToExpressionChain tests for the reactive notify property changed mixin.
-/// </content>
+/// <summary>Tests for the reactive notify property changed mixin (WhenAny, WhenAnyValue, ObservableForProperty).</summary>
 public partial class ReactiveNotifyPropertyChangedMixinTest
 {
-    /// <summary>
-    ///     Tests ObservableForProperty with selector throws for null selector.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty with selector throws for null selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableForProperty_NullSelector_Throws()
@@ -33,9 +26,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload with property name.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload with property name.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -45,7 +36,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.IsOnlyOneWord = Value1Text;
 
@@ -62,9 +53,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[1]).IsEqualTo(Value2Text);
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload with beforeChange.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload with beforeChange.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -74,7 +63,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord), true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord), true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.IsOnlyOneWord = ChangedText;
 
@@ -84,9 +73,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[0]).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload without skipInitial.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload without skipInitial.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -99,7 +86,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         fixture.ObservableForProperty<TestFixture, string?>(
             nameof(TestFixture.IsOnlyOneWord),
             false,
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+            false).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         // ImmediateScheduler executes synchronously
         await Assert.That(results).Count().IsEqualTo(1);
@@ -114,9 +101,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[1]).IsEqualTo(ChangedText);
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload throws for null property name.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload throws for null property name.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableForProperty_StringPropertyNameNull_Throws()
@@ -127,9 +112,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload throws for null item.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload throws for null item.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableForProperty_StringPropertyNameNullItem_Throws()
@@ -140,9 +123,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty string overload with isDistinct parameter.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty string overload with isDistinct parameter.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -156,7 +137,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             nameof(TestFixture.IsOnlyOneWord),
             false,
             true,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+            true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.IsOnlyOneWord = Value1Text;
 
@@ -169,9 +150,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results).Count().IsEqualTo(ExpectedCountAfterSecondChange);
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty with selector.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty with selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -184,7 +163,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0).ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = "Hello";
 
@@ -201,9 +180,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[1]).IsEqualTo(HiLength);
     }
 
-    /// <summary>
-    ///     Tests ObservableForProperty with selector and beforeChange.
-    /// </summary>
+    /// <summary>Tests ObservableForProperty with selector and beforeChange.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -215,7 +192,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, true).ObserveOn(ImmediateScheduler.Instance).Subscribe(results.Add);
+        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, true).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = ChangedText;
 
@@ -232,9 +209,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[1]).IsEqualTo(ExpectedLength); // Length of ChangedText
     }
 
-    /// <summary>
-    ///     Verifies child change notification behavior when the host property changes.
-    /// </summary>
+    /// <summary>Verifies child change notification behavior when the host property changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -242,7 +217,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new HostTestFixture { Child = new() };
 
-        fixture.ObservableForProperty(static x => x.Child!.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(static x => x.Child!.IsOnlyOneWord).Collect();
 
         fixture.Child.IsOnlyOneWord = FooText;
 
@@ -260,9 +235,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(changes).Count().IsEqualTo(ExpectedCountAfterSecondChange);
     }
 
-    /// <summary>
-    ///     Observes a named property and verifies notifications and values.
-    /// </summary>
+    /// <summary>Observes a named property and verifies notifications and values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -270,7 +243,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new TestFixture();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Collect();
 
         fixture.IsOnlyOneWord = FooText;
 
@@ -298,9 +271,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Observes a named property before change and verifies notifications.
-    /// </summary>
+    /// <summary>Observes a named property before change and verifies notifications.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -308,9 +279,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new TestFixture { IsOnlyOneWord = PreText };
 
-        fixture.ObservableForProperty(
+        var changes = fixture.ObservableForProperty(
             x => x.IsOnlyOneWord,
-            true).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+            true).Collect();
 
         await Assert.That(changes).IsEmpty();
 
@@ -332,9 +303,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Observes a named property with no initial-skip and verifies notifications.
-    /// </summary>
+    /// <summary>Observes a named property with no initial-skip and verifies notifications.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -342,10 +311,10 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new TestFixture { IsOnlyOneWord = PreText };
 
-        fixture.ObservableForProperty(
+        var changes = fixture.ObservableForProperty(
             x => x.IsOnlyOneWord,
             false,
-            false).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+            false).Collect();
 
         // ImmediateScheduler executes synchronously
         await Assert.That(changes).Count().IsEqualTo(1);
@@ -365,9 +334,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Verifies that repeated values are de-duplicated.
-    /// </summary>
+    /// <summary>Verifies that repeated values are de-duplicated.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -375,7 +342,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new TestFixture();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Collect();
 
         fixture.IsOnlyOneWord = FooText;
 
@@ -407,9 +374,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Verifies re-subscription behavior when replacing the host.
-    /// </summary>
+    /// <summary>Verifies re-subscription behavior when replacing the host.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -417,7 +382,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new HostTestFixture { Child = new() };
 
-        fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord).Collect();
 
         fixture.Child.IsOnlyOneWord = FooText;
 
@@ -461,9 +426,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Verifies re-subscription behavior when host becomes null and then is restored.
-    /// </summary>
+    /// <summary>Verifies re-subscription behavior when host becomes null and then is restored.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -473,7 +436,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var fixtureProp = fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord);
 
-        fixtureProp.ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixtureProp.Collect();
 
         fixture.Child.IsOnlyOneWord = FooText;
 
@@ -507,9 +470,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Ensures ObservableForProperty works with non-reactive INPC objects.
-    /// </summary>
+    /// <summary>Ensures ObservableForProperty works with non-reactive INPC objects.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -517,7 +478,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new NonReactiveInpcObject { InpcProperty = null! };
 
-        fixture.ObservableForProperty(static x => x.InpcProperty.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(static x => x.InpcProperty.IsOnlyOneWord).Collect();
 
         fixture.InpcProperty = new();
 
@@ -535,9 +496,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(changes).Count().IsEqualTo(ExpectedCountAfterThirdChange);
     }
 
-    /// <summary>
-    ///     Simple child property observation test.
-    /// </summary>
+    /// <summary>Simple child property observation test.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -545,7 +504,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new HostTestFixture { Child = new() };
 
-        fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(x => x.Child!.IsOnlyOneWord).Collect();
 
         fixture.Child.IsOnlyOneWord = FooText;
 
@@ -577,9 +536,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Simple property observation test.
-    /// </summary>
+    /// <summary>Simple property observation test.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -591,7 +548,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
     {
         var fixture = new TestFixture();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord).ToObservableChangeSet(ImmediateScheduler.Instance).Bind(out var changes).Subscribe();
+        var changes = fixture.ObservableForProperty(x => x.IsOnlyOneWord).Collect();
 
         fixture.IsOnlyOneWord = FooText;
 
@@ -623,9 +580,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Tests SubscribeToExpressionChain basic functionality.
-    /// </summary>
+    /// <summary>Tests SubscribeToExpressionChain basic functionality.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -637,7 +592,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = "First";
 
@@ -654,9 +609,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[1]).IsEqualTo("Second");
     }
 
-    /// <summary>
-    ///     Tests SubscribeToExpressionChain with beforeChange parameter.
-    /// </summary>
+    /// <summary>Tests SubscribeToExpressionChain with beforeChange parameter.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -668,7 +621,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = ChangedText;
 
@@ -678,9 +631,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[0]).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    ///     Tests SubscribeToExpressionChain with beforeChange and skipInitial.
-    /// </summary>
+    /// <summary>Tests SubscribeToExpressionChain with beforeChange and skipInitial.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -695,7 +646,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
             expression.Body,
             true,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+            true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         // ImmediateScheduler executes synchronously
         await Assert.That(results).IsEmpty();
@@ -708,9 +659,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results[0]).IsEqualTo(InitialText);
     }
 
-    /// <summary>
-    ///     Tests SubscribeToExpressionChain with isDistinct parameter.
-    /// </summary>
+    /// <summary>Tests SubscribeToExpressionChain with isDistinct parameter.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -727,7 +676,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             false,
             true,
             false,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+            true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = Value1Text;
 
@@ -740,9 +689,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(results).Count().IsEqualTo(ExpectedCountAfterSecondChange);
     }
 
-    /// <summary>
-    ///     Tests SubscribeToExpressionChain with suppressWarnings parameter.
-    /// </summary>
+    /// <summary>Tests SubscribeToExpressionChain with suppressWarnings parameter.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -758,7 +705,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             expression.Body,
             false,
             true,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(x => results.Add(x.Value));
+            true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = TestText;
 

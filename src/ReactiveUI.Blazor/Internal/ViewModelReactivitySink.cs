@@ -5,8 +5,11 @@
 
 using System.ComponentModel;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor.Internal;
+#else
 namespace ReactiveUI.Blazor.Internal;
-
+#endif
 /// <summary>
 /// Drives Blazor re-rendering for a component's view model: it re-renders when the view model instance is
 /// reassigned (after the first assignment) and whenever the current view model raises any property change.

@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- DynamicData-flavoured routing/change-set interop. Isolated here so the lean ReactiveUI, ReactiveUI.Core
+         and ReactiveUI.Reactive assemblies stay free of DynamicData (and therefore System.Reactive). Only
+         consumers that want the DynamicData IChangeSet projection of RoutingState / change sets reference this. -->
+    <TargetFrameworks>$(ReactiveUIFinalTargetFrameworks)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Routing</AssemblyName>
+    <RootNamespace>ReactiveUI</RootNamespace>
+    <PackageId>ReactiveUI.Routing</PackageId>
+    <PackageDescription>Observable change-set projections of ReactiveUI navigation stacks and collections, for animating and tracking add/remove/move operations.</PackageDescription>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
+    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI\ReactiveUI.csproj"/>
+  </ItemGroup>
+
+  <!-- Compiles its own copy of the shared arg-validation polyfill (matches Core/lean/.Reactive).
+       Observers come from ReactiveUI.Primitives.Signals (DelegateWitness), already imported via the seam. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Routing.Tests"/>
+  </ItemGroup>
+</Project>

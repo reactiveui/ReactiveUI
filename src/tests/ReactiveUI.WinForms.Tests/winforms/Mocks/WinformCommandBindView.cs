@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A view used for command binding tests.
-/// </summary>
+/// <summary>A view used for command binding tests.</summary>
 public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WinformCommandBindView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="WinformCommandBindView"/> class.</summary>
     public WinformCommandBindView()
     {
         Command1 = new();
@@ -29,13 +25,9 @@ public class WinformCommandBindView : IViewFor<WinformCommandBindViewModel>
     /// <inheritdoc/>
     public WinformCommandBindViewModel? ViewModel { get; set; }
 
-    /// <summary>
-    /// Gets or sets the button bound to the first command.
-    /// </summary>
+    /// <summary>Gets the button bound to the first command.</summary>
     public Button Command1 { get; protected set; }
 
-    /// <summary>
-    /// Gets or sets the control bound to the second command.
-    /// </summary>
+    /// <summary>Gets the control bound to the second command.</summary>
     public CustomClickableControl Command2 { get; protected set; }
 }

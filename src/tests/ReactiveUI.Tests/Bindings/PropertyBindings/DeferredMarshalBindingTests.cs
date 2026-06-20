@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables;
-
 namespace ReactiveUI.Tests.Bindings.PropertyBindings;
 
 /// <summary>
@@ -28,7 +26,7 @@ public class DeferredMarshalBindingTests
             view,
             static x => x.Text,
             static x => x.ViewText,
-            (IObservable<System.Reactive.Unit>?)null,
+            (IObservable<RxVoid>?)null,
             null);
 
         await Task.Run(() => vm.Text = "background update");
@@ -41,8 +39,10 @@ public class DeferredMarshalBindingTests
     /// <summary>A binder that defers the binding change signal onto a manual queue instead of running it inline.</summary>
     private sealed class DeferringBinder : PropertyBinderImplementation
     {
+        /// <summary>The manual queue that holds deferred binding actions.</summary>
         private readonly Queue<Action> _queue = new();
 
+        /// <summary>Runs every queued binding action in order.</summary>
         public void Drain()
         {
             while (_queue.Count > 0)
@@ -54,8 +54,14 @@ public class DeferredMarshalBindingTests
         protected override IObservable<bool> ScheduleForBinding<TView>(TView view, bool value) =>
             new DeferredSignal(_queue, value);
 
+        /// <summary>An observable that enqueues its emission onto a manual queue instead of running inline.</summary>
+        /// <param name="queue">The queue that receives the deferred emission action.</param>
+        /// <param name="value">The boolean value to emit when drained.</param>
         private sealed class DeferredSignal(Queue<Action> queue, bool value) : IObservable<bool>
         {
+            /// <summary>Enqueues the emission of the configured value to the supplied observer.</summary>
+            /// <param name="observer">The observer that receives the deferred value.</param>
+            /// <returns>A disposable representing the subscription.</returns>
             public IDisposable Subscribe(IObserver<bool> observer)
             {
                 queue.Enqueue(() =>
@@ -63,33 +69,36 @@ public class DeferredMarshalBindingTests
                     observer.OnNext(value);
                     observer.OnCompleted();
                 });
-                return Disposable.Empty;
+                return Scope.Empty;
             }
         }
     }
 
+    /// <summary>A minimal view model exposing a single reactive text property.</summary>
     private sealed class ReproViewModel : ReactiveObject
     {
-        private string? _text;
-
+        /// <summary>Gets or sets the reactive text value.</summary>
         public string? Text
         {
-            get => _text;
-            set => this.RaiseAndSetIfChanged(ref _text, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
+    /// <summary>A minimal view holding a reactive view model and a bound text property.</summary>
     private sealed class ReproView : ReactiveObject, IViewFor<ReproViewModel>
     {
-        private string? _viewText;
+        /// <summary>The backing field for the bound view model.</summary>
         private ReproViewModel? _viewModel;
 
+        /// <summary>Gets or sets the value mirrored from the view model.</summary>
         public string? ViewText
         {
-            get => _viewText;
-            set => this.RaiseAndSetIfChanged(ref _viewText, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
+        /// <summary>Gets or sets the bound view model.</summary>
         public ReproViewModel? ViewModel
         {
             get => _viewModel;

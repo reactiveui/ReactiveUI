@@ -40,8 +40,8 @@ public class ChangeStreamBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _changedViewModel = new BenchmarkViewModel();
-        _changingViewModel = new BenchmarkViewModel();
+        _changedViewModel = new();
+        _changingViewModel = new();
         _changedSubscription = _changedViewModel.Changed.Subscribe(_changedSink);
         _changingSubscription = _changingViewModel.Changing.Subscribe(_changingSink);
     }

@@ -7,16 +7,19 @@
     <PackageId>ReactiveUI</PackageId>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
     <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
@@ -27,14 +30,29 @@
     <EmbeddedResource Remove="Resources\**"/>
     <None Remove="Resources\**"/>
   </ItemGroup>
-  <!-- Platform subfolder is platform-lib-only; excluded here to avoid CA1812 on types core never uses. -->
+  <!-- Lean leaf: the type-agnostic core comes from ReactiveUI.Core (referenced), and the seam (RxVoid)
+       source from ReactiveUI.Shared (compiled here with the lean RxVoid identity). The src/Shared root
+       helpers (ArgumentExceptionHelper/DelegateObserver/EventPatternObservable) now live in Core and reach
+       this assembly via the Core reference + IVT; multicast subjects come from the ReactiveUI.Primitives package. -->
   <ItemGroup>
-    <Compile Include="..\Shared\**\*.cs" Exclude="..\Shared\Platform\**\*.cs" Link="Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <ProjectReference Include="..\ReactiveUI.Core\ReactiveUI.Core.csproj"/>
   </ItemGroup>
-  <!-- EventPatternObservable lives under Shared\Platform but is also consumed by core (CreatesCommandBindingViaEvent),
-       so it is linked here as a single shared source rather than duplicated into ReactiveUI\Internal. -->
   <ItemGroup>
-    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+    <Compile Include="..\ReactiveUI.Shared\**\*.cs" Link="ReactiveUI.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <!-- Internal plumbing helpers from src/Shared used by the seam source: each leaf compiles its own
+       internal copy (Core has its own; internal keeps them assembly-private, so no cross-assembly clash). -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+  </ItemGroup>
+  <!-- Shared source carries no per-file usings for the namespaces it shifts between leaves; the lean leaf
+       imports them globally here (unshifted). The .Reactive leaf imports the shifted forms (Directory.Build.props). -->
+  <ItemGroup>
+    <Using Include="ReactiveUI"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Builder"/>
+    <Using Include="ReactiveUI.Interfaces"/>
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <Compile Include="Platforms\netstandard2.0\**\*.cs"/>
@@ -65,26 +83,21 @@
   </ItemGroup>
   <!-- Apple Platforms reuse the platform-lib-only fused sinks from Shared\Platform (excluded from the core compile above). -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
-    <Compile Include="..\Shared\Platform\ReturnObservable.cs" Link="Shared\Platform\ReturnObservable.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
-  </ItemGroup>
-  <!-- WhereObservable/SelectManyObservable are consumed only by uikit-common (CommonReactiveSource, AutoSuspendHelper),
-       so they are included for the UIKit-based Apple TFMs only (macOS uses mac\, not uikit-common) to avoid CA1812. -->
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
-    <Compile Include="..\Shared\Platform\WhereObservable.cs" Link="Shared\Platform\WhereObservable.cs"/>
-    <Compile Include="..\Shared\Platform\SelectManyObservable.cs" Link="Shared\Platform\SelectManyObservable.cs"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
   </ItemGroup>
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Include="Platforms\android\**\*.cs"/>
     <Compile Include="Platforms\mobile-common\**\*.cs"/>
+    <!-- Android reuses the platform-lib-only fused sink from Shared\Platform (excluded from the core compile above). -->
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
   </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
     <Compile Include="Platforms\net\**\*.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DynamicData" />
+    <PackageReference Include="ReactiveUI.Primitives" ExcludeAssets="analyzers" />
     <PackageReference Include="Splat" />
-    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="ReactiveUI.Tests"/>

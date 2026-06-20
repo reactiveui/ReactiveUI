@@ -9,17 +9,14 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="ActivationForViewFetcher"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ActivationForViewFetcher"/>.</summary>
 [NotInParallel]
 public class ActivationForViewFetcherTest
 {
+    /// <summary>The expected affinity value returned for <see cref="FrameworkElement"/> types.</summary>
     private const int FrameworkElementAffinity = 10;
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for FrameworkElement types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for FrameworkElement types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -32,9 +29,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(FrameworkElementAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for derived FrameworkElement types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for derived FrameworkElement types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -47,9 +42,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(FrameworkElementAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 10 for Window types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 10 for Window types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -62,9 +55,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(FrameworkElementAffinity);
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForView returns 0 for non-FrameworkElement types.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForView returns 0 for non-FrameworkElement types.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -77,9 +68,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(affinity).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests that GetActivationForView returns empty for non-FrameworkElement view.
-    /// </summary>
+    /// <summary>Tests that GetActivationForView returns empty for non-FrameworkElement view.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfTestExecutor>]
@@ -93,9 +82,7 @@ public class ActivationForViewFetcherTest
         await Assert.That(activation).IsNotNull();
     }
 
-    /// <summary>
-    /// Test non-FrameworkElement view for testing.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test non-FrameworkElement view for testing.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestNonFrameworkElementView : IActivatableView;
 }

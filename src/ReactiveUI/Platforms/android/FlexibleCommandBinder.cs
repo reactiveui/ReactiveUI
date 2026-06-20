@@ -4,14 +4,16 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using System.Reflection;
 using System.Windows.Input;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
+using ReactiveUI.Primitives.Disposables;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Provides a base class for creating flexible command binding strategies that associate commands with object events
 /// and properties at runtime.
@@ -23,9 +25,7 @@ namespace ReactiveUI;
 /// binding lifetime management are the responsibility of the caller.</remarks>
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
-    /// <summary>
-    /// Configuration map.
-    /// </summary>
+    /// <summary>Configuration map.</summary>
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
     /// <inheritdoc/>
@@ -36,7 +36,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     public int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
-        T>(bool hasEventTarget)
+    T>(bool hasEventTarget)
     {
         if (hasEventTarget)
         {
@@ -63,7 +63,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
                                     DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents)]
-        T>(ICommand? command, T? target, IObservable<object?> commandParameter)
+    T>(ICommand? command, T? target, IObservable<object?> commandParameter)
         where T : class
     {
         ArgumentExceptionHelper.ThrowIfNull(target);
@@ -98,7 +98,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties |
                                     DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.NonPublicEvents)]
-        T, TEventArgs>(
+    T, TEventArgs>(
         ICommand? command,
         T? target,
         IObservable<object?> commandParameter,
@@ -147,10 +147,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
 
         return canExecuteSub is null
-            ? new CompositeDisposable(
+            ? new MultipleDisposable(
                 parameterSub,
                 new ActionDisposable(() => removeHandler(Handler)))
-            : new CompositeDisposable(
+            : new MultipleDisposable(
                 parameterSub,
                 canExecuteSub,
                 new ActionDisposable(() => removeHandler(Handler)));
@@ -167,9 +167,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
     }
 
-    /// <summary>
-    /// Creates a commands binding from event and a property.
-    /// </summary>
+    /// <summary>Creates a commands binding from event and a property.</summary>
     /// <returns>The binding from event.</returns>
     /// <param name="command">Command.</param>
     /// <param name="target">Target.</param>
@@ -209,7 +207,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         enabledSetter(target, command.CanExecute(latestParam), null);
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             actionDisp,
             commandParameter.Subscribe(new DelegateObserver<object?>(x => latestParam = x)),
             new CanExecuteChangedObservable(command, () => command.CanExecute(latestParam))
@@ -258,7 +256,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(
+            return new MultipleDisposable(
                 parameterSub,
                 new ActionDisposable(() => removeHandler(Handler)));
         }
@@ -268,7 +266,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             parameterSub,
             canExecuteSub,
             new ActionDisposable(() => removeHandler(Handler)));
@@ -325,7 +323,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(
+            return new MultipleDisposable(
                 parameterSub,
                 new ActionDisposable(() => removeHandler(Handler)));
         }
@@ -335,7 +333,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
             .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             parameterSub,
             canExecuteSub,
             new ActionDisposable(() => removeHandler(Handler)));
@@ -352,9 +350,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
     }
 
-    /// <summary>
-    /// Registers an observable factory for the specified type and property.
-    /// </summary>
+    /// <summary>Registers an observable factory for the specified type and property.</summary>
     /// <param name="type">Type.</param>
     /// <param name="affinity">The affinity for the type.</param>
     /// <param name="createBinding">Creates the binding.</param>
@@ -384,19 +380,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
     }
 
-    /// <summary>
-    /// Provides information about a command binding, including its affinity and a factory for creating the binding.
-    /// </summary>
+    /// <summary>Provides information about a command binding, including its affinity and a factory for creating the binding.</summary>
     private sealed class CommandBindingInfo
     {
-        /// <summary>
-        /// Gets or sets the affinity that ranks this binding against others for the same type.
-        /// </summary>
+        /// <summary>Gets or sets the affinity that ranks this binding against others for the same type.</summary>
         public int Affinity { get; set; }
 
-        /// <summary>
-        /// Gets or sets the factory that creates the command binding.
-        /// </summary>
+        /// <summary>Gets or sets the factory that creates the command binding.</summary>
         public Func<ICommand?, object?, IObservable<object?>, IDisposable>? CreateBinding { get; set; }
     }
 }

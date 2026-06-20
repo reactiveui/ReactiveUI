@@ -5,13 +5,14 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Reactive.Subjects;
 using Foundation;
-using ReactiveUI.Helpers;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// ReactiveTableViewSource is a Table View Source that is connected to
 /// a List that automatically updates the View based on the
@@ -25,14 +26,12 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     private readonly CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>> _commonSource;
 
     /// <summary>The subject that publishes items whenever a table view row is selected.</summary>
-    private readonly Subject<object?> _elementSelected = new();
+    private readonly Signal<object?> _elementSelected = new();
 
     /// <summary>The adapter that bridges the UITableView with the reactive source.</summary>
     private readonly UITableViewAdapter _adapter;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.</summary>
     /// <param name="tableView">The table view.</param>
     /// <param name="collection">The collection.</param>
     /// <param name="cellKey">The cell key.</param>
@@ -42,9 +41,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.</summary>
     /// <param name="tableView">The table view.</param>
     /// <param name="collection">The collection.</param>
     /// <param name="cellKey">The cell key.</param>
@@ -55,9 +52,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
         Data = [new TableSectionInformation<TSource, UITableViewCell>(collection, cellKey, sizeHint, initializeCellAction)
         ];
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveTableViewSource{TSource}"/> class.</summary>
     /// <param name="tableView">The table view.</param>
     public ReactiveTableViewSource(UITableView tableView)
     {
@@ -71,11 +66,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <inheritdoc/>
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>
-    /// Gets or sets the data that should be displayed by this
-    /// <see cref="ReactiveTableViewSource{TSource}"/>.  You should
-    /// probably bind your view model to this property.
-    /// </summary>
+    /// <summary>Gets or sets the data that should be displayed by this <see cref="ReactiveTableViewSource{TSource}"/>. You should probably bind your view model to this property.</summary>
     /// <value>The data.</value>
     public IReadOnlyList<TableSectionInformation<TSource>> Data
     {
@@ -94,59 +85,45 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
         }
     }
 
-    /// <summary>
-    /// Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.
-    /// </summary>
+    /// <summary>Gets an IObservable that is a hook to <see cref="RowSelected"/> calls.</summary>
     public IObservable<object?> ElementSelected => _elementSelected;
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.InsertSections is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.InsertSections is invoked.</summary>
     public UITableViewRowAnimation InsertSectionsAnimation
     {
         get => _adapter.InsertSectionsAnimation;
         set => _adapter.InsertSectionsAnimation = value;
     }
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.DeleteSections is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.DeleteSections is invoked.</summary>
     public UITableViewRowAnimation DeleteSectionsAnimation
     {
         get => _adapter.DeleteSectionsAnimation;
         set => _adapter.DeleteSectionsAnimation = value;
     }
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.ReloadSections is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.ReloadSections is invoked.</summary>
     public UITableViewRowAnimation ReloadSectionsAnimation
     {
         get => _adapter.ReloadSectionsAnimation;
         set => _adapter.ReloadSectionsAnimation = value;
     }
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.InsertRows is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.InsertRows is invoked.</summary>
     public UITableViewRowAnimation InsertRowsAnimation
     {
         get => _adapter.InsertRowsAnimation;
         set => _adapter.InsertRowsAnimation = value;
     }
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.DeleteRows is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.DeleteRows is invoked.</summary>
     public UITableViewRowAnimation DeleteRowsAnimation
     {
         get => _adapter.DeleteRowsAnimation;
         set => _adapter.DeleteRowsAnimation = value;
     }
 
-    /// <summary>
-    /// Gets or sets the row animation to use when UITableView.ReloadRows is invoked.
-    /// </summary>
+    /// <summary>Gets or sets the row animation to use when UITableView.ReloadRows is invoked.</summary>
     public UITableViewRowAnimation ReloadRowsAnimation
     {
         get => _adapter.ReloadRowsAnimation;
@@ -270,9 +247,7 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
 
 #pragma warning restore CS8603 // Possible null reference return.
 
-    /// <summary>
-    /// Items at.
-    /// </summary>
+    /// <summary>Items at.</summary>
     /// <param name="indexPath">The index path.</param>
     /// <returns>The item.</returns>
     public object? ItemAt(NSIndexPath indexPath)

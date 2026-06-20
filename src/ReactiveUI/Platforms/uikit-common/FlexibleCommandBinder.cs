@@ -4,18 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Input;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Base class for platform command binders that register per-type binding factories with an affinity score.
-/// </summary>
+#endif
+/// <summary>Base class for platform command binders that register per-type binding factories with an affinity score.</summary>
 /// <remarks>
 /// <para>
 /// This type is intended for platform implementations (Android, iOS, etc.) that need to bind an
@@ -34,32 +34,29 @@ namespace ReactiveUI;
 /// </remarks>
 public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 {
-    /// <summary>
-    /// A single synchronization gate for all mutable state in this instance.
-    /// </summary>
+    /// <summary>A single synchronization gate for all mutable state in this instance.</summary>
+#if NET9_0_OR_GREATER
+    private readonly Lock _gate = new();
+#else
     private readonly object _gate = new();
+#endif
 
-    /// <summary>
-    /// Mutable registration map; only accessed under <see cref="_gate"/>.
-    /// </summary>
+    /// <summary>Mutable registration map; only accessed under <see cref="_gate"/>.</summary>
     private readonly Dictionary<Type, CommandBindingInfo> _config = [];
 
-    /// <summary>
-    /// A version counter incremented on each registration mutation.
-    /// </summary>
+    /// <summary>A version counter incremented on each registration mutation.</summary>
     private int _version;
 
-    /// <summary>
-    /// A snapshot of registrations used for lock-free reads.
-    /// </summary>
+    /// <summary>A snapshot of registrations used for lock-free reads.</summary>
     private Entry[]? _snapshot;
 
-    /// <summary>
-    /// A snapshot version that corresponds to <see cref="_snapshot"/>.
-    /// </summary>
+    /// <summary>A snapshot version that corresponds to <see cref="_snapshot"/>.</summary>
     private int _snapshotVersion;
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The candidate target type.</typeparam>
+    /// <param name="hasEventTarget">A value indicating whether an explicit event target was supplied.</param>
+    /// <returns>The affinity score for binding a command to the candidate type.</returns>
     [SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",
@@ -96,6 +93,11 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     }
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     public IDisposable? BindCommandToObject<
         [DynamicallyAccessedMembers(
@@ -136,10 +138,17 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
 
         // Never invoke user code under locks; snapshot factories are safe to call directly here.
-        return best.Value.Factory(command, target, commandParameter) ?? Disposable.Empty;
+        return best.Value.Factory(command, target, commandParameter) ?? Scope.Empty;
     }
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <typeparam name="TEventArgs">The event args type of the named event.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <param name="eventName">The name of the event to subscribe to.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
         "Major Code Smell",
@@ -151,9 +160,17 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         IObservable<object?> commandParameter,
         string eventName)
         where T : class =>
-        Disposable.Empty;
+        Scope.Empty;
 
     /// <inheritdoc/>
+    /// <typeparam name="T">The target type being bound.</typeparam>
+    /// <typeparam name="TEventArgs">The event args type of the subscribed event.</typeparam>
+    /// <param name="command">The command to bind to the target.</param>
+    /// <param name="target">The target object to bind the command to.</param>
+    /// <param name="commandParameter">An observable providing the latest command parameter.</param>
+    /// <param name="addHandler">Adds the event handler to the target.</param>
+    /// <param name="removeHandler">Removes the event handler from the target.</param>
+    /// <returns>A disposable that tears down the binding, or <see langword="null"/> when binding is not possible.</returns>
     [SuppressMessage(
         "Major Code Smell",
         "S4018:Generic methods should provide type parameters",
@@ -179,10 +196,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         // Match existing binder behavior: null command means "no binding".
         if (command is null)
         {
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
@@ -197,17 +214,15 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
         addHandler(Handler);
 
-        return new CompositeDisposable(
+        return new MultipleDisposable(
             paramSub,
-            Disposable.Create(() => removeHandler(Handler)));
+            Scope.Create(() => removeHandler(Handler)));
     }
 
-    /// <summary>
-    /// Creates a command binding from an explicit event subscription API and an enabled property.
-    /// </summary>
+    /// <summary>Creates a command binding from an explicit event subscription API and an enabled property.</summary>
     /// <typeparam name="TTarget">The target type that exposes the event.</typeparam>
     /// <typeparam name="TEventArgs">The event args type.</typeparam>
     /// <param name="command">The command to execute when the event fires.</param>
@@ -241,7 +256,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
@@ -257,15 +272,15 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
         addHandler(Handler);
-        var eventDisp = Disposable.Create(() => removeHandler(Handler));
+        var eventDisp = Scope.Create(() => removeHandler(Handler));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(paramSub, eventDisp);
+            return new MultipleDisposable(paramSub, eventDisp);
         }
 
         // Initial enabled state.
@@ -278,14 +293,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                 command.CanExecuteChanged += CanExecuteHandler;
                 return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
             })
-            .Subscribe(x => enabledSetter(target, x, null));
+            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
+        return new MultipleDisposable(paramSub, eventDisp, canExecuteSub);
     }
 
-    /// <summary>
-    /// Creates a command binding from an explicit event subscription API and an enabled property.
-    /// </summary>
+    /// <summary>Creates a command binding from an explicit event subscription API and an enabled property.</summary>
     /// <typeparam name="TTarget">The target type that exposes the event.</typeparam>
     /// <param name="command">The command to execute when the event fires.</param>
     /// <param name="target">The target object that exposes the event.</param>
@@ -317,7 +330,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
@@ -333,15 +346,15 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
 
         // Subscribe parameter first so we have best effort latest value before the first event.
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
         addHandler(Handler);
-        var eventDisp = Disposable.Create(() => removeHandler(Handler));
+        var eventDisp = Scope.Create(() => removeHandler(Handler));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(paramSub, eventDisp);
+            return new MultipleDisposable(paramSub, eventDisp);
         }
 
         // Initial enabled state.
@@ -354,14 +367,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                 command.CanExecuteChanged += CanExecuteHandler;
                 return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
             })
-            .Subscribe(x => enabledSetter(target, x, null));
+            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(paramSub, eventDisp, canExecuteSub);
+        return new MultipleDisposable(paramSub, eventDisp, canExecuteSub);
     }
 
-    /// <summary>
-    /// Creates a command binding from a named event and an enabled property.
-    /// </summary>
+    /// <summary>Creates a command binding from a named event and an enabled property.</summary>
     /// <param name="command">The command to execute when the event fires.</param>
     /// <param name="target">The UI target object that exposes the event.</param>
     /// <param name="commandParameter">An observable providing the latest command parameter.</param>
@@ -386,13 +397,13 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(eventName);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         object? latestParam = null;
 
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
-        var actionSub = new EventPatternObservable<EventArgs>(target, eventName).Subscribe(_ =>
+        var actionSub = new EventPatternObservable<EventArgs>(target, eventName).Subscribe(new DelegateObserver<EventArgs>(_ =>
         {
             var param = Volatile.Read(ref latestParam);
             if (!command.CanExecute(param))
@@ -401,12 +412,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             }
 
             command.Execute(param);
-        });
+        }));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(paramSub, actionSub);
+            return new MultipleDisposable(paramSub, actionSub);
         }
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
@@ -418,15 +429,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                 command.CanExecuteChanged += Handler;
                 return new ActionDisposable(() => command.CanExecuteChanged -= Handler);
             })
-            .Subscribe(x => enabledSetter(target, x, null));
+            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(paramSub, actionSub, canExecuteSub);
+        return new MultipleDisposable(paramSub, actionSub, canExecuteSub);
     }
 
-    /// <summary>
-    /// Creates a command binding for UIKit controls using <see cref="UIControlEvent.TouchUpInside"/>
-    /// and an enabled property.
-    /// </summary>
+    /// <summary>Creates a command binding for UIKit controls using <see cref="UIControlEvent.TouchUpInside"/> and an enabled property.</summary>
     /// <param name="command">The command to execute when the control is activated.</param>
     /// <param name="target">The target object, expected to be a <see cref="UIControl"/>.</param>
     /// <param name="commandParameter">An observable providing the latest command parameter.</param>
@@ -443,11 +451,11 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(target);
         ArgumentExceptionHelper.ThrowIfNull(enabledProperty);
 
-        commandParameter ??= new ReturnObservable<object?>(target);
+        commandParameter ??= Signal.Emit<object?>(target);
 
         if (target is not UIControl ctl)
         {
-            return Disposable.Empty;
+            return Scope.Empty;
         }
 
         object? latestParam = null;
@@ -464,16 +472,16 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             command.Execute(param);
         }
 
-        var paramSub = commandParameter.Subscribe(x => Volatile.Write(ref latestParam, x));
+        var paramSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
 
         // UIKit target-action via EventHandler is supported through UIControl's AddTarget overload.
         ctl.AddTarget(Handler, UIControlEvent.TouchUpInside);
-        var actionDisp = Disposable.Create(() => ctl.RemoveTarget(Handler, UIControlEvent.TouchUpInside));
+        var actionDisp = Scope.Create(() => ctl.RemoveTarget(Handler, UIControlEvent.TouchUpInside));
 
         var enabledSetter = Reflection.GetValueSetterForProperty(enabledProperty);
         if (enabledSetter is null)
         {
-            return new CompositeDisposable(paramSub, actionDisp);
+            return new MultipleDisposable(paramSub, actionDisp);
         }
 
         enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
@@ -485,14 +493,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
                 command.CanExecuteChanged += CanExecuteHandler;
                 return new ActionDisposable(() => command.CanExecuteChanged -= CanExecuteHandler);
             })
-            .Subscribe(x => enabledSetter(target, x, null));
+            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
 
-        return new CompositeDisposable(paramSub, actionDisp, canExecuteSub);
+        return new MultipleDisposable(paramSub, actionDisp, canExecuteSub);
     }
 
-    /// <summary>
-    /// Registers a binding factory for a type with an affinity score.
-    /// </summary>
+    /// <summary>Registers a binding factory for a type with an affinity score.</summary>
     /// <param name="type">The registered type.</param>
     /// <param name="affinity">The affinity score used to select among candidates.</param>
     /// <param name="createBinding">The factory that creates the binding.</param>
@@ -510,9 +516,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
     }
 
-    /// <summary>
-    /// Produces or returns a cached snapshot of registrations for lock-free reads.
-    /// </summary>
+    /// <summary>Produces or returns a cached snapshot of registrations for lock-free reads.</summary>
     /// <returns>The current snapshot.</returns>
     private Entry[] GetSnapshot()
     {
@@ -550,22 +554,19 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         }
     }
 
-    /// <summary>
-    /// Immutable snapshot entry for a registered binding factory.
-    /// </summary>
+    /// <summary>Immutable snapshot entry for a registered binding factory.</summary>
+    /// <param name="Type">The registered type.</param>
+    /// <param name="Affinity">The affinity score used to select among candidates.</param>
+    /// <param name="Factory">The factory that creates the binding.</param>
     private readonly record struct Entry(
         Type Type,
         int Affinity,
         Func<ICommand?, object?, IObservable<object?>, IDisposable>? Factory);
 
-    /// <summary>
-    /// Stores binding configuration for a registered type.
-    /// </summary>
+    /// <summary>Stores binding configuration for a registered type.</summary>
     private sealed class CommandBindingInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandBindingInfo"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CommandBindingInfo"/> class.</summary>
         /// <param name="affinity">The affinity score.</param>
         /// <param name="createBinding">The binding factory.</param>
         public CommandBindingInfo(int affinity, Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding)
@@ -574,14 +575,10 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             CreateBinding = createBinding;
         }
 
-        /// <summary>
-        /// Gets the affinity score for this binding.
-        /// </summary>
+        /// <summary>Gets the affinity score for this binding.</summary>
         public int Affinity { get; }
 
-        /// <summary>
-        /// Gets the binding factory.
-        /// </summary>
+        /// <summary>Gets the binding factory.</summary>
         public Func<ICommand?, object?, IObservable<object?>, IDisposable> CreateBinding { get; }
     }
 }

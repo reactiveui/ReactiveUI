@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Maui.Tests;
 
-/// <summary>
-/// Tests for <see cref="AutoSuspendHelper"/>.
-/// </summary>
+/// <summary>Tests for <see cref="AutoSuspendHelper"/>.</summary>
 public sealed class AutoSuspendHelperTest
 {
-    /// <summary>
-    /// Tests that AutoSuspendHelper can be instantiated.
-    /// </summary>
+    /// <summary>Tests that AutoSuspendHelper can be instantiated.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_CreatesInstance()
@@ -22,9 +18,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(helper).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that AutoSuspendHelper wires up suspension host observables.
-    /// </summary>
+    /// <summary>Tests that AutoSuspendHelper wires up suspension host observables.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WiresUpSuspensionHost()
@@ -38,9 +32,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(RxSuspension.SuspensionHost.ShouldInvalidateState).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that OnCreate triggers IsLaunchingNew.
-    /// </summary>
+    /// <summary>Tests that OnCreate triggers IsLaunchingNew.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnCreate_TriggersIsLaunchingNew()
@@ -54,9 +46,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(triggered).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that OnStart triggers IsUnpausing.
-    /// </summary>
+    /// <summary>Tests that OnStart triggers IsUnpausing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnStart_TriggersIsUnpausing()
@@ -70,9 +60,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(triggered).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that OnResume triggers IsResuming.
-    /// </summary>
+    /// <summary>Tests that OnResume triggers IsResuming.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnResume_TriggersIsResuming()
@@ -86,9 +74,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(triggered).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that OnSleep triggers ShouldPersistState.
-    /// </summary>
+    /// <summary>Tests that OnSleep triggers ShouldPersistState.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnSleep_TriggersShouldPersistState()
@@ -102,9 +88,7 @@ public sealed class AutoSuspendHelperTest
         await Assert.That(triggered).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that Dispose cleans up resources.
-    /// </summary>
+    /// <summary>Tests that Dispose cleans up resources.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_CleansUpResources()
@@ -117,9 +101,7 @@ public sealed class AutoSuspendHelperTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Tests that UntimelyDemise property is accessible.
-    /// </summary>
+    /// <summary>Tests that UntimelyDemise property is accessible.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task UntimelyDemise_IsAccessible()

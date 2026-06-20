@@ -3,15 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using ReactiveUI.Helpers;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Mac platform registrations.
-/// </summary>
+#endif
+/// <summary>Mac platform registrations.</summary>
 /// <seealso cref="IWantsToRegisterStuff" />
 public class PlatformRegistrations : IWantsToRegisterStuff
 {
@@ -41,8 +40,8 @@ public class PlatformRegistrations : IWantsToRegisterStuff
 
         if (!ModeDetector.InUnitTestRunner())
         {
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
-            RxSchedulers.MainThreadScheduler = new WaitForDispatcherScheduler(static () => new NSRunloopScheduler());
+            RxSchedulers.TaskpoolScheduler = Sequencer.Default;
+            RxSchedulers.MainThreadScheduler = NSRunloopSequencer.Main;
         }
 
         registrar.RegisterConstant<ISuspensionDriver>(static () => new AppSupportJsonSuspensionDriver());

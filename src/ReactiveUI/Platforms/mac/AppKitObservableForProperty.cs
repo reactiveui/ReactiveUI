@@ -5,8 +5,11 @@
 
 using AppKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// AppKitObservableForProperty is an object that knows how to
 /// create notifications for a given type of object. Implement this if you
@@ -19,9 +22,7 @@ public class AppKitObservableForProperty : ObservableForPropertyBase
     /// <summary>The affinity score used when registering AppKit NSControl property observations.</summary>
     private const int AppKitAffinity = 20;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppKitObservableForProperty"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="AppKitObservableForProperty"/> class.</summary>
     public AppKitObservableForProperty()
     {
         Register(typeof(NSControl), "AlphaValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
@@ -34,8 +35,6 @@ public class AppKitObservableForProperty : ObservableForPropertyBase
         Register(typeof(NSControl), "AttributedStringValue", AppKitAffinity, static (s, p) => ObservableFromNotification(s, p, NSControl.TextDidChangeNotification));
     }
 
-    /// <summary>
-    /// Gets the App Kit ObservableForProperty instance.
-    /// </summary>
+    /// <summary>Gets the App Kit ObservableForProperty instance.</summary>
     public static Lazy<AppKitObservableForProperty> Instance { get; } = new();
 }

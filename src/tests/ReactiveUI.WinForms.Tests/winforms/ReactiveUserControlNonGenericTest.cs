@@ -3,22 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using ReactiveUI.Winforms;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for <see cref="ReactiveUserControlNonGeneric"/>.
-/// </summary>
+/// <summary>Tests for <see cref="ReactiveUserControlNonGeneric"/>.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 
 public class ReactiveUserControlNonGenericTest
 {
-    /// <summary>
-    /// Tests that ReactiveUserControlNonGeneric can be instantiated.
-    /// </summary>
+    /// <summary>Tests that ReactiveUserControlNonGeneric can be instantiated.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_CreatesInstance()
@@ -29,9 +24,7 @@ public class ReactiveUserControlNonGenericTest
         control.Dispose();
     }
 
-    /// <summary>
-    /// Tests that ViewModel property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_CanBeSetAndRetrieved()
@@ -45,9 +38,7 @@ public class ReactiveUserControlNonGenericTest
         control.Dispose();
     }
 
-    /// <summary>
-    /// Tests that ViewModel property can be set to null.
-    /// </summary>
+    /// <summary>Tests that ViewModel property can be set to null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModel_CanBeSetToNull()
@@ -61,9 +52,7 @@ public class ReactiveUserControlNonGenericTest
         control.Dispose();
     }
 
-    /// <summary>
-    /// Tests that Dispose cleans up resources.
-    /// </summary>
+    /// <summary>Tests that Dispose cleans up resources.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_CleansUpResources()
@@ -76,9 +65,7 @@ public class ReactiveUserControlNonGenericTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Tests that control can be disposed multiple times.
-    /// </summary>
+    /// <summary>Tests that control can be disposed multiple times.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_CanBeCalledMultipleTimes()
@@ -92,9 +79,7 @@ public class ReactiveUserControlNonGenericTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Test view model for testing.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Test view model for testing.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
 }

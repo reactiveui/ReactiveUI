@@ -5,19 +5,13 @@
 
 namespace ReactiveUI.Tests.WhenAny.Mockups;
 
-/// <summary>
-///     The second link in a chain of nested reactive objects used for deep property observation tests.
-/// </summary>
+/// <summary>The second link in a chain of nested reactive objects used for deep property observation tests.</summary>
 public class ObjChain2 : ReactiveObject
 {
-    private ObjChain3 _model = new();
-
-    /// <summary>
-    ///     Gets or sets the nested model.
-    /// </summary>
+    /// <summary>Gets or sets the nested model.</summary>
     public ObjChain3 Model
     {
-        get => _model;
-        set => this.RaiseAndSetIfChanged(ref _model, value);
-    }
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
+    } = new();
 }

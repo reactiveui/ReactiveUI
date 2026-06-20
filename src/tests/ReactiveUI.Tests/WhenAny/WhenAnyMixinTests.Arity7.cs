@@ -3,19 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>
-/// Arity-7 WhenAny and WhenAnyValue overload tests.
-/// </content>
+/// <summary>Tests for the WhenAny and WhenAnyValue mixin overloads.</summary>
 public partial class WhenAnyMixinTests
 {
-    /// <summary>
-    ///     Verifies the WhenAny overload for 7 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAny overload for 7 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_7Props_Sel()
@@ -30,13 +23,11 @@ public partial class WhenAnyMixinTests
             x => x.Property5,
             x => x.Property6,
             x => x.Property7,
-            (_, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAny overload for 7 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the WhenAny overload for 7 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_7Props_Sel_Dist()
@@ -52,13 +43,11 @@ public partial class WhenAnyMixinTests
             x => x.Property6,
             x => x.Property7,
             (_, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAny overload for 7 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAny overload for 7 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_7Props_Sel_Str()
@@ -73,13 +62,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property5),
             nameof(WhenAnyArityTestViewModel.Property6),
             nameof(WhenAnyArityTestViewModel.Property7),
-            (_, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAny overload for 7 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAny overload for 7 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAny_7Props_Sel_Str_Dist()
@@ -95,13 +82,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property6),
             nameof(WhenAnyArityTestViewModel.Property7),
             (_, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyValue overload for 7 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyValue overload for 7 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Sel()
@@ -116,13 +101,11 @@ public partial class WhenAnyMixinTests
             x => x.Property5,
             x => x.Property6,
             x => x.Property7,
-            (_, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyValue overload for 7 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyValue overload for 7 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Sel_Dist()
@@ -138,13 +121,11 @@ public partial class WhenAnyMixinTests
             x => x.Property6,
             x => x.Property7,
             (_, _, _, _, _, _, _) => "x",
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAnyValue overload for 7 properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAnyValue overload for 7 properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Sel_Str()
@@ -159,13 +140,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property5),
             nameof(WhenAnyArityTestViewModel.Property6),
             nameof(WhenAnyArityTestViewModel.Property7),
-            (_, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the string-based WhenAnyValue overload for 7 properties with a selector and distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the string-based WhenAnyValue overload for 7 properties with a selector and distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Sel_Str_Dist()
@@ -181,13 +160,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property6),
             nameof(WhenAnyArityTestViewModel.Property7),
             (_, _, _, _, _, _, _) => "x",
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple expression-based WhenAnyValue overload for 7 properties.
-    /// </summary>
+    /// <summary>Verifies the tuple expression-based WhenAnyValue overload for 7 properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Tuple_Expr()
@@ -201,13 +178,11 @@ public partial class WhenAnyMixinTests
             x => x.Property4,
             x => x.Property5,
             x => x.Property6,
-            x => x.Property7).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            x => x.Property7).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple expression-based WhenAnyValue overload for 7 properties with a distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the tuple expression-based WhenAnyValue overload for 7 properties with a distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Tuple_Expr_Dist()
@@ -222,13 +197,11 @@ public partial class WhenAnyMixinTests
             x => x.Property5,
             x => x.Property6,
             x => x.Property7,
-            true).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple string-based WhenAnyValue overload for 7 properties.
-    /// </summary>
+    /// <summary>Verifies the tuple string-based WhenAnyValue overload for 7 properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Tuple_Str()
@@ -242,13 +215,11 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property4),
             nameof(WhenAnyArityTestViewModel.Property5),
             nameof(WhenAnyArityTestViewModel.Property6),
-            nameof(WhenAnyArityTestViewModel.Property7)).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            nameof(WhenAnyArityTestViewModel.Property7)).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the tuple string-based WhenAnyValue overload for 7 properties with a distinct-until-changed flag.
-    /// </summary>
+    /// <summary>Verifies the tuple string-based WhenAnyValue overload for 7 properties with a distinct-until-changed flag.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValue_7Props_Tuple_Str_Dist()
@@ -263,7 +234,7 @@ public partial class WhenAnyMixinTests
             nameof(WhenAnyArityTestViewModel.Property5),
             nameof(WhenAnyArityTestViewModel.Property6),
             nameof(WhenAnyArityTestViewModel.Property7),
-            false).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 }

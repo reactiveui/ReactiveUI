@@ -3,19 +3,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using Splat;
 
 namespace ReactiveUI.Tests.Infrastructure;
 
-/// <summary>
-///     Extension methods for testing ReactiveUI initialization and reset.
-/// </summary>
+/// <summary>Extension methods for testing ReactiveUI initialization and reset.</summary>
 internal static class RxAppTestExtensions
 {
-    /// <summary>
-    ///     Resets ReactiveUI state and reinitializes with core services using a fresh locator.
-    /// </summary>
+    /// <summary>Resets ReactiveUI state and reinitializes with core services using a fresh locator.</summary>
     /// <remarks>
     ///     This method:
     ///     1. Resets the ReactiveUI initialization state.
@@ -41,9 +41,7 @@ internal static class RxAppTestExtensions
             .WithCoreServices().BuildApp();
     }
 
-    /// <summary>
-    ///     Resets ReactiveUI state only (does not reinitialize).
-    /// </summary>
+    /// <summary>Resets ReactiveUI state only (does not reinitialize).</summary>
     /// <remarks>
     ///     Use this when you want to manually control the initialization afterward,
     ///     such as when creating a custom resolver for a specific test.

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured AndroidX leaf: recompiles the ReactiveUI.AndroidX source against the
+         ReactiveUI.Reactive engine (which now carries an android platform leg). REACTIVE_SHIM (from the
+         'Reactive' name suffix in Directory.Build.props) flips the namespaces to ReactiveUI.Reactive.*. -->
+    <TargetFrameworks>$(ReactiveUIAndroidTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.AndroidX.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.AndroidX</RootNamespace>
+    <PackageDescription>Provides ReactiveUI extensions for .NET Android applications using AndroidX libraries, recompiled against System.Reactive.</PackageDescription>
+    <PackageId>ReactiveUI.AndroidX.Reactive</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;androidx;android;net;</PackageTags>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <!-- The same ReactiveUI.AndroidX source the lean package ships, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.AndroidX\**\*.cs" Exclude="..\ReactiveUI.AndroidX\obj\**\*.cs;..\ReactiveUI.AndroidX\bin\**\*.cs" Link="ReactiveUI.AndroidX\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ChangeSetBinder.cs" Link="Shared\Platform\ChangeSetBinder.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- AndroidX Preferences still requires explicit package reference -->
+    <PackageReference Include="Xamarin.AndroidX.Preference"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+</Project>

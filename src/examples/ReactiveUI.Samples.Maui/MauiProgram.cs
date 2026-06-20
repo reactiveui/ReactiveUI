@@ -7,14 +7,10 @@ using ReactiveUI.Builder;
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// MAUI application entry point demonstrating ReactiveUI builder initialization.
-/// </summary>
+/// <summary>MAUI application entry point demonstrating ReactiveUI builder initialization.</summary>
 public static class MauiProgram
 {
-    /// <summary>
-    /// Creates and configures the MAUI application with ReactiveUI support.
-    /// </summary>
+    /// <summary>Creates and configures the MAUI application with ReactiveUI support.</summary>
     /// <returns>The configured <see cref="MauiApp"/>.</returns>
     public static MauiApp CreateMauiApp()
     {

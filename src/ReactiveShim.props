@@ -1,0 +1,88 @@
+<Project>
+  <!--
+    ReactiveShim.props — the ReactiveUI.Primitives migration seam, factored out of Directory.Build.props.
+
+    This file holds the lean/.Reactive "shim" abstractions: the global using-aliases and DefineConstants that
+    let one set of source files compile against either ReactiveUI.Primitives (lean leaves) or System.Reactive
+    (the *.Reactive leaves). Directory.Build.props imports it. See docs/RxSchedulers.md and
+    ~/source/rxui/docs/ISequencer-platform-shimming.md for the full design.
+
+    Keyed on project-name suffix:
+      - lean leaves   = MSBuildProjectName.StartsWith('ReactiveUI') and not EndsWith('Reactive')
+      - .Reactive leaf = MSBuildProjectName.EndsWith('Reactive')
+  -->
+
+  <!-- ReactiveUI.Primitives migration (disposables): make the ReactiveUI.Primitives.Disposables types
+       available unqualified so call sites resolve to them with no per-file usings. The phase-1 set below
+       (ActionDisposable..SwapDisposable) replaced in-repo forks of the same name. The Stage-3 additions
+       (MultipleDisposable, Scope) replace the last System.Reactive.Disposables holdouts — source now uses
+       MultipleDisposable (was CompositeDisposable) and Scope.Empty/Create (was Disposable.Empty/Create);
+       SerialDisposable/SingleAssignmentDisposable sites moved onto SwapDisposable/MutableDisposable, and
+       ICancelable (the IDisposable + IsDisposed interface) onto ReactiveUI.Primitives.Disposables.IsDisposed.
+       None of these names exist in System.Reactive.Disposables, so there is no collision.
+
+       Disposables are NEUTRAL (same package under both leaves), so they apply to every ReactiveUI
+       project, including the *.Reactive leaves. -->
+
+  <!-- RxReactiveSeam (which side of the lean/.Reactive seam this project is on) is defined in Directory.Build.props
+       so it is available to this file, tests/Directory.Build.props, and any csproj. -->
+
+  <!-- Lean seam: bind the shared source's RxVoid/ISequencer/Sequencer identifiers to the lean
+       ReactiveUI.Primitives types. The *.Reactive leaves are excluded; they rebind below. -->
+  <ItemGroup Condition="'$(RxReactiveSeam)' != 'true'">
+    <Using Include="ReactiveUI.Primitives.RxVoid" Alias="RxVoid"/>
+    <!-- Scheduler seam: the shared source names only ISequencer (the type), the Sequencer static
+         (Immediate/Default/CurrentThread/Normalize), TaskPoolSequencer, and the Schedule(...) extensions.
+         Lean binds them to ReactiveUI.Primitives.Concurrency; the *.Reactive leaves rebind to System.Reactive
+         below. The namespace import also brings the SequencerExtensions Schedule overloads into scope. -->
+    <Using Include="ReactiveUI.Primitives.Concurrency" />
+    <!-- Signal types (Signal, BehaviorSignal, ReplaySignal, ScheduledSignal, ISignal, DelayableNotificationSignal,
+         Broadcaster) resolve unqualified to the lean ReactiveUI.Primitives namespace. Open generics can't be aliased,
+         so this is a namespace import rather than a per-type alias like RxVoid/ISequencer above. -->
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
+  <!-- Reactive seam: the *.Reactive leaves recompile the shared ReactiveUI source against System.Reactive's
+       Unit (RxVoid) for interop, and flip the shared namespaces to ReactiveUI.Reactive.* via REACTIVE_SHIM.
+       The shared source's neutral scheduler names rebind to System.Reactive here: ISequencer -> IScheduler,
+       Sequencer -> Scheduler (Immediate/Default/CurrentThread/Normalize), TaskPoolSequencer -> TaskPoolScheduler,
+       and the System.Reactive.Concurrency import supplies the matching Schedule(...) extension overloads. The
+       global imports let the shifted shared files reach both their shifted siblings and the non-shifted Core siblings. -->
+  <PropertyGroup Condition="'$(RxReactiveSeam)' == 'true'">
+    <DefineConstants>$(DefineConstants);REACTIVE_SHIM</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(RxReactiveSeam)' == 'true'">
+    <Using Include="System.Reactive.Unit" Alias="RxVoid"/>
+    <Using Include="System.Reactive.Concurrency" />
+    <Using Include="System.Reactive.Concurrency.IScheduler" Alias="ISequencer"/>
+    <Using Include="System.Reactive.Concurrency.Scheduler" Alias="Sequencer"/>
+    <Using Include="System.Reactive.Concurrency.TaskPoolScheduler" Alias="TaskPoolSequencer"/>
+    <!-- Shifted shared namespaces (recompiled here under REACTIVE_SHIM) -->
+    <Using Include="ReactiveUI.Reactive" />
+    <Using Include="ReactiveUI.Reactive.Internal" />
+    <Using Include="ReactiveUI.Reactive.Builder" />
+    <Using Include="ReactiveUI.Reactive.Interfaces" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
+
+  <!-- Reactive seam, platform leaves: the apple/android reactive main-thread sequencers
+       (NSRunloopSequencer/HandlerSequencer : CoalescingDispatchScheduler) live in
+       ReactiveUI.Primitives.Reactive.Concurrency. Importing that namespace lets the platform
+       PlatformRegistrations resolve them unqualified — the reactive-leaf counterpart of the lean
+       leaf's global ReactiveUI.Primitives.Concurrency import above. Gated to the apple/android TFMs
+       where the namespace exists (the windows *.Reactive leaves provide it via their own packages). -->
+  <ItemGroup Condition="'$(RxReactiveSeam)' == 'true' and ($([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android')">
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency" />
+  </ItemGroup>
+
+  <!-- The Primitives package ships the R3Bridge + SystemReactiveBridge source-generators as analyzers.
+       They emit an internal marker attribute into every compilation they run in, which collides across
+       InternalsVisibleTo boundaries (CS0436). Core excludes them via ExcludeAssets="analyzers"; this
+       target removes them from any project they reach transitively. The planned ReactiveUI compat-shim
+       project (IScheduler <-> ISequencer interop) will opt back in to the bridge generators in isolation. -->
+  <Target Name="StripPrimitivesBridgeAnalyzers" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.String]::Copy('%(Analyzer.FileName)').Contains('ReactiveUI.Primitives.R3Bridge.Generator')) or $([System.String]::Copy('%(Analyzer.FileName)').Contains('ReactiveUI.Primitives.SystemReactiveBridge.Generator'))"/>
+    </ItemGroup>
+  </Target>
+</Project>

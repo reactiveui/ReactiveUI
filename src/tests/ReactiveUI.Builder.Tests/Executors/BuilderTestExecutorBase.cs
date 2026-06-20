@@ -17,16 +17,16 @@ namespace ReactiveUI.Builder.Tests.Executors;
 public class BuilderTestExecutorBase : ITestExecutor
 {
     /// <inheritdoc/>
-    public async ValueTask ExecuteTest(TestContext context, Func<ValueTask> testAction)
+    public async ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
-        ArgumentNullException.ThrowIfNull(testAction);
+        ArgumentNullException.ThrowIfNull(action);
 
         ResetState();
         ConfigureBuilder();
 
         try
         {
-            await testAction();
+            await action();
         }
         finally
         {
@@ -34,18 +34,14 @@ public class BuilderTestExecutorBase : ITestExecutor
         }
     }
 
-    /// <summary>
-    /// Resets all static state. Override to reset additional state holders.
-    /// </summary>
+    /// <summary>Resets all static state. Override to reset additional state holders.</summary>
     protected virtual void ResetState()
     {
         RxAppBuilder.ResetForTesting();
         AppBuilder.ResetBuilderStateForTests();
     }
 
-    /// <summary>
-    /// Creates the builder and registers services. Override to change registration.
-    /// </summary>
+    /// <summary>Creates the builder and registers services. Override to change registration.</summary>
     protected virtual void ConfigureBuilder() =>
         RxAppBuilder.CreateReactiveUIBuilder()
             .WithCoreServices()

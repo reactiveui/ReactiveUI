@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -10,15 +10,18 @@ using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Android.Content;
 using Android.Views;
-using ReactiveUI.Helpers;
-using static ReactiveUI.ControlFetcherMixin;
+#if REACTIVE_SHIM
+using static ReactiveUI.Reactive.ControlFetcherMixins;
+#else
+using static ReactiveUI.ControlFetcherMixins;
+#endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// A class that implements the Android ViewHolder pattern with a ViewModel.
-/// Use it along with GetViewHost.
-/// </summary>
+#endif
+/// <summary>A class that implements the Android ViewHolder pattern with a ViewModel. Use it along with GetViewHost.</summary>
 /// <typeparam name="TViewModel">The view model type.</typeparam>
 /// <remarks>
 /// <para>
@@ -27,7 +30,7 @@ namespace ReactiveUI;
 /// </para>
 /// <para>
 /// Compatibility: A legacy constructor is provided that enables reflection-based wiring and initializes
-/// <see cref="allPublicProperties"/> for older infrastructure.
+/// <see cref="AllPublicProperties"/> for older infrastructure.
 /// </para>
 /// </remarks>
 public abstract class ReactiveViewHost<TViewModel> :
@@ -37,39 +40,17 @@ public abstract class ReactiveViewHost<TViewModel> :
     IReactiveObject
     where TViewModel : class, IReactiveObject
 {
-    /// <summary>
-    /// All public properties.
-    /// </summary>
-    /// <remarks>
-    /// This field is used by legacy reflection-based wiring. It is not initialized by default in AOT-safe construction
-    /// paths to avoid reflection and allocations. If a derived type requires this, use the legacy constructor.
-    /// </remarks>
-    [SuppressMessage(
-        "StyleCop.CSharp.MaintainabilityRules",
-        "SA1401: Field should be private",
-        Justification = "Legacy reasons")]
-    [SuppressMessage("Design", "CA1051: Do not declare visible instance fields", Justification = "Legacy reasons")]
-    [IgnoreDataMember]
-    [JsonIgnore]
-    protected Lazy<PropertyInfo[]>? allPublicProperties;
-
-    /// <summary>
-    /// Backing field for <see cref="ViewModel"/>.
-    /// </summary>
+    /// <summary>Backing field for <see cref="ViewModel"/>.</summary>
     private TViewModel? _viewModel;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class.</summary>
     /// <remarks>
     /// This constructor performs no inflation or wiring and is AOT-safe.
     /// Derived types may assign <see cref="LayoutViewHost.View"/> manually.
     /// </remarks>
     protected ReactiveViewHost() => SetupRxObjAot();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource.</summary>
     /// <param name="ctx">The Android context.</param>
     /// <param name="layoutId">The layout resource identifier.</param>
     /// <param name="parent">The parent view group.</param>
@@ -82,9 +63,7 @@ public abstract class ReactiveViewHost<TViewModel> :
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveViewHost{TViewModel}"/> class by inflating a layout resource.</summary>
     /// <param name="ctx">The Android context.</param>
     /// <param name="layoutId">The layout resource identifier.</param>
     /// <param name="parent">The parent view group.</param>
@@ -190,12 +169,19 @@ public abstract class ReactiveViewHost<TViewModel> :
     public IObservable<IReactivePropertyChangedEventArgs<ReactiveViewHost<TViewModel>>> Changed =>
         this.GetChangedObservable();
 
-    /// <summary>
-    /// Gets an observable of exceptions thrown during reactive operations on this instance.
-    /// </summary>
+    /// <summary>Gets an observable of exceptions thrown during reactive operations on this instance.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
+
+    /// <summary>Gets or sets the lazily-computed set of public properties used by legacy reflection-based wiring.</summary>
+    /// <remarks>
+    /// This is used by legacy reflection-based wiring. It is not initialized by default in AOT-safe construction
+    /// paths to avoid reflection and allocations. If a derived type requires this, use the legacy constructor.
+    /// </remarks>
+    [IgnoreDataMember]
+    [JsonIgnore]
+    protected Lazy<PropertyInfo[]>? AllPublicProperties { get; set; }
 
     /// <summary>
     /// When this method is called, an object will not fire change notifications (neither traditional nor observable)
@@ -204,9 +190,7 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// <returns>An <see cref="IDisposable"/> that re-enables change notifications when disposed.</returns>
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-    /// <summary>
-    /// Gets a value indicating whether change notifications are enabled.
-    /// </summary>
+    /// <summary>Gets a value indicating whether change notifications are enabled.</summary>
     /// <returns><see langword="true"/> if change notifications are enabled; otherwise, <see langword="false"/>.</returns>
     public bool AreChangeNotificationsEnabled() => IReactiveObjectExtensions.AreChangeNotificationsEnabled(this);
 
@@ -216,29 +200,23 @@ public abstract class ReactiveViewHost<TViewModel> :
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args) => PropertyChanged?.Invoke(this, args);
 
-    /// <summary>
-    /// Reinitializes reactive infrastructure after deserialization.
-    /// </summary>
+    /// <summary>Reinitializes reactive infrastructure after deserialization.</summary>
     /// <param name="sc">The streaming context.</param>
     [OnDeserialized]
     private void SetupRxObj(in StreamingContext sc) => SetupRxObjAot();
 
-    /// <summary>
-    /// Initializes the instance for AOT-safe operation.
-    /// </summary>
+    /// <summary>Initializes the instance for AOT-safe operation.</summary>
     /// <remarks>
-    /// This method intentionally does not touch <see cref="allPublicProperties"/> to avoid reflection and allocations.
+    /// This method intentionally does not touch <see cref="AllPublicProperties"/> to avoid reflection and allocations.
     /// </remarks>
-    private void SetupRxObjAot() => allPublicProperties = null;
+    private void SetupRxObjAot() => AllPublicProperties = null;
 
-    /// <summary>
-    /// Initializes legacy reflection metadata used by older auto-wireup infrastructure.
-    /// </summary>
+    /// <summary>Initializes legacy reflection metadata used by older auto-wireup infrastructure.</summary>
     /// <remarks>
     /// This allocates reflection metadata and is not trimming/AOT safe.
     /// </remarks>
     [RequiresUnreferencedCode("This method uses reflection to enumerate public instance properties.")]
     [RequiresDynamicCode("This method uses reflection to enumerate public instance properties.")]
     private void SetupRxObjLegacyReflection() =>
-        allPublicProperties = new(() => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
+        AllPublicProperties = new(() => GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance));
 }

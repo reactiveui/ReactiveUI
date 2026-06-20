@@ -3,12 +3,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Subjects;
-using ReactiveUI.Internal;
-
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>Direct arity-2 <c>WhenAnyValueSink</c> coverage.</content>
+/// <summary>
+/// Direct tests for the internal <c>WhenAnyValueSink</c> and <c>WhenAnyChangeSink</c> combinators, exercising the
+/// per-source emit branches, error forwarding, source-completion, and selector-exception paths that the public
+/// <c>WhenAnyValue</c> API cannot reach (property-change observables never error or complete). Each arity lives in
+/// its own partial-class file.
+/// </summary>
 public partial class WhenAnySinkDirectTests
 {
     /// <summary>Exercises every emit, error, completion, and selector-exception path of the arity-2 value sink.</summary>
@@ -16,8 +18,8 @@ public partial class WhenAnySinkDirectTests
     [Test]
     public async Task ValueSink2_AllPaths()
     {
-        var s1 = new Subject<IObservedChange<object?, string>>();
-        var s2 = new Subject<IObservedChange<object?, string>>();
+        var s1 = new Signal<IObservedChange<object?, string>>();
+        var s2 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
         using (new WhenAnyValueSink<object?, string, string, string>(s1, s2, (x1, x2) => x1 + x2).Subscribe(rec))
         {
@@ -27,21 +29,21 @@ public partial class WhenAnySinkDirectTests
         }
 
         var ex = new InvalidOperationException("boom");
-        var e1 = new Subject<IObservedChange<object?, string>>();
-        var e2 = new Subject<IObservedChange<object?, string>>();
+        var e1 = new Signal<IObservedChange<object?, string>>();
+        var e2 = new Signal<IObservedChange<object?, string>>();
         var errRec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string>(e1, e2, (x1, x2) => x1 + x2).Subscribe(errRec);
         e1.OnError(ex);
 
-        var k1 = new Subject<IObservedChange<object?, string>>();
-        var k2 = new Subject<IObservedChange<object?, string>>();
+        var k1 = new Signal<IObservedChange<object?, string>>();
+        var k2 = new Signal<IObservedChange<object?, string>>();
         var cmpRec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string>(k1, k2, (x1, x2) => x1 + x2).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
 
-        var t1 = new Subject<IObservedChange<object?, string>>();
-        var t2 = new Subject<IObservedChange<object?, string>>();
+        var t1 = new Signal<IObservedChange<object?, string>>();
+        var t2 = new Signal<IObservedChange<object?, string>>();
         var throwRec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string>(t1, t2, (_, _) => throw ex).Subscribe(throwRec);
         t1.OnNext(Ch("a"));

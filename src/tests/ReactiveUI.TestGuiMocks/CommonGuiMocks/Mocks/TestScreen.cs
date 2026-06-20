@@ -5,20 +5,16 @@
 
 namespace ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
-/// <summary>
-/// A mock <see cref="IScreen"/> used for hosting a router in tests.
-/// </summary>
+/// <summary>A mock <see cref="IScreen"/> used for hosting a router in tests.</summary>
 public class TestScreen : ReactiveObject, IScreen
 {
-    /// <summary>
-    /// Backing field for the <see cref="Router"/> property.
-    /// </summary>
-    private RoutingState? _router;
+    /// <summary>Initializes a new instance of the <see cref="TestScreen"/> class.</summary>
+    public TestScreen() => Router = new();
 
     /// <inheritdoc/>
     public RoutingState Router
     {
-        get => _router!;
-        set => this.RaiseAndSetIfChanged(ref _router, value);
+        get;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

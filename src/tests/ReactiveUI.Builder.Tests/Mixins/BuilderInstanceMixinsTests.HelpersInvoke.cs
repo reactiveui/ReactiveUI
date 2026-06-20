@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// Shared helpers that invoke the higher-arity WithInstance overloads and capture the resolved instances.
-/// </content>
+/// <summary>Shared helpers that invoke the higher-arity WithInstance overloads and capture the resolved instances.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Invokes the nine-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the nine-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -81,9 +77,7 @@ public partial class BuilderInstanceMixinsTests
         captured9 = c9;
     }
 
-    /// <summary>
-    /// Invokes the ten-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the ten-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -158,9 +152,7 @@ public partial class BuilderInstanceMixinsTests
         captured10 = c10;
     }
 
-    /// <summary>
-    /// Invokes the eleven-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the eleven-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -241,9 +233,7 @@ public partial class BuilderInstanceMixinsTests
         captured11 = c11;
     }
 
-    /// <summary>
-    /// Invokes the twelve-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the twelve-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -330,9 +320,7 @@ public partial class BuilderInstanceMixinsTests
         captured12 = c12;
     }
 
-    /// <summary>
-    /// Invokes the thirteen-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the thirteen-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -425,9 +413,7 @@ public partial class BuilderInstanceMixinsTests
         captured13 = c13;
     }
 
-    /// <summary>
-    /// Invokes the fourteen-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the fourteen-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -526,9 +512,7 @@ public partial class BuilderInstanceMixinsTests
         captured14 = c14;
     }
 
-    /// <summary>
-    /// Invokes the fifteen-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the fifteen-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>
@@ -633,9 +617,7 @@ public partial class BuilderInstanceMixinsTests
         captured15 = c15;
     }
 
-    /// <summary>
-    /// Invokes the sixteen-type WithInstance overload and captures the resolved instances.
-    /// </summary>
+    /// <summary>Invokes the sixteen-type WithInstance overload and captures the resolved instances.</summary>
     /// <param name="builder">The builder to invoke the overload on.</param>
     /// <param name="captured1">Receives the resolved instance 1.</param>
     /// <param name="captured2">Receives the resolved instance 2.</param>

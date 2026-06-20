@@ -5,23 +5,15 @@
 
 namespace ReactiveUI.Builder.WpfApp.Services;
 
-/// <summary>
-/// The type of room event.
-/// </summary>
+/// <summary>The type of room event.</summary>
 public enum RoomEventKind
 {
-    /// <summary>
-    /// A new room was created.
-    /// </summary>
+    /// <summary>A new room was created.</summary>
     Add,
 
-    /// <summary>
-    /// A room was removed.
-    /// </summary>
+    /// <summary>A room was removed.</summary>
     Remove,
 
-    /// <summary>
-    /// Request others to broadcast their current rooms.
-    /// </summary>
+    /// <summary>Request others to broadcast their current rooms.</summary>
     SyncRequest
 }

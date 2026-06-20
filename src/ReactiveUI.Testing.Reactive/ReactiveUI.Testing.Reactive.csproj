@@ -1,19 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- System.Reactive-flavoured testing leaf: recompiles the shared ReactiveUI.Testing source against the
+         ReactiveUI.Reactive engine (RxSchedulers/MessageBus resolve to ReactiveUI.Reactive.* via the seam
+         global usings in Directory.Build.props) and adds the Microsoft.Reactive.Testing TestScheduler helpers.
+         The ReactiveUI.Testing namespace itself does not flip; nesting + global usings line up the engine types. -->
     <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
     <AssemblyName>ReactiveUI.Testing.Reactive</AssemblyName>
-    <RootNamespace>ReactiveUI.Testing.Reactive</RootNamespace>
+    <RootNamespace>ReactiveUI.Testing</RootNamespace>
     <IsTestProject>false</IsTestProject>
-    <PackageDescription>Provides TestScheduler extensions for testing ReactiveUI applications with Microsoft.Reactive.Testing</PackageDescription>
+    <PackageDescription>Provides extensions for testing ReactiveUI applications against System.Reactive, including Microsoft.Reactive.Testing TestScheduler support.</PackageDescription>
     <PackageId>ReactiveUI.Testing.Reactive</PackageId>
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;test;testscheduler;</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
   <ItemGroup>
-    <Compile Include="..\Shared\ArgumentExceptionHelper.cs" Link="Shared\ArgumentExceptionHelper.cs"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
+
+  <!-- The same ReactiveUI.Testing source the lean package ships, recompiled here against ReactiveUI.Reactive. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Testing\**\*.cs" Exclude="..\ReactiveUI.Testing\obj\**\*.cs;..\ReactiveUI.Testing\bin\**\*.cs" Link="ReactiveUI.Testing\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Reactive.Testing"/>
-    <ProjectReference Include="..\ReactiveUI.Testing\ReactiveUI.Testing.csproj"/>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
   </ItemGroup>
 </Project>

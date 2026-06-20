@@ -6,14 +6,10 @@
 #if NET6_0_OR_GREATER
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting strings to TimeOnly.
-/// </summary>
+/// <summary>Tests for converting strings to TimeOnly.</summary>
 public class StringToTimeOnlyTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -23,9 +19,7 @@ public class StringToTimeOnlyTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ValidString_Succeeds()
@@ -39,9 +33,7 @@ public class StringToTimeOnlyTypeConverterTests
         await Assert.That(output).IsEqualTo(expected);
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsFalse()
@@ -53,9 +45,7 @@ public class StringToTimeOnlyTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an empty string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an empty string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsFalse()
@@ -67,9 +57,7 @@ public class StringToTimeOnlyTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()

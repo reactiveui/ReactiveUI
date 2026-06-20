@@ -7,11 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Tests.Suspension;
 
-/// <summary>
-///     A placeholder application state used by suspension host tests.
-/// </summary>
+/// <summary>A placeholder application state used by suspension host tests.</summary>
 [SuppressMessage(
     "Minor Code Smell",
-    "S2094:Classes should not be empty",
+    "SST1436:Classes should not be empty",
     Justification = "Empty type used as a test marker.")]
 public class DummyAppState;

@@ -4,24 +4,16 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
-using ReactiveUI.Internal;
 
 namespace ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
-/// <summary>
-/// A fixture for RaceCondition and NameOf.
-/// </summary>
+/// <summary>A fixture for RaceCondition and NameOf.</summary>
 public class RaceConditionNameOfFixture : ReactiveObject
 {
-    /// <summary>
-    /// Backing helper for the <see cref="A"/> property.
-    /// </summary>
+    /// <summary>Backing helper for the <see cref="A"/> property.</summary>
     private readonly ObservableAsPropertyHelper<bool> _a;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RaceConditionNameOfFixture"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="RaceConditionNameOfFixture"/> class.</summary>
     [SuppressMessage("Major Code Smell", "S3366:\"this\" should not be exposed from constructors", Justification = "Required by ToProperty")]
     public RaceConditionNameOfFixture() =>
 
@@ -30,18 +22,13 @@ public class RaceConditionNameOfFixture : ReactiveObject
         // This triggers the property change firing
         // upon subscription in the ObservableAsPropertyHelper
         // constructor.
-        SingleValueObservable
-            .True
+        Signal.Emit(true)
             .Do(_ => Count++)
             .ToProperty(this, nameof(A), out _a);
 
-    /// <summary>
-    /// Gets or sets the count.
-    /// </summary>
+    /// <summary>Gets or sets the count.</summary>
     public int Count { get; set; }
 
-    /// <summary>
-    /// Gets a value indicating whether this <see cref="RaceConditionNameOfFixture"/> is a.
-    /// </summary>
+    /// <summary>Gets a value indicating whether this <see cref="RaceConditionNameOfFixture"/> is a.</summary>
     public bool A => _a.Value;
 }

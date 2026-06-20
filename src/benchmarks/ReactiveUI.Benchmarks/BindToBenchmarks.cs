@@ -7,9 +7,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace ReactiveUI.Benchmarks;
 
-/// <summary>
-/// Benchmarks <c>BindTo</c>: cold bind setup and per-value propagation of an observable into a target property.
-/// </summary>
+/// <summary>Benchmarks <c>BindTo</c>: cold bind setup and per-value propagation of an observable into a target property.</summary>
 [MemoryDiagnoser]
 [MarkdownExporterAttribute.GitHub]
 public class BindToBenchmarks
@@ -31,7 +29,7 @@ public class BindToBenchmarks
     public void Setup()
     {
         _source = CreateSource();
-        _target = new BenchmarkViewModel();
+        _target = new();
         _binding = _source.Values.BindTo(_target, x => x.Count);
     }
 

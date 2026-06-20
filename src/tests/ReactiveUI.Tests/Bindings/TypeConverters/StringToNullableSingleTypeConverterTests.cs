@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-///     Tests for converting strings to nullable floats (single-precision).
-/// </summary>
+/// <summary>Tests for converting strings to nullable floats (single-precision).</summary>
 public class StringToNullableSingleTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToNullableSingleTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an empty string converts successfully to a null result.
-    /// </summary>
+    /// <summary>Verifies that an empty string converts successfully to a null result.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsTrue()
@@ -36,9 +30,7 @@ public class StringToNullableSingleTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()
@@ -50,9 +42,7 @@ public class StringToNullableSingleTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts to a nullable float.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts to a nullable float.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_StringToSingleNullable_Succeeds()

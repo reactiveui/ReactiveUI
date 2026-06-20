@@ -3,8 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 
 namespace ReactiveUI.Tests.Utilities.AppBuilder;
 
@@ -35,15 +38,11 @@ namespace ReactiveUI.Tests.Utilities.AppBuilder;
 /// </remarks>
 public sealed class AppBuilderTestHelper
 {
-    /// <summary>
-    ///     The main thread scheduler captured before the test, restored during cleanup.
-    /// </summary>
-    private IScheduler? _originalMainThreadScheduler;
+    /// <summary>The main thread scheduler captured before the test, restored during cleanup.</summary>
+    private ISequencer? _originalMainThreadScheduler;
 
-    /// <summary>
-    ///     The taskpool scheduler captured before the test, restored during cleanup.
-    /// </summary>
-    private IScheduler? _originalTaskpoolScheduler;
+    /// <summary>The taskpool scheduler captured before the test, restored during cleanup.</summary>
+    private ISequencer? _originalTaskpoolScheduler;
 
     /// <summary>
     /// Initializes the AppBuilder with custom configuration.
@@ -58,7 +57,7 @@ public sealed class AppBuilderTestHelper
     /// <code>
     /// _helper.Initialize(builder =>
     /// {
-    ///     var scheduler = ImmediateScheduler.Instance;
+    ///     var scheduler = Sequencer.Immediate;
     ///     builder
     ///         .WithMainThreadScheduler(scheduler)
     ///         .WithTaskPoolScheduler(scheduler)

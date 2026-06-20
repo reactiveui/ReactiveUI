@@ -31,7 +31,7 @@ public class WhenAnyValueArityBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new BenchmarkViewModel();
+        _viewModel = new();
         _subscription = Observe(_viewModel).Subscribe(_sink);
     }
 

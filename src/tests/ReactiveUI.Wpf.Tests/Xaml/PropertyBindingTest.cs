@@ -5,11 +5,6 @@
 
 using System.Collections;
 using System.Globalization;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Subjects;
-using DynamicData.Binding;
 
 using ReactiveUI.Tests.Wpf;
 using ReactiveUI.Tests.Xaml.Mocks;
@@ -18,46 +13,93 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests property bindings.
-/// </summary>
+/// <summary>Tests property bindings.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public partial class PropertyBindingTest
 {
+    /// <summary>The initial decimal value used to seed bindings.</summary>
     private const decimal InitialDecimal = 123.45m;
+
+    /// <summary>The second decimal value used to seed bindings.</summary>
     private const decimal SecondDecimal = 567.89m;
+
+    /// <summary>The decimal value one.</summary>
     private const decimal DecimalOne = 1.0M;
+
+    /// <summary>The decimal value two.</summary>
     private const decimal DecimalTwo = 2.0M;
+
+    /// <summary>The decimal value three.</summary>
     private const decimal DecimalThree = 3.0M;
+
+    /// <summary>The decimal value four.</summary>
     private const decimal DecimalFour = 4.0M;
+
+    /// <summary>The initial double value used to seed bindings.</summary>
     private const double InitialDouble = 123.45;
+
+    /// <summary>The double value one.</summary>
     private const double DoubleOne = 1.0;
+
+    /// <summary>The double value two.</summary>
     private const double DoubleTwo = 2.0;
+
+    /// <summary>The double value three.</summary>
     private const double DoubleThree = 3.0;
+
+    /// <summary>The double value four.</summary>
     private const double DoubleFour = 4.0;
+
+    /// <summary>The initial single value used to seed bindings.</summary>
     private const float InitialSingle = 123.45f;
+
+    /// <summary>The single value one.</summary>
     private const float SingleOne = 1.0f;
+
+    /// <summary>The single value two.</summary>
     private const float SingleTwo = 2.0f;
+
+    /// <summary>The single value three.</summary>
     private const float SingleThree = 3.0f;
+
+    /// <summary>The single value four.</summary>
     private const float SingleFour = 4.0f;
+
+    /// <summary>The initial integral value used to seed bindings.</summary>
     private const int InitialIntegral = 123;
+
+    /// <summary>The integral value two.</summary>
     private const int IntegralTwo = 2;
+
+    /// <summary>The integral value three.</summary>
     private const int IntegralThree = 3;
+
+    /// <summary>The integral value four.</summary>
     private const int IntegralFour = 4;
+
+    /// <summary>The format hint passed to converters.</summary>
     private const int FormatHint = 3;
+
+    /// <summary>The rounding hint passed to converters.</summary>
     private const int RoundingHint = 2;
 
+    /// <summary>The textual representation of the initial numeric value.</summary>
     private const string InitialNumericText = "123.45";
+
+    /// <summary>The first sample string value.</summary>
     private const string AlphaValue = "Alpha";
+
+    /// <summary>The second sample string value.</summary>
     private const string GammaValue = "Gamma";
 
+    /// <summary>The source items bound to an items control in tests.</summary>
     private static readonly string[] _itemsControlSource = ["aaa", "bbb", "ccc"];
+
+    /// <summary>The collection of items used in collection binding tests.</summary>
     private static readonly string[] _collection = ["aaa", "bbb", "ccc"];
 
-    /// <summary>
-    /// Performs a smoke test with two way binding with func converter.
-    /// </summary>
+    /// <summary>Performs a smoke test with two way binding with func converter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TwoWayBindWithFuncConvertersSmokeTest()
@@ -74,7 +116,7 @@ public partial class PropertyBindingTest
             view,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
-            (IObservable<Unit>?)null,
+            (IObservable<RxVoid>?)null,
             static d => d.ToString(CultureInfo.CurrentCulture),
             static t => decimal.TryParse(t, out var res) ? res : decimal.Zero);
 
@@ -97,9 +139,7 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// Performs a smoke test with two way binding.
-    /// </summary>
+    /// <summary>Performs a smoke test with two way binding.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TwoWayBindSmokeTest()
@@ -111,7 +151,7 @@ public partial class PropertyBindingTest
         vm.Property1 = "Foo";
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.Property1);
 
-        var disp = fixture.Bind(vm, view, static x => x.Property1, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp = fixture.Bind(vm, view, static x => x.Property1, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
 
         using (Assert.Multiple())
         {
@@ -132,9 +172,7 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// Performs a smoke test with two way binding with a type converter.
-    /// </summary>
+    /// <summary>Performs a smoke test with two way binding with a type converter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TypeConvertedTwoWayBindSmokeTest()
@@ -153,7 +191,7 @@ public partial class PropertyBindingTest
         vm.Property2 = InitialProperty2;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.Property2.ToString());
 
-        var disp = fixture.Bind(vm, view, static x => x.Property2, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp = fixture.Bind(vm, view, static x => x.Property2, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
 
         using (Assert.Multiple())
         {
@@ -178,7 +216,7 @@ public partial class PropertyBindingTest
         }
 
         vm.JustADecimal = InitialJustADecimal;
-        var disp1 = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        var disp1 = fixture.Bind(vm, view, static x => x.JustADecimal, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
 
         using (Assert.Multiple())
         {
@@ -205,7 +243,7 @@ public partial class PropertyBindingTest
 
         // Empty test
         vm.JustAInt32 = InitialJustAInt32;
-        _ = fixture.Bind(vm, view, static x => x.JustAInt32, static x => x.SomeTextBox.Text, (IObservable<Unit>?)null, null);
+        _ = fixture.Bind(vm, view, static x => x.JustAInt32, static x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, null);
 
         view.SomeTextBox.Text = string.Empty;
         await Assert.That(vm.JustAInt32).IsEqualTo(InitialJustAInt32);
@@ -217,9 +255,7 @@ public partial class PropertyBindingTest
         await Assert.That(vm.JustAInt32).IsEqualTo(ParsedJustAInt32);
     }
 
-    /// <summary>
-    /// Tests binding into model objects.
-    /// </summary>
+    /// <summary>Tests binding into model objects.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindingIntoModelObjects()
@@ -231,9 +267,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Baz");
     }
 
-    /// <summary>
-    /// Tests the view model nullable to view non nullable.
-    /// </summary>
+    /// <summary>Tests the view model nullable to view non nullable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelNullableToViewNonNullable()
@@ -254,9 +288,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeControl.JustADouble).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests the view model non-nullable to view nullable.
-    /// </summary>
+    /// <summary>Tests the view model non-nullable to view nullable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelNonNullableToViewNullable()
@@ -277,9 +309,7 @@ public partial class PropertyBindingTest
         await Assert.That(vm.JustADouble).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests the view model nullable to view nullable.
-    /// </summary>
+    /// <summary>Tests the view model nullable to view nullable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelNullableToViewNullable()
@@ -300,9 +330,7 @@ public partial class PropertyBindingTest
         await Assert.That(vm.NullableDouble).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Tests the view model indexer to view.
-    /// </summary>
+    /// <summary>Tests the view model indexer to view.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelIndexerToView()
@@ -314,9 +342,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Foo");
     }
 
-    /// <summary>
-    /// Tests the view model indexer to view changes.
-    /// </summary>
+    /// <summary>Tests the view model indexer to view changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelIndexerToViewChanges()
@@ -332,9 +358,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Bar");
     }
 
-    /// <summary>
-    /// Tests view model indexer property to view.
-    /// </summary>
+    /// <summary>Tests view model indexer property to view.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelIndexerPropertyToView()
@@ -346,9 +370,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("3");
     }
 
-    /// <summary>
-    /// Tests when OneWayBind shouldn't initially be set to null.
-    /// </summary>
+    /// <summary>Tests when OneWayBind shouldn't initially be set to null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindShouldntInitiallySetToNull()
@@ -363,9 +385,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeControl.NullHatingString).IsEqualTo(vm.Model!.AnotherThing);
     }
 
-    /// <summary>
-    /// Perform a BindTo type conversion smoke test.
-    /// </summary>
+    /// <summary>Perform a BindTo type conversion smoke test.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToTypeConversionSmokeTest()
@@ -382,9 +402,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeControl.NullHatingString).IsEqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Tests that BindTo null should throw a helpful error.
-    /// </summary>
+    /// <summary>Tests that BindTo null should throw a helpful error.</summary>
     [Test]
     public void BindToNullShouldThrowHelpfulError()
     {
@@ -395,16 +413,14 @@ public partial class PropertyBindingTest
                  .BindTo(view.ViewModel, x => x.Property1));
     }
 
-    /// <summary>
-    /// Tests that BindTo two-way selected item of ItemControl.
-    /// </summary>
+    /// <summary>Tests that BindTo two-way selected item of ItemControl.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TwoWayBindToSelectedItemOfItemsControl()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        view.FakeItemsControl.ItemsSource = new ObservableCollectionExtended<string>(_itemsControlSource);
+        view.FakeItemsControl.ItemsSource = new ObservableCollection<string>(_itemsControlSource);
 
         view.Bind(view.ViewModel, static x => x.Property1, static x => x.FakeItemsControl.SelectedItem);
 
@@ -421,16 +437,14 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeItemsControl.SelectedItem).IsEqualTo("bbb");
     }
 
-    /// <summary>
-    /// Tests that Bind two-way selected item of ComboBox updates in both directions.
-    /// </summary>
+    /// <summary>Tests that Bind two-way selected item of ComboBox updates in both directions.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TwoWayBindToSelectedItemOfComboBox()
     {
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
-        view.ComboBoxSelection.ItemsSource = new ObservableCollectionExtended<string>(_collection);
+        view.ComboBoxSelection.ItemsSource = new ObservableCollection<string>(_collection);
 
         view.Bind(view.ViewModel, static x => x.Property1, static x => x.ComboBoxSelection.SelectedItem);
 
@@ -441,9 +455,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.ComboBoxSelection.SelectedItem).IsEqualTo("bbb");
     }
 
-    /// <summary>
-    /// Tests that view model updates from a background thread are marshalled before setting WPF controls.
-    /// </summary>
+    /// <summary>Tests that view model updates from a background thread are marshalled before setting WPF controls.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelToViewBindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
@@ -479,9 +491,7 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// Tests that ItemControl get a DataTemplate if none is set.
-    /// </summary>
+    /// <summary>Tests that ItemControl get a DataTemplate if none is set.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ItemsControlShouldGetADataTemplate()
@@ -495,9 +505,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that ItemControl display member path doesn't set a DataTemplate.
-    /// </summary>
+    /// <summary>Tests that ItemControl display member path doesn't set a DataTemplate.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ItemsControlWithDisplayMemberPathSetShouldNotGetADataTemplate()
@@ -512,9 +520,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNull();
     }
 
-    /// <summary>
-    /// Tests that ItemControl get a DataTemplate if none is set with BindTo.
-    /// </summary>
+    /// <summary>Tests that ItemControl get a DataTemplate if none is set with BindTo.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ItemsControlShouldGetADataTemplateInBindTo()
@@ -532,9 +538,7 @@ public partial class PropertyBindingTest
             .BindTo(vm, static x => x.Property1);
     }
 
-    /// <summary>
-    /// Tests that ItemControl OneWayBind.
-    /// </summary>
+    /// <summary>Tests that ItemControl OneWayBind.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindingToItemsControl()
@@ -548,9 +552,7 @@ public partial class PropertyBindingTest
         await Assert.That(itemsSourceValue.OfType<string>().Count()).IsGreaterThan(1);
     }
 
-    /// <summary>
-    /// Tests OneWayBind and a converter.
-    /// </summary>
+    /// <summary>Tests OneWayBind and a converter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindConverter()
@@ -562,9 +564,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.IsEnabled).IsFalse();
     }
 
-    /// <summary>
-    /// Tests OneWayBind and a converter with a null starting value, and tests it against a non-null value.
-    /// </summary>
+    /// <summary>Tests OneWayBind and a converter with a null starting value, and tests it against a non-null value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindWithNullStartingValueToNonNullValue()
@@ -579,9 +579,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Baz");
     }
 
-    /// <summary>
-    /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a null value.
-    /// </summary>
+    /// <summary>Tests OneWayBind and a converter with a non-null starting value, and tests it against a null value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindWithNonNullStartingValueToNullValue()
@@ -598,9 +596,7 @@ public partial class PropertyBindingTest
         await Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text)).IsTrue();
     }
 
-    /// <summary>
-    /// Tests OneWayBind and a converter with a non-null starting value, and tests it against a non-null value.
-    /// </summary>
+    /// <summary>Tests OneWayBind and a converter with a non-null starting value, and tests it against a non-null value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindWithSelectorAndNonNullStartingValueToNullValue()
@@ -615,9 +611,7 @@ public partial class PropertyBindingTest
         await Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text)).IsTrue();
     }
 
-    /// <summary>
-    /// Tests OneWayBind initial view model should be garbage collected when overwritten.
-    /// </summary>
+    /// <summary>Tests OneWayBind initial view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
@@ -641,9 +635,7 @@ public partial class PropertyBindingTest
         await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
-    /// <summary>
-    /// Tests BindTo  with a null starting value, and tests it against a non-null value.
-    /// </summary>
+    /// <summary>Tests BindTo  with a null starting value, and tests it against a non-null value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToWithNullStartingValueToNonNullValue()
@@ -659,9 +651,7 @@ public partial class PropertyBindingTest
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Baz");
     }
 
-    /// <summary>
-    /// Tests BindTo  with a non-null starting value, and tests it against a null value.
-    /// </summary>
+    /// <summary>Tests BindTo  with a non-null starting value, and tests it against a null value.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToWithNonNullStartingValueToNullValue()
@@ -679,9 +669,7 @@ public partial class PropertyBindingTest
         await Assert.That(string.IsNullOrEmpty(view.SomeTextBox.Text)).IsTrue();
     }
 
-    /// <summary>
-    /// Tests BindTo with a converter is not null.
-    /// </summary>
+    /// <summary>Tests BindTo with a converter is not null.</summary>
     [Test]
     public void BindExpectsConverterFuncsToNotBeNull()
     {
@@ -691,13 +679,11 @@ public partial class PropertyBindingTest
 
         const Func<string?, string?> NullFunc = null!;
 
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, NullFunc, s => s));
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<Unit>?)null, s => s, NullFunc));
+        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, s => s));
+        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, s => s, NullFunc));
     }
 
-    /// <summary>
-    /// Tests the BindWith func's should work as extension methods.
-    /// </summary>
+    /// <summary>Tests the BindWith func's should work as extension methods.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindWithFuncShouldWorkAsExtensionMethodSmokeTest()
@@ -722,9 +708,7 @@ public partial class PropertyBindingTest
         await Assert.That(vm.JustADecimal).IsEqualTo(DecimalThree);
     }
 
-    /// <summary>
-    /// Tests that bind initial view model should be garbage collected when overwritten.
-    /// </summary>
+    /// <summary>Tests that bind initial view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindInitialViewModelShouldBeGarbageCollectedWhenOverwritten()
@@ -748,14 +732,12 @@ public partial class PropertyBindingTest
         await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies one way bind with hint test.
-    /// </summary>
+    /// <summary>Verifies one way bind with hint test.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OneWayBindWithHintTest()
     {
-        var dis = new CompositeDisposable();
+        var dis = new MultipleDisposable();
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
@@ -770,28 +752,28 @@ public partial class PropertyBindingTest
         await Assert.That(dis.IsDisposed).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies one way bind with hint test dispose with failure.
-    /// </summary>
+    /// <summary>Verifies that one-way binding with a hint tolerates a null disposal container.</summary>
     [Test]
-    public void OneWayBindWithHintTestDisposeWithFailure()
+    public void OneWayBindWithHintTestDisposeWithNullContainerIsSafe()
     {
-        CompositeDisposable? dis = null;
+        MultipleDisposable? dis = null;
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
 
-        Assert.Throws<ArgumentNullException>(() => fixture.OneWayBind(vm, view, vm => vm.JustABoolean, v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis!));
+        // DisposeWith(MultipleDisposable) is a null-safe no-op in ReactiveUI.Primitives (disposables?.Add(...)),
+        // so binding against a null container neither throws nor loses the binding — the live binding is returned.
+        var binding = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis!);
+
+        binding.Dispose();
     }
 
-    /// <summary>
-    /// Verifies bind to with hint test.
-    /// </summary>
+    /// <summary>Verifies bind to with hint test.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToWithHintTest()
     {
-        var dis = new CompositeDisposable();
+        var dis = new MultipleDisposable();
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var obs = vm.WhenAnyValue(static x => x.JustABoolean);
@@ -805,9 +787,7 @@ public partial class PropertyBindingTest
         await Assert.That(dis.IsDisposed).IsTrue();
     }
 
-    /// <summary>
-    /// BindTo should only invoke the nested setter once per source value on the same host.
-    /// </summary>
+    /// <summary>BindTo should only invoke the nested setter once per source value on the same host.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToSetsNestedPropertyOncePerValueOnSameHost()
@@ -816,7 +796,7 @@ public partial class PropertyBindingTest
 
         var view = new TrackingHostView { ViewModel = new() };
 
-        using var source = new Subject<string>();
+        using var source = new Signal<string>();
         using var subscription = source.BindTo(view, static x => x.ViewModel!.Nested.SomeText);
 
         source.OnNext(AlphaValue);
@@ -838,16 +818,14 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// BindTo should not reapply stale values after replacing the nested host.
-    /// </summary>
+    /// <summary>BindTo should not reapply stale values after replacing the nested host.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindToSetsNestedPropertyOncePerValueAfterHostReplacement()
     {
         var view = new TrackingHostView { ViewModel = new() };
 
-        using var source = new Subject<string>();
+        using var source = new Signal<string>();
         using var subscription = source.BindTo(view, static x => x.ViewModel!.Nested.SomeText);
 
         foreach (var value in new[] { "Delta", "Epsilon", "Zeta" })
@@ -865,23 +843,14 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// A host view used to verify nested binding update tracking.
-    /// </summary>
+    /// <summary>A host view used to verify nested binding update tracking.</summary>
     private sealed class TrackingHostView : ReactiveObject, IViewFor<TrackingHostViewModel>
     {
-        /// <summary>
-        /// Backing field for the <see cref="ViewModel"/> property.
-        /// </summary>
-        private TrackingHostViewModel? _viewModel;
-
-        /// <summary>
-        /// Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets or sets the view model.</summary>
         public TrackingHostViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get => field;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc/>
@@ -892,39 +861,24 @@ public partial class PropertyBindingTest
         }
     }
 
-    /// <summary>
-    /// A host view model that exposes a nested reactive value.
-    /// </summary>
+    /// <summary>A host view model that exposes a nested reactive value.</summary>
     private sealed class TrackingHostViewModel : ReactiveObject
     {
-        /// <summary>
-        /// Backing field for the <see cref="Nested"/> property.
-        /// </summary>
-        private TrackingNestedValue _nested = new();
-
-        /// <summary>
-        /// Gets or sets the nested value.
-        /// </summary>
+        /// <summary>Gets or sets the nested value.</summary>
         public TrackingNestedValue Nested
         {
-            get => _nested;
-            set => this.RaiseAndSetIfChanged(ref _nested, value);
-        }
+            get => field;
+            set => this.RaiseAndSetIfChanged(ref field, value);
+        } = new();
     }
 
-    /// <summary>
-    /// A nested reactive value that counts how many times its text is set.
-    /// </summary>
+    /// <summary>A nested reactive value that counts how many times its text is set.</summary>
     private sealed class TrackingNestedValue : ReactiveObject
     {
-        /// <summary>
-        /// Gets the number of times <see cref="SomeText"/> has been set.
-        /// </summary>
+        /// <summary>Gets the number of times <see cref="SomeText"/> has been set.</summary>
         public int SetCallCount { get; private set; }
 
-        /// <summary>
-        /// Gets or sets some text whose set count is tracked.
-        /// </summary>
+        /// <summary>Gets or sets some text whose set count is tracked.</summary>
         public string? SomeText
         {
             get => field;

@@ -7,15 +7,11 @@ using Splat;
 
 namespace ReactiveUI.Builder.Tests;
 
-/// <summary>
-/// Tests that building the ReactiveUI builder registers core services and blocks duplicate initialization.
-/// </summary>
+/// <summary>Tests that building the ReactiveUI builder registers core services and blocks duplicate initialization.</summary>
 [NotInParallel]
 public class ReactiveUIBuilderBlockingTests
 {
-    /// <summary>
-    /// Verifies that building registers core services such as <see cref="ICreatesObservableForProperty"/>.
-    /// </summary>
+    /// <summary>Verifies that building registers core services such as <see cref="ICreatesObservableForProperty"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task Build_SetsFlag_AndBlocks_InitializeReactiveUI()

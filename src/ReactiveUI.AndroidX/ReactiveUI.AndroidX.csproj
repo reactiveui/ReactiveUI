@@ -6,8 +6,15 @@
     <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;androidx;android;net;</PackageTags>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">34.0</SupportedOSPlatformVersion>
   </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
   <ItemGroup>
-    <Compile Include="..\Shared\*.cs" Link="Shared\%(Filename)%(Extension)"/>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Multicast subjects come from the ReactiveUI.Primitives package (Signal&lt;T&gt;), reached via the ReactiveUI ref. DelegateObserver is internal and used by ChangeSetBinder. -->
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
     <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
     <Compile Include="..\Shared\Platform\ChangeSetBinder.cs" Link="Shared\Platform\ChangeSetBinder.cs"/>
   </ItemGroup>

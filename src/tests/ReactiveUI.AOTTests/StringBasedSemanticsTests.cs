@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
 
@@ -17,19 +16,13 @@ namespace ReactiveUI.AOT.Tests;
 [TestExecutor<AppBuilderTestExecutor>]
 public class StringBasedSemanticsTests
 {
-    /// <summary>
-    /// The minimum number of emissions expected from a basic initial-and-update sequence.
-    /// </summary>
+    /// <summary>The minimum number of emissions expected from a basic initial-and-update sequence.</summary>
     private const int MinInitialAndUpdateEmissions = 2;
 
-    /// <summary>
-    /// The number of distinct emissions expected from the distinct-until-changed sequence.
-    /// </summary>
+    /// <summary>The number of distinct emissions expected from the distinct-until-changed sequence.</summary>
     private const int ExpectedDistinctEmissions = 3;
 
-    /// <summary>
-    /// ObservableForProperty (string) should emit an initial value followed by updates.
-    /// </summary>
+    /// <summary>ObservableForProperty (string) should emit an initial value followed by updates.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -56,9 +49,7 @@ public class StringBasedSemanticsTests
         }
     }
 
-    /// <summary>
-    /// ObservableForProperty (string) with beforeChange should provide the previous value when the property changes.
-    /// </summary>
+    /// <summary>ObservableForProperty (string) with beforeChange should provide the previous value when the property changes.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -79,9 +70,7 @@ public class StringBasedSemanticsTests
         await Assert.That(observed).IsEqualTo("start");
     }
 
-    /// <summary>
-    /// WhenAnyValue (string) should apply DistinctUntilChanged by default and include an initial emission.
-    /// </summary>
+    /// <summary>WhenAnyValue (string) should apply DistinctUntilChanged by default and include an initial emission.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(
@@ -108,9 +97,7 @@ public class StringBasedSemanticsTests
         }
     }
 
-    /// <summary>
-    /// WhenAnyValue (string) tuple overload should combine the latest values from two properties.
-    /// </summary>
+    /// <summary>WhenAnyValue (string) tuple overload should combine the latest values from two properties.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [UnconditionalSuppressMessage(

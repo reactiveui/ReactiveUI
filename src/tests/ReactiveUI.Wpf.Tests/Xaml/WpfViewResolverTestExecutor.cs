@@ -3,9 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using System.Windows.Threading;
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 
 namespace ReactiveUI.Tests.Xaml;
@@ -16,9 +14,7 @@ namespace ReactiveUI.Tests.Xaml;
 /// </summary>
 public class WpfViewResolverTestExecutor : STAThreadExecutor
 {
-    /// <summary>
-    /// Helper that manages app builder setup and teardown for the test.
-    /// </summary>
+    /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
     private readonly AppBuilderTestHelper _helper = new();
 
     /// <inheritdoc/>
@@ -39,8 +35,8 @@ public class WpfViewResolverTestExecutor : STAThreadExecutor
             // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
             // so we must manually configure it for tests that need WPF controls
             var dispatcher = Dispatcher.CurrentDispatcher;
-            RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
-            RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+            RxSchedulers.MainThreadScheduler = new DispatcherSequencer(dispatcher);
+            RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
         });
     }
 

@@ -7,15 +7,17 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Foundation;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
 #if UIKIT
 using UIKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Represents an object that knows how to create notifications for a given type of object.
 /// Implement this when porting ReactiveUI to a new UI toolkit, or to enable <c>WhenAny*</c>
@@ -28,44 +30,32 @@ namespace ReactiveUI;
 [Preserve]
 public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 {
-    /// <summary>
-    /// Message used for <see cref="RequiresUnreferencedCodeAttribute"/> annotations on reflection-based event hookup.
-    /// </summary>
+    /// <summary>Message used for <see cref="RequiresUnreferencedCodeAttribute"/> annotations on reflection-based event hookup.</summary>
     private const string RequiresUnreferencedCodeMessage =
         "String-based event hookup uses reflection over members that may be trimmed.";
 
-    /// <summary>
-    /// Message used for <see cref="RequiresDynamicCodeAttribute"/> annotations on reflection-based event hookup.
-    /// </summary>
+    /// <summary>Message used for <see cref="RequiresDynamicCodeAttribute"/> annotations on reflection-based event hookup.</summary>
     private const string RequiresDynamicCodeMessage =
         "String-based event hookup may require runtime code generation and is not guaranteed to be AOT-compatible.";
 
-    /// <summary>
-    /// Synchronization gate protecting <see cref="_config"/> and <see cref="_version"/>.
-    /// </summary>
+    /// <summary>Synchronization gate protecting <see cref="_config"/> and <see cref="_version"/>.</summary>
     #if NET9_0_OR_GREATER
     private readonly Lock _gate = new();
     #else
     private readonly object _gate = new();
     #endif
 
-    /// <summary>
-    /// Configuration map keyed by registered type and then by property name.
-    /// </summary>
+    /// <summary>Configuration map keyed by registered type and then by property name.</summary>
     private readonly Dictionary<Type, Dictionary<string, ObservablePropertyInfo>> _config = [];
 
-    /// <summary>
-    /// Cache of the best matching registration for a runtime type and property name.
-    /// </summary>
+    /// <summary>Cache of the best matching registration for a runtime type and property name.</summary>
     /// <remarks>
     /// Entries are versioned so that updates via <see cref="Register"/> invalidate previous results without
     /// requiring global cache clearing under lock.
     /// </remarks>
     private readonly ConcurrentDictionary<(RuntimeTypeHandle Type, string Property), CacheEntry> _bestMatchCache = new();
 
-    /// <summary>
-    /// Monotonically increasing version for <see cref="_config"/> used to invalidate <see cref="_bestMatchCache"/>.
-    /// </summary>
+    /// <summary>Monotonically increasing version for <see cref="_config"/> used to invalidate <see cref="_bestMatchCache"/>.</summary>
     private int _version;
 
     /// <inheritdoc/>
@@ -121,7 +111,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
 
         if (beforeChanged)
         {
-            return NeverObservable<IObservedChange<object, object?>>.Instance;
+            return Signal.Silent<IObservedChange<object, object?>>();
         }
 
         var type = sender.GetType();
@@ -137,10 +127,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     }
 
 #if UIKIT
-    /// <summary>
-    /// Creates an observable sequence that produces a notification each time the given <see cref="UIControlEvent"/>
-    /// is raised by the <paramref name="sender"/>.
-    /// </summary>
+    /// <summary>Creates an observable sequence that produces a notification each time the given <see cref="UIControlEvent"/> is raised by the <paramref name="sender"/>.</summary>
     /// <param name="sender">The native sender.</param>
     /// <param name="expression">The expression associated with the observed change.</param>
     /// <param name="evt">The control event to listen for.</param>
@@ -152,10 +139,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         new ControlEventObservable(sender, expression, evt);
 #endif
 
-    /// <summary>
-    /// Creates an observable sequence that produces a notification each time the specified
-    /// <see cref="NSNotificationCenter"/> notification is posted for <paramref name="sender"/>.
-    /// </summary>
+    /// <summary>Creates an observable sequence that produces a notification each time the specified <see cref="NSNotificationCenter"/> notification is posted for <paramref name="sender"/>.</summary>
     /// <param name="sender">The native sender.</param>
     /// <param name="expression">The expression associated with the observed change.</param>
     /// <param name="notification">The notification name.</param>
@@ -166,9 +150,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         NSString notification) =>
         new NotificationObservable(sender, expression, notification);
 
-    /// <summary>
-    /// Creates an observable sequence from an event using reflection-based string event lookup.
-    /// </summary>
+    /// <summary>Creates an observable sequence from an event using reflection-based string event lookup.</summary>
     /// <remarks>
     /// Prefer the add/remove overloads (for example,
     /// <see cref="ObservableFromEvent{TSender}(TSender, Expression, Action{EventHandler}, Action{EventHandler})"/>)
@@ -186,9 +168,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         string eventName) =>
         new ReflectionEventObservable(sender, expression, eventName);
 
-    /// <summary>
-    /// Creates an observable sequence from an event using explicit add/remove handlers (non-reflection).
-    /// </summary>
+    /// <summary>Creates an observable sequence from an event using explicit add/remove handlers (non-reflection).</summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     /// <param name="sender">The sender instance.</param>
     /// <param name="expression">The expression associated with the observed change.</param>
@@ -203,9 +183,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         where TSender : NSObject =>
         new NonGenericEventHandlerObservable(sender, expression, addHandler, removeHandler);
 
-    /// <summary>
-    /// Creates an observable sequence from a typed event using explicit add/remove handlers (non-reflection).
-    /// </summary>
+    /// <summary>Creates an observable sequence from a typed event using explicit add/remove handlers (non-reflection).</summary>
     /// <typeparam name="TSender">The sender type.</typeparam>
     /// <typeparam name="TEventArgs">The event args type.</typeparam>
     /// <param name="sender">The sender instance.</param>
@@ -222,9 +200,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         where TEventArgs : EventArgs =>
         new EventHandlerObservable<TEventArgs>(sender, expression, addHandler, removeHandler);
 
-    /// <summary>
-    /// Registers an observable factory for the specified <paramref name="type"/> and <paramref name="property"/>.
-    /// </summary>
+    /// <summary>Registers an observable factory for the specified <paramref name="type"/> and <paramref name="property"/>.</summary>
     /// <param name="type">The type the property belongs to.</param>
     /// <param name="property">The property name.</param>
     /// <param name="affinity">The affinity score for this registration.</param>
@@ -257,9 +233,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
     }
 
-    /// <summary>
-    /// Resolves the best registered match for a runtime type and property name, using a versioned cache.
-    /// </summary>
+    /// <summary>Resolves the best registered match for a runtime type and property name, using a versioned cache.</summary>
     /// <param name="runtimeType">The runtime type to resolve.</param>
     /// <param name="propertyName">The property name to resolve.</param>
     /// <returns>The best matching registration, or <see langword="null"/> if none exists.</returns>
@@ -307,35 +281,23 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         return best;
     }
 
-    /// <summary>
-    /// Represents a cached best-match result for a (runtime type, property) pair.
-    /// </summary>
+    /// <summary>Represents a cached best-match result for a (runtime type, property) pair.</summary>
     private readonly record struct CacheEntry
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CacheEntry"/> struct.
-        /// Initializes a new instance of the <see cref="CacheEntry"/> record.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="CacheEntry"/> struct. Initializes a new instance of the <see cref="CacheEntry"/> record.</summary>
         /// <param name="version">The configuration version the entry was computed from.</param>
         /// <param name="info">The resolved property information, or <see langword="null"/> if unsupported.</param>
         public CacheEntry(int version, ObservablePropertyInfo? info) => (Version, Info) = (version, info);
 
-        /// <summary>
-        /// Gets the configuration version the entry was computed from.
-        /// </summary>
+        /// <summary>Gets the configuration version the entry was computed from.</summary>
         public int Version { get; }
 
-        /// <summary>
-        /// Gets the resolved property information, or <see langword="null"/> if unsupported.
-        /// </summary>
+        /// <summary>Gets the resolved property information, or <see langword="null"/> if unsupported.</summary>
         public ObservablePropertyInfo? Info { get; }
     }
 
 #if UIKIT
-    /// <summary>
-    /// Fused sink that subscribes to a <see cref="UIControlEvent"/> on a <see cref="UIControl"/> and produces
-    /// an <see cref="IObservedChange{TSender, TValue}"/> notification for each occurrence.
-    /// </summary>
+    /// <summary>Fused sink that turns a <see cref="UIControlEvent"/> into change notifications.</summary>
     private sealed class ControlEventObservable : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender that owns the control event.</summary>
@@ -347,9 +309,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         /// <summary>The control event mask to listen for.</summary>
         private readonly UIControlEvent _evt;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ControlEventObservable"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ControlEventObservable"/> class.</summary>
         /// <param name="sender">The native sender (must be a <see cref="UIControl"/>).</param>
         /// <param name="expression">The expression associated with the observed change.</param>
         /// <param name="evt">The control event to listen for.</param>
@@ -377,10 +337,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
     }
 #endif
 
-    /// <summary>
-    /// Fused sink that subscribes to an <see cref="NSNotificationCenter"/> notification and produces
-    /// an <see cref="IObservedChange{TSender, TValue}"/> notification for each posting.
-    /// </summary>
+    /// <summary>Fused sink that turns an <see cref="NSNotificationCenter"/> notification into change notifications.</summary>
     private sealed class NotificationObservable : IObservable<IObservedChange<object, object?>>
     {
         /// <summary>The native sender to observe notifications for.</summary>
@@ -392,9 +349,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         /// <summary>The notification name to observe.</summary>
         private readonly NSString _notification;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationObservable"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="NotificationObservable"/> class.</summary>
         /// <param name="sender">The native sender.</param>
         /// <param name="expression">The expression associated with the observed change.</param>
         /// <param name="notification">The notification name to observe.</param>
@@ -438,9 +393,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         /// <summary>The name of the CLR event to observe.</summary>
         private readonly string _eventName;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReflectionEventObservable"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ReflectionEventObservable"/> class.</summary>
         /// <param name="sender">The native sender.</param>
         /// <param name="expression">The expression associated with the observed change.</param>
         /// <param name="eventName">The name of the CLR event to observe.</param>
@@ -485,9 +438,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         /// <summary>Delegate that unwires the handler from the event source.</summary>
         private readonly Action<EventHandler> _removeHandler;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NonGenericEventHandlerObservable"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="NonGenericEventHandlerObservable"/> class.</summary>
         /// <param name="sender">The native sender.</param>
         /// <param name="expression">The expression associated with the observed change.</param>
         /// <param name="addHandler">Adds the handler to the event source.</param>
@@ -539,9 +490,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         /// <summary>Delegate that unwires the handler from the event source.</summary>
         private readonly Action<EventHandler<TEventArgs>> _removeHandler;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EventHandlerObservable{TEventArgs}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="EventHandlerObservable{TEventArgs}"/> class.</summary>
         /// <param name="sender">The native sender.</param>
         /// <param name="expression">The expression associated with the observed change.</param>
         /// <param name="addHandler">Adds the handler to the event source.</param>
@@ -572,14 +521,10 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
     }
 
-    /// <summary>
-    /// Describes an observable factory registration for a property, including its affinity.
-    /// </summary>
+    /// <summary>Describes an observable factory registration for a property, including its affinity.</summary>
     internal sealed record ObservablePropertyInfo
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObservablePropertyInfo"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ObservablePropertyInfo"/> class.</summary>
         /// <param name="affinity">The affinity score for the registration.</param>
         /// <param name="createObservable">The factory for creating the observable for this property.</param>
         public ObservablePropertyInfo(
@@ -587,14 +532,10 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
             Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> createObservable) =>
             (Affinity, CreateObservable) = (affinity, createObservable);
 
-        /// <summary>
-        /// Gets the affinity score for the registration.
-        /// </summary>
+        /// <summary>Gets the affinity score for the registration.</summary>
         public int Affinity { get; }
 
-        /// <summary>
-        /// Gets the observable factory for the registration.
-        /// </summary>
+        /// <summary>Gets the observable factory for the registration.</summary>
         public Func<NSObject, Expression, IObservable<IObservedChange<object, object?>>> CreateObservable { get; }
     }
 }

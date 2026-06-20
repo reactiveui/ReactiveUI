@@ -3,29 +3,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="ScheduledSubject{T}" />.
-/// </summary>
+/// <summary>Tests for <see cref="ScheduledSubject{T}" />.</summary>
 public class ScheduledSubjectTest
 {
-    /// <summary>
-    ///     Tests that constructor with default observer sends values to it.
-    /// </summary>
+    /// <summary>Tests that constructor with default observer sends values to it.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_WithDefaultObserver_SendsValuesToIt()
     {
-        var scheduler = ImmediateScheduler.Instance;
+        var scheduler = Sequencer.Immediate;
         var results = new List<int>();
-        var defaultObserver = Observer.Create<int>(results.Add);
+        var defaultObserver = TestObserver.Create<int>(results.Add);
 
         const int SecondValue = 2;
         const int ExpectedCount = 2;
@@ -36,9 +29,7 @@ public class ScheduledSubjectTest
         await Assert.That(results).Count().IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Tests that Dispose cleans up resources.
-    /// </summary>
+    /// <summary>Tests that Dispose cleans up resources.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -52,9 +43,7 @@ public class ScheduledSubjectTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    ///     Tests that OnCompleted completes the observable.
-    /// </summary>
+    /// <summary>Tests that OnCompleted completes the observable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -71,9 +60,7 @@ public class ScheduledSubjectTest
         await Assert.That(completed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests that OnError sends error to observers.
-    /// </summary>
+    /// <summary>Tests that OnError sends error to observers.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -91,9 +78,7 @@ public class ScheduledSubjectTest
         await Assert.That(receivedError).IsEqualTo(error);
     }
 
-    /// <summary>
-    ///     Tests that OnNext emits values.
-    /// </summary>
+    /// <summary>Tests that OnNext emits values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -115,9 +100,7 @@ public class ScheduledSubjectTest
         await Assert.That(results[1]).IsEqualTo(SecondValue);
     }
 
-    /// <summary>
-    ///     Tests that Subscribe returns a disposable.
-    /// </summary>
+    /// <summary>Tests that Subscribe returns a disposable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithVirtualTimeSchedulerExecutor>]
@@ -132,35 +115,33 @@ public class ScheduledSubjectTest
         subscription.Dispose();
     }
 
-    /// <summary>
-    ///     Tests that values are scheduled on the specified scheduler.
-    /// </summary>
+    /// <summary>Tests that values are scheduled on the specified scheduler.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Subscribe_SchedulesOnSpecifiedScheduler()
     {
-        var scheduler = new CountingTestScheduler(ImmediateScheduler.Instance);
+        var scheduler = new VirtualTimeScheduler();
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 
         subject.Subscribe(results.Add);
         subject.OnNext(1);
+        await Assert.That(results).IsEmpty();
+
+        scheduler.Start();
 
         using (Assert.Multiple())
         {
-            await Assert.That(scheduler.ScheduledItems).Count().IsGreaterThan(0);
             await Assert.That(results).Count().IsEqualTo(1);
         }
     }
 
-    /// <summary>
-    ///     Tests that subscription disposal stops receiving values.
-    /// </summary>
+    /// <summary>Tests that subscription disposal stops receiving values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Subscription_WhenDisposed_StopsReceivingValues()
     {
-        var scheduler = ImmediateScheduler.Instance;
+        var scheduler = Sequencer.Immediate;
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 

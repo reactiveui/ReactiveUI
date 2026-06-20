@@ -7,22 +7,18 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.WinForms.Tests.Winforms;
 
-/// <summary>
-/// Tests for PlatformOperations.
-/// </summary>
+/// <summary>Tests for PlatformOperations.</summary>
 [NotInParallel]
 [TestExecutor<WinFormsTestExecutor>]
 
 public class PlatformOperationsTest
 {
-    /// <summary>
-    /// Tests that GetOrientation returns null on Windows.
-    /// </summary>
+    /// <summary>Tests that GetOrientation returns null on Windows.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetOrientation_ReturnsNull()
     {
-        var platformOps = new ReactiveUI.Winforms.PlatformOperations();
+        var platformOps = new PlatformOperations();
 
         var orientation = platformOps.GetOrientation();
 

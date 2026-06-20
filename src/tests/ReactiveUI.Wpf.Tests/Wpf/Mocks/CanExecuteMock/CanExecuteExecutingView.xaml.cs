@@ -5,15 +5,11 @@
 
 namespace ReactiveUI.Tests.Wpf.Mocks.CanExecuteMock;
 
-/// <summary>
-/// Interaction logic for CommandBindingView.xaml.
-/// </summary>
+/// <summary>Interaction logic for CommandBindingView.xaml.</summary>
 [ExcludeFromViewRegistration]
 public partial class CanExecuteExecutingView
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CanExecuteExecutingView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="CanExecuteExecutingView"/> class.</summary>
     public CanExecuteExecutingView()
     {
         InitializeComponent();

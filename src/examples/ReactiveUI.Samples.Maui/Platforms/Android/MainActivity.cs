@@ -8,9 +8,7 @@ using Android.Content.PM;
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// Android activity entry point.
-/// </summary>
+/// <summary>Android activity entry point.</summary>
 [Activity(
     Theme = "@style/Maui.SplashTheme",
     MainLauncher = true,

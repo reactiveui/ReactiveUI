@@ -3,23 +3,18 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using Splat;
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <summary>
-/// Tests the happy-path behaviour of the instance-based WithInstance overloads.
-/// </summary>
+/// <summary>Tests the happy-path behaviour of the instance-based WithInstance overloads.</summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Major Code Smell",
     "S4018:Generic methods should provide type parameters",
     Justification = "Test exercises a generic overload with explicit type arguments.")]
 public partial class BuilderInstanceMixinsHappyPathTests
 {
-    /// <summary>
-    /// Verifies that the 1-type WithInstance overload invokes the action with the resolved instance.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance overload invokes the action with the resolved instance.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_1_Type_Invokes_Action_With_Resolved_Services()
@@ -37,9 +32,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 1-type WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_1_Type_Returns_Early_When_Current_Is_Null()
@@ -56,9 +49,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 1-type WithInstance overload returns the same instance when given a null action.
-    /// </summary>
+    /// <summary>Verifies that the 1-type WithInstance overload returns the same instance when given a null action.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_1_Type_Handles_Null_Action()
@@ -71,9 +62,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await Assert.That(result).IsSameReferenceAs(mockInstance);
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_2_Types_Invokes_Action_With_Resolved_Services()
@@ -98,9 +87,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 2-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 2-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_2_Types_Returns_Early_When_Current_Is_Null()
@@ -117,9 +104,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_3_Types_Invokes_Action_With_Resolved_Services()
@@ -148,9 +133,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 3-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 3-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_3_Types_Returns_Early_When_Current_Is_Null()
@@ -167,9 +150,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_4_Types_Invokes_Action_With_Resolved_Services()
@@ -202,9 +183,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 4-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 4-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_4_Types_Returns_Early_When_Current_Is_Null()
@@ -222,9 +201,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_5_Types_Invokes_Action_With_Resolved_Services()
@@ -261,9 +238,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 5-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 5-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_5_Types_Returns_Early_When_Current_Is_Null()
@@ -282,9 +257,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_6_Types_Invokes_Action_With_Resolved_Services()
@@ -326,9 +299,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 6-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 6-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_6_Types_Returns_Early_When_Current_Is_Null()
@@ -347,9 +318,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_7_Types_Invokes_Action_With_Resolved_Services()
@@ -397,9 +366,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 7-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 7-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithInstance_7_Types_Returns_Early_When_Current_Is_Null()
@@ -418,9 +385,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -483,9 +448,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 8-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 8-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -533,9 +496,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by eleven distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by eleven distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith11Services()
     {
@@ -547,9 +508,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by twelve distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by twelve distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith12Services()
     {
@@ -561,9 +520,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by thirteen distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by thirteen distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith13Services()
     {
@@ -576,9 +533,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by fourteen distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by fourteen distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith14Services()
     {
@@ -591,9 +546,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by fifteen distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by fifteen distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith15Services()
     {
@@ -606,9 +559,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Creates a mock instance backed by sixteen distinct services.
-    /// </summary>
+    /// <summary>Creates a mock instance backed by sixteen distinct services.</summary>
     /// <returns>The mock instance and the registered services in declaration order.</returns>
     private static (MockReactiveUIInstance MockInstance, object[] Services) CreateMockWith16Services()
     {
@@ -621,169 +572,129 @@ public partial class BuilderInstanceMixinsHappyPathTests
         return (new(services), services);
     }
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service1;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service2;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service3;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service4;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service5;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service6;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service7;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service8;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service9;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service10;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service11;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service12;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service13;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service14;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service15;
 
-    /// <summary>
-    /// Test service type used to verify instance resolution.
-    /// </summary>
+    /// <summary>Test service type used to verify instance resolution.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Marker type for tests.")]
     private sealed class Service16;
 
-    /// <summary>
-    /// Mock <see cref="IReactiveUIInstance"/> backed by a configurable dependency resolver.
-    /// </summary>
+    /// <summary>Mock <see cref="IReactiveUIInstance"/> backed by a configurable dependency resolver.</summary>
     private sealed class MockReactiveUIInstance : IReactiveUIInstance
     {
-        /// <summary>
-        /// The resolver backing this instance, or <see langword="null"/> to simulate a null current resolver.
-        /// </summary>
+        /// <summary>The resolver backing this instance, or <see langword="null"/> to simulate a null current resolver.</summary>
         private readonly MockDependencyResolver? _resolver;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MockReactiveUIInstance"/> class with the given services.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MockReactiveUIInstance"/> class with the given services.</summary>
         /// <param name="services">The services to register.</param>
         public MockReactiveUIInstance(params object[] services) => _resolver = new(services);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MockReactiveUIInstance"/> class, optionally with a null current resolver.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MockReactiveUIInstance"/> class, optionally with a null current resolver.</summary>
         /// <param name="hasNullCurrent">If <see langword="true"/>, the current resolver is null.</param>
         public MockReactiveUIInstance(bool hasNullCurrent) =>
             _resolver = hasNullCurrent ? null : new MockDependencyResolver();
@@ -795,25 +706,19 @@ public partial class BuilderInstanceMixinsHappyPathTests
         public IMutableDependencyResolver CurrentMutable => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public IScheduler MainThreadScheduler => throw new NotSupportedException();
+        public ISequencer MainThreadScheduler => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public IScheduler TaskpoolScheduler => throw new NotSupportedException();
+        public ISequencer TaskpoolScheduler => throw new NotSupportedException();
     }
 
-    /// <summary>
-    /// Mock read-only dependency resolver backed by a dictionary keyed on service type.
-    /// </summary>
+    /// <summary>Mock read-only dependency resolver backed by a dictionary keyed on service type.</summary>
     private sealed class MockDependencyResolver : IReadonlyDependencyResolver, IDisposable
     {
-        /// <summary>
-        /// The registered services keyed by their concrete type.
-        /// </summary>
+        /// <summary>The registered services keyed by their concrete type.</summary>
         private readonly Dictionary<Type, object> _services = [];
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MockDependencyResolver"/> class with the given services.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="MockDependencyResolver"/> class with the given services.</summary>
         /// <param name="services">The services to register.</param>
         public MockDependencyResolver(params object[] services)
         {
@@ -826,7 +731,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         /// <inheritdoc/>
         public object? GetService(Type? serviceType)
         {
-            if (serviceType == null)
+            if (serviceType is null)
             {
                 return null;
             }
@@ -838,7 +743,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         public object? GetService(Type? serviceType, string? contract)
         {
             _ = contract;
-            if (serviceType == null)
+            if (serviceType is null)
             {
                 return null;
             }
@@ -855,7 +760,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         /// <inheritdoc/>
         public IEnumerable<object> GetServices(Type? serviceType)
         {
-            if (serviceType == null)
+            if (serviceType is null)
             {
                 return [];
             }
@@ -867,7 +772,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         public IEnumerable<object> GetServices(Type? serviceType, string? contract)
         {
             _ = contract;
-            if (serviceType == null)
+            if (serviceType is null)
             {
                 return [];
             }
@@ -881,36 +786,28 @@ public partial class BuilderInstanceMixinsHappyPathTests
         /// <inheritdoc/>
         public IEnumerable<T> GetServices<T>(string? contract) => GetServices(typeof(T), contract).OfType<T>();
 
-        /// <summary>
-        /// Determines whether a service of the given type is registered.
-        /// </summary>
+        /// <summary>Determines whether a service of the given type is registered.</summary>
         /// <param name="serviceType">The type of service to check for.</param>
         /// <param name="contract">The optional contract; ignored by this mock.</param>
         /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
         public bool HasRegistration(Type? serviceType, string? contract)
         {
             _ = contract;
-            return serviceType != null && _services.ContainsKey(serviceType);
+            return serviceType is not null && _services.ContainsKey(serviceType);
         }
 
-        /// <summary>
-        /// Determines whether a service of the given type is registered.
-        /// </summary>
+        /// <summary>Determines whether a service of the given type is registered.</summary>
         /// <typeparam name="T">The type of service to check for.</typeparam>
         /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
         public bool HasRegistration<T>() => HasRegistration(typeof(T), null);
 
-        /// <summary>
-        /// Determines whether a service of the given type is registered.
-        /// </summary>
+        /// <summary>Determines whether a service of the given type is registered.</summary>
         /// <typeparam name="T">The type of service to check for.</typeparam>
         /// <param name="contract">The optional contract; ignored by this mock.</param>
         /// <returns><see langword="true"/> if the service is registered; otherwise, <see langword="false"/>.</returns>
         public bool HasRegistration<T>(string? contract) => HasRegistration(typeof(T), contract);
 
-        /// <summary>
-        /// Releases the resources used by this resolver.
-        /// </summary>
+        /// <summary>Releases the resources used by this resolver.</summary>
         public void Dispose()
         {
         }

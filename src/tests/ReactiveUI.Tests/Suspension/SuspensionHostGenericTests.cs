@@ -3,26 +3,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.Suspension;
 
-/// <summary>
-///     Tests for the generic <see cref="SuspensionHost{TAppState}"/>.
-/// </summary>
+/// <summary>Tests for the generic <see cref="SuspensionHost{TAppState}"/>.</summary>
 public class SuspensionHostGenericTests
 {
+    /// <summary>The sample state value used to seed the host.</summary>
     private const int SampleStateValue = 42;
+
+    /// <summary>The state value produced by the create-state factory.</summary>
     private const int FactoryStateValue = 99;
+
+    /// <summary>The second state value used in emission tests.</summary>
     private const int SecondStateValue = 2;
+
+    /// <summary>The expected number of emissions observed in tests.</summary>
     private const int ExpectedEmissionCount = 2;
 
-    /// <summary>
-    ///     Verifies the default observables produced by the constructor error when subscribed to.
-    /// </summary>
+    /// <summary>Verifies the default observables produced by the constructor error when subscribed to.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_DefaultObservables_ThrowExceptionOnSubscribe()
@@ -50,9 +48,7 @@ public class SuspensionHostGenericTests
         await Assert.That(gotErrorPersist).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies IsLaunchingNew returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsLaunchingNew returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsLaunchingNew_SetAndGet_ReturnsCorrectObservable()
@@ -60,16 +56,14 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
 
-        host.IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsLaunchingNew.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting IsLaunchingNew to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting IsLaunchingNew to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsLaunchingNew_SetNull_ThrowsArgumentException()
@@ -80,9 +74,7 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies IsResuming returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsResuming returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsResuming_SetAndGet_ReturnsCorrectObservable()
@@ -90,16 +82,14 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
 
-        host.IsResuming = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsResuming = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsResuming.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting IsResuming to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting IsResuming to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsResuming_SetNull_ThrowsArgumentException()
@@ -110,9 +100,7 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies IsUnpausing returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsUnpausing returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsUnpausing_SetAndGet_ReturnsCorrectObservable()
@@ -120,16 +108,14 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
 
-        host.IsUnpausing = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsUnpausing = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsUnpausing.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting IsUnpausing to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting IsUnpausing to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsUnpausing_SetNull_ThrowsArgumentException()
@@ -140,9 +126,7 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies IsContinuing returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies IsContinuing returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsContinuing_SetAndGet_ReturnsCorrectObservable()
@@ -150,16 +134,14 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
 
-        host.IsContinuing = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.IsContinuing = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.IsContinuing.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting IsContinuing to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting IsContinuing to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsContinuing_SetNull_ThrowsArgumentException()
@@ -170,27 +152,23 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies ShouldPersistState returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies ShouldPersistState returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldPersistState_SetAndGet_ReturnsCorrectObservable()
     {
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
-        var disposable = Disposable.Empty;
+        var disposable = Scope.Empty;
 
-        host.ShouldPersistState = Observable.Return(disposable, ImmediateScheduler.Instance);
+        host.ShouldPersistState = Signal.Emit(disposable, Sequencer.Immediate);
 
         using var subscription = host.ShouldPersistState.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting ShouldPersistState to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting ShouldPersistState to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldPersistState_SetNull_ThrowsArgumentException()
@@ -201,9 +179,7 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies ShouldInvalidateState returns the observable that was set.
-    /// </summary>
+    /// <summary>Verifies ShouldInvalidateState returns the observable that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldInvalidateState_SetAndGet_ReturnsCorrectObservable()
@@ -211,16 +187,14 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var wasTriggered = false;
 
-        host.ShouldInvalidateState = Observable.Return(Unit.Default, ImmediateScheduler.Instance);
+        host.ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate);
 
         using var subscription = host.ShouldInvalidateState.Subscribe(_ => wasTriggered = true);
 
         await Assert.That(wasTriggered).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies setting ShouldInvalidateState to null throws an argument exception.
-    /// </summary>
+    /// <summary>Verifies setting ShouldInvalidateState to null throws an argument exception.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ShouldInvalidateState_SetNull_ThrowsArgumentException()
@@ -231,9 +205,7 @@ public class SuspensionHostGenericTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies AppStateValue returns the value that was set.
-    /// </summary>
+    /// <summary>Verifies AppStateValue returns the value that was set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppStateValue_SetAndGet_ReturnsCorrectValue()
@@ -246,9 +218,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.AppStateValue).IsSameReferenceAs(state);
     }
 
-    /// <summary>
-    ///     Verifies setting AppStateValue raises a PropertyChanged notification.
-    /// </summary>
+    /// <summary>Verifies setting AppStateValue raises a PropertyChanged notification.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppStateValue_PropertyChanged_RaisesNotification()
@@ -271,9 +241,7 @@ public class SuspensionHostGenericTests
         await Assert.That(propertyChanged).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies AppStateValueChanged emits each time AppStateValue is set.
-    /// </summary>
+    /// <summary>Verifies AppStateValueChanged emits each time AppStateValue is set.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppStateValueChanged_EmitsWhenAppStateValueIsSet()
@@ -281,7 +249,7 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var receivedStates = new List<DummyAppState?>();
 
-        using var subscription = host.AppStateValueChanged.ObserveOn(ImmediateScheduler.Instance).Subscribe(receivedStates.Add);
+        using var subscription = host.AppStateValueChanged.ObserveOn(Sequencer.Immediate).Subscribe(receivedStates.Add);
 
         var state1 = new DummyAppState { Value = 1 };
         host.AppStateValue = state1;
@@ -294,9 +262,7 @@ public class SuspensionHostGenericTests
         await Assert.That(receivedStates[1]).IsSameReferenceAs(state2);
     }
 
-    /// <summary>
-    ///     Verifies AppStateValueChanged emits null when AppStateValue is set to null.
-    /// </summary>
+    /// <summary>Verifies AppStateValueChanged emits null when AppStateValue is set to null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppStateValueChanged_EmitsNull()
@@ -304,7 +270,7 @@ public class SuspensionHostGenericTests
         using var host = new SuspensionHost<DummyAppState>();
         var receivedStates = new List<DummyAppState?>();
 
-        using var subscription = host.AppStateValueChanged.ObserveOn(ImmediateScheduler.Instance).Subscribe(receivedStates.Add);
+        using var subscription = host.AppStateValueChanged.ObserveOn(Sequencer.Immediate).Subscribe(receivedStates.Add);
 
         host.AppStateValue = new();
         host.AppStateValue = null;
@@ -313,9 +279,7 @@ public class SuspensionHostGenericTests
         await Assert.That(receivedStates[1]).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies CreateNewAppStateTyped returns the factory that was set and produces the expected state.
-    /// </summary>
+    /// <summary>Verifies CreateNewAppStateTyped returns the factory that was set and produces the expected state.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateNewAppStateTyped_SetAndGet_ReturnsCorrectFunc()
@@ -328,9 +292,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.CreateNewAppStateTyped!()).IsSameReferenceAs(expectedState);
     }
 
-    /// <summary>
-    ///     Verifies setting CreateNewAppStateTyped raises a PropertyChanged notification.
-    /// </summary>
+    /// <summary>Verifies setting CreateNewAppStateTyped raises a PropertyChanged notification.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task CreateNewAppStateTyped_PropertyChanged_RaisesNotification()
@@ -353,9 +315,7 @@ public class SuspensionHostGenericTests
         await Assert.That(propertyChanged).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.AppState getter projects from the typed value.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.AppState getter projects from the typed value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_AppState_GetProjectsFromTypedValue()
@@ -369,9 +329,7 @@ public class SuspensionHostGenericTests
         await Assert.That(untypedHost.AppState).IsSameReferenceAs(state);
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.AppState setter updates the typed property for a valid value.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.AppState setter updates the typed property for a valid value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_AppState_SetWithValidValue_UpdatesTypedProperty()
@@ -385,9 +343,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.AppStateValue).IsSameReferenceAs(state);
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.AppState setter sets the typed property to default when set to null.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.AppState setter sets the typed property to default when set to null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_AppState_SetNull_SetsTypedPropertyToDefault()
@@ -401,9 +357,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.AppStateValue).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.AppState setter throws when given an incompatible type.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.AppState setter throws when given an incompatible type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_AppState_SetInvalidType_ThrowsInvalidCastException()
@@ -415,9 +369,7 @@ public class SuspensionHostGenericTests
             .Throws<InvalidCastException>();
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.CreateNewAppState getter projects from the typed factory.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.CreateNewAppState getter projects from the typed factory.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_GetProjectsFromTypedFactory()
@@ -433,9 +385,7 @@ public class SuspensionHostGenericTests
         await Assert.That(factory()).IsSameReferenceAs(expectedState);
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.CreateNewAppState getter returns null when the typed factory is null.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.CreateNewAppState getter returns null when the typed factory is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_GetWhenTypedIsNull_ReturnsNull()
@@ -449,9 +399,7 @@ public class SuspensionHostGenericTests
         await Assert.That((object?)factory).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.CreateNewAppState setter updates the typed factory for a valid factory.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.CreateNewAppState setter updates the typed factory for a valid factory.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_SetWithValidFactory_UpdatesTypedProperty()
@@ -467,9 +415,7 @@ public class SuspensionHostGenericTests
         await Assert.That(typedFactory()).IsSameReferenceAs(expectedState);
     }
 
-    /// <summary>
-    ///     Verifies the ISuspensionHost.CreateNewAppState setter sets the typed factory to null when set to null.
-    /// </summary>
+    /// <summary>Verifies the ISuspensionHost.CreateNewAppState setter sets the typed factory to null when set to null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_SetNull_SetsTypedPropertyToNull()
@@ -483,9 +429,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.CreateNewAppStateTyped is null).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies the typed factory derived from an incompatible ISuspensionHost.CreateNewAppState throws when invoked.
-    /// </summary>
+    /// <summary>Verifies the typed factory derived from an incompatible ISuspensionHost.CreateNewAppState throws when invoked.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_SetInvalidFactory_ThrowsInvalidCastException()
@@ -499,9 +443,7 @@ public class SuspensionHostGenericTests
             .Throws<InvalidCastException>();
     }
 
-    /// <summary>
-    ///     Verifies calling Dispose more than once does not throw.
-    /// </summary>
+    /// <summary>Verifies calling Dispose more than once does not throw.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_CalledMultipleTimes_DoesNotThrow()
@@ -513,9 +455,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host.Dispose).ThrowsNothing();
     }
 
-    /// <summary>
-    ///     Verifies Dispose disposes all internal subjects without error.
-    /// </summary>
+    /// <summary>Verifies Dispose disposes all internal subjects without error.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Dispose_DisposesAllSubjects()
@@ -523,11 +463,12 @@ public class SuspensionHostGenericTests
         // Set observables before disposal
         var host = new SuspensionHost<DummyAppState>
         {
-            IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance), IsResuming = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            IsUnpausing = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            IsContinuing = Observable.Return(Unit.Default, ImmediateScheduler.Instance),
-            ShouldPersistState = Observable.Return(Disposable.Empty, ImmediateScheduler.Instance),
-            ShouldInvalidateState = Observable.Return(Unit.Default, ImmediateScheduler.Instance)
+            IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            IsResuming = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            IsUnpausing = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            IsContinuing = Signal.Emit(RxVoid.Default, Sequencer.Immediate),
+            ShouldPersistState = Signal.Emit(Scope.Empty, Sequencer.Immediate),
+            ShouldInvalidateState = Signal.Emit(RxVoid.Default, Sequencer.Immediate)
         };
 
         host.Dispose();
@@ -536,9 +477,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host).IsNotNull();
     }
 
-    /// <summary>
-    ///     Verifies an AppStateValueChanged subscription receives values prior to disposing the host.
-    /// </summary>
+    /// <summary>Verifies an AppStateValueChanged subscription receives values prior to disposing the host.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AppStateValueChanged_SubscriptionWorksBeforeDispose()
@@ -546,7 +485,7 @@ public class SuspensionHostGenericTests
         var host = new SuspensionHost<DummyAppState>();
         var receivedCount = 0;
 
-        using var subscription = host.AppStateValueChanged.ObserveOn(ImmediateScheduler.Instance).Subscribe(_ => receivedCount++);
+        using var subscription = host.AppStateValueChanged.ObserveOn(Sequencer.Immediate).Subscribe(_ => receivedCount++);
 
         // Set values and verify subscription works
         host.AppStateValue = new();
@@ -561,9 +500,7 @@ public class SuspensionHostGenericTests
         await Assert.That(host).IsNotNull();
     }
 
-    /// <summary>
-    ///     Verifies observable properties can be replaced at runtime and existing subscriptions observe the new source.
-    /// </summary>
+    /// <summary>Verifies observable properties can be replaced at runtime and existing subscriptions observe the new source.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObservableProperties_CanBeReplacedDynamically()
@@ -572,13 +509,13 @@ public class SuspensionHostGenericTests
         var launchCount = 0;
 
         // Set initial observable
-        host.IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance).Do(_ => launchCount++);
+        host.IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate).Do(_ => launchCount++);
 
         // Subscribe and verify initial observable works
         using var sub = host.IsLaunchingNew.Subscribe();
 
         // Replace the observable with a new one
-        host.IsLaunchingNew = Observable.Return(Unit.Default, ImmediateScheduler.Instance).Do(_ => launchCount++);
+        host.IsLaunchingNew = Signal.Emit(RxVoid.Default, Sequencer.Immediate).Do(_ => launchCount++);
 
         // The existing subscription should see the new observable due to ReplaySubject + Switch pattern
         // Total triggers depend on when Switch() switches to the new observable
@@ -586,25 +523,17 @@ public class SuspensionHostGenericTests
         await Assert.That(launchCount).IsGreaterThanOrEqualTo(MinimumLaunchCount);
     }
 
-    /// <summary>
-    ///     A simple application state used by the generic suspension host tests.
-    /// </summary>
+    /// <summary>A simple application state used by the generic suspension host tests.</summary>
     private sealed class DummyAppState
     {
-        /// <summary>
-        ///     Gets or sets an arbitrary value used to assert state identity.
-        /// </summary>
+        /// <summary>Gets or sets an arbitrary value used to assert state identity.</summary>
         public int Value { get; set; }
     }
 
-    /// <summary>
-    ///     An unrelated state type used to test type mismatch behavior.
-    /// </summary>
+    /// <summary>An unrelated state type used to test type mismatch behavior.</summary>
     private sealed class OtherAppState
     {
-        /// <summary>
-        ///     Gets or sets an arbitrary name.
-        /// </summary>
+        /// <summary>Gets or sets an arbitrary name.</summary>
         public string? Name { get; set; }
     }
 }

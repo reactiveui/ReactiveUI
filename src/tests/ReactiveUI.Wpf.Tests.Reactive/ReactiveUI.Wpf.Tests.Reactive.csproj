@@ -1,0 +1,68 @@
+<!--
+ Copyright (c) 2025 .NET Foundation and Contributors. All rights reserved.
+ Licensed to the .NET Foundation under one or more agreements.
+ The .NET Foundation licenses this file to you under the MIT license.
+ See the LICENSE file in the project root for full license information.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ReactiveUITestingUITargets)</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ReactiveUI.Wpf.Tests.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!-- Reference the ReactiveUI.Reactive engine directly (not ReactiveUI.Tests.Reactive, whose cross-included core
+       mocks share names/namespaces with this leaf's own WPF mocks and would collide). This pulls the reactive engine
+       chain into the restore graph so the platform engine ProjectReferences below resolve. The shared test helpers
+       (Test.Utilities + TestGuiMocks) are cross-included to recompile under REACTIVE_SHIM rather than referenced as
+       lean projects (which would drag in lean ReactiveUI and shadow the shifted seam interfaces). Splat.Drawing
+       supplies IPlatformModeDetector (used by TestGuiMocks). -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+    <PackageReference Include="Splat.Drawing"/>
+    <!-- The cross-included Test.Utilities VirtualTimeScheduler uses Microsoft.Reactive.Testing.TestScheduler
+         under REACTIVE_SHIM. -->
+    <PackageReference Include="Microsoft.Reactive.Testing"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Wpf.Tests\API\**\*.cs" Link="API\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.Wpf.Tests\AssemblyHooks.cs" Link="AssemblyHooks.cs"/>
+    <Compile Include="..\ReactiveUI.Wpf.Tests\AssemblyInfo.Parallel.cs" Link="AssemblyInfo.Parallel.cs"/>
+    <Compile Include="..\ReactiveUI.Test.Utilities\**\*.cs" Exclude="..\ReactiveUI.Test.Utilities\obj\**\*.cs;..\ReactiveUI.Test.Utilities\bin\**\*.cs" Link="ReactiveUI.Test.Utilities\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.TestGuiMocks\**\*.cs" Exclude="..\ReactiveUI.TestGuiMocks\obj\**\*.cs;..\ReactiveUI.TestGuiMocks\bin\**\*.cs" Link="ReactiveUI.TestGuiMocks\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <Choose>
+    <When Condition=" $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+      <PropertyGroup>
+        <UseWpf>true</UseWpf>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <ProjectReference Include="..\..\ReactiveUI.Wpf.Reactive\ReactiveUI.Wpf.Reactive.csproj"/>
+        <ProjectReference Include="..\..\ReactiveUI.Blend.Reactive\ReactiveUI.Blend.Reactive.csproj"/>
+        <Using Include="ReactiveUI.Reactive.Blend"/>
+        <Using Include="ReactiveUI.Reactive.Wpf.Binding"/>
+        <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+        <Compile Include="..\ReactiveUI.Wpf.Tests\Wpf\**\*.cs" Link="Wpf\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.Wpf.Tests\Xaml\**\*.cs" Link="Xaml\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.Wpf.Tests\WhenAny\**\*.cs" Link="WhenAny\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.Wpf.Tests\ReactiveObjects\**\*.cs" Link="ReactiveObjects\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Compile Include="..\ReactiveUI.Wpf.Tests\Utilities\**\*.cs" Link="Utilities\%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Page Include="..\ReactiveUI.Wpf.Tests\**\*.xaml" Link="%(RecursiveDir)%(Filename)%(Extension)" />
+        <Page Update="..\ReactiveUI.Wpf.Tests\Wpf\Mocks\CanExecuteMock\CanExecuteExecutingView.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+      </ItemGroup>
+    </When>
+  </Choose>
+</Project>

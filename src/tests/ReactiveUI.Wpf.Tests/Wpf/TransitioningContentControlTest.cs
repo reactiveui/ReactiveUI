@@ -10,33 +10,60 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="TransitioningContentControl"/>.
-/// </summary>
+/// <summary>Tests for <see cref="TransitioningContentControl"/>.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class TransitioningContentControlTest
 {
+    /// <summary>The number of values in the <see cref="TransitioningContentControl.TransitionType"/> enumeration.</summary>
     private const int TransitionTypeCount = 5;
+
+    /// <summary>The number of values in the transition direction enumeration.</summary>
     private const int TransitionDirectionCount = 4;
+
+    /// <summary>The DPI scale used when overriding the control's DPI for tests.</summary>
     private const double OverriddenDpiScale = 1.25;
+
+    /// <summary>Half a second, expressed in seconds.</summary>
     private const double HalfSecond = 0.5;
+
+    /// <summary>One second, expressed in seconds.</summary>
     private const double OneSecond = 1.0;
+
+    /// <summary>The default transition duration, in seconds.</summary>
     private const double DefaultDurationSeconds = 0.3;
+
+    /// <summary>The multiplier used to negate a value.</summary>
     private const int NegativeSign = -1;
+
+    /// <summary>The width and height applied to the control under test.</summary>
     private const double ControlSize = 100;
+
+    /// <summary>The width applied to button content.</summary>
     private const double ButtonWidth = 100;
+
+    /// <summary>The height applied to button content.</summary>
     private const double ButtonHeight = 50;
+
+    /// <summary>The template part name of the container element.</summary>
     private const string PartContainerName = "PART_Container";
+
+    /// <summary>The template part name of the current content presentation site.</summary>
     private const string PartCurrentContentName = "PART_CurrentContentPresentationSite";
+
+    /// <summary>The template part name of the previous image site.</summary>
     private const string PartPreviousImageName = "PART_PreviousImageSite";
+
+    /// <summary>The name of the visual state group containing presentation states.</summary>
     private const string PresentationStatesName = "PresentationStates";
+
+    /// <summary>The name of the fade transition visual state.</summary>
     private const string TransitionFadeName = "Transition_Fade";
+
+    /// <summary>The text used to represent newly presented content.</summary>
     private const string NewContentText = "New Content";
 
-    /// <summary>
-    /// Tests that Transition property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Transition property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Transition_SetAndGet_WorksCorrectly()
@@ -53,9 +80,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.Transition).IsEqualTo(TransitioningContentControl.TransitionType.Move);
     }
 
-    /// <summary>
-    /// Tests that Direction property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Direction property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Direction_SetAndGet_WorksCorrectly()
@@ -72,9 +97,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.Direction).IsEqualTo(TransitioningContentControl.TransitionDirection.Right);
     }
 
-    /// <summary>
-    /// Tests that Duration property can be set and retrieved.
-    /// </summary>
+    /// <summary>Tests that Duration property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Duration_SetAndGet_WorksCorrectly()
@@ -91,9 +114,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(OneSecond));
     }
 
-    /// <summary>
-    /// Tests that all transition types are supported.
-    /// </summary>
+    /// <summary>Tests that all transition types are supported.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Transition_AllTypes_CanBeSet()
@@ -115,9 +136,7 @@ public class TransitioningContentControlTest
         }
     }
 
-    /// <summary>
-    /// Tests that all transition directions are supported.
-    /// </summary>
+    /// <summary>Tests that all transition directions are supported.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Direction_AllDirections_CanBeSet()
@@ -138,9 +157,7 @@ public class TransitioningContentControlTest
         }
     }
 
-    /// <summary>
-    /// Tests that TransitionProperty is registered.
-    /// </summary>
+    /// <summary>Tests that TransitionProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TransitionProperty_IsRegistered()
@@ -148,9 +165,7 @@ public class TransitioningContentControlTest
         await Assert.That(TransitioningContentControl.TransitionProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that TransitionDirectionProperty is registered.
-    /// </summary>
+    /// <summary>Tests that TransitionDirectionProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TransitionDirectionProperty_IsRegistered()
@@ -158,9 +173,7 @@ public class TransitioningContentControlTest
         await Assert.That(TransitioningContentControl.TransitionDirectionProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that TransitionDurationProperty is registered.
-    /// </summary>
+    /// <summary>Tests that TransitionDurationProperty is registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TransitionDurationProperty_IsRegistered()
@@ -168,9 +181,7 @@ public class TransitioningContentControlTest
         await Assert.That(TransitioningContentControl.TransitionDurationProperty).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that OverrideDpi can be set to true.
-    /// </summary>
+    /// <summary>Tests that OverrideDpi can be set to true.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OverrideDpi_CanBeSet()
@@ -182,9 +193,7 @@ public class TransitioningContentControlTest
         await Assert.That(TransitioningContentControl.OverrideDpi).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that Content property can be set.
-    /// </summary>
+    /// <summary>Tests that Content property can be set.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Content_SetAndGet_WorksCorrectly()
@@ -197,9 +206,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.Content).IsEqualTo(content);
     }
 
-    /// <summary>
-    /// Tests that control can be created with default values.
-    /// </summary>
+    /// <summary>Tests that control can be created with default values.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Constructor_CreatesControlWithDefaults()
@@ -212,9 +219,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.Duration).IsEqualTo(TimeSpan.FromSeconds(DefaultDurationSeconds));
     }
 
-    /// <summary>
-    /// Tests that GetDpiScaleForElement returns correct DPI scale without override.
-    /// </summary>
+    /// <summary>Tests that GetDpiScaleForElement returns correct DPI scale without override.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetDpiScaleForElement_WithoutOverride_ReturnsActualDpi()
@@ -228,9 +233,7 @@ public class TransitioningContentControlTest
         await Assert.That(dpiScale.DpiScaleY).IsGreaterThan(0);
     }
 
-    /// <summary>
-    /// Tests that GetDpiScaleForElement returns overridden DPI scale when enabled.
-    /// </summary>
+    /// <summary>Tests that GetDpiScaleForElement returns overridden DPI scale when enabled.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetDpiScaleForElement_WithOverride_ReturnsOverriddenDpi()
@@ -246,9 +249,7 @@ public class TransitioningContentControlTest
         TransitioningContentControl.OverrideDpi = false;
     }
 
-    /// <summary>
-    /// Tests that SetFadeTransitionDefaults sets duration on animations.
-    /// </summary>
+    /// <summary>Tests that SetFadeTransitionDefaults sets duration on animations.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetFadeTransitionDefaults_WithValidStoryboard_SetsDuration()
@@ -273,9 +274,7 @@ public class TransitioningContentControlTest
         await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
     }
 
-    /// <summary>
-    /// Tests that SetFadeTransitionDefaults handles null CompletingTransition gracefully.
-    /// </summary>
+    /// <summary>Tests that SetFadeTransitionDefaults handles null CompletingTransition gracefully.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetFadeTransitionDefaults_WithNullStoryboard_DoesNotThrow()
@@ -288,9 +287,7 @@ public class TransitioningContentControlTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Tests that SetSlideTransitionDefaults sets correct values based on direction.
-    /// </summary>
+    /// <summary>Tests that SetSlideTransitionDefaults sets correct values based on direction.</summary>
     /// <param name="direction">The transition direction.</param>
     /// <param name="expectedSign">The expected sign of the From value (positive or negative).</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -334,9 +331,7 @@ public class TransitioningContentControlTest
         await Assert.That(animation.From).IsEqualTo(expectedValue);
     }
 
-    /// <summary>
-    /// Tests that SetMoveTransitionDefaults sets correct values based on direction.
-    /// </summary>
+    /// <summary>Tests that SetMoveTransitionDefaults sets correct values based on direction.</summary>
     /// <param name="direction">The transition direction.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -376,9 +371,7 @@ public class TransitioningContentControlTest
         await Assert.That(completingAnimation.From).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that SetBounceTransitionDefaults sets correct values for bounce transition.
-    /// </summary>
+    /// <summary>Tests that SetBounceTransitionDefaults sets correct values for bounce transition.</summary>
     /// <param name="direction">The transition direction.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -417,9 +410,7 @@ public class TransitioningContentControlTest
         await Assert.That(Math.Abs(animation.To!.Value)).IsEqualTo(expectedMagnitude);
     }
 
-    /// <summary>
-    /// Tests that ConfigureStandardTransition returns correct transition name for Fade.
-    /// </summary>
+    /// <summary>Tests that ConfigureStandardTransition returns correct transition name for Fade.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ConfigureStandardTransition_WithFadeType_ReturnsCorrectName()
@@ -432,9 +423,7 @@ public class TransitioningContentControlTest
         await Assert.That(transitionName).IsEqualTo(TransitionFadeName);
     }
 
-    /// <summary>
-    /// Tests that ConfigureStandardTransition returns correct transition name for non-Fade types.
-    /// </summary>
+    /// <summary>Tests that ConfigureStandardTransition returns correct transition name for non-Fade types.</summary>
     /// <param name="transitionType">The transition type.</param>
     /// <param name="direction">The transition direction.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -457,9 +446,7 @@ public class TransitioningContentControlTest
         await Assert.That(transitionName).IsEqualTo(expectedName);
     }
 
-    /// <summary>
-    /// Tests that ConfigureBounceTransition returns correct transition names.
-    /// </summary>
+    /// <summary>Tests that ConfigureBounceTransition returns correct transition names.</summary>
     /// <param name="direction">The transition direction.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -484,9 +471,7 @@ public class TransitioningContentControlTest
         await Assert.That(completingName).IsEqualTo(expectedCompletingName);
     }
 
-    /// <summary>
-    /// Tests that PrepareTransitionImages sets content on the content presenter.
-    /// </summary>
+    /// <summary>Tests that PrepareTransitionImages sets content on the content presenter.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PrepareTransitionImages_WithNewContent_SetsContentPresenterContent()
@@ -499,9 +484,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.CurrentContentPresentationSite?.Content).IsEqualTo(newContent);
     }
 
-    /// <summary>
-    /// Tests that GetRenderTargetBitmapFromUiElement returns default when element has zero size.
-    /// </summary>
+    /// <summary>Tests that GetRenderTargetBitmapFromUiElement returns default when element has zero size.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetRenderTargetBitmapFromUiElement_WithZeroSize_ReturnsDefault()
@@ -513,9 +496,7 @@ public class TransitioningContentControlTest
         await Assert.That(bitmap).IsNull();
     }
 
-    /// <summary>
-    /// Tests that GetRenderTargetBitmapFromUiElement creates bitmap for rendered element.
-    /// </summary>
+    /// <summary>Tests that GetRenderTargetBitmapFromUiElement creates bitmap for rendered element.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetRenderTargetBitmapFromUiElement_WithRenderedElement_CreatesBitmap()
@@ -539,9 +520,7 @@ public class TransitioningContentControlTest
         await Assert.That(bitmap.PixelHeight).IsGreaterThan(0);
     }
 
-    /// <summary>
-    /// Tests that GetTransitionStoryboardByName throws when transition name is null.
-    /// </summary>
+    /// <summary>Tests that GetTransitionStoryboardByName throws when transition name is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetTransitionStoryboardByName_WithNullName_ThrowsArgumentNullException()
@@ -551,9 +530,7 @@ public class TransitioningContentControlTest
         await Assert.That(() => control.GetTransitionStoryboardByName(null!)).Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    /// Tests that GetTransitionStoryboardByName throws when transition name is empty.
-    /// </summary>
+    /// <summary>Tests that GetTransitionStoryboardByName throws when transition name is empty.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetTransitionStoryboardByName_WithEmptyName_ThrowsArgumentException()
@@ -563,9 +540,7 @@ public class TransitioningContentControlTest
         await Assert.That(() => control.GetTransitionStoryboardByName(string.Empty)).Throws<ArgumentException>();
     }
 
-    /// <summary>
-    /// Tests that GetTransitionStoryboardByName throws when visual state group is not initialized.
-    /// </summary>
+    /// <summary>Tests that GetTransitionStoryboardByName throws when visual state group is not initialized.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetTransitionStoryboardByName_WithoutVisualStateGroup_ThrowsInvalidOperationException()
@@ -576,9 +551,7 @@ public class TransitioningContentControlTest
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Tests that GetTransitionStoryboardByName throws when transition is not found.
-    /// </summary>
+    /// <summary>Tests that GetTransitionStoryboardByName throws when transition is not found.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetTransitionStoryboardByName_WithInvalidTransition_ThrowsInvalidOperationException()
@@ -589,9 +562,7 @@ public class TransitioningContentControlTest
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Tests that GetTransitionStoryboardByName returns storyboard for valid transition.
-    /// </summary>
+    /// <summary>Tests that GetTransitionStoryboardByName returns storyboard for valid transition.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetTransitionStoryboardByName_WithValidTransition_ReturnsStoryboard()
@@ -603,9 +574,7 @@ public class TransitioningContentControlTest
         await Assert.That(storyboard).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that SetTransitionDefaultValues calls correct method for each transition type.
-    /// </summary>
+    /// <summary>Tests that SetTransitionDefaultValues calls correct method for each transition type.</summary>
     /// <param name="transitionType">The transition type.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -634,9 +603,7 @@ public class TransitioningContentControlTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Tests that OnApplyTemplate throws when PART_Container is missing.
-    /// </summary>
+    /// <summary>Tests that OnApplyTemplate throws when PART_Container is missing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnApplyTemplate_WithoutContainer_ThrowsInvalidOperationException()
@@ -653,9 +620,7 @@ public class TransitioningContentControlTest
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Tests that OnApplyTemplate throws when PART_CurrentContentPresentationSite is missing.
-    /// </summary>
+    /// <summary>Tests that OnApplyTemplate throws when PART_CurrentContentPresentationSite is missing.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnApplyTemplate_WithoutContentPresenter_ThrowsInvalidOperationException()
@@ -672,9 +637,7 @@ public class TransitioningContentControlTest
             .Throws<InvalidOperationException>();
     }
 
-    /// <summary>
-    /// Tests that control can apply template successfully with all required parts.
-    /// </summary>
+    /// <summary>Tests that control can apply template successfully with all required parts.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task OnApplyTemplate_WithAllParts_Succeeds()
@@ -684,9 +647,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.CurrentContentPresentationSite).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that enum values have correct count.
-    /// </summary>
+    /// <summary>Tests that enum values have correct count.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TransitionType_Enum_HasExpectedValues()
@@ -696,9 +657,7 @@ public class TransitioningContentControlTest
         await Assert.That(values.Length).IsEqualTo(TransitionTypeCount);
     }
 
-    /// <summary>
-    /// Tests that direction enum has correct count.
-    /// </summary>
+    /// <summary>Tests that direction enum has correct count.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TransitionDirection_Enum_HasExpectedValues()
@@ -708,9 +667,7 @@ public class TransitioningContentControlTest
         await Assert.That(values.Length).IsEqualTo(TransitionDirectionCount);
     }
 
-    /// <summary>
-    /// Tests that setting CompletingTransition triggers SetTransitionDefaultValues.
-    /// </summary>
+    /// <summary>Tests that setting CompletingTransition triggers SetTransitionDefaultValues.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CompletingTransition_Set_TriggersSetTransitionDefaultValues()
@@ -734,9 +691,7 @@ public class TransitioningContentControlTest
         await Assert.That(animation2.Duration.TimeSpan).IsEqualTo(TimeSpan.FromSeconds(HalfSecond));
     }
 
-    /// <summary>
-    /// Tests that setting StartingTransition triggers SetTransitionDefaultValues.
-    /// </summary>
+    /// <summary>Tests that setting StartingTransition triggers SetTransitionDefaultValues.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task StartingTransition_Set_TriggersSetTransitionDefaultValues()
@@ -762,9 +717,7 @@ public class TransitioningContentControlTest
         await Assert.That(animation.To).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that PrepareTransitionImages captures the current content.
-    /// </summary>
+    /// <summary>Tests that PrepareTransitionImages captures the current content.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PrepareTransitionImages_CapturesCurrentContent()
@@ -788,9 +741,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo(NewContentText);
     }
 
-    /// <summary>
-    /// Tests that ConfigureBounceTransition sets both transitions.
-    /// </summary>
+    /// <summary>Tests that ConfigureBounceTransition sets both transitions.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ConfigureBounceTransition_SetsBothTransitions()
@@ -807,9 +758,7 @@ public class TransitioningContentControlTest
         await Assert.That(control.CompletingTransition).IsNotNull();
     }
 
-    /// <summary>
-    /// Tests that ConfigureStandardTransition returns correct name for different transition types.
-    /// </summary>
+    /// <summary>Tests that ConfigureStandardTransition returns correct name for different transition types.</summary>
     /// <param name="transitionType">The transition type.</param>
     /// <param name="direction">The transition direction.</param>
     /// <param name="expectedName">The expected transition name.</param>
@@ -834,9 +783,7 @@ public class TransitioningContentControlTest
         await Assert.That(transitionName).IsEqualTo(expectedName);
     }
 
-    /// <summary>
-    /// Tests PrepareTransitionImages with zero-size element.
-    /// </summary>
+    /// <summary>Tests PrepareTransitionImages with zero-size element.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task PrepareTransitionImages_WithZeroSizeElement_HandlesGracefully()
@@ -844,16 +791,13 @@ public class TransitioningContentControlTest
         var control = CreateControlWithTemplate();
 
         // Don't set size - ActualWidth/Height will be 0
-
         // Should not throw even with zero size
         control.PrepareTransitionImages(NewContentText);
 
         await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo(NewContentText);
     }
 
-    /// <summary>
-    /// Creates a control with a minimal template for testing.
-    /// </summary>
+    /// <summary>Creates a control with a minimal template for testing.</summary>
     /// <returns>A configured TransitioningContentControl.</returns>
     private static TransitioningContentControl CreateControlWithTemplate()
     {
@@ -892,9 +836,7 @@ public class TransitioningContentControlTest
         return control;
     }
 
-    /// <summary>
-    /// Creates a control with template parts set up for testing.
-    /// </summary>
+    /// <summary>Creates a control with template parts set up for testing.</summary>
     /// <returns>A configured TransitioningContentControl.</returns>
     private static TransitioningContentControl CreateControlWithTemplateParts()
     {
@@ -916,9 +858,7 @@ public class TransitioningContentControlTest
         return control;
     }
 
-    /// <summary>
-    /// Adds all required transition states to a visual state group.
-    /// </summary>
+    /// <summary>Adds all required transition states to a visual state group.</summary>
     /// <param name="stateGroup">The visual state group.</param>
     private static void AddTransitionStates(VisualStateGroup stateGroup)
     {

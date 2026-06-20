@@ -5,59 +5,46 @@
 
 using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
 using System.Reflection;
 using Microsoft.Maui.Controls;
 using ReactiveUI.Internal;
+using ReactiveUI.Primitives;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 
-/// <summary>
-/// This is a <see cref="NavigationPage"/> that serves as a router.
-/// </summary>
+/// <summary>This is a <see cref="NavigationPage"/> that serves as a router.</summary>
 /// <seealso cref="NavigationPage" />
 /// <seealso cref="IActivatableView" />
 public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 {
-    /// <summary>
-    /// The router bindable property.
-    /// </summary>
+    /// <summary>The router bindable property.</summary>
     public static readonly BindableProperty RouterProperty = BindableProperty.Create(
         nameof(Router),
         typeof(RoutingState),
         typeof(RoutedViewHost));
 
-    /// <summary>
-    /// The Set Title on Navigate property.
-    /// </summary>
+    /// <summary>The Set Title on Navigate property.</summary>
     public static readonly BindableProperty SetTitleOnNavigateProperty = BindableProperty.Create(
         nameof(SetTitleOnNavigate),
         typeof(bool),
         typeof(RoutedViewHost),
         false);
 
-    /// <summary>
-    /// The subscriptions created by this host.
-    /// </summary>
-    private readonly CompositeDisposable _subscriptions = [];
+    /// <summary>The subscriptions created by this host.</summary>
+    private readonly MultipleDisposable _subscriptions = [];
 
-    /// <summary>
-    /// The name of the last navigation action that occurred.
-    /// </summary>
+    /// <summary>The name of the last navigation action that occurred.</summary>
     private string? _action;
 
-    /// <summary>
-    /// A value indicating whether a navigation operation is currently in progress.
-    /// </summary>
+    /// <summary>A value indicating whether a navigation operation is currently in progress.</summary>
     private bool _currentlyNavigating;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RoutedViewHost"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="RoutedViewHost"/> class.</summary>
     /// <exception cref="InvalidOperationException">You *must* register an IScreen class representing your App's main Screen.</exception>
     [RequiresUnreferencedCode(
         "This class uses reflection to determine view model types at runtime through ViewLocator, which may be incompatible with trimming.")]
@@ -91,27 +78,21 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         });
     }
 
-    /// <summary>
-    /// Gets or sets the <see cref="RoutingState"/> of the view model stack.
-    /// </summary>
+    /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
     public RoutingState Router
     {
         get => (RoutingState)GetValue(RouterProperty);
         set => SetValue(RouterProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether gets or sets the Set Title of the view model stack.
-    /// </summary>
+    /// <summary>Gets or sets a value indicating whether gets or sets the Set Title of the view model stack.</summary>
     public bool SetTitleOnNavigate
     {
         get => (bool)GetValue(SetTitleOnNavigateProperty);
         set => SetValue(SetTitleOnNavigateProperty, value);
     }
 
-    /// <summary>
-    /// Pages for view model.
-    /// </summary>
+    /// <summary>Pages for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     [RequiresUnreferencedCode(
@@ -123,7 +104,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
     {
         if (vm is null)
         {
-            return EmptyObservable<Page>.Instance;
+            return Signal.None<Page>();
         }
 
         var ret = ViewLocator.Current.ResolveView(vm);
@@ -132,7 +113,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             var msg =
                 $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{vm.GetType().Name}>";
 
-            return new ThrowObservable<Page>(new InvalidOperationException(msg));
+            return Signal.Fail<Page>(new InvalidOperationException(msg));
         }
 
         ret.ViewModel = vm;
@@ -143,12 +124,10 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             pg.Title = vm.UrlPathSegment;
         }
 
-        return new ReturnObservable<Page>(pg);
+        return Signal.Emit<Page>(pg);
     }
 
-    /// <summary>
-    /// Page for view model.
-    /// </summary>
+    /// <summary>Page for view model.</summary>
     /// <param name="vm">The vm.</param>
     /// <returns>An observable of the page associated to a <see cref="IRoutableViewModel"/>.</returns>
     [RequiresUnreferencedCode(
@@ -181,9 +160,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         return pg;
     }
 
-    /// <summary>
-    /// Invalidates current page view model.
-    /// </summary>
+    /// <summary>Invalidates current page view model.</summary>
     protected void InvalidateCurrentViewModel()
     {
         var vm = Router?.GetCurrentViewModel();
@@ -204,10 +181,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         }
     }
 
-    /// <summary>
-    /// Syncs page's navigation stack  with <see cref="Router"/>
-    /// to affect <see cref="Router"/> manipulations like Add or Clear.
-    /// </summary>
+    /// <summary>Syncs page's navigation stack with <see cref="Router"/> to affect <see cref="Router"/> manipulations like Add or Clear.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
@@ -251,22 +225,20 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         }
     }
 
-    /// <summary>
-    /// Subscribes to <see cref="RoutingState.NavigationStack"/> changes and resyncs when the stack is cleared.
-    /// </summary>
+    /// <summary>Subscribes to <see cref="RoutingState.NavigationStack"/> changes and resyncs when the stack is cleared.</summary>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
         "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
         "trimming can't validate that the requirements of those annotations are met.")]
     private void SubscribeToNavigationStackChanges() =>
-        new FromEventObservable<Unit>(onNext =>
+        new FromEventObservable<RxVoid>(onNext =>
             {
-                void Handler(object? sender, NotifyCollectionChangedEventArgs e) => onNext(Unit.Default);
+                void Handler(object? sender, NotifyCollectionChangedEventArgs e) => onNext(RxVoid.Default);
                 Router.NavigationStack.CollectionChanged += Handler;
                 return new ActionDisposable(() => Router.NavigationStack.CollectionChanged -= Handler);
             })
-            .Subscribe(new DelegateObserver<Unit>(async _ =>
+            .Subscribe(new DelegateObserver<RxVoid>(async _ =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router?.NavigationStack.Count == 0).
                 if (_currentlyNavigating || Router?.NavigationStack.Count != 0)
@@ -278,9 +250,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             }))
             .DisposeWith(_subscriptions);
 
-    /// <summary>
-    /// Subscribes to <see cref="RoutingState.NavigateBack"/> requests and pops the page accordingly.
-    /// </summary>
+    /// <summary>Subscribes to <see cref="RoutingState.NavigateBack"/> requests and pops the page accordingly.</summary>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
@@ -316,9 +286,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         await SyncNavigationStacksAsync();
     }
 
-    /// <summary>
-    /// Subscribes to <see cref="RoutingState.Navigate"/> requests and pushes the resolved page.
-    /// </summary>
+    /// <summary>Subscribes to <see cref="RoutingState.Navigate"/> requests and pushes the resolved page.</summary>
     [RequiresUnreferencedCode(
         "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
     [RequiresDynamicCode(
@@ -386,22 +354,19 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         await SyncNavigationStacksAsync();
     }
 
-    /// <summary>
-    /// Subscribes to the <see cref="NavigationPage.Popped"/> event to keep the router stack in sync
-    /// when the user navigates back via the application back button.
-    /// </summary>
+    /// <summary>Subscribes to the <see cref="NavigationPage.Popped"/> event to keep the router stack in sync when the user navigates back via the application back button.</summary>
     private void SubscribeToPopped()
     {
-        var poppingEvent = new FromEventObservable<Unit>(onNext =>
+        var poppingEvent = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, NavigationEventArgs e) => onNext(Unit.Default);
+            void Handler(object? sender, NavigationEventArgs e) => onNext(RxVoid.Default);
             Popped += Handler;
             return new ActionDisposable(() => Popped -= Handler);
         });
 
         // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
         poppingEvent
-            .Subscribe(new DelegateObserver<Unit>(_ =>
+            .Subscribe(new DelegateObserver<RxVoid>(_ =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router is not null).
                 if (_currentlyNavigating || Router is null)
@@ -420,21 +385,18 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             .DisposeWith(_subscriptions);
     }
 
-    /// <summary>
-    /// Subscribes to the <see cref="NavigationPage.PoppedToRoot"/> event to keep the router stack in sync
-    /// when the user pops back to the root page.
-    /// </summary>
+    /// <summary>Subscribes to the <see cref="NavigationPage.PoppedToRoot"/> event to keep the router stack in sync when the user pops back to the root page.</summary>
     private void SubscribeToPoppedToRoot()
     {
-        var poppingToRootEvent = new FromEventObservable<Unit>(onNext =>
+        var poppingToRootEvent = new FromEventObservable<RxVoid>(onNext =>
         {
-            void Handler(object? sender, NavigationEventArgs e) => onNext(Unit.Default);
+            void Handler(object? sender, NavigationEventArgs e) => onNext(RxVoid.Default);
             PoppedToRoot += Handler;
             return new ActionDisposable(() => PoppedToRoot -= Handler);
         });
 
         poppingToRootEvent
-            .Subscribe(new DelegateObserver<Unit>(_ =>
+            .Subscribe(new DelegateObserver<RxVoid>(_ =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router is not null).
                 if (_currentlyNavigating || Router is null)
@@ -453,9 +415,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             .DisposeWith(_subscriptions);
     }
 
-    /// <summary>
-    /// Determines whether the page navigation stack differs from the router navigation stack.
-    /// </summary>
+    /// <summary>Determines whether the page navigation stack differs from the router navigation stack.</summary>
     /// <returns><see langword="true"/> if the stacks are different; otherwise, <see langword="false"/>.</returns>
     private bool StacksAreDifferent()
     {

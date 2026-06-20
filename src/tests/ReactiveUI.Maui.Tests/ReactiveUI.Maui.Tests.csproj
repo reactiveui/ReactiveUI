@@ -10,6 +10,10 @@
     <ProjectReference Include="..\..\ReactiveUI\ReactiveUI.csproj"/>
     <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives" />
+    <Using Include="ReactiveUI.Primitives.Signals" />
+  </ItemGroup>
 
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
     <WindowsPackageType>None</WindowsPackageType>

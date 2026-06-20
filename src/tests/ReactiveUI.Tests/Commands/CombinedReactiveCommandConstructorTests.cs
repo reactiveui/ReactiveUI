@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-
 namespace ReactiveUI.Tests.Commands;
 
 /// <summary>
@@ -20,11 +16,11 @@ public class CombinedReactiveCommandConstructorTests
     [Test]
     public async Task CanExecuteConstructor_BuildsCommand()
     {
-        var child = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
-        IEnumerable<ReactiveCommandBase<Unit, Unit>> children = [child];
-        IObservable<bool> canExecute = Observable.Return(true);
+        var child = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
+        IEnumerable<ReactiveCommandBase<RxVoid, RxVoid>> children = [child];
+        IObservable<bool> canExecute = Signal.Emit(true);
 
-        using var combined = new CombinedReactiveCommand<Unit, Unit>(children, canExecute);
+        using var combined = new CombinedReactiveCommand<RxVoid, RxVoid>(children, canExecute);
 
         await Assert.That(combined).IsNotNull();
     }
@@ -34,10 +30,10 @@ public class CombinedReactiveCommandConstructorTests
     [Test]
     public async Task SchedulerConstructor_BuildsCommand()
     {
-        var child = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
-        IEnumerable<ReactiveCommandBase<Unit, Unit>> children = [child];
+        var child = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
+        IEnumerable<ReactiveCommandBase<RxVoid, RxVoid>> children = [child];
 
-        using var combined = new CombinedReactiveCommand<Unit, Unit>(children, ImmediateScheduler.Instance);
+        using var combined = new CombinedReactiveCommand<RxVoid, RxVoid>(children, Sequencer.Immediate);
 
         await Assert.That(combined).IsNotNull();
     }

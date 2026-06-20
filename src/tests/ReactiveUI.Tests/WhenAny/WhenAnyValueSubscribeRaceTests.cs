@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -9,10 +9,7 @@ using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <summary>
-/// Tests targeting the "missed update" race between <c>WhenAnyValue</c>'s initial value read and the
-/// <see cref="INotifyPropertyChanged.PropertyChanged"/> handler attachment.
-/// </summary>
+/// <summary>Tests targeting the "missed update" race between <c>WhenAnyValue</c>'s initial value read and the <see cref="INotifyPropertyChanged.PropertyChanged"/> handler attachment.</summary>
 /// <remarks>
 /// In <c>ExpressionChainSink.Sink.Level.SetParent</c>, the subscribing thread (1) reads the current
 /// property value via the cached getter and emits it downstream, then (2) subscribes to
@@ -145,27 +142,24 @@ public class WhenAnyValueSubscribeRaceTests
         await Assert.That(divergences).IsEmpty();
     }
 
-    /// <summary>
-    /// A minimal hand-rolled <see cref="INotifyPropertyChanged"/> source used to isolate the chain
-    /// sink's behaviour from <see cref="ReactiveObject"/>.
-    /// </summary>
+    /// <summary>A minimal hand-rolled <see cref="INotifyPropertyChanged"/> source used to isolate the chain sink's behaviour from <see cref="ReactiveObject"/>.</summary>
     private sealed class PlainInpc : INotifyPropertyChanged
     {
-        private int _value;
-
+        /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>Gets or sets the value, raising <see cref="PropertyChanged"/> only when it actually changes.</summary>
         public int Value
         {
-            get => _value;
+            get;
             set
             {
-                if (_value == value)
+                if (field == value)
                 {
                     return;
                 }
 
-                _value = value;
+                field = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             }
         }

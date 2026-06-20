@@ -8,26 +8,18 @@ using ReactiveUI.Tests.Mocks;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A single-instance example view registered with a contract.
-/// </summary>
+/// <summary>A single-instance example view registered with a contract.</summary>
 [ViewContract("contract")]
 [SingleInstanceView]
-public class SingleInstanceWithContractExampleView : ReactiveUI.Winforms.ReactiveUserControl<SingleInstanceExampleViewModel>
+public class SingleInstanceWithContractExampleView : ReactiveUserControl<SingleInstanceExampleViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SingleInstanceWithContractExampleView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="SingleInstanceWithContractExampleView"/> class.</summary>
     public SingleInstanceWithContractExampleView() => Instances++;
 
-    /// <summary>
-    /// Gets the number of instances created.
-    /// </summary>
+    /// <summary>Gets the number of instances created.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public static int Instances { get; private set; }
 
-    /// <summary>
-    /// Reset the static counter (for test isolation only).
-    /// </summary>
+    /// <summary>Reset the static counter (for test isolation only).</summary>
     internal static void ResetInstances() => Instances = 0;
 }

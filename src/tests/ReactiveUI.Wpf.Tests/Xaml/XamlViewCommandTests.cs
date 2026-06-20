@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -15,16 +13,12 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests for XAML and commands.
-/// </summary>
+/// <summary>Tests for XAML and commands.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class XamlViewCommandTests
 {
-    /// <summary>
-    /// Test that event binder binds to explicit inherited event.
-    /// </summary>
+    /// <summary>Test that event binder binds to explicit inherited event.</summary>
     [Test]
     public void EventBinderBindsToExplicitInheritedEvent()
     {
@@ -32,23 +26,21 @@ public class XamlViewCommandTests
         fixture.BindCommand(fixture!.ViewModel, static x => x!.Cmd, static x => x.TheTextBox, "MouseDown");
     }
 
-    /// <summary>
-    /// Test that event binder binds to implicit event.
-    /// </summary>
+    /// <summary>Test that event binder binds to implicit event.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task EventBinderBindsToImplicitEvent()
     {
         var input = new Button();
         var fixture = new CreatesCommandBindingViaEvent();
-        var cmd = ReactiveCommand.Create<int>(_ => { }, outputScheduler: ImmediateScheduler.Instance);
+        var cmd = ReactiveCommand.Create<int>(_ => { }, outputScheduler: Sequencer.Immediate);
 
         await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
 
         var invokeCount = 0;
         cmd.Subscribe(_ => ++invokeCount);
 
-        var disp = fixture.BindCommandToObject(cmd, input, Observable.Return((object)5));
+        var disp = fixture.BindCommandToObject(cmd, input, Signal.Emit((object)5));
         using (Assert.Multiple())
         {
             await Assert.That(disp).IsNotNull();

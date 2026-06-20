@@ -8,22 +8,15 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="VisibilityToBooleanTypeConverter"/> which converts
-/// Visibility enum values to boolean values.
-/// </summary>
+/// <summary>Tests for <see cref="VisibilityToBooleanTypeConverter"/> which converts Visibility enum values to boolean values.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public sealed class VisibilityToBooleanTypeConverterTests
 {
-    /// <summary>
-    /// The expected affinity returned for supported conversions.
-    /// </summary>
+    /// <summary>The expected affinity returned for supported conversions.</summary>
     private const int ExpectedAffinity = 2;
 
-    /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObjects returns correct affinity.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinity()
@@ -35,9 +28,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Visible to true.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts Visibility.Visible to true.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsVisibleToTrue()
@@ -50,9 +41,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Collapsed to false.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts Visibility.Collapsed to false.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsCollapsedToFalse()
@@ -65,9 +54,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts Visibility.Hidden to false.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts Visibility.Hidden to false.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsHiddenToFalse()
@@ -80,9 +67,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint inverts the result (Visible becomes false).
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint inverts the result (Visible becomes false).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseHint_ConvertsVisibleToFalse()
@@ -95,9 +80,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint inverts the result (Collapsed becomes true).
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint inverts the result (Collapsed becomes true).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseHint_ConvertsCollapsedToTrue()
@@ -110,9 +93,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint inverts the result (Hidden becomes true).
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint inverts the result (Hidden becomes true).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseHint_ConvertsHiddenToTrue()
@@ -125,9 +106,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with None hint (default) works correctly.
-    /// </summary>
+    /// <summary>Tests that TryConvert with None hint (default) works correctly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithNoneHint_WorksAsDefault()
@@ -143,9 +122,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(collapsedResult).IsFalse();
     }
 
-    /// <summary>
-    /// Tests that TryConvert always returns true (successful conversion).
-    /// </summary>
+    /// <summary>Tests that TryConvert always returns true (successful conversion).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_AlwaysReturnsTrue()
@@ -161,9 +138,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(success3).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that TryConvert with non-BooleanToVisibilityHint conversion hint uses default behavior.
-    /// </summary>
+    /// <summary>Tests that TryConvert with non-BooleanToVisibilityHint conversion hint uses default behavior.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithNonBooleanToVisibilityHint_UsesDefaultBehavior()
@@ -177,9 +152,7 @@ public sealed class VisibilityToBooleanTypeConverterTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Tests that TryConvert treats only Visible as true, all others as false.
-    /// </summary>
+    /// <summary>Tests that TryConvert treats only Visible as true, all others as false.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_TreatsOnlyVisibleAsTrue()

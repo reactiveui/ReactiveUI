@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables.Fluent;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,19 +14,13 @@ namespace ReactiveUI.Blazor.Tests;
 /// </summary>
 public class ReactiveInjectableComponentBaseTests : BunitContext
 {
-    /// <summary>
-    /// The expected number of renders after the initial render of the component.
-    /// </summary>
+    /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
 
-    /// <summary>
-    /// The delay in milliseconds allowed for the asynchronous UI update to settle.
-    /// </summary>
+    /// <summary>The delay in milliseconds allowed for the asynchronous UI update to settle.</summary>
     private const int RenderDelayMilliseconds = 100;
 
-    /// <summary>
-    /// The delay in milliseconds used to confirm that no asynchronous re-render occurred.
-    /// </summary>
+    /// <summary>The delay in milliseconds used to confirm that no asynchronous re-render occurred.</summary>
     private const int NoRenderDelayMilliseconds = 50;
 
     /// <summary>
@@ -54,9 +47,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(ExpectedRenderCount);
     }
 
-    /// <summary>
-    /// Verifies that setting the ViewModel to the same value doesn't trigger notifications.
-    /// </summary>
+    /// <summary>Verifies that setting the ViewModel to the same value doesn't trigger notifications.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task ViewModel_Set_Same_Value_No_Notification()
@@ -77,9 +68,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         await Assert.That(cut.Instance.RenderCount).IsEqualTo(renderCount);
     }
 
-    /// <summary>
-    /// Verifies that the explicit interface implementation works correctly.
-    /// </summary>
+    /// <summary>Verifies that the explicit interface implementation works correctly.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task IViewFor_ViewModel_Explicit_Interface_Works()
@@ -101,9 +90,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         await Assert.That(cut.Instance.ViewModel).IsEqualTo(newViewModel);
     }
 
-    /// <summary>
-    /// Verifies that Activated and Deactivated observables are accessible.
-    /// </summary>
+    /// <summary>Verifies that Activated and Deactivated observables are accessible.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task Activated_Deactivated_Observables_Work()
@@ -118,9 +105,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         await Assert.That(activatable.Deactivated).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies that IActivatableViewModel activation works correctly.
-    /// </summary>
+    /// <summary>Verifies that IActivatableViewModel activation works correctly.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task ActivatableViewModel_Works()
@@ -144,60 +129,39 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         await Assert.That(viewModel.IsActivated).IsFalse();
     }
 
-    /// <summary>
-    /// A simple ReactiveObject ViewModel for testing.
-    /// </summary>
+    /// <summary>A simple ReactiveObject ViewModel for testing.</summary>
     public class TestViewModel : ReactiveObject
     {
-        /// <summary>
-        /// The backing field for the <see cref="SomeProperty"/> property.
-        /// </summary>
-        private string? _someProperty;
-
-        /// <summary>
-        /// Gets or sets a property that notifies on change.
-        /// </summary>
+        /// <summary>Gets or sets a property that notifies on change.</summary>
         public string? SomeProperty
         {
-            get => _someProperty;
-            set => this.RaiseAndSetIfChanged(ref _someProperty, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
-    /// <summary>
-    /// An activatable ViewModel for testing IActivatableViewModel support.
-    /// </summary>
+    /// <summary>An activatable ViewModel for testing IActivatableViewModel support.</summary>
     public class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.</summary>
         public TestActivatableViewModel() =>
             this.WhenActivated(disposables =>
             {
                 IsActivated = true;
-                System.Reactive.Disposables.Disposable.Create(() => IsActivated = false).DisposeWith(disposables);
+                new ActionDisposable(() => IsActivated = false).DisposeWith(disposables);
             });
 
-        /// <summary>
-        /// Gets the ViewModelActivator for this ViewModel.
-        /// </summary>
+        /// <summary>Gets the ViewModelActivator for this ViewModel.</summary>
         public ViewModelActivator Activator { get; } = new();
 
-        /// <summary>
-        /// Gets a value indicating whether the ViewModel is currently activated.
-        /// </summary>
+        /// <summary>Gets a value indicating whether the ViewModel is currently activated.</summary>
         public bool IsActivated { get; private set; }
     }
 
-    /// <summary>
-    /// A concrete implementation of ReactiveInjectableComponentBase for testing.
-    /// </summary>
+    /// <summary>A concrete implementation of ReactiveInjectableComponentBase for testing.</summary>
     public class TestInjectableComponent : ReactiveInjectableComponentBase<TestViewModel>
     {
-        /// <summary>
-        /// Gets the number of times the component has rendered.
-        /// </summary>
+        /// <summary>Gets the number of times the component has rendered.</summary>
         public int RenderCount { get; private set; }
 
         /// <inheritdoc/>
@@ -208,8 +172,6 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
         }
     }
 
-    /// <summary>
-    /// A concrete implementation of ReactiveInjectableComponentBase for testing with activatable ViewModels.
-    /// </summary>
+    /// <summary>A concrete implementation of ReactiveInjectableComponentBase for testing with activatable ViewModels.</summary>
     public class TestActivatableInjectableComponent : ReactiveInjectableComponentBase<TestActivatableViewModel>;
 }

@@ -3,33 +3,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ReactiveUI.Tests.ReactiveObjects.Mocks;
 
-/// <summary>
-///     A fixture for testing the OAPH expression-based override.
-/// </summary>
+/// <summary>A fixture for testing the OAPH expression-based override.</summary>
 /// <seealso cref="TestFixture" />
 public class OaphTestFixture : TestFixture
 {
-    /// <summary>
-    ///     The number of leading characters exposed by <see cref="FirstThreeLettersOfOneWord" />.
-    /// </summary>
+    /// <summary>The number of leading characters exposed by <see cref="FirstThreeLettersOfOneWord" />.</summary>
     private const int PrefixLength = 3;
 
-    /// <summary>
-    ///     The backing helper for the <see cref="FirstThreeLettersOfOneWord" /> property.
-    /// </summary>
+    /// <summary>The backing helper for the <see cref="FirstThreeLettersOfOneWord" /> property.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     private readonly ObservableAsPropertyHelper<string?> _firstThreeLettersOfOneWord;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="OaphTestFixture" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="OaphTestFixture" /> class.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
         "S3366:Make sure the use of this in constructors is safe here",
@@ -42,9 +33,7 @@ public class OaphTestFixture : TestFixture
             static x => x.FirstThreeLettersOfOneWord,
             out _firstThreeLettersOfOneWord);
 
-    /// <summary>
-    ///     Gets the first three letters of one word.
-    /// </summary>
+    /// <summary>Gets the first three letters of one word.</summary>
     [IgnoreDataMember]
     [JsonIgnore]
     public string? FirstThreeLettersOfOneWord => _firstThreeLettersOfOneWord.Value;

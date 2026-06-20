@@ -5,28 +5,17 @@
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A mock list item view model used by binding tests.
-/// </summary>
-public class MockBindListItemViewModel : ReactiveUI.ReactiveObject
+/// <summary>A mock list item view model used by binding tests.</summary>
+public class MockBindListItemViewModel : ReactiveObject
 {
-    /// <summary>
-    /// Backing field for the <see cref="Name"/> property.
-    /// </summary>
-    private string _name = string.Empty;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MockBindListItemViewModel"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="MockBindListItemViewModel"/> class.</summary>
     /// <param name="name">The display name of the item.</param>
     public MockBindListItemViewModel(string name) => Name = name;
 
-    /// <summary>
-    /// Gets or sets displayed name of the crumb.
-    /// </summary>
+    /// <summary>Gets or sets displayed name of the crumb.</summary>
     public string Name
     {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 }

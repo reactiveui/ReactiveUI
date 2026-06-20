@@ -11,9 +11,7 @@ namespace ReactiveUI.Tests.Bindings.Converters;
 /// </summary>
 public class ConverterAffinityTests
 {
-    /// <summary>
-    ///     Data source for standard converters (affinity = 2).
-    /// </summary>
+    /// <summary>Data source for standard converters (affinity = 2).</summary>
     /// <returns>A sequence of converter test data with expected affinity values.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
@@ -106,9 +104,7 @@ public class ConverterAffinityTests
         yield return () => (new StringToUriTypeConverter(), BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    ///     Verifies that the EqualityTypeConverter has affinity 1 (last resort).
-    /// </summary>
+    /// <summary>Verifies that the EqualityTypeConverter has affinity 1 (last resort).</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task EqualityConverter_ShouldHaveAffinity1()

@@ -5,23 +5,15 @@
 
 namespace ReactiveUI.Tests.ReactiveProperties;
 
-/// <summary>
-/// An enumeration used for testing reactive property scenarios.
-/// </summary>
+/// <summary>An enumeration used for testing reactive property scenarios.</summary>
 internal enum TestEnum
 {
-    /// <summary>
-    /// No value.
-    /// </summary>
+    /// <summary>No value.</summary>
     None,
 
-    /// <summary>
-    /// The first test value.
-    /// </summary>
+    /// <summary>The first test value.</summary>
     Enum1,
 
-    /// <summary>
-    /// The second test value.
-    /// </summary>
+    /// <summary>The second test value.</summary>
     Enum2
 }

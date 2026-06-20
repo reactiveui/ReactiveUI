@@ -1,0 +1,11 @@
+<Project>
+  <!-- Inherit all repository-wide settings from the root src/Directory.Build.props. -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Projects in this folder (benchmarks) are not shipped libraries, so they have no public
+         API surface to track. Disabling here (rather than by path-substring matching in the
+         root props) avoids false positives from unrelated paths. -->
+    <TrackPublicApi>false</TrackPublicApi>
+  </PropertyGroup>
+</Project>

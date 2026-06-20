@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured Blend leaf: recompiles the ReactiveUI.Blend source against the
+         ReactiveUI.Reactive engine. REACTIVE_SHIM (from the 'Reactive' name suffix in Directory.Build.props)
+         flips the namespaces to ReactiveUI.Reactive.*; the seam global usings line up the engine types. -->
+    <TargetFrameworks>$(ReactiveUIWindowsOnlyTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Blend.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.Blend</RootNamespace>
+    <PackageDescription>Provides reactive extensions based xaml components based on the Blend SDK library, recompiled against System.Reactive.</PackageDescription>
+    <PackageId>ReactiveUI.Blend.Reactive</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;frp;Blend;wpf;net;</PackageTags>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces used by the recompiled shared source; see ReactiveShim.props for the seam set. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf"/>
+  </ItemGroup>
+  <!-- The same ReactiveUI.Blend source the lean package ships, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Blend\**\*.cs" Exclude="..\ReactiveUI.Blend\obj\**\*.cs;..\ReactiveUI.Blend\bin\**\*.cs;..\ReactiveUI.Blend\Platforms\**\*.cs" Link="ReactiveUI.Blend\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+  </ItemGroup>
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
+    <Reference Include="PresentationFramework.Aero"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests.Reactive"/>
+  </ItemGroup>
+</Project>

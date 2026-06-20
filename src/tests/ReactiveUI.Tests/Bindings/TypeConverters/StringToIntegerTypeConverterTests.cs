@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-///     Tests for converting strings to integers.
-/// </summary>
+/// <summary>Tests for converting strings to integers.</summary>
 public class StringToIntegerTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an empty string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an empty string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_ReturnsFalse()
@@ -36,9 +30,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an invalid string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an invalid string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_InvalidString_ReturnsFalse()
@@ -50,9 +42,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an out-of-range value fails to convert.
-    /// </summary>
+    /// <summary>Verifies that an out-of-range value fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_OutOfRangeValue_ReturnsFalse()
@@ -64,15 +54,13 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts to an integer.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts to an integer.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_StringToInt_Succeeds()
     {
         var converter = new StringToIntegerTypeConverter();
-        const int ExpectedValue = 123456;
+        const int ExpectedValue = 123_456;
 
         var result = converter.TryConvert("123456", null, out var output);
 
@@ -80,9 +68,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that a null string fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null string fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NullString_ReturnsFalse()
@@ -95,9 +81,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Verifies that a zero value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a zero value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ZeroValue_Succeeds()
@@ -110,15 +94,13 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Verifies that a negative value converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a negative value converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new StringToIntegerTypeConverter();
-        const int ExpectedValue = -123456;
+        const int ExpectedValue = -123_456;
 
         var result = converter.TryConvert("-123456", null, out var output);
 
@@ -126,9 +108,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that a valid string converts via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that a valid string converts via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_ValidString_Succeeds()
@@ -142,9 +122,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo(ExpectedValue);
     }
 
-    /// <summary>
-    /// Verifies that an input of an invalid type fails to convert via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that an input of an invalid type fails to convert via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_InvalidType_ReturnsFalse()
@@ -158,9 +136,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert via the typed overload.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert via the typed overload.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_NullInput_ReturnsFalse()
@@ -173,9 +149,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="string"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="string"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsStringType()
@@ -185,9 +159,7 @@ public class StringToIntegerTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(string));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is <see cref="int"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is <see cref="int"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsIntType()

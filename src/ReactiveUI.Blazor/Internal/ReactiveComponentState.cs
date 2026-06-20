@@ -4,12 +4,12 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Disposables;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blazor.Internal;
+#else
 namespace ReactiveUI.Blazor.Internal;
-
+#endif
 /// <summary>
 /// Internal state container for reactive Blazor components.
 /// Manages activation lifecycle, subscriptions, and disposal semantics.
@@ -26,14 +26,10 @@ namespace ReactiveUI.Blazor.Internal;
 /// </remarks>
 internal sealed class ReactiveComponentState : IDisposable
 {
-    /// <summary>
-    /// Signals component activation. Emits <see cref="Unit.Default"/> when <see cref="NotifyActivated"/> is called.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _initSubject = new();
+    /// <summary>Signals component activation. Emits <see cref="RxVoid.Default"/> when <see cref="NotifyActivated"/> is called.</summary>
+    private readonly Signal<RxVoid> _initSubject = new();
 
-    /// <summary>
-    /// Signals component deactivation. Emits <see cref="Unit.Default"/> when <see cref="NotifyDeactivated"/> is called.
-    /// </summary>
+    /// <summary>Signals component deactivation. Emits <see cref="RxVoid.Default"/> when <see cref="NotifyDeactivated"/> is called.</summary>
     /// <remarks>
     /// Suppressed CA2213 because this subject is used for signaling only and is disposed explicitly in <see cref="Dispose"/>.
     /// </remarks>
@@ -41,16 +37,12 @@ internal sealed class ReactiveComponentState : IDisposable
         "Design",
         "CA2213:Disposable fields should be disposed",
         Justification = "Disposed explicitly in Dispose method.")]
-    private readonly BroadcastSubject<Unit> _deactivateSubject = new();
+    private readonly Signal<RxVoid> _deactivateSubject = new();
 
-    /// <summary>
-    /// Holds subscriptions tied to the component lifetime. Disposed when the component is disposed.
-    /// </summary>
-    private readonly CompositeDisposable _lifetimeDisposables = [];
+    /// <summary>Holds subscriptions tied to the component lifetime. Disposed when the component is disposed.</summary>
+    private readonly MultipleDisposable _lifetimeDisposables = [];
 
-    /// <summary>
-    /// Holds subscriptions created on first render.
-    /// </summary>
+    /// <summary>Holds subscriptions created on first render.</summary>
     /// <remarks>
     /// Deferring these subscriptions to OnAfterRender avoids framework conflicts that occur when they are created
     /// during OnInitialized. Assigning <see cref="FirstRenderSubscriptions"/> disposes any previously held value,
@@ -58,32 +50,24 @@ internal sealed class ReactiveComponentState : IDisposable
     /// </remarks>
     private IDisposable? _firstRenderSubscriptions;
 
-    /// <summary>
-    /// Indicates whether the state has been disposed. Prevents double disposal.
-    /// </summary>
+    /// <summary>Indicates whether the state has been disposed. Prevents double disposal.</summary>
     private bool _disposed;
 
-    /// <summary>
-    /// Gets an observable that emits when the component is activated.
-    /// </summary>
+    /// <summary>Gets an observable that emits when the component is activated.</summary>
     /// <remarks>
     /// This observable emits once during component initialization and can be used to trigger
     /// reactive activation patterns for view models implementing <see cref="IActivatableViewModel"/>.
     /// </remarks>
-    public IObservable<Unit> Activated => _initSubject;
+    public IObservable<RxVoid> Activated => _initSubject;
 
-    /// <summary>
-    /// Gets an observable that emits when the component is deactivated.
-    /// </summary>
+    /// <summary>Gets an observable that emits when the component is deactivated.</summary>
     /// <remarks>
     /// This observable emits during component disposal, allowing cleanup operations to execute
     /// while subscriptions are still active.
     /// </remarks>
-    public IObservable<Unit> Deactivated => _deactivateSubject;
+    public IObservable<RxVoid> Deactivated => _deactivateSubject;
 
-    /// <summary>
-    /// Gets the composite disposable for lifetime subscriptions.
-    /// </summary>
+    /// <summary>Gets the composite disposable for lifetime subscriptions.</summary>
     /// <remarks>
     /// Use this to register subscriptions that should live for the entire component lifetime.
     /// All subscriptions added here will be disposed when the component is disposed.
@@ -92,11 +76,9 @@ internal sealed class ReactiveComponentState : IDisposable
         "Style",
         "RCS1085:Use auto-implemented property",
         Justification = "Explicit field backing provides clarity and follows established pattern in this class.")]
-    public CompositeDisposable LifetimeDisposables => _lifetimeDisposables;
+    public MultipleDisposable LifetimeDisposables => _lifetimeDisposables;
 
-    /// <summary>
-    /// Gets or sets the disposable for first-render-only subscriptions.
-    /// </summary>
+    /// <summary>Gets or sets the disposable for first-render-only subscriptions.</summary>
     /// <remarks>
     /// <para>
     /// Setting this property disposes any previously held value before storing the new one, giving the swap
@@ -121,18 +103,14 @@ internal sealed class ReactiveComponentState : IDisposable
         }
     }
 
-    /// <summary>
-    /// Notifies observers that the component has been activated.
-    /// </summary>
+    /// <summary>Notifies observers that the component has been activated.</summary>
     /// <remarks>
     /// Call this method during component initialization (typically in OnInitialized) to signal
     /// that the component is now active and ready for reactive operations.
     /// </remarks>
-    public void NotifyActivated() => _initSubject.OnNext(Unit.Default);
+    public void NotifyActivated() => _initSubject.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Notifies observers that the component is being deactivated.
-    /// </summary>
+    /// <summary>Notifies observers that the component is being deactivated.</summary>
     /// <remarks>
     /// <para>
     /// Call this method during component disposal to signal that the component is shutting down.
@@ -143,11 +121,9 @@ internal sealed class ReactiveComponentState : IDisposable
     /// Performance: This method is typically called once during disposal and incurs minimal overhead.
     /// </para>
     /// </remarks>
-    public void NotifyDeactivated() => _deactivateSubject.OnNext(Unit.Default);
+    public void NotifyDeactivated() => _deactivateSubject.OnNext(RxVoid.Default);
 
-    /// <summary>
-    /// Disposes all managed resources held by this state container.
-    /// </summary>
+    /// <summary>Disposes all managed resources held by this state container.</summary>
     /// <remarks>
     /// <para>
     /// Disposal order is critical for correct cleanup behavior:

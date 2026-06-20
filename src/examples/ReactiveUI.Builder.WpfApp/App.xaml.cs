@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
@@ -6,51 +6,35 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI.Builder.WpfApp.Models;
 using Splat;
 
 namespace ReactiveUI.Builder.WpfApp;
 
-/// <summary>
-/// Interaction logic for App.xaml.
-/// </summary>
+/// <summary>Interaction logic for App.xaml.</summary>
 [SuppressMessage(
     "Design",
     "CA1001:Types that own disposable fields should be disposable",
     Justification = "Disposed on application exit in OnExit")]
 public partial class App : Application
 {
-    /// <summary>
-    /// The small object cache size configured for ReactiveUI.
-    /// </summary>
+    /// <summary>The small object cache size configured for ReactiveUI.</summary>
     private const int SmallCacheSize = 100;
 
-    /// <summary>
-    /// The large object cache size configured for ReactiveUI.
-    /// </summary>
+    /// <summary>The large object cache size configured for ReactiveUI.</summary>
     private const int LargeCacheSize = 400;
 
-    /// <summary>
-    /// The suspension driver that persists and restores the chat state to a JSON file on disk.
-    /// </summary>
+    /// <summary>The suspension driver that persists and restores the chat state to a JSON file on disk.</summary>
     private Services.FileJsonSuspensionDriver? _driver;
 
-    /// <summary>
-    /// The service that relays chat messages and room events between running app instances.
-    /// </summary>
+    /// <summary>The service that relays chat messages and room events between running app instances.</summary>
     private Services.ChatNetworkService? _networkService;
 
-    /// <summary>
-    /// The coordinator that tracks how many app instances are running so the last one can save state.
-    /// </summary>
+    /// <summary>The coordinator that tracks how many app instances are running so the last one can save state.</summary>
     private Services.AppLifetimeCoordinator? _lifetime;
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Application.Startup" /> event.
-    /// </summary>
+    /// <summary>Raises the <see cref="E:System.Windows.Application.Startup" /> event.</summary>
     /// <param name="e">A <see cref="T:System.Windows.StartupEventArgs" /> that contains the event data.</param>
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -60,22 +44,13 @@ public partial class App : Application
         RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
+
             ////.RegisterView<MainWindow, ViewModels.AppBootstrapper>()
             ////.RegisterView<Views.ChatRoomView, ViewModels.ChatRoomViewModel>()
             ////.RegisterView<Views.LobbyView, ViewModels.LobbyViewModel>()
             .WithSuspensionHost<ChatState>() // Configure typed suspension host
             .WithCacheSizes(SmallCacheSize, LargeCacheSize) // Customize cache sizes
-            .WithExceptionHandler(Observer.Create<Exception>(static ex =>
-            {
-                // Custom exception handler - log unhandled reactive errors
-                Trace.TraceInformation($"[ReactiveUI] Unhandled exception: {ex}");
-                if (!Debugger.IsAttached)
-                {
-                    return;
-                }
-
-                Debugger.Break();
-            }))
+            .WithExceptionHandler(new LoggingExceptionObserver())
             .WithMessageBus()
             .WithRegistration(static r =>
             {
@@ -141,9 +116,7 @@ public partial class App : Application
         mainWindow.Show();
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Application.Exit" /> event.
-    /// </summary>
+    /// <summary>Raises the <see cref="E:System.Windows.Application.Exit" /> event.</summary>
     /// <param name="e">An <see cref="T:System.Windows.ExitEventArgs" /> that contains the event data.</param>
     protected override void OnExit(ExitEventArgs e)
     {
@@ -155,13 +128,37 @@ public partial class App : Application
             // Only the last instance persists the final state to the central store
             if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
             {
-                _driver.SaveState(RxSuspension.SuspensionHost.AppState).Wait();
+                _driver.SaveState(RxSuspension.SuspensionHost.AppState).GetAwaiter().GetResult();
             }
         }
         finally
         {
             _networkService?.Dispose();
             base.OnExit(e);
+        }
+    }
+
+    /// <summary>Logs unhandled ReactiveUI exceptions and breaks into the debugger when attached.</summary>
+    private sealed class LoggingExceptionObserver : IObserver<Exception>
+    {
+        /// <inheritdoc/>
+        public void OnNext(Exception value)
+        {
+            Trace.TraceInformation($"[ReactiveUI] Unhandled exception: {value}");
+            if (!Debugger.IsAttached)
+            {
+                return;
+            }
+
+            Debugger.Break();
+        }
+
+        /// <inheritdoc/>
+        public void OnError(Exception error) => OnNext(error);
+
+        /// <inheritdoc/>
+        public void OnCompleted()
+        {
         }
     }
 }

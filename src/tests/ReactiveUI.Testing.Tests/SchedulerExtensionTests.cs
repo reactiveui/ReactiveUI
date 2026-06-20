@@ -3,31 +3,29 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using Microsoft.Reactive.Testing;
 using ReactiveUI.Tests.Utilities.AppBuilder;
+using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Testing.Tests;
 
-/// <summary>
-/// Tests for SchedulerExtensions.
-/// </summary>
+/// <summary>Tests for SchedulerExtensions.</summary>
 [NotInParallel]
 [TestExecutor<AppBuilderTestExecutor>]
 public sealed class SchedulerExtensionTests
 {
+    /// <summary>The message used when the scheduler is not set as expected.</summary>
     private const string SchedulerNotSetMessage = "Scheduler not set correctly";
+
+    /// <summary>The value used in scheduler notification assertions.</summary>
     private const int ExpectedValue = 42;
 
-    /// <summary>
-    /// Tests that WithScheduler sets both RxApp and RxSchedulers schedulers.
-    /// </summary>
+    /// <summary>Tests that WithScheduler sets both RxApp and RxSchedulers schedulers.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithScheduler_ShouldSetBothRxAppAndRxSchedulersSchedulers()
     {
-        var testScheduler = new TestScheduler();
+        var testScheduler = new VirtualTimeScheduler();
         var originalMainThread = RxSchedulers.MainThreadScheduler;
         var originalTaskpool = RxSchedulers.TaskpoolScheduler;
 
@@ -37,56 +35,52 @@ public sealed class SchedulerExtensionTests
             using (Assert.Multiple())
             {
                 // Verify RxApp schedulers are set
-                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(testScheduler);
-                await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(testScheduler);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(testScheduler);
+                await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(testScheduler);
             }
         }
 
         // Verify schedulers are restored after disposal
         using (Assert.Multiple())
         {
-            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalMainThread);
-            await Assert.That(RxSchedulers.TaskpoolScheduler).IsEqualTo(originalTaskpool);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalMainThread);
+            await Assert.That(RxSchedulers.TaskpoolScheduler).IsSameReferenceAs(originalTaskpool);
         }
     }
 
-    /// <summary>
-    /// Tests that nested WithScheduler calls work correctly (sequential access).
-    /// </summary>
+    /// <summary>Tests that nested WithScheduler calls work correctly (sequential access).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithScheduler_NestedCalls_ShouldWorkSequentially()
     {
-        var scheduler1 = new TestScheduler();
-        var scheduler2 = new TestScheduler();
+        var scheduler1 = new VirtualTimeScheduler();
+        var scheduler2 = new VirtualTimeScheduler();
         var originalMainThread = RxSchedulers.MainThreadScheduler;
 
         using (SchedulerExtensions.WithScheduler(scheduler1))
         {
-            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler1);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler1);
 
             using (SchedulerExtensions.WithScheduler(scheduler2))
             {
-                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler2);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler2);
             }
 
             // After inner scope, should restore to scheduler1
-            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler1);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler1);
         }
 
         // After outer scope, should restore to original
-        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalMainThread);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalMainThread);
     }
 
-    /// <summary>
-    /// Tests that WithScheduler properly releases the gate even when an exception is thrown.
-    /// </summary>
+    /// <summary>Tests that WithScheduler properly releases the gate even when an exception is thrown.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithScheduler_ExceptionInCriticalSection_ShouldStillReleaseGate()
     {
-        var scheduler1 = new TestScheduler();
-        var scheduler2 = new TestScheduler();
+        var scheduler1 = new VirtualTimeScheduler();
+        var scheduler2 = new VirtualTimeScheduler();
 
         // First call throws an exception
         try
@@ -104,18 +98,16 @@ public sealed class SchedulerExtensionTests
         // Second call should succeed (gate was released despite exception)
         using (SchedulerExtensions.WithScheduler(scheduler2))
         {
-            await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler2);
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler2);
         }
     }
 
-    /// <summary>
-    /// Tests the With extension method with a function.
-    /// </summary>
+    /// <summary>Tests the With extension method with a function.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task With_Function_ShouldExecuteAndReturnValue()
     {
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
 
         var result = scheduler.With(s =>
@@ -132,17 +124,15 @@ public sealed class SchedulerExtensionTests
         await Assert.That(result).IsEqualTo(ExpectedValue);
 
         // After the block, original scheduler should be restored
-        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalScheduler);
     }
 
-    /// <summary>
-    /// Tests the With extension method with an action.
-    /// </summary>
+    /// <summary>Tests the With extension method with an action.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task With_Action_ShouldExecute()
     {
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
         var executed = false;
 
@@ -160,17 +150,15 @@ public sealed class SchedulerExtensionTests
         });
 
         await Assert.That(executed).IsTrue();
-        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalScheduler);
     }
 
-    /// <summary>
-    /// Tests the WithAsync extension method with a function.
-    /// </summary>
+    /// <summary>Tests the WithAsync extension method with a function.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithAsync_Function_ShouldExecuteAndReturnValue()
     {
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
 
         var result = await scheduler.WithAsync(s =>
@@ -185,17 +173,15 @@ public sealed class SchedulerExtensionTests
         });
 
         await Assert.That(result).IsEqualTo(ExpectedValue);
-        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalScheduler);
     }
 
-    /// <summary>
-    /// Tests the WithAsync extension method with an action.
-    /// </summary>
+    /// <summary>Tests the WithAsync extension method with an action.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithAsync_Action_ShouldExecute()
     {
-        var scheduler = new TestScheduler();
+        var scheduler = new VirtualTimeScheduler();
         var originalScheduler = RxSchedulers.MainThreadScheduler;
         var executed = false;
 
@@ -213,12 +199,10 @@ public sealed class SchedulerExtensionTests
         });
 
         await Assert.That(executed).IsTrue();
-        await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(originalScheduler);
+        await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(originalScheduler);
     }
 
-    /// <summary>
-    /// Tests that rapid sequential calls work correctly (stress test).
-    /// </summary>
+    /// <summary>Tests that rapid sequential calls work correctly (stress test).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WithScheduler_RapidSequentialCalls_ShouldWork()
@@ -227,124 +211,14 @@ public sealed class SchedulerExtensionTests
 
         for (var i = 0; i < iterations; i++)
         {
-            var scheduler = new TestScheduler();
+            var scheduler = new VirtualTimeScheduler();
             using (SchedulerExtensions.WithScheduler(scheduler))
             {
-                await Assert.That(RxSchedulers.MainThreadScheduler).IsEqualTo(scheduler);
+                await Assert.That(RxSchedulers.MainThreadScheduler).IsSameReferenceAs(scheduler);
             }
         }
 
         // No assertions needed - if we get here without deadlock, the test passed
         await Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Tests that AdvanceToMs advances the scheduler to the specified time.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task AdvanceToMs_ShouldAdvanceToSpecifiedTime()
-    {
-        const double advanceToMilliseconds = 1000;
-        var scheduler = new TestScheduler();
-        scheduler.AdvanceToMs(advanceToMilliseconds);
-
-        var expectedTicks = TimeSpan.FromMilliseconds(advanceToMilliseconds).Ticks;
-        await Assert.That(scheduler.Clock).IsEqualTo(expectedTicks);
-    }
-
-    /// <summary>
-    /// Tests that AdvanceByMs advances the scheduler by the specified time.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task AdvanceByMs_ShouldAdvanceBySpecifiedTime()
-    {
-        const double advanceByMilliseconds = 500;
-        var scheduler = new TestScheduler();
-        var initialTime = scheduler.Clock;
-
-        scheduler.AdvanceByMs(advanceByMilliseconds);
-
-        var expectedTime = initialTime + TimeSpan.FromMilliseconds(advanceByMilliseconds).Ticks;
-        await Assert.That(scheduler.Clock).IsEqualTo(expectedTime);
-    }
-
-    /// <summary>
-    /// Tests that OnNextAt creates a notification at the specified time.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task OnNextAt_ShouldCreateNotificationAtSpecifiedTime()
-    {
-        const double notificationMilliseconds = 100;
-        var scheduler = new TestScheduler();
-        var recorded = scheduler.OnNextAt(notificationMilliseconds, ExpectedValue);
-
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(notificationMilliseconds));
-
-        using (Assert.Multiple())
-        {
-            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
-            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnNext);
-            await Assert.That(recorded.Value.Value).IsEqualTo(ExpectedValue);
-        }
-    }
-
-    /// <summary>
-    /// Tests that OnErrorAt creates an error notification at the specified time.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task OnErrorAt_ShouldCreateErrorNotificationAtSpecifiedTime()
-    {
-        const double errorMilliseconds = 200;
-        var scheduler = new TestScheduler();
-        var exception = new InvalidOperationException("Test error");
-        var recorded = scheduler.OnErrorAt<int>(errorMilliseconds, exception);
-
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(errorMilliseconds));
-
-        using (Assert.Multiple())
-        {
-            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
-            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnError);
-            await Assert.That(recorded.Value.Exception).IsEqualTo(exception);
-        }
-    }
-
-    /// <summary>
-    /// Tests that OnCompletedAt creates a completion notification at the specified time.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task OnCompletedAt_ShouldCreateCompletionNotificationAtSpecifiedTime()
-    {
-        const double completedMilliseconds = 300;
-        var scheduler = new TestScheduler();
-        var recorded = scheduler.OnCompletedAt<int>(completedMilliseconds);
-
-        var expectedTime = scheduler.FromTimeSpan(TimeSpan.FromMilliseconds(completedMilliseconds));
-
-        using (Assert.Multiple())
-        {
-            await Assert.That(recorded.Time).IsEqualTo(expectedTime);
-            await Assert.That(recorded.Value.Kind).IsEqualTo(NotificationKind.OnCompleted);
-        }
-    }
-
-    /// <summary>
-    /// Tests that FromTimeSpan converts TimeSpan to ticks correctly.
-    /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    [Test]
-    public async Task FromTimeSpan_ShouldConvertToTicks()
-    {
-        const double timeSpanMilliseconds = 250;
-        var scheduler = new TestScheduler();
-        var timeSpan = TimeSpan.FromMilliseconds(timeSpanMilliseconds);
-        var ticks = scheduler.FromTimeSpan(timeSpan);
-
-        await Assert.That(ticks).IsEqualTo(timeSpan.Ticks);
     }
 }

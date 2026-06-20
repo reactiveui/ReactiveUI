@@ -4,19 +4,14 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>
-///     WhenAnyValue parameter-arity tests for the reactive notify property changed mixin.
-/// </content>
+/// <summary>Tests for the reactive notify property changed mixin (WhenAny, WhenAnyValue, ObservableForProperty).</summary>
 public partial class ReactiveNotifyPropertyChangedMixinTest
 {
-    /// <summary>
-    ///     WhenAnyValue with ten parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with ten parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -50,9 +45,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo("13579");
     }
 
-    /// <summary>
-    ///     WhenAnyValue with eleven parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with eleven parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -90,9 +83,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo("1357911");
     }
 
-    /// <summary>
-    ///     WhenAnyValue with twelve parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with twelve parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -131,9 +122,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo("1357911");
     }
 
-    /// <summary>
-    ///     WhenAnyValue with one parameter returns the value.
-    /// </summary>
+    /// <summary>WhenAnyValue with one parameter returns the value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith1Paramerters()
@@ -147,9 +136,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with one parameter reflects sequential changes (nullable target set later).
-    /// </summary>
+    /// <summary>WhenAnyValue with one parameter reflects sequential changes (nullable target set later).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith1ParamertersSequentialCheck()
@@ -177,9 +164,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    ///     WhenAnyValue with one parameter (already nullable) reflects sequential changes.
-    /// </summary>
+    /// <summary>WhenAnyValue with one parameter (already nullable) reflects sequential changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith1ParamertersSequentialCheckNullable()
@@ -205,9 +190,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    ///     WhenAnyValue with two parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with two parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith2ParamertersReturnsTuple()
@@ -228,9 +211,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with two parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with two parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith2ParamertersReturnsValues()
@@ -252,9 +233,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with three parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with three parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith3ParamertersReturnsTuple()
@@ -276,9 +255,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with three parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with three parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith3ParamertersReturnsValues()
@@ -301,9 +278,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with four parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with four parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith4ParamertersReturnsTuple()
@@ -326,9 +301,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with four parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with four parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith4ParamertersReturnsValues()
@@ -352,9 +325,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with five parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with five parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith5ParamertersReturnsTuple()
@@ -378,9 +349,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with five parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with five parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith5ParamertersReturnsValues()
@@ -405,9 +374,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with six parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with six parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith6ParamertersReturnsTuple()
@@ -432,9 +399,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with six parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with six parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith6ParamertersReturnsValues()
@@ -460,9 +425,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with seven parameters (tuple result).
-    /// </summary>
+    /// <summary>WhenAnyValue with seven parameters (tuple result).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith7ParamertersReturnsTuple()
@@ -488,9 +451,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveSevenText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with seven parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with seven parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWith7ParamertersReturnsValues()
@@ -517,9 +478,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveSevenText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with eight parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with eight parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -551,9 +510,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result).IsEqualTo(OneThreeFiveSevenText);
     }
 
-    /// <summary>
-    ///     WhenAnyValue with nine parameters (values projector).
-    /// </summary>
+    /// <summary>WhenAnyValue with nine parameters (values projector).</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(

@@ -4,35 +4,26 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
 using Android.Content;
 using AndroidX.Fragment.App;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// This is an Activity that is both an Activity and has ReactiveObject powers
-/// (i.e. you can call RaiseAndSetIfChanged).
-/// </summary>
+#endif
+/// <summary>This is an Activity that is both an Activity and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
 public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
     IReactiveNotifyPropertyChanged<ReactiveFragmentActivity>, IHandleObservableErrors
 {
-    /// <summary>
-    /// The subject that signals when the activity is activated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _activated = new();
+    /// <summary>The subject that signals when the activity is activated.</summary>
+    private readonly Signal<RxVoid> _activated = new();
 
-    /// <summary>
-    /// The subject that signals when the activity is deactivated.
-    /// </summary>
-    private readonly BroadcastSubject<Unit> _deactivated = new();
+    /// <summary>The subject that signals when the activity is deactivated.</summary>
+    private readonly Signal<RxVoid> _deactivated = new();
 
-    /// <summary>
-    /// The subject that signals activity results.
-    /// </summary>
-    private readonly BroadcastSubject<(int requestCode, Result result, Intent intent)> _activityResult = new();
+    /// <summary>The subject that signals activity results.</summary>
+    private readonly Signal<(int requestCode, Result result, Intent intent)> _activityResult = new();
 
     /// <inheritdoc/>
     public event PropertyChangingEventHandler? PropertyChanging;
@@ -51,19 +42,13 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
     /// <inheritdoc/>
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
-    /// <summary>
-    /// Gets a signal when the activity fragment is activated.
-    /// </summary>
-    public IObservable<Unit> Activated => _activated;
+    /// <summary>Gets a signal when the activity fragment is activated.</summary>
+    public IObservable<RxVoid> Activated => _activated;
 
-    /// <summary>
-    /// Gets a signal when the activity fragment is deactivated.
-    /// </summary>
-    public IObservable<Unit> Deactivated => _deactivated;
+    /// <summary>Gets a signal when the activity fragment is deactivated.</summary>
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
-    /// <summary>
-    /// Gets the activity result.
-    /// </summary>
+    /// <summary>Gets the activity result.</summary>
     public IObservable<(int requestCode, Result result, Intent intent)> ActivityResult =>
         _activityResult;
 
@@ -76,9 +61,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
     /// <inheritdoc />
     public IDisposable SuppressChangeNotifications() => IReactiveObjectExtensions.SuppressChangeNotifications(this);
 
-    /// <summary>
-    /// Starts the activity for result asynchronously.
-    /// </summary>
+    /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="intent">The intent.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
@@ -92,9 +75,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
         return ret;
     }
 
-    /// <summary>
-    /// Starts the activity for result asynchronously.
-    /// </summary>
+    /// <summary>Starts the activity for result asynchronously.</summary>
     /// <param name="type">The type.</param>
     /// <param name="requestCode">The request code.</param>
     /// <returns>A task with the result and intent.</returns>
@@ -112,14 +93,14 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
     protected override void OnPause()
     {
         base.OnPause();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>
     protected override void OnResume()
     {
         base.OnResume();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
     }
 
     /// <inheritdoc/>

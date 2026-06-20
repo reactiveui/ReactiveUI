@@ -8,21 +8,15 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="BooleanToVisibilityTypeConverter"/> in WPF.
-/// </summary>
+/// <summary>Tests for <see cref="BooleanToVisibilityTypeConverter"/> in WPF.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public sealed class BooleanToVisibilityTypeConverterTest
 {
-    /// <summary>
-    /// The expected affinity returned for supported conversions.
-    /// </summary>
+    /// <summary>The expected affinity returned for supported conversions.</summary>
     private const int ExpectedAffinity = 2;
 
-    /// <summary>
-    /// Tests that FromType and ToType properties are correctly set.
-    /// </summary>
+    /// <summary>Tests that FromType and ToType properties are correctly set.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TypeProperties_AreCorrectlySet()
@@ -33,9 +27,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(converter.ToType).IsEqualTo(typeof(Visibility));
     }
 
-    /// <summary>
-    /// Tests that GetAffinityForObjects returns correct affinity.
-    /// </summary>
+    /// <summary>Tests that GetAffinityForObjects returns correct affinity.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAffinityForObjects_ReturnsCorrectAffinity()
@@ -47,9 +39,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(affinity).IsEqualTo(ExpectedAffinity);
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts true to Visibility.Visible.
-    /// </summary>
+    /// <summary>Tests that TryConvert converts true to Visibility.Visible.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsTrueToVisible()
@@ -62,9 +52,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Visible);
     }
 
-    /// <summary>
-    /// Tests that TryConvert converts false to Visibility.Collapsed (default).
-    /// </summary>
+    /// <summary>Tests that TryConvert converts false to Visibility.Collapsed (default).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_ConvertsFalseToCollapsed()
@@ -77,9 +65,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with Inverse hint inverts the conversion.
-    /// </summary>
+    /// <summary>Tests that TryConvert with Inverse hint inverts the conversion.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseHint_InvertsConversion()
@@ -92,9 +78,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Collapsed);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed (WPF-specific).
-    /// </summary>
+    /// <summary>Tests that TryConvert with UseHidden hint uses Hidden instead of Collapsed (WPF-specific).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithUseHiddenHint_UsesHidden()
@@ -107,9 +91,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Hidden);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with both Inverse and UseHidden hints works correctly (WPF-specific).
-    /// </summary>
+    /// <summary>Tests that TryConvert with both Inverse and UseHidden hints works correctly (WPF-specific).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_WithInverseAndUseHidden_UsesHidden()
@@ -125,9 +107,7 @@ public sealed class BooleanToVisibilityTypeConverterTest
         await Assert.That(result).IsEqualTo(Visibility.Hidden);
     }
 
-    /// <summary>
-    /// Tests that TryConvert with UseHidden hint on true stays Visible.
-    /// </summary>
+    /// <summary>Tests that TryConvert with UseHidden hint on true stays Visible.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryConvert_TrueWithUseHidden_StaysVisible()

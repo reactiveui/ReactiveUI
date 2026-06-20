@@ -7,18 +7,12 @@ using System.ComponentModel;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A custom clickable component.
-/// </summary>
+/// <summary>A custom clickable component.</summary>
 public class CustomClickableComponent : Component
 {
-    /// <summary>
-    /// Occurs when the click.
-    /// </summary>
+    /// <summary>Occurs when the click.</summary>
     public event EventHandler? Click;
 
-    /// <summary>
-    /// Performs the click.
-    /// </summary>
+    /// <summary>Performs the click.</summary>
     public void PerformClick() => Click?.Invoke(this, EventArgs.Empty);
 }

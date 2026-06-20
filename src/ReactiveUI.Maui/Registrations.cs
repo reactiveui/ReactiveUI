@@ -4,10 +4,18 @@
 // See the LICENSE file in the project root for full license information.
 
 #if IS_WINUI
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.WinUI;
+#else
 namespace ReactiveUI.WinUI;
 #endif
+#endif
 #if IS_MAUI
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 #endif
 
 /// <summary>

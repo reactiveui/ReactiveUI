@@ -7,24 +7,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI.Builder.WpfApp.Models;
 
-/// <summary>
-/// A single chat message.
-/// </summary>
+/// <summary>A single chat message.</summary>
 public class ChatMessage
 {
-    /// <summary>
-    /// Gets or sets the sender name.
-    /// </summary>
+    /// <summary>Gets or sets the sender name.</summary>
     public string Sender { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the message text.
-    /// </summary>
+    /// <summary>Gets or sets the message text.</summary>
     public string Text { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or sets the timestamp.
-    /// </summary>
+    /// <summary>Gets or sets the timestamp.</summary>
     [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available all TFMs")]
     public DateTimeOffset Timestamp { get; set; } =
 #if NET8_0_OR_GREATER

@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="ChainedComparer{T}" />.
-/// </summary>
+/// <summary>Tests for <see cref="ChainedComparer{T}" />.</summary>
 public class ChainedComparerTest
 {
-    /// <summary>
-    ///     Tests that Compare returns 0 when both values are null.
-    /// </summary>
+    /// <summary>Tests that Compare returns 0 when both values are null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_BothNull_ReturnsZero()
@@ -24,9 +20,7 @@ public class ChainedComparerTest
         await Assert.That(result).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Tests that Compare chains multiple comparers correctly.
-    /// </summary>
+    /// <summary>Tests that Compare chains multiple comparers correctly.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_ChainedComparers_WorksCorrectly()
@@ -45,9 +39,7 @@ public class ChainedComparerTest
         await Assert.That(result2).IsLessThan(0);
     }
 
-    /// <summary>
-    ///     Tests that Compare uses comparison when parent is null.
-    /// </summary>
+    /// <summary>Tests that Compare uses comparison when parent is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_NoParent_UsesComparison()
@@ -59,9 +51,7 @@ public class ChainedComparerTest
         await Assert.That(result).IsLessThan(0);
     }
 
-    /// <summary>
-    ///     Tests that Compare uses parent result when non-zero.
-    /// </summary>
+    /// <summary>Tests that Compare uses parent result when non-zero.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_ParentReturnsNonZero_UsesParentResult()
@@ -74,9 +64,7 @@ public class ChainedComparerTest
         await Assert.That(result).IsLessThan(0);
     }
 
-    /// <summary>
-    ///     Tests that Compare uses comparison when parent returns zero.
-    /// </summary>
+    /// <summary>Tests that Compare uses comparison when parent returns zero.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Compare_ParentReturnsZero_UsesComparison()
@@ -89,19 +77,13 @@ public class ChainedComparerTest
         await Assert.That(result).IsLessThan(0);
     }
 
-    /// <summary>
-    ///     Test class for comparison testing.
-    /// </summary>
+    /// <summary>Test class for comparison testing.</summary>
     private sealed class TestClass
     {
-        /// <summary>
-        ///     Gets or sets the priority used for primary comparison.
-        /// </summary>
+        /// <summary>Gets or sets the priority used for primary comparison.</summary>
         public int Priority { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the value used for secondary comparison.
-        /// </summary>
+        /// <summary>Gets or sets the value used for secondary comparison.</summary>
         public int Value { get; set; }
     }
 }

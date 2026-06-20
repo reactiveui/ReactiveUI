@@ -19,13 +19,13 @@ namespace ReactiveUI.Tests.Locator;
 [TestExecutor<AppBuilderTestExecutor>]
 public class DefaultViewLocatorTests
 {
+    /// <summary>The number of iterations used in concurrency/thread-safety tests.</summary>
     private const int ConcurrentIterations = 100;
+
+    /// <summary>The contract name used to resolve mobile-specific view registrations.</summary>
     private const string MobileContract = "mobile";
 
-    /// <summary>
-    ///     Verifies that <c>Map</c> returns the locator instance
-    ///     to support fluent API chaining.
-    /// </summary>
+    /// <summary>Verifies that <c>Map</c> returns the locator instance to support fluent API chaining.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_AllowsChaining()
@@ -40,10 +40,7 @@ public class DefaultViewLocatorTests
         await Assert.That(result).IsTypeOf<DefaultViewLocator>();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Map</c> throws
-    ///     <see cref="ArgumentNullException" /> when factory parameter is null.
-    /// </summary>
+    /// <summary>Verifies that <c>Map</c> throws <see cref="ArgumentNullException" /> when factory parameter is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_NullFactory_ThrowsArgumentNullException()
@@ -57,10 +54,7 @@ public class DefaultViewLocatorTests
         });
     }
 
-    /// <summary>
-    ///     Verifies that calling <c>Map</c> multiple times
-    ///     for the same view model and contract overwrites the previous mapping.
-    /// </summary>
+    /// <summary>Verifies that calling <c>Map</c> multiple times for the same view model and contract overwrites the previous mapping.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_OverwritesExistingMapping()
@@ -86,10 +80,7 @@ public class DefaultViewLocatorTests
         await Assert.That(callCount).IsEqualTo(OverwriteIncrement);
     }
 
-    /// <summary>
-    ///     Verifies that <c>Map</c> registers a view factory
-    ///     that can be resolved via <c>ResolveView</c>.
-    /// </summary>
+    /// <summary>Verifies that <c>Map</c> registers a view factory that can be resolved via <c>ResolveView</c>.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_RegistersViewFactory()
@@ -104,10 +95,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Map</c> is thread-safe
-    ///     and does not throw when called concurrently from multiple threads.
-    /// </summary>
+    /// <summary>Verifies that <c>Map</c> is thread-safe and does not throw when called concurrently from multiple threads.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_ThreadSafe_ConcurrentMapsDontThrow()
@@ -130,10 +118,7 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that <c>Map</c> with contract parameter
-    ///     registers contract-specific views that can be resolved separately.
-    /// </summary>
+    /// <summary>Verifies that <c>Map</c> with contract parameter registers contract-specific views that can be resolved separately.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Map_WithContract_RegistersContractSpecificView()
@@ -150,10 +135,7 @@ public class DefaultViewLocatorTests
         await Assert.That(desktopView).IsTypeOf<TestViewAlt>();
     }
 
-    /// <summary>
-    ///     Verifies that <c>ResolveView</c> creates a new view instance
-    ///     on each call using the registered factory.
-    /// </summary>
+    /// <summary>Verifies that <c>ResolveView</c> creates a new view instance on each call using the registered factory.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Generic_CreatesNewInstanceOnEachCall()
@@ -170,10 +152,7 @@ public class DefaultViewLocatorTests
         await Assert.That(ReferenceEquals(view1, view2)).IsFalse();
     }
 
-    /// <summary>
-    ///     Verifies that explicit mappings registered via <c>Map</c>
-    ///     take priority over service locator registrations.
-    /// </summary>
+    /// <summary>Verifies that explicit mappings registered via <c>Map</c> take priority over service locator registrations.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Generic_ExplicitMappingTakesPriorityOverServiceLocator()
@@ -199,10 +178,7 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that <c>ResolveView</c> falls back
-    ///     to querying the service locator when no explicit mapping exists.
-    /// </summary>
+    /// <summary>Verifies that <c>ResolveView</c> falls back to querying the service locator when no explicit mapping exists.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Generic_FallsBackToServiceLocator()
@@ -227,10 +203,7 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that <c>ResolveView</c> returns null
-    ///     when no mapping or service registration exists for the view model type.
-    /// </summary>
+    /// <summary>Verifies that <c>ResolveView</c> returns null when no mapping or service registration exists for the view model type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Generic_ReturnsNullWhenNoMapping()
@@ -242,10 +215,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>ResolveView</c> with contract
-    ///     uses the explicit mapping registered for that contract.
-    /// </summary>
+    /// <summary>Verifies that <c>ResolveView</c> with contract uses the explicit mapping registered for that contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Generic_WithContract_UsesExplicitMapping()
@@ -260,10 +230,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> falls back
-    ///     to the service locator and sets the view model property.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> falls back to the service locator and sets the view model property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_FallsBackToServiceLocator()
@@ -290,10 +257,7 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> returns null
-    ///     when the instance parameter is null.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> returns null when the instance parameter is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_ReturnsNullForNullInstance()
@@ -305,10 +269,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> returns null
-    ///     when no mapping or service registration exists for the view model type.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> returns null when no mapping or service registration exists for the view model type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_ReturnsNullWhenNoMappingOrService()
@@ -321,10 +282,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> sets
-    ///     the <see cref="IViewFor{T}.ViewModel" /> property on the resolved view instance.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> sets the <see cref="IViewFor{T}.ViewModel" /> property on the resolved view instance.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_SetsViewModelProperty()
@@ -340,10 +298,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view!.ViewModel).IsEqualTo(vm);
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> uses
-    ///     explicit mappings registered via <c>Map</c>.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> uses explicit mappings registered via <c>Map</c>.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_UsesExplicitMapping()
@@ -359,10 +314,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view).IsTypeOf<TestView>();
     }
 
-    /// <summary>
-    ///     Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> with contract
-    ///     uses the contract-specific mapping and sets the view model property.
-    /// </summary>
+    /// <summary>Verifies that <see cref="DefaultViewLocator.ResolveView(object, string)" /> with contract uses the contract-specific mapping and sets the view model property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_Instance_WithContract_UsesContractMapping()
@@ -379,10 +331,7 @@ public class DefaultViewLocatorTests
         await Assert.That(view!.ViewModel).IsEqualTo(vm);
     }
 
-    /// <summary>
-    ///     Verifies that <c>ResolveView</c> is thread-safe
-    ///     and does not throw when called concurrently from multiple threads.
-    /// </summary>
+    /// <summary>Verifies that <c>ResolveView</c> is thread-safe and does not throw when called concurrently from multiple threads.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ResolveView_ThreadSafe_ConcurrentResolvesDontThrow()
@@ -404,10 +353,7 @@ public class DefaultViewLocatorTests
         await Task.WhenAll(tasks);
     }
 
-    /// <summary>
-    ///     Verifies that <c>Unmap</c> returns the locator instance
-    ///     to support fluent API chaining.
-    /// </summary>
+    /// <summary>Verifies that <c>Unmap</c> returns the locator instance to support fluent API chaining.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Unmap_AllowsChaining()
@@ -424,10 +370,7 @@ public class DefaultViewLocatorTests
         await Assert.That(result).IsTypeOf<DefaultViewLocator>();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Unmap</c> does not throw when
-    ///     called for a contract that was never registered.
-    /// </summary>
+    /// <summary>Verifies that <c>Unmap</c> does not throw when called for a contract that was never registered.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Unmap_NonExistentMapping_DoesNotThrow()
@@ -439,10 +382,7 @@ public class DefaultViewLocatorTests
         await Assert.That(locator.ResolveView<TestViewModel>("nonexistent")).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Unmap</c> removes the default mapping
-    ///     when called without a contract parameter.
-    /// </summary>
+    /// <summary>Verifies that <c>Unmap</c> removes the default mapping when called without a contract parameter.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Unmap_RemovesDefaultMapping()
@@ -458,10 +398,7 @@ public class DefaultViewLocatorTests
         await Assert.That(locator.ResolveView<TestViewModel>()).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Unmap</c> removes a previously
-    ///     registered mapping for a specific contract.
-    /// </summary>
+    /// <summary>Verifies that <c>Unmap</c> removes a previously registered mapping for a specific contract.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Unmap_RemovesMappingForContract()
@@ -477,10 +414,7 @@ public class DefaultViewLocatorTests
         await Assert.That(locator.ResolveView<TestViewModel>(MobileContract)).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that <c>Unmap</c> is thread-safe
-    ///     and does not throw when called concurrently from multiple threads.
-    /// </summary>
+    /// <summary>Verifies that <c>Unmap</c> is thread-safe and does not throw when called concurrently from multiple threads.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Unmap_ThreadSafe_ConcurrentUnmapsDontThrow()
@@ -508,19 +442,13 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.
-    /// </summary>
+    /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel" />.</summary>
     private sealed class TestView : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -528,19 +456,13 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel2" />.
-    /// </summary>
+    /// <summary>Test view implementing <see cref="IViewFor{TViewModel}" /> for <see cref="TestViewModel2" />.</summary>
     private sealed class TestView2 : IViewFor<TestViewModel2>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel2? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -548,19 +470,13 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Alternative test view for <see cref="TestViewModel" />, used to test contract-specific mappings.
-    /// </summary>
+    /// <summary>Alternative test view for <see cref="TestViewModel" />, used to test contract-specific mappings.</summary>
     private sealed class TestViewAlt : IViewFor<TestViewModel>
     {
-        /// <summary>
-        ///     Gets or sets the strongly-typed view model.
-        /// </summary>
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
         public TestViewModel? ViewModel { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.
-        /// </summary>
+        /// <summary>Gets or sets the view model. Implements <see cref="IViewFor.ViewModel" />.</summary>
         object? IViewFor.ViewModel
         {
             get => ViewModel;
@@ -568,21 +484,17 @@ public class DefaultViewLocatorTests
         }
     }
 
-    /// <summary>
-    ///     Test view model used for testing view locator functionality.
-    /// </summary>
+    /// <summary>Test view model used for testing view locator functionality.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel : ReactiveObject;
 
-    /// <summary>
-    ///     Second test view model used for testing multi-mapping scenarios.
-    /// </summary>
+    /// <summary>Second test view model used for testing multi-mapping scenarios.</summary>
     [SuppressMessage(
         "Minor Code Smell",
-        "S2094:Classes should not be empty",
+        "SST1436:Classes should not be empty",
         Justification = "Empty type used as a test marker.")]
     private sealed class TestViewModel2 : ReactiveObject;
 }

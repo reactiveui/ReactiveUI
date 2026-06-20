@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured benchmark leaf: recompiles the same benchmark sources against the
+         ReactiveUI.Reactive engine so BenchmarkDotNet can compare shim vs lean on the same scenarios. -->
+    <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>ReactiveUI.Benchmarks.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Benchmarks</RootNamespace>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <SonarQubeExclude>true</SonarQubeExclude>
+    <IsAotCompatible>false</IsAotCompatible>
+    <IsTrimmable>false</IsTrimmable>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    <PackageDescription>Micro-benchmarks for ReactiveUI's shimmed System.Reactive path, paired with the lean ReactiveUI.Primitives benchmarks.</PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Benchmarks\**\*.cs" Exclude="..\ReactiveUI.Benchmarks\obj\**\*.cs;..\ReactiveUI.Benchmarks\bin\**\*.cs" Link="ReactiveUI.Benchmarks\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" />
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="ReactiveUI.Primitives.Signals" />
+    <Using Include="ReactiveUI.Primitives.Disposables" />
+    <Using Include="ReactiveUI.Reactive.Builder" />
+    <Using Include="ReactiveUI.Primitives.Reactive.LinqExtensions" Alias="BenchmarkLinq" />
+    <Using Include="ReactiveUI.Primitives.Reactive.Signals" />
+    <Using Include="System.Reactive.Linq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj" />
+    <ProjectReference Include="..\..\ReactiveUI.Routing.Reactive\ReactiveUI.Routing.Reactive.csproj" />
+  </ItemGroup>
+</Project>

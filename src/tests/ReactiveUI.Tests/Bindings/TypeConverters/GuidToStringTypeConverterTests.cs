@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting Guid to strings.
-/// </summary>
+/// <summary>Tests for converting Guid to strings.</summary>
 public class GuidToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class GuidToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that a Guid value converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a Guid value converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Guid_Succeeds()
@@ -38,9 +32,7 @@ public class GuidToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("12345678-1234-1234-1234-123456789abc");
     }
 
-    /// <summary>
-    /// Verifies that an empty Guid converts successfully.
-    /// </summary>
+    /// <summary>Verifies that an empty Guid converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyGuid_Succeeds()

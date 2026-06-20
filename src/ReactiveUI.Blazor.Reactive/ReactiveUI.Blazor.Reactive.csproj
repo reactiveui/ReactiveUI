@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured Blazor leaf: recompiles the ReactiveUI.Blazor source against the
+         ReactiveUI.Reactive engine. REACTIVE_SHIM (from the 'Reactive' name suffix in Directory.Build.props)
+         flips the namespaces to ReactiveUI.Reactive.*; the seam global usings line up the engine types. -->
+    <TargetFrameworks>$(ReactiveUIModernTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Blazor.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.Blazor</RootNamespace>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for Blazor, recompiled against System.Reactive.</PackageDescription>
+    <PackageId>ReactiveUI.Blazor.Reactive</PackageId>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;eventsnet;netstandard;blazor;web;</PackageTags>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Reactive.Wasm"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components"/>
+  </ItemGroup>
+  <!-- The same ReactiveUI.Blazor source the lean package ships, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Blazor\**\*.cs" Exclude="..\ReactiveUI.Blazor\obj\**\*.cs;..\ReactiveUI.Blazor\bin\**\*.cs" Link="ReactiveUI.Blazor\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+</Project>

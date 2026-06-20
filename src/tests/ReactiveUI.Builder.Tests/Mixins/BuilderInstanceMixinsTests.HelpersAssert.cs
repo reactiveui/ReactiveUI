@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// Shared helpers that assert the captured instances match the expected instances for the higher-arity overloads.
-/// </content>
+/// <summary>Shared helpers that assert the captured instances match the expected instances for the higher-arity overloads.</summary>
 public partial class BuilderInstanceMixinsTests
 {
-    /// <summary>
-    /// Asserts that each of the nine captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the nine captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -67,9 +63,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured9).IsSameReferenceAs(expected9);
     }
 
-    /// <summary>
-    /// Asserts that each of the ten captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the ten captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -129,9 +123,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured10).IsSameReferenceAs(expected10);
     }
 
-    /// <summary>
-    /// Asserts that each of the eleven captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the eleven captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -196,9 +188,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured11).IsSameReferenceAs(expected11);
     }
 
-    /// <summary>
-    /// Asserts that each of the twelve captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the twelve captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -268,9 +258,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured12).IsSameReferenceAs(expected12);
     }
 
-    /// <summary>
-    /// Asserts that each of the thirteen captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the thirteen captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -345,9 +333,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured13).IsSameReferenceAs(expected13);
     }
 
-    /// <summary>
-    /// Asserts that each of the fourteen captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the fourteen captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -427,9 +413,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured14).IsSameReferenceAs(expected14);
     }
 
-    /// <summary>
-    /// Asserts that each of the fifteen captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the fifteen captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>
@@ -514,9 +498,7 @@ public partial class BuilderInstanceMixinsTests
         await Assert.That(captured15).IsSameReferenceAs(expected15);
     }
 
-    /// <summary>
-    /// Asserts that each of the sixteen captured instances is the same reference as the expected instance.
-    /// </summary>
+    /// <summary>Asserts that each of the sixteen captured instances is the same reference as the expected instance.</summary>
     /// <param name="captured1">The captured instance 1.</param>
     /// <param name="expected1">The expected instance 1.</param>
     /// <param name="captured2">The captured instance 2.</param>

@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable byte to strings.
-/// </summary>
+/// <summary>Tests for converting nullable byte to strings.</summary>
 public class NullableByteToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class NullableByteToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a nullable byte to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a nullable byte to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_ByteNullableToString_Succeeds()
@@ -38,9 +32,7 @@ public class NullableByteToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("123");
     }
 
-    /// <summary>
-    /// Verifies that converting the maximum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the maximum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MaxValue_Succeeds()
@@ -54,9 +46,7 @@ public class NullableByteToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("255");
     }
 
-    /// <summary>
-    /// Verifies that converting the minimum value succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting the minimum value succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_MinValue_Succeeds()
@@ -70,9 +60,7 @@ public class NullableByteToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("0");
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds and yields a null output.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds and yields a null output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_NullValue_ReturnsTrue()
@@ -85,9 +73,7 @@ public class NullableByteToStringTypeConverterTests
         await Assert.That(output).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a conversion hint is used to format the output.
-    /// </summary>
+    /// <summary>Verifies that a conversion hint is used to format the output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()

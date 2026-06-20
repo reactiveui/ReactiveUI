@@ -5,8 +5,11 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// Fallback converter using System.ComponentModel.TypeDescriptor for reflection-based type conversion.
 /// This converter is consulted only when no typed converter matches.

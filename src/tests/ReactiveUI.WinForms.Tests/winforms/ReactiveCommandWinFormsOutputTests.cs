@@ -3,12 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using ReactiveUI.WinForms.Tests.Winforms.Mocks;
 using TUnit.Core.Executors;
 
@@ -25,7 +19,6 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 /// - WhenAnyObservable(vm => vm.Command) should propagate output
 /// - InvokeCommand should execute and propagate output
 /// - command.Execute().Subscribe() should receive output
-///
 /// The WinForms initialization is performed via
 /// AppLocator.CurrentMutable.CreateReactiveUIBuilder().WithWinForms().BuildApp()
 /// (which now includes core services) as called by the <see cref="WinFormsTestExecutor"/>.
@@ -34,10 +27,19 @@ namespace ReactiveUI.WinForms.Tests.Winforms;
 [TestExecutor<WinFormsTestExecutor>]
 public class ReactiveCommandWinFormsOutputTests
 {
+    /// <summary>The value two used in the tests.</summary>
     private const int Two = 2;
+
+    /// <summary>The value three used in the tests.</summary>
     private const int Three = 3;
+
+    /// <summary>The lower-case input value used in the tests.</summary>
     private const string HelloInput = "hello";
+
+    /// <summary>The upper-case expected output value used in the tests.</summary>
     private const string HelloUpper = "HELLO";
+
+    /// <summary>The first page identifier used in the routing tests.</summary>
     private const string Page1 = "page1";
 
     /// <summary>
@@ -49,8 +51,8 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task ReactiveCommand_Subscribe_ReceivesOutput_WhenCommandExecutes()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            () => Observable.Return("result"),
-            outputScheduler: ImmediateScheduler.Instance);
+            () => Signal.Emit("result"),
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
         command.Subscribe(results.Add);
@@ -70,8 +72,8 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task ReactiveCommand_Subscribe_ReceivesOutput_WithParameter()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Observable.Return(input.ToUpperInvariant()),
-            outputScheduler: ImmediateScheduler.Instance);
+            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
         command.Subscribe(results.Add);
@@ -82,9 +84,7 @@ public class ReactiveCommandWinFormsOutputTests
         await Assert.That(results[0]).IsEqualTo(HelloUpper);
     }
 
-    /// <summary>
-    /// Verifies that multiple executions each propagate their output to subscribers.
-    /// </summary>
+    /// <summary>Verifies that multiple executions each propagate their output to subscribers.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task ReactiveCommand_Subscribe_ReceivesAllOutputs_OnMultipleExecutions()
@@ -92,7 +92,7 @@ public class ReactiveCommandWinFormsOutputTests
         var counter = 0;
         var command = ReactiveCommand.Create(
             () => ++counter,
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<int>();
         command.Subscribe(results.Add);
@@ -116,10 +116,10 @@ public class ReactiveCommandWinFormsOutputTests
     [Test]
     public async Task ReactiveCommand_IsExecuting_TracksExecutionState()
     {
-        var gate = new Subject<Unit>();
+        var gate = new Signal<RxVoid>();
         var command = ReactiveCommand.CreateFromObservable(
             () => gate.Take(1),
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var executingValues = new List<bool>();
         command.IsExecuting.Subscribe(executingValues.Add);
@@ -128,7 +128,7 @@ public class ReactiveCommandWinFormsOutputTests
         var executeTask = command.Execute().ToTask();
 
         // Signal the command to complete
-        gate.OnNext(Unit.Default);
+        gate.OnNext(RxVoid.Default);
         await executeTask;
 
         using var multiple = Assert.Multiple();
@@ -169,13 +169,13 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task InvokeCommand_ExecutesCommand_AndOutputPropagates()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Observable.Return(input.ToUpperInvariant()),
-            outputScheduler: ImmediateScheduler.Instance);
+            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
         command.Subscribe(results.Add);
 
-        var source = new Subject<string>();
+        var source = new Signal<string>();
         source.InvokeCommand(command);
         source.OnNext(HelloInput);
 
@@ -197,7 +197,7 @@ public class ReactiveCommandWinFormsOutputTests
         var results = new List<string>();
         viewModel.NavigateCommand.Subscribe(results.Add);
 
-        var source = new Subject<string>();
+        var source = new Signal<string>();
         source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
         source.OnNext(Page1);
 
@@ -214,8 +214,8 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task Execute_Subscribe_ReceivesOutput()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string input) => Observable.Return(input.ToUpperInvariant()),
-            outputScheduler: ImmediateScheduler.Instance);
+            (string input) => Signal.Emit(input.ToUpperInvariant()),
+            outputScheduler: Sequencer.Immediate);
 
         var executedResults = new List<string>();
         var subscribedResults = new List<string>();
@@ -242,14 +242,14 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task CreateFromObservable_WithObservableCreate_PropagatesOutput()
     {
         var command = ReactiveCommand.CreateFromObservable(
-            (string page) => Observable.Create<string>(observer =>
+            (string page) => Signal.Create<string>(observer =>
             {
                 var result = "navigated-to-" + page;
                 observer.OnNext(result);
                 observer.OnCompleted();
-                return Disposable.Empty;
+                return Scope.Empty;
             }),
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
         command.Subscribe(results.Add);
@@ -269,13 +269,13 @@ public class ReactiveCommandWinFormsOutputTests
     public async Task CreateFromObservable_WithSelectManyChain_PropagatesOutput()
     {
         var innerCommand = ReactiveCommand.CreateFromObservable(
-            (string page) => Observable.Return("inner-" + page),
-            outputScheduler: ImmediateScheduler.Instance);
+            (string page) => Signal.Emit("inner-" + page),
+            outputScheduler: Sequencer.Immediate);
 
         var outerCommand = ReactiveCommand.CreateFromObservable(
-            (string page) => Observable.Return(page)
+            (string page) => Signal.Emit(page)
                 .SelectMany(p => innerCommand.Execute(p)),
-            outputScheduler: ImmediateScheduler.Instance);
+            outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
         outerCommand.Subscribe(results.Add);

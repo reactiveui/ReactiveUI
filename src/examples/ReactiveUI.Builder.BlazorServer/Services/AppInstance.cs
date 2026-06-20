@@ -5,9 +5,7 @@
 
 namespace ReactiveUI.Builder.BlazorServer.Services;
 
-/// <summary>
-/// Provides a process-wide identifier for this running application instance.
-/// </summary>
+/// <summary>Provides a process-wide identifier for this running application instance.</summary>
 /// <remarks>
 /// The sample uses this id to tag MessageBus payloads so that an instance can
 /// ignore the chat and room events it broadcast itself, distinguishing them from
@@ -15,8 +13,6 @@ namespace ReactiveUI.Builder.BlazorServer.Services;
 /// </remarks>
 internal static class AppInstance
 {
-    /// <summary>
-    /// A unique identifier generated once per application instance.
-    /// </summary>
+    /// <summary>A unique identifier generated once per application instance.</summary>
     public static readonly Guid Id = Guid.NewGuid();
 }

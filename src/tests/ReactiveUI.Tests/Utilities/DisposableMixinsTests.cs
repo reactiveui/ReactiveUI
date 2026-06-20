@@ -3,27 +3,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-
 namespace ReactiveUI.Tests.Utilities;
 
-/// <summary>
-///     Tests for DisposableMixins utility methods.
-/// </summary>
+/// <summary>Tests for DisposableMixins utility methods.</summary>
 public class DisposableMixinsTests
 {
-    /// <summary>
-    ///     Tests that DisposeWith adds disposable to composite.
-    /// </summary>
+    /// <summary>Tests that DisposeWith adds disposable to composite.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DisposeWith_AddsToComposite()
     {
         // Arrange
-        var disposable1 = Disposable.Create(() => { });
-        var disposable2 = Disposable.Create(() => { });
-        var compositeDisposable = new CompositeDisposable();
+        var disposable1 = Scope.Create(() => { });
+        var disposable2 = Scope.Create(() => { });
+        var compositeDisposable = new MultipleDisposable();
 
         // Act
         const int ExpectedCount = 2;
@@ -34,17 +27,15 @@ public class DisposableMixinsTests
         await Assert.That(compositeDisposable).Count().IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Tests that DisposeWith disposes when composite is disposed.
-    /// </summary>
+    /// <summary>Tests that DisposeWith disposes when composite is disposed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DisposeWith_DisposesWhenCompositeDisposed()
     {
         // Arrange
         var disposed = false;
-        var disposable = Disposable.Create(() => disposed = true);
-        var compositeDisposable = new CompositeDisposable();
+        var disposable = Scope.Create(() => disposed = true);
+        var compositeDisposable = new MultipleDisposable();
 
         // Act
         disposable.DisposeWith(compositeDisposable);
@@ -54,16 +45,14 @@ public class DisposableMixinsTests
         await Assert.That(disposed).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests that DisposeWith returns original disposable.
-    /// </summary>
+    /// <summary>Tests that DisposeWith returns original disposable.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DisposeWith_ReturnsOriginalDisposable()
     {
         // Arrange
-        var disposable = Disposable.Create(() => { });
-        var compositeDisposable = new CompositeDisposable();
+        var disposable = Scope.Create(() => { });
+        var compositeDisposable = new MultipleDisposable();
 
         // Act
         var result = disposable.DisposeWith(compositeDisposable);

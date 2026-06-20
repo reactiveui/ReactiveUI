@@ -4,46 +4,40 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive.Disposables.Fluent;
+using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Winforms;
 
-/// <summary>
-/// A reactive login view demonstrating WhenActivated and reactive subscriptions for WinForms.
-/// </summary>
+/// <summary>A reactive login view demonstrating WhenActivated and reactive subscriptions for WinForms.</summary>
 public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 {
-    /// <summary>
-    /// The text box bound to the view model's user name.
-    /// </summary>
+    /// <summary>The text box bound to the view model's user name.</summary>
     private readonly TextBox _username = new() { PlaceholderText = "Username", Width = 240, Name = "Username" };
 
-    /// <summary>
-    /// The text box bound to the view model's password.
-    /// </summary>
+    /// <summary>The text box bound to the view model's password.</summary>
     private readonly TextBox _password = new()
     {
-        PlaceholderText = "Password", Width = 240, UseSystemPasswordChar = true, Name = "Password"
+        PlaceholderText = "Password",
+        Width = 240,
+        UseSystemPasswordChar = true,
+        Name = "Password"
     };
 
-    /// <summary>
-    /// The button bound to the view model's login command.
-    /// </summary>
+    /// <summary>The button bound to the view model's login command.</summary>
     private readonly Button _login = new() { Text = "Login", Width = 115, Name = "Login" };
 
-    /// <summary>
-    /// The button bound to the view model's cancel command.
-    /// </summary>
+    /// <summary>The button bound to the view model's cancel command.</summary>
     private readonly Button _cancel = new() { Text = "Cancel", Width = 115, Name = "Cancel" };
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoginView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LoginView"/> class.</summary>
     public LoginView()
     {
         var layout = new FlowLayoutPanel
         {
-            Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, Padding = new(20), WrapContents = false
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.TopDown,
+            Padding = new(20),
+            WrapContents = false
         };
 
         layout.Controls.AddRange(_username, _password);
@@ -78,9 +72,7 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
         });
     }
 
-    /// <summary>
-    /// Gets or sets the view model for this view.
-    /// </summary>
+    /// <summary>Gets or sets the view model for this view.</summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public LoginViewModel? ViewModel { get; set; }
 

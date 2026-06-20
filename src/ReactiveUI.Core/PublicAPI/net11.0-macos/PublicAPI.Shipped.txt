@@ -1,0 +1,761 @@
+#nullable enable
+ReactiveUI.BindingAffinity
+ReactiveUI.BindingConverterResolver
+ReactiveUI.BindingConverterResolver.BindingConverterResolver() -> void
+ReactiveUI.BindingConverterResolver.GetBindingConverter(System.Type! fromType, System.Type! toType) -> object?
+ReactiveUI.BindingConverterResolver.GetSetMethodConverter(System.Type? fromType, System.Type? toType) -> System.Func<object?, object?, object?[]?, object?>?
+ReactiveUI.BindingDirection
+ReactiveUI.BindingDirection.AsyncOneWay = 2 -> ReactiveUI.BindingDirection
+ReactiveUI.BindingDirection.OneWay = 0 -> ReactiveUI.BindingDirection
+ReactiveUI.BindingDirection.TwoWay = 1 -> ReactiveUI.BindingDirection
+ReactiveUI.BindingFallbackConverterRegistry
+ReactiveUI.BindingFallbackConverterRegistry.BindingFallbackConverterRegistry() -> void
+ReactiveUI.BindingFallbackConverterRegistry.GetAllConverters() -> System.Collections.Generic.IEnumerable<ReactiveUI.IBindingFallbackConverter!>!
+ReactiveUI.BindingFallbackConverterRegistry.Register(ReactiveUI.IBindingFallbackConverter! converter) -> void
+ReactiveUI.BindingFallbackConverterRegistry.TryGetConverter(System.Type! fromType, System.Type! toType) -> ReactiveUI.IBindingFallbackConverter?
+ReactiveUI.BindingTypeConverter<TFrom, TTo>
+ReactiveUI.BindingTypeConverter<TFrom, TTo>.BindingTypeConverter() -> void
+ReactiveUI.BindingTypeConverter<TFrom, TTo>.FromType.get -> System.Type!
+ReactiveUI.BindingTypeConverter<TFrom, TTo>.ToType.get -> System.Type!
+ReactiveUI.BindingTypeConverter<TFrom, TTo>.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.BindingTypeConverterDispatch
+ReactiveUI.BindingTypeConverterRegistry
+ReactiveUI.BindingTypeConverterRegistry.BindingTypeConverterRegistry() -> void
+ReactiveUI.BindingTypeConverterRegistry.GetAllConverters() -> System.Collections.Generic.IEnumerable<ReactiveUI.IBindingTypeConverter!>!
+ReactiveUI.BindingTypeConverterRegistry.Register(ReactiveUI.IBindingTypeConverter! converter) -> void
+ReactiveUI.BindingTypeConverterRegistry.TryGetConverter(System.Type! fromType, System.Type! toType) -> ReactiveUI.IBindingTypeConverter?
+ReactiveUI.BooleanToStringTypeConverter
+ReactiveUI.BooleanToStringTypeConverter.BooleanToStringTypeConverter() -> void
+ReactiveUI.ByteToNullableByteTypeConverter
+ReactiveUI.ByteToNullableByteTypeConverter.ByteToNullableByteTypeConverter() -> void
+ReactiveUI.ByteToNullableByteTypeConverter.FromType.get -> System.Type!
+ReactiveUI.ByteToNullableByteTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.ByteToNullableByteTypeConverter.ToType.get -> System.Type!
+ReactiveUI.ByteToNullableByteTypeConverter.TryConvert(byte from, object? conversionHint, out byte? result) -> bool
+ReactiveUI.ByteToNullableByteTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.ByteToStringTypeConverter
+ReactiveUI.ByteToStringTypeConverter.ByteToStringTypeConverter() -> void
+ReactiveUI.ChangeSetExtensions
+ReactiveUI.ChangeSetExtensions.extension<T>(System.Collections.ObjectModel.ObservableCollection<T>!)
+ReactiveUI.ChangeSetExtensions.extension<T>(System.Collections.ObjectModel.ObservableCollection<T>!).ToReactiveChangeSet() -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+ReactiveUI.ChangeSetExtensions.extension<TCollection, T>(TCollection)
+ReactiveUI.ChangeSetExtensions.extension<TCollection, T>(TCollection).ToReactiveChangeSet() -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+ReactiveUI.ChangeSetMixins
+ReactiveUI.ChangeSetMixins.extension(ReactiveUI.IReactiveChangeSet!)
+ReactiveUI.ChangeSetMixins.extension(ReactiveUI.IReactiveChangeSet!).CountHasChanged() -> bool
+ReactiveUI.ChangeSetMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!)
+ReactiveUI.ChangeSetMixins.extension<T>(System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!).WhenCountChanged() -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+ReactiveUI.CollectionChanged
+ReactiveUI.CollectionChanged.CollectionChanged() -> void
+ReactiveUI.CollectionChanged.CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs! eventArgs) -> void
+ReactiveUI.CollectionChanged.Equals(ReactiveUI.CollectionChanged other) -> bool
+ReactiveUI.CollectionChanged.EventArgs.get -> System.Collections.Specialized.NotifyCollectionChangedEventArgs!
+ReactiveUI.CollectionChanged.Sender.get -> object?
+ReactiveUI.CollectionChangedExtensions
+ReactiveUI.CollectionChangedExtensions.extension(System.Collections.Specialized.INotifyCollectionChanged!)
+ReactiveUI.CollectionChangedExtensions.extension(System.Collections.Specialized.INotifyCollectionChanged!).ObserveCollectionChanges() -> System.IObservable<ReactiveUI.CollectionChanged>!
+ReactiveUI.ComparerChainingExtensions
+ReactiveUI.ComparerChainingExtensions.extension<T>(System.Collections.Generic.IComparer<T>?)
+ReactiveUI.ComparerChainingExtensions.extension<T>(System.Collections.Generic.IComparer<T>?).ThenBy<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.ComparerChainingExtensions.extension<T>(System.Collections.Generic.IComparer<T>?).ThenBy<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.ComparerChainingExtensions.extension<T>(System.Collections.Generic.IComparer<T>?).ThenByDescending<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.ComparerChainingExtensions.extension<T>(System.Collections.Generic.IComparer<T>?).ThenByDescending<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.ComponentModelConversion
+ReactiveUI.ConverterMigrationHelperMixins
+ReactiveUI.ConverterMigrationHelperMixins.extension(ReactiveUI.ConverterService!)
+ReactiveUI.ConverterMigrationHelperMixins.extension(ReactiveUI.ConverterService!).ImportFrom(Splat.IReadonlyDependencyResolver! resolver) -> void
+ReactiveUI.ConverterService
+ReactiveUI.ConverterService.ConverterService() -> void
+ReactiveUI.ConverterService.FallbackConverters.get -> ReactiveUI.BindingFallbackConverterRegistry!
+ReactiveUI.ConverterService.ResolveConverter(System.Type! fromType, System.Type! toType) -> object?
+ReactiveUI.ConverterService.ResolveSetMethodConverter(System.Type? fromType, System.Type? toType) -> ReactiveUI.ISetMethodBindingConverter?
+ReactiveUI.ConverterService.SetMethodConverters.get -> ReactiveUI.SetMethodBindingConverterRegistry!
+ReactiveUI.ConverterService.TypedConverters.get -> ReactiveUI.BindingTypeConverterRegistry!
+ReactiveUI.CreatesCommandBinding
+ReactiveUI.CreatesCommandBindingViaCommandParameter
+ReactiveUI.CreatesCommandBindingViaCommandParameter.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler<TEventArgs!>!>! addHandler, System.Action<System.EventHandler<TEventArgs!>!>! removeHandler) -> System.IDisposable?
+ReactiveUI.CreatesCommandBindingViaCommandParameter.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, string! eventName) -> System.IDisposable?
+ReactiveUI.CreatesCommandBindingViaCommandParameter.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter) -> System.IDisposable?
+ReactiveUI.CreatesCommandBindingViaCommandParameter.CreatesCommandBindingViaCommandParameter() -> void
+ReactiveUI.CreatesCommandBindingViaCommandParameter.GetAffinityForObject<T>(bool hasEventTarget) -> int
+ReactiveUI.CreatesCommandBindingViaEvent
+ReactiveUI.CreatesCommandBindingViaEvent.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler<TEventArgs!>!>! addHandler, System.Action<System.EventHandler<TEventArgs!>!>! removeHandler) -> System.IDisposable!
+ReactiveUI.CreatesCommandBindingViaEvent.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, string! eventName) -> System.IDisposable?
+ReactiveUI.CreatesCommandBindingViaEvent.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter) -> System.IDisposable?
+ReactiveUI.CreatesCommandBindingViaEvent.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler!>! addHandler, System.Action<System.EventHandler!>! removeHandler) -> System.IDisposable!
+ReactiveUI.CreatesCommandBindingViaEvent.CreatesCommandBindingViaEvent() -> void
+ReactiveUI.CreatesCommandBindingViaEvent.GetAffinityForObject<T>(bool hasEventTarget) -> int
+ReactiveUI.DateOnlyToStringTypeConverter
+ReactiveUI.DateOnlyToStringTypeConverter.DateOnlyToStringTypeConverter() -> void
+ReactiveUI.DateTimeOffsetToStringTypeConverter
+ReactiveUI.DateTimeOffsetToStringTypeConverter.DateTimeOffsetToStringTypeConverter() -> void
+ReactiveUI.DateTimeToStringTypeConverter
+ReactiveUI.DateTimeToStringTypeConverter.DateTimeToStringTypeConverter() -> void
+ReactiveUI.DecimalToNullableDecimalTypeConverter
+ReactiveUI.DecimalToNullableDecimalTypeConverter.DecimalToNullableDecimalTypeConverter() -> void
+ReactiveUI.DecimalToNullableDecimalTypeConverter.FromType.get -> System.Type!
+ReactiveUI.DecimalToNullableDecimalTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.DecimalToNullableDecimalTypeConverter.ToType.get -> System.Type!
+ReactiveUI.DecimalToNullableDecimalTypeConverter.TryConvert(decimal from, object? conversionHint, out decimal? result) -> bool
+ReactiveUI.DecimalToNullableDecimalTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.DecimalToStringTypeConverter
+ReactiveUI.DecimalToStringTypeConverter.DecimalToStringTypeConverter() -> void
+ReactiveUI.DefaultViewLocator
+ReactiveUI.DefaultViewLocator.DefaultViewLocator() -> void
+ReactiveUI.DefaultViewLocator.Map<TViewModel, TView>(System.Func<TView!>! factory) -> ReactiveUI.DefaultViewLocator!
+ReactiveUI.DefaultViewLocator.Map<TViewModel, TView>(System.Func<TView!>! factory, string? contract) -> ReactiveUI.DefaultViewLocator!
+ReactiveUI.DefaultViewLocator.ResolveView(object? instance) -> ReactiveUI.IViewFor?
+ReactiveUI.DefaultViewLocator.ResolveView(object? instance, string? contract) -> ReactiveUI.IViewFor?
+ReactiveUI.DefaultViewLocator.ResolveView<TViewModel>() -> ReactiveUI.IViewFor<TViewModel!>?
+ReactiveUI.DefaultViewLocator.ResolveView<TViewModel>(string? contract) -> ReactiveUI.IViewFor<TViewModel!>?
+ReactiveUI.DefaultViewLocator.Unmap<TViewModel>() -> ReactiveUI.DefaultViewLocator!
+ReactiveUI.DefaultViewLocator.Unmap<TViewModel>(string? contract) -> ReactiveUI.DefaultViewLocator!
+ReactiveUI.DependencyResolverMixins
+ReactiveUI.DependencyResolverMixins.extension(Splat.IMutableDependencyResolver!)
+ReactiveUI.DependencyResolverMixins.extension(Splat.IMutableDependencyResolver!).RegisterViewsForViewModels(System.Reflection.Assembly! assembly) -> void
+ReactiveUI.DependencyResolverRegistrar
+ReactiveUI.DependencyResolverRegistrar.DependencyResolverRegistrar(Splat.IMutableDependencyResolver! resolver) -> void
+ReactiveUI.DependencyResolverRegistrar.Register<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.DependencyResolverRegistrar.Register<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.DependencyResolverRegistrar.RegisterConstant<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.DependencyResolverRegistrar.RegisterConstant<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.DependencyResolverRegistrar.RegisterLazySingleton<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.DependencyResolverRegistrar.RegisterLazySingleton<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.DoubleToNullableDoubleTypeConverter
+ReactiveUI.DoubleToNullableDoubleTypeConverter.DoubleToNullableDoubleTypeConverter() -> void
+ReactiveUI.DoubleToNullableDoubleTypeConverter.FromType.get -> System.Type!
+ReactiveUI.DoubleToNullableDoubleTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.DoubleToNullableDoubleTypeConverter.ToType.get -> System.Type!
+ReactiveUI.DoubleToNullableDoubleTypeConverter.TryConvert(double from, object? conversionHint, out double? result) -> bool
+ReactiveUI.DoubleToNullableDoubleTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.DoubleToStringTypeConverter
+ReactiveUI.DoubleToStringTypeConverter.DoubleToStringTypeConverter() -> void
+ReactiveUI.EqualityTypeConverter
+ReactiveUI.EqualityTypeConverter.EqualityTypeConverter() -> void
+ReactiveUI.EqualityTypeConverter.FromType.get -> System.Type!
+ReactiveUI.EqualityTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.EqualityTypeConverter.ToType.get -> System.Type!
+ReactiveUI.EqualityTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.ExcludeFromViewRegistrationAttribute
+ReactiveUI.ExcludeFromViewRegistrationAttribute.ExcludeFromViewRegistrationAttribute() -> void
+ReactiveUI.ExpressionMixins
+ReactiveUI.ExpressionMixins.extension(System.Linq.Expressions.Expression!)
+ReactiveUI.ExpressionMixins.extension(System.Linq.Expressions.Expression!).GetArgumentsArray() -> object?[]?
+ReactiveUI.ExpressionMixins.extension(System.Linq.Expressions.Expression!).GetExpressionChain() -> System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression!>!
+ReactiveUI.ExpressionMixins.extension(System.Linq.Expressions.Expression!).GetMemberInfo() -> System.Reflection.MemberInfo?
+ReactiveUI.ExpressionMixins.extension(System.Linq.Expressions.Expression!).GetParent() -> System.Linq.Expressions.Expression?
+ReactiveUI.ExpressionRewriter
+ReactiveUI.ExpressionRewriter.ExpressionRewriter() -> void
+ReactiveUI.GuidToStringTypeConverter
+ReactiveUI.GuidToStringTypeConverter.GuidToStringTypeConverter() -> void
+ReactiveUI.IActivatableView
+ReactiveUI.IActivationForViewFetcher
+ReactiveUI.IActivationForViewFetcher.GetActivationForView(ReactiveUI.IActivatableView! view) -> System.IObservable<bool>!
+ReactiveUI.IActivationForViewFetcher.GetAffinityForView(System.Type! view) -> int
+ReactiveUI.IBindingConverterResolver
+ReactiveUI.IBindingConverterResolver.GetBindingConverter(System.Type! fromType, System.Type! toType) -> object?
+ReactiveUI.IBindingConverterResolver.GetSetMethodConverter(System.Type? fromType, System.Type? toType) -> System.Func<object?, object?, object?[]?, object?>?
+ReactiveUI.IBindingFallbackConverter
+ReactiveUI.IBindingFallbackConverter.GetAffinityForObjects(System.Type! fromType, System.Type! toType) -> int
+ReactiveUI.IBindingFallbackConverter.TryConvert(System.Type! fromType, object! from, System.Type! toType, object? conversionHint, out object? result) -> bool
+ReactiveUI.IBindingHookEvaluator
+ReactiveUI.IBindingHookEvaluator.EvaluateBindingHooks<TViewModel, TView>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression! viewModelExpression, System.Linq.Expressions.Expression! viewExpression, ReactiveUI.BindingDirection direction) -> bool
+ReactiveUI.IBindingTypeConverter
+ReactiveUI.IBindingTypeConverter.FromType.get -> System.Type!
+ReactiveUI.IBindingTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.IBindingTypeConverter.ToType.get -> System.Type!
+ReactiveUI.IBindingTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.IBindingTypeConverter<TFrom, TTo>
+ReactiveUI.IBindingTypeConverter<TFrom, TTo>.TryConvert(TFrom? from, object? conversionHint, out TTo? result) -> bool
+ReactiveUI.ICanForceManualActivation
+ReactiveUI.ICanForceManualActivation.Activate(bool isActivating) -> void
+ReactiveUI.ICommandBinderImplementation
+ReactiveUI.ICommandBinderImplementation.BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TProp?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TControl!>!>! controlProperty, System.IObservable<TParam?>! withParameter) -> ReactiveUI.IReactiveBinding<TView!, TProp>!
+ReactiveUI.ICommandBinderImplementation.BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TProp?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TControl!>!>! controlProperty, System.IObservable<TParam?>! withParameter, string? toEvent) -> ReactiveUI.IReactiveBinding<TView!, TProp>!
+ReactiveUI.ICommandBinderImplementation.BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TProp?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TControl!>!>! controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel!, TParam?>!>! withParameter) -> ReactiveUI.IReactiveBinding<TView!, TProp>!
+ReactiveUI.ICommandBinderImplementation.BindCommand<TView, TViewModel, TProp, TControl, TParam>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TProp?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TControl!>!>! controlProperty, System.Linq.Expressions.Expression<System.Func<TViewModel!, TParam?>!>! withParameter, string? toEvent) -> ReactiveUI.IReactiveBinding<TView!, TProp>!
+ReactiveUI.IComparerBuilder<T>
+ReactiveUI.IComparerBuilder<T>.OrderBy<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.IComparerBuilder<T>.OrderBy<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.IComparerBuilder<T>.OrderByDescending<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.IComparerBuilder<T>.OrderByDescending<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+ReactiveUI.ICreatesCommandBinding
+ReactiveUI.ICreatesCommandBinding.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler<TEventArgs!>!>! addHandler, System.Action<System.EventHandler<TEventArgs!>!>! removeHandler) -> System.IDisposable?
+ReactiveUI.ICreatesCommandBinding.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, string! eventName) -> System.IDisposable?
+ReactiveUI.ICreatesCommandBinding.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter) -> System.IDisposable?
+ReactiveUI.ICreatesCommandBinding.GetAffinityForObject<T>(bool hasEventTarget) -> int
+ReactiveUI.ICreatesObservableForProperty
+ReactiveUI.ICreatesObservableForProperty.GetAffinityForObject(System.Type! type, string! propertyName) -> int
+ReactiveUI.ICreatesObservableForProperty.GetAffinityForObject(System.Type? type, string! propertyName, bool beforeChanged) -> int
+ReactiveUI.ICreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.ICreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.ICreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged, bool suppressWarnings) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.IExtensionState<TSender>
+ReactiveUI.IExtensionState<TSender>.AreChangeNotificationsDelayed() -> bool
+ReactiveUI.IExtensionState<TSender>.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>!>!
+ReactiveUI.IExtensionState<TSender>.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>!>!
+ReactiveUI.IExtensionState<TSender>.Delay() -> System.IDisposable!
+ReactiveUI.IExtensionState<TSender>.NotificationsEnabled() -> bool
+ReactiveUI.IExtensionState<TSender>.RaiseChanged(string! propertyName) -> void
+ReactiveUI.IExtensionState<TSender>.RaiseChanging(string! propertyName) -> void
+ReactiveUI.IExtensionState<TSender>.SubscribeChanged() -> void
+ReactiveUI.IExtensionState<TSender>.SubscribeChanging() -> void
+ReactiveUI.IExtensionState<TSender>.Suppress() -> System.IDisposable!
+ReactiveUI.IExtensionState<TSender>.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.IHandleObservableErrors
+ReactiveUI.IHandleObservableErrors.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.IInteractionContext<TInput, TOutput>
+ReactiveUI.IInteractionContext<TInput, TOutput>.Input.get -> TInput
+ReactiveUI.IInteractionContext<TInput, TOutput>.IsHandled.get -> bool
+ReactiveUI.IInteractionContext<TInput, TOutput>.SetOutput(TOutput output) -> void
+ReactiveUI.INPCObservableForProperty
+ReactiveUI.INPCObservableForProperty.GetAffinityForObject(System.Type! type, string! propertyName) -> int
+ReactiveUI.INPCObservableForProperty.GetAffinityForObject(System.Type? type, string! propertyName, bool beforeChanged) -> int
+ReactiveUI.INPCObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.INPCObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.INPCObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged, bool suppressWarnings) -> System.IObservable<ReactiveUI.IObservedChange<object?, object?>!>!
+ReactiveUI.INPCObservableForProperty.INPCObservableForProperty() -> void
+ReactiveUI.IObservedChange<TSender, TValue>
+ReactiveUI.IObservedChange<TSender, TValue>.Expression.get -> System.Linq.Expressions.Expression?
+ReactiveUI.IObservedChange<TSender, TValue>.Sender.get -> TSender
+ReactiveUI.IObservedChange<TSender, TValue>.Value.get -> TValue
+ReactiveUI.IOutputContext<TInput, TOutput>
+ReactiveUI.IOutputContext<TInput, TOutput>.GetOutput() -> TOutput
+ReactiveUI.IPlatformOperations
+ReactiveUI.IPlatformOperations.GetOrientation() -> string?
+ReactiveUI.IPropertyBinderImplementation
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TViewModelPropertyType?, TViewPropertyType>! viewModelToViewConverter, System.Func<TViewPropertyType, TViewModelPropertyType?>! viewToViewModelConverter) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, System.Func<TViewModelPropertyType?, TViewPropertyType>! viewModelToViewConverter, System.Func<TViewPropertyType, TViewModelPropertyType?>! viewToViewModelConverter, ReactiveUI.TriggerUpdate triggerUpdate) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride, ReactiveUI.IBindingTypeConverter? viewToViewModelConverterOverride) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.Bind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType, TDontCare>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, System.IObservable<TDontCare>? signalViewUpdate, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride, ReactiveUI.IBindingTypeConverter? viewToViewModelConverterOverride, ReactiveUI.TriggerUpdate triggerUpdate) -> ReactiveUI.IReactiveBinding<TView!, (object? view, bool isViewModel)>!
+ReactiveUI.IPropertyBinderImplementation.BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue>! observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget!, TTargetValue?>!>! propertyExpression) -> System.IDisposable!
+ReactiveUI.IPropertyBinderImplementation.BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue>! observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget!, TTargetValue?>!>! propertyExpression, object? conversionHint) -> System.IDisposable!
+ReactiveUI.IPropertyBinderImplementation.BindTo<TValue, TTarget, TTargetValue>(System.IObservable<TValue>! observedChange, TTarget? target, System.Linq.Expressions.Expression<System.Func<TTarget!, TTargetValue?>!>! propertyExpression, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) -> System.IDisposable!
+ReactiveUI.IPropertyBinderImplementation.OneWayBind<TViewModel, TView, TProp, TOut>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TProp>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TOut>!>! viewProperty, System.Func<TProp, TOut>! selector) -> ReactiveUI.IReactiveBinding<TView!, TOut>!
+ReactiveUI.IPropertyBinderImplementation.OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty) -> ReactiveUI.IReactiveBinding<TView!, TViewPropertyType>!
+ReactiveUI.IPropertyBinderImplementation.OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) -> ReactiveUI.IReactiveBinding<TView!, TViewPropertyType>!
+ReactiveUI.IPropertyBinderImplementation.OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, object? conversionHint) -> ReactiveUI.IReactiveBinding<TView!, TViewPropertyType>!
+ReactiveUI.IPropertyBinderImplementation.OneWayBind<TViewModel, TView, TViewModelPropertyType, TViewPropertyType>(TViewModel? viewModel, TView! view, System.Linq.Expressions.Expression<System.Func<TViewModel!, TViewModelPropertyType?>!>! viewModelProperty, System.Linq.Expressions.Expression<System.Func<TView!, TViewPropertyType>!>! viewProperty, object? conversionHint, ReactiveUI.IBindingTypeConverter? viewModelToViewConverterOverride) -> ReactiveUI.IReactiveBinding<TView!, TViewPropertyType>!
+ReactiveUI.IPropertyBindingExpressionCompiler
+ReactiveUI.IPropertyBindingExpressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(TTarget? target, System.IObservable<TObs>! observedChanged, System.Linq.Expressions.Expression! viewExpression, System.Linq.Expressions.Expression![]! hostExpressionChain, System.Func<object?, object?[]?, object?>! getter, System.Action<object?, object?, object?[]?>! setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?>! getSetConverter) -> System.IObservable<(bool ShouldEmit, TValue Value)>!
+ReactiveUI.IPropertyBindingExpressionCompiler.CreateDirectSetObservable<TTarget, TValue, TObs>(TTarget? target, System.IObservable<TObs>! observedChanged, System.Linq.Expressions.Expression! viewExpression, System.Func<object?, object?[]?, object?>! getter, System.Action<object?, object?, object?[]?>! setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?>! getSetConverter) -> System.IObservable<(bool ShouldEmit, TValue Value)>!
+ReactiveUI.IPropertyBindingExpressionCompiler.CreateSetThenGet(System.Linq.Expressions.Expression! viewExpression, System.Func<object?, object?[]?, object?>! getter, System.Action<object?, object?, object?[]?>! setter, System.Func<System.Type?, System.Type?, System.Func<object?, object?, object?[]?, object?>?>! getSetConverter) -> System.Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)>!
+ReactiveUI.IPropertyBindingExpressionCompiler.GetExpressionChainArray(System.Linq.Expressions.Expression? expression) -> System.Linq.Expressions.Expression![]?
+ReactiveUI.IPropertyBindingExpressionCompiler.IsDirectMemberAccess(System.Linq.Expressions.Expression! viewExpression) -> bool
+ReactiveUI.IPropertyBindingExpressionCompiler.ShouldReplayOnHostChanges(System.Linq.Expressions.Expression![]? hostExpressionChain) -> bool
+ReactiveUI.IPropertyBindingHook
+ReactiveUI.IPropertyBindingHook.ExecuteHook(object? source, object! target, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewProperties, ReactiveUI.BindingDirection direction) -> bool
+ReactiveUI.IReactiveBinding<TView, TValue>
+ReactiveUI.IReactiveBinding<TView, TValue>.Changed.get -> System.IObservable<TValue?>!
+ReactiveUI.IReactiveBinding<TView, TValue>.Direction.get -> ReactiveUI.BindingDirection
+ReactiveUI.IReactiveBinding<TView, TValue>.View.get -> TView
+ReactiveUI.IReactiveBinding<TView, TValue>.ViewExpression.get -> System.Linq.Expressions.Expression!
+ReactiveUI.IReactiveBinding<TView, TValue>.ViewModelExpression.get -> System.Linq.Expressions.Expression!
+ReactiveUI.IReactiveChangeSet
+ReactiveUI.IReactiveChangeSet.Adds.get -> int
+ReactiveUI.IReactiveChangeSet.Removes.get -> int
+ReactiveUI.IReactiveChangeSet<T>
+ReactiveUI.IReactiveCommand
+ReactiveUI.IReactiveCommand.CanExecute.get -> System.IObservable<bool>!
+ReactiveUI.IReactiveCommand.IsExecuting.get -> System.IObservable<bool>!
+ReactiveUI.IReactiveCommand<TParam, TResult>
+ReactiveUI.IReactiveCommand<TParam, TResult>.Execute() -> System.IObservable<TResult>!
+ReactiveUI.IReactiveCommand<TParam, TResult>.Execute(TParam parameter) -> System.IObservable<TResult>!
+ReactiveUI.IReactiveNotifyPropertyChanged<TSender>
+ReactiveUI.IReactiveNotifyPropertyChanged<TSender>.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>!>!
+ReactiveUI.IReactiveNotifyPropertyChanged<TSender>.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<TSender>!>!
+ReactiveUI.IReactiveNotifyPropertyChanged<TSender>.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.IReactiveObject
+ReactiveUI.IReactiveObject.RaisePropertyChanged(System.ComponentModel.PropertyChangedEventArgs! args) -> void
+ReactiveUI.IReactiveObject.RaisePropertyChanging(System.ComponentModel.PropertyChangingEventArgs! args) -> void
+ReactiveUI.IReactiveProperty<T>
+ReactiveUI.IReactiveProperty<T>.ObserveErrorChanged.get -> System.IObservable<System.Collections.IEnumerable?>!
+ReactiveUI.IReactiveProperty<T>.ObserveHasErrors.get -> System.IObservable<bool>!
+ReactiveUI.IReactiveProperty<T>.Refresh() -> void
+ReactiveUI.IReactiveProperty<T>.Value.get -> T?
+ReactiveUI.IReactiveProperty<T>.Value.set -> void
+ReactiveUI.IReactivePropertyChangedEventArgs<TSender>
+ReactiveUI.IReactivePropertyChangedEventArgs<TSender>.PropertyName.get -> string?
+ReactiveUI.IReactivePropertyChangedEventArgs<TSender>.Sender.get -> TSender
+ReactiveUI.IRegistrar
+ReactiveUI.IRegistrar.Register<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.IRegistrar.Register<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.IRegistrar.RegisterConstant<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.IRegistrar.RegisterConstant<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.IRegistrar.RegisterLazySingleton<TService>(System.Func<TService!>! factory) -> void
+ReactiveUI.IRegistrar.RegisterLazySingleton<TService>(System.Func<TService!>! factory, string? contract) -> void
+ReactiveUI.ISetMethodBindingConverter
+ReactiveUI.ISetMethodBindingConverter.GetAffinityForObjects(System.Type? fromType, System.Type? toType) -> int
+ReactiveUI.ISetMethodBindingConverter.PerformSet(object? toTarget, object? newValue, object?[]? arguments) -> object?
+ReactiveUI.IViewFor
+ReactiveUI.IViewFor.ViewModel.get -> object?
+ReactiveUI.IViewFor.ViewModel.set -> void
+ReactiveUI.IViewFor<T>
+ReactiveUI.IViewFor<T>.ViewModel.get -> T?
+ReactiveUI.IViewFor<T>.ViewModel.set -> void
+ReactiveUI.IViewLocator
+ReactiveUI.IViewLocator.ResolveView(object? instance) -> ReactiveUI.IViewFor?
+ReactiveUI.IViewLocator.ResolveView(object? instance, string? contract) -> ReactiveUI.IViewFor?
+ReactiveUI.IViewLocator.ResolveView<TViewModel>() -> ReactiveUI.IViewFor<TViewModel!>?
+ReactiveUI.IViewLocator.ResolveView<TViewModel>(string? contract) -> ReactiveUI.IViewFor<TViewModel!>?
+ReactiveUI.IViewModule
+ReactiveUI.IViewModule.RegisterViews(ReactiveUI.DefaultViewLocator! locator) -> void
+ReactiveUI.IWantsToRegisterStuff
+ReactiveUI.IWantsToRegisterStuff.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.IntegerToNullableIntegerTypeConverter
+ReactiveUI.IntegerToNullableIntegerTypeConverter.FromType.get -> System.Type!
+ReactiveUI.IntegerToNullableIntegerTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.IntegerToNullableIntegerTypeConverter.IntegerToNullableIntegerTypeConverter() -> void
+ReactiveUI.IntegerToNullableIntegerTypeConverter.ToType.get -> System.Type!
+ReactiveUI.IntegerToNullableIntegerTypeConverter.TryConvert(int from, object? conversionHint, out int? result) -> bool
+ReactiveUI.IntegerToNullableIntegerTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.IntegerToStringTypeConverter
+ReactiveUI.IntegerToStringTypeConverter.IntegerToStringTypeConverter() -> void
+ReactiveUI.InteractionContext<TInput, TOutput>
+ReactiveUI.InteractionContext<TInput, TOutput>.GetOutput() -> TOutput
+ReactiveUI.InteractionContext<TInput, TOutput>.Input.get -> TInput
+ReactiveUI.InteractionContext<TInput, TOutput>.InteractionContext(TInput input) -> void
+ReactiveUI.InteractionContext<TInput, TOutput>.IsHandled.get -> bool
+ReactiveUI.InteractionContext<TInput, TOutput>.SetOutput(TOutput output) -> void
+ReactiveUI.Internal.SingleValueObservable<T>
+ReactiveUI.Internal.SingleValueObservable<T>.SingleValueObservable(T value) -> void
+ReactiveUI.Internal.SingleValueObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
+ReactiveUI.Internal.StartWithObservable<T>
+ReactiveUI.Internal.StartWithObservable<T>.StartWithObservable(System.IObservable<T>! source, T value) -> void
+ReactiveUI.Internal.StartWithObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
+ReactiveUI.Internal.SyncExecuteObservable<T>
+ReactiveUI.Internal.SyncExecuteObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
+ReactiveUI.Internal.SyncExecuteObservable<T>.SyncExecuteObservable(System.Func<T>! execute) -> void
+ReactiveUI.Internal.TaskObservable<T>
+ReactiveUI.Internal.TaskObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
+ReactiveUI.Internal.TaskObservable<T>.TaskObservable(System.Threading.Tasks.Task<T>! task) -> void
+ReactiveUI.LongToNullableLongTypeConverter
+ReactiveUI.LongToNullableLongTypeConverter.FromType.get -> System.Type!
+ReactiveUI.LongToNullableLongTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.LongToNullableLongTypeConverter.LongToNullableLongTypeConverter() -> void
+ReactiveUI.LongToNullableLongTypeConverter.ToType.get -> System.Type!
+ReactiveUI.LongToNullableLongTypeConverter.TryConvert(long from, object? conversionHint, out long? result) -> bool
+ReactiveUI.LongToNullableLongTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.LongToStringTypeConverter
+ReactiveUI.LongToStringTypeConverter.LongToStringTypeConverter() -> void
+ReactiveUI.NotAWeakReference
+ReactiveUI.NotAWeakReference.IsAlive.get -> bool
+ReactiveUI.NotAWeakReference.NotAWeakReference(object! target) -> void
+ReactiveUI.NotAWeakReference.Target.get -> object!
+ReactiveUI.NullableBooleanToStringTypeConverter
+ReactiveUI.NullableBooleanToStringTypeConverter.NullableBooleanToStringTypeConverter() -> void
+ReactiveUI.NullableByteToByteTypeConverter
+ReactiveUI.NullableByteToByteTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableByteToByteTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableByteToByteTypeConverter.NullableByteToByteTypeConverter() -> void
+ReactiveUI.NullableByteToByteTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableByteToByteTypeConverter.TryConvert(byte? from, object? conversionHint, out byte result) -> bool
+ReactiveUI.NullableByteToByteTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableByteToStringTypeConverter
+ReactiveUI.NullableByteToStringTypeConverter.NullableByteToStringTypeConverter() -> void
+ReactiveUI.NullableDateOnlyToStringTypeConverter
+ReactiveUI.NullableDateOnlyToStringTypeConverter.NullableDateOnlyToStringTypeConverter() -> void
+ReactiveUI.NullableDateTimeOffsetToStringTypeConverter
+ReactiveUI.NullableDateTimeOffsetToStringTypeConverter.NullableDateTimeOffsetToStringTypeConverter() -> void
+ReactiveUI.NullableDateTimeToStringTypeConverter
+ReactiveUI.NullableDateTimeToStringTypeConverter.NullableDateTimeToStringTypeConverter() -> void
+ReactiveUI.NullableDecimalToDecimalTypeConverter
+ReactiveUI.NullableDecimalToDecimalTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableDecimalToDecimalTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableDecimalToDecimalTypeConverter.NullableDecimalToDecimalTypeConverter() -> void
+ReactiveUI.NullableDecimalToDecimalTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableDecimalToDecimalTypeConverter.TryConvert(decimal? from, object? conversionHint, out decimal result) -> bool
+ReactiveUI.NullableDecimalToDecimalTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableDecimalToStringTypeConverter
+ReactiveUI.NullableDecimalToStringTypeConverter.NullableDecimalToStringTypeConverter() -> void
+ReactiveUI.NullableDoubleToDoubleTypeConverter
+ReactiveUI.NullableDoubleToDoubleTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableDoubleToDoubleTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableDoubleToDoubleTypeConverter.NullableDoubleToDoubleTypeConverter() -> void
+ReactiveUI.NullableDoubleToDoubleTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableDoubleToDoubleTypeConverter.TryConvert(double? from, object? conversionHint, out double result) -> bool
+ReactiveUI.NullableDoubleToDoubleTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableDoubleToStringTypeConverter
+ReactiveUI.NullableDoubleToStringTypeConverter.NullableDoubleToStringTypeConverter() -> void
+ReactiveUI.NullableGuidToStringTypeConverter
+ReactiveUI.NullableGuidToStringTypeConverter.NullableGuidToStringTypeConverter() -> void
+ReactiveUI.NullableIntegerToIntegerTypeConverter
+ReactiveUI.NullableIntegerToIntegerTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableIntegerToIntegerTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableIntegerToIntegerTypeConverter.NullableIntegerToIntegerTypeConverter() -> void
+ReactiveUI.NullableIntegerToIntegerTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableIntegerToIntegerTypeConverter.TryConvert(int? from, object? conversionHint, out int result) -> bool
+ReactiveUI.NullableIntegerToIntegerTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableIntegerToStringTypeConverter
+ReactiveUI.NullableIntegerToStringTypeConverter.NullableIntegerToStringTypeConverter() -> void
+ReactiveUI.NullableLongToLongTypeConverter
+ReactiveUI.NullableLongToLongTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableLongToLongTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableLongToLongTypeConverter.NullableLongToLongTypeConverter() -> void
+ReactiveUI.NullableLongToLongTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableLongToLongTypeConverter.TryConvert(long? from, object? conversionHint, out long result) -> bool
+ReactiveUI.NullableLongToLongTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableLongToStringTypeConverter
+ReactiveUI.NullableLongToStringTypeConverter.NullableLongToStringTypeConverter() -> void
+ReactiveUI.NullableShortToShortTypeConverter
+ReactiveUI.NullableShortToShortTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableShortToShortTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableShortToShortTypeConverter.NullableShortToShortTypeConverter() -> void
+ReactiveUI.NullableShortToShortTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableShortToShortTypeConverter.TryConvert(short? from, object? conversionHint, out short result) -> bool
+ReactiveUI.NullableShortToShortTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableShortToStringTypeConverter
+ReactiveUI.NullableShortToStringTypeConverter.NullableShortToStringTypeConverter() -> void
+ReactiveUI.NullableSingleToSingleTypeConverter
+ReactiveUI.NullableSingleToSingleTypeConverter.FromType.get -> System.Type!
+ReactiveUI.NullableSingleToSingleTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.NullableSingleToSingleTypeConverter.NullableSingleToSingleTypeConverter() -> void
+ReactiveUI.NullableSingleToSingleTypeConverter.ToType.get -> System.Type!
+ReactiveUI.NullableSingleToSingleTypeConverter.TryConvert(float? from, object? conversionHint, out float result) -> bool
+ReactiveUI.NullableSingleToSingleTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.NullableSingleToStringTypeConverter
+ReactiveUI.NullableSingleToStringTypeConverter.NullableSingleToStringTypeConverter() -> void
+ReactiveUI.NullableTimeOnlyToStringTypeConverter
+ReactiveUI.NullableTimeOnlyToStringTypeConverter.NullableTimeOnlyToStringTypeConverter() -> void
+ReactiveUI.NullableTimeSpanToStringTypeConverter
+ReactiveUI.NullableTimeSpanToStringTypeConverter.NullableTimeSpanToStringTypeConverter() -> void
+ReactiveUI.ObservedChange<TSender, TValue>
+ReactiveUI.ObservedChange<TSender, TValue>.Expression.get -> System.Linq.Expressions.Expression?
+ReactiveUI.ObservedChange<TSender, TValue>.ObservedChange(TSender sender, System.Linq.Expressions.Expression? expression, TValue value) -> void
+ReactiveUI.ObservedChange<TSender, TValue>.Sender.get -> TSender
+ReactiveUI.ObservedChange<TSender, TValue>.Value.get -> TValue
+ReactiveUI.OrderedComparer
+ReactiveUI.OrderedComparer<T>
+ReactiveUI.PreserveAttribute
+ReactiveUI.PreserveAttribute.AllMembers.get -> bool
+ReactiveUI.PreserveAttribute.AllMembers.set -> void
+ReactiveUI.PreserveAttribute.PreserveAttribute() -> void
+ReactiveUI.ReactiveBinding<TView, TValue>
+ReactiveUI.ReactiveBinding<TView, TValue>.Changed.get -> System.IObservable<TValue?>!
+ReactiveUI.ReactiveBinding<TView, TValue>.Direction.get -> ReactiveUI.BindingDirection
+ReactiveUI.ReactiveBinding<TView, TValue>.Dispose() -> void
+ReactiveUI.ReactiveBinding<TView, TValue>.ReactiveBinding(TView view, System.Linq.Expressions.Expression! viewExpression, System.Linq.Expressions.Expression! viewModelExpression, System.IObservable<TValue?>! changed, ReactiveUI.BindingDirection direction, System.IDisposable! bindingDisposable) -> void
+ReactiveUI.ReactiveBinding<TView, TValue>.View.get -> TView
+ReactiveUI.ReactiveBinding<TView, TValue>.ViewExpression.get -> System.Linq.Expressions.Expression!
+ReactiveUI.ReactiveBinding<TView, TValue>.ViewModelExpression.get -> System.Linq.Expressions.Expression!
+ReactiveUI.ReactiveChange<T>
+ReactiveUI.ReactiveChange<T>.Current.get -> T
+ReactiveUI.ReactiveChange<T>.CurrentIndex.get -> int
+ReactiveUI.ReactiveChange<T>.Equals(ReactiveUI.ReactiveChange<T> other) -> bool
+ReactiveUI.ReactiveChange<T>.Previous.get -> T?
+ReactiveUI.ReactiveChange<T>.PreviousIndex.get -> int
+ReactiveUI.ReactiveChange<T>.ReactiveChange() -> void
+ReactiveUI.ReactiveChange<T>.ReactiveChange(ReactiveUI.ReactiveChangeReason reason, T current, T? previous, int currentIndex, int previousIndex) -> void
+ReactiveUI.ReactiveChange<T>.Reason.get -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason.Add = 0 -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason.Move = 3 -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason.Refresh = 4 -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason.Remove = 1 -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeReason.Replace = 2 -> ReactiveUI.ReactiveChangeReason
+ReactiveUI.ReactiveChangeSet<T>
+ReactiveUI.ReactiveChangeSet<T>.Adds.get -> int
+ReactiveUI.ReactiveChangeSet<T>.Count.get -> int
+ReactiveUI.ReactiveChangeSet<T>.GetEnumerator() -> System.Collections.Generic.List<ReactiveUI.ReactiveChange<T>>.Enumerator
+ReactiveUI.ReactiveChangeSet<T>.ReactiveChangeSet(System.Collections.Generic.List<ReactiveUI.ReactiveChange<T>>! changes) -> void
+ReactiveUI.ReactiveChangeSet<T>.Removes.get -> int
+ReactiveUI.ReactiveChangeSet<T>.this[int index].get -> ReactiveUI.ReactiveChange<T>
+ReactiveUI.ReactivePropertyChangedEventArgs<TSender>
+ReactiveUI.ReactivePropertyChangedEventArgs<TSender>.ReactivePropertyChangedEventArgs(TSender sender, string! propertyName) -> void
+ReactiveUI.ReactivePropertyChangedEventArgs<TSender>.Sender.get -> TSender
+ReactiveUI.ReactivePropertyChangingEventArgs<TSender>
+ReactiveUI.ReactivePropertyChangingEventArgs<TSender>.ReactivePropertyChangingEventArgs(TSender sender, string? propertyName) -> void
+ReactiveUI.ReactivePropertyChangingEventArgs<TSender>.Sender.get -> TSender
+ReactiveUI.ReflectionMixins
+ReactiveUI.ReflectionMixins.extension(System.Reflection.PropertyInfo!)
+ReactiveUI.ReflectionMixins.extension(System.Reflection.PropertyInfo!).IsStatic() -> bool
+ReactiveUI.RxConverters
+ReactiveUI.SetMethodBindingConverterRegistry
+ReactiveUI.SetMethodBindingConverterRegistry.GetAllConverters() -> System.Collections.Generic.IEnumerable<ReactiveUI.ISetMethodBindingConverter!>!
+ReactiveUI.SetMethodBindingConverterRegistry.Register(ReactiveUI.ISetMethodBindingConverter! converter) -> void
+ReactiveUI.SetMethodBindingConverterRegistry.SetMethodBindingConverterRegistry() -> void
+ReactiveUI.SetMethodBindingConverterRegistry.TryGetConverter(System.Type? fromType, System.Type? toType) -> ReactiveUI.ISetMethodBindingConverter?
+ReactiveUI.ShortToNullableShortTypeConverter
+ReactiveUI.ShortToNullableShortTypeConverter.FromType.get -> System.Type!
+ReactiveUI.ShortToNullableShortTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.ShortToNullableShortTypeConverter.ShortToNullableShortTypeConverter() -> void
+ReactiveUI.ShortToNullableShortTypeConverter.ToType.get -> System.Type!
+ReactiveUI.ShortToNullableShortTypeConverter.TryConvert(short from, object? conversionHint, out short? result) -> bool
+ReactiveUI.ShortToNullableShortTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.ShortToStringTypeConverter
+ReactiveUI.ShortToStringTypeConverter.ShortToStringTypeConverter() -> void
+ReactiveUI.SingleInstanceViewAttribute
+ReactiveUI.SingleInstanceViewAttribute.SingleInstanceViewAttribute() -> void
+ReactiveUI.SingleToNullableSingleTypeConverter
+ReactiveUI.SingleToNullableSingleTypeConverter.FromType.get -> System.Type!
+ReactiveUI.SingleToNullableSingleTypeConverter.GetAffinityForObjects() -> int
+ReactiveUI.SingleToNullableSingleTypeConverter.SingleToNullableSingleTypeConverter() -> void
+ReactiveUI.SingleToNullableSingleTypeConverter.ToType.get -> System.Type!
+ReactiveUI.SingleToNullableSingleTypeConverter.TryConvert(float from, object? conversionHint, out float? result) -> bool
+ReactiveUI.SingleToNullableSingleTypeConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.SingleToStringTypeConverter
+ReactiveUI.SingleToStringTypeConverter.SingleToStringTypeConverter() -> void
+ReactiveUI.SingletonDataErrorsChangedEventArgs
+ReactiveUI.SingletonPropertyChangedEventArgs
+ReactiveUI.StringConverter
+ReactiveUI.StringConverter.FromType.get -> System.Type!
+ReactiveUI.StringConverter.GetAffinityForObjects() -> int
+ReactiveUI.StringConverter.StringConverter() -> void
+ReactiveUI.StringConverter.ToType.get -> System.Type!
+ReactiveUI.StringConverter.TryConvertTyped(object? from, object? conversionHint, out object? result) -> bool
+ReactiveUI.StringToBooleanTypeConverter
+ReactiveUI.StringToBooleanTypeConverter.StringToBooleanTypeConverter() -> void
+ReactiveUI.StringToByteTypeConverter
+ReactiveUI.StringToByteTypeConverter.StringToByteTypeConverter() -> void
+ReactiveUI.StringToDateOnlyTypeConverter
+ReactiveUI.StringToDateOnlyTypeConverter.StringToDateOnlyTypeConverter() -> void
+ReactiveUI.StringToDateTimeOffsetTypeConverter
+ReactiveUI.StringToDateTimeOffsetTypeConverter.StringToDateTimeOffsetTypeConverter() -> void
+ReactiveUI.StringToDateTimeTypeConverter
+ReactiveUI.StringToDateTimeTypeConverter.StringToDateTimeTypeConverter() -> void
+ReactiveUI.StringToDecimalTypeConverter
+ReactiveUI.StringToDecimalTypeConverter.StringToDecimalTypeConverter() -> void
+ReactiveUI.StringToDoubleTypeConverter
+ReactiveUI.StringToDoubleTypeConverter.StringToDoubleTypeConverter() -> void
+ReactiveUI.StringToGuidTypeConverter
+ReactiveUI.StringToGuidTypeConverter.StringToGuidTypeConverter() -> void
+ReactiveUI.StringToIntegerTypeConverter
+ReactiveUI.StringToIntegerTypeConverter.StringToIntegerTypeConverter() -> void
+ReactiveUI.StringToLongTypeConverter
+ReactiveUI.StringToLongTypeConverter.StringToLongTypeConverter() -> void
+ReactiveUI.StringToNullableBooleanTypeConverter
+ReactiveUI.StringToNullableBooleanTypeConverter.StringToNullableBooleanTypeConverter() -> void
+ReactiveUI.StringToNullableByteTypeConverter
+ReactiveUI.StringToNullableByteTypeConverter.StringToNullableByteTypeConverter() -> void
+ReactiveUI.StringToNullableDateOnlyTypeConverter
+ReactiveUI.StringToNullableDateOnlyTypeConverter.StringToNullableDateOnlyTypeConverter() -> void
+ReactiveUI.StringToNullableDateTimeOffsetTypeConverter
+ReactiveUI.StringToNullableDateTimeOffsetTypeConverter.StringToNullableDateTimeOffsetTypeConverter() -> void
+ReactiveUI.StringToNullableDateTimeTypeConverter
+ReactiveUI.StringToNullableDateTimeTypeConverter.StringToNullableDateTimeTypeConverter() -> void
+ReactiveUI.StringToNullableDecimalTypeConverter
+ReactiveUI.StringToNullableDecimalTypeConverter.StringToNullableDecimalTypeConverter() -> void
+ReactiveUI.StringToNullableDoubleTypeConverter
+ReactiveUI.StringToNullableDoubleTypeConverter.StringToNullableDoubleTypeConverter() -> void
+ReactiveUI.StringToNullableGuidTypeConverter
+ReactiveUI.StringToNullableGuidTypeConverter.StringToNullableGuidTypeConverter() -> void
+ReactiveUI.StringToNullableIntegerTypeConverter
+ReactiveUI.StringToNullableIntegerTypeConverter.StringToNullableIntegerTypeConverter() -> void
+ReactiveUI.StringToNullableLongTypeConverter
+ReactiveUI.StringToNullableLongTypeConverter.StringToNullableLongTypeConverter() -> void
+ReactiveUI.StringToNullableShortTypeConverter
+ReactiveUI.StringToNullableShortTypeConverter.StringToNullableShortTypeConverter() -> void
+ReactiveUI.StringToNullableSingleTypeConverter
+ReactiveUI.StringToNullableSingleTypeConverter.StringToNullableSingleTypeConverter() -> void
+ReactiveUI.StringToNullableTimeOnlyTypeConverter
+ReactiveUI.StringToNullableTimeOnlyTypeConverter.StringToNullableTimeOnlyTypeConverter() -> void
+ReactiveUI.StringToNullableTimeSpanTypeConverter
+ReactiveUI.StringToNullableTimeSpanTypeConverter.StringToNullableTimeSpanTypeConverter() -> void
+ReactiveUI.StringToShortTypeConverter
+ReactiveUI.StringToShortTypeConverter.StringToShortTypeConverter() -> void
+ReactiveUI.StringToSingleTypeConverter
+ReactiveUI.StringToSingleTypeConverter.StringToSingleTypeConverter() -> void
+ReactiveUI.StringToTimeOnlyTypeConverter
+ReactiveUI.StringToTimeOnlyTypeConverter.StringToTimeOnlyTypeConverter() -> void
+ReactiveUI.StringToTimeSpanTypeConverter
+ReactiveUI.StringToTimeSpanTypeConverter.StringToTimeSpanTypeConverter() -> void
+ReactiveUI.StringToUriTypeConverter
+ReactiveUI.StringToUriTypeConverter.StringToUriTypeConverter() -> void
+ReactiveUI.TimeOnlyToStringTypeConverter
+ReactiveUI.TimeOnlyToStringTypeConverter.TimeOnlyToStringTypeConverter() -> void
+ReactiveUI.TimeSpanToStringTypeConverter
+ReactiveUI.TimeSpanToStringTypeConverter.TimeSpanToStringTypeConverter() -> void
+ReactiveUI.TriggerUpdate
+ReactiveUI.TriggerUpdate.ViewModelToView = 1 -> ReactiveUI.TriggerUpdate
+ReactiveUI.TriggerUpdate.ViewToViewModel = 0 -> ReactiveUI.TriggerUpdate
+ReactiveUI.UnhandledErrorException
+ReactiveUI.UnhandledErrorException.UnhandledErrorException() -> void
+ReactiveUI.UnhandledErrorException.UnhandledErrorException(string! message) -> void
+ReactiveUI.UnhandledErrorException.UnhandledErrorException(string! message, System.Exception! innerException) -> void
+ReactiveUI.UriToStringTypeConverter
+ReactiveUI.UriToStringTypeConverter.UriToStringTypeConverter() -> void
+ReactiveUI.ViewContractAttribute
+ReactiveUI.ViewContractAttribute.Contract.get -> string!
+ReactiveUI.ViewContractAttribute.ViewContractAttribute(string! contract) -> void
+ReactiveUI.ViewLocator
+ReactiveUI.ViewLocatorNotFoundException
+ReactiveUI.ViewLocatorNotFoundException.ViewLocatorNotFoundException() -> void
+ReactiveUI.ViewLocatorNotFoundException.ViewLocatorNotFoundException(string! message) -> void
+ReactiveUI.ViewLocatorNotFoundException.ViewLocatorNotFoundException(string! message, System.Exception! innerException) -> void
+ReactiveUI.ViewMappingBuilder
+ReactiveUI.ViewMappingBuilder.Map<TViewModel, TView>() -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.Map<TViewModel, TView>(System.Func<TView!>! factory) -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.Map<TViewModel, TView>(System.Func<TView!>! factory, string? contract) -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.Map<TViewModel, TView>(string? contract) -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.MapFromServiceLocator<TViewModel, TView>() -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.MapFromServiceLocator<TViewModel, TView>(string? contract) -> ReactiveUI.ViewMappingBuilder!
+ReactiveUI.ViewMappingBuilder.ViewMappingBuilder(ReactiveUI.DefaultViewLocator! locator) -> void
+abstract ReactiveUI.BindingTypeConverter<TFrom, TTo>.GetAffinityForObjects() -> int
+abstract ReactiveUI.BindingTypeConverter<TFrom, TTo>.TryConvert(TFrom? from, object? conversionHint, out TTo? result) -> bool
+override ReactiveUI.BooleanToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.BooleanToStringTypeConverter.TryConvert(bool from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.ByteToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.ByteToStringTypeConverter.TryConvert(byte from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.CollectionChanged.Equals(object? obj) -> bool
+override ReactiveUI.CollectionChanged.GetHashCode() -> int
+override ReactiveUI.DateOnlyToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.DateOnlyToStringTypeConverter.TryConvert(System.DateOnly from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.DateTimeOffsetToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.DateTimeOffsetToStringTypeConverter.TryConvert(System.DateTimeOffset from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.DateTimeToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.DateTimeToStringTypeConverter.TryConvert(System.DateTime from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.DecimalToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.DecimalToStringTypeConverter.TryConvert(decimal from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.DoubleToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.DoubleToStringTypeConverter.TryConvert(double from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.ExpressionRewriter.Visit(System.Linq.Expressions.Expression? node) -> System.Linq.Expressions.Expression!
+override ReactiveUI.GuidToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.GuidToStringTypeConverter.TryConvert(System.Guid from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.IntegerToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.IntegerToStringTypeConverter.TryConvert(int from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.LongToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.LongToStringTypeConverter.TryConvert(long from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableBooleanToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableBooleanToStringTypeConverter.TryConvert(bool? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableByteToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableByteToStringTypeConverter.TryConvert(byte? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableDateOnlyToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableDateOnlyToStringTypeConverter.TryConvert(System.DateOnly? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableDateTimeOffsetToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableDateTimeOffsetToStringTypeConverter.TryConvert(System.DateTimeOffset? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableDateTimeToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableDateTimeToStringTypeConverter.TryConvert(System.DateTime? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableDecimalToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableDecimalToStringTypeConverter.TryConvert(decimal? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableDoubleToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableDoubleToStringTypeConverter.TryConvert(double? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableGuidToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableGuidToStringTypeConverter.TryConvert(System.Guid? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableIntegerToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableIntegerToStringTypeConverter.TryConvert(int? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableLongToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableLongToStringTypeConverter.TryConvert(long? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableShortToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableShortToStringTypeConverter.TryConvert(short? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableSingleToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableSingleToStringTypeConverter.TryConvert(float? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableTimeOnlyToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableTimeOnlyToStringTypeConverter.TryConvert(System.TimeOnly? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.NullableTimeSpanToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.NullableTimeSpanToStringTypeConverter.TryConvert(System.TimeSpan? from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.ReactiveChange<T>.Equals(object? obj) -> bool
+override ReactiveUI.ReactiveChange<T>.GetHashCode() -> int
+override ReactiveUI.ShortToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.ShortToStringTypeConverter.TryConvert(short from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.SingleToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.SingleToStringTypeConverter.TryConvert(float from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.StringToBooleanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToBooleanTypeConverter.TryConvert(string? from, object? conversionHint, out bool result) -> bool
+override ReactiveUI.StringToByteTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToByteTypeConverter.TryConvert(string? from, object? conversionHint, out byte result) -> bool
+override ReactiveUI.StringToDateOnlyTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToDateOnlyTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateOnly result) -> bool
+override ReactiveUI.StringToDateTimeOffsetTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToDateTimeOffsetTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateTimeOffset result) -> bool
+override ReactiveUI.StringToDateTimeTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToDateTimeTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateTime result) -> bool
+override ReactiveUI.StringToDecimalTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToDecimalTypeConverter.TryConvert(string? from, object? conversionHint, out decimal result) -> bool
+override ReactiveUI.StringToDoubleTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToDoubleTypeConverter.TryConvert(string? from, object? conversionHint, out double result) -> bool
+override ReactiveUI.StringToGuidTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToGuidTypeConverter.TryConvert(string? from, object? conversionHint, out System.Guid result) -> bool
+override ReactiveUI.StringToIntegerTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToIntegerTypeConverter.TryConvert(string? from, object? conversionHint, out int result) -> bool
+override ReactiveUI.StringToLongTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToLongTypeConverter.TryConvert(string? from, object? conversionHint, out long result) -> bool
+override ReactiveUI.StringToNullableBooleanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableBooleanTypeConverter.TryConvert(string? from, object? conversionHint, out bool? result) -> bool
+override ReactiveUI.StringToNullableByteTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableByteTypeConverter.TryConvert(string? from, object? conversionHint, out byte? result) -> bool
+override ReactiveUI.StringToNullableDateOnlyTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableDateOnlyTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateOnly? result) -> bool
+override ReactiveUI.StringToNullableDateTimeOffsetTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableDateTimeOffsetTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateTimeOffset? result) -> bool
+override ReactiveUI.StringToNullableDateTimeTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableDateTimeTypeConverter.TryConvert(string? from, object? conversionHint, out System.DateTime? result) -> bool
+override ReactiveUI.StringToNullableDecimalTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableDecimalTypeConverter.TryConvert(string? from, object? conversionHint, out decimal? result) -> bool
+override ReactiveUI.StringToNullableDoubleTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableDoubleTypeConverter.TryConvert(string? from, object? conversionHint, out double? result) -> bool
+override ReactiveUI.StringToNullableGuidTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableGuidTypeConverter.TryConvert(string? from, object? conversionHint, out System.Guid? result) -> bool
+override ReactiveUI.StringToNullableIntegerTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableIntegerTypeConverter.TryConvert(string? from, object? conversionHint, out int? result) -> bool
+override ReactiveUI.StringToNullableLongTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableLongTypeConverter.TryConvert(string? from, object? conversionHint, out long? result) -> bool
+override ReactiveUI.StringToNullableShortTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableShortTypeConverter.TryConvert(string? from, object? conversionHint, out short? result) -> bool
+override ReactiveUI.StringToNullableSingleTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableSingleTypeConverter.TryConvert(string? from, object? conversionHint, out float? result) -> bool
+override ReactiveUI.StringToNullableTimeOnlyTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableTimeOnlyTypeConverter.TryConvert(string? from, object? conversionHint, out System.TimeOnly? result) -> bool
+override ReactiveUI.StringToNullableTimeSpanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToNullableTimeSpanTypeConverter.TryConvert(string? from, object? conversionHint, out System.TimeSpan? result) -> bool
+override ReactiveUI.StringToShortTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToShortTypeConverter.TryConvert(string? from, object? conversionHint, out short result) -> bool
+override ReactiveUI.StringToSingleTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToSingleTypeConverter.TryConvert(string? from, object? conversionHint, out float result) -> bool
+override ReactiveUI.StringToTimeOnlyTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToTimeOnlyTypeConverter.TryConvert(string? from, object? conversionHint, out System.TimeOnly result) -> bool
+override ReactiveUI.StringToTimeSpanTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToTimeSpanTypeConverter.TryConvert(string? from, object? conversionHint, out System.TimeSpan result) -> bool
+override ReactiveUI.StringToUriTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.StringToUriTypeConverter.TryConvert(string? from, object? conversionHint, out System.Uri? result) -> bool
+override ReactiveUI.TimeOnlyToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.TimeOnlyToStringTypeConverter.TryConvert(System.TimeOnly from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.TimeSpanToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.TimeSpanToStringTypeConverter.TryConvert(System.TimeSpan from, object? conversionHint, out string? result) -> bool
+override ReactiveUI.UriToStringTypeConverter.GetAffinityForObjects() -> int
+override ReactiveUI.UriToStringTypeConverter.TryConvert(System.Uri? from, object? conversionHint, out string? result) -> bool
+static ReactiveUI.BindingTypeConverterDispatch.TryConvertAny(object? converter, System.Type! fromType, object? from, System.Type! toType, object? conversionHint, out object? result) -> bool
+static ReactiveUI.ChangeSetExtensions.ToReactiveChangeSet<T>(this System.Collections.ObjectModel.ObservableCollection<T>! collection) -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+static ReactiveUI.ChangeSetExtensions.ToReactiveChangeSet<TCollection, T>(this TCollection collection) -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+static ReactiveUI.ChangeSetMixins.CountHasChanged(this ReactiveUI.IReactiveChangeSet! changeSet) -> bool
+static ReactiveUI.ChangeSetMixins.WhenCountChanged<T>(this System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>! changeSet) -> System.IObservable<ReactiveUI.IReactiveChangeSet<T>!>!
+static ReactiveUI.CollectionChanged.operator !=(in ReactiveUI.CollectionChanged left, in ReactiveUI.CollectionChanged right) -> bool
+static ReactiveUI.CollectionChanged.operator ==(in ReactiveUI.CollectionChanged left, in ReactiveUI.CollectionChanged right) -> bool
+static ReactiveUI.CollectionChangedExtensions.ObserveCollectionChanges(this System.Collections.Specialized.INotifyCollectionChanged! source) -> System.IObservable<ReactiveUI.CollectionChanged>!
+static ReactiveUI.ComparerChainingExtensions.ThenBy<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.ComparerChainingExtensions.ThenBy<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.ComparerChainingExtensions.ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.ComparerChainingExtensions.ThenByDescending<T, TValue>(this System.Collections.Generic.IComparer<T>? parent, System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.ComponentModelConversion.GetAffinity(System.Type! fromType, System.Type! toType) -> int
+static ReactiveUI.ComponentModelConversion.TryConvert<TLogHost>(TLogHost! logHost, System.Type! fromType, object! from, System.Type! toType, out object? result) -> bool
+static ReactiveUI.ConverterMigrationHelperMixins.ExtractConverters(Splat.IReadonlyDependencyResolver! resolver) -> (System.Collections.Generic.IList<ReactiveUI.IBindingTypeConverter!>! TypedConverters, System.Collections.Generic.IList<ReactiveUI.IBindingFallbackConverter!>! FallbackConverters, System.Collections.Generic.IList<ReactiveUI.ISetMethodBindingConverter!>! SetMethodConverters)
+static ReactiveUI.ConverterMigrationHelperMixins.ImportFrom(this ReactiveUI.ConverterService! converterService, Splat.IReadonlyDependencyResolver! resolver) -> void
+static ReactiveUI.CreatesCommandBinding.BindCommandToObject<TControl, TEventArgs>(System.Windows.Input.ICommand? command, TControl? target, System.IObservable<object?>! commandParameter, string! eventName) -> System.IDisposable!
+static ReactiveUI.CreatesCommandBinding.BindCommandToObject<TControl>(System.Windows.Input.ICommand? command, TControl? target, System.IObservable<object?>! commandParameter) -> System.IDisposable!
+static ReactiveUI.DependencyResolverMixins.RegisterViewsForViewModels(this Splat.IMutableDependencyResolver! resolver, System.Reflection.Assembly! assembly) -> void
+static ReactiveUI.ExpressionMixins.GetArgumentsArray(this System.Linq.Expressions.Expression! expression) -> object?[]?
+static ReactiveUI.ExpressionMixins.GetExpressionChain(this System.Linq.Expressions.Expression! expression) -> System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression!>!
+static ReactiveUI.ExpressionMixins.GetMemberInfo(this System.Linq.Expressions.Expression! expression) -> System.Reflection.MemberInfo?
+static ReactiveUI.ExpressionMixins.GetParent(this System.Linq.Expressions.Expression! expression) -> System.Linq.Expressions.Expression?
+static ReactiveUI.OrderedComparer.For<T>() -> ReactiveUI.IComparerBuilder<T>!
+static ReactiveUI.OrderedComparer.For<T>(System.Collections.Generic.IEnumerable<T>! enumerable) -> ReactiveUI.IComparerBuilder<T>!
+static ReactiveUI.OrderedComparer<T>.OrderBy<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.OrderedComparer<T>.OrderBy<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.OrderedComparer<T>.OrderByDescending<TValue>(System.Func<T, TValue>! selector) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.OrderedComparer<T>.OrderByDescending<TValue>(System.Func<T, TValue>! selector, System.Collections.Generic.IComparer<TValue>! comparer) -> System.Collections.Generic.IComparer<T>!
+static ReactiveUI.ReactiveChange<T>.operator !=(in ReactiveUI.ReactiveChange<T> left, in ReactiveUI.ReactiveChange<T> right) -> bool
+static ReactiveUI.ReactiveChange<T>.operator ==(in ReactiveUI.ReactiveChange<T> left, in ReactiveUI.ReactiveChange<T> right) -> bool
+static ReactiveUI.ReflectionMixins.IsStatic(this System.Reflection.PropertyInfo! item) -> bool
+static ReactiveUI.RxConverters.Current.get -> ReactiveUI.ConverterService!
+static ReactiveUI.RxConverters.SetService(ReactiveUI.ConverterService! service) -> void
+static ReactiveUI.ViewLocator.Current.get -> ReactiveUI.IViewLocator!
+static readonly ReactiveUI.BindingAffinity.DefaultEvent -> int
+static readonly ReactiveUI.BindingAffinity.DefaultInternalTypeConverter -> int
+static readonly ReactiveUI.BindingAffinity.ExactType -> int
+static readonly ReactiveUI.BindingAffinity.Explicit -> int
+static readonly ReactiveUI.SingletonDataErrorsChangedEventArgs.Value -> System.ComponentModel.DataErrorsChangedEventArgs!
+static readonly ReactiveUI.SingletonPropertyChangedEventArgs.ErrorMessage -> System.ComponentModel.PropertyChangedEventArgs!
+static readonly ReactiveUI.SingletonPropertyChangedEventArgs.HasErrors -> System.ComponentModel.PropertyChangedEventArgs!
+static readonly ReactiveUI.SingletonPropertyChangedEventArgs.Value -> System.ComponentModel.PropertyChangedEventArgs!
+virtual ReactiveUI.ReactiveBinding<TView, TValue>.Dispose(bool isDisposing) -> void

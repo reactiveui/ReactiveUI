@@ -4,46 +4,39 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>
-/// Arity-9 WhenAnyObservable overload tests.
-/// </content>
+/// <summary>Tests for the WhenAnyObservable mixin overloads.</summary>
 [SuppressMessage(
     "Major Code Smell",
     "S107:Methods should not have too many parameters",
     Justification = "Arity-9 variadic selectors intentionally accept more than seven parameters.")]
 public partial class WhenAnyObservableMixinTests
 {
-    /// <summary>
-    ///     Verifies the WhenAnyObservable overload for 9 observable properties.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyObservable overload for 9 observable properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyObservable_9Props()
     {
         var vm = new WhenAnyArityTestViewModel();
-        var subj1 = new Subject<string>();
+        var subj1 = new Signal<string>();
         vm.ObservableProperty1 = subj1;
-        var subj2 = new Subject<string>();
+        var subj2 = new Signal<string>();
         vm.ObservableProperty2 = subj2;
-        var subj3 = new Subject<string>();
+        var subj3 = new Signal<string>();
         vm.ObservableProperty3 = subj3;
-        var subj4 = new Subject<string>();
+        var subj4 = new Signal<string>();
         vm.ObservableProperty4 = subj4;
-        var subj5 = new Subject<string>();
+        var subj5 = new Signal<string>();
         vm.ObservableProperty5 = subj5;
-        var subj6 = new Subject<string>();
+        var subj6 = new Signal<string>();
         vm.ObservableProperty6 = subj6;
-        var subj7 = new Subject<string>();
+        var subj7 = new Signal<string>();
         vm.ObservableProperty7 = subj7;
-        var subj8 = new Subject<string>();
+        var subj8 = new Signal<string>();
         vm.ObservableProperty8 = subj8;
-        var subj9 = new Subject<string>();
+        var subj9 = new Signal<string>();
         vm.ObservableProperty9 = subj9;
         var list = new List<string>();
         vm.WhenAnyObservable(
@@ -55,7 +48,7 @@ public partial class WhenAnyObservableMixinTests
             x => x.ObservableProperty6,
             x => x.ObservableProperty7,
             x => x.ObservableProperty8,
-            x => x.ObservableProperty9).ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            x => x.ObservableProperty9).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");
@@ -68,31 +61,29 @@ public partial class WhenAnyObservableMixinTests
         await Assert.That(list).Count().IsGreaterThan(0);
     }
 
-    /// <summary>
-    ///     Verifies the WhenAnyObservable overload for 9 observable properties with a selector.
-    /// </summary>
+    /// <summary>Verifies the WhenAnyObservable overload for 9 observable properties with a selector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyObservable_9Props_Sel()
     {
         var vm = new WhenAnyArityTestViewModel();
-        var subj1 = new Subject<string>();
+        var subj1 = new Signal<string>();
         vm.ObservableProperty1 = subj1;
-        var subj2 = new Subject<string>();
+        var subj2 = new Signal<string>();
         vm.ObservableProperty2 = subj2;
-        var subj3 = new Subject<string>();
+        var subj3 = new Signal<string>();
         vm.ObservableProperty3 = subj3;
-        var subj4 = new Subject<string>();
+        var subj4 = new Signal<string>();
         vm.ObservableProperty4 = subj4;
-        var subj5 = new Subject<string>();
+        var subj5 = new Signal<string>();
         vm.ObservableProperty5 = subj5;
-        var subj6 = new Subject<string>();
+        var subj6 = new Signal<string>();
         vm.ObservableProperty6 = subj6;
-        var subj7 = new Subject<string>();
+        var subj7 = new Signal<string>();
         vm.ObservableProperty7 = subj7;
-        var subj8 = new Subject<string>();
+        var subj8 = new Signal<string>();
         vm.ObservableProperty8 = subj8;
-        var subj9 = new Subject<string>();
+        var subj9 = new Signal<string>();
         vm.ObservableProperty9 = subj9;
         var list = new List<string>();
         vm.WhenAnyObservable(
@@ -105,7 +96,7 @@ public partial class WhenAnyObservableMixinTests
             x => x.ObservableProperty7,
             x => x.ObservableProperty8,
             x => x.ObservableProperty9,
-            (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(ImmediateScheduler.Instance).Subscribe(list.Add);
+            (_, _, _, _, _, _, _, _, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj1.OnNext("test");
         subj2.OnNext("test");
         subj3.OnNext("test");

@@ -4,26 +4,22 @@
 // See the LICENSE file in the project root for full license information.
 
 using AndroidX.RecyclerView.Widget;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.AndroidX;
+#else
 namespace ReactiveUI.AndroidX;
-
-/// <summary>
-/// An adapter for the Android <see cref="RecyclerView"/>.
-/// </summary>
+#endif
+/// <summary>An adapter for the Android <see cref="RecyclerView"/>.</summary>
 /// <typeparam name="TViewModel">The type of ViewModel that this adapter holds.</typeparam>
 public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Adapter
     where TViewModel : class, IReactiveObject
 {
-    /// <summary>
-    /// The materialized change-set binding that backs the adapter.
-    /// </summary>
+    /// <summary>The materialized change-set binding that backs the adapter.</summary>
     private readonly ChangeSetBinder<TViewModel> _binder;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveRecyclerViewAdapter{TViewModel}"/> class.</summary>
     /// <param name="backingList">The backing list.</param>
     protected ReactiveRecyclerViewAdapter(IObservable<IReactiveChangeSet<TViewModel>> backingList) =>
         _binder = new(backingList, onChange: UpdateBindings);
@@ -34,10 +30,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
     /// <inheritdoc/>
     public override int GetItemViewType(int position) => GetItemViewType(position, GetViewModelByPosition(position));
 
-    /// <summary>
-    /// Determine the View that will be used/re-used in lists where
-    /// the list contains different cell designs.
-    /// </summary>
+    /// <summary>Determine the View that will be used/re-used in lists where the list contains different cell designs.</summary>
     /// <param name="position">The position of the current view in the list.</param>
     /// <param name="viewModel">The ViewModel associated with the current View.</param>
     /// <returns>An ID to be used in OnCreateViewHolder.</returns>
@@ -67,9 +60,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Gets the view model at the specified position, or null if the position is out of range.
-    /// </summary>
+    /// <summary>Gets the view model at the specified position, or null if the position is out of range.</summary>
     /// <param name="position">The position in the list.</param>
     /// <returns>The view model at the position, or null.</returns>
     private TViewModel? GetViewModelByPosition(int position) => position >= _binder.Count ? null : _binder[position];
@@ -102,8 +93,7 @@ public abstract class ReactiveRecyclerViewAdapter<TViewModel> : RecyclerView.Ada
                     break;
                 }
 
-            case ReactiveChangeReason.Replace:
-            case ReactiveChangeReason.Refresh:
+            case ReactiveChangeReason.Replace or ReactiveChangeReason.Refresh:
                 {
                     NotifyItemChanged(change.CurrentIndex);
                     break;

@@ -5,8 +5,11 @@
 
 using UIKit;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// UIKitObservableForProperty provides toolkit-specific observable factories used by ReactiveUI
 /// to generate change notifications for UIKit controls in <c>WhenAny*</c> and related operators.
@@ -14,7 +17,6 @@ namespace ReactiveUI;
 /// <remarks>
 /// This implementation registers observable factories for common UIKit properties that change via
 /// control events or notifications.
-///
 /// For event-based notifications, this implementation uses explicit add/remove handler overloads
 /// (non-reflection) provided by <see cref="ObservableForPropertyBase"/> to improve performance and
 /// trimming/AOT compatibility.
@@ -22,9 +24,7 @@ namespace ReactiveUI;
 [Preserve]
 public sealed class UIKitObservableForProperty : ObservableForPropertyBase
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="UIKitObservableForProperty"/> class.</summary>
     public UIKitObservableForProperty()
     {
         // UIControl "Value" changes via ValueChanged.
@@ -102,9 +102,7 @@ public sealed class UIKitObservableForProperty : ObservableForPropertyBase
             });
     }
 
-    /// <summary>
-    /// Gets the shared <see cref="UIKitObservableForProperty"/> instance.
-    /// </summary>
+    /// <summary>Gets the shared <see cref="UIKitObservableForProperty"/> instance.</summary>
     /// <remarks>
     /// The instance is created lazily. Consumers typically register it with the service locator once
     /// during application initialization.

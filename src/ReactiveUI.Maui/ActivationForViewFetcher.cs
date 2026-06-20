@@ -1,27 +1,37 @@
-﻿// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
 using System.Reflection;
 using ReactiveUI.Internal;
+using ReactiveUI.Primitives;
 
 #if IS_WINUI
 using Microsoft.UI.Xaml;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Maui.Internal;
+#else
 using ReactiveUI.Maui.Internal;
+#endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.WinUI;
+#else
 namespace ReactiveUI.WinUI;
+#endif
 #endif
 #if IS_MAUI
 using Microsoft.Maui.Controls;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
 #endif
+#endif
 
-/// <summary>
-/// This class is the default implementation that determines when views are Activated and Deactivated.
-/// </summary>
+/// <summary>This class is the default implementation that determines when views are Activated and Deactivated.</summary>
 /// <seealso cref="IActivationForViewFetcher" />
 public class ActivationForViewFetcher : IActivationForViewFetcher
 {
@@ -53,15 +63,15 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             GetActivationFor(view as View) ??
             GetActivationFor(view as Cell) ??
 #endif
-            (IObservable<bool>)NeverObservable<bool>.Instance;
+            (IObservable<bool>)Signal.Silent<bool>();
 
-        return new DistinctUntilChangedObservable<bool>(activation);
+        return activation.DistinctUntilChanged();
     }
 
     /// <summary>Gets the activation stream for an <see cref="ICanActivate"/>, or null when not applicable.</summary>
     /// <param name="canActivate">The view to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="canActivate"/> is null.</returns>
-    private static MergedObservable<bool>? GetActivationFor(ICanActivate? canActivate)
+    private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
     {
         if (canActivate is null)
         {
@@ -69,16 +79,16 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         }
 
         // Replaces Activated.Select(_ => true).Merge(Deactivated.Select(_ => false)).
-        return new MergedObservable<bool>(
-            new SelectObservable<Unit, bool>(canActivate.Activated, static _ => true),
-            new SelectObservable<Unit, bool>(canActivate.Deactivated, static _ => false));
+        return Signal.Blend<bool>(
+            new MapSignal<RxVoid, bool>(canActivate.Activated, static _ => true),
+            new MapSignal<RxVoid, bool>(canActivate.Deactivated, static _ => false));
     }
 
 #if IS_MAUI
     /// <summary>Gets the activation stream for a <see cref="Page"/>, or null when not applicable.</summary>
     /// <param name="page">The page to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="page"/> is null.</returns>
-    private static MergedObservable<bool>? GetActivationFor(Page? page)
+    private static IObservable<bool>? GetActivationFor(Page? page)
     {
         if (page is null)
         {
@@ -99,7 +109,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             return new ActionDisposable(() => page.Disappearing -= Handler);
         });
 
-        return new MergedObservable<bool>(appearing, disappearing);
+        return Signal.Blend<bool>(appearing, disappearing);
     }
 #endif
 
@@ -107,7 +117,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <summary>Gets the activation stream for a <see cref="View"/>, or null when not applicable.</summary>
     /// <param name="view">The view to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="view"/> is null.</returns>
-    private static DistinctUntilChangedObservable<bool>? GetActivationFor(View? view)
+    private static IObservable<bool>? GetActivationFor(View? view)
     {
         if (view is null)
         {
@@ -129,14 +139,14 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
         });
 
         // Replaces loaded.Merge(unloaded).StartWith(view.IsLoaded).DistinctUntilChanged().
-        return new DistinctUntilChangedObservable<bool>(
-            new StartWithObservable<bool>(new MergedObservable<bool>(loaded, unloaded), view.IsLoaded));
+        return new StartWithObservable<bool>(Signal.Blend<bool>(loaded, unloaded), view.IsLoaded)
+            .DistinctUntilChanged();
     }
 
     /// <summary>Gets the activation stream for a <see cref="Cell"/>, or null when not applicable.</summary>
     /// <param name="cell">The cell to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="cell"/> is null.</returns>
-    private static MergedObservable<bool>? GetActivationFor(Cell? cell)
+    private static IObservable<bool>? GetActivationFor(Cell? cell)
     {
         if (cell is null)
         {
@@ -157,13 +167,13 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             return new ActionDisposable(() => cell.Disappearing -= Handler);
         });
 
-        return new MergedObservable<bool>(appearing, disappearing);
+        return Signal.Blend<bool>(appearing, disappearing);
     }
 #else
     /// <summary>Gets the activation stream for a <see cref="FrameworkElement"/>, or null when not applicable.</summary>
     /// <param name="view">The framework element to observe, or null.</param>
     /// <returns>The activation stream, or null when <paramref name="view"/> is null.</returns>
-    private static DistinctUntilChangedObservable<bool>? GetActivationFor(FrameworkElement? view)
+    private static IObservable<bool>? GetActivationFor(FrameworkElement? view)
     {
         if (view is null)
         {
@@ -192,11 +202,11 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
             () => view.IsHitTestVisible);
 
         // Replaces Merge(...).Select(b => b ? hitTest.SkipWhile(!x) : false).Switch().DistinctUntilChanged().
-        return new DistinctUntilChangedObservable<bool>(
-            new SwitchObservable<bool>(
-                new SelectObservable<bool, IObservable<bool>>(
-                    new MergedObservable<bool>(viewLoaded, viewUnloaded),
-                    b => b ? new SkipWhileObservable<bool>(isHitTestVisible, static x => !x) : new ReturnObservable<bool>(false))));
+        return new MapSignal<bool, IObservable<bool>>(
+                Signal.Blend<bool>(viewLoaded, viewUnloaded),
+                b => b ? isHitTestVisible.SkipWhile(static x => !x) : Signal.Emit<bool>(false))
+            .Switch()
+            .DistinctUntilChanged();
     }
 #endif
 }

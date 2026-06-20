@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable booleans to strings.
-/// </summary>
+/// <summary>Tests for converting nullable booleans to strings.</summary>
 public class NullableBooleanToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class NullableBooleanToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a true value succeeds and yields "True".
-    /// </summary>
+    /// <summary>Verifies that converting a true value succeeds and yields "True".</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_True_ReturnsTrue()
@@ -38,9 +32,7 @@ public class NullableBooleanToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("True");
     }
 
-    /// <summary>
-    /// Verifies that converting a false value succeeds and yields "False".
-    /// </summary>
+    /// <summary>Verifies that converting a false value succeeds and yields "False".</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_False_ReturnsFalse()
@@ -54,9 +46,7 @@ public class NullableBooleanToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("False");
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds and yields a null string.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds and yields a null string.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsNullString()

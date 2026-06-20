@@ -13,9 +13,7 @@ namespace ReactiveUI.Tests.Bindings.PropertyBindings;
 /// </summary>
 public class BackgroundThreadBindingTests
 {
-    /// <summary>
-    /// A view model property assignment from a background thread must reach the bound view property.
-    /// </summary>
+    /// <summary>A view model property assignment from a background thread must reach the bound view property.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BackgroundThreadViewModelChangePropagatesToView()
@@ -32,27 +30,25 @@ public class BackgroundThreadBindingTests
     /// <summary>A minimal view model exposing a single reactive string property.</summary>
     public class BackgroundBindViewModel : ReactiveObject
     {
-        private string? _text;
-
         /// <summary>Gets or sets the bound text.</summary>
         public string? Text
         {
-            get => _text;
-            set => this.RaiseAndSetIfChanged(ref _text, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
     /// <summary>A minimal view holding a reactive view model and a bound text property.</summary>
     public class BackgroundBindView : ReactiveObject, IViewFor<BackgroundBindViewModel>
     {
-        private string? _viewText;
+        /// <summary>The backing field for the bound view model.</summary>
         private BackgroundBindViewModel? _viewModel;
 
         /// <summary>Gets or sets the value mirrored from the view model.</summary>
         public string? ViewText
         {
-            get => _viewText;
-            set => this.RaiseAndSetIfChanged(ref _viewText, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc/>

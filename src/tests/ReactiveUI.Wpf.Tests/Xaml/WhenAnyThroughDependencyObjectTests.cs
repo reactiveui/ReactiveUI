@@ -12,20 +12,18 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests that WhenAny dependency objects.
-/// </summary>
+/// <summary>Tests that WhenAny dependency objects.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class WhenAnyThroughDependencyObjectTests
 {
+    /// <summary>The expected emission count of two.</summary>
     private const int ExpectedCountTwo = 2;
 
+    /// <summary>The expected sequence of observed values.</summary>
     private static readonly string[] _expectedFooBar = ["Foo", "Bar"];
 
-    /// <summary>
-    /// Tests that WhenAny through a view shouldn't give null values.
-    /// </summary>
+    /// <summary>Tests that WhenAny through a view shouldn't give null values.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyThroughAViewShouldntGiveNullValues()

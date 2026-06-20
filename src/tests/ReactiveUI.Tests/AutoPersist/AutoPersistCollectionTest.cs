@@ -4,10 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Subjects;
-using DynamicData.Binding;
-using ReactiveUI.Internal;
+using System.Collections.Specialized;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
@@ -21,19 +18,13 @@ namespace ReactiveUI.Tests.AutoPersist;
 [NotInParallel]
 public class AutoPersistCollectionTest
 {
-    /// <summary>
-    ///     Milliseconds to advance the scheduler past initial subscription setup.
-    /// </summary>
+    /// <summary>Milliseconds to advance the scheduler past initial subscription setup.</summary>
     private const int InitialAdvanceMilliseconds = 10;
 
-    /// <summary>
-    ///     The throttle interval, in milliseconds, used by the collection persistence tests.
-    /// </summary>
+    /// <summary>The throttle interval, in milliseconds, used by the collection persistence tests.</summary>
     private const int ThrottleMilliseconds = 100;
 
-    /// <summary>
-    ///     Milliseconds to advance past the throttle interval to allow a save to fire.
-    /// </summary>
+    /// <summary>Milliseconds to advance past the throttle interval to allow a save to fire.</summary>
     private const int PastThrottleMilliseconds = 110;
 
     /// <summary>
@@ -47,16 +38,16 @@ public class AutoPersistCollectionTest
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
-        var manualSave = new Subject<Unit>();
+        var manualSave = new Signal<RxVoid>();
         var item = new TestFixture();
-        var fixture = new ObservableCollectionExtended<TestFixture> { item };
+        var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
         var disp = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -85,7 +76,7 @@ public class AutoPersistCollectionTest
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
-        fixture.SuspendNotifications().Dispose();
+        fixture.RaiseReset();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Bamf";
@@ -117,7 +108,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -146,16 +137,16 @@ public class AutoPersistCollectionTest
         const int ExpectedSavesAfterReset = 3;
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
-        var manualSave = new Subject<Unit>();
+        var manualSave = new Signal<RxVoid>();
         var item = new TestFixture();
-        var fixture = new ObservableCollectionExtended<TestFixture> { item };
+        var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
         fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -181,7 +172,7 @@ public class AutoPersistCollectionTest
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReAdd);
 
-        fixture.SuspendNotifications().Dispose();
+        fixture.RaiseReset();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "Bamf";
@@ -205,16 +196,16 @@ public class AutoPersistCollectionTest
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
-        var manualSave = new Subject<Unit>();
+        var manualSave = new Signal<RxVoid>();
         var item = new TestFixture();
-        var fixture = new ObservableCollection<TestFixture> { item };
+        var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
         fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -222,7 +213,7 @@ public class AutoPersistCollectionTest
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(0);
 
-        manualSave.OnNext(Unit.Default);
+        manualSave.OnNext(RxVoid.Default);
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
     }
@@ -239,17 +230,17 @@ public class AutoPersistCollectionTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var item = new TestFixture();
-        var fixture = new ObservableCollection<TestFixture> { item };
-        var metadataProvider = AutoPersistHelper.CreateMetadataProvider<TestFixture>();
+        var fixture = new ResettableCollection<TestFixture> { item };
+        var metadataProvider = AutoPersistHelperMixins.CreateMetadataProvider<TestFixture>();
         var timesSaved = 0;
 
         fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
-            NeverObservable<Unit>.Instance,
+            ReactiveUI.Primitives.Signals.Signal.Silent<RxVoid>(),
             metadataProvider,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -273,14 +264,14 @@ public class AutoPersistCollectionTest
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
 
         var item = new TestFixture();
-        var fixture = new ObservableCollectionExtended<TestFixture> { item };
+        var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
         fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Unit;
+                return SingleValueObservable.Void;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -290,11 +281,20 @@ public class AutoPersistCollectionTest
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(1);
 
-        fixture.SuspendNotifications().Dispose();
+        fixture.RaiseReset();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
         item.IsNotNullString = "After";
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
         await Assert.That(timesSaved).IsEqualTo(ExpectedSavesAfterReset);
+    }
+
+    /// <summary>An observable collection that can raise a collection-level reset without changing its contents.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    private sealed class ResettableCollection<T> : ObservableCollection<T>
+    {
+        /// <summary>Raises a <see cref="NotifyCollectionChangedAction.Reset" /> notification, exercising the AutoPersist reset path.</summary>
+        public void RaiseReset() =>
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
     }
 }

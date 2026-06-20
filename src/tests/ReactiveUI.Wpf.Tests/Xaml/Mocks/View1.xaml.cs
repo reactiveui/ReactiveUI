@@ -7,14 +7,10 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// Interaction logic for View1.xaml.
-/// </summary>
+/// <summary>Interaction logic for View1.xaml.</summary>
 public partial class View1 : UserControl
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="View1"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="View1"/> class.</summary>
     public View1()
     {
         InitializeComponent();

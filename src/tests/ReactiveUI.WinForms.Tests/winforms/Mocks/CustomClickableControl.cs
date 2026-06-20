@@ -5,25 +5,17 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// Custom clickable control.
-/// </summary>
+/// <summary>Custom clickable control.</summary>
 public class CustomClickableControl : Control
 {
-    /// <summary>
-    /// Performs the click.
-    /// </summary>
+    /// <summary>Performs the click.</summary>
     public void PerformClick() => OnClick(EventArgs.Empty);
 
-    /// <summary>
-    /// Raises the mouse click event.
-    /// </summary>
+    /// <summary>Raises the mouse click event.</summary>
     /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     public void RaiseMouseClickEvent(MouseEventArgs args) => OnMouseClick(args);
 
-    /// <summary>
-    /// Raises the mouse up event.
-    /// </summary>
+    /// <summary>Raises the mouse up event.</summary>
     /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     public void RaiseMouseUpEvent(MouseEventArgs args) => OnMouseUp(args);
 }

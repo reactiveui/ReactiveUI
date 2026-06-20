@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Builder.Tests.Mixins;
 
-/// <content>
-/// Tests the happy-path behaviour of the instance-based WithInstance overloads for the higher-arity (9-16 type) overloads.
-/// </content>
+/// <summary>Tests the happy-path behaviour of the instance-based WithInstance overloads for the higher-arity (9-16 type) overloads.</summary>
 public partial class BuilderInstanceMixinsHappyPathTests
 {
-    /// <summary>
-    /// Verifies that the 9-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -89,9 +85,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 9-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 9-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -123,9 +117,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 10-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 10-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -208,9 +200,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 10-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 10-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -243,9 +233,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 11-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 11-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -288,9 +276,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 11-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 11-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -324,9 +310,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 12-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 12-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -371,9 +355,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 12-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 12-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -408,9 +390,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 13-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 13-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -457,9 +437,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 13-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 13-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -496,9 +474,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 14-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 14-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -547,9 +523,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 14-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 14-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -587,9 +561,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -640,9 +612,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 15-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 15-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -680,9 +650,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         }
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance overload invokes the action with the resolved instances.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance overload invokes the action with the resolved instances.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -735,9 +703,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
         await AssertResolvedServices(mockInstance, result, captured, services);
     }
 
-    /// <summary>
-    /// Verifies that the 16-types WithInstance overload returns early without invoking the action when the current resolver is null.
-    /// </summary>
+    /// <summary>Verifies that the 16-types WithInstance overload returns early without invoking the action when the current resolver is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(

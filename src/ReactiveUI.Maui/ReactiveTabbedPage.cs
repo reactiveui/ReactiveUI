@@ -6,32 +6,30 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Maui.Controls;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
 
-/// <summary>
-/// This is a <see cref="TabbedPage"/> that is also an <see cref="IViewFor{T}"/>.
-/// </summary>
+/// <summary>This is a <see cref="TabbedPage"/> that is also an <see cref="IViewFor{T}"/>.</summary>
 /// <typeparam name="TViewModel">The type of the view model.</typeparam>
 /// <seealso cref="TabbedPage" />
 /// <seealso cref="IViewFor{TViewModel}" />
 public class ReactiveTabbedPage<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes
         .PublicParameterlessConstructor)]
-    TViewModel> : TabbedPage, IViewFor<TViewModel>
+TViewModel> : TabbedPage, IViewFor<TViewModel>
     where TViewModel : class
 {
-    /// <summary>
-    /// The view model bindable property.
-    /// </summary>
+    /// <summary>The view model bindable property.</summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
         nameof(ViewModel),
         typeof(TViewModel),
         typeof(ReactiveTabbedPage<TViewModel>),
         propertyChanged: OnViewModelChanged);
 
-    /// <summary>
-    /// Gets or sets the ViewModel to display.
-    /// </summary>
+    /// <summary>Gets or sets the ViewModel to display.</summary>
     public TViewModel? ViewModel
     {
         get => (TViewModel)GetValue(ViewModelProperty);
@@ -52,9 +50,7 @@ public class ReactiveTabbedPage<
         ViewModel = BindingContext as TViewModel;
     }
 
-    /// <summary>
-    /// Updates the binding context when the view model changes.
-    /// </summary>
+    /// <summary>Updates the binding context when the view model changes.</summary>
     /// <param name="bindableObject">The bindable object whose property changed.</param>
     /// <param name="oldValue">The previous value.</param>
     /// <param name="newValue">The new value.</param>

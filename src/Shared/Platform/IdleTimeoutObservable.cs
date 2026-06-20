@@ -3,10 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive;
-using System.Reactive.Concurrency;
-using ReactiveUI.Helpers;
-
 namespace ReactiveUI.Internal;
 
 /// <summary>
@@ -20,10 +16,10 @@ namespace ReactiveUI.Internal;
 /// <param name="idleTimeout">Supplies the idle timeout duration (evaluated when a timer starts).</param>
 /// <param name="scheduler">The scheduler the timer runs on.</param>
 internal sealed class IdleTimeoutObservable(
-    IObservable<Unit> deactivated,
-    IObservable<Unit> reactivated,
+    IObservable<RxVoid> deactivated,
+    IObservable<RxVoid> reactivated,
     Func<TimeSpan> idleTimeout,
-    IScheduler scheduler) : IObservable<IDisposable>
+    ISequencer scheduler) : IObservable<IDisposable>
 {
     /// <inheritdoc/>
     public IDisposable Subscribe(IObserver<IDisposable> observer)
@@ -39,10 +35,10 @@ internal sealed class IdleTimeoutObservable(
     /// <param name="downstream">The downstream observer.</param>
     /// <param name="idleTimeout">Supplies the idle timeout duration.</param>
     /// <param name="scheduler">The scheduler the timer runs on.</param>
-    private sealed class Sink(IObserver<IDisposable> downstream, Func<TimeSpan> idleTimeout, IScheduler scheduler) : IDisposable
+    private sealed class Sink(IObserver<IDisposable> downstream, Func<TimeSpan> idleTimeout, ISequencer scheduler) : IDisposable
     {
-/// <summary>Serializes notification forwarding across the sources.</summary>
-        #if NET9_0_OR_GREATER
+        /// <summary>Serializes notification forwarding across the sources.</summary>
+#if NET9_0_OR_GREATER
         private readonly Lock _gate = new();
 #else
         private readonly object _gate = new();
@@ -63,10 +59,10 @@ internal sealed class IdleTimeoutObservable(
         /// <summary>Subscribes to the deactivation and reactivation sources.</summary>
         /// <param name="deactivated">The deactivation source.</param>
         /// <param name="reactivated">The reactivation source.</param>
-        public void Run(IObservable<Unit> deactivated, IObservable<Unit> reactivated)
+        public void Run(IObservable<RxVoid> deactivated, IObservable<RxVoid> reactivated)
         {
-            _deactivatedSubscription = deactivated.Subscribe(new DelegateObserver<Unit>(_ => OnDeactivated()));
-            _reactivatedSubscription = reactivated.Subscribe(new DelegateObserver<Unit>(_ => CancelTimer()));
+            _deactivatedSubscription = deactivated.Subscribe(new DelegateObserver<RxVoid>(_ => OnDeactivated()));
+            _reactivatedSubscription = reactivated.Subscribe(new DelegateObserver<RxVoid>(_ => CancelTimer()));
         }
 
         /// <inheritdoc/>

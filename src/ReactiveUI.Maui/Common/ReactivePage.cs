@@ -16,14 +16,20 @@ using Microsoft.Maui.Controls;
 #endif
 
 #if IS_MAUI
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Maui;
+#else
 namespace ReactiveUI.Maui;
+#endif
+#else
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
 #else
 namespace ReactiveUI;
 #endif
+#endif
 
-/// <summary>
-/// A <see cref="Page"/> that is reactive.
-/// </summary>
+/// <summary>A <see cref="Page"/> that is reactive.</summary>
 /// <remarks>
 /// <para>
 /// This class is a <see cref="Page"/> that is also reactive. That is, it implements <see cref="IViewFor{TViewModel}"/>.
@@ -56,7 +62,6 @@ namespace ReactiveUI;
 /// <code>
 /// <![CDATA[
 /// internal class YourViewBase : ReactivePage<YourViewModel> { /* No code needed here */ }
-///
 /// public partial class YourView : YourViewBase
 /// {
 ///     /* Your code */
@@ -84,31 +89,27 @@ namespace ReactiveUI;
 /// <typeparam name="TViewModel">
 /// The type of the view model backing the view.
 /// </typeparam>
-[SuppressMessage(
-    "WinRT",
-    "CsWinRT1029:Types used in signatures should be WinRT types",
-    Justification = "This is a netstandard2.0 library")]
-[SuppressMessage("Roslynator", "RCS1043:Remove \'partial\' modifier from type with a single part", Justification = "This is a netstandard2.0 library")]
-[SuppressMessage("Minor Code Smell", "S2333:Redundant modifiers should not be used", Justification = "This is a netstandard2.0 library")]
+#if WINUI_TARGET
 public partial class ReactivePage<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :
     Page, IViewFor<TViewModel>
     where TViewModel : class
+#else
+public class ReactivePage<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TViewModel> :
+    Page, IViewFor<TViewModel>
+    where TViewModel : class
+#endif
 {
+    /// <summary>The shared view model property for this closed generic page type.</summary>
 #if WINUI_TARGET
-    /// <summary>
-    /// The view model dependency property.
-    /// </summary>
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
-            "ViewModel",
+            nameof(ViewModel),
             typeof(TViewModel),
             typeof(ReactivePage<TViewModel>),
             new(null));
 #else
-    /// <summary>
-    /// The view model bindable property.
-    /// </summary>
     public static readonly BindableProperty ViewModelProperty = BindableProperty.Create(
         nameof(ViewModel),
         typeof(TViewModel),
@@ -116,15 +117,13 @@ public partial class ReactivePage<
         propertyChanged: OnViewModelChanged);
 #endif
 
-    /// <summary>
-    /// Gets the binding root view model.
-    /// </summary>
+    /// <summary>Gets the binding root view model.</summary>
     public TViewModel? BindingRoot => ViewModel;
 
     /// <inheritdoc/>
     public TViewModel? ViewModel
     {
-        get => (TViewModel)GetValue(ViewModelProperty);
+        get => (TViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
     }
 
@@ -143,13 +142,11 @@ public partial class ReactivePage<
         ViewModel = BindingContext as TViewModel;
     }
 
-    /// <summary>
-    /// Updates the binding context when the view model changes.
-    /// </summary>
+    /// <summary>Updates the binding context when the view model changes.</summary>
     /// <param name="bindableObject">The bindable object whose property changed.</param>
     /// <param name="oldValue">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnViewModelChanged(BindableObject bindableObject, object oldValue, object newValue) =>
+    private static void OnViewModelChanged(BindableObject bindableObject, object? oldValue, object? newValue) =>
         bindableObject.BindingContext = newValue;
 #endif
 }

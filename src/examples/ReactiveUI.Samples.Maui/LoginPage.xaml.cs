@@ -3,21 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
 using ReactiveUI.Maui;
+using ReactiveUI.Primitives;
 
 namespace ReactiveUI.Samples.Maui;
 
-/// <summary>
-/// A reactive login page demonstrating WhenActivated, Bind, BindCommand,
-/// and DisplayAlert for user feedback in MAUI.
-/// </summary>
+/// <summary>A reactive login page demonstrating WhenActivated, Bind, BindCommand, and DisplayAlert for user feedback in MAUI.</summary>
 public partial class LoginPage : ReactiveContentPage<LoginViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoginPage"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LoginPage"/> class.</summary>
     public LoginPage()
     {
         InitializeComponent();
@@ -38,11 +32,14 @@ public partial class LoginPage : ReactiveContentPage<LoginViewModel>
                 .DisposeWith(d);
 
             ViewModel.Login
-                .SelectMany(success => Observable.FromAsync(() =>
-                    Shell.Current.DisplayAlertAsync(
+                .SelectMany(success => Signal.FromAsync(async () =>
+                {
+                    await Shell.Current.DisplayAlertAsync(
                         success ? "Login Successful" : "Login Failed",
                         success ? "Welcome!" : "Invalid credentials.",
-                        "OK")))
+                        "OK");
+                    return RxVoid.Default;
+                }))
                 .Subscribe()
                 .DisposeWith(d);
         });

@@ -4,15 +4,17 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+#if REACTIVE_SHIM
+using ReactiveUI.Reactive.Builder;
+#else
 using ReactiveUI.Builder;
+#endif
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-/// Unit tests for <see cref="BindingHookEvaluator"/>.
-/// </summary>
+/// <summary>RxVoid tests for <see cref="BindingHookEvaluator"/>.</summary>
 /// <remarks>
 /// These tests verify hook evaluation logic.
 /// Tests use the Executor paradigm to register mock hooks and manage state.
@@ -20,9 +22,7 @@ namespace ReactiveUI.Tests;
 [TestExecutor<Executor>]
 public class BindingHookEvaluatorTests
 {
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks returns true when no rejecting hooks are registered.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks returns true when no rejecting hooks are registered.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithNoRejectingHooks_ReturnsTrue()
@@ -32,10 +32,10 @@ public class BindingHookEvaluatorTests
         var viewModel = new TestViewModel();
         var view = new TestView { ViewModel = viewModel };
 
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Property1;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Property1;
         Expression<Func<TestView, string?>> viewExpr = v => v.SomeStringProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -50,9 +50,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks returns false when a hook rejects the binding.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks returns false when a hook rejects the binding.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithRejectingHook_ReturnsFalse()
@@ -63,10 +61,10 @@ public class BindingHookEvaluatorTests
         var view = new TestView { ViewModel = viewModel };
 
         // Use RejectMe property which the hook is configured to reject
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.RejectMe;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.RejectMe;
         Expression<Func<TestView, string?>> viewExpr = v => v.SomeStringProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -81,9 +79,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks handles null viewModel gracefully.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks handles null viewModel gracefully.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithNullViewModel_HandlesGracefully()
@@ -93,10 +89,10 @@ public class BindingHookEvaluatorTests
         const TestViewModel? viewModel = null;
         var view = new TestView();
 
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Property1;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Property1;
         Expression<Func<TestView, string?>> viewExpr = v => v.SomeStringProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -111,9 +107,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTypeOf<bool>();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks handles complex property chains.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks handles complex property chains.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithChainedProperties_EvaluatesCorrectly()
@@ -123,10 +117,10 @@ public class BindingHookEvaluatorTests
         var viewModel = new TestViewModel { Model = new() { AnotherProperty = 42 } };
         var view = new TestView { ViewModel = viewModel };
 
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Model!.AnotherProperty;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Model!.AnotherProperty;
         Expression<Func<TestView, int>> viewExpr = v => v.SomeIntProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -141,9 +135,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks returns true when vmExpression is null (default behavior).
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks returns true when viewModelExpression is null (default behavior).</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithNullVmExpression_ReturnsTrue()
@@ -160,7 +152,7 @@ public class BindingHookEvaluatorTests
         var result = evaluator.EvaluateBindingHooks(
             viewModel,
             view,
-            null!, // null vmExpression
+            null!, // null viewModelExpression
             rewrittenView,
             BindingDirection.OneWay);
 
@@ -168,9 +160,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks handles TwoWay binding direction.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks handles TwoWay binding direction.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithTwoWayBinding_ProcessesCorrectly()
@@ -180,10 +170,10 @@ public class BindingHookEvaluatorTests
         var viewModel = new TestViewModel();
         var view = new TestView { ViewModel = viewModel };
 
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Property1;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Property1;
         Expression<Func<TestView, string?>> viewExpr = v => v.SomeStringProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -198,9 +188,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Verifies that EvaluateBindingHooks handles AsyncOneWay binding direction.
-    /// </summary>
+    /// <summary>Verifies that EvaluateBindingHooks handles AsyncOneWay binding direction.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
     public async Task EvaluateBindingHooks_WithAsyncOneWay_ProcessesCorrectly()
@@ -210,10 +198,10 @@ public class BindingHookEvaluatorTests
         var viewModel = new TestViewModel();
         var view = new TestView { ViewModel = viewModel };
 
-        Expression<Func<TestViewModel, int>> vmExpr = vm => vm.Property1;
+        Expression<Func<TestViewModel, int>> viewModelExpression = vm => vm.Property1;
         Expression<Func<TestView, int>> viewExpr = v => v.SomeIntProperty;
 
-        var rewrittenVm = Reflection.Rewrite(vmExpr.Body);
+        var rewrittenVm = Reflection.Rewrite(viewModelExpression.Body);
         var rewrittenView = Reflection.Rewrite(viewExpr.Body);
 
         // Act
@@ -228,9 +216,7 @@ public class BindingHookEvaluatorTests
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    /// Test executor for binding hook evaluator tests.
-    /// </summary>
+    /// <summary>Test executor for binding hook evaluator tests.</summary>
     public class Executor : BaseAppBuilderTestExecutor
     {
         /// <inheritdoc/>
@@ -245,9 +231,7 @@ public class BindingHookEvaluatorTests
         }
     }
 
-    /// <summary>
-    /// Test binding hook that rejects bindings for the "RejectMe" property.
-    /// </summary>
+    /// <summary>Test binding hook that rejects bindings for the "RejectMe" property.</summary>
     private sealed class RejectingHook : IPropertyBindingHook
     {
         /// <inheritdoc/>
@@ -258,30 +242,22 @@ public class BindingHookEvaluatorTests
             Func<IObservedChange<object, object>[]> getCurrentViewProperties,
             BindingDirection direction)
         {
-            var vmProps = getCurrentViewModelProperties();
+            var viewModelProperties = getCurrentViewModelProperties();
 
             // Reject if the property name is "RejectMe"
-            return vmProps is null || vmProps.Length == 0 ||
-                   vmProps[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
+            return viewModelProperties is null || viewModelProperties.Length == 0 ||
+                   viewModelProperties[^1].Expression?.GetMemberInfo()?.Name != "RejectMe";
         }
     }
 
-    /// <summary>
-    /// Test helper view class.
-    /// </summary>
+    /// <summary>Test helper view class.</summary>
     private sealed class TestView : ReactiveObject, IViewFor<TestViewModel>
     {
-        private TestViewModel? _viewModel;
-        private string? _someStringProperty;
-        private int _someIntProperty;
-
-        /// <summary>
-        /// Gets or sets the view model.
-        /// </summary>
+        /// <summary>Gets or sets the view model.</summary>
         public TestViewModel? ViewModel
         {
-            get => _viewModel;
-            set => this.RaiseAndSetIfChanged(ref _viewModel, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
         /// <inheritdoc/>
@@ -291,76 +267,54 @@ public class BindingHookEvaluatorTests
             set => ViewModel = (TestViewModel?)value;
         }
 
-        /// <summary>
-        /// Gets or sets a string property used for binding tests.
-        /// </summary>
+        /// <summary>Gets or sets a string property used for binding tests.</summary>
         public string? SomeStringProperty
         {
-            get => _someStringProperty;
-            set => this.RaiseAndSetIfChanged(ref _someStringProperty, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets an integer property used for binding tests.
-        /// </summary>
+        /// <summary>Gets or sets an integer property used for binding tests.</summary>
         public int SomeIntProperty
         {
-            get => _someIntProperty;
-            set => this.RaiseAndSetIfChanged(ref _someIntProperty, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
-    /// <summary>
-    /// Test helper view model class.
-    /// </summary>
+    /// <summary>Test helper view model class.</summary>
     private sealed class TestViewModel : ReactiveObject
     {
-        private int _property1;
-        private int _rejectMe;
-        private TestModel? _model;
-
-        /// <summary>
-        /// Gets or sets the first integer property used for binding tests.
-        /// </summary>
+        /// <summary>Gets or sets the first integer property used for binding tests.</summary>
         public int Property1
         {
-            get => _property1;
-            set => this.RaiseAndSetIfChanged(ref _property1, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the property that the rejecting hook is configured to reject.
-        /// </summary>
+        /// <summary>Gets or sets the property that the rejecting hook is configured to reject.</summary>
         public int RejectMe
         {
-            get => _rejectMe;
-            set => this.RaiseAndSetIfChanged(ref _rejectMe, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
 
-        /// <summary>
-        /// Gets or sets the nested model used for chained-property binding tests.
-        /// </summary>
+        /// <summary>Gets or sets the nested model used for chained-property binding tests.</summary>
         public TestModel? Model
         {
-            get => _model;
-            set => this.RaiseAndSetIfChanged(ref _model, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
-    /// <summary>
-    /// Test helper model class.
-    /// </summary>
+    /// <summary>Test helper model class.</summary>
     private sealed class TestModel : ReactiveObject
     {
-        private int _anotherProperty;
-
-        /// <summary>
-        /// Gets or sets a nested integer property used for chained-property binding tests.
-        /// </summary>
+        /// <summary>Gets or sets a nested integer property used for chained-property binding tests.</summary>
         public int AnotherProperty
         {
-            get => _anotherProperty;
-            set => this.RaiseAndSetIfChanged(ref _anotherProperty, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 }

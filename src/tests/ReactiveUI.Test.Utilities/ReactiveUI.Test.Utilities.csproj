@@ -8,9 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- System.Reactive is needed only for the VirtualTimeScheduler dual (ISequencer + IScheduler) impl that
+         serves the .Reactive test leaves. PrivateAssets=all keeps it from flowing to consumers, so lean test
+         projects stay System.Reactive-free (no System.ObservableExtensions.Subscribe ambiguity with the
+         Primitives SubscribeExtensions). .Reactive consumers reference System.Reactive via their own seam. -->
+    <PackageReference Include="System.Reactive" PrivateAssets="all"/>
     <PackageReference Include="TUnit.Core"/>
-    <PackageReference Include="PublicApiGenerator"/>
-    <PackageReference Include="Verify.TUnit"/>
   </ItemGroup>
 
   <ItemGroup>

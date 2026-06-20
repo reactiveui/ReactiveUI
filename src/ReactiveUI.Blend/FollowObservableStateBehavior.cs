@@ -3,22 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
 using ReactiveUI.Helpers;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blend;
+#else
 namespace ReactiveUI.Blend;
+#endif
 
-/// <summary>
-/// Behavior that tracks the state of an observable.
-/// </summary>
+/// <summary>Behavior that tracks the state of an observable.</summary>
 public class FollowObservableStateBehavior : Behavior<FrameworkElement>
 {
-    /// <summary>
-    /// The state observable dependency property.
-    /// </summary>
+    /// <summary>The state observable dependency property.</summary>
     public static readonly DependencyProperty StateObservableProperty =
         DependencyProperty.Register(
             "StateObservable",
@@ -26,9 +25,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
             typeof(FollowObservableStateBehavior),
             new(null, OnStateObservableChanged));
 
-    /// <summary>
-    /// The target object dependency property.
-    /// </summary>
+    /// <summary>The target object dependency property.</summary>
     public static readonly DependencyProperty TargetObjectProperty =
         DependencyProperty.Register(
             "TargetObject",
@@ -39,38 +36,30 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <summary>The current subscription watching the state observable.</summary>
     private IDisposable? _watcher;
 
-    /// <summary>
-    /// Gets or sets the state observable.
-    /// </summary>
+    /// <summary>Gets or sets the state observable.</summary>
     public IObservable<string> StateObservable
     {
         get => (IObservable<string>)GetValue(StateObservableProperty);
         set => SetValue(StateObservableProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets the target object.
-    /// </summary>
+    /// <summary>Gets or sets the target object.</summary>
     public FrameworkElement TargetObject
     {
         get => (FrameworkElement)GetValue(TargetObjectProperty);
         set => SetValue(TargetObjectProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether [automatic resubscribe on error].
-    /// </summary>
+    /// <summary>Gets or sets a value indicating whether [automatic resubscribe on error].</summary>
     public bool AutoResubscribeOnError { get; set; }
 
     /// <summary>
     /// Gets or sets the scheduler to use for observing state changes.
     /// If null, uses RxSchedulers.MainThreadScheduler. This property is primarily for testing purposes.
     /// </summary>
-    public IScheduler? SchedulerOverride { get; set; }
+    public ISequencer? SchedulerOverride { get; set; }
 
-    /// <summary>
-    /// Internal method for testing purposes that calls OnStateObservableChanged.
-    /// </summary>
+    /// <summary>Internal method for testing purposes that calls OnStateObservableChanged.</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event args.</param>
     internal static void InternalOnStateObservableChangedForTesting(
@@ -78,14 +67,12 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
         DependencyPropertyChangedEventArgs e) =>
         OnStateObservableChanged(sender, e);
 
-    /// <summary>
-    /// Called when [state observable changed].
-    /// </summary>
+    /// <summary>Called when [state observable changed].</summary>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
     protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
     {
-        ArgumentExceptionHelper.ThrowIfNotOfType<FollowObservableStateBehavior>(sender);
+        ArgumentValidation.ThrowIfNotOfType<FollowObservableStateBehavior>(sender);
         var item = (FollowObservableStateBehavior)sender;
 
         if (item._watcher is not null)

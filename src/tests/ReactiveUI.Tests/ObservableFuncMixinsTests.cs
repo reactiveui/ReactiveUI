@@ -8,9 +8,7 @@ using ReactiveUI.Tests.WhenAny;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-/// Tests for <see cref="ObservableFuncMixins"/>, which converts a property expression into an observable sequence.
-/// </summary>
+/// <summary>Tests for <see cref="ObservableFuncMixins"/>, which converts a property expression into an observable sequence.</summary>
 public class ObservableFuncMixinsTests
 {
     /// <summary>The value a property holds at subscription time.</summary>

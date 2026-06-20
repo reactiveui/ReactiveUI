@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Activation;
 
-/// <summary>
-///     Tests for activating view model behaviour.
-/// </summary>
+/// <summary>Tests for activating view model behaviour.</summary>
 public class ActivatingViewModelTests
 {
-    /// <summary>
-    ///     Tests for the activation to make sure it activates the appropriate number of times.
-    /// </summary>
+    /// <summary>Tests for the activation to make sure it activates the appropriate number of times.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ActivationsGetRefCounted()
@@ -34,9 +30,7 @@ public class ActivatingViewModelTests
         await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    ///     Tests to make sure the activations of derived classes don't get stomped.
-    /// </summary>
+    /// <summary>Tests to make sure the activations of derived classes don't get stomped.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task DerivedActivationsDontGetStomped()

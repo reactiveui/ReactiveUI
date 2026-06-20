@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Input;
 
@@ -16,9 +15,7 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for WPF command binding implementation.
-/// </summary>
+/// <summary>Tests for WPF command binding implementation.</summary>
 /// <remarks>
 /// This test fixture is marked as NonParallelizable because some tests call
 /// Locator.CurrentMutable.RegisterConstant() to register test loggers, which mutates
@@ -28,12 +25,13 @@ namespace ReactiveUI.Tests.Wpf;
 [TestExecutor<WpfTestExecutor>]
 public class WpfCommandBindingImplementationTests
 {
+    /// <summary>The expected accumulated value after the command is invoked a second time.</summary>
     private const int ExpectedSecondInvocation = 2;
+
+    /// <summary>The name of the mouse up routed event used for explicit event wiring.</summary>
     private const string MouseUpEventName = "MouseUp";
 
-    /// <summary>
-    /// Commands the bind to explicit event wireup.
-    /// </summary>
+    /// <summary>Commands the bind to explicit event wireup.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindToExplicitEventWireup()
@@ -54,9 +52,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(1);
     }
 
-    /// <summary>
-    /// Binds the command to object target is null.
-    /// </summary>
+    /// <summary>Binds the command to object target is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindCommandToObjectWithEventTargetIsNull()
@@ -71,9 +67,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Binds the command to object target is null.
-    /// </summary>
+    /// <summary>Binds the command to object target is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -89,9 +83,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Binds the command to object target is null.
-    /// </summary>
+    /// <summary>Binds the command to object target is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -107,9 +99,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Binds the command to object command is null.
-    /// </summary>
+    /// <summary>Binds the command to object command is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -125,9 +115,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Binds the command to object command is null.
-    /// </summary>
+    /// <summary>Binds the command to object command is null.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S4144:Methods should not have identical implementations", Justification = "Intentional duplicate test scenario.")]
@@ -143,9 +131,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(invokeCount).IsEqualTo(0);
     }
 
-    /// <summary>
-    /// Commands the bind view model to view with observable.
-    /// </summary>
+    /// <summary>Commands the bind view model to view with observable.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindViewModelToViewWithObservable()
@@ -189,9 +175,7 @@ public class WpfCommandBindingImplementationTests
         }
     }
 
-    /// <summary>
-    /// Commands the bind view model to view with function.
-    /// </summary>
+    /// <summary>Commands the bind view model to view with function.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandBindViewModelToViewWithFunc()
@@ -235,9 +219,7 @@ public class WpfCommandBindingImplementationTests
         }
     }
 
-    /// <summary>
-    /// Verifies that binding a command to a XAML-declared field does not log a warning.
-    /// </summary>
+    /// <summary>Verifies that binding a command to a XAML-declared field does not log a warning.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task BindCommandShouldNotWarnWhenBindingToFieldDeclaredInXaml()
@@ -254,9 +236,7 @@ public class WpfCommandBindingImplementationTests
                 t.logLevel == LogLevel.Warn)).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an overwritten view model is garbage collected after a command binding.
-    /// </summary>
+    /// <summary>Verifies that an overwritten view model is garbage collected after a command binding.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
@@ -280,9 +260,7 @@ public class WpfCommandBindingImplementationTests
         await Assert.That(weakRef.IsAlive).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that the command and its parameter rebind when the view model instance is replaced.
-    /// </summary>
+    /// <summary>Verifies that the command and its parameter rebind when the view model instance is replaced.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandAndParameterRebindToNewViewModelInstance()
@@ -309,9 +287,7 @@ public class WpfCommandBindingImplementationTests
         }
     }
 
-    /// <summary>
-    /// Verifies that rebinding a command from a background thread does not touch the WPF control directly.
-    /// </summary>
+    /// <summary>Verifies that rebinding a command from a background thread does not touch the WPF control directly.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task CommandRebindingFromBackgroundThreadDoesNotTouchWpfControlDirectly()
@@ -319,7 +295,7 @@ public class WpfCommandBindingImplementationTests
         var vm = new CommandBindingViewModel();
         var view = new CommandBindingView { ViewModel = vm };
         using var binding = view.BindCommand(vm, static x => x.Command2, static x => x.Command1);
-        var replacement = ReactiveCommand.Create(static () => { }, outputScheduler: ImmediateScheduler.Instance);
+        var replacement = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
 
         Exception? thrown = null;
         await Task.Run(() =>

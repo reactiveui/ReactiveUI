@@ -7,32 +7,19 @@ using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A mock routable view model used by routing tests.
-/// </summary>
-public class TestViewModel : ReactiveUI.ReactiveObject, IRoutableViewModel
+/// <summary>A mock routable view model used by routing tests.</summary>
+public class TestViewModel : ReactiveObject, IRoutableViewModel
 {
-    /// <summary>
-    /// Backing field for the <see cref="SomeProp"/> property.
-    /// </summary>
-    private string? _someProp;
-
-    /// <summary>
-    /// Gets or sets a sample property.
-    /// </summary>
+    /// <summary>Gets or sets a sample property.</summary>
     public string? SomeProp
     {
-        get => _someProp;
-        set => this.RaiseAndSetIfChanged(ref _someProp, value);
+        get => field;
+        set => this.RaiseAndSetIfChanged(ref field, value);
     }
 
-    /// <summary>
-    /// Gets the URL path segment.
-    /// </summary>
+    /// <summary>Gets the URL path segment.</summary>
     public string UrlPathSegment => "Test";
 
-    /// <summary>
-    /// Gets or sets the host screen.
-    /// </summary>
+    /// <summary>Gets or sets the host screen.</summary>
     public IScreen HostScreen { get; set; } = new TestScreen();
 }

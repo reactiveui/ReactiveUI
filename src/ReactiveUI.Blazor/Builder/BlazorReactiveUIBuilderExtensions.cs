@@ -4,95 +4,77 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Concurrency;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Builder;
+#else
 namespace ReactiveUI.Builder;
-
-/// <summary>
-/// Blazor-specific extensions for the ReactiveUI builder.
-/// </summary>
+#endif
+/// <summary>Blazor-specific extensions for the ReactiveUI builder.</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "ReactiveUI is the name of the product.")]
 public static class BlazorReactiveUIBuilderExtensions
 {
-    /// <summary>
-    /// Gets the blazor main thread scheduler.
-    /// </summary>
+    /// <summary>Gets the blazor main thread scheduler.</summary>
     /// <value>
     /// The blazor main thread scheduler.
     /// </value>
-    public static IScheduler BlazorMainThreadScheduler { get; } = CurrentThreadScheduler.Instance;
+    public static ISequencer BlazorMainThreadScheduler { get; } = Sequencer.CurrentThread;
 
-    /// <summary>
-    /// Gets the blazor wasm scheduler.
-    /// </summary>
+    /// <summary>Gets the blazor wasm scheduler.</summary>
     /// <value>
     /// The blazor wasm scheduler.
     /// </value>
-    public static IScheduler BlazorWasmScheduler { get; } = WasmScheduler.Default;
+    public static ISequencer BlazorWasmScheduler { get; } =
+#if REACTIVE_SHIM
+        WasmScheduler.Default;
+#else
+        Sequencer.CurrentThread;
+#endif
 
-    /// <summary>
-    /// Configures ReactiveUI for Blazor platform with appropriate schedulers.
-    /// </summary>
-    /// <param name="builder">The builder instance.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithBlazor(this IReactiveUIBuilder builder)
+    /// <summary>Provides ReactiveUI builder extension methods for Blazor.</summary>
+    /// <param name="builder">The ReactiveUI builder.</param>
+    extension(IReactiveUIBuilder builder)
     {
-        if (builder is null)
+        /// <summary>Configures ReactiveUI for Blazor platform with appropriate schedulers.</summary>
+        /// <returns>The builder instance for chaining.</returns>
+        public IReactiveUIBuilder WithBlazor()
         {
-            throw new ArgumentNullException(nameof(builder));
+            ArgumentExceptionHelper.ThrowIfNull(builder);
+
+            return ((IReactiveUIBuilder)builder.WithCoreServices())
+                .WithBlazorScheduler()
+                .WithTaskPoolScheduler(TaskPoolSequencer.Default)
+                .WithPlatformModule<Blazor.Registrations>();
         }
 
-        return ((IReactiveUIBuilder)builder.WithCoreServices())
-            .WithBlazorScheduler()
-            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
-            .WithPlatformModule<Blazor.Registrations>();
-    }
-
-    /// <summary>
-    /// Configures ReactiveUI for Blazor platform with appropriate schedulers.
-    /// </summary>
-    /// <param name="builder">The builder instance.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithBlazorWasm(this IReactiveUIBuilder builder)
-    {
-        if (builder is null)
+        /// <summary>Configures ReactiveUI for Blazor platform with appropriate schedulers.</summary>
+        /// <returns>The builder instance for chaining.</returns>
+        public IReactiveUIBuilder WithBlazorWasm()
         {
-            throw new ArgumentNullException(nameof(builder));
+            ArgumentExceptionHelper.ThrowIfNull(builder);
+
+            return builder
+                .WithBlazorWasmScheduler()
+                .WithTaskPoolScheduler(TaskPoolSequencer.Default)
+                .WithPlatformModule<Blazor.Registrations>();
         }
 
-        return builder
-            .WithBlazorWasmScheduler()
-            .WithTaskPoolScheduler(TaskPoolScheduler.Default)
-            .WithPlatformModule<Blazor.Registrations>();
-    }
-
-    /// <summary>
-    /// Withes the blazor scheduler.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithBlazorScheduler(this IReactiveUIBuilder builder)
-    {
-        if (builder is null)
+        /// <summary>Withes the blazor scheduler.</summary>
+        /// <returns>The builder instance for chaining.</returns>
+        public IReactiveUIBuilder WithBlazorScheduler()
         {
-            throw new ArgumentNullException(nameof(builder));
+            ArgumentExceptionHelper.ThrowIfNull(builder);
+
+            return builder.WithMainThreadScheduler(BlazorMainThreadScheduler);
         }
 
-        return builder.WithMainThreadScheduler(BlazorMainThreadScheduler);
-    }
-
-    /// <summary>
-    /// Withes the blazor scheduler.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
-    /// <returns>The builder instance for chaining.</returns>
-    public static IReactiveUIBuilder WithBlazorWasmScheduler(this IReactiveUIBuilder builder)
-    {
-        if (builder is null)
+        /// <summary>Withes the blazor scheduler.</summary>
+        /// <returns>The builder instance for chaining.</returns>
+        public IReactiveUIBuilder WithBlazorWasmScheduler()
         {
-            throw new ArgumentNullException(nameof(builder));
-        }
+            ArgumentExceptionHelper.ThrowIfNull(builder);
 
-        return builder.WithMainThreadScheduler(BlazorWasmScheduler);
+            return builder.WithMainThreadScheduler(BlazorWasmScheduler);
+        }
     }
 }

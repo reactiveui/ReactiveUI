@@ -13,10 +13,7 @@ namespace ReactiveUI.Tests.Bindings.Converters;
 /// </summary>
 public class ConverterRegistryTests
 {
-    /// <summary>
-    ///     Verifies that the registry supports concurrent reads during registration.
-    ///     This tests the lock-free snapshot pattern.
-    /// </summary>
+    /// <summary>Verifies that the registry supports concurrent reads during registration. This tests the lock-free snapshot pattern.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task ConcurrentReads_DuringRegistration_ShouldBeThreadSafe()
@@ -64,9 +61,7 @@ public class ConverterRegistryTests
         await Assert.That(finalCheck2).IsEqualTo(converter2);
     }
 
-    /// <summary>
-    ///     Verifies that converters with negative affinity are ignored.
-    /// </summary>
+    /// <summary>Verifies that converters with negative affinity are ignored.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task ConverterWithNegativeAffinity_ShouldBeIgnored()
@@ -88,9 +83,7 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(validAffinity);
     }
 
-    /// <summary>
-    ///     Verifies that converters with affinity 0 are ignored.
-    /// </summary>
+    /// <summary>Verifies that converters with affinity 0 are ignored.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task ConverterWithZeroAffinity_ShouldBeIgnored()
@@ -111,9 +104,7 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(validAffinity);
     }
 
-    /// <summary>
-    ///     Verifies that an empty registry returns null.
-    /// </summary>
+    /// <summary>Verifies that an empty registry returns null.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task EmptyRegistry_ShouldReturnNull()
@@ -128,9 +119,7 @@ public class ConverterRegistryTests
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that fallback converter registry works correctly.
-    /// </summary>
+    /// <summary>Verifies that fallback converter registry works correctly.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task FallbackRegistry_ShouldSelectHighestAffinity()
@@ -152,9 +141,7 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(highAffinity);
     }
 
-    /// <summary>
-    ///     Verifies that GetAllConverters returns all registered converters.
-    /// </summary>
+    /// <summary>Verifies that GetAllConverters returns all registered converters.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task GetAllConverters_ShouldReturnAllRegistered()
@@ -211,9 +198,7 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(highAffinity);
     }
 
-    /// <summary>
-    ///     Verifies that requesting a non-existent type pair returns null.
-    /// </summary>
+    /// <summary>Verifies that requesting a non-existent type pair returns null.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task NonExistentTypePair_ShouldReturnNull()
@@ -231,9 +216,7 @@ public class ConverterRegistryTests
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    ///     Verifies that a registered converter can be retrieved.
-    /// </summary>
+    /// <summary>Verifies that a registered converter can be retrieved.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task Register_AndRetrieve_ShouldReturnConverter()
@@ -252,9 +235,7 @@ public class ConverterRegistryTests
         await Assert.That(retrieved).IsEqualTo(converter);
     }
 
-    /// <summary>
-    ///     Verifies that set-method converter registry works correctly.
-    /// </summary>
+    /// <summary>Verifies that set-method converter registry works correctly.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
     public async Task SetMethodRegistry_ShouldSelectHighestAffinity()
@@ -276,18 +257,15 @@ public class ConverterRegistryTests
         await Assert.That(selected).IsEqualTo(highAffinity);
     }
 
-    /// <summary>
-    /// Test typed converter that reports a configurable affinity.
-    /// </summary>
+    /// <summary>Test typed converter that reports a configurable affinity.</summary>
     /// <typeparam name="TFrom">The source type.</typeparam>
     /// <typeparam name="TTo">The target type.</typeparam>
     private sealed class TestConverter<TFrom, TTo> : BindingTypeConverter<TFrom, TTo>
     {
+        /// <summary>The affinity value to report.</summary>
         private readonly int _affinity;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestConverter{TFrom, TTo}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestConverter{TFrom, TTo}"/> class.</summary>
         /// <param name="affinity">The affinity value to report.</param>
         public TestConverter(int affinity) => _affinity = affinity;
 
@@ -302,16 +280,13 @@ public class ConverterRegistryTests
         }
     }
 
-    /// <summary>
-    /// Test fallback converter that reports a configurable affinity.
-    /// </summary>
+    /// <summary>Test fallback converter that reports a configurable affinity.</summary>
     private sealed class TestFallbackConverter : IBindingFallbackConverter
     {
+        /// <summary>The affinity value to report.</summary>
         private readonly int _baseAffinity;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestFallbackConverter"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestFallbackConverter"/> class.</summary>
         /// <param name="baseAffinity">The affinity value to report.</param>
         public TestFallbackConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 
@@ -337,16 +312,13 @@ public class ConverterRegistryTests
         }
     }
 
-    /// <summary>
-    /// Test set-method converter that reports a configurable affinity.
-    /// </summary>
+    /// <summary>Test set-method converter that reports a configurable affinity.</summary>
     private sealed class TestSetMethodConverter : ISetMethodBindingConverter
     {
+        /// <summary>The affinity value to report.</summary>
         private readonly int _baseAffinity;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestSetMethodConverter"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="TestSetMethodConverter"/> class.</summary>
         /// <param name="baseAffinity">The affinity value to report.</param>
         public TestSetMethodConverter(int baseAffinity) => _baseAffinity = baseAffinity;
 

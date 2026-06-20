@@ -8,19 +8,16 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Disposables;
 using Foundation;
-using ReactiveUI.Helpers;
 using ReactiveUI.Internal;
 using Splat;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Provides a common reactive data source implementation for collection-based UI views backed by sectioned data.
-/// </summary>
+#endif
+/// <summary>Provides a common reactive data source implementation for collection-based UI views backed by sectioned data.</summary>
 /// <typeparam name="TSource">The source item type.</typeparam>
 /// <typeparam name="TUIView">The UI view type.</typeparam>
 /// <typeparam name="TUIViewCell">The UI cell type.</typeparam>
@@ -43,45 +40,29 @@ namespace ReactiveUI;
 internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> : ReactiveObject, IDisposable
     where TSectionInfo : ISectionInformation<TUIViewCell>
 {
-    /// <summary>
-    /// Adapter used to manipulate the UI view (reload, begin/end updates, insert/delete items, etc.).
-    /// </summary>
+    /// <summary>Adapter used to manipulate the UI view (reload, begin/end updates, insert/delete items, etc.).</summary>
     private readonly IUICollViewAdapter<TUIView, TUIViewCell> _adapter;
 
-    /// <summary>
-    /// Managed thread id captured at construction time; used to validate calls occur on the expected thread.
-    /// </summary>
+    /// <summary>Managed thread id captured at construction time; used to validate calls occur on the expected thread.</summary>
     private readonly int _mainThreadId;
 
-    /// <summary>
-    /// Root disposable for subscriptions created by this instance.
-    /// </summary>
-    private readonly CompositeDisposable _mainDisposables;
+    /// <summary>Root disposable for subscriptions created by this instance.</summary>
+    private readonly MultipleDisposable _mainDisposables;
 
-    /// <summary>
-    /// Holds subscriptions associated with the current <see cref="SectionInfo"/> value. Replaced when SectionInfo changes.
-    /// </summary>
-    [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Handled by the CompositeDisposable")]
-    private readonly SerialDisposable _sectionInfoDisposable;
+    /// <summary>Holds subscriptions associated with the current <see cref="SectionInfo"/> value. Replaced when SectionInfo changes.</summary>
+    [SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Handled by the SwapDisposable")]
+    private readonly SwapDisposable _sectionInfoDisposable;
 
-    /// <summary>
-    /// Pending collection changes captured while the UI is not reloading and before a scheduled batch update is applied.
-    /// </summary>
+    /// <summary>Pending collection changes captured while the UI is not reloading and before a scheduled batch update is applied.</summary>
     private readonly List<(int section, PendingChange pendingChange)> _pendingChanges;
 
-    /// <summary>
-    /// Indicates whether pending changes are currently being collected for later application.
-    /// </summary>
+    /// <summary>Indicates whether pending changes are currently being collected for later application.</summary>
     private bool _isCollectingChanges;
 
-    /// <summary>
-    /// Backing store for <see cref="SectionInfo"/>.
-    /// </summary>
+    /// <summary>Backing store for <see cref="SectionInfo"/>.</summary>
     private IReadOnlyList<TSectionInfo> _sectionInfo;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CommonReactiveSource{TSource, TUIView, TUIViewCell, TSectionInfo}"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="CommonReactiveSource{TSource, TUIView, TUIViewCell, TSectionInfo}"/> class.</summary>
     /// <param name="adapter">The adapter to use which we want to display information for.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="adapter"/> is <see langword="null"/>.</exception>
     public CommonReactiveSource(IUICollViewAdapter<TUIView, TUIViewCell> adapter)
@@ -92,7 +73,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         _mainThreadId = Environment.CurrentManagedThreadId;
 
         _mainDisposables = [];
-        _sectionInfoDisposable = new SerialDisposable();
+        _sectionInfoDisposable = new SwapDisposable();
         _mainDisposables.Add(_sectionInfoDisposable);
 
         _pendingChanges = [];
@@ -100,25 +81,23 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         // Avoid ObservableForProperty/WhenAnyValue (expression trees); filter by property name instead.
         _mainDisposables.Add(
-            new WhereObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>(
+            new KeepSignal<IReactivePropertyChangedEventArgs<IReactiveObject>>(
                     Changing!,
                     static e => e.PropertyName == nameof(SectionInfo))
-                .Subscribe(
+                .Subscribe(new DelegateObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>(
                     _ => SectionInfoChanging(),
-                    ex => this.Log().Error(ex, "Error occurred whilst SectionInfo changing.")));
+                    ex => this.Log().Error(ex, "Error occurred whilst SectionInfo changing."))));
 
         _mainDisposables.Add(
-            new WhereObservable<IReactivePropertyChangedEventArgs<IReactiveObject>>(
+            new KeepSignal<IReactivePropertyChangedEventArgs<IReactiveObject>>(
                     Changed!,
                     static e => e.PropertyName == nameof(SectionInfo))
-                .Subscribe(
+                .Subscribe(new DelegateObserver<IReactivePropertyChangedEventArgs<IReactiveObject>>(
                     _ => SectionInfoChanged(SectionInfo),
-                    ex => this.Log().Error(ex, "Error occurred when SectionInfo changed.")));
+                    ex => this.Log().Error(ex, "Error occurred when SectionInfo changed."))));
     }
 
-    /// <summary>
-    /// Gets or sets the current section information.
-    /// </summary>
+    /// <summary>Gets or sets the current section information.</summary>
     /// <remarks>
     /// Assigning this property replaces all subscriptions associated with the prior section information.
     /// </remarks>
@@ -128,14 +107,10 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         set => this.RaiseAndSetIfChanged(ref _sectionInfo, value);
     }
 
-    /// <summary>
-    /// Gets a value indicating whether debug logging is enabled.
-    /// </summary>
+    /// <summary>Gets a value indicating whether debug logging is enabled.</summary>
     private bool IsDebugEnabled => this.Log().Level <= LogLevel.Debug;
 
-    /// <summary>
-    /// Returns the number of sections.
-    /// </summary>
+    /// <summary>Returns the number of sections.</summary>
     /// <returns>The number of sections.</returns>
     public int NumberOfSections()
     {
@@ -147,9 +122,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         return count;
     }
 
-    /// <summary>
-    /// Returns the number of rows in a section.
-    /// </summary>
+    /// <summary>Returns the number of rows in a section.</summary>
     /// <param name="section">The section index.</param>
     /// <returns>The number of rows in the specified section.</returns>
     public int RowsInSection(int section)
@@ -164,9 +137,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         return count;
     }
 
-    /// <summary>
-    /// Returns the item at the specified index path.
-    /// </summary>
+    /// <summary>Returns the item at the specified index path.</summary>
     /// <param name="path">The index path.</param>
     /// <returns>The item at the index path, or <see langword="null"/>.</returns>
     public object? ItemAt(NSIndexPath path)
@@ -179,9 +150,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         return list[path.Row];
     }
 
-    /// <summary>
-    /// Dequeues and configures a cell for the specified index path.
-    /// </summary>
+    /// <summary>Dequeues and configures a cell for the specified index path.</summary>
     /// <param name="indexPath">The index path.</param>
     /// <returns>The configured view cell.</returns>
     public TUIViewCell GetCell(NSIndexPath indexPath)
@@ -191,15 +160,15 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         this.Log().Debug(CultureInfo.InvariantCulture, "Getting cell for index path {0}-{1}", indexPath.Section, indexPath.Row);
 
         var section = _sectionInfo[indexPath.Section];
-        var vm = ((IList)section.Collection!)[indexPath.Row];
+        var viewModel = ((IList)section.Collection!)[indexPath.Row];
 
-        var key = section?.CellKeySelector?.Invoke(vm) ?? NSString.Empty;
+        var key = section?.CellKeySelector?.Invoke(viewModel) ?? NSString.Empty;
         var cell = _adapter.DequeueReusableCell(key, indexPath);
 
         if (cell is IViewFor view)
         {
             this.Log().Debug(CultureInfo.InvariantCulture, "Setting VM for index path {0}-{1}", indexPath.Section, indexPath.Row);
-            view.ViewModel = vm;
+            view.ViewModel = viewModel;
         }
 
         var initializeCellAction = section?.InitializeCellAction ?? NoOpInitializeCell;
@@ -208,17 +177,13 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         return cell;
     }
 
-    /// <summary>
-    /// Disposes subscriptions and managed resources associated with this instance.
-    /// </summary>
+    /// <summary>Disposes subscriptions and managed resources associated with this instance.</summary>
     public void Dispose()
     {
         _mainDisposables.Dispose();
     }
 
-    /// <summary>
-    /// No-op initializer used when a section does not provide an initialization callback.
-    /// </summary>
+    /// <summary>No-op initializer used when a section does not provide an initialization callback.</summary>
     /// <param name="cell">The cell to initialize.</param>
     private static void NoOpInitializeCell(TUIViewCell cell)
     {
@@ -227,9 +192,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         _ = cell;
     }
 
-    /// <summary>
-    /// Builds the list of updates for a pending collection change event.
-    /// </summary>
+    /// <summary>Builds the list of updates for a pending collection change event.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of updates.</returns>
     /// <exception cref="NotSupportedException">Thrown when the action is not supported.</exception>
@@ -255,9 +218,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             _ => throw new NotSupportedException("Don't know how to deal with " + pendingChange.Action),
         };
 
-    /// <summary>
-    /// Builds the delete updates for a <see cref="NotifyCollectionChangedAction.Remove"/> change.
-    /// </summary>
+    /// <summary>Builds the delete updates for a <see cref="NotifyCollectionChangedAction.Remove"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of delete updates.</returns>
     private static IEnumerable<Update> GetRemoveUpdates(PendingChange pendingChange) =>
@@ -265,9 +226,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
             .Select(_ => Update.CreateDelete(pendingChange.OldStartingIndex));
 
-    /// <summary>
-    /// Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Move"/> change.
-    /// </summary>
+    /// <summary>Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Move"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of delete and add updates.</returns>
     private static IEnumerable<Update> GetMoveUpdates(PendingChange pendingChange) =>
@@ -279,9 +238,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                     .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
                     .Select(Update.CreateAdd));
 
-    /// <summary>
-    /// Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Replace"/> change.
-    /// </summary>
+    /// <summary>Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Replace"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of paired delete and add updates.</returns>
     private static IEnumerable<Update> GetReplaceUpdates(PendingChange pendingChange) =>
@@ -289,9 +246,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
             .SelectMany(static x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) });
 
-    /// <summary>
-    /// Called before <see cref="SectionInfo"/> changes. Disposes subscriptions for the current SectionInfo.
-    /// </summary>
+    /// <summary>Called before <see cref="SectionInfo"/> changes. Disposes subscriptions for the current SectionInfo.</summary>
     private void SectionInfoChanging()
     {
         VerifyOnMainThread();
@@ -300,9 +255,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         _sectionInfoDisposable.Disposable = null;
     }
 
-    /// <summary>
-    /// Called when <see cref="SectionInfo"/> changes. Subscribes to section structure and item changes.
-    /// </summary>
+    /// <summary>Called when <see cref="SectionInfo"/> changes. Subscribes to section structure and item changes.</summary>
     /// <param name="sectionInfo">The new section info.</param>
     private void SectionInfoChanged(IReadOnlyList<TSectionInfo>? sectionInfo)
     {
@@ -328,39 +281,37 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                 sectionInfo);
         }
 
-        var sectionChanged = new StartWithObservable<Unit>(
+        var sectionChanged = new StartWithObservable<RxVoid>(
             notifyCollectionChanged is null
-                ? NeverObservable<Unit>.Instance
-                : new SelectObservable<CollectionChanged, Unit>(
+                ? Signal.Silent<RxVoid>()
+                : new MapSignal<CollectionChanged, RxVoid>(
                     notifyCollectionChanged.ObserveCollectionChanges(),
-                    static _ => Unit.Default),
-            Unit.Default);
+                    static _ => RxVoid.Default),
+            RxVoid.Default);
 
-        var disposables = new CompositeDisposable
+        var disposables = new MultipleDisposable
         {
-            Disposable.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId))
+            Scope.Create(() => this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Disposed of section info", sectionInfoId))
         };
 
         _sectionInfoDisposable.Disposable = disposables;
         SubscribeToSectionInfoChanges(sectionInfoId, sectionInfo, sectionChanged, disposables);
     }
 
-    /// <summary>
-    /// Subscribes to changes in the section collection and to changes within each section's item collection.
-    /// </summary>
+    /// <summary>Subscribes to changes in the section collection and to changes within each section's item collection.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <param name="sectionInfo">The current section info.</param>
     /// <param name="sectionChanged">An observable indicating that the section set changed.</param>
     /// <param name="disposables">A disposable container for subscriptions.</param>
-    private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, IObservable<Unit> sectionChanged, CompositeDisposable disposables)
+    private void SubscribeToSectionInfoChanges(int sectionInfoId, IReadOnlyList<TSectionInfo> sectionInfo, StartWithObservable<RxVoid> sectionChanged, MultipleDisposable disposables)
     {
         // holds a single disposable representing the monitoring of sectionInfo.
         // once disposed, any changes to sectionInfo will no longer trigger any of the logic below
-        var sectionInfoDisposable = new SerialDisposable();
+        var sectionInfoDisposable = new SwapDisposable();
         disposables.Add(sectionInfoDisposable);
 
         disposables.Add(
-            sectionChanged.Subscribe(
+            sectionChanged.Subscribe(new DelegateObserver<RxVoid>(
                 _ =>
                 {
                     VerifyOnMainThread();
@@ -368,14 +319,14 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                     this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Calling ReloadData()", sectionInfoId);
                     _adapter.ReloadData();
 
-                    var sectionDisposables = new CompositeDisposable();
+                    var sectionDisposables = new MultipleDisposable();
                     sectionInfoDisposable.Disposable = sectionDisposables;
 
-                    var applyPendingChangesDisposable = new SerialDisposable();
+                    var applyPendingChangesDisposable = new SwapDisposable();
                     sectionDisposables.Add(applyPendingChangesDisposable);
 
                     SetUpSectionChangeSubscriptions(sectionInfoId, sectionInfo, sectionDisposables, applyPendingChangesDisposable);
-                }));
+                })));
     }
 
     /// <summary>
@@ -390,24 +341,22 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     private void SetUpSectionChangeSubscriptions(
         int sectionInfoId,
         IReadOnlyList<TSectionInfo> sectionInfo,
-        CompositeDisposable sectionDisposables,
-        SerialDisposable applyPendingChangesDisposable)
+        MultipleDisposable sectionDisposables,
+        SwapDisposable applyPendingChangesDisposable)
     {
         var sink = new ReloadAwareSectionSink(this, sectionInfoId, applyPendingChangesDisposable);
         sectionDisposables.Add(sink);
         sink.Run(sectionInfo);
     }
 
-    /// <summary>
-    /// Handles a single item-change event received from a section while no reload is in progress.
-    /// </summary>
+    /// <summary>Handles a single item-change event received from a section while no reload is in progress.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <param name="applyPendingChangesDisposable">Serial disposable used to schedule the deferred apply-changes action.</param>
     /// <param name="change">The collection change event wrapper.</param>
     /// <param name="section">The zero-based index of the section that changed.</param>
     private void OnSectionItemChanged(
         int sectionInfoId,
-        SerialDisposable applyPendingChangesDisposable,
+        SwapDisposable applyPendingChangesDisposable,
         CollectionChanged change,
         int section)
     {
@@ -415,17 +364,17 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
 
         if (IsDebugEnabled)
         {
-            var ea = change.EventArgs;
+            var eventArgs = change.EventArgs;
             this.Log().Debug(
                 CultureInfo.InvariantCulture,
                 "[#{0}] Change detected in section {1} : Action = {2}, OldStartingIndex = {3}, NewStartingIndex = {4}, OldItems.Count = {5}, NewItems.Count = {6}",
                 sectionInfoId,
                 section,
-                ea.Action,
-                ea.OldStartingIndex,
-                ea.NewStartingIndex,
-                ea.OldItems is null ? "null" : ea.OldItems.Count.ToString(CultureInfo.InvariantCulture),
-                ea.NewItems is null ? "null" : ea.NewItems.Count.ToString(CultureInfo.InvariantCulture));
+                eventArgs.Action,
+                eventArgs.OldStartingIndex,
+                eventArgs.NewStartingIndex,
+                eventArgs.OldItems is null ? "null" : eventArgs.OldItems.Count.ToString(CultureInfo.InvariantCulture),
+                eventArgs.NewItems is null ? "null" : eventArgs.NewItems.Count.ToString(CultureInfo.InvariantCulture));
         }
 
         if (!_isCollectingChanges)
@@ -458,9 +407,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         _pendingChanges.Add((section, new PendingChange(change.EventArgs)));
     }
 
-    /// <summary>
-    /// Applies pending changes collected during the current update window as adapter batch operations.
-    /// </summary>
+    /// <summary>Applies pending changes collected during the current update window as adapter batch operations.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <exception cref="InvalidOperationException">Thrown when called off the creating thread.</exception>
     private void ApplyPendingChanges(int sectionInfoId)
@@ -482,9 +429,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         }
     }
 
-    /// <summary>
-    /// Core logic executed inside the adapter's <c>PerformUpdates</c> action: logs, sorts and dispatches each pending change.
-    /// </summary>
+    /// <summary>Core logic executed inside the adapter's <c>PerformUpdates</c> action: logs, sorts and dispatches each pending change.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     private void ApplyPendingChangesCore(int sectionInfoId)
     {
@@ -498,18 +443,16 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         // Sort by section to process per section without GroupBy allocations.
         _pendingChanges.Sort(static (a, b) => a.section.CompareTo(b.section));
 
-        var iChange = 0;
-        while (iChange < _pendingChanges.Count)
+        var changeIndex = 0;
+        while (changeIndex < _pendingChanges.Count)
         {
-            var section = _pendingChanges[iChange].section;
+            var section = _pendingChanges[changeIndex].section;
             this.Log().Debug(CultureInfo.InvariantCulture, "[#{0}] Processing updates for section {1}", sectionInfoId, section);
-            iChange = ProcessSectionUpdates(sectionInfoId, section, iChange);
+            changeIndex = ProcessSectionUpdates(sectionInfoId, section, changeIndex);
         }
     }
 
-    /// <summary>
-    /// Logs all pending changes when debug logging is enabled.
-    /// </summary>
+    /// <summary>Logs all pending changes when debug logging is enabled.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     private void LogPendingChanges(int sectionInfoId)
     {
@@ -536,27 +479,25 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         }
     }
 
-    /// <summary>
-    /// Processes all pending changes for a single section starting at <paramref name="iChange"/>.
-    /// </summary>
+    /// <summary>Processes all pending changes for a single section starting at <paramref name="changeIndex"/>.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <param name="section">The section index being processed.</param>
-    /// <param name="iChange">The index into <see cref="_pendingChanges"/> at which this section starts.</param>
-    /// <returns>The next value of <c>iChange</c> (i.e. the first index belonging to the next section).</returns>
-    private int ProcessSectionUpdates(int sectionInfoId, int section, int iChange)
+    /// <param name="changeIndex">The index into <see cref="_pendingChanges"/> at which this section starts.</param>
+    /// <returns>The next value of <c>changeIndex</c> (i.e. the first index belonging to the next section).</returns>
+    private int ProcessSectionUpdates(int sectionInfoId, int section, int changeIndex)
     {
-        // Scan to determine the range [iChange, iEnd) for this section and whether any Reset is present.
-        var iEnd = iChange;
+        // Scan to determine the range [changeIndex, endIndex) for this section and whether any Reset is present.
+        var endIndex = changeIndex;
         var hasReset = false;
 
-        while (iEnd < _pendingChanges.Count && _pendingChanges[iEnd].section == section)
+        while (endIndex < _pendingChanges.Count && _pendingChanges[endIndex].section == section)
         {
-            if (_pendingChanges[iEnd].pendingChange.Action == NotifyCollectionChangedAction.Reset)
+            if (_pendingChanges[endIndex].pendingChange.Action == NotifyCollectionChangedAction.Reset)
             {
                 hasReset = true;
             }
 
-            iEnd++;
+            endIndex++;
         }
 
         if (hasReset)
@@ -568,27 +509,25 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
                 section);
 
             _adapter.ReloadSections(new NSIndexSet((nuint)section));
-            return iEnd;
+            return endIndex;
         }
 
-        ApplySectionItemUpdates(sectionInfoId, section, iChange, iEnd);
-        return iEnd;
+        ApplySectionItemUpdates(sectionInfoId, section, changeIndex, endIndex);
+        return endIndex;
     }
 
-    /// <summary>
-    /// Materializes, normalizes, and applies item-level insert/delete operations for a single section.
-    /// </summary>
+    /// <summary>Materializes, normalizes, and applies item-level insert/delete operations for a single section.</summary>
     /// <param name="sectionInfoId">A correlation id for logging.</param>
     /// <param name="section">The section index.</param>
-    /// <param name="iChange">Inclusive start index into <see cref="_pendingChanges"/> for this section.</param>
-    /// <param name="iEnd">Exclusive end index into <see cref="_pendingChanges"/> for this section.</param>
-    private void ApplySectionItemUpdates(int sectionInfoId, int section, int iChange, int iEnd)
+    /// <param name="changeIndex">Inclusive start index into <see cref="_pendingChanges"/> for this section.</param>
+    /// <param name="endIndex">Exclusive end index into <see cref="_pendingChanges"/> for this section.</param>
+    private void ApplySectionItemUpdates(int sectionInfoId, int section, int changeIndex, int endIndex)
     {
         // Materialize updates for this section.
         // We keep using the existing normalization routine; updates list is per-section and bounded.
         var updates = new List<Update>();
 
-        for (var j = iChange; j < iEnd; j++)
+        for (var j = changeIndex; j < endIndex; j++)
         {
             foreach (var update in GetUpdatesForEvent(_pendingChanges[j].pendingChange))
             {
@@ -648,9 +587,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         }
     }
 
-    /// <summary>
-    /// Applies an adapter update method for a single index within a section.
-    /// </summary>
+    /// <summary>Applies an adapter update method for a single index within a section.</summary>
     /// <param name="method">The adapter method.</param>
     /// <param name="index">The row index.</param>
     /// <param name="section">The section index.</param>
@@ -671,9 +608,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         method(toChange);
     }
 
-    /// <summary>
-    /// Throws if the current thread is not the creating thread.
-    /// </summary>
+    /// <summary>Throws if the current thread is not the creating thread.</summary>
     /// <exception cref="InvalidOperationException">Thrown when called off the creating thread.</exception>
     private void VerifyOnMainThread()
     {
@@ -701,10 +636,10 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         private readonly int _sectionInfoId;
 
         /// <summary>Serial disposable that holds the scheduled apply-changes action.</summary>
-        private readonly SerialDisposable _applyPendingChangesDisposable;
+        private readonly SwapDisposable _applyPendingChangesDisposable;
 
         /// <summary>All subscriptions created by this sink.</summary>
-        private readonly CompositeDisposable _subscriptions = [];
+        private readonly MultipleDisposable _subscriptions = [];
 
         /// <summary>The latest observed reload state.</summary>
         private bool _isReloading;
@@ -712,16 +647,14 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         /// <summary>Whether a reload-state value has been observed yet.</summary>
         private bool _hasReloadingValue;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReloadAwareSectionSink"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="ReloadAwareSectionSink"/> class.</summary>
         /// <param name="parent">The owning source.</param>
         /// <param name="sectionInfoId">A correlation id for logging.</param>
         /// <param name="applyPendingChangesDisposable">Serial disposable that holds the scheduled apply-changes action.</param>
         public ReloadAwareSectionSink(
             CommonReactiveSource<TSource, TUIView, TUIViewCell, TSectionInfo> parent,
             int sectionInfoId,
-            SerialDisposable applyPendingChangesDisposable)
+            SwapDisposable applyPendingChangesDisposable)
         {
             _parent = parent;
             _sectionInfoId = sectionInfoId;
@@ -789,9 +722,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         }
     }
 
-    /// <summary>
-    /// Snapshot of a collection change event that is resilient to external mutation of the original event args.
-    /// </summary>
+    /// <summary>Snapshot of a collection change event that is resilient to external mutation of the original event args.</summary>
     /// <remarks>
     /// Rather than storing <see cref="NotifyCollectionChangedEventArgs"/> instances, we store instances of this type.
     /// Storing the event args directly does not always work because external code can mutate the instance before it
@@ -799,51 +730,36 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// </remarks>
     private sealed class PendingChange
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PendingChange"/> class.
-        /// </summary>
-        /// <param name="ea">The original collection change event arguments.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="ea"/> is <see langword="null"/>.</exception>
-        public PendingChange(NotifyCollectionChangedEventArgs ea)
+        /// <summary>Initializes a new instance of the <see cref="PendingChange"/> class.</summary>
+        /// <param name="eventArgs">The original collection change event arguments.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="eventArgs"/> is <see langword="null"/>.</exception>
+        public PendingChange(NotifyCollectionChangedEventArgs eventArgs)
         {
-            ArgumentExceptionHelper.ThrowIfNull(ea);
+            ArgumentExceptionHelper.ThrowIfNull(eventArgs);
 
-            Action = ea.Action;
-            OldItems = CopyItems(ea.OldItems);
-            NewItems = CopyItems(ea.NewItems);
-            OldStartingIndex = ea.OldStartingIndex;
-            NewStartingIndex = ea.NewStartingIndex;
+            Action = eventArgs.Action;
+            OldItems = CopyItems(eventArgs.OldItems);
+            NewItems = CopyItems(eventArgs.NewItems);
+            OldStartingIndex = eventArgs.OldStartingIndex;
+            NewStartingIndex = eventArgs.NewStartingIndex;
         }
 
-        /// <summary>
-        /// Gets the collection change action.
-        /// </summary>
+        /// <summary>Gets the collection change action.</summary>
         public NotifyCollectionChangedAction Action { get; }
 
-        /// <summary>
-        /// Gets the copied old items.
-        /// </summary>
+        /// <summary>Gets the copied old items.</summary>
         public IList? OldItems { get; }
 
-        /// <summary>
-        /// Gets the copied new items.
-        /// </summary>
+        /// <summary>Gets the copied new items.</summary>
         public IList? NewItems { get; }
 
-        /// <summary>
-        /// Gets the old starting index.
-        /// </summary>
+        /// <summary>Gets the old starting index.</summary>
         public int OldStartingIndex { get; }
 
-        /// <summary>
-        /// Gets the new starting index.
-        /// </summary>
+        /// <summary>Gets the new starting index.</summary>
         public int NewStartingIndex { get; }
 
-        /// <summary>
-        /// Creates a shallow copy of the items in the specified list, returning a new list containing the same
-        /// elements.
-        /// </summary>
+        /// <summary>Creates a shallow copy of the items in the specified list, returning a new list containing the same elements.</summary>
         /// <remarks>The copy is shallow; reference types within the list are not cloned. The returned
         /// list is always of type <see cref="List{Object}"/>.</remarks>
         /// <param name="source">The list whose items are to be copied. Can be null or empty.</param>

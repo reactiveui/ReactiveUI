@@ -9,15 +9,11 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.AOT.Tests;
 
-/// <summary>
-/// Tests for ViewLocator AOT mappings.
-/// </summary>
+/// <summary>Tests for ViewLocator AOT mappings.</summary>
 [TestExecutor<AppBuilderTestExecutor>]
 public class ViewLocatorAOTMappingTests
 {
-    /// <summary>
-    /// Map/Resolve with contract and default fallback works.
-    /// </summary>
+    /// <summary>Map/Resolve with contract and default fallback works.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Map_ResolveView_UsesAOTMappingWithContract()
@@ -39,9 +35,7 @@ public class ViewLocatorAOTMappingTests
         await Assert.That(viewUnknown).IsNull();
     }
 
-    /// <summary>
-    /// Unmap removes a mapping for a contract.
-    /// </summary>
+    /// <summary>Unmap removes a mapping for a contract.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Unmap_RemovesMapping()
@@ -55,9 +49,7 @@ public class ViewLocatorAOTMappingTests
         await Assert.That(locator.ResolveView<VmB>("c1")).IsNull();
     }
 
-    /// <summary>
-    /// Tests that AOT mapping is used without contract.
-    /// </summary>
+    /// <summary>Tests that AOT mapping is used without contract.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task Map_ResolveView_UsesAOTMappingWithoutContract()
@@ -71,9 +63,7 @@ public class ViewLocatorAOTMappingTests
         await Assert.That(view).IsTypeOf<ViewA>();
     }
 
-    /// <summary>
-    /// Default view for <see cref="VmA"/> used to test fallback resolution.
-    /// </summary>
+    /// <summary>Default view for <see cref="VmA"/> used to test fallback resolution.</summary>
     private sealed class ViewADefault : IViewFor<VmA>
     {
         /// <inheritdoc/>
@@ -87,9 +77,7 @@ public class ViewLocatorAOTMappingTests
         public VmA? ViewModel { get; set; }
     }
 
-    /// <summary>
-    /// View for <see cref="VmB"/> used to test contract-based resolution.
-    /// </summary>
+    /// <summary>View for <see cref="VmB"/> used to test contract-based resolution.</summary>
     private sealed class ViewB : IViewFor<VmB>
     {
         /// <inheritdoc/>
@@ -103,21 +91,15 @@ public class ViewLocatorAOTMappingTests
         public VmB? ViewModel { get; set; }
     }
 
-    /// <summary>
-    /// Sample view model used for view locator resolution tests.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Sample view model used for view locator resolution tests.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class VmA : ReactiveObject;
 
-    /// <summary>
-    /// Sample view model used for view locator resolution tests.
-    /// </summary>
-    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type for tests.")]
+    /// <summary>Sample view model used for view locator resolution tests.</summary>
+    [SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class VmB : ReactiveObject;
 
-    /// <summary>
-    /// View for <see cref="VmA"/> used to test contract-based resolution.
-    /// </summary>
+    /// <summary>View for <see cref="VmA"/> used to test contract-based resolution.</summary>
     private sealed class ViewA : IViewFor<VmA>
     {
         /// <inheritdoc/>

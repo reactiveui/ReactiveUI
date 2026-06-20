@@ -5,15 +5,14 @@
 
 using Android.Views;
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// Represents a host that provides access to a layout view instance.
-/// </summary>
+#endif
+/// <summary>Represents a host that provides access to a layout view instance.</summary>
 public interface ILayoutViewHost
 {
-    /// <summary>
-    /// Gets the view associated with the current context, if available.
-    /// </summary>
+    /// <summary>Gets the view associated with the current context, if available.</summary>
     View? View { get; }
 }

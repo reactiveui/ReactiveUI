@@ -1,0 +1,78 @@
+// Copyright (c) 2009-2026 .NET Foundation and Contributors. All rights reserved.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
+namespace ReactiveUI;
+#endif
+/// <summary>
+/// Provides access to the application's suspension host for managing process lifecycle events, such as application
+/// suspension and resumption. This class enables integration with platform-specific lifecycle management, particularly
+/// on mobile devices.
+/// </summary>
+/// <remarks>The suspension host is automatically initialized with a default implementation if not configured
+/// explicitly. This class is intended for use by application infrastructure and advanced scenarios that require direct
+/// access to lifecycle events. Most applications interact with the suspension host through higher-level APIs.</remarks>
+public static class RxSuspension
+{
+    /// <summary>The current suspension host instance.</summary>
+    private static ISuspensionHost? _suspensionHost;
+
+    /// <summary>Tracks whether the suspension host has been initialized; 0 means false, 1 means true.</summary>
+    private static int _suspensionHostInitialized;
+
+    /// <summary>
+    /// Gets the suspension host for application lifecycle management.
+    /// Provides events for process lifetime events, especially on mobile devices.
+    /// Auto-initializes with default SuspensionHost if not configured via builder.
+    /// </summary>
+    public static ISuspensionHost SuspensionHost
+    {
+        get
+        {
+            if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 0, 0) == 0)
+            {
+                InitializeDefaultSuspensionHost();
+            }
+
+            return _suspensionHost!;
+        }
+    }
+
+    /// <summary>Initializes the suspension host with a custom instance. Called by ReactiveUIBuilder.</summary>
+    /// <param name="suspensionHost">The custom suspension host to use.</param>
+    internal static void InitializeSuspensionHost(ISuspensionHost suspensionHost)
+    {
+        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
+        {
+            return;
+        }
+
+        _suspensionHost = suspensionHost ?? throw new ArgumentNullException(nameof(suspensionHost));
+    }
+
+    /// <summary>Resets the suspension host state for testing purposes.</summary>
+    /// <remarks>
+    /// WARNING: This method should ONLY be used in unit tests to reset state between test runs.
+    /// Never call this in production code as it can lead to inconsistent application state.
+    /// </remarks>
+    internal static void ResetForTesting()
+    {
+        Interlocked.Exchange(ref _suspensionHostInitialized, 0);
+        _suspensionHost = null;
+    }
+
+    /// <summary>Initializes the default suspension host if not already configured. Creates a new SuspensionHost instance.</summary>
+    private static void InitializeDefaultSuspensionHost()
+    {
+        if (Interlocked.CompareExchange(ref _suspensionHostInitialized, 1, 0) != 0)
+        {
+            return;
+        }
+
+        _suspensionHost = new SuspensionHost();
+    }
+}

@@ -3,24 +3,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-
 namespace ReactiveUI.Tests.Mixins;
 
-/// <summary>
-///     Tests for SwitchSubscribeMixin extension methods that handle switching between observables.
-/// </summary>
+/// <summary>Tests for SwitchSubscribeMixins extension methods that handle switching between observables.</summary>
 public class SwitchSubscribeMixinTests
 {
+    /// <summary>The multiplier used to double values in the tests.</summary>
     private const int DoubleMultiplier = 2;
+
+    /// <summary>The multiplier used to triple values in the tests.</summary>
     private const int TripleMultiplier = 3;
+
+    /// <summary>The input value supplied to commands in the tests.</summary>
     private const int CommandInput = 5;
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on an observable throws when the source is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on an observable throws when the source is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Observable_ShouldThrowArgumentNullException_WhenSourceIsNull()
@@ -33,31 +30,27 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on an observable throws when the onNext handler is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on an observable throws when the onNext handler is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Observable_ShouldThrowArgumentNullException_WhenOnNextIsNull()
     {
         // Arrange
-        var source = Observable.Return(Observable.Return(1));
+        var source = Signal.Emit(Signal.Emit(1));
 
         // Act & Assert
         await Assert.That(() => source.SwitchSubscribe(null!))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on an observable receives values from the inner observable.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on an observable receives values from the inner observable.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Observable_ShouldReceiveValues()
     {
         // Arrange
-        var inner = new BehaviorSubject<int>(1);
-        var outer = new BehaviorSubject<IObservable<int>?>(inner);
+        var inner = new BehaviorSignal<int>(1);
+        var outer = new BehaviorSignal<IObservable<int>?>(inner);
         var values = new List<int>();
 
         // Act
@@ -67,18 +60,16 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on an observable switches to a newly emitted inner observable.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on an observable switches to a newly emitted inner observable.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Observable_ShouldSwitchToNewObservable()
     {
         // Arrange
         const int SecondInnerValue = 10;
-        var inner1 = new BehaviorSubject<int>(1);
-        var inner2 = new BehaviorSubject<int>(SecondInnerValue);
-        var outer = new BehaviorSubject<IObservable<int>?>(inner1);
+        var inner1 = new BehaviorSignal<int>(1);
+        var inner2 = new BehaviorSignal<int>(SecondInnerValue);
+        var outer = new BehaviorSignal<IObservable<int>?>(inner1);
         var values = new List<int>();
 
         using var subscription = outer.SwitchSubscribe(values.Add);
@@ -90,16 +81,14 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1, SecondInnerValue]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on an observable ignores null inner observables.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on an observable ignores null inner observables.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Observable_ShouldIgnoreNullObservables()
     {
         // Arrange
-        var inner = new BehaviorSubject<int>(1);
-        var outer = new BehaviorSubject<IObservable<int>?>(inner);
+        var inner = new BehaviorSignal<int>(1);
+        var outer = new BehaviorSignal<IObservable<int>?>(inner);
         var values = new List<int>();
 
         using var subscription = outer.SwitchSubscribe(values.Add);
@@ -111,15 +100,13 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with handlers throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with handlers throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var source = Observable.Return(Observable.Return(1));
+        var source = Signal.Emit(Signal.Emit(1));
         Action<int> onNext = _ => { };
         Action<Exception> onError = _ => { };
         var onCompleted = () => { };
@@ -135,16 +122,14 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with handlers invokes the onError handler.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with handlers invokes the onError handler.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithHandlers_ShouldCallOnError()
     {
         // Arrange
-        var inner = new Subject<int>();
-        var outer = Observable.Return<IObservable<int>?>(inner);
+        var inner = new Signal<int>();
+        var outer = Signal.Emit<IObservable<int>?>(inner);
         Exception? capturedError = null;
 
         // Act
@@ -156,16 +141,14 @@ public class SwitchSubscribeMixinTests
         await Assert.That(capturedError).IsTypeOf<InvalidOperationException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with handlers invokes the onCompleted handler.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with handlers invokes the onCompleted handler.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithHandlers_ShouldCallOnCompleted()
     {
         // Arrange
-        var inner = new Subject<int>();
-        var outer = new BehaviorSubject<IObservable<int>?>(inner);
+        var inner = new Signal<int>();
+        var outer = new BehaviorSignal<IObservable<int>?>(inner);
         var completed = false;
 
         // Act
@@ -177,9 +160,7 @@ public class SwitchSubscribeMixinTests
         await Assert.That(completed).IsTrue();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect throws when the source is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect throws when the source is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_ShouldThrowArgumentNullException_WhenSourceIsNull()
@@ -188,41 +169,37 @@ public class SwitchSubscribeMixinTests
         const IObservable<string?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => source.SwitchSelect(_ => Observable.Return(1)))
+        await Assert.That(() => SwitchSubscribeMixins.SwitchSelect(source, _ => Signal.Emit(1)))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect throws when the selector is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect throws when the selector is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_ShouldThrowArgumentNullException_WhenSelectorIsNull()
     {
         // Arrange
-        var source = Observable.Return("test");
+        var source = Signal.Emit("test");
 
         // Act & Assert
-        await Assert.That(() => source.SwitchSelect<string, int>(null!))
+        await Assert.That(() => SwitchSubscribeMixins.SwitchSelect<string, int>(source, null!))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect projects the source and switches to the projected observable.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect projects the source and switches to the projected observable.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_ShouldProjectAndSwitch()
     {
         // Arrange
         const int SecondSubjectValue = 10;
-        var subject1 = new BehaviorSubject<int>(1);
-        var subject2 = new BehaviorSubject<int>(SecondSubjectValue);
-        var outer = new BehaviorSubject<TestViewModel?>(new() { Observable = subject1 });
+        var subject1 = new BehaviorSignal<int>(1);
+        var subject2 = new BehaviorSignal<int>(SecondSubjectValue);
+        var outer = new BehaviorSignal<TestViewModel?>(new() { Observable = subject1 });
         var values = new List<int>();
 
         // Act
-        using var subscription = outer.SwitchSelect(vm => vm.Observable).Subscribe(values.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, vm => vm.Observable).Subscribe(values.Add);
 
         outer.OnNext(new() { Observable = subject2 });
 
@@ -230,19 +207,17 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1, SecondSubjectValue]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect ignores null source values.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect ignores null source values.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_ShouldIgnoreNullValues()
     {
         // Arrange
-        var subject = new BehaviorSubject<int>(1);
-        var outer = new BehaviorSubject<TestViewModel?>(new() { Observable = subject });
+        var subject = new BehaviorSignal<int>(1);
+        var outer = new BehaviorSignal<TestViewModel?>(new() { Observable = subject });
         var values = new List<int>();
 
-        using var subscription = outer.SwitchSelect(vm => vm.Observable).Subscribe(values.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, vm => vm.Observable).Subscribe(values.Add);
 
         // Act
         outer.OnNext(null);
@@ -251,15 +226,13 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with a selector throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with a selector throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithSelector_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var source = Observable.Return(new TestViewModel { Observable = Observable.Return(1) });
+        var source = Signal.Emit(new TestViewModel { Observable = Signal.Emit(1) });
         Func<TestViewModel, IObservable<int>> selector = vm => vm.Observable;
         Action<int> onNext = _ => { };
 
@@ -272,16 +245,14 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with a selector projects and subscribes to the projected observable.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with a selector projects and subscribes to the projected observable.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithSelector_ShouldProjectAndSubscribe()
     {
         // Arrange
-        var subject = new BehaviorSubject<int>(1);
-        var outer = new BehaviorSubject<TestViewModel?>(new() { Observable = subject });
+        var subject = new BehaviorSignal<int>(1);
+        var outer = new BehaviorSignal<TestViewModel?>(new() { Observable = subject });
         var values = new List<int>();
 
         const int SecondValue = 2;
@@ -294,15 +265,13 @@ public class SwitchSubscribeMixinTests
         await Assert.That(values).IsEquivalentTo([1, SecondValue]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe with a selector and handlers throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe with a selector and handlers throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_WithSelectorAndHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var source = Observable.Return(new TestViewModel { Observable = Observable.Return(1) });
+        var source = Signal.Emit(new TestViewModel { Observable = Signal.Emit(1) });
         Func<TestViewModel, IObservable<int>> selector = vm => vm.Observable;
         Action<int> onNext = _ => { };
         Action<Exception> onError = _ => { };
@@ -322,9 +291,7 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable throws when the source is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable throws when the source is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Command_ShouldThrowArgumentNullException_WhenSourceIsNull()
@@ -337,33 +304,29 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable throws when the onNext handler is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable throws when the onNext handler is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Command_ShouldThrowArgumentNullException_WhenOnNextIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var source = Observable.Return<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
 
         // Act & Assert
         await Assert.That(() => source.SwitchSubscribe(null!))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable receives command results.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable receives command results.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Command_ShouldReceiveCommandResults()
     {
         // Arrange
         const int ExpectedResult = CommandInput * DoubleMultiplier;
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var results = new List<int>();
 
         // Act
@@ -374,9 +337,7 @@ public class SwitchSubscribeMixinTests
         await Assert.That(results).IsEquivalentTo([ExpectedResult]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable switches to a newly emitted command.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable switches to a newly emitted command.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Command_ShouldSwitchToNewCommand()
@@ -384,9 +345,9 @@ public class SwitchSubscribeMixinTests
         // Arrange
         const int FirstExpectedResult = CommandInput * DoubleMultiplier;
         const int SecondExpectedResult = CommandInput * TripleMultiplier;
-        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command1);
+        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command1);
         var results = new List<int>();
 
         using var subscription = outer.SwitchSubscribe(results.Add);
@@ -400,17 +361,15 @@ public class SwitchSubscribeMixinTests
         await Assert.That(results).IsEquivalentTo([FirstExpectedResult, SecondExpectedResult]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable ignores null commands.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable ignores null commands.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_Command_ShouldIgnoreNullCommands()
     {
         // Arrange
         const int ExpectedResult = CommandInput * DoubleMultiplier;
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var results = new List<int>();
 
         using var subscription = outer.SwitchSubscribe(results.Add);
@@ -423,16 +382,14 @@ public class SwitchSubscribeMixinTests
         await Assert.That(results).IsEquivalentTo([ExpectedResult]);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable with handlers throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable with handlers throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_CommandWithHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var source = Observable.Return<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
         Action<int> onNext = _ => { };
         Action<Exception> onError = _ => { };
         var onCompleted = () => { };
@@ -449,9 +406,7 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect on a command observable throws when the source is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect on a command observable throws when the source is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_Command_ShouldThrowArgumentNullException_WhenSourceIsNull()
@@ -460,40 +415,36 @@ public class SwitchSubscribeMixinTests
         const IObservable<IReactiveCommand<int, int>?> source = null!;
 
         // Act & Assert
-        await Assert.That(() => source.SwitchSelect(cmd => cmd.IsExecuting))
+        await Assert.That(() => SwitchSubscribeMixins.SwitchSelect(source, cmd => cmd.IsExecuting))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect on a command observable throws when the selector is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect on a command observable throws when the selector is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_Command_ShouldThrowArgumentNullException_WhenSelectorIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var source = Observable.Return<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
 
         // Act & Assert
         await Assert.That(() => source.SwitchSelect<int, int, bool>(null!))
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect on a command observable projects a command property.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect on a command observable projects a command property.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_Command_ShouldProjectCommandProperty()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var isExecutingValues = new List<bool>();
 
         // Act
-        using var subscription = outer.SwitchSelect(cmd => cmd.IsExecuting).Subscribe(isExecutingValues.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, cmd => cmd.IsExecuting).Subscribe(isExecutingValues.Add);
 
         await command.Execute(CommandInput);
 
@@ -502,21 +453,19 @@ public class SwitchSubscribeMixinTests
         await Assert.That(isExecutingValues[0]).IsFalse();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSelect on a command observable switches to a new command property.
-    /// </summary>
+    /// <summary>Verifies that SwitchSelect on a command observable switches to a new command property.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSelect_Command_ShouldSwitchToNewCommandProperty()
     {
         // Arrange
         const int MinimumValueCount = 2;
-        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command1);
+        var command1 = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var command2 = ReactiveCommand.Create<int, int>(x => x * TripleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command1);
         var canExecuteValues = new List<bool>();
 
-        using var subscription = outer.SwitchSelect(cmd => cmd.CanExecute).Subscribe(canExecuteValues.Add);
+        using var subscription = SwitchSubscribeMixins.SwitchSelect(outer, cmd => cmd.CanExecute).Subscribe(canExecuteValues.Add);
 
         // Act - Switch to new command
         outer.OnNext(command2);
@@ -525,16 +474,14 @@ public class SwitchSubscribeMixinTests
         await Assert.That(canExecuteValues).Count().IsGreaterThanOrEqualTo(MinimumValueCount);
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable with a selector throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable with a selector throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_CommandWithSelector_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var source = Observable.Return<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
         Func<IReactiveCommand<int, int>, IObservable<bool>> selector = cmd => cmd.IsExecuting;
         Action<bool> onNext = _ => { };
 
@@ -547,16 +494,14 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable with a selector projects and subscribes.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable with a selector projects and subscribes.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task SwitchSubscribe_CommandWithSelector_ShouldProjectAndSubscribe()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var outer = new BehaviorSubject<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var outer = new BehaviorSignal<IReactiveCommand<int, int>?>(command);
         var isExecutingValues = new List<bool>();
 
         // Act
@@ -567,17 +512,15 @@ public class SwitchSubscribeMixinTests
         await Assert.That(isExecutingValues).IsNotEmpty();
     }
 
-    /// <summary>
-    ///     Verifies that SwitchSubscribe on a command observable with a selector and handlers throws when any parameter is null.
-    /// </summary>
+    /// <summary>Verifies that SwitchSubscribe on a command observable with a selector and handlers throws when any parameter is null.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task
         SwitchSubscribe_CommandWithSelectorAndHandlers_ShouldThrowArgumentNullException_WhenAnyParameterIsNull()
     {
         // Arrange
-        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: ImmediateScheduler.Instance);
-        var source = Observable.Return<IReactiveCommand<int, int>?>(command);
+        var command = ReactiveCommand.Create<int, int>(x => x * DoubleMultiplier, outputScheduler: Sequencer.Immediate);
+        var source = Signal.Emit<IReactiveCommand<int, int>?>(command);
         Func<IReactiveCommand<int, int>, IObservable<bool>> selector = cmd => cmd.IsExecuting;
         Action<bool> onNext = _ => { };
         Action<Exception> onError = _ => { };
@@ -601,14 +544,10 @@ public class SwitchSubscribeMixinTests
             .Throws<ArgumentException>();
     }
 
-    /// <summary>
-    ///     A test view model exposing an observable used to verify switch operators.
-    /// </summary>
+    /// <summary>A test view model exposing an observable used to verify switch operators.</summary>
     private sealed class TestViewModel
     {
-        /// <summary>
-        ///     Gets or sets the observable projected by the switch operators.
-        /// </summary>
-        public IObservable<int> Observable { get; set; } = System.Reactive.Linq.Observable.Return(0);
+        /// <summary>Gets or sets the observable projected by the switch operators.</summary>
+        public IObservable<int> Observable { get; set; } = Signal.Emit(0);
     }
 }

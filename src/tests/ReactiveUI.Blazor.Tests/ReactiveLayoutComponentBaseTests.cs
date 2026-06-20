@@ -7,25 +7,16 @@ using Bunit;
 
 namespace ReactiveUI.Blazor.Tests;
 
-/// <summary>
-/// Tests for the <see cref="ReactiveLayoutComponentBase{T}"/> class.
-/// Verifies proper functioning of reactive features in Blazor layouts.
-/// </summary>
+/// <summary>Tests for the <see cref="ReactiveLayoutComponentBase{T}"/> class. Verifies proper functioning of reactive features in Blazor layouts.</summary>
 public class ReactiveLayoutComponentBaseTests : BunitContext
 {
-    /// <summary>
-    /// The expected number of renders after the initial render of the component.
-    /// </summary>
+    /// <summary>The expected number of renders after the initial render of the component.</summary>
     private const int ExpectedRenderCount = 2;
 
-    /// <summary>
-    /// The delay in milliseconds allowed for the asynchronous UI update to settle.
-    /// </summary>
+    /// <summary>The delay in milliseconds allowed for the asynchronous UI update to settle.</summary>
     private const int RenderDelayMilliseconds = 100;
 
-    /// <summary>
-    /// Verifies that changes to the ViewModel associated with a layout component trigger a re-render.
-    /// </summary>
+    /// <summary>Verifies that changes to the ViewModel associated with a layout component trigger a re-render.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
     public async Task ViewModel_Change_Triggers_StateHasChanged()
@@ -41,34 +32,21 @@ public class ReactiveLayoutComponentBaseTests : BunitContext
         await Assert.That(cut.Instance.RenderCount).IsGreaterThanOrEqualTo(ExpectedRenderCount);
     }
 
-    /// <summary>
-    /// A simple ViewModel for layout testing.
-    /// </summary>
+    /// <summary>A simple ViewModel for layout testing.</summary>
     public class TestViewModel : ReactiveObject
     {
-        /// <summary>
-        /// The backing field for the <see cref="SomeProperty"/> property.
-        /// </summary>
-        private string? _someProperty;
-
-        /// <summary>
-        /// Gets or sets a property that notifies on change.
-        /// </summary>
+        /// <summary>Gets or sets a property that notifies on change.</summary>
         public string? SomeProperty
         {
-            get => _someProperty;
-            set => this.RaiseAndSetIfChanged(ref _someProperty, value);
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
         }
     }
 
-    /// <summary>
-    /// A concrete implementation of ReactiveLayoutComponentBase for testing.
-    /// </summary>
+    /// <summary>A concrete implementation of ReactiveLayoutComponentBase for testing.</summary>
     public class TestLayoutComponent : ReactiveLayoutComponentBase<TestViewModel>
     {
-        /// <summary>
-        /// Gets the render count.
-        /// </summary>
+        /// <summary>Gets the render count.</summary>
         public int RenderCount { get; private set; }
 
         /// <inheritdoc/>

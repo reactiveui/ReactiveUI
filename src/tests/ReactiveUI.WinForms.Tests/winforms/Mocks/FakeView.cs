@@ -5,23 +5,17 @@
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A fake view.
-/// </summary>
+/// <summary>A fake view.</summary>
 public class FakeView : IViewFor<FakeViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FakeView"/> class.</summary>
     public FakeView()
     {
         TheTextBox = new();
         ViewModel = new();
     }
 
-    /// <summary>
-    /// Gets or sets the text box.
-    /// </summary>
+    /// <summary>Gets the text box.</summary>
     public TextBox TheTextBox { get; protected set; }
 
     /// <inheritdoc/>

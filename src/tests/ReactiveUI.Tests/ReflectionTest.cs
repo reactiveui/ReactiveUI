@@ -11,18 +11,17 @@ using ReactiveUI.Tests.WhenAny.Mockups;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-///     Tests for <see cref="Reflection" />.
-/// </summary>
+/// <summary>Tests for <see cref="Reflection" />.</summary>
 [NotInParallel]
 public class ReflectionTest
 {
+    /// <summary>The initial text value used by the reflection tests.</summary>
     private const string TestText = "Test";
+
+    /// <summary>The replacement text value used to verify reflective setters.</summary>
     private const string NewValueText = "NewValue";
 
-    /// <summary>
-    ///     Tests that ExpressionToPropertyNames converts deeply nested property access.
-    /// </summary>
+    /// <summary>Tests that ExpressionToPropertyNames converts deeply nested property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_DeeplyNestedProperty_ReturnsFullPath()
@@ -34,9 +33,7 @@ public class ReflectionTest
         await Assert.That(result).IsEqualTo("Child.IsOnlyOneWord");
     }
 
-    /// <summary>
-    ///     Tests that ExpressionToPropertyNames converts nested property access.
-    /// </summary>
+    /// <summary>Tests that ExpressionToPropertyNames converts nested property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [SuppressMessage(
@@ -52,18 +49,14 @@ public class ReflectionTest
         await Assert.That(result).IsEqualTo("Child.IsOnlyOneWord");
     }
 
-    /// <summary>
-    ///     Tests that ExpressionToPropertyNames throws for null expression.
-    /// </summary>
+    /// <summary>Tests that ExpressionToPropertyNames throws for null expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_NullExpression_Throws() =>
         await Assert.That(() => Reflection.ExpressionToPropertyNames(null))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that ExpressionToPropertyNames converts simple property access.
-    /// </summary>
+    /// <summary>Tests that ExpressionToPropertyNames converts simple property access.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ExpressionToPropertyNames_SimpleProperty_ReturnsPropertyName()
@@ -75,27 +68,21 @@ public class ReflectionTest
         await Assert.That(result).IsEqualTo("IsOnlyOneWord");
     }
 
-    /// <summary>
-    ///     Tests that GetEventArgsTypeForEvent throws for invalid event.
-    /// </summary>
+    /// <summary>Tests that GetEventArgsTypeForEvent throws for invalid event.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetEventArgsTypeForEvent_InvalidEvent_Throws() =>
         await Assert.That(() => Reflection.GetEventArgsTypeForEvent(typeof(TestClassWithEvent), "NonExistentEvent"))
             .Throws<Exception>();
 
-    /// <summary>
-    ///     Tests that GetEventArgsTypeForEvent throws for null type.
-    /// </summary>
+    /// <summary>Tests that GetEventArgsTypeForEvent throws for null type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetEventArgsTypeForEvent_NullType_Throws() =>
         await Assert.That(() => Reflection.GetEventArgsTypeForEvent(null!, "TestEvent"))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that GetEventArgsTypeForEvent returns EventArgs type.
-    /// </summary>
+    /// <summary>Tests that GetEventArgsTypeForEvent returns EventArgs type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetEventArgsTypeForEvent_ValidEvent_ReturnsEventArgsType()
@@ -107,9 +94,7 @@ public class ReflectionTest
         await Assert.That(result).IsEqualTo(typeof(EventArgs));
     }
 
-    /// <summary>
-    ///     Tests that GetValueFetcherForProperty returns fetcher for field.
-    /// </summary>
+    /// <summary>Tests that GetValueFetcherForProperty returns fetcher for field.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_Field_ReturnsFetcher()
@@ -124,18 +109,14 @@ public class ReflectionTest
         await Assert.That(value).IsEqualTo("FieldValue");
     }
 
-    /// <summary>
-    ///     Tests that GetValueFetcherForProperty throws for null member.
-    /// </summary>
+    /// <summary>Tests that GetValueFetcherForProperty throws for null member.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_NullMember_Throws() =>
         await Assert.That(() => Reflection.GetValueFetcherForProperty(null))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that GetValueFetcherForProperty returns fetcher for property.
-    /// </summary>
+    /// <summary>Tests that GetValueFetcherForProperty returns fetcher for property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherForProperty_Property_ReturnsFetcher()
@@ -150,18 +131,14 @@ public class ReflectionTest
         await Assert.That(value).IsEqualTo(TestText);
     }
 
-    /// <summary>
-    ///     Tests that GetValueFetcherOrThrow throws for null member.
-    /// </summary>
+    /// <summary>Tests that GetValueFetcherOrThrow throws for null member.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherOrThrow_NullMember_Throws() =>
         await Assert.That(() => Reflection.GetValueFetcherOrThrow(null))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that GetValueFetcherOrThrow returns fetcher for valid property.
-    /// </summary>
+    /// <summary>Tests that GetValueFetcherOrThrow returns fetcher for valid property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueFetcherOrThrow_ValidProperty_ReturnsFetcher()
@@ -176,9 +153,7 @@ public class ReflectionTest
         await Assert.That(value).IsEqualTo(TestText);
     }
 
-    /// <summary>
-    ///     Tests that GetValueSetterForProperty returns setter for field.
-    /// </summary>
+    /// <summary>Tests that GetValueSetterForProperty returns setter for field.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterForProperty_Field_ReturnsSetter()
@@ -193,18 +168,14 @@ public class ReflectionTest
         await Assert.That(fixture.TestField).IsEqualTo("NewFieldValue");
     }
 
-    /// <summary>
-    ///     Tests that GetValueSetterForProperty throws for null member.
-    /// </summary>
+    /// <summary>Tests that GetValueSetterForProperty throws for null member.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterForProperty_NullMember_Throws() =>
         await Assert.That(() => Reflection.GetValueSetterForProperty(null))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that GetValueSetterForProperty returns setter for property.
-    /// </summary>
+    /// <summary>Tests that GetValueSetterForProperty returns setter for property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterForProperty_Property_ReturnsSetter()
@@ -219,18 +190,14 @@ public class ReflectionTest
         await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
-    /// <summary>
-    ///     Tests that GetValueSetterOrThrow throws for null member.
-    /// </summary>
+    /// <summary>Tests that GetValueSetterOrThrow throws for null member.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterOrThrow_NullMember_Throws() =>
         await Assert.That(() => Reflection.GetValueSetterOrThrow(null))
             .Throws<ArgumentNullException>();
 
-    /// <summary>
-    ///     Tests that GetValueSetterOrThrow returns setter for valid property.
-    /// </summary>
+    /// <summary>Tests that GetValueSetterOrThrow returns setter for valid property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueSetterOrThrow_ValidProperty_ReturnsSetter()
@@ -245,9 +212,7 @@ public class ReflectionTest
         await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
-    /// <summary>
-    ///     Tests that IsStatic returns false for instance property.
-    /// </summary>
+    /// <summary>Tests that IsStatic returns false for instance property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsStatic_InstanceProperty_ReturnsFalse()
@@ -260,9 +225,7 @@ public class ReflectionTest
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    ///     Tests that IsStatic throws for null property.
-    /// </summary>
+    /// <summary>Tests that IsStatic throws for null property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsStatic_NullProperty_Throws()
@@ -273,9 +236,7 @@ public class ReflectionTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that IsStatic returns true for static property.
-    /// </summary>
+    /// <summary>Tests that IsStatic returns true for static property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task IsStatic_StaticProperty_ReturnsTrue()
@@ -288,9 +249,7 @@ public class ReflectionTest
         await Assert.That(result).IsTrue();
     }
 
-    /// <summary>
-    ///     Tests that ReallyFindType caches types.
-    /// </summary>
+    /// <summary>Tests that ReallyFindType caches types.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_CachesTypes()
@@ -304,9 +263,7 @@ public class ReflectionTest
         await Assert.That(result1).IsEqualTo(typeof(TestFixture));
     }
 
-    /// <summary>
-    ///     Tests that ReallyFindType returns null for invalid type when not throwing.
-    /// </summary>
+    /// <summary>Tests that ReallyFindType returns null for invalid type when not throwing.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_InvalidTypeNoThrow_ReturnsNull()
@@ -316,18 +273,14 @@ public class ReflectionTest
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    ///     Tests that ReallyFindType throws for invalid type when throwing.
-    /// </summary>
+    /// <summary>Tests that ReallyFindType throws for invalid type when throwing.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_InvalidTypeWithThrow_Throws() =>
         await Assert.That(() => Reflection.ReallyFindType("InvalidType.DoesNotExist", true))
             .Throws<TypeLoadException>();
 
-    /// <summary>
-    ///     Tests that ReallyFindType finds a valid type.
-    /// </summary>
+    /// <summary>Tests that ReallyFindType finds a valid type.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ReallyFindType_ValidType_ReturnsType()
@@ -340,9 +293,7 @@ public class ReflectionTest
         await Assert.That(result).IsEqualTo(typeof(TestFixture));
     }
 
-    /// <summary>
-    ///     Tests that Rewrite simplifies expression.
-    /// </summary>
+    /// <summary>Tests that Rewrite simplifies expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task Rewrite_Expression_SimplifiesExpression()
@@ -354,9 +305,7 @@ public class ReflectionTest
         await Assert.That(result).IsNotNull();
     }
 
-    /// <summary>
-    ///     Tests that ThrowIfMethodsNotOverloaded throws for missing methods.
-    /// </summary>
+    /// <summary>Tests that ThrowIfMethodsNotOverloaded throws for missing methods.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_MissingMethod_Throws()
@@ -367,9 +316,7 @@ public class ReflectionTest
             .Throws<Exception>();
     }
 
-    /// <summary>
-    ///     Tests that ThrowIfMethodsNotOverloaded passes for overloaded methods.
-    /// </summary>
+    /// <summary>Tests that ThrowIfMethodsNotOverloaded passes for overloaded methods.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ThrowIfMethodsNotOverloaded_OverloadedMethods_DoesNotThrow()
@@ -382,9 +329,7 @@ public class ReflectionTest
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    ///     Tests that TryGetAllValuesForPropertyChain returns false when null in chain.
-    /// </summary>
+    /// <summary>Tests that TryGetAllValuesForPropertyChain returns false when null in chain.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetAllValuesForPropertyChain_NullInChain_ReturnsFalse()
@@ -398,9 +343,7 @@ public class ReflectionTest
         await Assert.That(success).IsFalse();
     }
 
-    /// <summary>
-    ///     Tests that TryGetAllValuesForPropertyChain gets all values in chain.
-    /// </summary>
+    /// <summary>Tests that TryGetAllValuesForPropertyChain gets all values in chain.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetAllValuesForPropertyChain_ValidChain_ReturnsAllValues()
@@ -418,9 +361,7 @@ public class ReflectionTest
         await Assert.That(values[1].Value).IsEqualTo(TestText);
     }
 
-    /// <summary>
-    ///     Tests that TryGetValueForPropertyChain gets value from nested property.
-    /// </summary>
+    /// <summary>Tests that TryGetValueForPropertyChain gets value from nested property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetValueForPropertyChain_NestedProperty_ReturnsValue()
@@ -435,9 +376,7 @@ public class ReflectionTest
         await Assert.That(value).IsEqualTo("NestedTest");
     }
 
-    /// <summary>
-    ///     Tests that TryGetValueForPropertyChain returns false when null in chain.
-    /// </summary>
+    /// <summary>Tests that TryGetValueForPropertyChain returns false when null in chain.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetValueForPropertyChain_NullInChain_ReturnsFalse()
@@ -452,9 +391,7 @@ public class ReflectionTest
         await Assert.That(value).IsNull();
     }
 
-    /// <summary>
-    ///     Tests that TryGetValueForPropertyChain gets value from simple property.
-    /// </summary>
+    /// <summary>Tests that TryGetValueForPropertyChain gets value from simple property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TryGetValueForPropertyChain_SimpleProperty_ReturnsValue()
@@ -469,9 +406,7 @@ public class ReflectionTest
         await Assert.That(value).IsEqualTo(TestText);
     }
 
-    /// <summary>
-    ///     Tests that TrySetValueToPropertyChain sets value on nested property.
-    /// </summary>
+    /// <summary>Tests that TrySetValueToPropertyChain sets value on nested property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_NestedProperty_SetsValue()
@@ -486,9 +421,7 @@ public class ReflectionTest
         await Assert.That(fixture.Child.IsOnlyOneWord).IsEqualTo("NestedValue");
     }
 
-    /// <summary>
-    ///     Tests that TrySetValueToPropertyChain returns false when null in chain.
-    /// </summary>
+    /// <summary>Tests that TrySetValueToPropertyChain returns false when null in chain.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_NullInChain_ReturnsFalse()
@@ -502,9 +435,7 @@ public class ReflectionTest
         await Assert.That(success).IsFalse();
     }
 
-    /// <summary>
-    ///     Tests that TrySetValueToPropertyChain throws when shouldThrow is true and target is null.
-    /// </summary>
+    /// <summary>Tests that TrySetValueToPropertyChain throws when shouldThrow is true and target is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_NullTargetWithThrow_Throws()
@@ -516,9 +447,7 @@ public class ReflectionTest
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that TrySetValueToPropertyChain sets value on simple property.
-    /// </summary>
+    /// <summary>Tests that TrySetValueToPropertyChain sets value on simple property.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task TrySetValueToPropertyChain_SimpleProperty_SetsValue()
@@ -533,45 +462,28 @@ public class ReflectionTest
         await Assert.That(fixture.IsOnlyOneWord).IsEqualTo(NewValueText);
     }
 
-    /// <summary>
-    ///     Test class with an event.
-    /// </summary>
+    /// <summary>Test class with an event.</summary>
     private sealed class TestClassWithEvent
     {
-        /// <summary>
-        ///     A test event.
-        /// </summary>
+        /// <summary>A test event.</summary>
         public event EventHandler? TestEvent;
 
-        /// <summary>
-        ///     Raises the test event.
-        /// </summary>
+        /// <summary>Raises the test event.</summary>
         public void OnTestEvent() => TestEvent?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>
-    ///     Test class with a field.
-    /// </summary>
+    /// <summary>Test class with a field.</summary>
     private sealed class TestClassWithField
     {
-        /// <summary>
-        ///     A test field.
-        /// </summary>
-        [SuppressMessage(
-            "StyleCop.CSharp.MaintainabilityRules",
-            "SA1401:Fields should be private",
-            Justification = "Needed for test")]
+        /// <summary>A test field reflected on by the tests.</summary>
+        [SuppressMessage("Maintainability", "SST1401:Field should be private", Justification = "Public field required for reflection tests")]
         public string? TestField;
     }
 
-    /// <summary>
-    ///     Test class with overridden methods.
-    /// </summary>
+    /// <summary>Test class with overridden methods.</summary>
     private sealed class TestClassWithOverriddenMethods
     {
-        /// <summary>
-        ///     A test method.
-        /// </summary>
+        /// <summary>A test method.</summary>
         [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for test")]
         public void TestMethod()
         {
@@ -579,19 +491,13 @@ public class ReflectionTest
         }
     }
 
-    /// <summary>
-    ///     Test class with static property.
-    /// </summary>
+    /// <summary>Test class with static property.</summary>
     private sealed class TestClassWithStaticProperty
     {
-        /// <summary>
-        ///     Gets or sets a static property.
-        /// </summary>
+        /// <summary>Gets or sets a static property.</summary>
         public static string? StaticProperty { get; set; } = null!;
 
-        /// <summary>
-        ///     Gets or sets an instance property.
-        /// </summary>
+        /// <summary>Gets or sets an instance property.</summary>
         public string? InstanceProperty { get; set; } = null!;
     }
 }

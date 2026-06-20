@@ -1,0 +1,155 @@
+#nullable enable
+ReactiveUI.Reactive.AndroidX.ControlFetcherMixins
+ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.extension(AndroidX.Fragment.App.Fragment!)
+ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.extension(AndroidX.Fragment.App.Fragment!).WireUpControls(Android.Views.View! inflatedView) -> void
+ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.extension(AndroidX.Fragment.App.Fragment!).WireUpControls(Android.Views.View! inflatedView, ReactiveUI.Reactive.ControlFetcherMixins.ResolveStrategy resolveMembers) -> void
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ActivityResult.get -> System.IObservable<(int requestCode, Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ReactiveAppCompatActivity() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ReactiveAppCompatActivity(in nint handle, Android.Runtime.JniHandleOwnership ownership) -> void
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent? intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity<TViewModel>.ReactiveAppCompatActivity() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.ReactiveDialogFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment<TViewModel>.ReactiveDialogFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragment
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.ReactiveFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>.ReactiveFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactiveFragment<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ActivityResult.get -> System.IObservable<(int requestCode, Android.App.Result result, Android.Content.Intent! intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ReactiveFragmentActivity() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(Android.Content.Intent! intent, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent! intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.StartActivityForResultAsync(System.Type! type, int requestCode) -> System.Threading.Tasks.Task<(Android.App.Result result, Android.Content.Intent! intent)>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity<TViewModel>.ReactiveFragmentActivity() -> void
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel, TCollection>
+ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel, TCollection>.ReactivePagerAdapter(TCollection collection, System.Func<TViewModel!, Android.Views.ViewGroup!, Android.Views.View!>! viewCreator, System.Action<TViewModel!, Android.Views.View!>? viewInitializer = null) -> void
+ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.ReactivePagerAdapter(System.IObservable<ReactiveUI.IReactiveChangeSet<TViewModel!>!>! changeSet, System.Func<TViewModel!, Android.Views.ViewGroup!, Android.Views.View!>! viewCreator) -> void
+ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.ReactivePagerAdapter(System.IObservable<ReactiveUI.IReactiveChangeSet<TViewModel!>!>! changeSet, System.Func<TViewModel!, Android.Views.ViewGroup!, Android.Views.View!>! viewCreator, System.Action<TViewModel!, Android.Views.View!>? viewInitializer) -> void
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment!>!>!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.ReactivePreferenceFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.ReactivePreferenceFragment(in nint handle, Android.Runtime.JniHandleOwnership ownership) -> void
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment<TViewModel>.ReactivePreferenceFragment() -> void
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment<TViewModel>.ReactivePreferenceFragment(in nint handle, Android.Runtime.JniHandleOwnership ownership) -> void
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel, TCollection>
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel, TCollection>.ReactiveRecyclerViewAdapter(TCollection backingList) -> void
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.ReactiveRecyclerViewAdapter(System.IObservable<ReactiveUI.IReactiveChangeSet<TViewModel!>!>! backingList) -> void
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Activated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.AllPublicProperties.get -> System.Lazy<System.Reflection.PropertyInfo![]!>?
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.AllPublicProperties.set -> void
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.AreChangeNotificationsEnabled() -> bool
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Changed.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel!>!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Changing.get -> System.IObservable<ReactiveUI.IReactivePropertyChangedEventArgs<ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel!>!>!>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Deactivated.get -> System.IObservable<System.Reactive.Unit>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.LongClicked.get -> System.IObservable<int>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.LongClickedWithViewModel.get -> System.IObservable<TViewModel?>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.ReactiveRecyclerViewViewHolder(Android.Views.View! view) -> void
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Selected.get -> System.IObservable<int>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.SelectedWithViewModel.get -> System.IObservable<TViewModel?>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.SuppressChangeNotifications() -> System.IDisposable!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.ThrownExceptions.get -> System.IObservable<System.Exception!>!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.View.get -> Android.Views.View!
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.ViewModel.set -> void
+ReactiveUI.Reactive.AndroidX.Registrations
+ReactiveUI.Reactive.AndroidX.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Reactive.AndroidX.Registrations.Registrations() -> void
+ReactiveUI.Reactive.AndroidX.Resource
+ReactiveUI.Reactive.AndroidX.Resource.Resource() -> void
+ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions
+ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder?)
+ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder?).WithAndroidX() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.extension(ReactiveUI.Reactive.Builder.IReactiveUIBuilder?).WithAndroidXScheduler() -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+override ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.OnActivityResult(int requestCode, Android.App.Result resultCode, Android.Content.Intent? data) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.OnPause() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveAppCompatActivity.OnResume() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.OnPause() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveDialogFragment.OnResume() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragment.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragment.OnPause() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragment.OnResume() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.OnActivityResult(int requestCode, Android.App.Result resultCode, Android.Content.Intent? data) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.OnPause() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveFragmentActivity.OnResume() -> void
+override ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.Count.get -> int
+override ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.DestroyItem(Android.Views.ViewGroup! container, int position, Java.Lang.Object! object) -> void
+override ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.InstantiateItem(Android.Views.ViewGroup! container, int position) -> Java.Lang.Object!
+override ReactiveUI.Reactive.AndroidX.ReactivePagerAdapter<TViewModel>.IsViewFromObject(Android.Views.View! view, Java.Lang.Object! object) -> bool
+override ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.OnPause() -> void
+override ReactiveUI.Reactive.AndroidX.ReactivePreferenceFragment.OnResume() -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.Dispose(bool disposing) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.GetItemViewType(int position) -> int
+override ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.ItemCount.get -> int
+override ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.OnBindViewHolder(AndroidX.RecyclerView.Widget.RecyclerView.ViewHolder! holder, int position) -> void
+override ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewViewHolder<TViewModel>.Dispose(bool disposing) -> void
+static ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.WireUpControls(this AndroidX.Fragment.App.Fragment! fragment, Android.Views.View! inflatedView) -> void
+static ReactiveUI.Reactive.AndroidX.ControlFetcherMixins.WireUpControls(this AndroidX.Fragment.App.Fragment! fragment, Android.Views.View! inflatedView, ReactiveUI.Reactive.ControlFetcherMixins.ResolveStrategy resolveMembers) -> void
+static ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.AndroidXMainThreadScheduler.get -> System.Reactive.Concurrency.IScheduler!
+static ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.WithAndroidX(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder? builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+static ReactiveUI.Reactive.Builder.AndroidXReactiveUIBuilderExtensions.WithAndroidXScheduler(this ReactiveUI.Reactive.Builder.IReactiveUIBuilder? builder) -> ReactiveUI.Reactive.Builder.IReactiveUIBuilder!
+virtual ReactiveUI.Reactive.AndroidX.ReactiveRecyclerViewAdapter<TViewModel>.GetItemViewType(int position, TViewModel? viewModel) -> int

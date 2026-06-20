@@ -7,13 +7,9 @@ using System.Windows.Controls;
 
 namespace ReactiveUI.Tests.Wpf.Mocks.TransitionMock;
 
-/// <summary>
-/// Interaction logic for SecondView.xaml.
-/// </summary>
+/// <summary>Interaction logic for SecondView.xaml.</summary>
 public partial class SecondView : UserControl
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SecondView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="SecondView"/> class.</summary>
     public SecondView() => InitializeComponent();
 }

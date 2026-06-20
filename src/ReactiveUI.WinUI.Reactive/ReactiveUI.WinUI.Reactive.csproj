@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured WinUI Desktop leaf: recompiles the ReactiveUI.WinUI source (plus the shared
+         Maui WinUI/Common/Internal subset it reuses) against the ReactiveUI.Reactive engine. REACTIVE_SHIM
+         (from the 'Reactive' name suffix in Directory.Build.props) flips the namespaces to ReactiveUI.Reactive.*. -->
+    <TargetFrameworks>$(ReactiveUIWinUITargets)</TargetFrameworks>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <PackageId>ReactiveUI.WinUI.Reactive</PackageId>
+    <PackageDescription>Contains the ReactiveUI platform specific extensions for WinUI Desktop, recompiled against System.Reactive</PackageDescription>
+    <AssemblyName>ReactiveUI.WinUI.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive.WinUI.Desktop</RootNamespace>
+    <PackageTags>mvvm;reactiveui;rx;reactive extensions;observable;LINQ;events;winui</PackageTags>
+    <UseWinUI>true</UseWinUI>
+    <DefineConstants>IS_WINUI;WINUI_TARGET;</DefineConstants>
+    <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+    <!-- MSIX tooling (incl. the native MakePri.exe) only works on Windows; enabling it off-Windows breaks the build
+         under Wine. The managed assembly still compiles for reference/CI validation without it. -->
+    <EnableMsixTooling Condition="$([MSBuild]::IsOsPlatform('Windows'))">true</EnableMsixTooling>
+    <WindowsSdkPackageVersion>10.0.19041.48</WindowsSdkPackageVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal"/>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <!-- Packages only on Windows -->
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.WinUI.Reactive"/>
+    <PackageReference Include="Microsoft.WindowsAppSDK"/>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
+  </ItemGroup>
+  <Import Project="..\ReactiveUI.WinUI\build\SkipMakePriOnNonWindows.targets"
+          Condition="!$([MSBuild]::IsOsPlatform('Windows'))" />
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
+  </ItemGroup>
+  <!-- The WinUI package's own source (builder extensions), recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.WinUI\**\*.cs" Exclude="..\ReactiveUI.WinUI\obj\**\*.cs;..\ReactiveUI.WinUI\bin\**\*.cs" Link="ReactiveUI.WinUI\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <!-- The same Maui WinUI/Common/Internal subset the lean WinUI package reuses. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Maui\Internal\**\*.cs" LinkBase="internal"/>
+    <Compile Include="..\ReactiveUI.Maui\Common\**\*.cs" LinkBase="common"/>
+    <Compile Include="..\ReactiveUI.Maui\WinUI\**\*.cs" Link="WinUI\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI.Maui\ActivationForViewFetcher.cs" Link="ActivationForViewFetcher.cs"/>
+    <Compile Include="..\ReactiveUI.Maui\Registrations.cs" Link="Registrations.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="..\ReactiveUI.Maui\WinUI\DispatcherQueueScheduler.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\ObserveOnObservable.cs" Link="Shared\Platform\ObserveOnObservable.cs"/>
+  </ItemGroup>
+</Project>

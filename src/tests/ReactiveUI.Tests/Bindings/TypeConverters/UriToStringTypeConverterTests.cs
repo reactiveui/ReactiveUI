@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting Uri to strings.
-/// </summary>
+/// <summary>Tests for converting Uri to strings.</summary>
 public class UriToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class UriToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an absolute URI converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that an absolute URI converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AbsoluteUri_Succeeds()
@@ -38,9 +32,7 @@ public class UriToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("https://reactiveui.net/docs");
     }
 
-    /// <summary>
-    /// Verifies that a relative URI converts to its string representation.
-    /// </summary>
+    /// <summary>Verifies that a relative URI converts to its string representation.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_RelativeUri_Succeeds()
@@ -54,9 +46,7 @@ public class UriToStringTypeConverterTests
         await Assert.That(output).IsEqualTo("/path/to/resource");
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsFalse()

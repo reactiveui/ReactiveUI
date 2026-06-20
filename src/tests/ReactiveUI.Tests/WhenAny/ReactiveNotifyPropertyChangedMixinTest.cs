@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using ReactiveUI.Tests.WhenAny.Mockups;
@@ -14,44 +12,82 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <summary>
-///     Tests for the reactive notify property changed mixin (WhenAny, WhenAnyValue, ObservableForProperty).
-/// </summary>
+/// <summary>Tests for the reactive notify property changed mixin (WhenAny, WhenAnyValue, ObservableForProperty).</summary>
 public partial class ReactiveNotifyPropertyChangedMixinTest
 {
+    /// <summary>The expected notification count after the second property change.</summary>
     private const int ExpectedCountAfterSecondChange = 2;
+
+    /// <summary>The expected notification count after the third property change.</summary>
     private const int ExpectedCountAfterThirdChange = 3;
+
+    /// <summary>The expected notification count after the fourth property change.</summary>
     private const int ExpectedCountAfterFourthChange = 4;
 
+    /// <summary>Test value "Foo".</summary>
     private const string FooText = "Foo";
+
+    /// <summary>Test value "Bar".</summary>
     private const string BarText = "Bar";
+
+    /// <summary>Test value "Baz".</summary>
     private const string BazText = "Baz";
+
+    /// <summary>Test value "Bamf".</summary>
     private const string BamfText = "Bamf";
+
+    /// <summary>Test value "Initial".</summary>
     private const string InitialText = "Initial";
+
+    /// <summary>Test value "Changed".</summary>
     private const string ChangedText = "Changed";
+
+    /// <summary>Test value "Pre".</summary>
     private const string PreText = "Pre";
+
+    /// <summary>Test value "Test".</summary>
     private const string TestText = "Test";
+
+    /// <summary>Test value "abc".</summary>
     private const string AbcText = "abc";
+
+    /// <summary>Test value "A".</summary>
     private const string AText = "A";
+
+    /// <summary>Test value "B".</summary>
     private const string BText = "B";
+
+    /// <summary>Test value "Value1".</summary>
     private const string Value1Text = "Value1";
+
+    /// <summary>Test value "Value2".</summary>
     private const string Value2Text = "Value2";
+
+    /// <summary>The "IsOnlyOneWord" property name used in expression-chain tests.</summary>
     private const string IsOnlyOneWordName = "IsOnlyOneWord";
+
+    /// <summary>The "Child" property name used in expression-chain tests.</summary>
     private const string ChildName = "Child";
+
+    /// <summary>The "Child.IsOnlyOneWord" nested property path used in expression-chain tests.</summary>
     private const string ChildIsOnlyOneWordName = "Child.IsOnlyOneWord";
+
+    /// <summary>Test value "1".</summary>
     private const string OneText = "1";
+
+    /// <summary>Test value "13".</summary>
     private const string OneThreeText = "13";
+
+    /// <summary>Test value "135".</summary>
     private const string OneThreeFiveText = "135";
+
+    /// <summary>Test value "1357".</summary>
     private const string OneThreeFiveSevenText = "1357";
 
-    /// <summary>
-    ///     Gets or sets the dummy.
-    /// </summary>
+    /// <summary>Gets or sets the dummy.</summary>
     public string? Dummy { get; set; }
 
-    /// <summary>
-    ///     Verifies that any change in a deep expression list triggers the update sequence.
-    /// </summary>
+    /// <summary>Verifies that any change in a deep expression list triggers the update sequence.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task AnyChangeInExpressionListTriggersUpdate()
@@ -90,9 +126,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(obsUpdated).IsTrue();
     }
 
-    /// <summary>
-    ///     The <c>Changed</c> stream contains valid sender and property name data.
-    /// </summary>
+    /// <summary>The <c>Changed</c> stream contains valid sender and property name data.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ChangedShouldHaveValidData()
@@ -103,7 +137,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? propertyName = null;
 
-        fixture.Changed.ObserveOn(ImmediateScheduler.Instance).Subscribe(x =>
+        fixture.Changed.ObserveOn(Sequencer.Immediate).Subscribe(x =>
         {
             sender = x.Sender;
 
@@ -133,9 +167,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     The <c>Changing</c> stream contains valid sender and property name data.
-    /// </summary>
+    /// <summary>The <c>Changing</c> stream contains valid sender and property name data.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ChangingShouldHaveValidData()
@@ -146,7 +178,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? propertyName = null;
 
-        fixture.Changing.ObserveOn(ImmediateScheduler.Instance).Subscribe(x =>
+        fixture.Changing.ObserveOn(Sequencer.Immediate).Subscribe(x =>
         {
             sender = x.Sender;
 
@@ -176,9 +208,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Ensures multi-property expressions are correctly rewritten and resolved.
-    /// </summary>
+    /// <summary>Ensures multi-property expressions are correctly rewritten and resolved.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task MultiPropertyExpressionsShouldBeProperlyResolved()
@@ -232,9 +262,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Non-nullable pipeline works without extra decorators.
-    /// </summary>
+    /// <summary>Non-nullable pipeline works without extra decorators.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NonNullableTypesTestShouldntNeedDecorators()
@@ -253,9 +281,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Non-nullable tuple pipeline works without extra decorators.
-    /// </summary>
+    /// <summary>Non-nullable tuple pipeline works without extra decorators.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NonNullableTypesTestShouldntNeedDecorators2()
@@ -278,9 +304,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Nullable pipeline works without extra decorators.
-    /// </summary>
+    /// <summary>Nullable pipeline works without extra decorators.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NullableTypesTestShouldntNeedDecorators()
@@ -299,9 +323,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Nullable tuple pipeline works without extra decorators.
-    /// </summary>
+    /// <summary>Nullable tuple pipeline works without extra decorators.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task NullableTypesTestShouldntNeedDecorators2()
@@ -324,9 +346,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(result!.Count()).IsEqualTo(ExpectedCount);
     }
 
-    /// <summary>
-    ///     Ensures intermediate objects are eligible for GC when property value changes.
-    /// </summary>
+    /// <summary>Ensures intermediate objects are eligible for GC when property value changes.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task ObjectShouldBeGarbageCollectedWhenPropertyValueChanges()
@@ -397,9 +417,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         GC.KeepAlive(obj3);
     }
 
-    /// <summary>
-    ///     Subscribing to WhenAny should push the current value.
-    /// </summary>
+    /// <summary>Subscribing to WhenAny should push the current value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SubscriptionToWhenAnyShouldReturnCurrentValue()
@@ -417,9 +435,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(observedValue).IsEqualTo(obj.SomeOtherParam);
     }
 
-    /// <summary>
-    ///     WhenAny executes on the current synchronization context.
-    /// </summary>
+    /// <summary>WhenAny executes on the current synchronization context.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyShouldRunInContext()
@@ -429,16 +445,14 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText, PocoProperty = BamfText };
 
-        fixture.WhenAnyValue(x => x.IsNotNullString).ObserveOn(ImmediateScheduler.Instance).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
+        fixture.WhenAnyValue(x => x.IsNotNullString).ObserveOn(Sequencer.Immediate).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
 
         fixture.IsNotNullString = BarText;
 
         await Assert.That(whenAnyTid).IsEqualTo(tid);
     }
 
-    /// <summary>
-    ///     WhenAny works with "normal" CLR properties.
-    /// </summary>
+    /// <summary>WhenAny works with "normal" CLR properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyShouldWorkEvenWithNormalProperties()
@@ -493,9 +507,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Smoke test for <c>WhenAny</c> combining two properties.
-    /// </summary>
+    /// <summary>Smoke test for <c>WhenAny</c> combining two properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -576,9 +588,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     WhenAnyValue supports normal CLR properties.
-    /// </summary>
+    /// <summary>WhenAnyValue supports normal CLR properties.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueShouldWorkEvenWithNormalProperties()
@@ -609,9 +619,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Smoke test for WhenAnyValue combining two properties with a projector.
-    /// </summary>
+    /// <summary>Smoke test for WhenAnyValue combining two properties with a projector.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -680,9 +688,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         }
     }
 
-    /// <summary>
-    ///     Throws when WhenAnyValue receives an unsupported Constant expression.
-    /// </summary>
+    /// <summary>Throws when WhenAnyValue receives an unsupported Constant expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueUnsupportedExpressionType_Constant()
@@ -694,9 +700,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
         await Assert.That(exception.Message).IsEqualTo("Unsupported expression of type 'Constant'. Did you miss the member access prefix in the expression?");
     }
 
-    /// <summary>
-    ///     Throws when WhenAnyValue receives an unsupported Equal expression.
-    /// </summary>
+    /// <summary>Throws when WhenAnyValue receives an unsupported Equal expression.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueUnsupportedExpressionType_Equal()
@@ -711,9 +715,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
                 "Unsupported expression of type 'Equal' (x.IsNotNullString == x.IsOnlyOneWord). Did you meant to use expressions 'x.IsNotNullString' and 'x.IsOnlyOneWord'?");
     }
 
-    /// <summary>
-    ///     Verifies ToProperty projections for owner and owner name.
-    /// </summary>
+    /// <summary>Verifies ToProperty projections for owner and owner name.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task WhenAnyValueWithToProperty()

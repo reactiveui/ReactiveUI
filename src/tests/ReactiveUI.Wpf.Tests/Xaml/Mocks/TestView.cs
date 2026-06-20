@@ -7,22 +7,16 @@ using Splat;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
-/// <summary>
-/// A mock view that also acts as an <see cref="IScreen"/> for routing tests.
-/// </summary>
+/// <summary>A mock view that also acts as an <see cref="IScreen"/> for routing tests.</summary>
 public class TestView : ReactiveUserControl<TestViewModel>, IScreen
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TestView"/> class.</summary>
     public TestView()
         : this(null)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TestView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TestView"/> class.</summary>
     /// <param name="screen">The screen whose router should be reused, or <see langword="null"/> to resolve one.</param>
     public TestView(IScreen? screen)
     {

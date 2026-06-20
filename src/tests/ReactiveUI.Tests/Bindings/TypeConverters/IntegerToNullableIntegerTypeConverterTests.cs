@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting int to nullable int.
-/// </summary>
+/// <summary>Tests for converting int to nullable int.</summary>
 public class IntegerToNullableIntegerTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,15 +18,13 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting an int value always succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting an int value always succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AlwaysSucceeds()
     {
         var converter = new IntegerToNullableIntegerTypeConverter();
-        const int Value = 123456;
+        const int Value = 123_456;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -38,9 +32,7 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(output).IsEqualTo((int?)Value);
     }
 
-    /// <summary>
-    /// Verifies the converter source type is <see cref="int"/>.
-    /// </summary>
+    /// <summary>Verifies the converter source type is <see cref="int"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task FromType_ReturnsInt()
@@ -49,9 +41,7 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(converter.FromType).IsEqualTo(typeof(int));
     }
 
-    /// <summary>
-    /// Verifies the converter target type is nullable <see cref="int"/>.
-    /// </summary>
+    /// <summary>Verifies the converter target type is nullable <see cref="int"/>.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task ToType_ReturnsIntNullable()
@@ -60,9 +50,7 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(converter.ToType).IsEqualTo(typeof(int?));
     }
 
-    /// <summary>
-    /// Verifies that a valid value converts successfully and produces output.
-    /// </summary>
+    /// <summary>Verifies that a valid value converts successfully and produces output.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithValidValue_ReturnsTrueAndOutput()
@@ -76,9 +64,7 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(result).IsEqualTo((int?)Value);
     }
 
-    /// <summary>
-    /// Verifies that a null value fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null value fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithNullValue_ReturnsFalse()
@@ -91,9 +77,7 @@ public class IntegerToNullableIntegerTypeConverterTests
         await Assert.That(result).IsNull();
     }
 
-    /// <summary>
-    /// Verifies that a value of an invalid type fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a value of an invalid type fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvertTyped_WithInvalidType_ReturnsFalse()

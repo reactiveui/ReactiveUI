@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting strings to Uri.
-/// </summary>
+/// <summary>Tests for converting strings to Uri.</summary>
 public class StringToUriTypeConverterTests
 {
-    /// <summary>
-    /// Verifies the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,9 +18,7 @@ public class StringToUriTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that an absolute URI string converts successfully.
-    /// </summary>
+    /// <summary>Verifies that an absolute URI string converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_AbsoluteUri_Succeeds()
@@ -38,9 +32,7 @@ public class StringToUriTypeConverterTests
         await Assert.That(output).IsEqualTo(expected);
     }
 
-    /// <summary>
-    /// Verifies that a relative URI string converts successfully.
-    /// </summary>
+    /// <summary>Verifies that a relative URI string converts successfully.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_RelativeUri_Succeeds()
@@ -54,9 +46,7 @@ public class StringToUriTypeConverterTests
         await Assert.That(output).IsEqualTo(expected);
     }
 
-    /// <summary>
-    /// Verifies that a null input fails to convert.
-    /// </summary>
+    /// <summary>Verifies that a null input fails to convert.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsFalse()
@@ -68,9 +58,7 @@ public class StringToUriTypeConverterTests
         await Assert.That(result).IsFalse();
     }
 
-    /// <summary>
-    /// Verifies that an empty string converts to a relative URI.
-    /// </summary>
+    /// <summary>Verifies that an empty string converts to a relative URI.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_EmptyString_CreatesRelativeUri()

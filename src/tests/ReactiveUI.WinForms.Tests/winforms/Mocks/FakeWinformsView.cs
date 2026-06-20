@@ -7,14 +7,10 @@ using System.ComponentModel;
 
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
-/// <summary>
-/// A fake view model.
-/// </summary>
+/// <summary>A fake view model.</summary>
 public class FakeWinformsView : Control, IViewFor<FakeWinformViewModel>
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FakeWinformsView"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="FakeWinformsView"/> class.</summary>
     public FakeWinformsView()
     {
         Property1 = new();
@@ -36,33 +32,21 @@ public class FakeWinformsView : Control, IViewFor<FakeWinformViewModel>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public FakeWinformViewModel? ViewModel { get; set; }
 
-    /// <summary>
-    /// Gets the property1.
-    /// </summary>
+    /// <summary>Gets the property1.</summary>
     public Button Property1 { get; }
 
-    /// <summary>
-    /// Gets the property2.
-    /// </summary>
+    /// <summary>Gets the property2.</summary>
     public Label Property2 { get; }
 
-    /// <summary>
-    /// Gets the property3.
-    /// </summary>
+    /// <summary>Gets the property3.</summary>
     public TextBox Property3 { get; }
 
-    /// <summary>
-    /// Gets the property4.
-    /// </summary>
+    /// <summary>Gets the property4.</summary>
     public RichTextBox Property4 { get; }
 
-    /// <summary>
-    /// Gets the boolean property.
-    /// </summary>
+    /// <summary>Gets the boolean property.</summary>
     public CheckBox BooleanProperty { get; }
 
-    /// <summary>
-    /// Gets some double.
-    /// </summary>
+    /// <summary>Gets some double.</summary>
     public TextBox SomeDouble { get; }
 }

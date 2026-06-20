@@ -1,0 +1,84 @@
+#nullable enable
+ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions
+ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!)
+ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithWinForms() -> ReactiveUI.Builder.IReactiveUIBuilder!
+ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.extension(ReactiveUI.Builder.IReactiveUIBuilder!).WithWinFormsScheduler() -> ReactiveUI.Builder.IReactiveUIBuilder!
+ReactiveUI.Winforms.ActivationForViewFetcher
+ReactiveUI.Winforms.ActivationForViewFetcher.ActivationForViewFetcher() -> void
+ReactiveUI.Winforms.ActivationForViewFetcher.GetActivationForView(ReactiveUI.IActivatableView! view) -> System.IObservable<bool>!
+ReactiveUI.Winforms.ActivationForViewFetcher.GetAffinityForView(System.Type! view) -> int
+ReactiveUI.Winforms.ContentControlBindingHook
+ReactiveUI.Winforms.ContentControlBindingHook.ContentControlBindingHook() -> void
+ReactiveUI.Winforms.ContentControlBindingHook.ExecuteHook(object? source, object! target, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewModelProperties, System.Func<ReactiveUI.IObservedChange<object!, object!>![]!>! getCurrentViewProperties, ReactiveUI.BindingDirection direction) -> bool
+ReactiveUI.Winforms.CreatesWinformsCommandBinding
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler<TEventArgs!>!>! addHandler, System.Action<System.EventHandler<TEventArgs!>!>! removeHandler) -> System.IDisposable?
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.BindCommandToObject<T, TEventArgs>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, string! eventName) -> System.IDisposable?
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter) -> System.IDisposable?
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.BindCommandToObject<T>(System.Windows.Input.ICommand? command, T? target, System.IObservable<object?>! commandParameter, System.Action<System.EventHandler!>! addHandler, System.Action<System.EventHandler!>! removeHandler) -> System.IDisposable?
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.CreatesWinformsCommandBinding() -> void
+ReactiveUI.Winforms.CreatesWinformsCommandBinding.GetAffinityForObject<T>(bool hasEventTarget) -> int
+ReactiveUI.Winforms.PanelSetMethodBindingConverter
+ReactiveUI.Winforms.PanelSetMethodBindingConverter.GetAffinityForObjects(System.Type? fromType, System.Type? toType) -> int
+ReactiveUI.Winforms.PanelSetMethodBindingConverter.PanelSetMethodBindingConverter() -> void
+ReactiveUI.Winforms.PanelSetMethodBindingConverter.PerformSet(object? toTarget, object? newValue, object?[]? arguments) -> object!
+ReactiveUI.Winforms.PlatformOperations
+ReactiveUI.Winforms.PlatformOperations.GetOrientation() -> string?
+ReactiveUI.Winforms.PlatformOperations.PlatformOperations() -> void
+ReactiveUI.Winforms.ReactiveUserControl<TViewModel>
+ReactiveUI.Winforms.ReactiveUserControl<TViewModel>.ReactiveUserControl() -> void
+ReactiveUI.Winforms.ReactiveUserControl<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Winforms.ReactiveUserControl<TViewModel>.ViewModel.set -> void
+ReactiveUI.Winforms.ReactiveUserControlNonGeneric
+ReactiveUI.Winforms.ReactiveUserControlNonGeneric.ReactiveUserControlNonGeneric() -> void
+ReactiveUI.Winforms.Registrations
+ReactiveUI.Winforms.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
+ReactiveUI.Winforms.Registrations.Registrations() -> void
+ReactiveUI.Winforms.RoutedControlHost
+ReactiveUI.Winforms.RoutedControlHost.DefaultContent.get -> System.Windows.Forms.Control?
+ReactiveUI.Winforms.RoutedControlHost.DefaultContent.set -> void
+ReactiveUI.Winforms.RoutedControlHost.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Winforms.RoutedControlHost.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Winforms.RoutedControlHost.RoutedControlHost() -> void
+ReactiveUI.Winforms.RoutedControlHost.Router.get -> ReactiveUI.RoutingState?
+ReactiveUI.Winforms.RoutedControlHost.Router.set -> void
+ReactiveUI.Winforms.RoutedControlHost.ViewContractObservable.get -> System.IObservable<string!>?
+ReactiveUI.Winforms.RoutedControlHost.ViewContractObservable.set -> void
+ReactiveUI.Winforms.RoutedControlHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.Winforms.RoutedControlHost.ViewLocator.set -> void
+ReactiveUI.Winforms.TableContentSetMethodBindingConverter
+ReactiveUI.Winforms.TableContentSetMethodBindingConverter.GetAffinityForObjects(System.Type? fromType, System.Type? toType) -> int
+ReactiveUI.Winforms.TableContentSetMethodBindingConverter.PerformSet(object? toTarget, object? newValue, object?[]? arguments) -> object!
+ReactiveUI.Winforms.TableContentSetMethodBindingConverter.TableContentSetMethodBindingConverter() -> void
+ReactiveUI.Winforms.ViewModelControlHost
+ReactiveUI.Winforms.ViewModelControlHost.CacheViews.get -> bool
+ReactiveUI.Winforms.ViewModelControlHost.CacheViews.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.Content.get -> object?
+ReactiveUI.Winforms.ViewModelControlHost.Content.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.CurrentView.get -> System.Windows.Forms.Control?
+ReactiveUI.Winforms.ViewModelControlHost.DefaultContent.get -> System.Windows.Forms.Control?
+ReactiveUI.Winforms.ViewModelControlHost.DefaultContent.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.PropertyChanged -> System.ComponentModel.PropertyChangedEventHandler?
+ReactiveUI.Winforms.ViewModelControlHost.PropertyChanging -> System.ComponentModel.PropertyChangingEventHandler?
+ReactiveUI.Winforms.ViewModelControlHost.ViewContractObservable.get -> System.IObservable<string!>?
+ReactiveUI.Winforms.ViewModelControlHost.ViewContractObservable.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.ViewLocator.get -> ReactiveUI.IViewLocator?
+ReactiveUI.Winforms.ViewModelControlHost.ViewLocator.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.ViewModel.get -> object?
+ReactiveUI.Winforms.ViewModelControlHost.ViewModel.set -> void
+ReactiveUI.Winforms.ViewModelControlHost.ViewModelControlHost() -> void
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.GetAffinityForObject(System.Type! type, string! propertyName) -> int
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.GetAffinityForObject(System.Type? type, string! propertyName, bool beforeChanged) -> int
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.GetNotificationForProperty(object! sender, System.Linq.Expressions.Expression! expression, string! propertyName, bool beforeChanged, bool suppressWarnings) -> System.IObservable<ReactiveUI.IObservedChange<object!, object?>!>!
+ReactiveUI.Winforms.WinformsCreatesObservableForProperty.WinformsCreatesObservableForProperty() -> void
+override ReactiveUI.Winforms.ReactiveUserControl<TViewModel>.Dispose(bool disposing) -> void
+override ReactiveUI.Winforms.ReactiveUserControlNonGeneric.Dispose(bool disposing) -> void
+override ReactiveUI.Winforms.RoutedControlHost.Dispose(bool disposing) -> void
+override ReactiveUI.Winforms.ViewModelControlHost.Dispose(bool disposing) -> void
+static ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.WinFormsMainThreadScheduler.get -> ReactiveUI.Primitives.Concurrency.ISequencer!
+static ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.WithWinForms(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+static ReactiveUI.Builder.WinFormsReactiveUIBuilderExtensions.WithWinFormsScheduler(this ReactiveUI.Builder.IReactiveUIBuilder! builder) -> ReactiveUI.Builder.IReactiveUIBuilder!
+static ReactiveUI.Winforms.ViewModelControlHost.DefaultCacheViewsEnabled.get -> bool
+static ReactiveUI.Winforms.ViewModelControlHost.DefaultCacheViewsEnabled.set -> void

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using BenchmarkDotNet.Attributes;
 using DynamicData;
 
@@ -36,9 +35,9 @@ public class NavigationBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _router = new RoutingState(ImmediateScheduler.Instance);
-        _viewModel = new NavigableViewModel();
-        _subscription = _router.NavigationChanged.Subscribe(_sink);
+        _router = new(Sequencer.Immediate);
+        _viewModel = new();
+        _subscription = _router.NavigationChanged().Subscribe(_sink);
     }
 
     /// <summary>Disposes the subscription and clears the stack.</summary>

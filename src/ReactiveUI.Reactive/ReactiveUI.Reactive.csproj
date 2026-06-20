@@ -1,0 +1,109 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- System.Reactive-flavoured leaf: recompiles the shared ReactiveUI seam source (ReactiveUI.Shared)
+         with RxVoid bound to System.Reactive.Unit (alias + REACTIVE_SHIM come from Directory.Build.props
+         via the 'Reactive' name suffix), shifting those types to the ReactiveUI.Reactive.* namespace.
+         The seam-free engine comes from ReactiveUI.Core; the System.Reactive Primitives equivalents come
+         from ReactiveUI.Primitives.Reactive. Carries the android + apple + windows platform legs (compiling
+         ReactiveUI's Platforms/android + apple-common/ios/mac/tvos/uikit-common + net-for-windows under
+         REACTIVE_SHIM); the windows leg backs the WinUI/Maui .Reactive leaves. Apple TFMs are gated to
+         Windows/macOS like the lean engine; windows TFMs build everywhere via EnableWindowsTargeting. -->
+    <TargetFrameworks>$(ReactiveUICoreTargets);$(ReactiveUIFrameworkTargets);$(ReactiveUIWindowsTargets);$(ReactiveUIAndroidTargets)</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(TargetFrameworks);$(ReactiveUIAppleTargets)</TargetFrameworks>
+    <AssemblyName>ReactiveUI.Reactive</AssemblyName>
+    <RootNamespace>ReactiveUI.Reactive</RootNamespace>
+    <PackageId>ReactiveUI.Reactive</PackageId>
+    <PackageDescription>ReactiveUI recompiled against System.Reactive's Unit for seamless interop with System.Reactive consumers.</PackageDescription>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">35.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <!-- Neutral (non-seam) namespaces the recompiled/shared source uses; the seam set lives in ReactiveShim.props. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Primitives.Disposables"/>
+  </ItemGroup>
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <WindowsSdkPackageVersion Condition="$([System.String]::Copy('$(TargetFramework)').EndsWith('-windows10.0.19041.0'))">10.0.19041.57</WindowsSdkPackageVersion>
+    <DefineConstants>$(DefineConstants);WINUI_TARGET</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net8.0')) or $(TargetFramework.StartsWith('net9.0')) or $(TargetFramework.StartsWith('net10.0')) or $(TargetFramework.StartsWith('net11.0'))">
+    <IsAotCompatible>true</IsAotCompatible>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <PackageReference Include="System.ComponentModel.Annotations"/>
+    <PackageReference Include="System.Text.Json"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReactiveUI.Core\ReactiveUI.Core.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Primitives.Reactive" ExcludeAssets="analyzers" />
+    <PackageReference Include="Splat" />
+  </ItemGroup>
+
+  <!-- Neutral (non-seam) namespaces used pervasively by the recompiled shared source. ReactiveUI.Internal holds
+       the unshifted plumbing types (DelegateObserver, ObservedChangeValueSelector); the shifted ReactiveUI.Reactive.*
+       siblings come from ReactiveShim.props. Declared per-csproj rather than in the shim because they do not differ
+       between the lean and .Reactive sides. -->
+  <ItemGroup>
+    <Using Include="ReactiveUI.Internal" />
+  </ItemGroup>
+
+  <!-- The same RxVoid-aware seam source the lean leaf compiles, recompiled here under REACTIVE_SHIM. -->
+  <ItemGroup>
+    <Compile Include="..\ReactiveUI.Shared\**\*.cs" Link="ReactiveUI.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <!-- Internal plumbing helpers from src/Shared used by the seam source: each leaf compiles its own
+       internal copy (Core has its own; internal keeps them assembly-private, so no cross-assembly clash). -->
+  <ItemGroup>
+    <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>
+    <Compile Include="..\Shared\DelegateObserver.cs" Link="Shared\DelegateObserver.cs"/>
+  </ItemGroup>
+  <!-- Base .NET platform registration (not a workload platform) — net/net4 + windows TFMs (mirrors lean's net group). -->
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net11.0' or '$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0')) ">
+    <Compile Include="..\ReactiveUI\Platforms\net\**\*.cs" Link="Platforms\net\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <!-- Android platform leg: the same ReactiveUI Platforms/android source the lean engine compiles, recompiled
+       here under REACTIVE_SHIM (flipped to ReactiveUI.Reactive.*). Mirrors the lean ReactiveUI android group. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Include="..\ReactiveUI\Platforms\android\**\*.cs" Link="Platforms\android\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\mobile-common\**\*.cs" Link="Platforms\mobile-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+  </ItemGroup>
+
+  <!-- Apple platform legs: the same ReactiveUI Platforms apple source the lean engine compiles, recompiled
+       here under REACTIVE_SHIM (flipped to ReactiveUI.Reactive.*). Mirrors the lean ReactiveUI apple groups. -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <Compile Include="..\ReactiveUI\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\ios\**\*.cs" Link="Platforms\ios\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\uikit-common\**\*.cs" Link="Platforms\uikit-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\mobile-common\**\*.cs" Link="Platforms\mobile-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">
+    <Compile Include="..\ReactiveUI\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\mac\**\*.cs" Link="Platforms\mac\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\mobile-common\**\*.cs" Link="Platforms\mobile-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\ReactiveUI\Platforms\apple-common\**\*.cs" Link="Platforms\apple-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\tvos\**\*.cs" Link="Platforms\tvos\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\uikit-common\**\*.cs" Link="Platforms\uikit-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+    <Compile Include="..\ReactiveUI\Platforms\mobile-common\**\*.cs" Link="Platforms\mobile-common\%(RecursiveDir)%(Filename)%(Extension)"/>
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+    <Compile Include="..\Shared\Platform\FromEventObservable.cs" Link="Shared\Platform\FromEventObservable.cs"/>
+    <Compile Include="..\Shared\Platform\EventPatternObservable.cs" Link="Shared\Platform\EventPatternObservable.cs"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReactiveUI.Reactive.Tests"/>
+    <InternalsVisibleTo Include="ReactiveUI.Wpf.Tests.Reactive"/>
+    <InternalsVisibleTo Include="ReactiveUI.WinForms.Tests.Reactive"/>
+  </ItemGroup>
+</Project>

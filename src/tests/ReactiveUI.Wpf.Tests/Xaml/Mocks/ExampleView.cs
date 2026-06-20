@@ -5,7 +5,5 @@
 
 namespace ReactiveUI.Tests.Mocks;
 
-/// <summary>
-/// A view for <see cref="ExampleViewModel"/>.
-/// </summary>
+/// <summary>A view for <see cref="ExampleViewModel"/>.</summary>
 public class ExampleView : ReactiveUserControl<ExampleViewModel>;

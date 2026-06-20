@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Utilities.Schedulers;
@@ -14,20 +12,16 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.ObservedChanged;
 
-/// <summary>
-///     Tests for the ObservedChangedMixin.
-/// </summary>
+/// <summary>Tests for the ObservedChangedMixins.</summary>
 public class ObservedChangedMixinTest
 {
-    /// <summary>
-    ///     Tests to make sure that BindTo can handle intermediate object switching.
-    /// </summary>
+    /// <summary>Tests to make sure that BindTo can handle intermediate object switching.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
     public async Task BindToIsNotFooledByIntermediateObjectSwitching()
     {
-        var input = new Subject<string>();
+        var input = new Signal<string>();
         var fixture = new HostTestFixture { Child = new() };
 
         input.BindTo(fixture, static x => x.Child!.IsNotNullString);
@@ -50,15 +44,13 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.Child!.IsNotNullString).IsEqualTo("Bar");
     }
 
-    /// <summary>
-    ///     Runs a smoke test for the BindTo functionality.
-    /// </summary>
+    /// <summary>Runs a smoke test for the BindTo functionality.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
     public async Task BindToSmokeTest()
     {
-        var input = new Subject<string>();
+        var input = new Signal<string>();
         var fixture = new HostTestFixture { Child = new() };
 
         input.BindTo(fixture, static x => x.Child!.IsNotNullString);
@@ -76,9 +68,7 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Bar");
     }
 
-    /// <summary>
-    ///     Tests to make sure that BindTo can handle Stack Overflow conditions.
-    /// </summary>
+    /// <summary>Tests to make sure that BindTo can handle Stack Overflow conditions.</summary>
     [Test]
     public void BindToStackOverFlowTest()
     {
@@ -87,25 +77,22 @@ public class ObservedChangedMixinTest
         // event storm. The critical issue is that the
         // property StackOverflowTrigger will clone the
         // value before setting it.
-        //
         // If this test executes through without hanging then
         // the problem has been fixed.
         var fixtureA = new TestFixture();
 
-        var source = new BehaviorSubject<List<string>>([]);
+        var source = new BehaviorSignal<List<string>>([]);
 
         source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
     }
 
-    /// <summary>
-    ///     Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.
-    /// </summary>
+    /// <summary>Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
     public async Task DisposingDisconnectsTheBindTo()
     {
-        var input = new Subject<string>();
+        var input = new Signal<string>();
         var fixture = new HostTestFixture { Child = new() };
 
         var subscription = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
@@ -125,22 +112,18 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.Child.IsNotNullString).IsEqualTo("Foo");
     }
 
-    /// <summary>
-    ///     Tests that GetPropertyName throws for null item.
-    /// </summary>
+    /// <summary>Tests that GetPropertyName throws for null item.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetPropertyName_NullItem_Throws()
     {
         const IObservedChange<TestFixture, string?> item = null!;
 
-        await Assert.That(() => item.GetPropertyName())
+        await Assert.That(() => item!.GetPropertyName())
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that GetPropertyName returns the property name.
-    /// </summary>
+    /// <summary>Tests that GetPropertyName returns the property name.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetPropertyName_ReturnsPropertyName()
@@ -152,35 +135,29 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.GetPropertyName()).IsEqualTo("IsOnlyOneWord");
     }
 
-    /// <summary>
-    ///     Tests that GetValue throws for null item.
-    /// </summary>
+    /// <summary>Tests that GetValue throws for null item.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValue_NullItem_Throws()
     {
         const IObservedChange<TestFixture, string?> item = null!;
 
-        await Assert.That(() => item.GetValue())
+        await Assert.That(item.GetValue)
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that GetValueOrDefault throws for null item.
-    /// </summary>
+    /// <summary>Tests that GetValueOrDefault throws for null item.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueOrDefault_NullItem_Throws()
     {
         const IObservedChange<TestFixture, string?> item = null!;
 
-        await Assert.That(() => item.GetValueOrDefault())
+        await Assert.That(item.GetValueOrDefault)
             .Throws<ArgumentNullException>();
     }
 
-    /// <summary>
-    ///     Tests that GetValueOrDefault returns default when property chain is null.
-    /// </summary>
+    /// <summary>Tests that GetValueOrDefault returns default when property chain is null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueOrDefault_WithNullInChain_ReturnsDefault()
@@ -193,9 +170,7 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.GetValueOrDefault()).IsNull();
     }
 
-    /// <summary>
-    ///     Tests that GetValueOrDefault returns value when property is not null.
-    /// </summary>
+    /// <summary>Tests that GetValueOrDefault returns value when property is not null.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueOrDefault_WithValue_ReturnsValue()
@@ -208,9 +183,7 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.GetValueOrDefault()).IsEqualTo("Foo");
     }
 
-    /// <summary>
-    ///     Tests that getting the value should actually return the value.
-    /// </summary>
+    /// <summary>Tests that getting the value should actually return the value.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -222,7 +195,7 @@ public class ObservedChangedMixinTest
         var fixture = new TestFixture();
 
         // ...whereas ObservableForProperty *is* guaranteed to.
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue()).WhereNotNull().Subscribe(output.Add);
+        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue())).Subscribe(output.Add);
 
         foreach (var v in input)
         {
@@ -233,9 +206,7 @@ public class ObservedChangedMixinTest
         await input.AssertAreEqual(output);
     }
 
-    /// <summary>
-    ///     Tests that getting the value should return the value from a path.
-    /// </summary>
+    /// <summary>Tests that getting the value should return the value from a path.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetValueShouldReturnTheValueFromAPath()
@@ -248,9 +219,7 @@ public class ObservedChangedMixinTest
         await Assert.That(fixture.GetValue()).IsEqualTo("Foo");
     }
 
-    /// <summary>
-    ///     Runs a smoke test that sets the value path.
-    /// </summary>
+    /// <summary>Runs a smoke test that sets the value path.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     public async Task SetValuePathSmokeTest()
@@ -267,9 +236,7 @@ public class ObservedChangedMixinTest
         await Assert.That(output.Child.IsNotNullString).IsEqualTo("Bar");
     }
 
-    /// <summary>
-    ///     Tests that Value extension method converts changes to values.
-    /// </summary>
+    /// <summary>Tests that Value extension method converts changes to values.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WithSchedulerExecutor>]
@@ -280,7 +247,7 @@ public class ObservedChangedMixinTest
 
         var fixture = new TestFixture();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value().WhereNotNull().Subscribe(output.Add);
+        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value()).Subscribe(output.Add);
 
         foreach (var v in input)
         {

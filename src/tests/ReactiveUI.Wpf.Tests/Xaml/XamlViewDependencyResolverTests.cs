@@ -9,15 +9,11 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests associated with UI and the <see cref="IDependencyResolver"/>.
-/// </summary>
+/// <summary>Tests associated with UI and the <see cref="IDependencyResolver"/>.</summary>
 [TestExecutor<WpfViewResolverTestExecutor>]
 public sealed class XamlViewDependencyResolverTests
 {
-    /// <summary>
-    /// Test that register views for view model should register all views.
-    /// </summary>
+    /// <summary>Test that register views for view model should register all views.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task RegisterViewsForViewModelShouldRegisterAllViews()
@@ -34,9 +30,7 @@ public sealed class XamlViewDependencyResolverTests
         }
     }
 
-    /// <summary>
-    /// Test that register views for view model should include contracts.
-    /// </summary>
+    /// <summary>Test that register views for view model should include contracts.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task RegisterViewsForViewModelShouldIncludeContracts()

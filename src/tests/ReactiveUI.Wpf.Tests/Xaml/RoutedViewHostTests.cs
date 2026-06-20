@@ -3,12 +3,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
 using System.Windows;
 using System.Windows.Threading;
-
-using DynamicData;
-using ReactiveUI.Builder;
 using ReactiveUI.Tests.Utilities;
 using ReactiveUI.Tests.Utilities.AppBuilder;
 using ReactiveUI.Tests.Wpf;
@@ -17,9 +13,7 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Xaml;
 
-/// <summary>
-/// Tests for RoutedViewHost.
-/// </summary>
+/// <summary>Tests for RoutedViewHost.</summary>
 /// <remarks>
 /// This test fixture is marked as NonParallelizable because tests modify
 /// global service locator state.
@@ -28,11 +22,10 @@ namespace ReactiveUI.Tests.Xaml;
 [TestExecutor<WpfTestExecutor>]
 public class RoutedViewHostTests
 {
+    /// <summary>The expected activation sequence used to assert the host activates once.</summary>
     private static readonly bool[] _expectedActivated = [true];
 
-    /// <summary>
-    /// Verifies that the routed view host shows its default content when activated with no route.
-    /// </summary>
+    /// <summary>Verifies that the routed view host shows its default content when activated with no route.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task RoutedViewHostDefaultContentNotNull()
@@ -43,7 +36,7 @@ public class RoutedViewHostTests
         };
 
         var activation = new ActivationForViewFetcher();
-        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
@@ -57,15 +50,13 @@ public class RoutedViewHostTests
         await Assert.That(uc.Content).IsNotNull();
     }
 
-    /// <summary>
-    /// Verifies the routed view host resolves the routed view after activation.
-    /// </summary>
+    /// <summary>Verifies the routed view host resolves the routed view after activation.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndActivated()
     {
-        var router = new RoutingState(ImmediateScheduler.Instance);
+        var router = new RoutingState(Sequencer.Immediate);
         var viewModel = new TestViewModel();
 
         var uc = new RoutedViewHost
@@ -75,7 +66,7 @@ public class RoutedViewHostTests
         };
 
         var activation = new ActivationForViewFetcher();
-        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Simulate activation by raising the Loaded event
         var loaded = new RoutedEventArgs
@@ -94,15 +85,13 @@ public class RoutedViewHostTests
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
     }
 
-    /// <summary>
-    /// Verifies the routed view host resolves a view navigated to before activation.
-    /// </summary>
+    /// <summary>Verifies the routed view host resolves a view navigated to before activation.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     [TestExecutor<WpfWithViewAndRoutingExecutor>]
     public async Task RoutedViewHostDefaultContentNotNullWithViewModelAndNotActivated()
     {
-        var router = new RoutingState(ImmediateScheduler.Instance);
+        var router = new RoutingState(Sequencer.Immediate);
         var viewModel = new TestViewModel();
 
         var uc = new RoutedViewHost
@@ -112,7 +101,7 @@ public class RoutedViewHostTests
         };
 
         var activation = new ActivationForViewFetcher();
-        activation.GetActivationForView(uc).ToObservableChangeSet(scheduler: ImmediateScheduler.Instance).Bind(out var controlActivated).Subscribe();
+        var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Test navigation before Activation.
         router.Navigate.Execute(viewModel).Subscribe();
@@ -130,14 +119,10 @@ public class RoutedViewHostTests
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
     }
 
-    /// <summary>
-    /// Test executor for RoutedViewHost tests that require view registration.
-    /// </summary>
+    /// <summary>Test executor for RoutedViewHost tests that require view registration.</summary>
     public class WpfWithViewAndRoutingExecutor : STAThreadExecutor
     {
-        /// <summary>
-        /// Helper that manages app builder setup and teardown for the test.
-        /// </summary>
+        /// <summary>Helper that manages app builder setup and teardown for the test.</summary>
         private readonly AppBuilderTestHelper _helper = new();
 
         /// <inheritdoc/>
@@ -157,8 +142,8 @@ public class RoutedViewHostTests
                 // Note: WithWpf() skips scheduler setup when InUnitTestRunner() is true,
                 // so we must manually configure it for tests that need WPF controls
                 var dispatcher = Dispatcher.CurrentDispatcher;
-                RxSchedulers.MainThreadScheduler = new DispatcherScheduler(dispatcher);
-                RxSchedulers.TaskpoolScheduler = TaskPoolScheduler.Default;
+                RxSchedulers.MainThreadScheduler = new DispatcherSequencer(dispatcher);
+                RxSchedulers.TaskpoolScheduler = TaskPoolSequencer.Default;
             });
         }
 

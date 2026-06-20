@@ -3,15 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Reactive.Concurrency;
-using ReactiveUI.Helpers;
-using ReactiveUI.Internal;
-
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive.Blend;
+#else
 namespace ReactiveUI.Blend;
+#endif
 
-/// <summary>
-/// Subscribes to a source observable and marshals each notification to delegate callbacks on a scheduler.
-/// </summary>
+/// <summary>Subscribes to a source observable and marshals each notification to delegate callbacks on a scheduler.</summary>
 /// <remarks>
 /// A dedicated, allocation-light fusion of <c>ObserveOn(scheduler).Subscribe(onNext, onError)</c> used by the
 /// Blend behaviors: the sink is its own observer, schedules each value and error onto the supplied scheduler, and
@@ -21,7 +19,7 @@ namespace ReactiveUI.Blend;
 internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
 {
     /// <summary>The scheduler each notification is delivered on.</summary>
-    private readonly IScheduler _scheduler;
+    private readonly ISequencer _scheduler;
 
     /// <summary>The per-value callback.</summary>
     private readonly Action<T> _onNext;
@@ -36,16 +34,14 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
     /// <param name="scheduler">The scheduler each notification is delivered on.</param>
     /// <param name="onNext">The per-value callback.</param>
     /// <param name="onError">The error callback.</param>
-    private ScheduledObserver(IScheduler scheduler, Action<T> onNext, Action<Exception> onError)
+    private ScheduledObserver(ISequencer scheduler, Action<T> onNext, Action<Exception> onError)
     {
         _scheduler = scheduler;
         _onNext = onNext;
         _onError = onError;
     }
 
-    /// <summary>
-    /// Subscribes to <paramref name="source"/>, delivering notifications to the callbacks on <paramref name="scheduler"/>.
-    /// </summary>
+    /// <summary>Subscribes to <paramref name="source"/>, delivering notifications to the callbacks on <paramref name="scheduler"/>.</summary>
     /// <param name="source">The source observable.</param>
     /// <param name="scheduler">The scheduler each notification is delivered on.</param>
     /// <param name="onNext">The per-value callback.</param>
@@ -53,7 +49,7 @@ internal sealed class ScheduledObserver<T> : IObserver<T>, IDisposable
     /// <returns>A disposable that tears down the subscription.</returns>
     public static IDisposable Subscribe(
         IObservable<T> source,
-        IScheduler scheduler,
+        ISequencer scheduler,
         Action<T> onNext,
         Action<Exception> onError)
     {

@@ -7,16 +7,12 @@ using TUnit.Core.Executors;
 
 namespace ReactiveUI.Tests.Wpf;
 
-/// <summary>
-/// Tests for <see cref="PlatformOperations"/>.
-/// </summary>
+/// <summary>Tests for <see cref="PlatformOperations"/>.</summary>
 [NotInParallel]
 [TestExecutor<WpfTestExecutor>]
 public class PlatformOperationsTest
 {
-    /// <summary>
-    /// Tests that GetOrientation returns null on WPF.
-    /// </summary>
+    /// <summary>Tests that GetOrientation returns null on WPF.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task GetOrientation_ReturnsNull()

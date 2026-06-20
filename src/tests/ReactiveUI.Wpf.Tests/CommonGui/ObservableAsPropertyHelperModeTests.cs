@@ -10,14 +10,10 @@ using ReactiveUI.TestGuiMocks.CommonGuiMocks.Mocks;
 
 namespace ReactiveUI.Tests;
 
-/// <summary>
-/// OAPH mode tests.
-/// </summary>
+/// <summary>OAPH mode tests.</summary>
 public class ObservableAsPropertyHelperModeTests
 {
-    /// <summary>
-    /// Tests that ToProperty should only subscribe only once.
-    /// </summary>
+    /// <summary>Tests that ToProperty should only subscribe only once.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ToPropertyShouldSubscribeOnlyOnce()
@@ -42,9 +38,7 @@ public class ObservableAsPropertyHelperModeTests
         }
     }
 
-    /// <summary>
-    /// Tests to make sure that ToProperty overload with the nameof only subscribes once.
-    /// </summary>
+    /// <summary>Tests to make sure that ToProperty overload with the nameof only subscribes once.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
     public async Task ToProperty_NameOf_ShouldSubscribeOnlyOnce()

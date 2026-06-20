@@ -4,12 +4,15 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Subjects;
-using ReactiveUI.Internal;
 
 namespace ReactiveUI.Tests.WhenAny;
 
-/// <content>Direct arity-9 <c>WhenAnyValueSink</c> coverage.</content>
+/// <summary>
+/// Direct tests for the internal <c>WhenAnyValueSink</c> and <c>WhenAnyChangeSink</c> combinators, exercising the
+/// per-source emit branches, error forwarding, source-completion, and selector-exception paths that the public
+/// <c>WhenAnyValue</c> API cannot reach (property-change observables never error or complete). Each arity lives in
+/// its own partial-class file.
+/// </summary>
 [SuppressMessage("Major Code Smell", "S107", Justification = "Variadic selectors intentionally accept more than seven parameters.")]
 public partial class WhenAnySinkDirectTests
 {
@@ -18,15 +21,15 @@ public partial class WhenAnySinkDirectTests
     [Test]
     public async Task ValueSink9_Emits()
     {
-        var s1 = new Subject<IObservedChange<object?, string>>();
-        var s2 = new Subject<IObservedChange<object?, string>>();
-        var s3 = new Subject<IObservedChange<object?, string>>();
-        var s4 = new Subject<IObservedChange<object?, string>>();
-        var s5 = new Subject<IObservedChange<object?, string>>();
-        var s6 = new Subject<IObservedChange<object?, string>>();
-        var s7 = new Subject<IObservedChange<object?, string>>();
-        var s8 = new Subject<IObservedChange<object?, string>>();
-        var s9 = new Subject<IObservedChange<object?, string>>();
+        var s1 = new Signal<IObservedChange<object?, string>>();
+        var s2 = new Signal<IObservedChange<object?, string>>();
+        var s3 = new Signal<IObservedChange<object?, string>>();
+        var s4 = new Signal<IObservedChange<object?, string>>();
+        var s5 = new Signal<IObservedChange<object?, string>>();
+        var s6 = new Signal<IObservedChange<object?, string>>();
+        var s7 = new Signal<IObservedChange<object?, string>>();
+        var s8 = new Signal<IObservedChange<object?, string>>();
+        var s9 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
         using var sub = new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string>(
             s1,
@@ -65,15 +68,15 @@ public partial class WhenAnySinkDirectTests
     public async Task ValueSink9_ForwardsError()
     {
         var ex = new InvalidOperationException("boom");
-        var e1 = new Subject<IObservedChange<object?, string>>();
-        var e2 = new Subject<IObservedChange<object?, string>>();
-        var e3 = new Subject<IObservedChange<object?, string>>();
-        var e4 = new Subject<IObservedChange<object?, string>>();
-        var e5 = new Subject<IObservedChange<object?, string>>();
-        var e6 = new Subject<IObservedChange<object?, string>>();
-        var e7 = new Subject<IObservedChange<object?, string>>();
-        var e8 = new Subject<IObservedChange<object?, string>>();
-        var e9 = new Subject<IObservedChange<object?, string>>();
+        var e1 = new Signal<IObservedChange<object?, string>>();
+        var e2 = new Signal<IObservedChange<object?, string>>();
+        var e3 = new Signal<IObservedChange<object?, string>>();
+        var e4 = new Signal<IObservedChange<object?, string>>();
+        var e5 = new Signal<IObservedChange<object?, string>>();
+        var e6 = new Signal<IObservedChange<object?, string>>();
+        var e7 = new Signal<IObservedChange<object?, string>>();
+        var e8 = new Signal<IObservedChange<object?, string>>();
+        var e9 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string>(
             e1,
@@ -96,15 +99,15 @@ public partial class WhenAnySinkDirectTests
     [Test]
     public async Task ValueSink9_Completes()
     {
-        var k1 = new Subject<IObservedChange<object?, string>>();
-        var k2 = new Subject<IObservedChange<object?, string>>();
-        var k3 = new Subject<IObservedChange<object?, string>>();
-        var k4 = new Subject<IObservedChange<object?, string>>();
-        var k5 = new Subject<IObservedChange<object?, string>>();
-        var k6 = new Subject<IObservedChange<object?, string>>();
-        var k7 = new Subject<IObservedChange<object?, string>>();
-        var k8 = new Subject<IObservedChange<object?, string>>();
-        var k9 = new Subject<IObservedChange<object?, string>>();
+        var k1 = new Signal<IObservedChange<object?, string>>();
+        var k2 = new Signal<IObservedChange<object?, string>>();
+        var k3 = new Signal<IObservedChange<object?, string>>();
+        var k4 = new Signal<IObservedChange<object?, string>>();
+        var k5 = new Signal<IObservedChange<object?, string>>();
+        var k6 = new Signal<IObservedChange<object?, string>>();
+        var k7 = new Signal<IObservedChange<object?, string>>();
+        var k8 = new Signal<IObservedChange<object?, string>>();
+        var k9 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string>(
             k1,
@@ -135,15 +138,15 @@ public partial class WhenAnySinkDirectTests
     public async Task ValueSink9_SelectorThrows()
     {
         var ex = new InvalidOperationException("selector");
-        var t1 = new Subject<IObservedChange<object?, string>>();
-        var t2 = new Subject<IObservedChange<object?, string>>();
-        var t3 = new Subject<IObservedChange<object?, string>>();
-        var t4 = new Subject<IObservedChange<object?, string>>();
-        var t5 = new Subject<IObservedChange<object?, string>>();
-        var t6 = new Subject<IObservedChange<object?, string>>();
-        var t7 = new Subject<IObservedChange<object?, string>>();
-        var t8 = new Subject<IObservedChange<object?, string>>();
-        var t9 = new Subject<IObservedChange<object?, string>>();
+        var t1 = new Signal<IObservedChange<object?, string>>();
+        var t2 = new Signal<IObservedChange<object?, string>>();
+        var t3 = new Signal<IObservedChange<object?, string>>();
+        var t4 = new Signal<IObservedChange<object?, string>>();
+        var t5 = new Signal<IObservedChange<object?, string>>();
+        var t6 = new Signal<IObservedChange<object?, string>>();
+        var t7 = new Signal<IObservedChange<object?, string>>();
+        var t8 = new Signal<IObservedChange<object?, string>>();
+        var t9 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
         new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string>(
             t1,

@@ -7,14 +7,10 @@ using System.Globalization;
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable DateTime to strings.
-/// </summary>
+/// <summary>Tests for converting nullable DateTime to strings.</summary>
 public class NullableDateTimeToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -24,9 +20,7 @@ public class NullableDateTimeToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a date-time value to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a date-time value to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
@@ -36,7 +30,7 @@ public class NullableDateTimeToStringTypeConverterTests
     public async Task TryConvert_DateTime_Succeeds()
     {
         var converter = new NullableDateTimeToStringTypeConverter();
-        DateTime? value = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Unspecified);
+        DateTime? value = new DateTime(2_024, 1, 15, 10, 30, 45, DateTimeKind.Unspecified);
 
         var result = converter.TryConvert(value, null, out var output);
 
@@ -44,9 +38,7 @@ public class NullableDateTimeToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(value.Value.ToString(CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds and yields a null string.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds and yields a null string.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsNullString()

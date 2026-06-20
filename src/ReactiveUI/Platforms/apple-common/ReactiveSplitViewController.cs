@@ -4,8 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Reactive;
-using System.Reactive.Subjects;
 using Foundation;
 
 #if UIKIT
@@ -14,8 +12,11 @@ using NSSplitViewController = UIKit.UISplitViewController;
 using AppKit;
 #endif
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
+#endif
 /// <summary>
 /// This is a View that is both a NSSplitViewController and has ReactiveObject powers
 /// (i.e. you can call RaiseAndSetIfChanged).
@@ -23,15 +24,13 @@ namespace ReactiveUI;
 public abstract class ReactiveSplitViewController : NSSplitViewController, IReactiveNotifyPropertyChanged<ReactiveSplitViewController>, IHandleObservableErrors, IReactiveObject, ICanActivate
 {
     /// <summary>The subject used to signal view activation.</summary>
-    private readonly Subject<Unit> _activated = new();
+    private readonly Signal<RxVoid> _activated = new();
 
     /// <summary>The subject used to signal view deactivation.</summary>
-    private readonly Subject<Unit> _deactivated = new();
+    private readonly Signal<RxVoid> _deactivated = new();
 
 #if UIKIT
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.</summary>
     /// <param name="nibName">The name.</param>
     /// <param name="bundle">The bundle.</param>
     protected ReactiveSplitViewController(string nibName, NSBundle bundle)
@@ -40,36 +39,28 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     }
 #endif
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.</summary>
     /// <param name="handle">The pointer.</param>
     protected ReactiveSplitViewController(in IntPtr handle)
         : base(handle)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.</summary>
     /// <param name="t">The object flag.</param>
     protected ReactiveSplitViewController(NSObjectFlag t)
         : base(t)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.</summary>
     /// <param name="coder">The coder.</param>
     protected ReactiveSplitViewController(NSCoder coder)
         : base(coder)
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReactiveSplitViewController"/> class.</summary>
     protected ReactiveSplitViewController()
     {
     }
@@ -90,10 +81,10 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public IObservable<Exception> ThrownExceptions => this.GetThrownExceptionsObservable();
 
     /// <inheritdoc/>
-    public IObservable<Unit> Activated => _activated;
+    public IObservable<RxVoid> Activated => _activated;
 
     /// <inheritdoc/>
-    public IObservable<Unit> Deactivated => _deactivated;
+    public IObservable<RxVoid> Deactivated => _deactivated;
 
     /// <inheritdoc/>
     void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
@@ -115,7 +106,7 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public override void ViewWillAppear(bool animated)
     {
         base.ViewWillAppear(animated);
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
         this.ActivateSubviews(true);
     }
 
@@ -123,7 +114,7 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public override void ViewDidDisappear(bool animated)
     {
         base.ViewDidDisappear(animated);
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
         this.ActivateSubviews(false);
     }
 
@@ -132,7 +123,7 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public override void ViewWillAppear()
     {
         base.ViewWillAppear();
-        _activated.OnNext(Unit.Default);
+        _activated.OnNext(RxVoid.Default);
         this.ActivateSubviews(true);
     }
 
@@ -140,7 +131,7 @@ public abstract class ReactiveSplitViewController : NSSplitViewController, IReac
     public override void ViewDidDisappear()
     {
         base.ViewDidDisappear();
-        _deactivated.OnNext(Unit.Default);
+        _deactivated.OnNext(RxVoid.Default);
         this.ActivateSubviews(false);
     }
 #endif

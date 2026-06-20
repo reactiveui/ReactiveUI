@@ -3,20 +3,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+#if REACTIVE_SHIM
+namespace ReactiveUI.Reactive;
+#else
 namespace ReactiveUI;
-
-/// <summary>
-/// The type of update triggered.
-/// </summary>
+#endif
+/// <summary>The type of update triggered.</summary>
 public enum UpdateType
 {
-    /// <summary>
-    /// An add update.
-    /// </summary>
+    /// <summary>An add update.</summary>
     Add,
 
-    /// <summary>
-    /// A delete update.
-    /// </summary>
+    /// <summary>A delete update.</summary>
     Delete
 }

@@ -5,14 +5,10 @@
 
 namespace ReactiveUI.Tests.Bindings.TypeConverters;
 
-/// <summary>
-/// Tests for converting nullable DateTimeOffset to strings.
-/// </summary>
+/// <summary>Tests for converting nullable DateTimeOffset to strings.</summary>
 public class NullableDateTimeOffsetToStringTypeConverterTests
 {
-    /// <summary>
-    /// Verifies that the converter reports an affinity of 2.
-    /// </summary>
+    /// <summary>Verifies that the converter reports an affinity of 2.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task GetAffinityForObjects_Returns2()
@@ -22,15 +18,13 @@ public class NullableDateTimeOffsetToStringTypeConverterTests
         await Assert.That(affinity).IsEqualTo(BindingAffinity.DefaultInternalTypeConverter);
     }
 
-    /// <summary>
-    /// Verifies that converting a date-time offset value to a string succeeds.
-    /// </summary>
+    /// <summary>Verifies that converting a date-time offset value to a string succeeds.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_DateTimeOffset_Succeeds()
     {
         var converter = new NullableDateTimeOffsetToStringTypeConverter();
-        DateTimeOffset? value = new DateTimeOffset(2024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
+        DateTimeOffset? value = new DateTimeOffset(2_024, 1, 15, 10, 30, 45, TimeSpan.FromHours(-5));
 
         var result = converter.TryConvert(value, null, out var output);
 
@@ -38,9 +32,7 @@ public class NullableDateTimeOffsetToStringTypeConverterTests
         await Assert.That(output).IsEqualTo(value.Value.ToString());
     }
 
-    /// <summary>
-    /// Verifies that converting a null value succeeds and yields a null string.
-    /// </summary>
+    /// <summary>Verifies that converting a null value succeeds and yields a null string.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task TryConvert_Null_ReturnsNullString()
