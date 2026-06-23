@@ -47,7 +47,7 @@ public class MessageBusExtensionsTests
 
         using (testBus.WithMessageBus())
         {
-            MessageBus.Current.Listen<string>().Subscribe(Witness.Create<string>(_ => messageReceived = true));
+            _ = MessageBus.Current.Listen<string>().Subscribe(Witness.Create<string>(_ => messageReceived = true));
 
             // Act
             MessageBus.Current.SendMessage("test");
@@ -145,7 +145,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        testBus.With(() => ExpectedFunctionResult);
+        _ = testBus.With(() => ExpectedFunctionResult);
 
         // Assert
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
