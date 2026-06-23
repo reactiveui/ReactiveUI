@@ -142,7 +142,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         foreach (var node in expression.GetExpressionChain())
         {
             var name = node.GetMemberInfo()?.Name;
-            if (!string.IsNullOrEmpty(name))
+            if (name is { Length: > 0 })
             {
                 pathParts.Add(name);
             }

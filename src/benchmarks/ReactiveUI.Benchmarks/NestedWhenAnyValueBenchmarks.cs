@@ -31,7 +31,7 @@ public class NestedWhenAnyValueBenchmarks
     [GlobalSetup]
     public void Setup()
     {
-        _viewModel = new NestedBenchmarkViewModel { Child = new BenchmarkViewModel() };
+        _viewModel = new NestedBenchmarkViewModel { Child = new() };
         _subscription = _viewModel.WhenAnyValue(x => x.Child!.First).Subscribe(_sink);
     }
 
@@ -55,7 +55,7 @@ public class NestedWhenAnyValueBenchmarks
     {
         for (var i = 0; i < EmissionCount; i++)
         {
-            _viewModel.Child = new BenchmarkViewModel();
+            _viewModel.Child = new();
         }
     }
 }

@@ -154,7 +154,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
 
         if (SetTitleOnNavigate)
         {
-            RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
         }
 
         return pg;
@@ -314,7 +314,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return;
         }
 
-        RxSchedulers.MainThreadScheduler.Schedule(() => _ = OnNavigateAsync());
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() => _ = OnNavigateAsync());
     }
 
     /// <summary>Resolves the page for the current view model and pushes it, then resyncs the stacks.</summary>
@@ -365,7 +365,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         });
 
         // NB: User pressed the Application back as opposed to requesting Back via Router.NavigateBack.
-        poppingEvent
+        _ = poppingEvent
             .Subscribe(new DelegateObserver<RxVoid>(_ =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router is not null).
@@ -395,7 +395,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
             return new ActionDisposable(() => PoppedToRoot -= Handler);
         });
 
-        poppingToRootEvent
+        _ = poppingToRootEvent
             .Subscribe(new DelegateObserver<RxVoid>(_ =>
             {
                 // Replaces .Where(_ => !_currentlyNavigating && Router is not null).

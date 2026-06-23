@@ -73,7 +73,7 @@ public class ViewModelViewHost : ContentView, IViewFor
         ViewContractObservable = Signal.Emit<string?>(null);
 
         // Re-resolve when the contract changes; ViewModel changes are handled by OnViewModelPropertyChanged.
-        ViewContractObservable
+        _ = ViewContractObservable
             .Subscribe(new DelegateObserver<string?>(contract =>
             {
                 _viewContract = contract;

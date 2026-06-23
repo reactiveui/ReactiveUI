@@ -43,10 +43,16 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             return 0;
         }
 
-        var match = _config.Keys
-            .Where(x => x.IsAssignableFrom(typeof(T)))
-            .OrderByDescending(x => _config[x].Affinity)
-            .FirstOrDefault();
+        Type? match = null;
+        var bestAffinity = int.MinValue;
+        foreach (var key in _config.Keys)
+        {
+            if (key.IsAssignableFrom(typeof(T)) && _config[key].Affinity > bestAffinity)
+            {
+                bestAffinity = _config[key].Affinity;
+                match = key;
+            }
+        }
 
         if (match is null)
         {
@@ -70,10 +76,22 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         var type = target.GetType();
 
-        var match = _config.Keys
-            .Where(x => x.IsAssignableFrom(type))
-            .OrderByDescending(x => _config[x].Affinity)
-            .FirstOrDefault() ?? throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
+        Type? match = null;
+        var bestAffinity = int.MinValue;
+        foreach (var key in _config.Keys)
+        {
+            if (key.IsAssignableFrom(type) && _config[key].Affinity > bestAffinity)
+            {
+                bestAffinity = _config[key].Affinity;
+                match = key;
+            }
+        }
+
+        if (match is null)
+        {
+            throw new NotSupportedException($"CommandBinding for {type.Name} is not supported");
+        }
+
         var typeProperties = _config[match];
 
         return typeProperties.CreateBinding?.Invoke(command, target, commandParameter) ?? EmptyDisposable.Instance;
