@@ -16,10 +16,10 @@ public class ActivatingViewModelTests
         var fixture = new ActivatingViewModel();
         await Assert.That(fixture.IsActiveCount).IsEqualTo(0);
 
-        fixture.Activator.Activate();
+        _ = fixture.Activator.Activate();
         await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
 
-        fixture.Activator.Activate();
+        _ = fixture.Activator.Activate();
         await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
 
         fixture.Activator.Deactivate();
@@ -42,14 +42,14 @@ public class ActivatingViewModelTests
             await Assert.That(fixture.IsActiveCountAlso).IsEqualTo(0);
         }
 
-        fixture.Activator.Activate();
+        _ = fixture.Activator.Activate();
         using (Assert.Multiple())
         {
             await Assert.That(fixture.IsActiveCount).IsEqualTo(1);
             await Assert.That(fixture.IsActiveCountAlso).IsEqualTo(1);
         }
 
-        fixture.Activator.Activate();
+        _ = fixture.Activator.Activate();
         using (Assert.Multiple())
         {
             await Assert.That(fixture.IsActiveCount).IsEqualTo(1);

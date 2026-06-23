@@ -73,8 +73,8 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
         hostApplication.RegisterActivityLifecycleCallbacks(new ObservableLifecycle(this));
 
         // Both create and save-instance-state callbacks update the latest bundle (replaces a Merge + Subscribe).
-        _onCreate.Subscribe(new DelegateObserver<Bundle?>(static x => LatestBundle = x));
-        _onSaveInstanceState.Subscribe(new DelegateObserver<Bundle?>(static x => LatestBundle = x));
+        _ = _onCreate.Subscribe(new DelegateObserver<Bundle?>(static x => LatestBundle = x));
+        _ = _onSaveInstanceState.Subscribe(new DelegateObserver<Bundle?>(static x => LatestBundle = x));
 
         RxSuspension.SuspensionHost.IsLaunchingNew = new CreateSignalObservable(_onCreate, emitWhenNull: true);
         RxSuspension.SuspensionHost.IsResuming = new CreateSignalObservable(_onCreate, emitWhenNull: false);

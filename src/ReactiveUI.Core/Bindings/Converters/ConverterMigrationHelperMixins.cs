@@ -113,14 +113,32 @@ public static class ConverterMigrationHelperMixins
     {
         ArgumentExceptionHelper.ThrowIfNull(resolver);
 
-        List<IBindingTypeConverter> typed =
-            [.. resolver.GetServices<IBindingTypeConverter>().Where(static c => c is not null)];
+        List<IBindingTypeConverter> typed = [];
+        foreach (var converter in resolver.GetServices<IBindingTypeConverter>())
+        {
+            if (converter is not null)
+            {
+                typed.Add(converter);
+            }
+        }
 
-        List<IBindingFallbackConverter> fallback =
-            [.. resolver.GetServices<IBindingFallbackConverter>().Where(static c => c is not null)];
+        List<IBindingFallbackConverter> fallback = [];
+        foreach (var converter in resolver.GetServices<IBindingFallbackConverter>())
+        {
+            if (converter is not null)
+            {
+                fallback.Add(converter);
+            }
+        }
 
-        List<ISetMethodBindingConverter> setMethod =
-            [.. resolver.GetServices<ISetMethodBindingConverter>().Where(static c => c is not null)];
+        List<ISetMethodBindingConverter> setMethod = [];
+        foreach (var converter in resolver.GetServices<ISetMethodBindingConverter>())
+        {
+            if (converter is not null)
+            {
+                setMethod.Add(converter);
+            }
+        }
 
         return (typed, fallback, setMethod);
     }

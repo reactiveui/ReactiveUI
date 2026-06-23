@@ -37,7 +37,7 @@ internal static class RxAppTestExtensions
         AppLocator.SetLocator(resolver);
 
         // Initialize ReactiveUI with core services
-        RxAppBuilder.CreateReactiveUIBuilder()
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithCoreServices().BuildApp();
     }
 

@@ -20,8 +20,8 @@ public class DisposableMixinsTests
 
         // Act
         const int ExpectedCount = 2;
-        disposable1.DisposeWith(compositeDisposable);
-        disposable2.DisposeWith(compositeDisposable);
+        _ = disposable1.DisposeWith(compositeDisposable);
+        _ = disposable2.DisposeWith(compositeDisposable);
 
         // Assert
         await Assert.That(compositeDisposable).Count().IsEqualTo(ExpectedCount);
@@ -38,7 +38,7 @@ public class DisposableMixinsTests
         var compositeDisposable = new MultipleDisposable();
 
         // Act
-        disposable.DisposeWith(compositeDisposable);
+        _ = disposable.DisposeWith(compositeDisposable);
         compositeDisposable.Dispose();
 
         // Assert

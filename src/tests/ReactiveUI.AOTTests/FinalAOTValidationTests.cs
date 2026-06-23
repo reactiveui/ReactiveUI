@@ -39,12 +39,12 @@ public class FinalAOTValidationTests
 
         // 3. Use interactions (fully AOT-compatible)
         var interaction = new Interaction<string, bool>();
-        interaction.RegisterHandler(context => context.SetOutput(context.Input.Length > MinimumInputLength));
+        _ = interaction.RegisterHandler(context => context.SetOutput(context.Input.Length > MinimumInputLength));
 
         // 4. Use message bus (fully AOT-compatible)
         var messageBus = new MessageBus();
         var messages = new List<string>();
-        messageBus.Listen<string>().Subscribe(messages.Add);
+        _ = messageBus.Listen<string>().Subscribe(messages.Add);
 
         // 5. Test the complete workflow
         property.Value = "test value";
@@ -92,16 +92,16 @@ public class FinalAOTValidationTests
         var taskResult = string.Empty;
         var observableResult = string.Empty;
 
-        simpleCommand.Subscribe(r => simpleResult = r);
-        paramCommand.Subscribe(r => paramResult = r);
-        taskCommand.Subscribe(r => taskResult = r);
-        observableCommand.Subscribe(r => observableResult = r);
+        _ = simpleCommand.Subscribe(r => simpleResult = r);
+        _ = paramCommand.Subscribe(r => paramResult = r);
+        _ = taskCommand.Subscribe(r => taskResult = r);
+        _ = observableCommand.Subscribe(r => observableResult = r);
 
         // Execute commands and wait for completion
-        simpleCommand.Execute().GetAwaiter().GetResult();
-        paramCommand.Execute(CommandParameterValue).GetAwaiter().GetResult();
-        taskCommand.Execute().GetAwaiter().GetResult();
-        observableCommand.Execute().GetAwaiter().GetResult();
+        _ = simpleCommand.Execute().GetAwaiter().GetResult();
+        _ = paramCommand.Execute(CommandParameterValue).GetAwaiter().GetResult();
+        _ = taskCommand.Execute().GetAwaiter().GetResult();
+        _ = observableCommand.Execute().GetAwaiter().GetResult();
 
         using (Assert.Multiple())
         {
@@ -138,23 +138,23 @@ public class FinalAOTValidationTests
 
             // AOT-compatible: Property with explicit scheduler
             var property = new ReactiveProperty<string>("initial", scheduler, false, false);
-            property.DisposeWith(d);
+            _ = property.DisposeWith(d);
 
             // AOT-incompatible but properly suppressed: ReactiveCommand
             var command = ReactiveCommand.Create(() => property.Value = "updated");
-            command.DisposeWith(d);
+            _ = command.DisposeWith(d);
 
             // AOT-compatible: Interactions
             var interaction = new Interaction<RxVoid, bool>();
-            interaction.RegisterHandler(ctx => ctx.SetOutput(true));
+            _ = interaction.RegisterHandler(ctx => ctx.SetOutput(true));
 
             // Execute mixed workflow
-            command.Execute().Subscribe();
+            _ = command.Execute().Subscribe();
             interactionResult = interaction.Handle(RxVoid.Default).GetAwaiter().GetResult();
             propertyValue = property.Value;
         });
 
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
 
         using (Assert.Multiple())
         {
@@ -205,13 +205,13 @@ public class FinalAOTValidationTests
         {
             // Create observables with proper disposal
             var source = new StateSignal<string>("test");
-            source.DisposeWith(disposables);
+            _ = source.DisposeWith(disposables);
 
             var property = new ReactiveProperty<string>(string.Empty, scheduler, false, false);
-            property.DisposeWith(disposables);
+            _ = property.DisposeWith(disposables);
 
             // Connect with error handling
-            source
+            _ = source
                 .Recover<string, Exception>(ex => Signal.Emit($"Error: {ex.Message}"))
                 .Subscribe(value => property.Value = value)
                 .DisposeWith(disposables);

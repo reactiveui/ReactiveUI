@@ -51,7 +51,7 @@ public sealed class ViewMappingBuilder
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>, new()
     {
-        _locator.Map<TViewModel, TView>(() => new(), contract);
+        _ = _locator.Map<TViewModel, TView>(() => new(), contract);
         return this;
     }
 
@@ -87,7 +87,7 @@ public sealed class ViewMappingBuilder
         where TView : class, IViewFor<TViewModel>
     {
         ArgumentExceptionHelper.ThrowIfNull(factory);
-        _locator.Map<TViewModel, TView>(factory, contract);
+        _ = _locator.Map<TViewModel, TView>(factory, contract);
         return this;
     }
 
@@ -120,9 +120,9 @@ public sealed class ViewMappingBuilder
         where TViewModel : class
         where TView : class, IViewFor<TViewModel>
     {
-        _locator.Map<TViewModel, TView>(
+        _ = _locator.Map<TViewModel, TView>(
             () => AppLocator.Current.GetService<TView>() ??
-                  throw new InvalidOperationException($"View {typeof(TView).Name} not registered in service locator"),
+                  throw new InvalidOperationException($"View {nameof(TView)} not registered in service locator"),
             contract);
         return this;
     }

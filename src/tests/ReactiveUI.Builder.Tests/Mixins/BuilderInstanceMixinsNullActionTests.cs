@@ -357,7 +357,7 @@ public class BuilderInstanceMixinsNullActionTests
         protected override void ConfigureBuilder()
         {
             var builder = RxAppBuilder.CreateReactiveUIBuilder();
-            builder.WithRegistrationOnBuild(r =>
+            _ = builder.WithRegistrationOnBuild(r =>
             {
                 r.RegisterConstant(new InstanceService01());
                 r.RegisterConstant(new InstanceService02());
@@ -376,7 +376,7 @@ public class BuilderInstanceMixinsNullActionTests
                 r.RegisterConstant(new InstanceService15());
                 r.RegisterConstant(new InstanceService16());
             });
-            builder.WithCoreServices().BuildApp();
+            _ = builder.WithCoreServices().BuildApp();
         }
     }
 

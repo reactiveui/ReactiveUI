@@ -6,8 +6,8 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>5.4.0</PrimitivesVersion>
-    <TUnitVersion>1.54.0</TUnitVersion>
+    <PrimitivesVersion>5.6.0</PrimitivesVersion>
+    <TUnitVersion>1.56.25</TUnitVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.2</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
@@ -78,7 +78,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Analyzers">
-    <PackageVersion Include="StyleSharp.Analyzers" Version="3.11.2"/>
+    <PackageVersion Include="StyleSharp.Analyzers" Version="3.13.2"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0"/>

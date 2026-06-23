@@ -815,7 +815,7 @@ public class TransitioningContentControlTest
 
         template.VisualTree = grid;
         control.Template = template;
-        control.ApplyTemplate();
+        _ = control.ApplyTemplate();
 
         // Set up visual state groups AFTER applying template
         if (control.Template.FindName(PartContainerName, control) is Grid container)
@@ -826,7 +826,7 @@ public class TransitioningContentControlTest
             AddTransitionStates(stateGroup);
 
             var groups = VisualStateManager.GetVisualStateGroups(container);
-            groups.Add(stateGroup);
+            _ = groups.Add(stateGroup);
 
             // Manually update the PresentationStateGroup property since OnApplyTemplate already ran
             // Get the first group with name "PresentationStates"
@@ -853,7 +853,7 @@ public class TransitioningContentControlTest
 
         template.VisualTree = grid;
         control.Template = template;
-        control.ApplyTemplate();
+        _ = control.ApplyTemplate();
 
         return control;
     }
@@ -863,13 +863,13 @@ public class TransitioningContentControlTest
     private static void AddTransitionStates(VisualStateGroup stateGroup)
     {
         // Normal state
-        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
+        _ = stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
 
         // Fade transition
         var fadeStoryboard = new Storyboard();
         fadeStoryboard.Children.Add(new DoubleAnimation());
         fadeStoryboard.Children.Add(new DoubleAnimation());
-        stateGroup.States.Add(new VisualState { Name = TransitionFadeName, Storyboard = fadeStoryboard });
+        _ = stateGroup.States.Add(new VisualState { Name = TransitionFadeName, Storyboard = fadeStoryboard });
 
         // Add states for each direction and transition type
         var directions = new[] { "Left", "Right", "Up", "Down" };
@@ -884,7 +884,7 @@ public class TransitioningContentControlTest
                     storyboard.Children.Add(new DoubleAnimation());
                 }
 
-                stateGroup.States.Add(new VisualState { Name = $"Transition_{transition}{direction}", Storyboard = storyboard });
+                _ = stateGroup.States.Add(new VisualState { Name = $"Transition_{transition}{direction}", Storyboard = storyboard });
             }
         }
 
@@ -893,14 +893,14 @@ public class TransitioningContentControlTest
         {
             var bounceOutStoryboard = new Storyboard();
             bounceOutStoryboard.Children.Add(new DoubleAnimation());
-            stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}Out", Storyboard = bounceOutStoryboard });
+            _ = stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}Out", Storyboard = bounceOutStoryboard });
 
             var bounceInStoryboard = new Storyboard();
             var keyFrameAnimation = new DoubleAnimationUsingKeyFrames();
-            keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
-            keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
+            _ = keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
+            _ = keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
             bounceInStoryboard.Children.Add(keyFrameAnimation);
-            stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}In", Storyboard = bounceInStoryboard });
+            _ = stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}In", Storyboard = bounceInStoryboard });
         }
     }
 }

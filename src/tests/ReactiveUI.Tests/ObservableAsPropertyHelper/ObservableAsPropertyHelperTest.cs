@@ -49,7 +49,7 @@ public class ObservableAsPropertyHelperTest
     {
         const int ExpectedAccountsFound = 3;
         var fixture = new WhenAnyTestFixture();
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             static x => x.ProjectService.ProjectsNullable,
             static x => x.AccountService.AccountUsersNullable).Where(static tuple => tuple.Value1.Count > 0 && tuple.Value2.Count > 0).Select(static tuple =>
                 {
@@ -270,7 +270,7 @@ public class ObservableAsPropertyHelperTest
         await Assert.That(fixture.IsSubscribed).IsFalse();
 
         int? emittedValue = null;
-        fixture.Source.Subscribe(val => emittedValue = val);
+        _ = fixture.Source.Subscribe(val => emittedValue = val);
 
         using (Assert.Multiple())
         {
@@ -325,7 +325,7 @@ public class ObservableAsPropertyHelperTest
         await Assert.That(fixture.IsSubscribed).IsFalse();
 
         int? emittedValue = null;
-        fixture.Source.Subscribe(val => emittedValue = val);
+        _ = fixture.Source.Subscribe(val => emittedValue = val);
 
         using (Assert.Multiple())
         {
@@ -348,7 +348,7 @@ public class ObservableAsPropertyHelperTest
         await Assert.That(fixture.IsSubscribed).IsTrue();
 
         int? emittedValue = null;
-        fixture.Source.Subscribe(val => emittedValue = val);
+        _ = fixture.Source.Subscribe(val => emittedValue = val);
 
         await Assert.That(emittedValue).IsEqualTo(initialValue);
     }
@@ -452,7 +452,7 @@ public class ObservableAsPropertyHelperTest
         await Assert.That(fixture.Value).IsEqualTo(InitialValue);
         new[] { 1, SecondInput, ThirdInput, ExpectedLastValue }.Run(input.OnNext);
 
-        fixture.ThrownExceptions.Subscribe(errors.Add);
+        _ = fixture.ThrownExceptions.Subscribe(errors.Add);
 
         // ImmediateScheduler executes synchronously, no need for scheduler.Start()
         await Assert.That(fixture.Value).IsEqualTo(ExpectedLastValue);
@@ -548,7 +548,7 @@ public class ObservableAsPropertyHelperTest
         var scheduler = TestContext.Current!.GetScheduler();
         var propertiesChanged = new List<string>();
 
-        Assert.Throws<NotSupportedException>(() =>
+        _ = Assert.Throws<NotSupportedException>(() =>
         {
             var fixture = new OaphIndexerTestFixture(
                 1,
@@ -575,7 +575,7 @@ public class ObservableAsPropertyHelperTest
     {
         const int InvalidPathMode = 2;
         var scheduler = TestContext.Current!.GetScheduler();
-        Assert.Throws<ArgumentException>(() => _ = new OaphIndexerTestFixture(InvalidPathMode, scheduler));
+        _ = Assert.Throws<ArgumentException>(() => _ = new OaphIndexerTestFixture(InvalidPathMode, scheduler));
     }
 
     /// <summary>ToProperty(nameof) should raise standard notifications.</summary>

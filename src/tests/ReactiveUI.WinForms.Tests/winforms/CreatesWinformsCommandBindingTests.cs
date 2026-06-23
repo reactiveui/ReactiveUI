@@ -503,7 +503,7 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
         var control = new CustomClickableControl();
 
-        using var binding = fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), "MouseUp");
+        using var binding = fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), "MouseUp");
         control.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         await Assert.That(executed).IsTrue();
     }
@@ -516,7 +516,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var control = new CustomClickableControl();
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(null!, control, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(null!, control, Signal.Emit<object?>(null), "MouseUp");
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }
@@ -529,7 +529,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create(() => { });
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), "MouseUp");
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }

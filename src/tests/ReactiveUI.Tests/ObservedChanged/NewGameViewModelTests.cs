@@ -25,7 +25,7 @@ public class NewGameViewModelTests
         foreach (var i in Enumerable.Range(1, MaxPlayers))
         {
             _viewmodel.NewPlayerName = "Player" + i;
-            _viewmodel.AddPlayer.Execute().Subscribe();
+            _ = _viewmodel.AddPlayer.Execute().Subscribe();
             await Assert.That(_viewmodel.Players).Count().IsEqualTo(i);
         }
     }

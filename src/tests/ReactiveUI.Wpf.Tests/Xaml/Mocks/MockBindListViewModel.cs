@@ -24,7 +24,7 @@ public sealed class MockBindListViewModel : ReactiveObject
         Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public MockBindListViewModel()
     {
-        ListItems = new ReadOnlyObservableCollection<MockBindListItemViewModel>(ActiveListItem);
+        ListItems = new(ActiveListItem);
 
         // ActiveItem tracks the last element; re-raise it whenever the source list changes.
         ActiveListItem.CollectionChanged += (_, _) => this.RaisePropertyChanged(nameof(ActiveItem));

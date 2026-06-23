@@ -185,7 +185,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
                 return;
             }
 
-            _completion.TrySetResult((value.resultCode, value.intent));
+            _ = _completion.TrySetResult((value.resultCode, value.intent));
             Dispose();
         }
 
@@ -197,7 +197,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
                 return;
             }
 
-            _completion.TrySetException(error);
+            _ = _completion.TrySetException(error);
             Dispose();
         }
 
@@ -209,7 +209,7 @@ public class ReactiveActivity : Activity, IReactiveObject, IReactiveNotifyProper
                 return;
             }
 
-            _completion.TrySetCanceled();
+            _ = _completion.TrySetCanceled();
             Dispose();
         }
 

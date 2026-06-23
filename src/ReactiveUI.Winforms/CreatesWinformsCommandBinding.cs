@@ -119,30 +119,33 @@ public sealed class CreatesWinformsCommandBinding : ICreatesCommandBinding
         const BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 
         var type = typeof(T);
-        var eventInfo = _defaultEventsToBind
-            .Select(x => new { EventInfo = type.GetEvent(x.name, BindingFlags), Args = x.type })
-            .FirstOrDefault(x => x.EventInfo is not null);
+        EventInfo? matchedEvent = null;
+        Type? matchedArgs = null;
+        foreach (var (name, argType) in _defaultEventsToBind)
+        {
+            var candidate = type.GetEvent(name, BindingFlags);
+            if (candidate is not null)
+            {
+                matchedEvent = candidate;
+                matchedArgs = argType;
+                break;
+            }
+        }
 
-        if (eventInfo is null)
+        if (matchedEvent is null)
         {
             return null;
         }
 
         // Dynamically call the correct generic method based on event args type
-        if (eventInfo.Args == typeof(EventArgs))
+        if (matchedArgs == typeof(EventArgs))
         {
-            return BindCommandToObject<T, EventArgs>(command, target, commandParameter, eventInfo.EventInfo?.Name!);
-        }
-        else if (eventInfo.Args == typeof(MouseEventArgs))
-        {
-            return BindCommandToObject<T, MouseEventArgs>(
-                command,
-                target,
-                commandParameter,
-                eventInfo.EventInfo?.Name!);
+            return BindCommandToObject<T, EventArgs>(command, target, commandParameter, matchedEvent.Name);
         }
 
-        return null;
+        return matchedArgs == typeof(MouseEventArgs)
+            ? BindCommandToObject<T, MouseEventArgs>(command, target, commandParameter, matchedEvent.Name)
+            : null;
     }
 
     /// <inheritdoc/>

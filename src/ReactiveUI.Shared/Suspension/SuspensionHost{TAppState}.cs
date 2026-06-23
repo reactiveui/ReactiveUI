@@ -189,7 +189,7 @@ public class SuspensionHost<TAppState> : ReactiveObject, ISuspensionHost<TAppSta
         get => _appState;
         set
         {
-            this.RaiseAndSetIfChanged(ref _appState, value);
+            _ = this.RaiseAndSetIfChanged(ref _appState, value);
 
             _appStateValueChanged.OnNext(value);
         }

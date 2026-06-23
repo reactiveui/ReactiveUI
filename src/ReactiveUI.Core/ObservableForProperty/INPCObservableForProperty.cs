@@ -76,12 +76,9 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
             return new BeforeChangeNotification(before, sender, expression, expectedName);
         }
 
-        if (sender is INotifyPropertyChanged after)
-        {
-            return new ChangeNotification(after, sender, expression, expectedName);
-        }
-
-        return Signal.Silent<IObservedChange<object?, object?>>();
+        return sender is INotifyPropertyChanged after
+            ? new ChangeNotification(after, sender, expression, expectedName)
+            : Signal.Silent<IObservedChange<object?, object?>>();
     }
 
     /// <summary>Determines whether a notified property name matches the observed property (an empty name means "all properties").</summary>

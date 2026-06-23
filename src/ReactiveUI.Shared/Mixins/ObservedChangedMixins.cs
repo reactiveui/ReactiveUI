@@ -135,7 +135,7 @@ public static class ObservedChangedMixins
                 return;
             }
 
-            Reflection.TrySetValueToPropertyChain(
+            _ = Reflection.TrySetValueToPropertyChain(
                 target,
                 Reflection.Rewrite(property.Body).GetExpressionChain(),
                 item.GetValue());

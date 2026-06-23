@@ -51,7 +51,7 @@ public class ObservableLoggingMixinTests
             () => logger.Log().Info(CultureInfo.InvariantCulture, OnCompletedFormat, Message));
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -78,7 +78,7 @@ public class ObservableLoggingMixinTests
 
         var results = new List<int>();
         var completed = false;
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(results.Add, () => completed = true);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(results.Add, () => completed = true);
 
         await Assert.That(results).IsEquivalentTo(Enumerable.Range(1, RangeCount).ToList());
         await Assert.That(completed).IsTrue();
@@ -99,7 +99,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger, TestMessage);
 
         var errorCaught = false;
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => errorCaught = true);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => errorCaught = true);
 
         subject.OnError(new InvalidOperationException("Test error"));
 
@@ -123,7 +123,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger, TestMessage);
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -148,7 +148,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger);
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnCompleted();
@@ -173,7 +173,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger, TestMessage, x => $"Value: {x}");
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(ExpectedValue);
         subject.OnCompleted();
@@ -200,7 +200,7 @@ public class ObservableLoggingMixinTests
         var logged = subject.Log(logger, TestMessage);
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -226,7 +226,7 @@ public class ObservableLoggingMixinTests
         var caught = subject.LoggedCatch(logger, fallback, "Error occurred");
 
         var values = new List<int>();
-        caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnError(new InvalidOperationException());
 
@@ -256,7 +256,7 @@ public class ObservableLoggingMixinTests
             });
 
         var values = new List<int>();
-        caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         var thrownException = new InvalidOperationException(TestMessage);
         subject.OnError(thrownException);
@@ -283,7 +283,7 @@ public class ObservableLoggingMixinTests
             "Specific error");
 
         var values = new List<int>();
-        caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnError(new InvalidOperationException());
 
@@ -305,7 +305,7 @@ public class ObservableLoggingMixinTests
         var caught = subject.LoggedCatch(logger, Signal.Emit(1));
 
         var values = new List<int>();
-        caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnError(new InvalidOperationException());
 
@@ -326,7 +326,7 @@ public class ObservableLoggingMixinTests
 
         var caught = subject.LoggedCatch(logger, null, "Error");
 
-        caught.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => { }, () => { });
+        _ = caught.ObserveOn(Sequencer.Immediate).Subscribe(_ => { }, _ => { }, () => { });
 
         subject.OnError(new InvalidOperationException());
 
@@ -355,7 +355,7 @@ public class ObservableLoggingMixinTests
             () => logger.Log().Info(CultureInfo.InvariantCulture, OnCompletedFormat, Message));
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -381,7 +381,7 @@ public class ObservableLoggingMixinTests
         var logged = LogNonGeneric(subject, logger, TestMessage);
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -411,7 +411,7 @@ public class ObservableLoggingMixinTests
             () => logger.Log().Info(CultureInfo.InvariantCulture, OnCompletedFormat, TestMessage));
 
         var values = new List<int>();
-        logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = logged.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);

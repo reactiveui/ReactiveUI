@@ -76,12 +76,9 @@ public partial class PropertyBinderImplementation
         }
 
         var fallbackConverter = GetConverterForTypes(sourceType, targetType);
-        if (fallbackConverter is null || fallbackConverter == converter)
-        {
-            return false;
-        }
-
-        return BindingTypeConverterDispatch.TryConvertAny(fallbackConverter, sourceType, value, targetType, conversionHint, out converted);
+        return fallbackConverter is not null
+            && fallbackConverter != converter
+            && BindingTypeConverterDispatch.TryConvertAny(fallbackConverter, sourceType, value, targetType, conversionHint, out converted);
     }
 
     /// <summary>Converts a view model property value into the corresponding view property value.</summary>
@@ -212,22 +209,12 @@ public partial class PropertyBinderImplementation
 
         if (isViewModelChange)
         {
-            if (!viewModelToViewConverter(viewModelValue, out var viewModelAsView) ||
-                EqualityComparer<TViewPropertyType>.Default.Equals(viewValue, viewModelAsView))
-            {
-                return (false, null, false);
-            }
-
-            return (true, viewModelAsView, true);
+            return !viewModelToViewConverter(viewModelValue, out var viewModelAsView) ||
+                EqualityComparer<TViewPropertyType>.Default.Equals(viewValue, viewModelAsView) ? (false, null, false) : (true, viewModelAsView, true);
         }
 
-        if (!viewToViewModelConverter(viewValue, out var viewAsViewModel) ||
-            EqualityComparer<TViewModelPropertyType?>.Default.Equals(viewModelValue, viewAsViewModel))
-        {
-            return (false, null, false);
-        }
-
-        return (true, viewAsViewModel, false);
+        return !viewToViewModelConverter(viewValue, out var viewAsViewModel) ||
+            EqualityComparer<TViewModelPropertyType?>.Default.Equals(viewModelValue, viewAsViewModel) ? (false, null, false) : (true, viewAsViewModel, false);
     }
 
     /// <summary>Builds the merged observable that signals when either the view model or the view side changed.</summary>

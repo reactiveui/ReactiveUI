@@ -37,7 +37,7 @@ public class CommandBindingImplementationTests
         var view = new WinformCommandBindView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command1.Subscribe(_ => ++invokeCount);
+        _ = vm.Command1.Subscribe(_ => ++invokeCount);
 
         // The parameterless command bind is exposed via the view mixin; the binder implementation only offers
         // the with-parameter overloads (exercised by the other tests in this fixture).
@@ -65,7 +65,7 @@ public class CommandBindingImplementationTests
         var fixture = new CommandBinderImplementation();
 
         var invokeCount = 0;
-        vm.Command3.Subscribe(_ => ++invokeCount);
+        _ = vm.Command3.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommand(vm, view, vm => vm.Command3, v => v.Command1, vm => vm.Parameter);
 
@@ -109,7 +109,7 @@ public class CommandBindingImplementationTests
         var fixture = new CommandBinderImplementation();
 
         var invokeCount = 0;
-        vm.Command3.Subscribe(_ => ++invokeCount);
+        _ = vm.Command3.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommand(vm, view, x => x.Command3, x => x.Command2, vm => vm.Parameter, "MouseUp");
 

@@ -57,7 +57,7 @@ public class WinformsCreatesObservableForPropertyTests
             nameof(TestComponent.TestProperty))
             .ObserveOn(Sequencer.Immediate);
 
-        observable.Subscribe(change => receivedChange = change);
+        _ = observable.Subscribe(change => receivedChange = change);
 
         // Trigger the property changed event
         testComponent.TestProperty = "new value";
@@ -86,7 +86,7 @@ public class WinformsCreatesObservableForPropertyTests
                 .ObserveOn(Sequencer.Immediate);
 
             // Subscribe to execute the observable - this is where the exception will be thrown
-            observable.Subscribe();
+            _ = observable.Subscribe();
         }
         catch (Exception ex)
         {

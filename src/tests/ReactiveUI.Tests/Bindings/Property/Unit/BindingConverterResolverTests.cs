@@ -201,7 +201,7 @@ public class BindingConverterResolverTests
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(context);
 
-            builder
+            _ = builder
                 .WithRegistration(r => r.RegisterConstant<IBindingTypeConverter>(new MockBindingTypeConverter()))
                 .WithRegistration(r =>
                     r.RegisterConstant<ISetMethodBindingConverter>(new MockSetMethodBindingConverter()))

@@ -94,13 +94,9 @@ public static class RxSchedulers
 
             lock (_lock)
             {
-                if (_taskpoolScheduler is not null)
-                {
-                    return _taskpoolScheduler;
-                }
+                return _taskpoolScheduler ??= TaskPoolSequencer.Default;
 
 #if !PORTABLE
-                return _taskpoolScheduler ??= TaskPoolSequencer.Default;
 #else
                 return _taskpoolScheduler ??= Sequencer.Default;
 #endif

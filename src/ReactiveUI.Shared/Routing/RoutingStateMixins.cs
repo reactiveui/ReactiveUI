@@ -30,7 +30,16 @@ public static class RoutingStateMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            return item.NavigationStack.Reverse().OfType<T>().FirstOrDefault();
+            var stack = item.NavigationStack;
+            for (var i = stack.Count - 1; i >= 0; i--)
+            {
+                if (stack[i] is T match)
+                {
+                    return match;
+                }
+            }
+
+            return default;
         }
 
         /// <summary>Gets the current view model from the top of the navigation stack.</summary>
@@ -39,7 +48,8 @@ public static class RoutingStateMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(item);
 
-            return item.NavigationStack.LastOrDefault();
+            var stack = item.NavigationStack;
+            return stack.Count > 0 ? stack[stack.Count - 1] : null;
         }
     }
 }

@@ -44,7 +44,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService07? c7 = null;
         InstanceService08? c8 = null;
         InstanceService09? c9 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -116,7 +116,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService08? c8 = null;
         InstanceService09? c9 = null;
         InstanceService10? c10 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -194,7 +194,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService09? c9 = null;
         InstanceService10? c10 = null;
         InstanceService11? c11 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -278,7 +278,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService10? c10 = null;
         InstanceService11? c11 = null;
         InstanceService12? c12 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -368,7 +368,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService11? c11 = null;
         InstanceService12? c12 = null;
         InstanceService13? c13 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -464,7 +464,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService12? c12 = null;
         InstanceService13? c13 = null;
         InstanceService14? c14 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -566,7 +566,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService13? c13 = null;
         InstanceService14? c14 = null;
         InstanceService15? c15 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -674,7 +674,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService14? c14 = null;
         InstanceService15? c15 = null;
         InstanceService16? c16 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,

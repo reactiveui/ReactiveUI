@@ -24,7 +24,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterSingletonViewForViewModelRegistersSingleton()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>();
+        _ = resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>();
 
         var view = resolver.GetService<IViewFor<TestViewModel>>();
 
@@ -52,7 +52,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterSingletonViewForViewModelReturnsSameInstance()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>();
+        _ = resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<TestViewModel>>();
@@ -71,7 +71,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterSingletonViewForViewModelSupportsChaining()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>().RegisterSingletonViewForViewModel<AlternateTestView, AlternateTestViewModel>();
+        _ = resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>().RegisterSingletonViewForViewModel<AlternateTestView, AlternateTestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<AlternateTestViewModel>>();
@@ -88,7 +88,7 @@ public class MutableDependencyResolverExtensionsTests
     public void RegisterSingletonViewForViewModelThrowsOnNullResolver()
     {
         IMutableDependencyResolver? resolver = null;
-        Assert.Throws<ArgumentNullException>(() => resolver!.RegisterSingletonViewForViewModel<TestView, TestViewModel>());
+        _ = Assert.Throws<ArgumentNullException>(() => resolver!.RegisterSingletonViewForViewModel<TestView, TestViewModel>());
     }
 
     /// <summary>Verifies that RegisterSingletonViewForViewModel registers a singleton view with a contract.</summary>
@@ -97,7 +97,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterSingletonViewForViewModelWithContractRegistersSingleton()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>(TestContract);
+        _ = resolver.RegisterSingletonViewForViewModel<TestView, TestViewModel>(TestContract);
 
         var view = resolver.GetService<IViewFor<TestViewModel>>(TestContract);
 
@@ -114,7 +114,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterViewForViewModelCreatesNewInstanceEachTime()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterViewForViewModel<TestView, TestViewModel>();
+        _ = resolver.RegisterViewForViewModel<TestView, TestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<TestViewModel>>();
@@ -133,7 +133,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterViewForViewModelRegistersView()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterViewForViewModel<TestView, TestViewModel>();
+        _ = resolver.RegisterViewForViewModel<TestView, TestViewModel>();
 
         var view = resolver.GetService<IViewFor<TestViewModel>>();
 
@@ -161,7 +161,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterViewForViewModelSupportsChaining()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterViewForViewModel<TestView, TestViewModel>().RegisterViewForViewModel<AlternateTestView, AlternateTestViewModel>();
+        _ = resolver.RegisterViewForViewModel<TestView, TestViewModel>().RegisterViewForViewModel<AlternateTestView, AlternateTestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<AlternateTestViewModel>>();
@@ -178,7 +178,7 @@ public class MutableDependencyResolverExtensionsTests
     public void RegisterViewForViewModelThrowsOnNullResolver()
     {
         IMutableDependencyResolver? resolver = null;
-        Assert.Throws<ArgumentNullException>(() => resolver!.RegisterViewForViewModel<TestView, TestViewModel>());
+        _ = Assert.Throws<ArgumentNullException>(() => resolver!.RegisterViewForViewModel<TestView, TestViewModel>());
     }
 
     /// <summary>Verifies that RegisterViewForViewModel registers a view with a contract.</summary>
@@ -187,7 +187,7 @@ public class MutableDependencyResolverExtensionsTests
     public async Task RegisterViewForViewModelWithContractRegistersView()
     {
         var resolver = new ModernDependencyResolver();
-        resolver.RegisterViewForViewModel<TestView, TestViewModel>(TestContract);
+        _ = resolver.RegisterViewForViewModel<TestView, TestViewModel>(TestContract);
 
         var view = resolver.GetService<IViewFor<TestViewModel>>(TestContract);
 

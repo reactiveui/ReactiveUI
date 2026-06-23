@@ -18,7 +18,7 @@ public class ContentControlBindingHookTests
     public void ExecuteHook_Throws_When_GetCurrentViewProperties_Is_Null()
     {
         var hook = new ContentControlBindingHook();
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             hook.ExecuteHook(null, new(), () => [], null!, BindingDirection.OneWay));
     }
 

@@ -52,7 +52,7 @@ public class SuspensionHostTests
         using var host = new SuspensionHost();
         var gotError = false;
 
-        host.IsLaunchingNew.Subscribe(_ => { }, ex => gotError = true);
+        _ = host.IsLaunchingNew.Subscribe(_ => { }, ex => gotError = true);
 
         await Assert.That(gotError).IsTrue();
     }
@@ -62,9 +62,7 @@ public class SuspensionHostTests
     [Test]
     public async Task CreateNewAppState_SetAndGet_ReturnsCorrectFunc()
     {
-        using var host = new SuspensionHost();
-        host.CreateNewAppState = () => new DummyAppState();
-
+        using var host = new SuspensionHost { CreateNewAppState = () => new DummyAppState() };
         await Assert.That(host.CreateNewAppState).IsNotNull();
         await Assert.That(host.CreateNewAppState!()).IsTypeOf<DummyAppState>();
     }

@@ -35,8 +35,8 @@ public class ViewLocatorTests
         AppBuilder.ResetBuilderStateForTests();
 
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.ConfigureViewLocator(locator => locator.Map<TestViewModel, TestView>(() => new()));
-        builder.WithCoreServices().BuildApp();
+        _ = builder.ConfigureViewLocator(locator => locator.Map<TestViewModel, TestView>(() => new()));
+        _ = builder.WithCoreServices().BuildApp();
 
         var current = ViewLocator.Current;
         var view = current.ResolveView<TestViewModel>();
@@ -85,7 +85,7 @@ public class ViewLocatorTests
         // Simulate re-initialization
         RxAppBuilder.ResetForTesting();
         AppBuilder.ResetBuilderStateForTests();
-        RxAppBuilder.CreateReactiveUIBuilder()
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithCoreServices().BuildApp();
 
         var current2 = ViewLocator.Current;

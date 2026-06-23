@@ -57,7 +57,7 @@ public class WithSchedulerAndMessageBusExecutor : BaseAppBuilderTestExecutor
         context.RestoreExecutionContext();
 
         // Configure builder with schedulers, message bus, and core services
-        builder
+        _ = builder
             .WithMainThreadScheduler(scheduler)
             .WithTaskPoolScheduler(scheduler)
             .WithMessageBus(messageBus)

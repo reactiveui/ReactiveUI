@@ -45,7 +45,7 @@ public class AOTCompatibilityTests
         var executed = false;
         var command = ReactiveCommand.Create(() => executed = true);
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
 
         await Assert.That(executed).IsTrue();
     }
@@ -58,7 +58,7 @@ public class AOTCompatibilityTests
         string? result = null;
         var command = ReactiveCommand.Create<string>(param => result = param);
 
-        command.Execute("test").Subscribe();
+        _ = command.Execute("test").Subscribe();
 
         await Assert.That(result).IsEqualTo("test");
     }
@@ -90,7 +90,7 @@ public class AOTCompatibilityTests
         string? observedValue = null;
 
         // Using string property names should work in AOT
-        obj.WhenAnyValue<TestReactiveObject, string>(nameof(TestReactiveObject.TestProperty))
+        _ = obj.WhenAnyValue<TestReactiveObject, string>(nameof(TestReactiveObject.TestProperty))
             .Subscribe(value => observedValue = value);
 
         obj.TestProperty = "test value";
@@ -106,7 +106,7 @@ public class AOTCompatibilityTests
         var interaction = new Interaction<string, bool>();
         var called = false;
 
-        interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(context =>
         {
             called = true;
             context.SetOutput(true);

@@ -257,9 +257,13 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         bool ignoreInitialError)
     {
         _validatorStore.Value.Add(validator);
-        var validators = _validatorStore.Value
-            .Select(x => x(ignoreInitialError ? _checkValidation : new PrependObservable(_checkValidation, _value)))
-            .ToArray();
+        var validatorFuncs = _validatorStore.Value;
+        IObservable<T?> validationSource = ignoreInitialError ? _checkValidation : new PrependObservable(_checkValidation, _value);
+        var validators = new IObservable<IEnumerable?>[validatorFuncs.Count];
+        for (var i = 0; i < validatorFuncs.Count; i++)
+        {
+            validators[i] = validatorFuncs[i](validationSource);
+        }
 
         _validationDisposable.Disposable = new ValidationStream(validators, _scheduler)
             .Subscribe(new DelegateObserver<IEnumerable?>(x =>
@@ -270,12 +274,12 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                 var handler = ErrorsChanged;
                 if (handler is not null)
                 {
-                    _scheduler.ScheduleOrInline(() => handler(this, SingletonDataErrorsChangedEventArgs.Value));
+                    _ = _scheduler.ScheduleOrInline(() => handler(this, SingletonDataErrorsChangedEventArgs.Value));
                 }
 
                 if (lastHasErrors != currentHasErrors)
                 {
-                    _scheduler.ScheduleOrInline(() =>
+                    _ = _scheduler.ScheduleOrInline(() =>
                         this.RaisePropertyChanged(SingletonPropertyChangedEventArgs.HasErrors.PropertyName));
                 }
 
@@ -657,24 +661,54 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                         return;
                     }
 
-                    if (Array.TrueForAll(_latest, static x => x is null))
-                    {
-                        aggregated = null;
-                    }
-                    else
-                    {
-                        var strings = _latest.Where(static x => x is not null).OfType<string>();
-                        var others = _latest
-                            .Where(static x => x is not null and not string)
-                            .SelectMany(static x => x!.OfType<object?>());
-
-                        // Materialize while holding the gate: _latest is mutated by later emissions, so a deferred
-                        // query would re-evaluate against the new state when a downstream consumer enumerates it.
-                        aggregated = strings.Concat(others).ToArray();
-                    }
+                    aggregated = BuildAggregate();
                 }
 
                 _downstream.OnNext(aggregated);
+            }
+
+            /// <summary>
+            /// Materializes the combined error sequence from every validator's latest values while the gate is held.
+            /// <c>_latest</c> is mutated by later emissions, so a deferred query would re-evaluate against new state
+            /// when a downstream consumer enumerates it. A single pass splits strings from the flattened contents of
+            /// the remaining sequences, then both are copied once into a pre-sized result (strings first).
+            /// </summary>
+            /// <returns>The aggregated errors, or <see langword="null"/> when every validator reported null.</returns>
+            private object?[]? BuildAggregate()
+            {
+                if (Array.TrueForAll(_latest, static x => x is null))
+                {
+                    return null;
+                }
+
+                List<object?> stringValues = new(_latest.Length);
+                List<object?> otherValues = [];
+                foreach (var item in _latest)
+                {
+                    if (item is null)
+                    {
+                        continue;
+                    }
+
+                    if (item is string stringValue)
+                    {
+                        stringValues.Add(stringValue);
+                        continue;
+                    }
+
+                    foreach (var inner in item)
+                    {
+                        if (inner is not null)
+                        {
+                            otherValues.Add(inner);
+                        }
+                    }
+                }
+
+                var result = new object?[stringValues.Count + otherValues.Count];
+                stringValues.CopyTo(result, 0);
+                otherValues.CopyTo(result, stringValues.Count);
+                return result;
             }
 
             /// <summary>Forwards an error from any validator.</summary>
@@ -802,7 +836,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
                     return;
                 }
 
-                Interlocked.Increment(ref _active);
+                _ = Interlocked.Increment(ref _active);
                 _ = ForwardAsync(task);
             }
 

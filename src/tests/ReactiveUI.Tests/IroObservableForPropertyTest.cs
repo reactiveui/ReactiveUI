@@ -85,7 +85,7 @@ public class IroObservableForPropertyTest
         var expression = System.Linq.Expressions.Expression.Property(param, nameof(TestReactiveObject.TestProperty));
 
         var changes = new List<IObservedChange<object, object?>>();
-        oaph.GetNotificationForProperty(sender, expression, nameof(TestReactiveObject.TestProperty)).ObserveOn(Sequencer.Immediate).Subscribe(changes.Add);
+        _ = oaph.GetNotificationForProperty(sender, expression, nameof(TestReactiveObject.TestProperty)).ObserveOn(Sequencer.Immediate).Subscribe(changes.Add);
 
         sender.TestProperty = "value1";
         sender.TestProperty = "value2";

@@ -694,14 +694,9 @@ public partial class SuspensionHostExtensionsAotTests
         public IObservable<object?> LoadState()
         {
             LoadStateCallCount++;
-            if (ShouldThrowOnLoad)
-            {
-                return Signal.Fail<object?>(
+            return ShouldThrowOnLoad ? Signal.Fail<object?>(
                     new InvalidOperationException("Failed to load state"),
-                    Sequencer.Immediate);
-            }
-
-            return Signal.Emit((object?)StateToLoad, Sequencer.Immediate);
+                    Sequencer.Immediate) : Signal.Emit((object?)StateToLoad, Sequencer.Immediate);
         }
 
         /// <inheritdoc/>
@@ -715,12 +710,7 @@ public partial class SuspensionHostExtensionsAotTests
                     Sequencer.Immediate);
             }
 
-            if (StateToLoad is TState typedState)
-            {
-                return Signal.Emit<TState?>(typedState, Sequencer.Immediate);
-            }
-
-            return Signal.Emit<TState?>(default, Sequencer.Immediate);
+            return StateToLoad is TState typedState ? Signal.Emit<TState?>(typedState, Sequencer.Immediate) : Signal.Emit<TState?>(default, Sequencer.Immediate);
         }
 
         /// <inheritdoc/>

@@ -30,24 +30,14 @@ public static class ExpressionMixins
                 {
                     case ExpressionType.Index when node is IndexExpression indexExpression:
                         {
-                            var parent = indexExpression.GetParent();
-                            expressions.Add(
-                                indexExpression.Object is not null &&
-                                parent is not null &&
-                                indexExpression.Object.NodeType != ExpressionType.Parameter
-                                    ? indexExpression.Update(Expression.Parameter(parent.Type), indexExpression.Arguments)
-                                    : indexExpression);
-
+                            expressions.Add(NormalizeIndexExpression(indexExpression));
                             node = indexExpression.Object;
                             break;
                         }
 
                     case ExpressionType.MemberAccess when node is MemberExpression memberExpression:
                         {
-                            var parent = memberExpression.GetParent();
-                            expressions.Add(parent is not null && memberExpression.Expression is not null &&
-                                memberExpression.Expression.NodeType != ExpressionType.Parameter ? memberExpression.Update(Expression.Parameter(parent.Type)) : memberExpression);
-
+                            expressions.Add(NormalizeMemberExpression(memberExpression));
                             node = memberExpression.Expression;
                             break;
                         }
@@ -58,7 +48,7 @@ public static class ExpressionMixins
 
                             if (node is ConstantExpression)
                             {
-                                errorMessageBuilder.Append(" Did you miss the member access prefix in the expression?");
+                                _ = errorMessageBuilder.Append(" Did you miss the member access prefix in the expression?");
                             }
 
                             throw new NotSupportedException(errorMessageBuilder.ToString());
@@ -214,9 +204,41 @@ public static class ExpressionMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(expression);
 
-            return expression.NodeType != ExpressionType.Index
-                ? null
-                : [.. ((IndexExpression)expression).Arguments.Cast<ConstantExpression>().Select(static c => c.Value)];
+            if (expression.NodeType != ExpressionType.Index)
+            {
+                return null;
+            }
+
+            var arguments = ((IndexExpression)expression).Arguments;
+            var result = new object?[arguments.Count];
+            for (var i = 0; i < arguments.Count; i++)
+            {
+                result[i] = ((ConstantExpression)arguments[i]).Value;
+            }
+
+            return result;
         }
+    }
+
+    /// <summary>Rewrites an index expression's receiver to a parameter placeholder when it is a nested member access.</summary>
+    /// <param name="indexExpression">The index expression to normalize.</param>
+    /// <returns>The normalized expression to add to the chain.</returns>
+    private static IndexExpression NormalizeIndexExpression(IndexExpression indexExpression)
+    {
+        var parent = indexExpression.GetParent();
+        return indexExpression.Object is not null && parent is not null && indexExpression.Object.NodeType != ExpressionType.Parameter
+            ? indexExpression.Update(Expression.Parameter(parent.Type), indexExpression.Arguments)
+            : indexExpression;
+    }
+
+    /// <summary>Rewrites a member expression's receiver to a parameter placeholder when it is a nested member access.</summary>
+    /// <param name="memberExpression">The member expression to normalize.</param>
+    /// <returns>The normalized expression to add to the chain.</returns>
+    private static MemberExpression NormalizeMemberExpression(MemberExpression memberExpression)
+    {
+        var parent = memberExpression.GetParent();
+        return parent is not null && memberExpression.Expression is not null && memberExpression.Expression.NodeType != ExpressionType.Parameter
+            ? memberExpression.Update(Expression.Parameter(parent.Type))
+            : memberExpression;
     }
 }

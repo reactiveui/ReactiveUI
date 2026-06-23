@@ -53,7 +53,7 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         var completed = false;
 
-        subject.Subscribe(_ => { }, () => completed = true);
+        _ = subject.Subscribe(_ => { }, () => completed = true);
         subject.OnCompleted();
         scheduler.Start();
 
@@ -70,7 +70,7 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         Exception? receivedError = null;
 
-        subject.Subscribe(_ => { }, ex => receivedError = ex);
+        _ = subject.Subscribe(_ => { }, ex => receivedError = ex);
         var error = new InvalidOperationException("Test error");
         subject.OnError(error);
         scheduler.Start();
@@ -90,7 +90,7 @@ public class ScheduledSubjectTest
 
         const int SecondValue = 2;
         const int ExpectedCount = 2;
-        subject.Subscribe(results.Add);
+        _ = subject.Subscribe(results.Add);
         subject.OnNext(1);
         subject.OnNext(SecondValue);
         scheduler.Start();
@@ -124,7 +124,7 @@ public class ScheduledSubjectTest
         var subject = new ScheduledSubject<int>(scheduler);
         var results = new List<int>();
 
-        subject.Subscribe(results.Add);
+        _ = subject.Subscribe(results.Add);
         subject.OnNext(1);
         await Assert.That(results).IsEmpty();
 

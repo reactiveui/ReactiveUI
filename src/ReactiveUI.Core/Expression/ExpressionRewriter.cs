@@ -88,12 +88,9 @@ public sealed class ExpressionRewriter : ExpressionVisitor
         var instance = Visit(node.Left);
         var index = (ConstantExpression)Visit(node.Right);
 
-        if (instance.Type.IsArray)
-        {
-            return Expression.ArrayAccess(instance, index);
-        }
-
-        return Expression.MakeIndex(instance, GetItemProperty(instance.Type), [index]);
+        return instance.Type.IsArray
+            ? Expression.ArrayAccess(instance, index)
+            : Expression.MakeIndex(instance, GetItemProperty(instance.Type), [index]);
     }
 
     /// <summary>Visits a <see cref="UnaryExpression"/> node and rewrites it as needed for expression tree processing.</summary>
@@ -204,7 +201,7 @@ public sealed class ExpressionRewriter : ExpressionVisitor
     private static NotSupportedException CreateUnsupportedNodeException(Expression node)
     {
         StringBuilder sb = new(96);
-        sb.Append("Unsupported expression of type '")
+        _ = sb.Append("Unsupported expression of type '")
             .Append(node.NodeType)
             .Append("' ")
             .Append(node)
@@ -212,7 +209,7 @@ public sealed class ExpressionRewriter : ExpressionVisitor
 
         if (node is BinaryExpression be)
         {
-            sb.Append(" Did you meant to use expressions '")
+            _ = sb.Append(" Did you meant to use expressions '")
                 .Append(be.Left)
                 .Append("' and '")
                 .Append(be.Right)
@@ -267,7 +264,7 @@ public sealed class ExpressionRewriter : ExpressionVisitor
 
     /// <summary>Visits a method argument list without LINQ allocations.</summary>
     /// <param name="arguments">The argument list to visit.</param>
-    /// <returns>A visited argument array suitable for <see cref="Expression.MakeIndex(Expression, PropertyInfo, System.Collections.Generic.IEnumerable{Expression})"/>.</returns>
+    /// <returns>A visited argument array suitable for <see cref="Expression.MakeIndex(Expression, PropertyInfo, IEnumerable{Expression})"/>.</returns>
     private Expression[] VisitArgumentList(ReadOnlyCollection<Expression> arguments)
     {
         var count = arguments.Count;

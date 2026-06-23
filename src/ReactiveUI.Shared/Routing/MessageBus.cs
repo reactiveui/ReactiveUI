@@ -262,7 +262,7 @@ public class MessageBus : IMessageBus
             block(_messageBus, item);
             if (_messageBus.TryGetValue(item, out var value) && !value.IsAlive)
             {
-                _messageBus.Remove(item);
+                _ = _messageBus.Remove(item);
             }
         }
     }
@@ -276,7 +276,7 @@ public class MessageBus : IMessageBus
     /// found.</returns>
     private ISequencer GetScheduler((Type type, string? contract) item)
     {
-        _schedulerMappings.TryGetValue(item, out var scheduler);
+        _ = _schedulerMappings.TryGetValue(item, out var scheduler);
         return scheduler ?? Sequencer.CurrentThread;
     }
 

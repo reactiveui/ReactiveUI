@@ -95,7 +95,7 @@ public static partial class AutoPersistHelperMixins
             var persistablePropertyNames = metadata.PersistablePropertyNames;
 
             var ret = new OnceDisposable();
-            RxSchedulers.MainThreadScheduler.Schedule(() =>
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
             {
                 if (ret.IsDisposed)
                 {

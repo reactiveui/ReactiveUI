@@ -62,7 +62,7 @@ public static class UsbManagerExtensions
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             UsbDevicePermissionReceiver usbPermissionReceiver = new(observer, device);
-            context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
+            _ = context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
 
             var intent = PendingIntent.GetBroadcast(context, 0, new(ActionUsbPermission), 0);
             manager.RequestPermission(device, intent);
@@ -89,7 +89,7 @@ public static class UsbManagerExtensions
             ArgumentExceptionHelper.ThrowIfNull(observer);
 
             UsbAccessoryPermissionReceiver usbPermissionReceiver = new(observer, accessory);
-            context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
+            _ = context.RegisterReceiver(usbPermissionReceiver, new(ActionUsbPermission));
 
             var intent = PendingIntent.GetBroadcast(context, 0, new(ActionUsbPermission), 0);
             manager.RequestPermission(accessory, intent);

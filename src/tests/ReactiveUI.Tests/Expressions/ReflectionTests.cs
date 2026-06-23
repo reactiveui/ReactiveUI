@@ -225,7 +225,7 @@ public class ReflectionTests
         const int ConstantValue = 42;
         var constant = System.Linq.Expressions.Expression.Constant(ConstantValue);
 
-        Assert.Throws<NotSupportedException>(() => constant.GetMemberInfo());
+        _ = Assert.Throws<NotSupportedException>(() => constant.GetMemberInfo());
     }
 
     /// <summary>Verifies that GetParent returns the object expression of an index expression.</summary>
@@ -266,7 +266,7 @@ public class ReflectionTests
         const int ConstantValue = 42;
         var constant = System.Linq.Expressions.Expression.Constant(ConstantValue);
 
-        Assert.Throws<NotSupportedException>(() => constant.GetParent());
+        _ = Assert.Throws<NotSupportedException>(() => constant.GetParent());
     }
 
     /// <summary>Verifies that a value fetcher reads a value from a field.</summary>
@@ -392,7 +392,7 @@ public class ReflectionTests
     public void IsStatic_WithNull_Throws()
     {
         PropertyInfo? propertyInfo = null;
-        Assert.Throws<ArgumentNullException>(() => propertyInfo!.IsStatic());
+        _ = Assert.Throws<ArgumentNullException>(() => propertyInfo!.IsStatic());
     }
 
     /// <summary>Verifies that IsStatic returns true for a static property.</summary>

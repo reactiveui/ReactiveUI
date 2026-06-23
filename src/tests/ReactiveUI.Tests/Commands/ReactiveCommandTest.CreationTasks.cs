@@ -28,21 +28,21 @@ public partial class ReactiveCommandTest
         var fixture = ReactiveCommand.CreateFromTask(
             async token =>
             {
-                tcsStarted.TrySetResult(RxVoid.Default);
+                _ = tcsStarted.TrySetResult(RxVoid.Default);
                 try
                 {
                     await Task.Delay(LongDelayMilliseconds, token);
                 }
                 catch (OperationCanceledException)
                 {
-                    tcsCaught.TrySetResult(RxVoid.Default);
+                    _ = tcsCaught.TrySetResult(RxVoid.Default);
                     await tcsFinish.Task;
                     throw;
                 }
             },
             outputScheduler: Sequencer.Immediate);
 
-        fixture.ThrownExceptions.Subscribe(_ => { });
+        _ = fixture.ThrownExceptions.Subscribe(_ => { });
 
         var disposable = fixture.Execute().Subscribe();
 
@@ -50,7 +50,7 @@ public partial class ReactiveCommandTest
         disposable.Dispose();
 
         await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
-        tcsFinish.TrySetResult(RxVoid.Default);
+        _ = tcsFinish.TrySetResult(RxVoid.Default);
 
         // Wait for cancellation to complete
         await Task.Delay(CompletionDelayMilliseconds);

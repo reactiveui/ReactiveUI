@@ -157,7 +157,7 @@ public static class ReactiveCommandMixins
                 return;
             }
 
-            command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
+            _ = command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
         }
     }
 
@@ -321,7 +321,7 @@ public static class ReactiveCommandMixins
                 return;
             }
 
-            command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
+            _ = command.Execute(value).Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
         }
     }
 }

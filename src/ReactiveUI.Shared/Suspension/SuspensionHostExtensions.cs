@@ -500,7 +500,7 @@ public static class SuspensionHostExtensions
                 return;
             }
 
-            op.Subscribe(new ResultObserver(logHost, value, onFinally, successMessage, errorMessage));
+            _ = op.Subscribe(new ResultObserver(logHost, value, onFinally, successMessage, errorMessage));
         }
 
         /// <inheritdoc/>

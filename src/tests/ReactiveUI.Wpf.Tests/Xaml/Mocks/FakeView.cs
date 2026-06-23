@@ -14,7 +14,7 @@ public class FakeView : IViewFor<FakeViewModel>
     /// <summary>Initializes a new instance of the <see cref="FakeView"/> class.</summary>
     public FakeView()
     {
-        TheTextBox = new TextBox();
+        TheTextBox = new();
         ViewModel = new();
     }
 

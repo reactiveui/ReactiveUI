@@ -36,7 +36,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture>();
         var addedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -61,7 +61,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             _ => { },
             removedItems.Add);
 
@@ -111,7 +111,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
         var addedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -132,7 +132,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.ActOnEveryObject(_ => { }, _ => { });
+            _ = collection!.ActOnEveryObject(_ => { }, _ => { });
             await Task.CompletedTask;
         });
     }
@@ -146,7 +146,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.ActOnEveryObject(null!, _ => { });
+            _ = collection.ActOnEveryObject(null!, _ => { });
             await Task.CompletedTask;
         });
     }
@@ -160,7 +160,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.ActOnEveryObject(_ => { }, null!);
+            _ = collection.ActOnEveryObject(_ => { }, null!);
             await Task.CompletedTask;
         });
     }
@@ -174,7 +174,7 @@ public class AutoPersistHelperTest
         var readOnlyCollection = new ReadOnlyObservableCollection<TestFixture>(innerCollection);
         var addedItems = new List<TestFixture>();
 
-        readOnlyCollection.ActOnEveryObject(
+        _ = readOnlyCollection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -197,11 +197,11 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item };
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             _ => { },
             removedItems.Add);
 
-        collection.Remove(item);
+        _ = collection.Remove(item);
 
         using (Assert.Multiple())
         {
@@ -222,7 +222,7 @@ public class AutoPersistHelperTest
         var addedItems = new List<TestFixture>();
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             removedItems.Add);
 
@@ -284,7 +284,7 @@ public class AutoPersistHelperTest
         var manualSave = new Signal<RxVoid>();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -325,7 +325,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            obj.AutoPersist(_ => SingleValueObservable.Void);
+            _ = obj.AutoPersist(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
@@ -341,7 +341,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -367,7 +367,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(null!);
+            _ = fixture.AutoPersist(null!);
             await Task.CompletedTask;
         });
     }
@@ -381,7 +381,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -399,7 +399,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -415,7 +415,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -442,7 +442,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -476,7 +476,7 @@ public class AutoPersistHelperTest
         var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -503,7 +503,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture>();
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -532,7 +532,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
+            _ = collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
@@ -546,7 +546,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(null!);
+            _ = collection.AutoPersistCollection(null!);
             await Task.CompletedTask;
         });
     }
@@ -560,7 +560,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
+            _ = collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
             await Task.CompletedTask;
         });
     }
@@ -578,7 +578,7 @@ public class AutoPersistHelperTest
         var saveCount = 0;
         var manualSave = new Signal<RxVoid>();
 
-        readOnlyCollection.AutoPersistCollection(
+        _ = readOnlyCollection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -611,7 +611,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item };
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -621,7 +621,7 @@ public class AutoPersistHelperTest
 
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
-        collection.Remove(item);
+        _ = collection.Remove(item);
 
         item.IsNotNullString = "Test";
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
@@ -641,7 +641,7 @@ public class AutoPersistHelperTest
         var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;

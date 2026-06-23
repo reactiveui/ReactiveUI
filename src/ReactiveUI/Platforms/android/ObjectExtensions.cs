@@ -66,12 +66,7 @@ internal static class ObjectExtensions
         /// <returns>A Java-compatible object that represents the specified value, or null if the value is null.</returns>
         public Object? ToJavaObject()
         {
-            if (value is null)
-            {
-                return null;
-            }
-
-            return new JavaHolder(value);
+            return value is null ? null : new JavaHolder(value);
         }
     }
 }

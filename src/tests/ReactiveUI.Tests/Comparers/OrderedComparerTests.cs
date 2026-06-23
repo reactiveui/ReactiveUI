@@ -93,7 +93,7 @@ public class OrderedComparerTests
     public async Task WorksWithAnonymousTypes()
     {
         var source = new List<string> { "abc", "bcd", "cde" };
-        var items = source.ConvertAll(static x => new { FirstLetter = x[0], AllOfIt = x });
+        var items = source.ConvertAll(static x => (FirstLetter: x[0], AllOfIt: x));
 
         items.Sort(OrderedComparer.For(items).OrderBy(static x => x.FirstLetter));
         await Assert.That(items.Select(static x => x.FirstLetter).SequenceEqual("abc")).IsTrue();

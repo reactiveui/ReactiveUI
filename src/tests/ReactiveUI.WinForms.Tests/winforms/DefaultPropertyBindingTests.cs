@@ -264,7 +264,7 @@ public class DefaultPropertyBindingTests
                 .ObserveOn(Sequencer.Immediate);
 
             // Need to subscribe to actually execute the observable creation
-            observable.Subscribe();
+            _ = observable.Subscribe();
             return Task.CompletedTask;
         });
 

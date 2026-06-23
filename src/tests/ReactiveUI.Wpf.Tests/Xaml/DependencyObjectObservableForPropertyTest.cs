@@ -140,9 +140,9 @@ public class DependencyObjectObservableForPropertyTest
     public async Task ListBoxSelectedItemTest()
     {
         var input = new ListBox();
-        input.Items.Add(FooValue);
-        input.Items.Add(BarValue);
-        input.Items.Add("Baz");
+        _ = input.Items.Add(FooValue);
+        _ = input.Items.Add(BarValue);
+        _ = input.Items.Add("Baz");
 
         var output = input.WhenAnyValue(static x => x.SelectedItem).Collect();
 

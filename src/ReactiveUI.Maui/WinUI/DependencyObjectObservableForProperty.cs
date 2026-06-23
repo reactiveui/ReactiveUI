@@ -41,12 +41,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
             return 0;
         }
 
-        if (GetDependencyPropertyFetcher(type, propertyName) is null)
-        {
-            return 0;
-        }
-
-        return DependencyPropertyAffinity;
+        return GetDependencyPropertyFetcher(type, propertyName) is null ? 0 : DependencyPropertyAffinity;
     }
 
     /// <inheritdoc/>
@@ -167,12 +162,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         {
             var value = pi.GetValue(null);
 
-            if (value is null)
-            {
-                return null;
-            }
-
-            return () => (DependencyProperty)value;
+            return value is null ? null : () => (DependencyProperty)value;
         }
 
         var fi = ActuallyGetField(typeInfo, propertyName + "Property");
@@ -180,12 +170,7 @@ public class DependencyObjectObservableForProperty : ICreatesObservableForProper
         {
             var value = fi.GetValue(null);
 
-            if (value is null)
-            {
-                return null;
-            }
-
-            return () => (DependencyProperty)value;
+            return value is null ? null : () => (DependencyProperty)value;
         }
 
         return null;

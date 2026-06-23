@@ -18,7 +18,7 @@ public class ReactiveUiBuilderWpfTests
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithWpf().Build();
+        _ = builder.WithWpf().Build();
 
         var platformOperations = locator.GetService<IPlatformOperations>();
         await Assert.That(platformOperations).IsNotNull();
@@ -38,7 +38,7 @@ public class ReactiveUiBuilderWpfTests
         using var locator = new ModernDependencyResolver();
         var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithWpf().Build();
+        _ = builder.WithWpf().Build();
 
         var observableProperty = locator.GetService<ICreatesObservableForProperty>();
         await Assert.That(observableProperty).IsNotNull();

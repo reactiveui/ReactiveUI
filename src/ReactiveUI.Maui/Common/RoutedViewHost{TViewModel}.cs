@@ -125,7 +125,7 @@ public partial class RoutedViewHost<
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-        viewModelAndContract.DistinctUntilChanged()
+        _ = viewModelAndContract.DistinctUntilChanged()
             .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
                 ResolveViewForViewModel,
                 RxState.DefaultExceptionHandler.OnNext))
@@ -190,7 +190,7 @@ public partial class RoutedViewHost<
 
         // Use the generic ResolveView<TViewModel> method - this is AOT-safe!
         var view = viewLocator.ResolveView<TViewModel>(x.contract) ?? viewLocator.ResolveView<TViewModel>()
-            ?? throw new InvalidOperationException($"Couldn't find view for '{typeof(TViewModel).Name}'.");
+            ?? throw new InvalidOperationException($"Couldn't find view for '{nameof(TViewModel)}'.");
         view.ViewModel = x.viewModel as TViewModel;
         Content = view;
     }

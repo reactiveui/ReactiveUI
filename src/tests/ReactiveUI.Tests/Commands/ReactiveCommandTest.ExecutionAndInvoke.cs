@@ -58,7 +58,7 @@ public partial class ReactiveCommandTest
         var execution = command.Execute();
         await Assert.That(executionCount).IsEqualTo(0);
 
-        execution.Subscribe();
+        _ = execution.Subscribe();
         await Assert.That(executionCount).IsEqualTo(1);
     }
 
@@ -122,9 +122,9 @@ public partial class ReactiveCommandTest
             () => Signal.Fail<RxVoid>(new InvalidOperationException(TestErrorMessage)),
             outputScheduler: Sequencer.Immediate);
         var canExecute = command.CanExecute.Collect();
-        command.ThrownExceptions.Subscribe();
+        _ = command.ThrownExceptions.Subscribe();
 
-        command.Execute().Subscribe(_ => { }, _ => { });
+        _ = command.Execute().Subscribe(_ => { }, _ => { });
 
         const int ExpectedCount = 3;
         const int ThirdIndex = 2;
@@ -299,7 +299,7 @@ public partial class ReactiveCommandTest
             () => ++executionCount,
             outputScheduler: Sequencer.Immediate);
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         const int ExpectedSecondCount = 2;
 
@@ -323,7 +323,7 @@ public partial class ReactiveCommandTest
             receivedParams.Add,
             outputScheduler: Sequencer.Immediate);
         var source = new Signal<int>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(ParameterValue);
         source.OnNext(SecondParameter);
@@ -348,7 +348,7 @@ public partial class ReactiveCommandTest
             canExecute,
             Sequencer.Immediate);
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(RxVoid.Default);
         await Assert.That(executed).IsFalse();
@@ -368,7 +368,7 @@ public partial class ReactiveCommandTest
             () => ++executionCount,
             outputScheduler: Sequencer.Immediate);
         var source = Signal.Emit(RxVoid.Default);
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         await Assert.That(executionCount).IsEqualTo(1);
     }
@@ -381,7 +381,7 @@ public partial class ReactiveCommandTest
         var executionCount = 0;
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => ++executionCount,
             outputScheduler: Sequencer.Immediate);
@@ -402,7 +402,7 @@ public partial class ReactiveCommandTest
     {
         var target = new CommandHolder();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         var command = new FakeCommand();
         target.TheCommand = command;
 
@@ -424,7 +424,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => executed = true,
             canExecute,
@@ -447,7 +447,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new CommandHolder();
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create(
             () => executed = true,
             canExecute,
@@ -475,10 +475,10 @@ public partial class ReactiveCommandTest
                 throw new InvalidOperationException();
             },
             outputScheduler: Sequencer.Immediate);
-        command.ThrownExceptions.Subscribe();
+        _ = command.ThrownExceptions.Subscribe();
         target.TheCommand = command;
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
 
         const int ExpectedCount = 2;
 
@@ -498,7 +498,7 @@ public partial class ReactiveCommandTest
             () => ++executionCount,
             outputScheduler: Sequencer.Immediate);
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         const int ExpectedSecondCount = 2;
 
@@ -522,7 +522,7 @@ public partial class ReactiveCommandTest
             receivedParams.Add,
             outputScheduler: Sequencer.Immediate);
         var source = new Signal<int>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(ParameterValue);
         source.OnNext(SecondParameter);
@@ -547,7 +547,7 @@ public partial class ReactiveCommandTest
             canExecute,
             Sequencer.Immediate);
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(RxVoid.Default);
         await Assert.That(executed).IsFalse();
@@ -569,7 +569,7 @@ public partial class ReactiveCommandTest
             canExecute,
             Sequencer.Immediate);
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(RxVoid.Default);
         await Assert.That(executed).IsFalse();
@@ -592,9 +592,9 @@ public partial class ReactiveCommandTest
                 throw new InvalidOperationException();
             },
             outputScheduler: Sequencer.Immediate);
-        command.ThrownExceptions.Subscribe();
+        _ = command.ThrownExceptions.Subscribe();
         var source = new Signal<RxVoid>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         const int ExpectedCount = 2;
 
@@ -612,7 +612,7 @@ public partial class ReactiveCommandTest
         var executionCount = 0;
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => ++executionCount,
             outputScheduler: Sequencer.Immediate);
@@ -634,7 +634,7 @@ public partial class ReactiveCommandTest
         var receivedParam = 0;
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             param => receivedParam = param,
             outputScheduler: Sequencer.Immediate);
@@ -652,7 +652,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => executed = true,
             canExecute,
@@ -675,7 +675,7 @@ public partial class ReactiveCommandTest
         var canExecute = new BehaviorSignal<bool>(false);
         var target = new ReactiveCommandHolder();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
         target.TheCommand = ReactiveCommand.Create<int>(
             _ => executed = true,
             canExecute,
@@ -705,9 +705,9 @@ public partial class ReactiveCommandTest
                 },
                 outputScheduler: Sequencer.Immediate)
         };
-        target.TheCommand.ThrownExceptions.Subscribe();
+        _ = target.TheCommand.ThrownExceptions.Subscribe();
         var source = new Signal<int>();
-        source.InvokeCommand(target, x => x.TheCommand!);
+        _ = source.InvokeCommand(target, x => x.TheCommand!);
 
         const int ExpectedCount = 2;
 

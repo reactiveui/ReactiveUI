@@ -34,19 +34,30 @@ public static class ReactiveNotifyPropertyChangedMixins
     private static readonly
         MemoizingMRUCache<(Type? senderType, string propertyName, bool beforeChange), ICreatesObservableForProperty?>
         _notifyFactoryCache =
-            new(
-                (t, _) => AppLocator.Current.GetServices<ICreatesObservableForProperty>()
-                    .Aggregate(
-                        (score: 0, binding: (ICreatesObservableForProperty?)null),
-                        (acc, x) =>
-                        {
-                            var score = x.GetAffinityForObject(t.senderType, t.propertyName, t.beforeChange);
-                            return score > acc.score ? (score, x) : acc;
-                        }).binding,
-                RxCacheSize.BigCacheLimit);
+            new((t, _) => ResolveNotifyFactory(t), RxCacheSize.BigCacheLimit);
 
     /// <summary>Initializes static members of the <see cref="ReactiveNotifyPropertyChangedMixins"/> class.</summary>
     static ReactiveNotifyPropertyChangedMixins() => RxAppBuilder.EnsureInitialized();
+
+    /// <summary>Selects the registered property-notification factory with the highest affinity for the given key.</summary>
+    /// <param name="key">The sender type, property name, and change timing to resolve a factory for.</param>
+    /// <returns>The highest-affinity factory, or <see langword="null"/> when none have positive affinity.</returns>
+    private static ICreatesObservableForProperty? ResolveNotifyFactory((Type? senderType, string propertyName, bool beforeChange) key)
+    {
+        var bestScore = 0;
+        ICreatesObservableForProperty? best = null;
+        foreach (var factory in AppLocator.Current.GetServices<ICreatesObservableForProperty>())
+        {
+            var score = factory.GetAffinityForObject(key.senderType, key.propertyName, key.beforeChange);
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = factory;
+            }
+        }
+
+        return best;
+    }
 
     /// <summary>Provides ObservableForProperty extension members for observing property changes on a sender object.</summary>
     /// <typeparam name="TSender">The sender type.</typeparam>

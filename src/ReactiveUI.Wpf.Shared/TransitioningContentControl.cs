@@ -407,10 +407,20 @@ public class TransitioningContentControl : ContentControl
 
         if (VisualStateManager.GetVisualStateGroups(Container) is IEnumerable<VisualStateGroup> groups)
         {
-            PresentationStateGroup = groups.FirstOrDefault(static o => o.Name == PresentationGroup);
+            VisualStateGroup? matchedGroup = null;
+            foreach (var group in groups)
+            {
+                if (group.Name == PresentationGroup)
+                {
+                    matchedGroup = group;
+                    break;
+                }
+            }
+
+            PresentationStateGroup = matchedGroup;
         }
 
-        VisualStateManager.GoToState(this, NormalState, false);
+        _ = VisualStateManager.GoToState(this, NormalState, false);
     }
 
     /// <summary>Gets the DPI scale for the specified UI element.</summary>
@@ -598,10 +608,15 @@ public class TransitioningContentControl : ContentControl
                 "Visual state group is not initialized or states collection is invalid.");
         }
 
-        var transition = states
-            .Where(o => o.Name == transitionName)
-            .Select(o => o.Storyboard)
-            .FirstOrDefault();
+        Storyboard? transition = null;
+        foreach (var state in states)
+        {
+            if (state.Name == transitionName)
+            {
+                transition = state.Storyboard;
+                break;
+            }
+        }
 
         return transition ??
                throw new InvalidOperationException($"Transition '{transitionName}' not found in visual state group.");
@@ -663,7 +678,7 @@ public class TransitioningContentControl : ContentControl
     private void AbortTransition()
     {
         // Go to a normal state and release our hold on the old content.
-        VisualStateManager.GoToState(this, NormalState, false);
+        _ = VisualStateManager.GoToState(this, NormalState, false);
         _isTransitioning = false;
 
         if (PreviousImageSite is null)
@@ -741,7 +756,7 @@ public class TransitioningContentControl : ContentControl
         RaiseTransitionStarted();
 
         statesRemaining--;
-        VisualStateManager.GoToState(this, startingTransitionName, false);
+        _ = VisualStateManager.GoToState(this, startingTransitionName, false);
 
         void NextState(object? o, EventArgs e)
         {
@@ -752,7 +767,7 @@ public class TransitioningContentControl : ContentControl
             }
 
             statesRemaining--;
-            VisualStateManager.GoToState(this, transitionInName, false);
+            _ = VisualStateManager.GoToState(this, transitionInName, false);
         }
     }
 }

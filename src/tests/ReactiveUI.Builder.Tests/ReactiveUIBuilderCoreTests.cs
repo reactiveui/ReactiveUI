@@ -71,7 +71,7 @@ public class ReactiveUIBuilderCoreTests
     public void WithCustomRegistration_With_Null_Action_Should_Throw()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
+        _ = Assert.Throws<ArgumentNullException>(() => builder.WithCustomRegistration(null!));
     }
 
     /// <summary>Verifies that registering views from an assembly completes without error.</summary>
@@ -90,7 +90,7 @@ public class ReactiveUIBuilderCoreTests
     public void WithViewsFromAssembly_With_Null_Assembly_Should_Throw()
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
+        _ = Assert.Throws<ArgumentNullException>(() => builder.WithViewsFromAssembly(null!));
     }
 
     /// <summary>Verifies that calling core services multiple times does not duplicate registrations.</summary>
@@ -141,7 +141,7 @@ public class ReactiveUIBuilderCoreTests
         RxAppBuilder.ResetForTesting();
 
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var app = builder.Build();
 
@@ -174,7 +174,7 @@ public class ReactiveUIBuilderCoreTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() => builder.ForPlatforms(null!));
+        _ = Assert.Throws<ArgumentNullException>(() => builder.ForPlatforms(null!));
     }
 
     /// <summary>Executor that builds the app with platform services registered.</summary>
@@ -197,7 +197,7 @@ public class ReactiveUIBuilderCoreTests
         protected override void ConfigureBuilder()
         {
             CustomServiceRegistered = false;
-            RxAppBuilder.CreateReactiveUIBuilder()
+            _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithCustomRegistration(r =>
                 {
                     r.RegisterConstant("TestValue", typeof(string));
@@ -229,7 +229,7 @@ public class ReactiveUIBuilderCoreTests
         protected override void ConfigureBuilder()
         {
             CustomServiceRegistered = false;
-            RxAppBuilder.CreateReactiveUIBuilder()
+            _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithCoreServices()
                 .WithCustomRegistration(r =>
                 {

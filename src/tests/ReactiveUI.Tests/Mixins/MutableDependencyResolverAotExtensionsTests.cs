@@ -18,7 +18,7 @@ public class MutableDependencyResolverAotExtensionsTests
     {
         using var resolver = new ModernDependencyResolver();
 
-        resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>();
+        _ = resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<TestViewModel>>();
@@ -63,7 +63,7 @@ public class MutableDependencyResolverAotExtensionsTests
     {
         using var resolver = new ModernDependencyResolver();
 
-        resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>("SingletonContract");
+        _ = resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>("SingletonContract");
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>("SingletonContract");
         var view2 = resolver.GetService<IViewFor<TestViewModel>>("SingletonContract");
@@ -83,7 +83,7 @@ public class MutableDependencyResolverAotExtensionsTests
     {
         using var resolver = new ModernDependencyResolver();
 
-        resolver.RegisterViewForViewModelAOT<TestView, TestViewModel>();
+        _ = resolver.RegisterViewForViewModelAOT<TestView, TestViewModel>();
 
         var view1 = resolver.GetService<IViewFor<TestViewModel>>();
         var view2 = resolver.GetService<IViewFor<TestViewModel>>();
@@ -128,7 +128,7 @@ public class MutableDependencyResolverAotExtensionsTests
     {
         using var resolver = new ModernDependencyResolver();
 
-        resolver.RegisterViewForViewModelAOT<TestView, TestViewModel>("MyContract");
+        _ = resolver.RegisterViewForViewModelAOT<TestView, TestViewModel>("MyContract");
 
         var view = resolver.GetService<IViewFor<TestViewModel>>("MyContract");
 

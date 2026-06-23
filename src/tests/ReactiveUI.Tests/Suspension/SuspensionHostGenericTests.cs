@@ -33,12 +33,12 @@ public class SuspensionHostGenericTests
         var gotErrorInvalidate = false;
         var gotErrorPersist = false;
 
-        host.IsLaunchingNew.Subscribe(_ => { }, ex => gotErrorLaunching = true);
-        host.IsResuming.Subscribe(_ => { }, ex => gotErrorResuming = true);
-        host.IsUnpausing.Subscribe(_ => { }, ex => gotErrorUnpausing = true);
-        host.IsContinuing.Subscribe(_ => { }, ex => gotErrorContinuing = true);
-        host.ShouldInvalidateState.Subscribe(_ => { }, ex => gotErrorInvalidate = true);
-        host.ShouldPersistState.Subscribe(_ => { }, ex => gotErrorPersist = true);
+        _ = host.IsLaunchingNew.Subscribe(_ => { }, ex => gotErrorLaunching = true);
+        _ = host.IsResuming.Subscribe(_ => { }, ex => gotErrorResuming = true);
+        _ = host.IsUnpausing.Subscribe(_ => { }, ex => gotErrorUnpausing = true);
+        _ = host.IsContinuing.Subscribe(_ => { }, ex => gotErrorContinuing = true);
+        _ = host.ShouldInvalidateState.Subscribe(_ => { }, ex => gotErrorInvalidate = true);
+        _ = host.ShouldPersistState.Subscribe(_ => { }, ex => gotErrorPersist = true);
 
         await Assert.That(gotErrorLaunching).IsTrue();
         await Assert.That(gotErrorResuming).IsTrue();
@@ -348,8 +348,7 @@ public class SuspensionHostGenericTests
     [Test]
     public async Task ISuspensionHost_AppState_SetNull_SetsTypedPropertyToDefault()
     {
-        using var host = new SuspensionHost<DummyAppState>();
-        host.AppStateValue = new();
+        using var host = new SuspensionHost<DummyAppState> { AppStateValue = new() };
         var untypedHost = (ISuspensionHost)host;
 
         untypedHost.AppState = null;
@@ -390,9 +389,7 @@ public class SuspensionHostGenericTests
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_GetWhenTypedIsNull_ReturnsNull()
     {
-        using var host = new SuspensionHost<DummyAppState>();
-        host.CreateNewAppStateTyped = null;
-
+        using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = null };
         var untypedHost = (ISuspensionHost)host;
         var factory = untypedHost.CreateNewAppState;
 
@@ -420,8 +417,7 @@ public class SuspensionHostGenericTests
     [Test]
     public async Task ISuspensionHost_CreateNewAppState_SetNull_SetsTypedPropertyToNull()
     {
-        using var host = new SuspensionHost<DummyAppState>();
-        host.CreateNewAppStateTyped = () => new();
+        using var host = new SuspensionHost<DummyAppState> { CreateNewAppStateTyped = () => new() };
         var untypedHost = (ISuspensionHost)host;
 
         untypedHost.CreateNewAppState = null;

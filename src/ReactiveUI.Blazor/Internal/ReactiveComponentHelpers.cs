@@ -52,12 +52,12 @@ internal static class ReactiveComponentHelpers
         }
 
         // Subscribe to component activation and trigger view model activation.
-        state.Activated
+        _ = state.Activated
             .Subscribe(new DelegateObserver<RxVoid>(_ => avm.Activator.Activate()))
             .DisposeWith(state.LifetimeDisposables);
 
         // Deactivation subscription does not need disposal tracking beyond component lifetime.
-        state.Deactivated.Subscribe(new DelegateObserver<RxVoid>(_ => avm.Activator.Deactivate()));
+        _ = state.Deactivated.Subscribe(new DelegateObserver<RxVoid>(_ => avm.Activator.Deactivate()));
     }
 
     /// <summary>

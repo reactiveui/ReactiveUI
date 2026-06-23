@@ -67,7 +67,7 @@ public class PanelSetMethodBindingConverterTests
     public void PerformSet_Throws_When_ToTarget_Is_Null()
     {
         var converter = new PanelSetMethodBindingConverter();
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             converter.PerformSet(null, new List<Button>(), null));
     }
 
@@ -77,7 +77,7 @@ public class PanelSetMethodBindingConverterTests
     {
         var converter = new PanelSetMethodBindingConverter();
         var panel = new Panel();
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             converter.PerformSet(panel.Controls, "not a collection", null));
     }
 
@@ -92,7 +92,7 @@ public class PanelSetMethodBindingConverterTests
         var button2 = new Button { Name = "Button2" };
         var controls = new List<Button> { button1, button2 };
 
-        converter.PerformSet(panel.Controls, controls, null);
+        _ = converter.PerformSet(panel.Controls, controls, null);
 
         await Assert.That(panel.Controls.Count).IsEqualTo(ExpectedControlCount);
         await Assert.That(panel.Controls[0]).IsSameReferenceAs(button1);

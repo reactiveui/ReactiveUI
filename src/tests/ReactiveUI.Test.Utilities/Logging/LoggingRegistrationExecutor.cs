@@ -43,7 +43,7 @@ public class LoggingRegistrationExecutor : BaseAppBuilderTestExecutor
         context.StateBag["TestLogManager"] = currentLogManager;
 
         // Configure builder with logging registration and core services
-        builder
+        _ = builder
             .WithRegistration(r => r.Register<ILogManager>(() => currentLogManager))
             .WithCoreServices();
     }

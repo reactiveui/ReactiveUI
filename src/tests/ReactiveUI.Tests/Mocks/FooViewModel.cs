@@ -19,7 +19,7 @@ public class FooViewModel : ReactiveObject
 
         // The per-set latency is a scheduler-native DelaySubscription (not a delay inside the awaited task): virtual-time
         // tests drive RxSchedulers.TaskpoolScheduler deterministically, whereas a thread-pool-bridged Task delay races them.
-        this.WhenAnyValue(static x => x.Setpoint)
+        _ = this.WhenAnyValue(static x => x.Setpoint)
             .SelectMany(value => Signal.FromAsync(() => foo.SetValueAsync(value))
                 .DelaySubscription(TimeSpan.FromMilliseconds(SetValueDelayMilliseconds), RxSchedulers.TaskpoolScheduler))
             .Subscribe();

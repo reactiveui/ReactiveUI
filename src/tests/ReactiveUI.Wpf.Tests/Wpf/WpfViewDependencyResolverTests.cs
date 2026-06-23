@@ -20,7 +20,7 @@ public sealed class WpfViewDependencyResolverTests : IDisposable
     public WpfViewDependencyResolverTests()
     {
         _resolver = new();
-        _resolver.CreateReactiveUIBuilder()
+        _ = _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithWpf()
             .WithViewsFromAssembly(GetType().Assembly)

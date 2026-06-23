@@ -67,7 +67,7 @@ public class TableContentSetMethodBindingConverterTests
     public void PerformSet_Throws_When_ToTarget_Is_Null()
     {
         var converter = new TableContentSetMethodBindingConverter();
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             converter.PerformSet(null, new List<Button>(), null));
     }
 
@@ -77,7 +77,7 @@ public class TableContentSetMethodBindingConverterTests
     {
         var converter = new TableContentSetMethodBindingConverter();
         var panel = new Panel();
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             converter.PerformSet(panel.Controls, new List<Button>(), null));
     }
 
@@ -87,7 +87,7 @@ public class TableContentSetMethodBindingConverterTests
     {
         var converter = new TableContentSetMethodBindingConverter();
         var tableLayoutPanel = new TableLayoutPanel();
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             converter.PerformSet(tableLayoutPanel.Controls, "not a collection", null));
     }
 
@@ -102,7 +102,7 @@ public class TableContentSetMethodBindingConverterTests
         var button2 = new Button { Name = "Button2" };
         var controls = new List<Button> { button1, button2 };
 
-        converter.PerformSet(tableLayoutPanel.Controls, controls, null);
+        _ = converter.PerformSet(tableLayoutPanel.Controls, controls, null);
 
         await Assert.That(tableLayoutPanel.Controls.Count).IsEqualTo(ExpectedControlCount);
         await Assert.That(tableLayoutPanel.Controls[0]).IsSameReferenceAs(button1);

@@ -17,7 +17,7 @@ public class BuilderSchedulerMixinsTests
     public void WithTaskPoolScheduler_Throws_When_Builder_Null()
     {
         var scheduler = Sequencer.Immediate;
-        Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithTaskPoolScheduler(null!, scheduler));
+        _ = Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithTaskPoolScheduler(null!, scheduler));
     }
 
     /// <summary>Verifies that setting the main thread scheduler on a null builder throws <see cref="ArgumentNullException"/>.</summary>
@@ -25,7 +25,7 @@ public class BuilderSchedulerMixinsTests
     public void WithMainThreadScheduler_Throws_When_Builder_Null()
     {
         var scheduler = Sequencer.Immediate;
-        Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithMainThreadScheduler(null!, scheduler));
+        _ = Assert.Throws<ArgumentNullException>(() => BuilderMixins.WithMainThreadScheduler(null!, scheduler));
     }
 
     /// <summary>Verifies that setting the task pool scheduler updates both the builder and <see cref="RxSchedulers"/>.</summary>
@@ -40,8 +40,8 @@ public class BuilderSchedulerMixinsTests
             var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = Sequencer.Immediate;
 
-            builder.WithTaskPoolScheduler(scheduler);
-            builder.WithCoreServices().Build();
+            _ = builder.WithTaskPoolScheduler(scheduler);
+            _ = builder.WithCoreServices().Build();
 
             using (Assert.Multiple())
             {
@@ -67,8 +67,8 @@ public class BuilderSchedulerMixinsTests
             var builder = RxAppBuilder.CreateReactiveUIBuilder();
             var scheduler = Sequencer.Immediate;
 
-            builder.WithMainThreadScheduler(scheduler);
-            builder.WithCoreServices().Build();
+            _ = builder.WithMainThreadScheduler(scheduler);
+            _ = builder.WithCoreServices().Build();
 
             using (Assert.Multiple())
             {

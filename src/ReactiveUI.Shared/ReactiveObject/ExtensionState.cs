@@ -104,7 +104,7 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
     /// notifications.</returns>
     public IDisposable Suppress()
     {
-        Interlocked.Increment(ref _changeNotificationsSuppressed);
+        _ = Interlocked.Increment(ref _changeNotificationsSuppressed);
         return new ActionDisposable(() => Interlocked.Decrement(ref _changeNotificationsSuppressed));
     }
 
@@ -322,7 +322,7 @@ internal sealed class ExtensionState<TSender> : IExtensionState<TSender>
         {
             var changeSubject =
                 new DelayableNotificationSignal<TEventArgs>(AreChangeNotificationsDelayed, DistinctEvents);
-            changeSubject.Subscribe(new DelegateObserver<TEventArgs>(raiseEvent));
+            _ = changeSubject.Subscribe(new DelegateObserver<TEventArgs>(raiseEvent));
             return changeSubject;
         });
 }

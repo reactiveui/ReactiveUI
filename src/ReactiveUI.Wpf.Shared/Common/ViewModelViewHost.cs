@@ -104,7 +104,7 @@ public
             viewModelChanged,
             (contract, vm) => (ViewModel: vm, Contract: contract));
 
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
             d(new ObserveOnObservable<string?>(contractChanged, RxSchedulers.MainThreadScheduler)
                 .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty)));

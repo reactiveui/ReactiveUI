@@ -25,7 +25,7 @@ public class WpfReactiveUiBuilderExtensionsTest
     [Test]
     public void WithWpf_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             WpfReactiveUIBuilderExtensions.WithWpf(null!));
     }
 
@@ -53,7 +53,7 @@ public class WpfReactiveUiBuilderExtensionsTest
     [Test]
     public void WithWpfScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             WpfReactiveUIBuilderExtensions.WithWpfScheduler(null!));
     }
 
@@ -90,7 +90,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         {
             var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
 
-            builder.WithWpfScheduler();
+            _ = builder.WithWpfScheduler();
 
             await Assert.That(builder.MainThreadScheduler).IsNotNull();
             await Assert.That(builder.MainThreadScheduler!).IsTypeOf<DispatcherSequencer>();
@@ -101,7 +101,7 @@ public class WpfReactiveUiBuilderExtensionsTest
     [Test]
     public void WithWpfConverters_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             WpfReactiveUIBuilderExtensions.WithWpfConverters(null!));
     }
 
@@ -118,7 +118,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         {
             var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
 
-            builder.WithWpfConverters();
+            _ = builder.WithWpfConverters();
 
             // Verify BooleanToVisibilityTypeConverter is registered
             var boolToVisibility = builder.ConverterService.TypedConverters.TryGetConverter(typeof(bool), typeof(Visibility));
@@ -149,7 +149,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         using (resolver.WithResolver())
         {
             var builder = (ReactiveUIBuilder)AppLocator.CurrentMutable.CreateReactiveUIBuilder();
-            builder.WithWpf().BuildApp();
+            _ = builder.WithWpf().BuildApp();
 
             var converterService = builder.ConverterService;
 
@@ -181,7 +181,7 @@ public class WpfReactiveUiBuilderExtensionsTest
         using (resolver.WithResolver())
         {
             var builder = (ReactiveUIBuilder)AppLocator.CurrentMutable.CreateReactiveUIBuilder();
-            builder.WithWpf().BuildApp();
+            _ = builder.WithWpf().BuildApp();
 
             var converter = builder.ConverterService.TypedConverters.TryGetConverter(typeof(bool), typeof(Visibility));
             await Assert.That(converter).IsNotNull();

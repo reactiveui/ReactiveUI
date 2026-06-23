@@ -92,12 +92,17 @@ public static class CreatesCommandBinding
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
     T>(bool hasEventTarget)
     {
-        var binder = AppLocator.Current.GetServices<ICreatesCommandBinding>()
-            .Aggregate((score: 0, binding: (ICreatesCommandBinding?)null), (acc, x) =>
+        var bestScore = 0;
+        ICreatesCommandBinding? binder = null;
+        foreach (var candidate in AppLocator.Current.GetServices<ICreatesCommandBinding>())
+        {
+            var score = candidate.GetAffinityForObject<T>(hasEventTarget);
+            if (score > bestScore)
             {
-                var score = x.GetAffinityForObject<T>(hasEventTarget);
-                return score > acc.score ? (score, x) : acc;
-            }).binding;
+                bestScore = score;
+                binder = candidate;
+            }
+        }
 
         return binder ?? throw new InvalidOperationException($"Couldn't find a Command Binder for {typeof(T).FullName}");
     }

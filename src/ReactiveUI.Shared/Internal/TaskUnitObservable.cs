@@ -22,7 +22,7 @@ internal sealed class TaskUnitObservable(Task task) : IObservable<RxVoid>
     public IDisposable Subscribe(IObserver<RxVoid> observer)
     {
         ArgumentExceptionHelper.ThrowIfNull(observer);
-        task.ContinueWith(
+        _ = task.ContinueWith(
             static (completed, state) =>
             {
                 var observer = (IObserver<RxVoid>)state!;

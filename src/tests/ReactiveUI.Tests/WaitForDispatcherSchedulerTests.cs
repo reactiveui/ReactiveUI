@@ -33,7 +33,7 @@ public class WaitForDispatcherSchedulerTests
         ISequencer? schedulerExecutedOn = null;
         var schedulerFactory = new Func<ISequencer>(() => throw new ArgumentNullException());
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        sut.Schedule<object>(
+        _ = sut.Schedule<object>(
             null!,
             (scheduler, _) =>
             {
@@ -57,7 +57,7 @@ public class WaitForDispatcherSchedulerTests
         });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        sut.Schedule(() => { });
+        _ = sut.Schedule(() => { });
 
         const int ExpectedFactoryCalls = 2;
         await Assert.That(schedulerFactoryCalls).IsEqualTo(ExpectedFactoryCalls);
@@ -89,7 +89,7 @@ public class WaitForDispatcherSchedulerTests
 
         // First Schedule call — factory throws, falls back to CurrentThreadScheduler (not cached)
         ISequencer? firstCallScheduler = null;
-        sut.Schedule<object>(
+        _ = sut.Schedule<object>(
             null!,
             (scheduler, _) =>
             {
@@ -99,7 +99,7 @@ public class WaitForDispatcherSchedulerTests
 
         // Second Schedule call — factory succeeds, result is cached
         ISequencer? secondCallScheduler = null;
-        sut.Schedule<object>(
+        _ = sut.Schedule<object>(
             null!,
             (scheduler, _) =>
             {
@@ -109,7 +109,7 @@ public class WaitForDispatcherSchedulerTests
 
         // Third Schedule call — uses cached scheduler, factory not called again
         var callsBeforeThird = schedulerFactoryCalls;
-        sut.Schedule<object>(
+        _ = sut.Schedule<object>(
             null!,
             (_, _) => Scope.Empty);
 
@@ -127,7 +127,7 @@ public class WaitForDispatcherSchedulerTests
         var schedulerFactory = new Func<ISequencer>(() => throw new InvalidOperationException());
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        sut.Schedule<object>(
+        _ = sut.Schedule<object>(
             null!,
             (scheduler, _) =>
             {
@@ -151,7 +151,7 @@ public class WaitForDispatcherSchedulerTests
         });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        sut.Schedule(() => { });
+        _ = sut.Schedule(() => { });
 
         await Assert.That(schedulerFactoryCalls).IsEqualTo(1);
     }

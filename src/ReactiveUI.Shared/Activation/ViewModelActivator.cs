@@ -117,7 +117,7 @@ public sealed class ViewModelActivator : IDisposable
     {
         if (ignoreRefCount)
         {
-            Interlocked.Exchange(ref _refCount, 0);
+            _ = Interlocked.Exchange(ref _refCount, 0);
             Interlocked.Exchange(ref _activationHandle, EmptyDisposable.Instance).Dispose();
             _deactivated.OnNext(RxVoid.Default);
             return;

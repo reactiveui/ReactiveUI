@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup.Primitives;
 using System.Windows.Media;
+using Expression = System.Linq.Expressions.Expression;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Wpf.Binding;
@@ -66,35 +67,36 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
         // Get the View details
         View = view;
         ViewExpression = Reflection.Rewrite(viewProperty.Body);
-        var viewExpressionChain = ViewExpression.GetExpressionChain().ToArray();
+        Expression[] viewExpressionChain = [.. ViewExpression.GetExpressionChain()];
 
         var controlName = ExtractControlName(viewExpressionChain, typeof(TView));
         _control = FindControlByName(view as DependencyObject, controlName)
                    ?? throw new ArgumentException(
-                       $"Control '{controlName}' not found in view {typeof(TView).Name}",
+                       $"Control '{controlName}' not found in view {nameof(TView)}",
                        nameof(viewProperty));
 
-        var propertyName = viewExpressionChain.LastOrDefault()?.GetMemberInfo()?.Name;
+        var lastViewExpression = viewExpressionChain.Length > 0 ? viewExpressionChain[^1] : null;
+        var propertyName = lastViewExpression?.GetMemberInfo()?.Name;
         _dependencyProperty = GetDependencyProperty(_control, propertyName)
                           ?? throw new ArgumentException(
-                              $"Dependency property '{propertyName}' not found on {typeof(TVProp).Name}",
+                              $"Dependency property '{propertyName}' not found on {nameof(TVProp)}",
                               nameof(viewProperty));
 
         Changed = new ChangedObservable(
             Reflection.ViewModelWhenAnyValue(viewModel, view, ViewModelExpression),
             view.WhenAnyDynamic(ViewExpression, static x => (TVProp?)x.Value));
         Direction = BindingDirection.TwoWay;
-        Bind();
+        _ = Bind();
     }
 
     /// <summary>Gets the expression representing the view model property being bound.</summary>
-    public System.Linq.Expressions.Expression ViewModelExpression { get; }
+    public Expression ViewModelExpression { get; }
 
     /// <summary>Gets the view instance that owns this binding.</summary>
     public TView View { get; }
 
     /// <summary>Gets the expression representing the view property being bound.</summary>
-    public System.Linq.Expressions.Expression ViewExpression { get; }
+    public Expression ViewExpression { get; }
 
     /// <summary>Gets an observable that emits values when either the view model or view property changes.</summary>
     public IObservable<TVMProp?> Changed { get; }
@@ -106,7 +108,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <returns>A disposable that can be used to remove the binding.</returns>
     public IDisposable Bind()
     {
-        _control.SetBinding(
+        _ = _control.SetBinding(
             _dependencyProperty,
             new System.Windows.Data.Binding
             {
@@ -134,12 +136,17 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// </summary>
     /// <param name="expression">The expression to extract the path from.</param>
     /// <returns>The dot-separated property path.</returns>
-    internal static string ExtractPropertyPath(System.Linq.Expressions.Expression expression)
+    internal static string ExtractPropertyPath(Expression expression)
     {
-        var chain = expression.GetExpressionChain();
-        var pathParts = chain
-            .Select(static x => x.GetMemberInfo()?.Name)
-            .Where(static name => !string.IsNullOrEmpty(name));
+        List<string> pathParts = [];
+        foreach (var node in expression.GetExpressionChain())
+        {
+            var name = node.GetMemberInfo()?.Name;
+            if (!string.IsNullOrEmpty(name))
+            {
+                pathParts.Add(name);
+            }
+        }
 
         return string.Join(".", pathParts);
     }
@@ -152,7 +159,7 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <param name="viewType">The type of the view for error messages.</param>
     /// <returns>The name of the control.</returns>
     /// <exception cref="ArgumentException">Thrown when the control name cannot be determined.</exception>
-    internal static string ExtractControlName(System.Linq.Expressions.Expression[] expressionChain, Type viewType)
+    internal static string ExtractControlName(Expression[] expressionChain, Type viewType)
     {
         if (expressionChain.Length < 2)
         {
@@ -241,9 +248,23 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
             }
         }
 
-        return EnumerateDependencyProperties(element)
-            .Concat(EnumerateAttachedProperties(element))
-            .FirstOrDefault(x => x.Name == name);
+        foreach (var property in EnumerateDependencyProperties(element))
+        {
+            if (property.Name == name)
+            {
+                return property;
+            }
+        }
+
+        foreach (var property in EnumerateAttachedProperties(element))
+        {
+            if (property.Name == name)
+            {
+                return property;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Finds the first control with the specified name in the visual tree.</summary>
@@ -252,17 +273,13 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <returns>The first matching FrameworkElement, or null if not found.</returns>
     internal static FrameworkElement? FindControlByName(DependencyObject? parent, string? name)
     {
-        if (parent is null)
+        if (parent is null || name is null || string.IsNullOrWhiteSpace(name))
         {
             return null;
         }
 
-        if (name is null || string.IsNullOrWhiteSpace(name))
-        {
-            return null;
-        }
-
-        return FindControlsByNameIterator(parent, name).FirstOrDefault();
+        using var enumerator = FindControlsByNameIterator(parent, name).GetEnumerator();
+        return enumerator.MoveNext() ? enumerator.Current : null;
     }
 
     /// <summary>Releases the resources used by the binding.</summary>

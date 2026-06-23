@@ -156,6 +156,6 @@ public abstract class ReactiveCommandBase<TParam, TResult> : IReactiveCommand<TP
 
         // Fire-and-forget: drive the execution to completion and swallow any error here
         // (errors are surfaced through ThrownExceptions). Replaces .Catch(Empty).Subscribe().
-        result.Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
+        _ = result.Subscribe(new DelegateObserver<TResult>(static _ => { }, static _ => { }));
     }
 }

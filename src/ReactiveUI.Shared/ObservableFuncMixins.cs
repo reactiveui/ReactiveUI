@@ -140,7 +140,7 @@ public static class ObservableFuncMixins
             /// <inheritdoc/>
             public void Dispose()
             {
-                Interlocked.Exchange(ref _disposed, 1);
+                _ = Interlocked.Exchange(ref _disposed, 1);
                 _subscription.Dispose();
             }
         }

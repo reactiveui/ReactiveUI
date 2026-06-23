@@ -225,7 +225,7 @@ public class BindingHookEvaluatorTests
             ArgumentNullException.ThrowIfNull(builder);
             ArgumentNullException.ThrowIfNull(context);
 
-            builder
+            _ = builder
                 .WithRegistration(r => r.RegisterConstant<IPropertyBindingHook>(new RejectingHook()))
                 .WithCoreServices();
         }

@@ -37,8 +37,9 @@ internal static class CompatMixins
         /// If count is greater than or equal to the number of elements in the sequence, an empty sequence is returned.</returns>
         internal IEnumerable<T> SkipLast(int count)
         {
-            var inputList = @this.ToList();
-            return inputList.Take(inputList.Count - count);
+            List<T> inputList = [.. @this];
+            var take = inputList.Count - count;
+            return take <= 0 ? [] : inputList.GetRange(0, take);
         }
     }
 }

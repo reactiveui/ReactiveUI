@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TUnit.Core.Executors;
 using Control = System.Windows.Controls.Control;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace ReactiveUI.Tests.Wpf;
 
@@ -65,7 +66,7 @@ public class ValidationBindingWpfTest
     [Test]
     public async Task ExtractControlName_ThrowsWhenChainTooShort()
     {
-        var chain = new System.Linq.Expressions.Expression[] { System.Linq.Expressions.Expression.Constant("value") };
+        var chain = new Expression[] { Expression.Constant("value") };
 
         await Assert.That(() => ValidationBindingWpf<TestView, TestViewModel, Control, string>.ExtractControlName(chain, typeof(TestView)))
             .Throws<ArgumentException>();
@@ -77,11 +78,11 @@ public class ValidationBindingWpfTest
     public async Task ExtractControlName_ThrowsForInvalidExpressionChain()
     {
         // Create an invalid expression chain
-        var chain = new System.Linq.Expressions.Expression[]
+        var chain = new Expression[]
         {
-            System.Linq.Expressions.Expression.Parameter(typeof(TestView), "view"),
-            System.Linq.Expressions.Expression.Constant(new TextBox()),
-            System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression.Constant(new TextBox()), "Text")
+            Expression.Parameter(typeof(TestView), "view"),
+            Expression.Constant(new TextBox()),
+            Expression.Property(Expression.Constant(new TextBox()), "Text")
         };
 
         await Assert.That(() => ValidationBindingWpf<TestView, TestViewModel, Control, string>.ExtractControlName(chain, typeof(TestView)))
@@ -233,7 +234,7 @@ public class ValidationBindingWpfTest
     {
         var panel = new StackPanel();
         var textBox = new TextBox { Name = "TestTextBox" };
-        panel.Children.Add(textBox);
+        _ = panel.Children.Add(textBox);
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(panel, "TestTextBox");
 
@@ -250,8 +251,8 @@ public class ValidationBindingWpfTest
         var innerPanel = new StackPanel();
         var textBox = new TextBox { Name = "NestedTextBox" };
 
-        innerPanel.Children.Add(textBox);
-        outerPanel.Children.Add(innerPanel);
+        _ = innerPanel.Children.Add(textBox);
+        _ = outerPanel.Children.Add(innerPanel);
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(outerPanel, "NestedTextBox");
 
@@ -266,7 +267,7 @@ public class ValidationBindingWpfTest
     {
         var panel = new StackPanel();
         var textBox = new TextBox { Name = "TextBox1" };
-        panel.Children.Add(textBox);
+        _ = panel.Children.Add(textBox);
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(panel, "NonExistentControl");
 
@@ -281,8 +282,8 @@ public class ValidationBindingWpfTest
         var panel = new StackPanel();
         var textBox1 = new TextBox { Name = "DuplicateName" };
         var textBox2 = new TextBox { Name = "DuplicateName" };
-        panel.Children.Add(textBox1);
-        panel.Children.Add(textBox2);
+        _ = panel.Children.Add(textBox1);
+        _ = panel.Children.Add(textBox2);
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(panel, "DuplicateName");
 
@@ -511,9 +512,9 @@ public class ValidationBindingWpfTest
         var level3 = new StackPanel();
         var deepControl = new TextBox { Name = "DeepControl" };
 
-        level3.Children.Add(deepControl);
-        level2.Children.Add(level3);
-        level1.Children.Add(level2);
+        _ = level3.Children.Add(deepControl);
+        _ = level2.Children.Add(level3);
+        _ = level1.Children.Add(level2);
 
         var result = ValidationBindingWpf<TestView, TestViewModel, Control, string>.FindControlByName(level1, "DeepControl");
 

@@ -23,9 +23,9 @@ public class FakeXamlCommandBindingView : Control, IViewFor<CommandBindingViewMo
     /// <summary>Initializes a new instance of the <see cref="FakeXamlCommandBindingView"/> class.</summary>
     public FakeXamlCommandBindingView()
     {
-        ButtonDeclaredInXaml = new Button();
+        ButtonDeclaredInXaml = new();
 
-        this.BindCommand(ViewModel, static vm => vm!.Command2!, static v => v.ButtonDeclaredInXaml);
+        _ = this.BindCommand(ViewModel, static vm => vm!.Command2!, static v => v.ButtonDeclaredInXaml);
     }
 
     /// <summary>Gets or sets the button declared in xaml.</summary>

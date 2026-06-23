@@ -14,7 +14,7 @@ public static class DispatcherUtilities
     public static void DoEvents()
     {
         var frame = new DispatcherFrame();
-        Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+        _ = Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
         Dispatcher.PushFrame(frame);
     }
 

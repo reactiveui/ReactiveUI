@@ -183,7 +183,7 @@ public class ReflectionAdvancedTests
     public async Task TryGetAllValuesForPropertyChain_WithEmptyChain_Throws()
     {
         var obj = new TestClass();
-        var emptyChain = Array.Empty<System.Linq.Expressions.Expression>();
+        var emptyChain = Array.Empty<Expression>();
 
         await Assert.That(() => Reflection.TryGetAllValuesForPropertyChain(out _, obj, emptyChain))
             .Throws<InvalidOperationException>();
@@ -224,7 +224,7 @@ public class ReflectionAdvancedTests
     public async Task TrySetValueToPropertyChain_WithEmptyChain_Throws()
     {
         var obj = new TestClass();
-        var emptyChain = Array.Empty<System.Linq.Expressions.Expression>();
+        var emptyChain = Array.Empty<Expression>();
 
         await Assert.That(() => Reflection.TrySetValueToPropertyChain(obj, emptyChain, "value"))
             .Throws<InvalidOperationException>();

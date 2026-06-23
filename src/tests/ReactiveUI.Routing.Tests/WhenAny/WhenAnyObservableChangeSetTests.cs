@@ -19,7 +19,7 @@ public class WhenAnyObservableChangeSetTests
     public async Task WhenAnyObservableWithNullObjectShouldUpdateWhenObjectIsntNullAnymore()
     {
         var fixture = new ChangeSetWhenAnyViewModel();
-        fixture.WhenAnyObservable(static x => x.Changes).Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
+        _ = fixture.WhenAnyObservable(static x => x.Changes).Bind(out var output).ObserveOn(ImmediateScheduler.Instance).Subscribe();
         await Assert.That(output).IsEmpty();
 
         fixture.MyListOfInts = [];
@@ -48,7 +48,7 @@ public class WhenAnyObservableChangeSetTests
             get;
             set
             {
-                this.RaiseAndSetIfChanged(ref field, value);
+                _ = this.RaiseAndSetIfChanged(ref field, value);
                 Changes = MyListOfInts?.ToObservableChangeSet();
             }
         }

@@ -21,7 +21,7 @@ public class FakeCollectionViewModel : ReactiveObject
     {
         Model = model;
 
-        this.WhenAny(static x => x.Model.SomeNumber, static x => x.Value.ToString()).ToProperty(
+        _ = this.WhenAny(static x => x.Model.SomeNumber, static x => x.Value.ToString()).ToProperty(
             this,
             static x => x.NumberAsString,
             out _numberAsString);

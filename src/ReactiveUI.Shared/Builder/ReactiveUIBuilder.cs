@@ -146,7 +146,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     /// <returns>The builder instance for chaining.</returns>
     public IReactiveUIBuilder WithRegistrationOnBuild(Action<IMutableDependencyResolver> configureAction)
     {
-        WithCustomRegistration(configureAction);
+        _ = WithCustomRegistration(configureAction);
         return this;
     }
 
@@ -187,7 +187,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
             return this;
         }
 
-        WithPlatformModule<PlatformRegistrations>();
+        _ = WithPlatformModule<PlatformRegistrations>();
 
         _platformRegistered = true;
         return this;
@@ -201,7 +201,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
         {
             RegisterStandardConverters();
 
-            WithPlatformModule<Registrations>();
+            _ = WithPlatformModule<Registrations>();
             _coreRegistered = true;
         }
 
@@ -248,7 +248,7 @@ public sealed class ReactiveUIBuilder : AppBuilder, IReactiveUIBuilder, IReactiv
     public IReactiveUIBuilder UsingSplatModule<T>(T registrationModule)
         where T : IModule
     {
-        UsingModule(registrationModule);
+        _ = UsingModule(registrationModule);
         return this;
     }
 

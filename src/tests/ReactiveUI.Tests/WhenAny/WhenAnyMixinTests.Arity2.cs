@@ -15,7 +15,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAny(
+        _ = vm.WhenAny(
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -29,7 +29,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAny(
+        _ = vm.WhenAny(
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x",
@@ -44,7 +44,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAny<WhenAnyArityTestViewModel, string, string?, string?>(
+        _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -58,7 +58,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAny<WhenAnyArityTestViewModel, string, string?, string?>(
+        _ = vm.WhenAny<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x",
@@ -73,7 +73,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAnyValue(
+        _ = vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -87,7 +87,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAnyValue(
+        _ = vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2,
             (_, _) => "x",
@@ -102,7 +102,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?, string?>(
+        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -116,7 +116,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<string>();
-        vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?, string?>(
+        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             (_, _) => "x",
@@ -131,7 +131,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<(string?, string?)>();
-        vm.WhenAnyValue(
+        _ = vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
@@ -144,7 +144,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<(string?, string?)>();
-        vm.WhenAnyValue(
+        _ = vm.WhenAnyValue(
             x => x.Property1,
             x => x.Property2,
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -158,7 +158,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<(string?, string?)>();
-        vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
+        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2)).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).Count().IsGreaterThan(0);
@@ -171,7 +171,7 @@ public partial class WhenAnyMixinTests
     {
         var vm = new WhenAnyArityTestViewModel();
         var list = new List<(string?, string?)>();
-        vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
+        _ = vm.WhenAnyValue<WhenAnyArityTestViewModel, string?, string?>(
             nameof(WhenAnyArityTestViewModel.Property1),
             nameof(WhenAnyArityTestViewModel.Property2),
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);

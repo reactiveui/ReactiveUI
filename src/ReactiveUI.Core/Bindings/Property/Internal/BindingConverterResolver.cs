@@ -28,27 +28,19 @@ public class BindingConverterResolver : IBindingConverterResolver
         ResolveBestConverter(fromType, toType);
 
     /// <inheritdoc/>
-    public Func<object?, object?, object?[]?, object?>? GetSetMethodConverter(Type? fromType, Type? toType)
-    {
-        if (fromType is null)
-        {
-            return null;
-        }
-
-        return _setMethodCache.GetOrAdd(
-            (fromType, toType),
-            static key =>
-            {
-                var converter = ResolveBestSetMethodConverter(key.fromType, key.toType);
-                if (converter is null)
+    public Func<object?, object?, object?[]?, object?>? GetSetMethodConverter(Type? fromType, Type? toType) =>
+        fromType is null
+            ? null
+            : _setMethodCache.GetOrAdd(
+                (fromType, toType),
+                static key =>
                 {
-                    return null;
-                }
-
-                return (currentValue, newValue, indexParameters) =>
-                    converter.PerformSet(currentValue, newValue, indexParameters);
-            });
-    }
+                    var converter = ResolveBestSetMethodConverter(key.fromType, key.toType);
+                    return converter is null
+                        ? null
+                        : (currentValue, newValue, indexParameters) =>
+                            converter.PerformSet(currentValue, newValue, indexParameters);
+                });
 
     /// <summary>Resolves the best converter for a given type pair using the ConverterService.</summary>
     /// <param name="fromType">The source type.</param>

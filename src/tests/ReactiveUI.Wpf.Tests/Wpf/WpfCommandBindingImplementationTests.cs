@@ -40,7 +40,7 @@ public class WpfCommandBindingImplementationTests
         var view = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         var disp = view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
@@ -61,7 +61,7 @@ public class WpfCommandBindingImplementationTests
         _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         // Test that binding with null target throws
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -77,7 +77,7 @@ public class WpfCommandBindingImplementationTests
         _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         // Test that binding with null target throws when target is required
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -93,7 +93,7 @@ public class WpfCommandBindingImplementationTests
         _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         // Test that binding with non-existent event name throws
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -109,7 +109,7 @@ public class WpfCommandBindingImplementationTests
         _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         // Test that binding with null command throws appropriate exception
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -125,7 +125,7 @@ public class WpfCommandBindingImplementationTests
         _ = new CommandBindingView { ViewModel = vm };
 
         var invokeCount = 0;
-        vm.Command2.Subscribe(_ => invokeCount++);
+        _ = vm.Command2.Subscribe(_ => invokeCount++);
 
         // Test that binding with null command throws exception
         await Assert.That(invokeCount).IsEqualTo(0);
@@ -140,8 +140,8 @@ public class WpfCommandBindingImplementationTests
         var view = new CommandBindingView { ViewModel = vm };
 
         // Create a paramenter feed
-        vm.Command2.Subscribe(_ => vm.Value++);
-        view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
+        _ = vm.Command2.Subscribe(_ => vm.Value++);
+        _ = view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
         // Bind the command and the IObservable parameter.
         _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm.WhenAnyValue(vm => vm.Value), MouseUpEventName);
@@ -149,7 +149,7 @@ public class WpfCommandBindingImplementationTests
 
         // Confirm that the values update as expected.
         var parameter = 0;
-        vm.Command1.Subscribe(i => parameter = i);
+        _ = vm.Command1.Subscribe(i => parameter = i);
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
@@ -184,8 +184,8 @@ public class WpfCommandBindingImplementationTests
         var view = new CommandBindingView { ViewModel = vm };
 
         // Create a paramenter feed
-        vm.Command2.Subscribe(_ => vm.Value++);
-        view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
+        _ = vm.Command2.Subscribe(_ => vm.Value++);
+        _ = view.BindCommand(vm, x => x.Command2, x => x.Command2, MouseUpEventName);
 
         // Bind the command and the Func<T> parameter.
         _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command3, vm => vm.Value, MouseUpEventName);
@@ -193,7 +193,7 @@ public class WpfCommandBindingImplementationTests
 
         // Confirm that the values update as expected.
         var parameter = 0;
-        vm.Command1.Subscribe(i => parameter = i);
+        _ = vm.Command1.Subscribe(i => parameter = i);
         view.Command2.RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left) { RoutedEvent = UIElement.MouseUpEvent });
         using (Assert.Multiple())
         {
@@ -269,14 +269,14 @@ public class WpfCommandBindingImplementationTests
         var view = new CommandBindingView { ViewModel = vm };
 
         var received1 = 0;
-        view.ViewModel.Command1.Subscribe(i => received1 = i);
+        _ = view.ViewModel.Command1.Subscribe(i => received1 = i);
 
         _ = new CommandBinderImplementation().BindCommand(vm, view, vm => vm.Command1, v => v.Command1, vm => vm.Value, nameof(CustomClickButton.CustomClick));
 
         view.ViewModel = new() { Value = ExpectedSecondInvocation };
 
         var received2 = 0;
-        view.ViewModel.Command1.Subscribe(i => received2 = i);
+        _ = view.ViewModel.Command1.Subscribe(i => received2 = i);
 
         view.Command1.RaiseCustomClick();
 

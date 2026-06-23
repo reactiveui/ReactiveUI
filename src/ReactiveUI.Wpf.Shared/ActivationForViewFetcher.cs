@@ -63,12 +63,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <returns>An observable that emits activation state for the window.</returns>
     private static IObservable<bool> GetActivationForWindow(IActivatableView view)
     {
-        if (view is not Window window)
-        {
-            return Signal.None<bool>();
-        }
-
-        return new FromEventObservable<bool>(onNext =>
+        return view is not Window window ? Signal.None<bool>() : new FromEventObservable<bool>(onNext =>
         {
             void Handler(object? sender, EventArgs e) => onNext(false);
             window.Closed += Handler;

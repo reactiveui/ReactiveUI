@@ -97,7 +97,7 @@ public class ScheduledSubject<T> : ISignal<T>
         ArgumentExceptionHelper.ThrowIfNull(observer);
 
         Interlocked.Exchange(ref _defaultObserverSub, EmptyDisposable.Instance).Dispose();
-        Interlocked.Increment(ref _observerRefCount);
+        _ = Interlocked.Increment(ref _observerRefCount);
 
         var inner = _subject.Subscribe(new SchedulingObserver<T>(observer, _scheduler));
         return new Subscription(this, inner);

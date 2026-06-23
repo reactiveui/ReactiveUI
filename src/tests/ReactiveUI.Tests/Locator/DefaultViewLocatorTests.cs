@@ -49,7 +49,7 @@ public class DefaultViewLocatorTests
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            locator.Map<TestViewModel, TestView>(null!);
+            _ = locator.Map<TestViewModel, TestView>(null!);
             await Task.CompletedTask;
         });
     }
@@ -63,7 +63,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var callCount = 0;
 
-        locator
+        _ = locator
             .Map<TestViewModel, TestView>(() =>
             {
                 callCount++;
@@ -75,7 +75,7 @@ public class DefaultViewLocatorTests
                 return new();
             });
 
-        locator.ResolveView<TestViewModel>();
+        _ = locator.ResolveView<TestViewModel>();
 
         await Assert.That(callCount).IsEqualTo(OverwriteIncrement);
     }
@@ -87,7 +87,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         var view = locator.ResolveView<TestViewModel>();
 
@@ -125,7 +125,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new(), MobileContract)
+        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract)
             .Map<TestViewModel, TestViewAlt>(() => new(), "desktop");
 
         var mobileView = locator.ResolveView<TestViewModel>(MobileContract);
@@ -142,7 +142,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         var view1 = locator.ResolveView<TestViewModel>();
         var view2 = locator.ResolveView<TestViewModel>();
@@ -165,7 +165,7 @@ public class DefaultViewLocatorTests
         try
         {
             var locator = new DefaultViewLocator();
-            locator.Map<TestViewModel, TestView>(() => new());
+            _ = locator.Map<TestViewModel, TestView>(() => new());
 
             var view = locator.ResolveView<TestViewModel>();
 
@@ -222,7 +222,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
 
         var view = locator.ResolveView<TestViewModel>(MobileContract);
 
@@ -290,7 +290,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         var view = locator.ResolveView(vm);
 
@@ -306,7 +306,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         var view = locator.ResolveView(vm);
 
@@ -322,7 +322,7 @@ public class DefaultViewLocatorTests
         var locator = new DefaultViewLocator();
         var vm = new TestViewModel();
 
-        locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
 
         var view = locator.ResolveView(vm, MobileContract);
 
@@ -337,7 +337,7 @@ public class DefaultViewLocatorTests
     public async Task ResolveView_ThreadSafe_ConcurrentResolvesDontThrow()
     {
         var locator = new DefaultViewLocator();
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         var tasks = new List<Task>();
         for (var i = 0; i < ConcurrentIterations; i++)
@@ -360,7 +360,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new(), "c1")
+        _ = locator.Map<TestViewModel, TestView>(() => new(), "c1")
             .Map<TestViewModel, TestView>(() => new(), "c2");
 
         var result = locator.Unmap<TestViewModel>("c1")
@@ -377,7 +377,7 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Unmap<TestViewModel>("nonexistent");
+        _ = locator.Unmap<TestViewModel>("nonexistent");
 
         await Assert.That(locator.ResolveView<TestViewModel>("nonexistent")).IsNull();
     }
@@ -389,11 +389,11 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new());
+        _ = locator.Map<TestViewModel, TestView>(() => new());
 
         await Assert.That(locator.ResolveView<TestViewModel>()).IsNotNull();
 
-        locator.Unmap<TestViewModel>();
+        _ = locator.Unmap<TestViewModel>();
 
         await Assert.That(locator.ResolveView<TestViewModel>()).IsNull();
     }
@@ -405,11 +405,11 @@ public class DefaultViewLocatorTests
     {
         var locator = new DefaultViewLocator();
 
-        locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
+        _ = locator.Map<TestViewModel, TestView>(() => new(), MobileContract);
 
         await Assert.That(locator.ResolveView<TestViewModel>(MobileContract)).IsNotNull();
 
-        locator.Unmap<TestViewModel>(MobileContract);
+        _ = locator.Unmap<TestViewModel>(MobileContract);
 
         await Assert.That(locator.ResolveView<TestViewModel>(MobileContract)).IsNull();
     }
@@ -423,7 +423,7 @@ public class DefaultViewLocatorTests
 
         for (var i = 0; i < ConcurrentIterations; i++)
         {
-            locator.Map<TestViewModel, TestView>(() => new(), $"contract{i}");
+            _ = locator.Map<TestViewModel, TestView>(() => new(), $"contract{i}");
         }
 
         var tasks = new List<Task>();

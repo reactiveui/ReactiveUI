@@ -99,11 +99,11 @@ public partial class ViewModelViewHost : TransitioningContentControl, IViewFor, 
                 static (contract, vm) => (vm, contract));
 
         // Subscribe directly without WhenActivated
-        new ObserveOnObservable<string?>(ViewContractObservable, RxSchedulers.MainThreadScheduler)
+        _ = new ObserveOnObservable<string?>(ViewContractObservable, RxSchedulers.MainThreadScheduler)
             .Subscribe(new DelegateObserver<string?>(x => _viewContract = x ?? string.Empty))
             .DisposeWith(_subscriptions);
 
-        viewModelAndContract.DistinctUntilChanged()
+        _ = viewModelAndContract.DistinctUntilChanged()
             .Subscribe(new DelegateObserver<(object? ViewModel, string? Contract)>(
                 x => ResolveViewForViewModel(x.ViewModel, x.Contract)))
             .DisposeWith(_subscriptions);

@@ -10,7 +10,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>
 /// Provides configurable cache size limits for ReactiveUI's internal caching mechanisms.
-/// These values can be configured via <see cref="Builder.IReactiveUIBuilder.WithCacheSizes"/> or will auto-initialize with platform-specific defaults.
+/// These values can be configured via <see cref="IReactiveUIBuilder.WithCacheSizes"/> or will auto-initialize with platform-specific defaults.
 /// </summary>
 public static class RxCacheSize
 {
@@ -81,7 +81,7 @@ public static class RxCacheSize
     /// </remarks>
     internal static void ResetForTesting()
     {
-        Interlocked.Exchange(ref _initialized, 0);
+        _ = Interlocked.Exchange(ref _initialized, 0);
         _smallCacheLimit = 0;
         _bigCacheLimit = 0;
     }

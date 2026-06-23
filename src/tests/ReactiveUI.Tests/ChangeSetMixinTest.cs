@@ -22,7 +22,7 @@ public class ChangeSetMixinTest
         var subject = new Signal<IReactiveChangeSet<int>>();
         var results = new List<IReactiveChangeSet<int>>();
 
-        subject.WhenCountChanged().ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = subject.WhenCountChanged().ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         var addChangeSet = new ReactiveChangeSet<int>([new(ReactiveChangeReason.Add, 1, default, 0, -1)]);
         var updateChangeSet = new ReactiveChangeSet<int>([new(ReactiveChangeReason.Replace, ReplacedItemValue, 1, 0, 0)]);

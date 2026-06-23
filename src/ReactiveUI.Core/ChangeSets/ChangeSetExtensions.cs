@@ -292,7 +292,7 @@ public static class ChangeSetExtensions
                     return;
                 }
 
-                _shadow.Remove(item);
+                _ = _shadow.Remove(item);
             }
         }
     }

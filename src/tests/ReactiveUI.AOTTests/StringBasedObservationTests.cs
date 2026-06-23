@@ -40,7 +40,7 @@ public class StringBasedObservationTests
         var s = new Sample { IntValue = InitialIntValue };
         var values = new List<int>();
 
-        s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), false, false, true)
+        _ = s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), false, false, true)
             .Select(static x => x.Value)
             .Subscribe(values.Add);
 
@@ -63,7 +63,7 @@ public class StringBasedObservationTests
         var s = new Sample { IntValue = 1 };
         var before = new List<int>();
 
-        s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), true, true, false)
+        _ = s.ObservableForProperty<Sample, int>(nameof(Sample.IntValue), true, true, false)
             .Select(static x => x.Value)
             .Subscribe(before.Add);
 
@@ -85,7 +85,7 @@ public class StringBasedObservationTests
         var s = new Sample { Name = "a" };
         var values = new List<string>();
 
-        s.WhenAnyValue<Sample, string?>(nameof(Sample.Name))
+        _ = s.WhenAnyValue<Sample, string?>(nameof(Sample.Name))
             .Subscribe(v => values.Add(v!));
 
         s.Name = "b";
@@ -107,7 +107,7 @@ public class StringBasedObservationTests
         var s = new Sample { Name = "x" };
         var values = new List<string>();
 
-        s.WhenAnyValue<Sample, string?>(nameof(Sample.Name), false)
+        _ = s.WhenAnyValue<Sample, string?>(nameof(Sample.Name), false)
             .Subscribe(v => values.Add(v!));
 
         s.Name = "y";

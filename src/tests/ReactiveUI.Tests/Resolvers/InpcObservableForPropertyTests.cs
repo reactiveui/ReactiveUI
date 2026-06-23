@@ -51,7 +51,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
@@ -82,7 +82,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
@@ -113,7 +113,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
 
@@ -147,7 +147,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
 

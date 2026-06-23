@@ -66,7 +66,7 @@ public class ActivationTests
 
         var formActivateCount = 0;
         var formDeActivateCount = 0;
-        formActivator.Subscribe(activated =>
+        _ = formActivator.Subscribe(activated =>
         {
             if (activated)
             {
@@ -113,7 +113,7 @@ public class ActivationTests
 
         var userControlActivateCount = 0;
         var userControlDeActivateCount = 0;
-        userControlActivator.Subscribe(activated =>
+        _ = userControlActivator.Subscribe(activated =>
         {
             if (activated)
             {

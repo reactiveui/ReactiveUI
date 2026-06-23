@@ -21,7 +21,7 @@ public partial class WhenAnyObservableMixinTests
         var subj3 = new Signal<string>();
         vm.ObservableProperty3 = subj3;
         var list = new List<string>();
-        vm.WhenAnyObservable(
+        _ = vm.WhenAnyObservable(
             x => x.ObservableProperty1,
             x => x.ObservableProperty2,
             x => x.ObservableProperty3).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -44,7 +44,7 @@ public partial class WhenAnyObservableMixinTests
         var subj3 = new Signal<string>();
         vm.ObservableProperty3 = subj3;
         var list = new List<string>();
-        vm.WhenAnyObservable(
+        _ = vm.WhenAnyObservable(
             x => x.ObservableProperty1,
             x => x.ObservableProperty2,
             x => x.ObservableProperty3,

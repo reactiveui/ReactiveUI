@@ -64,6 +64,6 @@ public abstract class BaseAppBuilderTestExecutor : ITestExecutor
         ArgumentNullException.ThrowIfNull(context);
 
         // Default implementation: just register core services
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
     }
 }

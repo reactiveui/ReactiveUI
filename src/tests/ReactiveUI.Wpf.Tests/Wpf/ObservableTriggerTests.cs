@@ -81,7 +81,7 @@ public class ObservableTriggerTests
             null,
             subject.AsObservable());
 
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             ObservableTrigger.InternalOnObservableChangedForTesting(button, eventArgs));
     }
 
@@ -94,7 +94,7 @@ public class ObservableTriggerTests
         var triggers = Interaction.GetTriggers(button);
         triggers.Add(trigger);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             ObservableTrigger.InternalOnObservableChangedForTesting(trigger, default));
     }
 
@@ -112,7 +112,7 @@ public class ObservableTriggerTests
             null,
             null!);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             ObservableTrigger.InternalOnObservableChangedForTesting(trigger, eventArgs));
     }
 

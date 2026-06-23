@@ -21,7 +21,7 @@ public class ObservableMixinsTest
         const int ExpectedCount = 3;
         const int ThirdIndex = 2;
 
-        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(1);
         subject.OnNext(SecondValue);
@@ -41,7 +41,7 @@ public class ObservableMixinsTest
         var subject = new Signal<string?>();
         var results = new List<string>();
 
-        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext("value1");
         subject.OnNext(null);
@@ -65,7 +65,7 @@ public class ObservableMixinsTest
         var subject = new Signal<string?>();
         var results = new List<string>();
 
-        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(null);
         subject.OnNext(null);
@@ -84,7 +84,7 @@ public class ObservableMixinsTest
         var obj1 = new TestClass { Value = "test1" };
         var obj2 = new TestClass { Value = "test2" };
 
-        ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = ObservableMixins.WhereNotNull(subject).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         subject.OnNext(obj1);
         subject.OnNext(null);

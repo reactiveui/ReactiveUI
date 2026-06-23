@@ -316,19 +316,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         {
             if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0 && !_disposed)
             {
-                _lastValue = _getInitialValue();
-                var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
-                lock (_gate)
-                {
-                    if (_disposed)
-                    {
-                        subscription.Dispose();
-                    }
-                    else
-                    {
-                        _sourceSubscription = subscription;
-                    }
-                }
+                ActivateOnFirstAccess();
             }
 
             return _lastValue!;
@@ -396,6 +384,24 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
     /// <summary>Returns the default value of <typeparamref name="T"/>.</summary>
     /// <returns>The default value.</returns>
     private static T? GetDefault() => default;
+
+    /// <summary>Seeds the initial value and subscribes to the source the first time <see cref="Value"/> is read in deferred mode.</summary>
+    private void ActivateOnFirstAccess()
+    {
+        _lastValue = _getInitialValue();
+        var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
+        lock (_gate)
+        {
+            if (_disposed)
+            {
+                subscription.Dispose();
+            }
+            else
+            {
+                _sourceSubscription = subscription;
+            }
+        }
+    }
 
     /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
     /// <param name="value">The value to deliver.</param>

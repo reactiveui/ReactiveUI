@@ -27,7 +27,7 @@ public static class ObservableTestCollectorExtensions
             ArgumentExceptionHelper.ThrowIfNull(source);
 
             var items = new Collection<T>();
-            source.Subscribe(new CollectingObserver<T>(items));
+            _ = source.Subscribe(new CollectingObserver<T>(items));
             return items;
         }
     }

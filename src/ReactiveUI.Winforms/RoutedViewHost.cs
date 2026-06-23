@@ -167,7 +167,7 @@ public partial class RoutedControlHost : UserControl, IReactiveObject
             {
                 if (_host.DefaultContent is not null)
                 {
-                    InitView(_host.DefaultContent);
+                    _ = InitView(_host.DefaultContent);
                     _host.Controls.Add(_host.DefaultContent);
                 }
 

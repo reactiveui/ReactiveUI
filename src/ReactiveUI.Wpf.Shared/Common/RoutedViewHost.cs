@@ -108,7 +108,7 @@ public
         // NB: The DistinctUntilChanged is useful because most views in
         // WinRT will end up getting here twice - once for configuring
         // the RoutedViewHost's ViewModel, and once on load via SizeChanged
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
             d(viewModelAndContract.DistinctUntilChanged()
                 .Subscribe(new DelegateObserver<(IRoutableViewModel? viewModel, string? contract)>(
                     ResolveViewForViewModel,

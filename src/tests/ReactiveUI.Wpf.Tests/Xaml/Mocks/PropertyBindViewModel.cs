@@ -29,7 +29,7 @@ public sealed class PropertyBindViewModel : ReactiveObject
     public PropertyBindViewModel(PropertyBindModel? model)
     {
         Model = model ?? new PropertyBindModel { AThing = DefaultAThing, AnotherThing = "Baz" };
-        SomeCollectionOfStrings = new ObservableCollection<string>(_defaultStrings);
+        SomeCollectionOfStrings = new(_defaultStrings);
     }
 
     /// <summary>Gets or sets a value indicating whether [just a boolean].</summary>

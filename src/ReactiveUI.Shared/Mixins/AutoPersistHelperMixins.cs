@@ -472,7 +472,7 @@ public static partial class AutoPersistHelperMixins
             var persistablePropertyNames = metadata.PersistablePropertyNames;
 
             var ret = new OnceDisposable();
-            RxSchedulers.MainThreadScheduler.Schedule(() =>
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
             {
                 if (ret.IsDisposed)
                 {
@@ -563,7 +563,7 @@ public static partial class AutoPersistHelperMixins
                     }
 
                     d.Dispose();
-                    disposerList.Remove(x);
+                    _ = disposerList.Remove(x);
                 });
 
             return new ActionDisposable(() =>
@@ -639,7 +639,7 @@ public static partial class AutoPersistHelperMixins
                     }
 
                     d.Dispose();
-                    disposerList.Remove(x);
+                    _ = disposerList.Remove(x);
                 });
 
             return new ActionDisposable(() =>
@@ -718,7 +718,7 @@ public static partial class AutoPersistHelperMixins
                     }
 
                     d.Dispose();
-                    disposerList.Remove(x);
+                    _ = disposerList.Remove(x);
                 });
 
             return new ActionDisposable(() =>
@@ -1107,7 +1107,7 @@ public static partial class AutoPersistHelperMixins
                 }
 
                 set ??= new(StringComparer.Ordinal);
-                set.Add(p.Name);
+                _ = set.Add(p.Name);
             }
 
             set ??= new(StringComparer.Ordinal);

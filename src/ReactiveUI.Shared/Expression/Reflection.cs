@@ -78,7 +78,7 @@ public static class Reflection
 
             if (!firstSegment)
             {
-                sb.Append('.');
+                _ = sb.Append('.');
             }
 
             switch (exp.NodeType)
@@ -87,26 +87,26 @@ public static class Reflection
                     exp is IndexExpression indexExpression &&
                     indexExpression.Indexer is not null:
                     {
-                        sb.Append(indexExpression.Indexer.Name).Append('[');
+                        _ = sb.Append(indexExpression.Indexer.Name).Append('[');
 
                         var args = indexExpression.Arguments;
                         for (var i = 0; i < args.Count; i++)
                         {
                             if (i != 0)
                             {
-                                sb.Append(',');
+                                _ = sb.Append(',');
                             }
 
-                            sb.Append(((ConstantExpression)args[i]).Value);
+                            _ = sb.Append(((ConstantExpression)args[i]).Value);
                         }
 
-                        sb.Append(']');
+                        _ = sb.Append(']');
                         break;
                     }
 
                 case ExpressionType.MemberAccess when exp is MemberExpression memberExpression:
                     {
-                        sb.Append(memberExpression.Member.Name);
+                        _ = sb.Append(memberExpression.Member.Name);
                         break;
                     }
             }
@@ -146,12 +146,7 @@ public static class Reflection
             };
         }
 
-        if (member is not PropertyInfo property)
-        {
-            return null;
-        }
-
-        return property.GetValue;
+        return member is not PropertyInfo property ? null : property.GetValue;
     }
 
     /// <summary>
@@ -197,12 +192,7 @@ public static class Reflection
             return (obj, val, _) => field.SetValue(obj, val);
         }
 
-        if (member is not PropertyInfo property)
-        {
-            return null;
-        }
-
-        return property.SetValue;
+        return member is not PropertyInfo property ? null : property.SetValue;
     }
 
     /// <summary>

@@ -39,11 +39,11 @@ public class PropertyBindView : Control, IViewFor<PropertyBindViewModel>
     /// <summary>Initializes a new instance of the <see cref="PropertyBindView"/> class.</summary>
     public PropertyBindView()
     {
-        SomeTextBox = new TextBox();
-        Property2 = new TextBox();
+        SomeTextBox = new();
+        Property2 = new();
         FakeControl = new();
-        FakeItemsControl = new ListBox();
-        ComboBoxSelection = new ComboBox();
+        FakeItemsControl = new();
+        ComboBoxSelection = new();
     }
 
     /// <summary>Gets or sets some text box.</summary>

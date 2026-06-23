@@ -44,7 +44,7 @@ public static class BuilderMixins
                     "The provided IAppBuilder is not an IReactiveUIBuilder. Ensure you are using the ReactiveUI builder pattern.");
             }
 
-            reactiveUiBuilder.Build();
+            _ = reactiveUiBuilder.Build();
             return reactiveUiBuilder;
         }
     }
@@ -167,7 +167,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithTaskPoolScheduler(scheduler, setRxApp);
+            _ = builder.WithTaskPoolScheduler(scheduler, setRxApp);
             return builder;
         }
 
@@ -194,7 +194,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithMainThreadScheduler(scheduler, setRxApp);
+            _ = builder.WithMainThreadScheduler(scheduler, setRxApp);
             return builder;
         }
 
@@ -209,7 +209,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithRegistrationOnBuild(configureAction);
+            _ = builder.WithRegistrationOnBuild(configureAction);
             return builder;
         }
 
@@ -224,7 +224,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithRegistration(configureAction);
+            _ = builder.WithRegistration(configureAction);
             return builder;
         }
 
@@ -240,7 +240,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithViewsFromAssembly(assembly);
+            _ = builder.WithViewsFromAssembly(assembly);
             return builder;
         }
 
@@ -259,7 +259,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithPlatformModule<T>();
+            _ = builder.WithPlatformModule<T>();
             return builder;
         }
 
@@ -275,7 +275,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.UsingSplatModule(registrationModule);
+            _ = builder.UsingSplatModule(registrationModule);
             return builder;
         }
 
@@ -289,7 +289,7 @@ public static class BuilderMixins
             BindingTypeConverter<TFrom, TTo> converter)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithConverter(converter);
+            _ = builder.WithConverter(converter);
             return builder;
         }
 
@@ -301,7 +301,7 @@ public static class BuilderMixins
             IBindingTypeConverter converter)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithConverter(converter);
+            _ = builder.WithConverter(converter);
             return builder;
         }
 
@@ -315,7 +315,7 @@ public static class BuilderMixins
             Func<BindingTypeConverter<TFrom, TTo>> factory)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithConverter(factory);
+            _ = builder.WithConverter(factory);
             return builder;
         }
 
@@ -327,7 +327,7 @@ public static class BuilderMixins
             Func<IBindingTypeConverter> factory)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithConverter(factory);
+            _ = builder.WithConverter(factory);
             return builder;
         }
 
@@ -343,7 +343,7 @@ public static class BuilderMixins
 
             foreach (var converter in converters)
             {
-                builder.WithConverter(converter);
+                _ = builder.WithConverter(converter);
             }
 
             return builder;
@@ -361,7 +361,7 @@ public static class BuilderMixins
             IBindingFallbackConverter converter)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithFallbackConverter(converter);
+            _ = builder.WithFallbackConverter(converter);
             return builder;
         }
 
@@ -373,7 +373,7 @@ public static class BuilderMixins
             Func<IBindingFallbackConverter> factory)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithFallbackConverter(factory);
+            _ = builder.WithFallbackConverter(factory);
             return builder;
         }
 
@@ -389,7 +389,7 @@ public static class BuilderMixins
             ISetMethodBindingConverter converter)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithSetMethodConverter(converter);
+            _ = builder.WithSetMethodConverter(converter);
             return builder;
         }
 
@@ -401,7 +401,7 @@ public static class BuilderMixins
             Func<ISetMethodBindingConverter> factory)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithSetMethodConverter(factory);
+            _ = builder.WithSetMethodConverter(factory);
             return builder;
         }
 
@@ -427,7 +427,7 @@ public static class BuilderMixins
             IReadonlyDependencyResolver resolver)
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
-            builder.WithConvertersFrom(resolver);
+            _ = builder.WithConvertersFrom(resolver);
             return builder;
         }
 
@@ -458,7 +458,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder
+            _ = builder
                 .WithMainThreadScheduler(mainThreadScheduler)
                 .WithRegistration(platformServices);
             return builder;
@@ -475,7 +475,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.ForPlatforms(platformConfigurations);
+            _ = builder.ForPlatforms(platformConfigurations);
             return builder;
         }
 
@@ -488,7 +488,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithMessageBus();
+            _ = builder.WithMessageBus();
             return builder;
         }
 
@@ -503,7 +503,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithMessageBus(configure);
+            _ = builder.WithMessageBus(configure);
             return builder;
         }
 
@@ -517,7 +517,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithMessageBus(messageBus);
+            _ = builder.WithMessageBus(messageBus);
             return builder;
         }
 
@@ -532,7 +532,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.ConfigureViewLocator(configure);
+            _ = builder.ConfigureViewLocator(configure);
             return builder;
         }
 
@@ -547,7 +547,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.ConfigureSuspensionDriver(configure);
+            _ = builder.ConfigureSuspensionDriver(configure);
             return builder;
         }
 
@@ -566,7 +566,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.RegisterViewModel<TViewModel>();
+            _ = builder.RegisterViewModel<TViewModel>();
             return builder;
         }
 
@@ -583,7 +583,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.RegisterConstantViewModel<TViewModel>();
+            _ = builder.RegisterConstantViewModel<TViewModel>();
             return builder;
         }
 
@@ -608,7 +608,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.RegisterSingletonViewModel<TViewModel>();
+            _ = builder.RegisterSingletonViewModel<TViewModel>();
             return builder;
         }
 
@@ -629,7 +629,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.RegisterView<TView, TViewModel>();
+            _ = builder.RegisterView<TView, TViewModel>();
             return builder;
         }
 
@@ -650,7 +650,7 @@ public static class BuilderMixins
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.RegisterSingletonView<TView, TViewModel>();
+            _ = builder.RegisterSingletonView<TView, TViewModel>();
             return builder;
         }
     }

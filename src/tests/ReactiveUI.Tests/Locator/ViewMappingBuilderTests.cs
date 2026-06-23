@@ -34,7 +34,7 @@ public class ViewMappingBuilderTests
         var builder = new ViewMappingBuilder(locator);
 
         // Act
-        builder.Map<TestViewModel, TestView>();
+        _ = builder.Map<TestViewModel, TestView>();
         var view = locator.ResolveView<TestViewModel>();
 
         // Assert
@@ -52,7 +52,7 @@ public class ViewMappingBuilderTests
         var builder = new ViewMappingBuilder(locator);
 
         // Act
-        builder
+        _ = builder
             .Map<TestViewModel, TestView>(Contract1)
             .Map<AlternateViewModel, AlternateView>(Contract2);
 
@@ -90,7 +90,7 @@ public class ViewMappingBuilderTests
         var builder = new ViewMappingBuilder(locator);
 
         // Act
-        builder
+        _ = builder
             .Map<TestViewModel, TestView>()
             .Map<AlternateViewModel, AlternateView>();
 
@@ -127,7 +127,7 @@ public class ViewMappingBuilderTests
         var createdView = new TestView();
 
         // Act
-        builder.Map<TestViewModel, TestView>(() => createdView);
+        _ = builder.Map<TestViewModel, TestView>(() => createdView);
         var view = locator.ResolveView<TestViewModel>();
 
         // Assert
@@ -146,7 +146,7 @@ public class ViewMappingBuilderTests
         var view2Instance = new TestView();
 
         // Act
-        builder
+        _ = builder
             .Map<TestViewModel, TestView>(() => view1Instance, Contract1)
             .Map<TestViewModel, TestView>(() => view2Instance, Contract2);
 
@@ -169,7 +169,7 @@ public class ViewMappingBuilderTests
         var callCount = 0;
 
         // Act
-        builder.Map<TestViewModel, TestView>(() =>
+        _ = builder.Map<TestViewModel, TestView>(() =>
         {
             callCount++;
             return new();
@@ -216,7 +216,7 @@ public class ViewMappingBuilderTests
         resolver.Register(() => viewInstance, typeof(TestView));
 
         // Act
-        builder.MapFromServiceLocator<TestViewModel, TestView>();
+        _ = builder.MapFromServiceLocator<TestViewModel, TestView>();
         var view = locator.ResolveView<TestViewModel>();
 
         // Assert
@@ -241,7 +241,7 @@ public class ViewMappingBuilderTests
         resolver.Register(() => view2Instance, typeof(TestView));
 
         // Act
-        builder
+        _ = builder
             .MapFromServiceLocator<TestViewModel, TestView>(Contract1)
             .MapFromServiceLocator<TestViewModel, TestView>(Contract2);
 
@@ -264,7 +264,7 @@ public class ViewMappingBuilderTests
         var builder = new ViewMappingBuilder(locator);
 
         // Act
-        builder.MapFromServiceLocator<TestViewModel, UnregisteredView>();
+        _ = builder.MapFromServiceLocator<TestViewModel, UnregisteredView>();
 
         // Assert - Should throw when trying to resolve
         await Assert.That(() => locator.ResolveView<TestViewModel>())
@@ -308,7 +308,7 @@ public class ViewMappingBuilderTests
         resolver.Register(() => new AlternateView(), typeof(AlternateView));
 
         // Act
-        builder
+        _ = builder
             .MapFromServiceLocator<TestViewModel, TestView>()
             .MapFromServiceLocator<AlternateViewModel, AlternateView>();
 
@@ -336,7 +336,7 @@ public class ViewMappingBuilderTests
         resolver.Register(() => new AnotherView(), typeof(AnotherView));
 
         // Act - Mix all three registration types
-        builder
+        _ = builder
             .Map<TestViewModel, TestView>() // Parameterless constructor
             .Map<AlternateViewModel, AlternateView>(() => factoryView) // Factory
             .MapFromServiceLocator<AnotherViewModel, AnotherView>(); // Service locator

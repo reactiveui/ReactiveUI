@@ -24,7 +24,7 @@ public class ObservedChangedMixinTest
         var input = new Signal<string>();
         var fixture = new HostTestFixture { Child = new() };
 
-        input.BindTo(fixture, static x => x.Child!.IsNotNullString);
+        _ = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
         await Assert.That(fixture.Child.IsNotNullString).IsNull();
 
@@ -53,7 +53,7 @@ public class ObservedChangedMixinTest
         var input = new Signal<string>();
         var fixture = new HostTestFixture { Child = new() };
 
-        input.BindTo(fixture, static x => x.Child!.IsNotNullString);
+        _ = input.BindTo(fixture, static x => x.Child!.IsNotNullString);
 
         await Assert.That(fixture.Child.IsNotNullString).IsNull();
 
@@ -83,7 +83,7 @@ public class ObservedChangedMixinTest
 
         var source = new BehaviorSignal<List<string>>([]);
 
-        source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
+        _ = source.BindTo(fixtureA, static x => x.StackOverflowTrigger);
     }
 
     /// <summary>Tests to make sure that Disposing disconnects BindTo and updates are no longer pushed.</summary>
@@ -195,7 +195,7 @@ public class ObservedChangedMixinTest
         var fixture = new TestFixture();
 
         // ...whereas ObservableForProperty *is* guaranteed to.
-        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue())).Subscribe(output.Add);
+        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Select(x => x.GetValue())).Subscribe(output.Add);
 
         foreach (var v in input)
         {
@@ -247,7 +247,7 @@ public class ObservedChangedMixinTest
 
         var fixture = new TestFixture();
 
-        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value()).Subscribe(output.Add);
+        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsOnlyOneWord).Value()).Subscribe(output.Add);
 
         foreach (var v in input)
         {

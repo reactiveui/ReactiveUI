@@ -88,7 +88,7 @@ public partial class WhenAnySinkDirectTests
         var e10 = new Signal<IObservedChange<object?, string>>();
         var e11 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
             e1,
             e2,
             e3,
@@ -123,7 +123,7 @@ public partial class WhenAnySinkDirectTests
         var k10 = new Signal<IObservedChange<object?, string>>();
         var k11 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
             k1,
             k2,
             k3,
@@ -168,7 +168,7 @@ public partial class WhenAnySinkDirectTests
         var t10 = new Signal<IObservedChange<object?, string>>();
         var t11 = new Signal<IObservedChange<object?, string>>();
         var rec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string, string, string, string, string, string, string>(
             t1,
             t2,
             t3,

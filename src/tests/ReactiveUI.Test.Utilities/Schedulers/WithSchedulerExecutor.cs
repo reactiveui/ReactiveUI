@@ -33,7 +33,7 @@ public class WithSchedulerExecutor : BaseAppBuilderTestExecutor
         context.StateBag.Items["Scheduler"] = scheduler;
 
         // Configure builder with schedulers and core services
-        builder
+        _ = builder
             .WithMainThreadScheduler(scheduler)
             .WithTaskPoolScheduler(scheduler)
             .WithCoreServices();
