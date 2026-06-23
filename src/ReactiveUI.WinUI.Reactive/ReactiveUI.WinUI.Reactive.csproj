@@ -27,7 +27,7 @@
   </ItemGroup>
   <!-- Packages only on Windows -->
   <ItemGroup>
-    <PackageReference Include="ReactiveUI.Primitives.WinUI.Reactive"/>
+    <PackageReference Include="ReactiveUI.Primitives.WinUI.Reactive" ExcludeAssets="analyzers" />
     <PackageReference Include="Microsoft.WindowsAppSDK"/>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools"/>
   </ItemGroup>

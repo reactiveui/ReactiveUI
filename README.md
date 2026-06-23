@@ -81,6 +81,17 @@ routing/collection/auto-persist helpers now live in a separate **`ReactiveUI.Rou
 for the System.Reactive flavor), so core no longer depends on DynamicData. Add `ReactiveUI.Routing` if you use those
 extensions.
 
+### Analyzers are opt-in
+
+The ReactiveUI packages reference `ReactiveUI.Primitives` with `ExcludeAssets="analyzers"`, so the analyzers that ship
+inside ReactiveUI.Primitives **do not flow to your project** and will not run against your code just because you
+installed ReactiveUI. We don't impose our analyzers on downstream consumers. If you want them, opt in explicitly by
+adding a direct reference to `ReactiveUI.Primitives` (without excluding the analyzer assets), e.g.:
+
+```xml
+<PackageReference Include="ReactiveUI.Primitives" Version="x.y.z" />
+```
+
 [Core]: https://www.nuget.org/packages/ReactiveUI/
 
 [CoreBadge]: https://img.shields.io/nuget/v/ReactiveUI.svg

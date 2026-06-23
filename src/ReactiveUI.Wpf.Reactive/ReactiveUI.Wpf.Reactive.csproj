@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReactiveUI.Primitives.Wpf.Reactive"/>
+    <PackageReference Include="ReactiveUI.Primitives.Wpf.Reactive" ExcludeAssets="analyzers" />
     <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
   </ItemGroup>
 

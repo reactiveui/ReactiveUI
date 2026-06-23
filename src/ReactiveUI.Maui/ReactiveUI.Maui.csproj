@@ -41,7 +41,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
-    <PackageReference Include="ReactiveUI.Primitives.Maui"/>
+    <PackageReference Include="ReactiveUI.Primitives.Maui" ExcludeAssets="analyzers" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\ArgumentValidation.cs" Link="Shared\ArgumentValidation.cs"/>

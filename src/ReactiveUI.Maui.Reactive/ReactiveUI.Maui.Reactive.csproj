@@ -43,7 +43,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls"/>
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility"/>
-    <PackageReference Include="ReactiveUI.Primitives.Maui.Reactive"/>
+    <PackageReference Include="ReactiveUI.Primitives.Maui.Reactive" ExcludeAssets="analyzers" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="ReactiveUI.Primitives.Reactive.Concurrency"/>
