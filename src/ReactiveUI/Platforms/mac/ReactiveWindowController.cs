@@ -133,7 +133,7 @@ public class ReactiveWindowController : NSWindowController, IReactiveNotifyPrope
 
         // subscribe to listen to window closing
         // notification to support (de)activation
-        NSNotificationCenter
+        _ = NSNotificationCenter
             .DefaultCenter
             .AddObserver(NSWindow.WillCloseNotification, _ => _deactivated.OnNext(RxVoid.Default), Window);
 

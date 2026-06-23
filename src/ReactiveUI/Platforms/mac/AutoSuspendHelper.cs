@@ -105,7 +105,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         ThrowIfDisposed();
 
         // Ensure the persist notification is emitted on the main thread, as callers typically interact with AppKit.
-        RxSchedulers.MainThreadScheduler.Schedule(() =>
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
             _shouldPersistState.OnNext(
                 Scope.Create(() => sender.ReplyToApplicationShouldTerminate(true))));
 
@@ -207,7 +207,7 @@ public class AutoSuspendHelper<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         }
 
         Reflection.ThrowIfMethodsNotOverloaded(
-            nameof(AutoSuspendHelper<T>),
+            nameof(AutoSuspendHelper<>),
             type,
             nameof(ApplicationShouldTerminate),
             nameof(DidFinishLaunching),

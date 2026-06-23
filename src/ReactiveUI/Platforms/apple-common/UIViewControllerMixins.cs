@@ -24,7 +24,7 @@ internal static class UIViewControllerMixins
     {
         /// <summary>Recursively activates or deactivates all subviews of the given view.</summary>
         /// <param name="activate"><see langword="true"/> to activate subviews; <see langword="false"/> to deactivate.</param>
-        private void ActivateSubviews(bool activate)
+        internal void ActivateSubviews(bool activate)
         {
             ArgumentExceptionHelper.ThrowIfNull(masterView);
 

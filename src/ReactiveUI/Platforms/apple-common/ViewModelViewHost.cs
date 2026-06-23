@@ -74,9 +74,9 @@ public class ViewModelViewHost : ReactiveViewController
     /// <summary>Initializes a new instance of the <see cref="ViewModelViewHost"/> class.</summary>
     public ViewModelViewHost()
     {
-        _currentView = new SwapDisposable();
-        _subscriptions = new DisposableBag();
-        _viewContractObservableSubscription = new SwapDisposable();
+        _currentView = new();
+        _subscriptions = new();
+        _viewContractObservableSubscription = new();
 
         // Drive ViewContract from ViewContractObservable without WhenAny*/expression trees (AOT-trimmer friendly).
         // We always publish an initial null contract to preserve the original StartWith(null) behavior.
@@ -277,7 +277,7 @@ public class ViewModelViewHost : ReactiveViewController
     /// <param name="contract">The new contract value.</param>
     private void SetViewContract(string? contract)
     {
-        this.RaiseAndSetIfChanged(ref _viewContract, contract, nameof(ViewContract));
+        _ = this.RaiseAndSetIfChanged(ref _viewContract, contract, nameof(ViewContract));
     }
 
     /// <summary>

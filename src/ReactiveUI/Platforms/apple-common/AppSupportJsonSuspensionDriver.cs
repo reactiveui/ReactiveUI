@@ -63,7 +63,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
     {
         ArgumentExceptionHelper.ThrowIfNull(subDirectory);
 
-        _appDirectory = new Lazy<string>(
+        _appDirectory = new(
             () => CreateAppDirectory(NSSearchPathDirectory.ApplicationSupportDirectory, subDirectory),
             isThreadSafe: true);
     }
@@ -173,11 +173,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
         // Allocate NSFileManager only once per driver instance via Lazy. Kept local and simple.
         var fm = new NSFileManager();
 
-        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out _);
-        if (url is null)
-        {
-            throw new InvalidOperationException("Unable to resolve platform application support directory.");
-        }
+        var url = fm.GetUrl(targetDir, NSSearchPathDomain.All, null, true, out _) ?? throw new InvalidOperationException("Unable to resolve platform application support directory.");
 
         var bundleId = NSBundle.MainBundle?.BundleIdentifier;
         if (string.IsNullOrEmpty(bundleId))
@@ -195,7 +191,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
 
         if (!Directory.Exists(path))
         {
-            Directory.CreateDirectory(path);
+            _ = Directory.CreateDirectory(path);
         }
 
         return path;

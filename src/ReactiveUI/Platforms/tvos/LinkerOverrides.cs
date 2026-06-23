@@ -28,26 +28,29 @@ internal class LinkerOverrides
         btn.SetTitle("foo", UIControlState.Disabled);
         btn.TitleLabel.Text = btn.TitleLabel.Text;
 
+        // Each control references both the setter (via the initializer) and the getter (via the
+        // discard read) so the trimmer/linker preserves both accessors (resolved at runtime). A
+        // self-assign (`x.Prop = x.Prop`) does the same but can't be written as an initializer.
         // UITextView
-        var tv = new UITextView();
-        tv.Text = tv.Text;
+        var tv = new UITextView { Text = default };
+        _ = tv.Text;
 
         // UITextField
-        var tf = new UITextField();
-        tv.Text = tf.Text;
+        var tf = new UITextField { Text = default };
+        _ = tf.Text;
 
         // UIImageView
-        var iv = new UIImageView();
-        iv.Image = iv.Image;
+        var iv = new UIImageView { Image = default };
+        _ = iv.Image;
 
         // UI Label
-        var lbl = new UILabel();
-        lbl.Text = lbl.Text;
+        var lbl = new UILabel { Text = default };
+        _ = lbl.Text;
 
         // UI Control
-        var ctl = new UIControl();
-        ctl.Enabled = ctl.Enabled;
-        ctl.Selected = ctl.Selected;
+        var ctl = new UIControl { Enabled = default, Selected = default };
+        _ = ctl.Enabled;
+        _ = ctl.Selected;
 
         static void Eh(object? s, EventArgs e)
         {

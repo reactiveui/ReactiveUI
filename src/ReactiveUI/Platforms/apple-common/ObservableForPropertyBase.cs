@@ -115,12 +115,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
 
         var type = sender.GetType();
-        var match = ResolveBestMatch(type, propertyName);
-
-        if (match is null)
-        {
-            throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
-        }
+        var match = ResolveBestMatch(type, propertyName) ?? throw new NotSupportedException($"Notifications for {type.Name}.{propertyName} are not supported");
 
         // Do not invoke user-provided observable factories under lock.
         return match.CreateObservable.Invoke((NSObject)sender, expression);
@@ -226,7 +221,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
                 _config[type] = typeProperties;
             }
 
-            typeProperties[property] = new ObservablePropertyInfo(affinity, createObservable);
+            typeProperties[property] = new(affinity, createObservable);
 
             // Invalidate caches by bumping version.
             _version++;
@@ -277,7 +272,7 @@ public abstract class ObservableForPropertyBase : ICreatesObservableForProperty
         }
 
         // Publish computed value to cache (including null, to avoid repeated scans for unsupported properties).
-        _bestMatchCache[key] = new CacheEntry(versionSnapshot, best);
+        _bestMatchCache[key] = new(versionSnapshot, best);
         return best;
     }
 

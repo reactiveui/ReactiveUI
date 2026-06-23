@@ -32,7 +32,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
     internal UITableViewAdapter(UITableView view)
     {
         _view = view;
-        _isReloadingData = new BehaviorSignal<bool>(false);
+        _isReloadingData = new(false);
     }
 
     /// <inheritdoc/>
@@ -70,7 +70,7 @@ internal class UITableViewAdapter : IUICollViewAdapter<UITableView, UITableViewC
 
         // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
         // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
-        RxSchedulers.MainThreadScheduler.Schedule(FinishReloadData);
+        _ = RxSchedulers.MainThreadScheduler.Schedule(FinishReloadData);
     }
 
     /// <inheritdoc/>

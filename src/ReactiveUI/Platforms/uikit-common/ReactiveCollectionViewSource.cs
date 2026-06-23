@@ -52,7 +52,7 @@ public class ReactiveCollectionViewSource<TSource> : UICollectionViewSource, IRe
     public ReactiveCollectionViewSource(UICollectionView collectionView)
     {
         var adapter = new UICollectionViewAdapter(collectionView);
-        _commonSource = new CommonReactiveSource<TSource, UICollectionView, UICollectionViewCell, CollectionViewSectionInformation<TSource>>(adapter);
+        _commonSource = new(adapter);
     }
 
     /// <inheritdoc/>

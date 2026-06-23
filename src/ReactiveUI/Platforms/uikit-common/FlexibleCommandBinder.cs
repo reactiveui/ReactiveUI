@@ -510,7 +510,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
 
         lock (_gate)
         {
-            _config[type] = new CommandBindingInfo(affinity, createBinding);
+            _config[type] = new(affinity, createBinding);
             _version++;
             _snapshot = null;
         }
@@ -544,7 +544,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             foreach (var kvp in _config)
             {
                 var info = kvp.Value;
-                entries[i++] = new Entry(kvp.Key, info.Affinity, info.CreateBinding);
+                entries[i++] = new(kvp.Key, info.Affinity, info.CreateBinding);
             }
 
             Volatile.Write(ref _snapshotVersion, v);
