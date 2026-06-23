@@ -137,7 +137,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     }
 
     /// <summary>Test dispatcher for testing.</summary>
-    private sealed class TestDispatcher : Microsoft.Maui.Dispatching.IDispatcher
+    private sealed class TestDispatcher : IDispatcher
     {
         /// <inheritdoc/>
         public bool IsDispatchRequired => false;
@@ -157,11 +157,11 @@ public class MauiReactiveUIBuilderExtensionsTest
         }
 
         /// <inheritdoc/>
-        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
+        public IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
     }
 
     /// <summary>Test dispatcher timer for testing.</summary>
-    private sealed class TestDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
+    private sealed class TestDispatcherTimer : IDispatcherTimer
     {
         /// <inheritdoc/>
         public event EventHandler? Tick;

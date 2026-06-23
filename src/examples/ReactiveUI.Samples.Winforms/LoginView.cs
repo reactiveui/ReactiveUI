@@ -50,21 +50,21 @@ public sealed class LoginView : UserControl, IViewFor<LoginViewModel>
 
         ViewModel = new(RxSchedulers.MainThreadScheduler);
 
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.UserName, v => v._username.Text)
+            _ = this.Bind(ViewModel, vm => vm.UserName, v => v._username.Text)
                 .DisposeWith(d);
 
-            this.Bind(ViewModel, vm => vm.Password, v => v._password.Text)
+            _ = this.Bind(ViewModel, vm => vm.Password, v => v._password.Text)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Login, v => v._login)
+            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v._login)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Cancel, v => v._cancel)
+            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v._cancel)
                 .DisposeWith(d);
 
-            ViewModel.Login
+            _ = ViewModel.Login
                 .Subscribe(success => MessageBox.Show(
                     success ? "Welcome!" : "Invalid credentials.",
                     success ? "Login Successful" : "Login Failed"))

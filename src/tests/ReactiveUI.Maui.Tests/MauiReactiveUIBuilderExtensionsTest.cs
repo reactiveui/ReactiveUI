@@ -35,7 +35,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_NullBuilder_Throws()
     {
-        const Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
+        const MauiAppBuilder builder = null!;
 
         await Assert.That(() => builder.UseReactiveUI(rxBuilder => { }))
             .Throws<ArgumentNullException>();
@@ -82,7 +82,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task UseReactiveUI_WithDispatcher_NullBuilder_Throws()
     {
-        const Microsoft.Maui.Hosting.MauiAppBuilder builder = null!;
+        const MauiAppBuilder builder = null!;
         var dispatcher = new MockDispatcher();
 
         await Assert.That(() => builder.UseReactiveUI(dispatcher))
@@ -98,7 +98,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         var builder = new ReactiveUIBuilder(resolver, resolver);
         var dispatcher = new MockDispatcher();
 
-        builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithMauiScheduler(dispatcher);
 
         await Assert.That(builder.MainThreadScheduler).IsNotNull();
         await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
@@ -112,11 +112,11 @@ public class MauiReactiveUIBuilderExtensionsTest
         var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(resolver, resolver);
         var dispatcher = new MockDispatcher();
-        builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
         var executed = false;
-        scheduler.Schedule(() => executed = true);
+        _ = scheduler.Schedule(() => executed = true);
 
         // MockDispatcher executes immediately if Dispatch is called
         await Assert.That(executed).IsTrue();
@@ -131,11 +131,11 @@ public class MauiReactiveUIBuilderExtensionsTest
         var resolver = new ModernDependencyResolver();
         var builder = new ReactiveUIBuilder(resolver, resolver);
         var dispatcher = new MockDispatcher();
-        builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithMauiScheduler(dispatcher);
         var scheduler = builder.MainThreadScheduler!;
 
         var executed = false;
-        scheduler.Schedule(TimeSpan.FromMilliseconds(100), () => executed = true);
+        _ = scheduler.Schedule(TimeSpan.FromMilliseconds(100), () => executed = true);
 
         // Delays are routed through IDispatcher.DispatchDelayed (the dispatcher's native delayed dispatch),
         // not a created timer, and the forwarded delay is the remaining time until the due timestamp.
@@ -153,7 +153,7 @@ public class MauiReactiveUIBuilderExtensionsTest
     }
 
     /// <summary>Mock dispatcher that records immediate and delayed dispatch calls for testing.</summary>
-    private sealed class MockDispatcher : Microsoft.Maui.Dispatching.IDispatcher
+    private sealed class MockDispatcher : IDispatcher
     {
         /// <summary>Gets the number of times <see cref="Dispatch"/> has been called.</summary>
         public int DispatchCount { get; private set; }
@@ -180,7 +180,7 @@ public class MauiReactiveUIBuilderExtensionsTest
         }
 
         /// <inheritdoc/>
-        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() =>
+        public IDispatcherTimer CreateTimer() =>
             throw new NotSupportedException("MauiDispatcherSequencer schedules delays via DispatchDelayed, not CreateTimer.");
     }
 }

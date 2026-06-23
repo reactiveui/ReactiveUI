@@ -37,7 +37,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         SendMessage = ReactiveCommand.Create(SendMessageImpl, canSend);
 
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
-        MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
+        _ = MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
             .Where(msg => msg.InstanceId != Services.AppInstance.Id)
             .EmitIfQuiet(TimeSpan.FromMilliseconds(33))
             .ObserveOn(RxSchedulers.MainThreadScheduler)

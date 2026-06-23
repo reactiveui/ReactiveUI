@@ -133,6 +133,6 @@ internal sealed class ChangeSetBinder<T> : IDisposable
             return;
         }
 
-        _items.Remove(item);
+        _ = _items.Remove(item);
     }
 }

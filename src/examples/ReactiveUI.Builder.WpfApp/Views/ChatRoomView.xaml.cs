@@ -25,18 +25,18 @@ public partial class ChatRoomView : IViewFor<ChatRoomViewModel>
     public ChatRoomView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
             // Map the ViewModel onto the DataContext so XAML bindings such as RoomName resolve correctly.
-            this.WhenAnyValue<ChatRoomView, ChatRoomViewModel>(nameof(ViewModel)).BindTo(this, v => v.DataContext)
+            _ = this.WhenAnyValue<ChatRoomView, ChatRoomViewModel>(nameof(ViewModel)).BindTo(this, v => v.DataContext)
                 .DisposeWith(d);
 
-            this.Bind(ViewModel, vm => vm.MessageText, v => v.MessageBox.Text).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.SendMessage, v => v.SendButton).DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Messages, v => v.MessagesList.ItemsSource).DisposeWith(d);
+            _ = this.Bind(ViewModel, vm => vm.MessageText, v => v.MessageBox.Text).DisposeWith(d);
+            _ = this.BindCommand(ViewModel, vm => vm.SendMessage, v => v.SendButton).DisposeWith(d);
+            _ = this.OneWayBind(ViewModel, vm => vm.Messages, v => v.MessagesList.ItemsSource).DisposeWith(d);
 
             // Back navigation
-            this.BindCommand(ViewModel, s => s.HostScreen.Router.NavigateBack, v => v.BackButton).DisposeWith(d);
+            _ = this.BindCommand(ViewModel, s => s.HostScreen.Router.NavigateBack, v => v.BackButton).DisposeWith(d);
         });
     }
 

@@ -23,26 +23,26 @@ public partial class LoginView : ReactiveUserControl<LoginViewModel>
         InitializeComponent();
         ViewModel = new(RxSchedulers.MainThreadScheduler);
 
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
+            _ = this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Login, v => v.Login)
+            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v.Login)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
+            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v.Cancel)
                 .DisposeWith(d);
 
             // WPF PasswordBox doesn't support data binding, so marshal changes manually.
-            Signal.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
+            _ = Signal.FromEventPattern<RoutedEventHandler, RoutedEventArgs>(
                     h => Password.PasswordChanged += h,
                     h => Password.PasswordChanged -= h)
                 .Select(_ => Password.Password)
                 .BindTo(this, v => v.ViewModel!.Password)
                 .DisposeWith(d);
 
-            ViewModel.Login
+            _ = ViewModel.Login
                 .Subscribe(success => MessageBox.Show(
                     success ? "Welcome!" : "Invalid credentials.",
                     success ? "Login Successful" : "Login Failed"))

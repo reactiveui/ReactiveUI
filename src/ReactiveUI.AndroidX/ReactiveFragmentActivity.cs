@@ -170,7 +170,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetResult((value.result, value.intent));
+            _ = _completion.TrySetResult((value.result, value.intent));
             Dispose();
         }
 
@@ -182,7 +182,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetException(error);
+            _ = _completion.TrySetException(error);
             Dispose();
         }
 
@@ -194,7 +194,7 @@ public class ReactiveFragmentActivity : FragmentActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetCanceled();
+            _ = _completion.TrySetCanceled();
             Dispose();
         }
 

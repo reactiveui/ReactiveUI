@@ -41,7 +41,7 @@ public partial class App : Application
         base.OnStartup(e);
 
         // Initialize ReactiveUI via the Builder only
-        RxAppBuilder.CreateReactiveUIBuilder()
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
             .WithViewsFromAssembly(typeof(App).Assembly) // auto-register all IViewFor in this assembly
 
@@ -72,7 +72,7 @@ public partial class App : Application
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ReactiveUI.Builder.WpfApp",
             "state.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
+        _ = Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
         _driver = new(statePath);
 
@@ -128,7 +128,7 @@ public partial class App : Application
             // Only the last instance persists the final state to the central store
             if (remaining == 0 && _driver is not null && RxSuspension.SuspensionHost.AppState is not null)
             {
-                _driver.SaveState(RxSuspension.SuspensionHost.AppState).GetAwaiter().GetResult();
+                _ = _driver.SaveState(RxSuspension.SuspensionHost.AppState).GetAwaiter().GetResult();
             }
         }
         finally

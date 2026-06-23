@@ -24,16 +24,16 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
     public LobbyView()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.DisplayName, v => v.DisplayNameBox.Text).DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.RoomName, v => v.RoomNameBox.Text).DisposeWith(d);
-            this.Bind(ViewModel, vm => vm.SelectedComboItem, v => v.ComboBoxSelection.SelectedItem).DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.CreateRoom, v => v.CreateRoomButton).DisposeWith(d);
+            _ = this.Bind(ViewModel, vm => vm.DisplayName, v => v.DisplayNameBox.Text).DisposeWith(d);
+            _ = this.Bind(ViewModel, vm => vm.RoomName, v => v.RoomNameBox.Text).DisposeWith(d);
+            _ = this.Bind(ViewModel, vm => vm.SelectedComboItem, v => v.ComboBoxSelection.SelectedItem).DisposeWith(d);
+            _ = this.BindCommand(ViewModel, vm => vm.CreateRoom, v => v.CreateRoomButton).DisposeWith(d);
 
             RoomsList.MouseDoubleClick += Dbl;
             RoomsList.KeyDown += Enter;
-            new ActionDisposable(() =>
+            _ = new ActionDisposable(() =>
             {
                 RoomsList.MouseDoubleClick -= Dbl;
                 RoomsList.KeyDown -= Enter;
@@ -43,11 +43,11 @@ public partial class LobbyView : IViewFor<ViewModels.LobbyViewModel>
             var selectedRoomStream = this.WhenAnyValue<LobbyView, object>(nameof(RoomsList.SelectedItem))
                 .Select(x => x as ChatRoom)
                 .WhereNotNull();
-            this.BindCommand(ViewModel, vm => vm.DeleteRoom, v => v.DeleteRoomButton, selectedRoomStream)
+            _ = this.BindCommand(ViewModel, vm => vm.DeleteRoom, v => v.DeleteRoomButton, selectedRoomStream)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.RoomsList.ItemsSource).DisposeWith(d);
-            this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.ComboBoxSelection.ItemsSource).DisposeWith(d);
+            _ = this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.RoomsList.ItemsSource).DisposeWith(d);
+            _ = this.OneWayBind(ViewModel, vm => vm.Rooms, v => v.ComboBoxSelection.ItemsSource).DisposeWith(d);
         });
 
         // Enter key to join

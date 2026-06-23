@@ -201,7 +201,7 @@ public class RoutedViewHostTest
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithMaui()
                     .RegisterView<TestRoutableView, TestRoutableViewModel>()
                     .WithCoreServices();

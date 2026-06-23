@@ -52,7 +52,7 @@ public class ChatRoomViewModel : ReactiveObject, IRoutableViewModel
         _canSendPropertyHelper = canSend.ToProperty(this, nameof(SendMessage));
 
         // Observe new incoming messages via MessageBus using the room name as the contract across instances
-        MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
+        _ = MessageBus.Current.Listen<ChatNetworkMessage>(room.Name)
             .EmitIfQuiet(TimeSpan.FromMilliseconds(33))
             .Where(x => x.InstanceId != _senderInstanceId)
             .Subscribe(Witness.Create<ChatNetworkMessage>(msg =>

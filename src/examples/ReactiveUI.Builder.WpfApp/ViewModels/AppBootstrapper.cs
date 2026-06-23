@@ -16,7 +16,7 @@ public class AppBootstrapper : ReactiveObject, IScreen
         Router = new();
 
         // Navigate to Lobby on start
-        Router.Navigate.Execute(new LobbyViewModel(this)).Subscribe();
+        _ = Router.Navigate.Execute(new LobbyViewModel(this)).Subscribe();
     }
 
     /// <summary>Gets the Router associated with this Screen.</summary>

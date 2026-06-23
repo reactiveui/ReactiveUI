@@ -51,13 +51,13 @@ public sealed class ChatNetworkService : IDisposable
         }
 
         // Outgoing chat messages (default contract) - only send messages originating from this instance
-        MessageBus.Current.Listen<ChatNetworkMessage>()
+        _ = MessageBus.Current.Listen<ChatNetworkMessage>()
             .Where(static m => m.InstanceId == AppInstance.Id)
             .ObserveOn(RxSchedulers.TaskpoolScheduler)
             .Subscribe(Send);
 
         // Outgoing room events - only send messages originating from this instance
-        MessageBus.Current.Listen<RoomEventMessage>(RoomsContract)
+        _ = MessageBus.Current.Listen<RoomEventMessage>(RoomsContract)
             .Where(static m => m.InstanceId == AppInstance.Id)
             .ObserveOn(RxSchedulers.TaskpoolScheduler)
             .Subscribe(Send);
@@ -69,7 +69,7 @@ public sealed class ChatNetworkService : IDisposable
     public void Start()
     {
         Trace.TraceInformation("[Net] Starting receive loop...");
-        Task.Run(ReceiveLoop, _cts.Token);
+        _ = Task.Run(ReceiveLoop, _cts.Token);
     }
 
     /// <inheritdoc />
@@ -192,7 +192,7 @@ public sealed class ChatNetworkService : IDisposable
         try
         {
             var bytes = JsonSerializer.SerializeToUtf8Bytes(message, message.GetType());
-            _udp.Send(bytes, bytes.Length, _sendEndpoint);
+            _ = _udp.Send(bytes, bytes.Length, _sendEndpoint);
             switch (message)
             {
                 case ChatNetworkMessage c:

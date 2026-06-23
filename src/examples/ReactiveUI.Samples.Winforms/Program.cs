@@ -14,7 +14,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithWinForms()
             .BuildApp();
 

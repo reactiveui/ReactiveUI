@@ -21,7 +21,7 @@ public class ReactiveUIBuilderMauiTests
     {
         AppBuilder.ResetBuilderStateForTests();
         using var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithMaui()
             .BuildApp();
 
@@ -42,12 +42,12 @@ public class ReactiveUIBuilderMauiTests
         var dispatcher = new TestDispatcher();
         var builder = locator.CreateReactiveUIBuilder();
 
-        builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithMauiScheduler(dispatcher);
 
         await Assert.That(builder.MainThreadScheduler).IsNotNull();
 
         var executed = false;
-        builder.MainThreadScheduler!.Schedule(0, (_, _) =>
+        _ = builder.MainThreadScheduler!.Schedule(0, (_, _) =>
         {
             executed = true;
             return EmptyDisposable.Instance;
@@ -67,7 +67,7 @@ public class ReactiveUIBuilderMauiTests
 
         using (ForceUnitTestMode())
         {
-            builder.WithMauiScheduler();
+            _ = builder.WithMauiScheduler();
             await Assert.That(builder.MainThreadScheduler).IsEqualTo(Sequencer.CurrentThread);
         }
     }

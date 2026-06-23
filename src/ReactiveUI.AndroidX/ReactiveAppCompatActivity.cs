@@ -191,7 +191,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetResult((value.result, value.intent));
+            _ = _completion.TrySetResult((value.result, value.intent));
             Dispose();
         }
 
@@ -203,7 +203,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetException(error);
+            _ = _completion.TrySetException(error);
             Dispose();
         }
 
@@ -215,7 +215,7 @@ public class ReactiveAppCompatActivity : AppCompatActivity, IReactiveObject,
                 return;
             }
 
-            _completion.TrySetCanceled();
+            _ = _completion.TrySetCanceled();
             Dispose();
         }
 

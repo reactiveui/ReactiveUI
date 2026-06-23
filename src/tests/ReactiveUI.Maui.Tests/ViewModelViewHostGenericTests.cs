@@ -182,10 +182,7 @@ public class ViewModelViewHostGenericTests
     public async Task IViewFor_ViewModelSetter_WorksCorrectly()
     {
         var viewModel = new TestViewModel();
-        IViewFor host = new ViewModelViewHost<TestViewModel>();
-
-        host.ViewModel = viewModel;
-
+        IViewFor host = new ViewModelViewHost<TestViewModel> { ViewModel = viewModel };
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
         await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsSameReferenceAs(viewModel);
     }
