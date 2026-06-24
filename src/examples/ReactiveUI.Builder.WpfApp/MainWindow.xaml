@@ -4,7 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
-    Width="800"
-    Height="450"
-    mc:Ignorable="d" />
+    Title="Mock EFTPOS Terminal"
+    Width="440"
+    Height="760"
+    ResizeMode="CanMinimize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Window.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="0.5,1">
+            <GradientStop Offset="0" Color="#0B1220" />
+            <GradientStop Offset="1" Color="#0E1A33" />
+        </LinearGradientBrush>
+    </Window.Background>
+</Window>

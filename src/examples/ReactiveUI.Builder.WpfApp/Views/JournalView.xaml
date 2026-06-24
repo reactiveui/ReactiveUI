@@ -1,0 +1,191 @@
+<UserControl
+    x:Class="ReactiveUI.Builder.WpfApp.Views.JournalView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:ReactiveUI.Builder.WpfApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:JournalViewModel}"
+    FontFamily="Segoe UI"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="Text" Color="#E2E8F0" />
+        <SolidColorBrush x:Key="Muted" Color="#94A3B8" />
+        <SolidColorBrush x:Key="Key" Color="#1B2740" />
+        <SolidColorBrush x:Key="KeyBorder" Color="#2A3A57" />
+        <SolidColorBrush x:Key="Accent" Color="#34D399" />
+
+        <Style x:Key="Pill" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            x:Name="Bd"
+                            Padding="14,8"
+                            Background="{StaticResource Key}"
+                            BorderBrush="{StaticResource KeyBorder}"
+                            BorderThickness="1"
+                            CornerRadius="9">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <Grid Grid.Row="0" Margin="0,0,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button
+                VerticalAlignment="Center"
+                Command="{Binding ViewModel.GoBack}"
+                Content="‹ Back"
+                Style="{StaticResource Pill}" />
+            <StackPanel
+                Grid.Column="1"
+                Margin="14,0,0,0"
+                VerticalAlignment="Center">
+                <TextBlock
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource Accent}"
+                    Text="TRANSACTION JOURNAL" />
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource Text}"
+                    Text="History" />
+            </StackPanel>
+        </Grid>
+
+        <!--  Today's total  -->
+        <Border
+            Grid.Row="1"
+            Padding="18,14"
+            Background="#0F2A22"
+            BorderBrush="{StaticResource Accent}"
+            BorderThickness="1"
+            CornerRadius="14">
+            <Grid>
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource Muted}"
+                    Text="APPROVED TODAY" />
+                <TextBlock
+                    HorizontalAlignment="Right"
+                    FontSize="28"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource Accent}"
+                    Text="{Binding ViewModel.TodayTotal, StringFormat=C}" />
+            </Grid>
+        </Border>
+
+        <!--  List  -->
+        <ListBox
+            Grid.Row="2"
+            Margin="0,14,0,0"
+            Background="Transparent"
+            BorderThickness="0"
+            ItemsSource="{Binding ViewModel.Transactions}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0,0,0,8" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Padding="16,12"
+                        Background="{StaticResource Key}"
+                        BorderBrush="{StaticResource KeyBorder}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock
+                                    FontSize="13"
+                                    FontWeight="SemiBold"
+                                    Text="{Binding Outcome}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#F87171" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Approved}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource Accent}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock
+                                    Margin="0,3,0,0"
+                                    FontSize="12"
+                                    Foreground="{StaticResource Muted}"
+                                    Text="{Binding CardScheme, StringFormat='{}{0} ···· '}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBlock
+                                    HorizontalAlignment="Right"
+                                    FontSize="18"
+                                    FontWeight="Bold"
+                                    Foreground="{StaticResource Text}"
+                                    Text="{Binding Amount, StringFormat=C}" />
+                                <TextBlock
+                                    HorizontalAlignment="Right"
+                                    FontSize="11"
+                                    Foreground="{StaticResource Muted}"
+                                    Text="{Binding Timestamp.LocalDateTime, StringFormat='{}{0:t}'}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button
+            Grid.Row="3"
+            Margin="0,14,0,0"
+            HorizontalAlignment="Center"
+            Command="{Binding ViewModel.Clear}"
+            Content="Clear journal"
+            Foreground="#F87171"
+            Style="{StaticResource Pill}" />
+    </Grid>
+</UserControl>
