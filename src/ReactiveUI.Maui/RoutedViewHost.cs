@@ -317,6 +317,26 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         _ = RxSchedulers.MainThreadScheduler.Schedule(() => _ = OnNavigateAsync());
     }
 
+    /// <summary>Resolves the page for the current view model. PagesForViewModel emits a single page synchronously
+    /// (or signals an error), so the subscription resolves it inline.</summary>
+    /// <returns>The resolved page, or <see langword="null"/> if none could be resolved.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic arguments), " +
+        "trimming can't validate that the requirements of those annotations are met.")]
+    private Page? ResolveCurrentPage()
+    {
+        Page? page = null;
+        PagesForViewModel(Router.GetCurrentViewModel())
+            .Subscribe(new DelegateObserver<Page>(
+                p => page = p,
+                e => this.Log().Error(e, "Failed to resolve the page for navigation")))
+            .Dispose();
+
+        return page;
+    }
+
     /// <summary>Resolves the page for the current view model and pushes it, then resyncs the stacks.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [RequiresUnreferencedCode(
@@ -326,13 +346,7 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         "trimming can't validate that the requirements of those annotations are met.")]
     private async Task OnNavigateAsync()
     {
-        // PagesForViewModel emits a single page synchronously (or signals an error), so the subscription resolves it inline.
-        Page? page = null;
-        PagesForViewModel(Router.GetCurrentViewModel())
-            .Subscribe(new DelegateObserver<Page>(
-                p => page = p,
-                e => this.Log().Error(e, "Failed to resolve the page for navigation")))
-            .Dispose();
+        var page = ResolveCurrentPage();
 
         if (page is null)
         {

@@ -459,7 +459,7 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             return;
         }
 
-        _disposables?.Dispose();
+        _disposables.Dispose();
 
         _checkValidation.Dispose();
         _valueRefereshed.Dispose();

@@ -125,12 +125,22 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
             // Only adopt the scheduling disposable when the step is genuinely pending (queued). When it ran inline the
             // step already took ownership of _current (a live handler subscription, the next scheduled step, or the
             // finished run), and overwriting that here would dispose the live work and stall the run.
-            if (!_stepRanInline)
-            {
-                _current.Disposable = scheduled;
-            }
+            AdoptIfPending(scheduled);
 
             _stepRanInline = previousRanInline;
+        }
+
+        /// <summary>Adopts the scheduling disposable into <see cref="_current"/> only when the step is still pending —
+        /// that is, the scheduled callback did not run inline and take ownership of <see cref="_current"/> itself.</summary>
+        /// <param name="scheduled">The disposable returned by the scheduling call.</param>
+        private void AdoptIfPending(IDisposable scheduled)
+        {
+            if (_stepRanInline)
+            {
+                return;
+            }
+
+            _current.Disposable = scheduled;
         }
 
         /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
