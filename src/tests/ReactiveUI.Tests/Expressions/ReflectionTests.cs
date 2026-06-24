@@ -494,6 +494,42 @@ public class ReflectionTests
         await Assert.That(obj.Nested!.Property).IsEqualTo(SetValueText);
     }
 
+    /// <summary>An empty expression chain has no member to resolve and throws.</summary>
+    [Test]
+    public void TryGetValueForPropertyChain_EmptyChain_Throws() =>
+        Assert.Throws<InvalidOperationException>(() =>
+            Reflection.TryGetValueForPropertyChain<int>(out _, new object(), []));
+
+    /// <summary>A null intermediate value in the chain yields a failed lookup.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetValueForPropertyChain_NullIntermediate_ReturnsFalse()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain();
+
+        var result = Reflection.TryGetValueForPropertyChain<string>(out var value, null, chain);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsFalse();
+            await Assert.That(value).IsNull();
+        }
+    }
+
+    /// <summary>Setting a read-only member without throwing returns false.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TrySetValueToPropertyChain_ReadOnlyMember_ReturnsFalse()
+    {
+        Expression<Func<TestClass, int[]>> expr = x => x.Array;
+        var chain = expr.Body.GetExpressionChain();
+
+        var result = Reflection.TrySetValueToPropertyChain<int[]>(new TestClass(), chain, [], shouldThrow: false);
+
+        await Assert.That(result).IsFalse();
+    }
+
     /// <summary>A sample class used as the target of reflection tests.</summary>
     public class TestClass
     {
