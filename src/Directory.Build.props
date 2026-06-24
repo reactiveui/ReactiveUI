@@ -70,7 +70,7 @@
 
     <!-- Platform-specific targets - always defined but only used on supported platforms -->
     <ReactiveUIFrameworkTargets>net462;net472;net481</ReactiveUIFrameworkTargets>
-    <ReactiveUIMauiWindowsTargets>net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
+    <ReactiveUIMauiWindowsTargets>net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIMauiWindowsTargets>
     <ReactiveUIWindowsTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIWindowsTargets>
     <ReactiveUIWinUITargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUIWinUITargets>
     <!-- net9 mobile (iOS/tvOS/macOS/maccatalyst) support ended 12 May 2026; target net10 only. -->
