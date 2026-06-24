@@ -123,4 +123,82 @@ public class WinFormsViewModelViewHostTests
         target.ViewModel = new FakeWinformViewModel();
         await Assert.That(ReferenceEquals(cachedView, target.CurrentView)).IsFalse();
     }
+
+    /// <summary>Setting a property raises the host's PropertyChanging and PropertyChanged notifications.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SettingProperty_RaisesPropertyChangingAndChanged()
+    {
+        using var target = new WinFormsViewModelViewHost();
+
+        // A manually implemented IReactiveObject only forwards classic events once these are enabled.
+        target.SubscribePropertyChangingEvents();
+        target.SubscribePropertyChangedEvents();
+
+        var changing = false;
+        var changed = false;
+        target.PropertyChanging += (_, e) => changing |= e.PropertyName == nameof(target.ViewModel);
+        target.PropertyChanged += (_, e) => changed |= e.PropertyName == nameof(target.ViewModel);
+
+        target.ViewModel = new FakeWinformViewModel();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(changing).IsTrue();
+            await Assert.That(changed).IsTrue();
+        }
+    }
+
+    /// <summary>Disposing the host tears down its subscriptions without error.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Dispose_TearsDownCleanly()
+    {
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
+        var target = new WinFormsViewModelViewHost
+        {
+            ViewLocator = viewLocator,
+            ViewModel = new FakeWinformViewModel(),
+        };
+
+        target.Dispose();
+
+        await Assert.That(target.IsDisposed).IsTrue();
+    }
+
+    /// <summary>When the view model is null but a default content is set, the host shows the default content.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task NullViewModelWithDefaultContent_ShowsDefaultContent()
+    {
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
+        var defaultContent = new Control();
+        using var target = new WinFormsViewModelViewHost
+        {
+            ViewLocator = viewLocator,
+            DefaultContent = defaultContent,
+        };
+
+        // ViewModel stays null, so the view-model/contract combine resolves to the default content.
+        target.ViewModel = new FakeWinformViewModel();
+        target.ViewModel = null;
+
+        await Assert.That(target.CurrentView).IsSameReferenceAs(defaultContent);
+    }
+
+    /// <summary>When the view locator resolves no view, the host leaves the current content unchanged.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task UnresolvableViewModel_LeavesContentUnchanged()
+    {
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => null! };
+        using var target = new WinFormsViewModelViewHost
+        {
+            CacheViews = false,
+            ViewLocator = viewLocator,
+            ViewModel = new FakeWinformViewModel(),
+        };
+
+        await Assert.That(target.CurrentView).IsNull();
+    }
 }

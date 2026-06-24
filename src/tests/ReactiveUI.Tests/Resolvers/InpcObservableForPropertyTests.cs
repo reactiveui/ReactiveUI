@@ -206,6 +206,27 @@ public class InpcObservableForPropertyTests
         subscription.Dispose();
     }
 
+    /// <summary>A non-notifying sender observed through an index expression yields a silent stream, exercising both the
+    /// index-named-property path and the "sender is not a notifier" fallback.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task NonNotifyingSenderWithIndexExpressionReturnsSilentStream()
+    {
+        var instance = new INPCObservableForProperty();
+
+        Expression<Func<List<string>, string>> expr = x => x[0];
+        var indexExpression = Reflection.Rewrite(expr.Body);
+        await Assert.That(indexExpression.NodeType).IsEqualTo(ExpressionType.Index);
+
+        var changes = new List<IObservedChange<object?, object?>>();
+
+        // A plain object is neither INotifyPropertyChanged nor INotifyPropertyChanging, so the index-named
+        // observation resolves to a silent (no-op) stream rather than hooking change events.
+        using var subscription = instance.GetNotificationForProperty(new object(), indexExpression, "Item").Subscribe(changes.Add);
+
+        await Assert.That(changes).IsEmpty();
+    }
+
     /// <summary>A test fixture implementing <see cref="INotifyPropertyChanged"/> to drive change notifications.</summary>
     private sealed class TestClassChanged : INotifyPropertyChanged
     {

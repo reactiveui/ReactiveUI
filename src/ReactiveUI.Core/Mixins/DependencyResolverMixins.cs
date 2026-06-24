@@ -50,6 +50,34 @@ public static class DependencyResolverMixins
         }
     }
 
+    /// <summary>Creates a factory delegate that instantiates objects of the specified type using a public parameterless constructor.</summary>
+    /// <param name="typeInfo">The type metadata for which to create the factory. The type must have a public parameterless constructor.</param>
+    /// <returns>A delegate that creates a new instance of the specified type when invoked.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
+    /// <remarks>Internal so the missing-parameterless-constructor guard can be exercised directly in tests.</remarks>
+    internal static Func<object> TypeFactory(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
+                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+        TypeInfo typeInfo)
+    {
+        ConstructorInfo? parameterlessConstructor = null;
+        foreach (var ci in typeInfo.DeclaredConstructors)
+        {
+            if (ci.IsPublic && ci.GetParameters().Length == 0)
+            {
+                parameterlessConstructor = ci;
+                break;
+            }
+        }
+
+        return parameterlessConstructor is null
+            ? throw new InvalidOperationException(
+                $"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
+            : () => Activator.CreateInstance(typeInfo.AsType())
+                    ?? throw new InvalidOperationException(
+                        $"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
+    }
+
     /// <summary>
     /// Registers a type with the specified dependency resolver, using singleton or transient lifetime based on the
     /// type's attributes and an optional contract.
@@ -148,32 +176,5 @@ public static class DependencyResolverMixins
         }
 
         return false;
-    }
-
-    /// <summary>Creates a factory delegate that instantiates objects of the specified type using a public parameterless constructor.</summary>
-    /// <param name="typeInfo">The type metadata for which to create the factory. The type must have a public parameterless constructor.</param>
-    /// <returns>A delegate that creates a new instance of the specified type when invoked.</returns>
-    /// <exception cref="Exception">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
-    private static Func<object> TypeFactory(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
-                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
-        TypeInfo typeInfo)
-    {
-        ConstructorInfo? parameterlessConstructor = null;
-        foreach (var ci in typeInfo.DeclaredConstructors)
-        {
-            if (ci.IsPublic && ci.GetParameters().Length == 0)
-            {
-                parameterlessConstructor = ci;
-                break;
-            }
-        }
-
-        return parameterlessConstructor is null
-            ? throw new InvalidOperationException(
-                $"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
-            : () => Activator.CreateInstance(typeInfo.AsType())
-                    ?? throw new InvalidOperationException(
-                        $"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
     }
 }

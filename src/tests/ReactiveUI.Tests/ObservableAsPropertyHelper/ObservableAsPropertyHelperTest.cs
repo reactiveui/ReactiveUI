@@ -826,6 +826,118 @@ public class ObservableAsPropertyHelperTest
         subscription.Dispose();
     }
 
+    /// <summary>The constructor overload with an initial-value factory seeds the value and delivers later source values.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task InitialValueFactoryConstructorSeedsAndDelivers()
+    {
+        const int Seed = 7;
+        var source = new Signal<int>();
+
+        using var fixture = new ObservableAsPropertyHelper<int>(source, static _ => { }, onChanging: null, getInitialValue: () => Seed);
+
+        await Assert.That(fixture.Value).IsEqualTo(Seed);
+
+        source.OnNext(EmittedValue);
+        await Assert.That(fixture.Value).IsEqualTo(EmittedValue);
+    }
+
+    /// <summary>A null initial-value factory falls back to <c>default(T)</c> for the seeded value.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task NullInitialValueFactoryFallsBackToDefault()
+    {
+        var source = new Signal<int>();
+
+        using var fixture = new ObservableAsPropertyHelper<int>(source, static _ => { }, onChanging: null, getInitialValue: null);
+
+        await Assert.That(fixture.Value).IsEqualTo(0);
+    }
+
+    /// <summary>When there is no thrown-exceptions subscriber, a source error is routed to the default exception handler.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    [NotInParallel]
+    public async Task SourceErrorWithoutSubscriberGoesToDefaultExceptionHandler()
+    {
+        RxState.ResetForTesting();
+        var handler = new CapturingExceptionObserver();
+        RxState.InitializeExceptionHandler(handler);
+        try
+        {
+            var error = new InvalidOperationException("Die!");
+            using var fixture = new ObservableAsPropertyHelper<int>(new ErrorObservable<int>(error), static _ => { }, 0, true, Sequencer.Immediate);
+
+            _ = fixture.Value;
+
+            await Assert.That(handler.Captured).IsSameReferenceAs(error);
+        }
+        finally
+        {
+            RxState.ResetForTesting();
+        }
+    }
+
+    /// <summary>A source value arriving after disposal is ignored rather than delivered.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnSourceNextAfterDisposeIsIgnored()
+    {
+        var source = new Signal<int>();
+        var observed = new List<int>();
+        var fixture = new ObservableAsPropertyHelper<int>(source, observed.Add, 0, false, Sequencer.Immediate);
+        observed.Clear();
+
+        fixture.Dispose();
+        fixture.OnSourceNext(EmittedValue);
+
+        await Assert.That(observed).IsEmpty();
+    }
+
+    /// <summary>Activating after disposal subscribes then immediately disposes the source subscription.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ActivateOnFirstAccessAfterDisposeDisposesSubscription()
+    {
+        var source = new TrackingObservable();
+        var fixture = new ObservableAsPropertyHelper<int>(source, static _ => { }, 0, true, Sequencer.Immediate);
+        fixture.Dispose();
+
+        fixture.ActivateOnFirstAccess();
+
+        await Assert.That(source.LastSubscriptionDisposed).IsTrue();
+    }
+
+    /// <summary>An exception observer that records the most recent exception it receives.</summary>
+    private sealed class CapturingExceptionObserver : IObserver<Exception>
+    {
+        /// <summary>Gets the most recently captured exception.</summary>
+        public Exception? Captured { get; private set; }
+
+        /// <inheritdoc/>
+        public void OnNext(Exception value) => Captured = value;
+
+        /// <inheritdoc/>
+        public void OnError(Exception error)
+        {
+        }
+
+        /// <inheritdoc/>
+        public void OnCompleted()
+        {
+        }
+    }
+
+    /// <summary>An observable that records whether the subscription it handed out has been disposed.</summary>
+    private sealed class TrackingObservable : IObservable<int>
+    {
+        /// <summary>Gets a value indicating whether the most recent subscription was disposed.</summary>
+        public bool LastSubscriptionDisposed { get; private set; }
+
+        /// <inheritdoc/>
+        public IDisposable Subscribe(IObserver<int> observer) => Scope.Create(() => LastSubscriptionDisposed = true);
+    }
+
     /// <summary>An observable that immediately errors any subscriber.</summary>
     /// <typeparam name="T">The element type.</typeparam>
     /// <param name="error">The error to deliver on subscribe.</param>

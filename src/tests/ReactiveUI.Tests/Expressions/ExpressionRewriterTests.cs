@@ -110,6 +110,21 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
+    /// <summary>Verifies that an already-built index expression with constant arguments is visited and preserved as an Index node.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Rewrite_WithConstantIndexExpression_VisitsAndReturnsIndexExpression()
+    {
+        var parameter = Expression.Parameter(typeof(TestClass), "x");
+        var listProperty = Expression.Property(parameter, "List");
+        var indexer = typeof(List<int>).GetProperty("Item")!;
+        var indexExpr = Expression.MakeIndex(listProperty, indexer, [Expression.Constant(0)]);
+
+        var result = Reflection.Rewrite(indexExpr);
+
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
+    }
+
     /// <summary>Verifies that a non-constant list indexer throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithListIndexerNonConstant_Throws()

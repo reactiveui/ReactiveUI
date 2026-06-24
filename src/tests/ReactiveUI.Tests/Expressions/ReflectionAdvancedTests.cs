@@ -23,6 +23,9 @@ public class ReflectionAdvancedTests
     /// <summary>The value stored against the dictionary key in reflection tests.</summary>
     private const int DictionaryValue = 42;
 
+    /// <summary>A sample string value used when exercising setter paths.</summary>
+    private const string SampleValue = "sample";
+
     /// <summary>Verifies that a complex nested expression is rewritten to a member access.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -333,6 +336,267 @@ public class ReflectionAdvancedTests
         var result = propertyInfo.IsStatic();
 
         await Assert.That(result).IsTrue();
+    }
+
+    /// <summary>Verifies that an index expression with multiple arguments separates them with a comma.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExpressionToPropertyNames_WithMultiArgIndexer_SeparatesWithComma()
+    {
+        var parameter = Expression.Parameter(typeof(MultiIndexerClass), "x");
+        var indexer = typeof(MultiIndexerClass).GetProperty(ItemPropertyName)!;
+        var firstArg = Expression.Constant(1);
+        var secondArg = Expression.Constant(2);
+        var indexExpr = Expression.MakeIndex(parameter, indexer, [firstArg, secondArg]);
+
+        var result = Reflection.ExpressionToPropertyNames(indexExpr);
+
+        await Assert.That(result).IsEqualTo("Item[1,2]");
+    }
+
+    /// <summary>Verifies that getting all values returns false when an intermediate link (before the last) is null.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetAllValuesForPropertyChain_WithNullMidChain_ReturnsFalseInLoop()
+    {
+        var obj = new TestClass { Nested = null };
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Nested!.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain();
+
+        var result = Reflection.TryGetAllValuesForPropertyChain(out var changeValues, obj, chain);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(changeValues[1]).IsNull();
+    }
+
+    /// <summary>Verifies that setting a value into a read-only property invokes the cached setter and surfaces its error.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TrySetValueToPropertyChain_WithReadOnlyProperty_InvokesSetterAndThrows()
+    {
+        var obj = new TestClass();
+        Expression<Func<TestClass, string?>> expr = x => x.ReadOnlyProperty;
+        var chain = expr.Body.GetExpressionChain();
+
+        await Assert.That(() => Reflection.TrySetValueToPropertyChain(obj, chain, SampleValue, false))
+            .Throws<ArgumentException>();
+    }
+
+    /// <summary>Verifies that the overload check throws when the object's runtime type lacks the requested method.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ThrowIfMethodsNotOverloaded_WithObjectMissingMethod_Throws()
+    {
+        var obj = new TestClass();
+
+        await Assert.That(() =>
+            Reflection.ThrowIfMethodsNotOverloaded(TestCallerName, obj, "NonExistentMethod"))
+            .Throws<InvalidOperationException>();
+    }
+
+    /// <summary>Verifies that getting the args type for a real event returns the event args type.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task GetEventArgsTypeForEvent_WithRealEvent_ReturnsEventArgsType()
+    {
+        var result = Reflection.GetEventArgsTypeForEvent(
+            typeof(EventClass),
+            nameof(EventClass.SampleEvent));
+
+        await Assert.That(result).IsEqualTo(typeof(EventArgs));
+    }
+
+    /// <summary>Verifies that an empty non-array collection chain throws the empty-chain error (materialization collection branch).</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetValueForPropertyChain_WithEmptyListChain_ThrowsInvalidOperation()
+    {
+        var obj = new TestClass();
+        var emptyList = new List<Expression>();
+
+        await Assert.That(() => Reflection.TryGetValueForPropertyChain<string>(out _, obj, emptyList))
+            .Throws<InvalidOperationException>();
+    }
+
+    /// <summary>Verifies that a non-empty list chain is materialized via the collection branch and traversed.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetValueForPropertyChain_WithListChain_ReturnsValue()
+    {
+        var obj = new TestClass { Nested = new() { Property = "fromList" } };
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var list = new List<Expression>(expr.Body.GetExpressionChain());
+
+        var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, list);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo("fromList");
+    }
+
+    /// <summary>Verifies that a lazily-enumerated (non-collection) chain hits the default materialization path.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetValueForPropertyChain_WithEnumerableChain_ReturnsValue()
+    {
+        var obj = new TestClass { Nested = new() { Property = "fromEnumerable" } };
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var enumerable = WrapAsEnumerable(expr.Body.GetExpressionChain());
+
+        var result = Reflection.TryGetValueForPropertyChain<string>(out var value, obj, enumerable);
+
+        await Assert.That(result).IsTrue();
+        await Assert.That(value).IsEqualTo("fromEnumerable");
+    }
+
+    /// <summary>Verifies that ViewModelWhenAnyValue emits the observed view model property value.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ViewModelWhenAnyValue_EmitsObservedValue()
+    {
+        var view = new SampleView { ViewModel = new() { Name = "vmValue" } };
+        Expression<Func<SampleViewModel, string?>> expr = x => x.Name;
+
+        object? observed = null;
+        using var subscription = Reflection
+            .ViewModelWhenAnyValue<SampleView, SampleViewModel>(view.ViewModel, view, expr.Body)
+            .Subscribe(x => observed = x);
+
+        await Assert.That(observed).IsEqualTo("vmValue");
+    }
+
+    /// <summary>Verifies that a compiled property chain returns false when an intermediate link before the last is null.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompiledPropertyChain_TryGetAllValues_WithNullMidChain_ReturnsFalseInLoop()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Nested!.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain().ToArray();
+        var compiled = new Reflection.CompiledPropertyChain<TestClass, string?>(chain);
+        var obj = new TestClass { Nested = null };
+
+        var result = compiled.TryGetAllValues(obj, out var changeValues);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(changeValues[1]).IsNull();
+    }
+
+    /// <summary>Verifies that a compiled property chain returns false when an intermediate is null during value traversal.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompiledPropertyChain_TryGetValue_WithNullMidChain_ReturnsFalse()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Nested!.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain().ToArray();
+        var compiled = new Reflection.CompiledPropertyChain<TestClass, string?>(chain);
+        var obj = new TestClass { Nested = null };
+
+        var result = compiled.TryGetValue(obj, out var value);
+
+        await Assert.That(result).IsFalse();
+        await Assert.That(value).IsNull();
+    }
+
+    /// <summary>Verifies that a compiled setter throws for a read-only (unsettable) member when configured to throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompiledPropertyChainSetter_TrySetValue_WithUnsettableMember_AndShouldThrow_Throws()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.ReadOnlyProperty;
+        var chain = expr.Body.GetExpressionChain().ToArray();
+        var setter = new Reflection.CompiledPropertyChainSetter<TestClass, string?>(chain);
+        var obj = new TestClass();
+
+        await Assert.That(() => setter.TrySetValue(obj, SampleValue))
+            .Throws<ArgumentException>();
+    }
+
+    /// <summary>Verifies that a compiled setter returns false when a parent link resolves to null without throwing.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompiledPropertyChainSetter_TrySetValue_WithNullParent_ReturnsFalse()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain().ToArray();
+        var setter = new Reflection.CompiledPropertyChainSetter<TestClass, string?>(chain);
+        var obj = new TestClass { Nested = null };
+
+        var result = setter.TrySetValue(obj, SampleValue, false);
+
+        await Assert.That(result).IsFalse();
+    }
+
+    /// <summary>Verifies that a compiled setter returns false for a null source when not configured to throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompiledPropertyChainSetter_TrySetValue_WithNullSourceAndNoThrow_ReturnsFalse()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
+        var chain = expr.Body.GetExpressionChain().ToArray();
+        var setter = new Reflection.CompiledPropertyChainSetter<TestClass, string?>(chain);
+
+        var result = setter.TrySetValue(null, SampleValue, false);
+
+        await Assert.That(result).IsFalse();
+    }
+
+    /// <summary>Wraps a sequence as a lazily-yielded enumerable so it is neither an array nor an <see cref="ICollection{T}"/>.</summary>
+    /// <param name="source">The source sequence.</param>
+    /// <returns>A deferred enumerable producing the same items.</returns>
+    private static IEnumerable<Expression> WrapAsEnumerable(IEnumerable<Expression> source)
+    {
+        foreach (var item in source)
+        {
+            yield return item;
+        }
+    }
+
+    /// <summary>A sample class exposing a multi-argument indexer for property-name tests.</summary>
+    public class MultiIndexerClass
+    {
+        /// <summary>Gets the value at the specified two-dimensional index.</summary>
+        /// <param name="first">The first index.</param>
+        /// <param name="second">The second index.</param>
+        /// <returns>The sum of the two indices.</returns>
+        public int this[int first, int second] => first + second;
+    }
+
+    /// <summary>A sample class exposing an event for event-args reflection tests.</summary>
+    public class EventClass
+    {
+        /// <summary>An event used to exercise event-args type resolution.</summary>
+        public event EventHandler? SampleEvent;
+
+        /// <summary>Raises the sample event.</summary>
+        public void Raise() => SampleEvent?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>A sample view model used to exercise <see cref="Reflection.ViewModelWhenAnyValue{TView, TViewModel}"/>.</summary>
+    public class SampleViewModel : ReactiveObject
+    {
+        /// <summary>Gets or sets the observed name value.</summary>
+        public string? Name
+        {
+            get => field;
+            set => this.RaiseAndSetIfChanged(ref field, value);
+        }
+    }
+
+    /// <summary>A sample view used to exercise <see cref="Reflection.ViewModelWhenAnyValue{TView, TViewModel}"/>.</summary>
+    public class SampleView : ReactiveObject, IViewFor<SampleViewModel>
+    {
+        /// <summary>Gets or sets the strongly-typed view model.</summary>
+        public SampleViewModel? ViewModel
+        {
+            get => field;
+            set => this.RaiseAndSetIfChanged(ref field, value);
+        }
+
+        /// <summary>Gets or sets the weakly-typed view model.</summary>
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (SampleViewModel?)value;
+        }
     }
 
     /// <summary>A sample class used as the target of advanced reflection tests.</summary>

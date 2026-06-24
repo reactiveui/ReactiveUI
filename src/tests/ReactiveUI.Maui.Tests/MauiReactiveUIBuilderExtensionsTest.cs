@@ -5,6 +5,7 @@
 
 using ReactiveUI.Builder;
 using Splat;
+using TUnit.Core.Executors;
 
 namespace ReactiveUI.Maui.Tests;
 
@@ -16,6 +17,38 @@ public class MauiReactiveUIBuilderExtensionsTest
     [Test]
     public async Task MauiMainThreadScheduler_IsNotNull() =>
         await Assert.That(MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler).IsNotNull();
+
+    /// <summary>Tests that MauiMainThreadScheduler resolves to a dispatcher-backed sequencer when a current-thread dispatcher is available.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiTestExecutor>]
+    public async Task MauiMainThreadScheduler_WithCurrentDispatcher_ResolvesDispatcherSequencer()
+    {
+        // The MauiTestExecutor installs a TestDispatcherProvider whose GetForCurrentThread() returns a dispatcher,
+        // so the property takes the dispatcher.ToSequencer() branch instead of falling back to Sequencer.Default.
+        var scheduler = MauiReactiveUIBuilderExtensions.MauiMainThreadScheduler;
+
+        await Assert.That(scheduler.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
+    }
+
+    /// <summary>Tests that WithMauiScheduler (no dispatcher) resolves the MAUI main-thread scheduler when not in a unit test runner.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiTestExecutor>]
+    public async Task WithMauiScheduler_NotInUnitTestRunner_UsesMauiMainThreadScheduler()
+    {
+        var resolver = new ModernDependencyResolver();
+        var builder = new ReactiveUIBuilder(resolver, resolver);
+
+        using (ForceNonUnitTestMode())
+        {
+            // With no dispatcher and outside a unit test runner, ResolveMainThreadScheduler returns the
+            // MauiMainThreadScheduler (the TestDispatcherProvider supplies a current-thread dispatcher).
+            _ = builder.WithMauiScheduler();
+
+            await Assert.That(builder.MainThreadScheduler!.GetType().Name).IsEqualTo("MauiDispatcherSequencer");
+        }
+    }
 
     /// <summary>Tests that UseReactiveUI with action does not throw.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -150,6 +183,22 @@ public class MauiReactiveUIBuilderExtensionsTest
         // Invoking the delayed callback runs the scheduled work.
         callback();
         await Assert.That(executed).IsTrue();
+    }
+
+    /// <summary>Temporarily overrides the mode detector so the code believes it is not running in a unit test.</summary>
+    /// <returns>A disposable that restores the default mode detector when disposed.</returns>
+    private static ActionDisposable ForceNonUnitTestMode()
+    {
+        ModeDetector.OverrideModeDetector(new AlwaysFalseModeDetector());
+        return new ActionDisposable(static () => ModeDetector.OverrideModeDetector(new DefaultModeDetector()));
+    }
+
+    /// <summary>Mode detector implementation that always reports it is not running in a unit test runner.</summary>
+    private sealed class AlwaysFalseModeDetector : IModeDetector
+    {
+        /// <summary>Indicates whether the code is running in a unit test runner.</summary>
+        /// <returns>Always returns <see langword="false"/>.</returns>
+        public bool? InUnitTestRunner() => false;
     }
 
     /// <summary>Mock dispatcher that records immediate and delayed dispatch calls for testing.</summary>

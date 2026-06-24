@@ -41,7 +41,8 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
     }
 
     /// <summary>Drives the sequential, scheduler-bound handler run for a single subscription.</summary>
-    private sealed class Sink : IDisposable
+    /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
+    internal sealed class Sink : IDisposable
     {
         /// <summary>The observer receiving the interaction output.</summary>
         private readonly IObserver<TOutput> _observer;
@@ -104,6 +105,47 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
             _current.Dispose();
         }
 
+        /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
+        /// <param name="index">The handler index to run.</param>
+        /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
+        internal void Step(int index)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (_context.IsHandled || index < 0)
+            {
+                Finish();
+                return;
+            }
+
+            IObservable<RxVoid> handlerResult;
+            try
+            {
+                handlerResult = _handlers[index](_context);
+            }
+            catch (Exception ex)
+            {
+                _observer.OnError(ex);
+                return;
+            }
+
+            var handlerObserver = new HandlerObserver(this, index);
+            var subscription = handlerResult.Subscribe(handlerObserver);
+
+            // If the handler completed (or errored) synchronously during Subscribe, it has already advanced the run and
+            // stored the next scheduled step in _current; overwriting that with this now-dead subscription would dispose
+            // (cancel) the next step and stall the run. Only retain the subscription while the handler is still running.
+            if (handlerObserver.IsCompleted)
+            {
+                return;
+            }
+
+            _current.Disposable = subscription;
+        }
+
         /// <summary>Schedules the next handler step on the handler scheduler.</summary>
         /// <param name="index">The handler index to run (descending toward the first-registered handler).</param>
         private void RunFrom(int index)
@@ -141,46 +183,6 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
             }
 
             _current.Disposable = scheduled;
-        }
-
-        /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
-        /// <param name="index">The handler index to run.</param>
-        private void Step(int index)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (_context.IsHandled || index < 0)
-            {
-                Finish();
-                return;
-            }
-
-            IObservable<RxVoid> handlerResult;
-            try
-            {
-                handlerResult = _handlers[index](_context);
-            }
-            catch (Exception ex)
-            {
-                _observer.OnError(ex);
-                return;
-            }
-
-            var handlerObserver = new HandlerObserver(this, index);
-            var subscription = handlerResult.Subscribe(handlerObserver);
-
-            // If the handler completed (or errored) synchronously during Subscribe, it has already advanced the run and
-            // stored the next scheduled step in _current; overwriting that with this now-dead subscription would dispose
-            // (cancel) the next step and stall the run. Only retain the subscription while the handler is still running.
-            if (handlerObserver.IsCompleted)
-            {
-                return;
-            }
-
-            _current.Disposable = subscription;
         }
 
         /// <summary>Emits the output once handled, or the unhandled-interaction error otherwise.</summary>

@@ -15,47 +15,24 @@ namespace ReactiveUI;
 [SuppressMessage("Design", "SST1432:Mark the type as static", Justification = "Partial of a non-static type; the instance members live in the primary PropertyBinderImplementation partial.")]
 public partial class PropertyBinderImplementation
 {
-    /// <summary>Dispatches a single conversion attempt to a converter, choosing the typed or fallback conversion path.</summary>
-    /// <param name="converter">The converter to use.</param>
-    /// <param name="sourceType">The type being converted from.</param>
-    /// <param name="targetType">The type being converted to.</param>
+    /// <summary>Dispatches a single conversion attempt to an explicitly supplied typed converter.</summary>
+    /// <param name="converter">The typed converter to use.</param>
     /// <param name="value">The value to convert.</param>
     /// <param name="conversionHint">An optional hint passed to the converter.</param>
     /// <param name="result">The converted value when conversion succeeds.</param>
     /// <returns><see langword="true"/> when the converter produced a value; otherwise <see langword="false"/>.</returns>
     private static bool TryConvertUsingConverter(
-        object converter,
-        Type sourceType,
-        Type targetType,
+        IBindingTypeConverter converter,
         object? value,
         object? conversionHint,
-        out object? result)
-    {
-        switch (converter)
-        {
-            case IBindingTypeConverter typedConverter:
-                return typedConverter.TryConvertTyped(value, conversionHint, out result);
-            case IBindingFallbackConverter when value is null:
-                {
-                    result = null;
-                    return false;
-                }
-
-            case IBindingFallbackConverter fallbackConverter:
-                return fallbackConverter.TryConvert(sourceType, value, targetType, conversionHint, out result);
-            default:
-                {
-                    result = null;
-                    return false;
-                }
-        }
-    }
+        out object? result) =>
+        converter.TryConvertTyped(value, conversionHint, out result);
 
     /// <summary>
     /// Attempts a conversion using an explicitly supplied converter, falling back to a registry
     /// converter registered for the same type pair when the supplied converter does not apply.
     /// </summary>
-    /// <param name="converter">The converter explicitly supplied by the caller.</param>
+    /// <param name="converter">The typed converter explicitly supplied by the caller.</param>
     /// <param name="sourceType">The type being converted from.</param>
     /// <param name="targetType">The type being converted to.</param>
     /// <param name="value">The value to convert.</param>
@@ -63,14 +40,14 @@ public partial class PropertyBinderImplementation
     /// <param name="converted">The converted value when conversion succeeds.</param>
     /// <returns><see langword="true"/> when a value was produced; otherwise <see langword="false"/>.</returns>
     private static bool TryConvertWithOverride(
-        object converter,
+        IBindingTypeConverter converter,
         Type sourceType,
         Type targetType,
         object? value,
         object? conversionHint,
         out object? converted)
     {
-        if (TryConvertUsingConverter(converter, sourceType, targetType, value, conversionHint, out converted))
+        if (TryConvertUsingConverter(converter, value, conversionHint, out converted))
         {
             return true;
         }
@@ -108,7 +85,7 @@ public partial class PropertyBinderImplementation
 
         if (converterOverride is not null)
         {
-            success = TryConvertWithOverride(converter, typeof(TViewModelPropertyType), typeof(TViewPropertyType), viewModelValue, conversionHint, out converted);
+            success = TryConvertWithOverride(converterOverride, typeof(TViewModelPropertyType), typeof(TViewPropertyType), viewModelValue, conversionHint, out converted);
         }
         else
         {
@@ -158,7 +135,7 @@ public partial class PropertyBinderImplementation
 
         if (converterOverride is not null)
         {
-            success = TryConvertWithOverride(converter, typeof(TViewPropertyType), typeof(TViewModelPropertyType?), viewValue, conversionHint, out converted);
+            success = TryConvertWithOverride(converterOverride, typeof(TViewPropertyType), typeof(TViewModelPropertyType?), viewValue, conversionHint, out converted);
         }
         else
         {

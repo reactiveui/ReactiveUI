@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 #if REACTIVE_SHIM
@@ -39,7 +38,7 @@ public static class RxSchedulers
     static RxSchedulers()
     {
         TaskpoolScheduler = TaskPoolSequencer.Default;
-        MainThreadScheduler ??= Sequencer.Default;
+        MainThreadScheduler = Sequencer.Default;
     }
 
     /// <summary>
@@ -47,24 +46,10 @@ public static class RxSchedulers
     /// should be run "on the UI thread". In normal mode, this will be
     /// DispatcherScheduler. This defaults to Sequencer.Default.
     /// </summary>
-    [SuppressMessage(
-        "Maintainability",
-        "CA1508:Avoid dead conditional code",
-        Justification = "Double-checked locking; another thread may set the field between the outer check and the lock.")]
     public static ISequencer MainThreadScheduler
     {
-        get
-        {
-            if (_mainThreadScheduler is not null)
-            {
-                return _mainThreadScheduler;
-            }
-
-            lock (_lock)
-            {
-                return _mainThreadScheduler ??= Sequencer.Default;
-            }
-        }
+        // The static constructor assigns this field before any member is accessed, so it is never null.
+        get => _mainThreadScheduler!;
 
         set
         {
@@ -79,29 +64,10 @@ public static class RxSchedulers
     /// Gets or sets the scheduler used to schedule work items to
     /// run in a background thread. This defaults to TaskPoolSequencer.Default.
     /// </summary>
-    [SuppressMessage(
-        "Maintainability",
-        "CA1508:Avoid dead conditional code",
-        Justification = "Double-checked locking; another thread may set the field between the outer check and the lock.")]
     public static ISequencer TaskpoolScheduler
     {
-        get
-        {
-            if (_taskpoolScheduler is not null)
-            {
-                return _taskpoolScheduler;
-            }
-
-            lock (_lock)
-            {
-                return _taskpoolScheduler ??= TaskPoolSequencer.Default;
-
-#if !PORTABLE
-#else
-                return _taskpoolScheduler ??= Sequencer.Default;
-#endif
-            }
-        }
+        // The static constructor assigns this field before any member is accessed, so it is never null.
+        get => _taskpoolScheduler!;
 
         set
         {

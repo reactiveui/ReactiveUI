@@ -433,4 +433,64 @@ public class ReactivePropertyBasicTests
         rp.Value = "new value";
         await Assert.That(rp.Value).IsEqualTo("new value");
     }
+
+    /// <summary>Verifies the parameterless constructor creates a property with the default value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ParameterlessConstructorCreatesDefaultValue()
+    {
+        using var rp = new ReactiveProperty<int>();
+        await Assert.That(rp.Value).IsEqualTo(0);
+    }
+
+    /// <summary>Verifies the single-value constructor stores the supplied value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task SingleValueConstructorStoresValue()
+    {
+        using var rp = new ReactiveProperty<int>(InitialValue);
+        await Assert.That(rp.Value).IsEqualTo(InitialValue);
+    }
+
+    /// <summary>Verifies the value/skip/duplicate constructor stores the supplied value and applies skip-current.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValueSkipDuplicateConstructorStoresValueAndSkips()
+    {
+        using var rp = new ReactiveProperty<int>(InitialValue, true, false);
+        var values = new List<int>();
+        _ = rp.Subscribe(values.Add);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(rp.Value).IsEqualTo(InitialValue);
+            await Assert.That(values).IsEmpty(); // skip-current means no initial emission
+        }
+    }
+
+    /// <summary>Verifies that disposing a property twice is a no-op and remains disposed.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DisposeTwiceIsNoOp()
+    {
+        var rp = ReactiveProperty<int>.Create(InitialValue);
+
+        rp.Dispose();
+        rp.Dispose(); // second call hits the already-disposed early-return guard
+
+        await Assert.That(rp.IsDisposed).IsTrue();
+    }
+
+    /// <summary>Verifies that setting a new value after disposal does not throw and keeps the assigned value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task SetValueAfterDisposeStoresValueWithoutNotifying()
+    {
+        var rp = ReactiveProperty<int>.Create(InitialValue);
+        rp.Dispose();
+
+        rp.Value = UpdatedValue; // SetValue takes the IsDisposed early-return path
+
+        await Assert.That(rp.Value).IsEqualTo(UpdatedValue);
+    }
 }

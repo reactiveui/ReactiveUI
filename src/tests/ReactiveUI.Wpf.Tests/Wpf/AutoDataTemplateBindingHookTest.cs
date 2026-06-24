@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Windows;
 using System.Windows.Controls;
 using TUnit.Core.Executors;
 
@@ -62,6 +63,95 @@ public class AutoDataTemplateBindingHookTest
         {
             await Assert.That(result).IsTrue();
             await Assert.That(itemsControl.ItemTemplate).IsNotNull();
+        }
+    }
+
+    /// <summary>An empty view-property list leaves the hook a no-op that returns true.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_EmptyViewProperties_ReturnsTrue()
+    {
+        var hook = new AutoDataTemplateBindingHook();
+
+        var result = hook.ExecuteHook(null, new object(), () => [], () => [], BindingDirection.OneWay);
+
+        await Assert.That(result).IsTrue();
+    }
+
+    /// <summary>An ItemsControl with a non-empty DisplayMemberPath is left untouched and returns true.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_ItemsControlWithDisplayMemberPath_ReturnsTrueWithoutTemplate()
+    {
+        var hook = new AutoDataTemplateBindingHook();
+        var itemsControl = new ListBox { DisplayMemberPath = "Name" };
+        Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
+        IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
+
+        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(itemsControl.ItemTemplate).IsNull();
+        }
+    }
+
+    /// <summary>A bound property other than ItemsSource leaves the ItemsControl untouched and returns true.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_NonItemsSourceProperty_ReturnsTrueWithoutTemplate()
+    {
+        var hook = new AutoDataTemplateBindingHook();
+        var itemsControl = new ListBox();
+        Expression<Func<ItemsControl, object?>> expr = ic => ic.Tag;
+        IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
+
+        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(itemsControl.ItemTemplate).IsNull();
+        }
+    }
+
+    /// <summary>An ItemsControl that already has an ItemTemplate keeps it and returns true.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_ItemsControlWithExistingItemTemplate_ReturnsTrueLeavingTemplate()
+    {
+        var hook = new AutoDataTemplateBindingHook();
+        var existingTemplate = new DataTemplate();
+        var itemsControl = new ListBox { ItemTemplate = existingTemplate };
+        Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
+        IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
+
+        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(itemsControl.ItemTemplate).IsSameReferenceAs(existingTemplate);
+        }
+    }
+
+    /// <summary>An ItemsControl that already has an ItemTemplateSelector is left untouched and returns true.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ExecuteHook_ItemsControlWithItemTemplateSelector_ReturnsTrueWithoutTemplate()
+    {
+        var hook = new AutoDataTemplateBindingHook();
+        var itemsControl = new ListBox { ItemTemplateSelector = new() };
+        Expression<Func<ItemsControl, object?>> expr = ic => ic.ItemsSource;
+        IObservedChange<object, object>[] props = [new ObservedChange<object, object>(itemsControl, Reflection.Rewrite(expr.Body), null!)];
+
+        var result = hook.ExecuteHook(null, itemsControl, () => [], () => props, BindingDirection.OneWay);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(itemsControl.ItemTemplate).IsNull();
         }
     }
 }

@@ -374,19 +374,9 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _sourceSubscription?.Dispose();
     }
 
-    /// <summary>The no-op onChanging callback used when none is supplied.</summary>
-    /// <param name="value">The unused value.</param>
-    private static void NoOp(T? value)
-    {
-        // Intentionally empty: the default onChanging callback does nothing when the caller supplies none.
-    }
-
-    /// <summary>Returns the default value of <typeparamref name="T"/>.</summary>
-    /// <returns>The default value.</returns>
-    private static T? GetDefault() => default;
-
     /// <summary>Seeds the initial value and subscribes to the source the first time <see cref="Value"/> is read in deferred mode.</summary>
-    private void ActivateOnFirstAccess()
+    /// <remarks>Internal so the disposed-during-activation guard can be exercised directly in tests.</remarks>
+    internal void ActivateOnFirstAccess()
     {
         _lastValue = _getInitialValue();
         var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
@@ -403,29 +393,10 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         }
     }
 
-    /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
-    /// <param name="value">The value to deliver.</param>
-    private void ScheduleDeliver(T? value) =>
-        _scheduler.ScheduleOrInline(
-            (Helper: this, Value: value),
-            static (_, state) =>
-            {
-                state.Helper.Deliver(state.Value);
-                return EmptyDisposable.Instance;
-            });
-
-    /// <summary>Runs the onChanging / store / onChanged sequence for a value.</summary>
-    /// <param name="value">The value being delivered.</param>
-    private void Deliver(T? value)
-    {
-        _onChanging(value);
-        _lastValue = value;
-        _onChanged(value);
-    }
-
     /// <summary>Applies the distinct / skip-initial gate to a source value and schedules delivery when it passes.</summary>
     /// <param name="value">The value produced by the source.</param>
-    private void OnSourceNext(T? value)
+    /// <remarks>Internal so the disposed-source-emission guard can be exercised directly in tests.</remarks>
+    internal void OnSourceNext(T? value)
     {
         lock (_gate)
         {
@@ -449,6 +420,37 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         }
 
         ScheduleDeliver(value);
+    }
+
+    /// <summary>The no-op onChanging callback used when none is supplied.</summary>
+    /// <param name="value">The unused value.</param>
+    private static void NoOp(T? value)
+    {
+        // Intentionally empty: the default onChanging callback does nothing when the caller supplies none.
+    }
+
+    /// <summary>Returns the default value of <typeparamref name="T"/>.</summary>
+    /// <returns>The default value.</returns>
+    private static T? GetDefault() => default;
+
+    /// <summary>Schedules delivery of a value's change notifications on the configured scheduler.</summary>
+    /// <param name="value">The value to deliver.</param>
+    private void ScheduleDeliver(T? value) =>
+        _scheduler.ScheduleOrInline(
+            (Helper: this, Value: value),
+            static (_, state) =>
+            {
+                state.Helper.Deliver(state.Value);
+                return EmptyDisposable.Instance;
+            });
+
+    /// <summary>Runs the onChanging / store / onChanged sequence for a value.</summary>
+    /// <param name="value">The value being delivered.</param>
+    private void Deliver(T? value)
+    {
+        _onChanging(value);
+        _lastValue = value;
+        _onChanged(value);
     }
 
     /// <summary>Schedules delivery of a source error to the exceptions stream.</summary>
