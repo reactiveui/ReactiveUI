@@ -261,11 +261,13 @@ public class RoutedViewHostTest
     {
         var host = new TestableRoutedViewHost();
 
-        host.Router.NavigationStack.Add(new TestRoutableViewModel());
-
-        // The current page is an IViewFor whose ViewModel is null, exercising the null-conditional type comparison.
+        // Push the page (whose view model is null) first so the navigation stack is non-empty before the
+        // router stack changes; otherwise the headless stack sync pushes into an empty navigation stack,
+        // which net10 MAUI rejects with an out-of-range List.Insert.
         var page = new TestRoutableView();
         await host.PushAsync(page);
+
+        host.Router.NavigationStack.Add(new TestRoutableViewModel());
 
         host.PublicInvalidateCurrentViewModel();
 
