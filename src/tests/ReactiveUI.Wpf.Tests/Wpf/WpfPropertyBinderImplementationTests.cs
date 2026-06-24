@@ -71,7 +71,9 @@ public class WpfPropertyBinderImplementationTests
             // This thread is NOT the view's dispatcher thread, so CheckAccess() is false and the update is scheduled.
             vm.Property1 = OffThreadValue;
 
-            // Pump the foreign dispatcher until the marshalled setter has run.
+            // The setter is marshalled onto the foreign dispatcher at a lower priority than a synchronous Invoke, so
+            // drain the queue first; otherwise the read can run before the marshalled setter has applied.
+            foreign.Flush();
             var result = foreign.Invoke(() => view.SomeTextBox.Text);
 
             await Assert.That(result).IsEqualTo(OffThreadValue);
@@ -111,6 +113,9 @@ public class WpfPropertyBinderImplementationTests
         /// <param name="func">The function to invoke.</param>
         /// <returns>The function result.</returns>
         public T Invoke<T>(Func<T> func) => Dispatcher.Invoke(func);
+
+        /// <summary>Drains the dispatcher queue, ensuring all queued (including marshalled) work has run.</summary>
+        public void Flush() => Dispatcher.Invoke(static () => { }, DispatcherPriority.SystemIdle);
 
         /// <inheritdoc/>
         public void Dispose() => Dispatcher.InvokeShutdown();
