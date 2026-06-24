@@ -19,7 +19,11 @@ public class DependencyResolverMixinsTypeFactoryTests
 
         var instance = factory();
 
-        await Assert.That(instance).IsTypeOf<ParameterlessType>();
+        using (Assert.Multiple())
+        {
+            await Assert.That(instance).IsTypeOf<ParameterlessType>();
+            await Assert.That(((ParameterlessType)instance).Initialized).IsTrue();
+        }
     }
 
     /// <summary>A type lacking a public parameterless constructor throws when its factory is built.</summary>
@@ -34,8 +38,8 @@ public class DependencyResolverMixinsTypeFactoryTests
     /// <summary>A type with a public parameterless constructor.</summary>
     private sealed class ParameterlessType
     {
-        /// <summary>Gets a marker value confirming the instance was created.</summary>
-        public bool Created => true;
+        /// <summary>Gets a value indicating whether the instance was constructed.</summary>
+        public bool Initialized { get; } = true;
     }
 
     /// <summary>A type whose only constructor requires an argument.</summary>
