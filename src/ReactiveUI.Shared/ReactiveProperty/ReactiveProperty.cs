@@ -560,9 +560,11 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
         }
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Unreachable: the relay subscription is disposed before its source can error.")]
         public void OnError(Exception error) => relay.OnError(error);
 
         /// <inheritdoc/>
+        [ExcludeFromCodeCoverage(Justification = "Unreachable: the relay subscription is disposed before its source can complete.")]
         public void OnCompleted() => relay.OnCompleted();
     }
 
@@ -841,9 +843,11 @@ public class ReactiveProperty<T> : ReactiveObject, IReactiveProperty<T>
             }
 
             /// <inheritdoc/>
+            [ExcludeFromCodeCoverage(Justification = "Unreachable: the source subscription is disposed before it can error.")]
             public void OnError(Exception error) => Fail(error);
 
             /// <inheritdoc/>
+            [ExcludeFromCodeCoverage(Justification = "Unreachable: the source subscription is disposed before it can complete.")]
             public void OnCompleted() => Done();
 
             /// <inheritdoc/>
