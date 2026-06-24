@@ -3,6 +3,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using Microsoft.Maui.Controls;
+using ReactiveUI.Builder;
+using ReactiveUI.Tests.Utilities.AppBuilder;
+using Splat;
+using TUnit.Core.Executors;
+
 namespace ReactiveUI.Maui.Tests;
 
 /// <summary>Tests for <see cref="ReactiveShellContent{TViewModel}"/>.</summary>
@@ -64,7 +70,57 @@ public class ReactiveShellContentTest
         await Assert.That(content.Contract).IsNull();
     }
 
+    /// <summary>Setting the view model resolves the registered view and assigns the content template.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<ReactiveShellContentTestExecutor>]
+    public async Task ViewModelChange_WithRegisteredView_SetsContentTemplate()
+    {
+        var content = new ReactiveShellContent<TestViewModel> { ViewModel = new() };
+
+        await Assert.That(content.ContentTemplate).IsNotNull();
+    }
+
+    /// <summary>Test executor that registers a view for the test view model.</summary>
+    [NotInParallel]
+    public sealed class ReactiveShellContentTestExecutor : MauiTestExecutor
+    {
+        /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
+        private readonly AppBuilderTestHelper _helper = new();
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            _helper.Initialize(builder => _ = builder.WithMaui().WithCoreServices());
+
+            AppLocator.CurrentMutable.Register<IViewFor<TestViewModel>>(static () => new TestView());
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            _helper.CleanUp();
+            base.CleanUp();
+        }
+    }
+
     /// <summary>Test view model for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
+
+    /// <summary>Test view for the test view model.</summary>
+    private sealed class TestView : ContentView, IViewFor<TestViewModel>
+    {
+        /// <inheritdoc/>
+        public TestViewModel? ViewModel { get; set; }
+
+        /// <inheritdoc/>
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TestViewModel?)value;
+        }
+    }
 }

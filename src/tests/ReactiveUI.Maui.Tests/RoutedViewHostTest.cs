@@ -187,6 +187,21 @@ public class RoutedViewHostTest
         await Assert.That(page.Title).IsEqualTo(TestTitle);
     }
 
+    /// <summary>Invalidating the current view model is a safe no-op when there is no current view model or page.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task InvalidateCurrentViewModel_NoCurrentViewModelOrPage_ReturnsEarly()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // The router has an empty navigation stack (no current view model) and there is no current page,
+        // so the call must short-circuit without throwing.
+        host.PublicInvalidateCurrentViewModel();
+
+        await Assert.That(host.Router?.GetCurrentViewModel()).IsNull();
+    }
+
     /// <summary>Test executor that sets up MAUI environment with view registration.</summary>
     [NotInParallel]
     public sealed class MauiRoutedViewHostTestExecutor : MauiTestExecutor
