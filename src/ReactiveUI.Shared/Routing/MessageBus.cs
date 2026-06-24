@@ -307,33 +307,7 @@ public class MessageBus : IMessageBus
                 return EmptyDisposable.Instance;
             }
 
-            return skipFirst ? source.Subscribe(new SkipFirstObserver(observer)) : source.Subscribe(observer);
-        }
-
-        /// <summary>Forwards every value except the first to the downstream observer.</summary>
-        /// <param name="downstream">The observer receiving values after the first.</param>
-        private sealed class SkipFirstObserver(IObserver<T> downstream) : IObserver<T>
-        {
-            /// <summary>Whether the first value has been skipped.</summary>
-            private bool _skipped;
-
-            /// <inheritdoc/>
-            public void OnNext(T value)
-            {
-                if (!_skipped)
-                {
-                    _skipped = true;
-                    return;
-                }
-
-                downstream.OnNext(value);
-            }
-
-            /// <inheritdoc/>
-            public void OnError(Exception error) => downstream.OnError(error);
-
-            /// <inheritdoc/>
-            public void OnCompleted() => downstream.OnCompleted();
+            return skipFirst ? source.Subscribe(new SkipFirstObserver<T>(observer)) : source.Subscribe(observer);
         }
     }
 }
