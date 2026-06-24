@@ -11,6 +11,7 @@ namespace ReactiveUI.Reactive.Cocoa;
 #else
 namespace ReactiveUI.Cocoa;
 #endif
+
 /// <summary>This class exists to force the MT linker to include properties called by RxUI via reflection.</summary>
 [Preserve(AllMembers = true)]
 [SuppressMessage("Major Code Smell", "S1656:Useless self-assignment", Justification = "Self-assignments force the linker to preserve these members.")]
@@ -18,7 +19,7 @@ namespace ReactiveUI.Cocoa;
 internal class LinkerOverrides
 {
     /// <summary>Forces the linker to preserve UIKit members accessed by ReactiveUI via reflection.</summary>
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Needed for linking.")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Used by linker.")]
     [SuppressMessage("Major Bug", "SST1189:Remove this self-assignment", Justification = "Deliberate self-assignment preserves both the getter and setter from the linker.")]
     public void KeepMe()
     {
@@ -28,9 +29,11 @@ internal class LinkerOverrides
         btn.SetTitle("foo", UIControlState.Disabled);
         btn.TitleLabel.Text = btn.TitleLabel.Text;
 
-        // Each control references both the setter (via the initializer) and the getter (via the
-        // discard read) so the trimmer/linker preserves both accessors (resolved at runtime). A
-        // self-assign (`x.Prop = x.Prop`) does the same but can't be written as an initializer.
+        // Each control below references both the setter and the getter of the property so the
+        // trimmer/linker preserves both accessors (these members are resolved at runtime). The
+        // initializer (`{ Prop = default }`) keeps the setter; the discard read (`_ = x.Prop`)
+        // keeps the getter. A self-assign (`x.Prop = x.Prop`) would do the same but can't be
+        // expressed as an initializer, so it is split here to keep the get + set intent explicit.
         // UITextView
         var tv = new UITextView { Text = default };
         _ = tv.Text;
@@ -52,12 +55,6 @@ internal class LinkerOverrides
         _ = ctl.Enabled;
         _ = ctl.Selected;
 
-        static void Eh(object? s, EventArgs e)
-        {
-            // Intentionally empty: the handler exists only to force the linker to preserve
-            // the event add/remove accessors; no runtime behavior is needed.
-        }
-
         ctl.TouchUpInside += Eh;
         ctl.TouchUpInside -= Eh;
 
@@ -67,5 +64,14 @@ internal class LinkerOverrides
         bbi.Clicked -= Eh;
 
         Eh(null, EventArgs.Empty);
+    }
+
+    /// <summary>Empty handler whose only purpose is to force the linker to preserve event add/remove accessors.</summary>
+    /// <param name="s">The event sender; unused.</param>
+    /// <param name="e">The event arguments; unused.</param>
+    internal static void Eh(object? s, EventArgs e)
+    {
+        // Intentionally empty: the handler exists only to force the linker to preserve
+        // the event add/remove accessors; no runtime behavior is needed.
     }
 }
