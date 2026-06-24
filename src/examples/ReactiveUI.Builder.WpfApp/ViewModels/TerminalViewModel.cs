@@ -67,7 +67,7 @@ public sealed class TerminalViewModel : ReactiveObject, IRoutableViewModel
         PayCommand = ReactiveCommand.CreateFromTask(ct => _processor.AuthorizeAsync(Amount, ct), canPay);
         _isBusy = PayCommand.IsExecuting.ToProperty(this, nameof(IsBusy));
 
-        _ = PayCommand.Subscribe(transaction =>
+        _ = PayCommand.WitnessOn(RxSchedulers.MainThreadScheduler).Subscribe(transaction =>
         {
             Journal.Insert(0, transaction);
             LastTransaction = transaction;
