@@ -20,8 +20,15 @@ public sealed class ChatNetworkService : IDisposable
     /// <summary>The UDP port that all instances send to and listen on.</summary>
     private const int Port = 54_545;
 
-    /// <summary>The IPv4 local multicast address used to reach other instances on the same machine/network.</summary>
-    private static readonly IPAddress MulticastAddress = IPAddress.Parse("239.255.0.1");
+    /// <summary>The environment variable that overrides the default multicast group address.</summary>
+    private const string MulticastAddressVariable = "CHAT_MULTICAST_ADDRESS";
+
+    /// <summary>The IPv4 local multicast address used to reach other instances on the same machine/network;
+    /// overridable via the <c>CHAT_MULTICAST_ADDRESS</c> environment variable so it is not hard-coded.</summary>
+    private static readonly IPAddress MulticastAddress =
+        IPAddress.TryParse(Environment.GetEnvironmentVariable(MulticastAddressVariable), out var configured)
+            ? configured
+            : new IPAddress(new byte[] { 239, 255, 0, 1 });
 
     /// <summary>The UDP client used to send outgoing packets.</summary>
     private readonly UdpClient _udp; // sender
