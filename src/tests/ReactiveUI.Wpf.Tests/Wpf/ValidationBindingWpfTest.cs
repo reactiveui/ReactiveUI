@@ -21,6 +21,12 @@ public class ValidationBindingWpfTest
     /// <summary>The delay, in milliseconds, before the test observable emits a value.</summary>
     private const int ObservableEmitDelayMs = 100;
 
+    /// <summary>The width and height used to realize a control's visual tree.</summary>
+    private const double VisualTreeSize = 100;
+
+    /// <summary>The initial view-model property value used by the binding tests.</summary>
+    private const string InitialValue = "initial";
+
     /// <summary>Tests that ExtractPropertyPath correctly extracts simple property path.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -421,7 +427,7 @@ public class ValidationBindingWpfTest
     public async Task Changed_EmitsWhenViewModelPropertyChanges()
     {
         var view = new TestViewWithControl();
-        var viewModel = new TestViewModel { TestProperty = "initial" };
+        var viewModel = new TestViewModel { TestProperty = InitialValue };
 
         try
         {
@@ -457,7 +463,7 @@ public class ValidationBindingWpfTest
     public async Task Changed_EmitsWhenViewPropertyChanges()
     {
         var view = new TestViewWithControl();
-        var viewModel = new TestViewModel { TestProperty = "initial" };
+        var viewModel = new TestViewModel { TestProperty = InitialValue };
 
         try
         {
@@ -552,6 +558,57 @@ public class ValidationBindingWpfTest
         }
     }
 
+    /// <summary>With a realized visual tree the constructor finds the control and binds successfully.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Constructor_WithRealizedVisualTree_BindsSuccessfully()
+    {
+        var view = new TestRealizedView();
+        var viewModel = new TestViewModel { TestProperty = InitialValue };
+
+        // Realize the visual tree so FindControlByName can locate the named control via the VisualTreeHelper.
+        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.UpdateLayout();
+
+        using var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
+            view,
+            viewModel,
+            vm => vm.TestProperty,
+            v => v.MyTextBox.Text);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(binding.Direction).IsEqualTo(BindingDirection.TwoWay);
+            await Assert.That(binding.Changed).IsNotNull();
+            await Assert.That(binding.View).IsSameReferenceAs(view);
+        }
+    }
+
+    /// <summary>With a realized visual tree the two-way binding propagates a view model change to the control.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Constructor_WithRealizedVisualTree_PropagatesViewModelToControl()
+    {
+        var view = new TestRealizedView();
+        var viewModel = new TestViewModel { TestProperty = InitialValue };
+
+        view.Measure(new Size(VisualTreeSize, VisualTreeSize));
+        view.Arrange(new Rect(0, 0, VisualTreeSize, VisualTreeSize));
+        view.UpdateLayout();
+
+        using var binding = new ValidationBindingWpf<TestRealizedView, TestViewModel, object, string>(
+            view,
+            viewModel,
+            vm => vm.TestProperty,
+            v => v.MyTextBox.Text);
+
+        viewModel.TestProperty = "updated";
+        await Task.Delay(ObservableEmitDelayMs);
+
+        await Assert.That(view.MyTextBox.Text).IsEqualTo("updated");
+    }
+
     /// <summary>A mock view used by the WPF validation binding tests.</summary>
     private sealed class TestView : Control, IViewFor<TestViewModel>
     {
@@ -578,6 +635,30 @@ public class ValidationBindingWpfTest
     {
         /// <summary>Initializes a new instance of the <see cref="TestViewWithControl"/> class.</summary>
         public TestViewWithControl()
+        {
+            MyTextBox = new TextBox { Name = "MyTextBox" };
+            Content = MyTextBox;
+        }
+
+        /// <summary>Gets or sets the view model.</summary>
+        public TestViewModel? ViewModel { get; set; }
+
+        /// <inheritdoc/>
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = value as TestViewModel;
+        }
+
+        /// <summary>Gets the hosted text box.</summary>
+        public TextBox MyTextBox { get; }
+    }
+
+    /// <summary>A user-control view whose visual tree can be realized to host a named text box.</summary>
+    private sealed class TestRealizedView : UserControl, IViewFor<TestViewModel>
+    {
+        /// <summary>Initializes a new instance of the <see cref="TestRealizedView"/> class.</summary>
+        public TestRealizedView()
         {
             MyTextBox = new TextBox { Name = "MyTextBox" };
             Content = MyTextBox;
