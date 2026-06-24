@@ -162,7 +162,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         var section = _sectionInfo[indexPath.Section];
         var viewModel = ((IList)section.Collection!)[indexPath.Row];
 
-        var key = section?.CellKeySelector?.Invoke(viewModel) ?? NSString.Empty;
+        var key = section.CellKeySelector?.Invoke(viewModel) ?? NSString.Empty;
         var cell = _adapter.DequeueReusableCell(key, indexPath);
 
         if (cell is IViewFor view)
@@ -171,7 +171,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             view.ViewModel = viewModel;
         }
 
-        var initializeCellAction = section?.InitializeCellAction ?? NoOpInitializeCell;
+        var initializeCellAction = section.InitializeCellAction ?? NoOpInitializeCell;
         initializeCellAction(cell);
 
         return cell;

@@ -255,8 +255,8 @@ public class ViewModelViewHost : ReactiveViewController
 
                         if (view is not NSViewController viewController)
                         {
-                            // view?.GetType().FullName may be null when the runtime type name is unavailable; the message still identifies the expected type.
-                            throw new InvalidOperationException($"Resolved view type '{view?.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
+                            // view.GetType().FullName may be null when the runtime type name is unavailable; the message still identifies the expected type.
+                            throw new InvalidOperationException($"Resolved view type '{view.GetType().FullName}' is not a '{typeof(NSViewController).FullName}'.");
                         }
 
                         view.ViewModel = x.ViewModel;
