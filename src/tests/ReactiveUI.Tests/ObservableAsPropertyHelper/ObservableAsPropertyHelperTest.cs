@@ -722,4 +722,122 @@ public class ObservableAsPropertyHelperTest
             await Assert.That(resultChanged[1].Value).IsEqualTo("Baz");
         }
     }
+
+    /// <summary>The two-argument constructor seeds the default value.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TwoArgConstructorUsesDefaultValue()
+    {
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { });
+        await Assert.That(fixture.Value).IsEqualTo(0);
+    }
+
+    /// <summary>The value-plus-defer-plus-scheduler constructor is usable.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task InitialValueDeferSchedulerConstructor()
+    {
+        const int seed = 7;
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, seed, false, Sequencer.Immediate);
+        await Assert.That(fixture.Value).IsEqualTo(seed);
+    }
+
+    /// <summary>The onChanging-only constructor seeds the default value via the default factory.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnChangingOnlyConstructorUsesDefaultValue()
+    {
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, static _ => { });
+        await Assert.That(fixture.Value).IsEqualTo(0);
+    }
+
+    /// <summary>The onChanging-plus-initial-value constructor seeds the supplied value.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnChangingInitialValueConstructor()
+    {
+        const int seed = 11;
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, static _ => { }, seed);
+        await Assert.That(fixture.Value).IsEqualTo(seed);
+    }
+
+    /// <summary>The onChanging-plus-initial-value-plus-defer constructor seeds the supplied value.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnChangingInitialValueDeferConstructor()
+    {
+        const int seed = 13;
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, static _ => { }, seed, false);
+        await Assert.That(fixture.Value).IsEqualTo(seed);
+    }
+
+    /// <summary>The Func-based initial value constructor evaluates the factory.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task FuncInitialValueConstructor()
+    {
+        const int seed = 17;
+        using var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, static _ => { }, static () => seed, false);
+        await Assert.That(fixture.Value).IsEqualTo(seed);
+    }
+
+    /// <summary>The default factory methods build usable helpers.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DefaultFactoryMethods()
+    {
+        const int valueSeed = 3;
+        const int schedulerSeed = 5;
+        using var withoutValue = ObservableAsPropertyHelper<int>.Default();
+        using var withValue = ObservableAsPropertyHelper<int>.Default(valueSeed);
+        using var withValueAndScheduler = ObservableAsPropertyHelper<int>.Default(schedulerSeed, Sequencer.Immediate);
+        await Assert.That(withoutValue.Value).IsEqualTo(0);
+        await Assert.That(withValue.Value).IsEqualTo(valueSeed);
+        await Assert.That(withValueAndScheduler.Value).IsEqualTo(schedulerSeed);
+    }
+
+    /// <summary>Disposing twice is a no-op.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DisposeIsIdempotent()
+    {
+        var fixture = new ObservableAsPropertyHelper<int>(Signal.Silent<int>(), static _ => { }, 1);
+        fixture.Dispose();
+        fixture.Dispose();
+        await Assert.That(fixture.IsSubscribed).IsTrue();
+    }
+
+    /// <summary>A deferred source error is routed to a ThrownExceptions subscriber.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ThrownExceptionsDeliversToSubscriber()
+    {
+        var error = new InvalidOperationException("boom");
+
+        // Defer subscription so the source (which errors on subscribe) is only touched once we read Value,
+        // by which point our ThrownExceptions observer is attached.
+        using var fixture = new ObservableAsPropertyHelper<int>(new ErrorObservable<int>(error), static _ => { }, 0, true, Sequencer.Immediate);
+
+        Exception? received = null;
+        var subscription = fixture.ThrownExceptions.Subscribe(ex => received = ex);
+        _ = fixture.Value;
+
+        await Assert.That(received).IsSameReferenceAs(error);
+        subscription.Dispose();
+    }
+
+    /// <summary>An observable that immediately errors any subscriber.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="error">The error to deliver on subscribe.</param>
+    private sealed class ErrorObservable<T>(Exception error) : IObservable<T?>
+    {
+        /// <summary>Errors the observer immediately.</summary>
+        /// <param name="observer">The observer.</param>
+        /// <returns>An empty disposable.</returns>
+        public IDisposable Subscribe(IObserver<T?> observer)
+        {
+            observer.OnError(error);
+            return EmptyDisposable.Instance;
+        }
+    }
 }
