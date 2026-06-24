@@ -165,6 +165,47 @@ public class InpcObservableForPropertyTests
         }
     }
 
+    /// <summary>The two-argument affinity overload defers to changed notifications, and a null type has no affinity.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task GetAffinityForObjectTwoArgOverloadAndNullType()
+    {
+        var instance = new INPCObservableForProperty();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), "Property1")).IsEqualTo(BindingAffinity.Explicit);
+            await Assert.That(instance.GetAffinityForObject(null, "Property1", false)).IsEqualTo(0);
+        }
+    }
+
+    /// <summary>A changing notification ignores other properties' events and unsubscribes on dispose.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ChangingNotificationIgnoresOtherPropertiesAndDisposes()
+    {
+        var instance = new INPCObservableForProperty();
+        var testClass = new TestClassChanging();
+
+        Expression<Func<TestClassChanging, string?>> expr = x => x.Property1;
+        var exp = Reflection.Rewrite(expr.Body);
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+
+        var changes = new List<IObservedChange<object?, object?>>();
+        var subscription = instance.GetNotificationForProperty(testClass, exp, propertyName, true).Subscribe(changes.Add);
+
+        // A non-matching property's changing event is filtered out.
+        testClass.Property2 = "ignored";
+        await Assert.That(changes).IsEmpty();
+
+        // The observed property's changing event is forwarded.
+        testClass.Property1 = "matched";
+        await Assert.That(changes).IsNotEmpty();
+
+        subscription.Dispose();
+    }
+
     /// <summary>A test fixture implementing <see cref="INotifyPropertyChanged"/> to drive change notifications.</summary>
     private sealed class TestClassChanged : INotifyPropertyChanged
     {
