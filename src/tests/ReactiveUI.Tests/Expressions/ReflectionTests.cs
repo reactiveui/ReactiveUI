@@ -517,17 +517,22 @@ public class ReflectionTests
         }
     }
 
-    /// <summary>Setting a read-only member without throwing returns false.</summary>
+    /// <summary>Setting a writable member through the chain assigns the value and returns true.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
-    public async Task TrySetValueToPropertyChain_ReadOnlyMember_ReturnsFalse()
+    public async Task TrySetValueToPropertyChain_WritableMember_SetsValue()
     {
-        Expression<Func<TestClass, int[]>> expr = x => x.Array;
+        var target = new TestClass();
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
         var chain = expr.Body.GetExpressionChain();
 
-        var result = Reflection.TrySetValueToPropertyChain<int[]>(new TestClass(), chain, [], shouldThrow: false);
+        var result = Reflection.TrySetValueToPropertyChain(target, chain, "assigned", shouldThrow: false);
 
-        await Assert.That(result).IsFalse();
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(target.Property).IsEqualTo("assigned");
+        }
     }
 
     /// <summary>A sample class used as the target of reflection tests.</summary>
