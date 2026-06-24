@@ -134,6 +134,24 @@ public class ViewModelViewHostTest
         await Assert.That(host.Content).IsEqualTo(defaultContent);
     }
 
+    /// <summary>Resolving a view model with no registered view throws.</summary>
+    [Test]
+    public void ResolveViewForViewModel_NoViewFound_Throws()
+    {
+        var host = new TestableViewModelViewHost { ViewLocator = new TestViewLocator(), ViewModel = new TestViewModel() };
+
+        _ = Assert.Throws<InvalidOperationException>(host.SimulateViewModelChange);
+    }
+
+    /// <summary>Resolving a view model to a non-View instance throws.</summary>
+    [Test]
+    public void ResolveViewForViewModel_NonViewInstance_Throws()
+    {
+        var host = new TestableViewModelViewHost { ViewLocator = new NonViewLocator(), ViewModel = new TestViewModel() };
+
+        _ = Assert.Throws<InvalidOperationException>(host.SimulateViewModelChange);
+    }
+
     /// <summary>Test view model for testing.</summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "SST1436:Classes should not be empty", Justification = "Marker type for tests.")]
     private sealed class TestViewModel;
@@ -228,5 +246,54 @@ public class ViewModelViewHostTest
             "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
             "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
         public IViewFor? ResolveView(object? instance) => null;
+    }
+
+    /// <summary>A view that implements <see cref="IViewFor"/> but is not a MAUI <see cref="View"/>.</summary>
+    private sealed class NonView : IViewFor<TestViewModel>
+    {
+        /// <inheritdoc/>
+        public TestViewModel? ViewModel { get; set; }
+
+        /// <inheritdoc/>
+        object? IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (TestViewModel?)value;
+        }
+    }
+
+    /// <summary>A view locator that resolves to a non-View instance.</summary>
+    [SuppressMessage(
+        "Major Code Smell",
+        "S4018:Generic methods should provide type parameters",
+        Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
+    private sealed class NonViewLocator : IViewLocator
+    {
+        /// <summary>The non-View instance to resolve to.</summary>
+        private readonly NonView _view = new();
+
+        /// <inheritdoc/>
+        public IViewFor<T>? ResolveView<T>(string? contract)
+            where T : class => _view as IViewFor<T>;
+
+        /// <inheritdoc/>
+        public IViewFor<T>? ResolveView<T>()
+            where T : class => _view as IViewFor<T>;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? instance, string? contract) => _view;
+
+        /// <inheritdoc/>
+        [RequiresUnreferencedCode(
+            "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+        [RequiresDynamicCode(
+            "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +
+            "or generic constraints), trimming can't validate that the requirements of those annotations are met.")]
+        public IViewFor? ResolveView(object? instance) => _view;
     }
 }
