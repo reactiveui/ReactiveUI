@@ -68,4 +68,37 @@ public class WinFormsRoutedViewHostTests
 
         await Assert.That(target.Controls.OfType<FakeWinformsView>().Count()).IsEqualTo(1);
     }
+
+    /// <summary>Tests that a configured view-contract observable is honoured when resolving the view.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ShouldResolveViewWithViewContractObservable()
+    {
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
+        var router = new RoutingState(Sequencer.Immediate);
+        var target = new WinFormsRoutedViewHost
+        {
+            Router = router,
+            ViewLocator = viewLocator,
+            ViewContractObservable = Signal.Emit("MyContract")
+        };
+        _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();
+
+        await Assert.That(target.Controls.OfType<FakeWinformsView>().Count()).IsEqualTo(1);
+    }
+
+    /// <summary>Tests that disposing the host tears down its subscriptions without error.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task ShouldDisposeCleanly()
+    {
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
+        var router = new RoutingState(Sequencer.Immediate);
+        var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
+        _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();
+
+        target.Dispose();
+
+        await Assert.That(target.IsDisposed).IsTrue();
+    }
 }
