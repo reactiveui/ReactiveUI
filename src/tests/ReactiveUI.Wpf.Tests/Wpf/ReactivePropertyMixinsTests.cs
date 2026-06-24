@@ -141,7 +141,7 @@ public class ReactivePropertyMixinsTests
         // Arrange
         var viewModel = new TestViewModel();
         string? errorMessage = null;
-        viewModel.DisplayNameProperty.ObserveErrorChanged
+        _ = viewModel.DisplayNameProperty.ObserveErrorChanged
             .ObserveOn(Sequencer.Immediate)
             .Subscribe(errors => errorMessage = errors?.OfType<string>().FirstOrDefault());
 
@@ -201,7 +201,7 @@ public class ReactivePropertyMixinsTests
         // Arrange
         var viewModel = new TestViewModel();
         string? errorMessage = null;
-        viewModel.CustomErrorMessageProperty.ObserveErrorChanged
+        _ = viewModel.CustomErrorMessageProperty.ObserveErrorChanged
             .ObserveOn(Sequencer.Immediate)
             .Subscribe(errors => errorMessage = errors?.OfType<string>().FirstOrDefault());
 
@@ -234,13 +234,13 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.Subscribe(errors.Add);
+        _ = observable.Subscribe(errors.Add);
         property.Value = null;
 
         // Assert
@@ -254,13 +254,13 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>("Valid", Sequencer.Immediate, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         string? lastError = "initial";
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.Subscribe(error => lastError = error);
+        _ = observable.Subscribe(error => lastError = error);
         property.Value = "Valid Value";
 
         // Assert
@@ -287,14 +287,14 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error1" : null)
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Error1" : null)
                 .AddValidationError(x => string.IsNullOrEmpty(x) ? "Error2" : null);
 
         var errors = new List<string?>();
         var observable = property.ObserveValidationErrors();
 
         // Act
-        observable.Subscribe(errors.Add);
+        _ = observable.Subscribe(errors.Add);
         property.Value = null;
 
         // Assert
@@ -308,11 +308,11 @@ public class ReactivePropertyMixinsTests
     {
         // Arrange
         var property = new ReactiveProperty<string>(default, Sequencer.Immediate, false, false);
-        property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
+        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? ValidationErrorText : null);
 
         var errorHistory = new List<string?>();
         var observable = property.ObserveValidationErrors();
-        observable.Subscribe(errorHistory.Add);
+        _ = observable.Subscribe(errorHistory.Add);
 
         // Act
         property.Value = null; // Should trigger error

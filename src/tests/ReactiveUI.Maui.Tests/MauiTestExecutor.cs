@@ -44,7 +44,7 @@ public class MauiTestExecutor : ITestExecutor
     protected virtual void Initialize()
     {
         _previousProvider = DispatcherProvider.Current;
-        DispatcherProvider.SetCurrent(new TestDispatcherProvider());
+        _ = DispatcherProvider.SetCurrent(new TestDispatcherProvider());
     }
 
     /// <summary>Cleans up the MAUI test environment by restoring the previous dispatcher provider.</summary>
@@ -55,6 +55,6 @@ public class MauiTestExecutor : ITestExecutor
             return;
         }
 
-        DispatcherProvider.SetCurrent(_previousProvider);
+        _ = DispatcherProvider.SetCurrent(_previousProvider);
     }
 }

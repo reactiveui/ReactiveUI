@@ -27,7 +27,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new Container();
         container.UseDryIocDependencyResolver();
-        Locator.CurrentMutable.CreateReactiveUIBuilder()
+        _ = Locator.CurrentMutable.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
 
@@ -49,7 +49,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new Container();
         container.UseDryIocDependencyResolver();
-        Locator.CurrentMutable.CreateReactiveUIBuilder()
+        _ = Locator.CurrentMutable.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
 
@@ -74,7 +74,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
         var locator = new AutofacDependencyResolver(builder);
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
         var container = builder.Build();
@@ -97,7 +97,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var builder = new ContainerBuilder();
         var locator = new AutofacDependencyResolver(builder);
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
         Locator.SetLocator(locator);
@@ -124,7 +124,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
         container.UseNinjectDependencyResolver();
-        Locator.CurrentMutable.CreateReactiveUIBuilder()
+        _ = Locator.CurrentMutable.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
 
@@ -146,7 +146,7 @@ public class SplatAdapterTests
         // Invoke RxApp which initializes the ReactiveUI platform.
         var container = new StandardKernel();
         container.UseNinjectDependencyResolver();
-        Locator.CurrentMutable.CreateReactiveUIBuilder()
+        _ = Locator.CurrentMutable.CreateReactiveUIBuilder()
             .WithCoreServices()
             .Build();
 

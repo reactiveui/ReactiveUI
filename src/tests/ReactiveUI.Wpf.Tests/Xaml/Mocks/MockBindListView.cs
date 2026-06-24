@@ -23,7 +23,7 @@ public class MockBindListView : UserControl, IViewFor<MockBindListViewModel>
         ItemList = new();
         ViewModel = new();
 
-        this.WhenActivated(d => this.OneWayBind(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d));
+        _ = this.WhenActivated(d => this.OneWayBind(ViewModel, vm => vm.ListItems, v => v.ItemList.ItemsSource).DisposeWith(d));
     }
 
     /// <summary>

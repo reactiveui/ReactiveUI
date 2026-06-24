@@ -91,4 +91,19 @@ public class RxSchedulersTest
             }
         }
     }
+
+    /// <summary>Forcing the static constructor to run leaves both default schedulers assigned.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<WithSchedulerExecutor>]
+    public async Task EnsureStaticConstructorRunAssignsDefaults()
+    {
+        RxSchedulers.EnsureStaticConstructorRun();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(RxSchedulers.MainThreadScheduler).IsNotNull();
+            await Assert.That(RxSchedulers.TaskpoolScheduler).IsNotNull();
+        }
+    }
 }

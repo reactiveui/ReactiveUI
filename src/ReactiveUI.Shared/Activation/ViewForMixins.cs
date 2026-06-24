@@ -29,16 +29,7 @@ public static class ViewForMixins
 {
     /// <summary>Cache mapping view types to their resolved activation fetcher, to avoid repeated service locator lookups.</summary>
     private static readonly MemoizingMRUCache<Type, IActivationForViewFetcher?> _activationFetcherCache =
-        new(
-            (t, _) =>
-                AppLocator.Current
-                    .GetServices<IActivationForViewFetcher?>()
-                    .Aggregate((count: 0, viewFetcher: default(IActivationForViewFetcher?)), (acc, x) =>
-                    {
-                        var score = x?.GetAffinityForView(t) ?? 0;
-                        return score > acc.count ? (score, x) : acc;
-                    }).viewFetcher,
-            RxCacheSize.SmallCacheLimit);
+        new((t, _) => ResolveActivationFetcher(t), RxCacheSize.SmallCacheLimit);
 
     /// <summary>Provides activation lifecycle extension members for <see cref="IActivatableView"/>.</summary>
     /// <param name="item">The view whose activation lifecycle will manage the disposables.</param>
@@ -262,6 +253,26 @@ public static class ViewForMixins
     /// from the service locator on the next access.
     /// </remarks>
     internal static void ResetActivationFetcherCacheForTesting() => _activationFetcherCache.InvalidateAll();
+
+    /// <summary>Selects the registered activation fetcher with the highest affinity for the given view type.</summary>
+    /// <param name="viewType">The view type to resolve an activation fetcher for.</param>
+    /// <returns>The highest-affinity fetcher, or <see langword="null"/> when none have positive affinity.</returns>
+    private static IActivationForViewFetcher? ResolveActivationFetcher(Type viewType)
+    {
+        var bestScore = 0;
+        IActivationForViewFetcher? best = null;
+        foreach (var fetcher in AppLocator.Current.GetServices<IActivationForViewFetcher?>())
+        {
+            var score = fetcher?.GetAffinityForView(viewType) ?? 0;
+            if (score > bestScore)
+            {
+                bestScore = score;
+                best = fetcher;
+            }
+        }
+
+        return best;
+    }
 
     /// <summary>
     /// Manages the activation and deactivation lifecycle of a view by subscribing to an activation observable and

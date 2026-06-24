@@ -119,8 +119,8 @@ public class CombinedReactiveCommandTest
         var childCommands = new[] { child };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
         Exception? exception = null;
-        fixture.ThrownExceptions.Subscribe(ex => exception = ex);
-        fixture.Execute().Subscribe(_ => { }, _ => { });
+        _ = fixture.ThrownExceptions.Subscribe(ex => exception = ex);
+        _ = fixture.Execute().Subscribe(_ => { }, _ => { });
 
         // With ImmediateScheduler, exceptions are delivered immediately
         await Assert.That(exception).IsTypeOf<InvalidOperationException>();
@@ -148,7 +148,7 @@ public class CombinedReactiveCommandTest
         var child2IsExecuting = child2.IsExecuting.Collect();
         var child3IsExecuting = child3.IsExecuting.Collect();
 
-        fixture.Execute().Subscribe();
+        _ = fixture.Execute().Subscribe();
 
         await Assert.That(isExecuting).Count().IsEqualTo(ExpectedExecutionEmissions);
         using (Assert.Multiple())
@@ -201,7 +201,7 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: Sequencer.Immediate);
         var thrownExceptions = fixture.ThrownExceptions.Collect();
 
-        fixture.Execute().Subscribe(static _ => { }, static _ => { });
+        _ = fixture.Execute().Subscribe(static _ => { }, static _ => { });
 
         await Assert.That(thrownExceptions).Count().IsEqualTo(1);
         await Assert.That(thrownExceptions[0].Message).IsEqualTo("oops");
@@ -223,7 +223,7 @@ public class CombinedReactiveCommandTest
 
         var results = fixture.Collect();
 
-        fixture.Execute().Subscribe();
+        _ = fixture.Execute().Subscribe();
 
         await Assert.That(results).Count().IsEqualTo(1);
         await Assert.That(results[0]).Count().IsEqualTo(ExpectedChildResultCount);
@@ -247,7 +247,7 @@ public class CombinedReactiveCommandTest
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: scheduler);
         var results = fixture.Collect();
 
-        fixture.Execute().Subscribe();
+        _ = fixture.Execute().Subscribe();
 
         // With ImmediateScheduler, results are delivered immediately
         await Assert.That(results).Count().IsEqualTo(1);

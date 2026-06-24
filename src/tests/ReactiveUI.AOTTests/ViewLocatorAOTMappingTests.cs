@@ -21,7 +21,7 @@ public class ViewLocatorAOTMappingTests
         var locator = new DefaultViewLocator();
 
         // Register contract-specific and default mappings
-        locator.Map<VmA, ViewA>(static () => new(), "mobile")
+        _ = locator.Map<VmA, ViewA>(static () => new(), "mobile")
             .Map<VmA, ViewADefault>(static () => new()); // default
 
         var viewMobile = locator.ResolveView<VmA>("mobile");
@@ -41,11 +41,11 @@ public class ViewLocatorAOTMappingTests
     public async Task Unmap_RemovesMapping()
     {
         var locator = new DefaultViewLocator();
-        locator.Map<VmB, ViewB>(static () => new(), "c1");
+        _ = locator.Map<VmB, ViewB>(static () => new(), "c1");
 
         await Assert.That(locator.ResolveView<VmB>("c1")).IsTypeOf<ViewB>();
 
-        locator.Unmap<VmB>("c1");
+        _ = locator.Unmap<VmB>("c1");
         await Assert.That(locator.ResolveView<VmB>("c1")).IsNull();
     }
 
@@ -55,7 +55,7 @@ public class ViewLocatorAOTMappingTests
     public async Task Map_ResolveView_UsesAOTMappingWithoutContract()
     {
         var locator = new DefaultViewLocator();
-        locator.Map<VmA, ViewA>(static () => new());
+        _ = locator.Map<VmA, ViewA>(static () => new());
 
         var view = locator.ResolveView<VmA>();
 

@@ -30,18 +30,14 @@ public static class DependencyResolverMixins
             ArgumentExceptionHelper.ThrowIfNull(resolver);
             ArgumentExceptionHelper.ThrowIfNull(assembly);
 
-            foreach (var ti in assembly.DefinedTypes
-                         .Where(static ti => ti.ImplementedInterfaces.Contains(typeof(IViewFor)) && !ti.IsAbstract))
+            foreach (var ti in assembly.DefinedTypes)
             {
-                if (ti.GetCustomAttribute<ExcludeFromViewRegistrationAttribute>() is not null)
+                if (ti.IsAbstract || ti.GetCustomAttribute<ExcludeFromViewRegistrationAttribute>() is not null)
                 {
                     continue;
                 }
 
-                var ivf = ti.ImplementedInterfaces.FirstOrDefault(static t =>
-                    t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IViewFor)));
-
-                if (ivf is null)
+                if (!TryResolveViewForInterface(ti, out var ivf))
                 {
                     continue;
                 }
@@ -52,6 +48,34 @@ public static class DependencyResolverMixins
                 RegisterType(resolver, ti, ivf, contract);
             }
         }
+    }
+
+    /// <summary>Creates a factory delegate that instantiates objects of the specified type using a public parameterless constructor.</summary>
+    /// <param name="typeInfo">The type metadata for which to create the factory. The type must have a public parameterless constructor.</param>
+    /// <returns>A delegate that creates a new instance of the specified type when invoked.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
+    /// <remarks>Internal so the missing-parameterless-constructor guard can be exercised directly in tests.</remarks>
+    internal static Func<object> TypeFactory(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
+                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+        TypeInfo typeInfo)
+    {
+        ConstructorInfo? parameterlessConstructor = null;
+        foreach (var ci in typeInfo.DeclaredConstructors)
+        {
+            if (ci.IsPublic && ci.GetParameters().Length == 0)
+            {
+                parameterlessConstructor = ci;
+                break;
+            }
+        }
+
+        return parameterlessConstructor is null
+            ? throw new InvalidOperationException(
+                $"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
+            : () => Activator.CreateInstance(typeInfo.AsType())
+                    ?? throw new InvalidOperationException(
+                        $"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
     }
 
     /// <summary>
@@ -108,22 +132,49 @@ public static class DependencyResolverMixins
         }
     }
 
-    /// <summary>Creates a factory delegate that instantiates objects of the specified type using a public parameterless constructor.</summary>
-    /// <param name="typeInfo">The type metadata for which to create the factory. The type must have a public parameterless constructor.</param>
-    /// <returns>A delegate that creates a new instance of the specified type when invoked.</returns>
-    /// <exception cref="Exception">Thrown if the specified type does not have a public parameterless constructor, or if instantiation fails.</exception>
-    private static Func<object> TypeFactory(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors |
-                                    DynamicallyAccessedMemberTypes.NonPublicConstructors)]
-        TypeInfo typeInfo)
+    /// <summary>
+    /// In a single pass over the implemented interfaces, confirms the type derives from <see cref="IViewFor"/>
+    /// and captures the concrete <c>IViewFor&lt;T&gt;</c> interface to register against.
+    /// </summary>
+    /// <param name="ti">The candidate type's metadata.</param>
+    /// <param name="viewForInterface">The resolved <c>IViewFor&lt;T&gt;</c> interface when the type is registrable.</param>
+    /// <returns><see langword="true"/> when the type is a non-marker view that can be registered.</returns>
+    [RequiresUnreferencedCode("Inspects implemented interfaces via reflection.")]
+    private static bool TryResolveViewForInterface(TypeInfo ti, [NotNullWhen(true)] out Type? viewForInterface)
     {
-        var parameterlessConstructor =
-            typeInfo.DeclaredConstructors.FirstOrDefault(ci => ci.IsPublic && ci.GetParameters().Length == 0);
-        return parameterlessConstructor is null
-            ? throw new InvalidOperationException(
-                $"Failed to register type {typeInfo.FullName} because it's missing a parameterless constructor.")
-            : () => Activator.CreateInstance(typeInfo.AsType())
-                    ?? throw new InvalidOperationException(
-                        $"Failed to instantiate type {typeInfo.FullName} - ensure it has a public parameterless constructor.");
+        var implementsViewFor = false;
+        viewForInterface = null;
+        foreach (var iface in ti.ImplementedInterfaces)
+        {
+            if (iface == typeof(IViewFor))
+            {
+                implementsViewFor = true;
+                continue;
+            }
+
+            if (viewForInterface is null && ImplementsInterface(iface.GetTypeInfo().ImplementedInterfaces, typeof(IViewFor)))
+            {
+                viewForInterface = iface;
+            }
+        }
+
+        return implementsViewFor && viewForInterface is not null;
+    }
+
+    /// <summary>Determines whether a sequence of interface types contains the target interface.</summary>
+    /// <param name="interfaces">The implemented interface types to search.</param>
+    /// <param name="target">The interface type to look for.</param>
+    /// <returns><see langword="true"/> when the target interface is present; otherwise <see langword="false"/>.</returns>
+    private static bool ImplementsInterface(IEnumerable<Type> interfaces, Type target)
+    {
+        foreach (var iface in interfaces)
+        {
+            if (iface == target)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

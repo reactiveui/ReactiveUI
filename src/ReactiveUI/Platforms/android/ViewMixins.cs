@@ -36,12 +36,7 @@ public static class ViewMixins
             where T : ILayoutViewHost
         {
             var tagData = item?.GetTag(ViewHostTag);
-            if (tagData is not null)
-            {
-                return tagData.ToNetObject<T>();
-            }
-
-            return default!;
+            return tagData is not null ? tagData.ToNetObject<T>() : default!;
         }
 
         /// <summary>Retrieves the layout view host associated with the specified view, if one exists.</summary>

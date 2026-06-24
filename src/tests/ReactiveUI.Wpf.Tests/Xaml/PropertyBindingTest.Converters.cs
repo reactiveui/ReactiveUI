@@ -27,7 +27,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
@@ -84,7 +84,7 @@ public partial class PropertyBindingTest
 
         var decimalToStringTypeConverter = new DecimalToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
@@ -142,7 +142,7 @@ public partial class PropertyBindingTest
 
         var decimalToStringTypeConverter = new NullableDecimalToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustANullDecimal,
             static x => x.SomeTextBox.Text,
@@ -202,7 +202,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustADecimal,
             static x => x.SomeTextBox.Text,
@@ -259,7 +259,7 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new DoubleToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustADouble,
             static x => x.SomeTextBox.Text,
@@ -317,7 +317,7 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableDoubleToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustANullDouble,
             static x => x.SomeTextBox.Text,
@@ -377,7 +377,7 @@ public partial class PropertyBindingTest
         vm.JustADouble = InitialDouble;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADouble.ToString(CultureInfo.InvariantCulture));
 
-        view.Bind(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.Bind(vm, static x => x.JustADouble, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustADouble = DoubleOne;
 
@@ -427,7 +427,7 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new SingleToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustASingle,
             static x => x.SomeTextBox.Text,
@@ -485,7 +485,7 @@ public partial class PropertyBindingTest
 
         var toStringConverter = new NullableSingleToStringTypeConverter();
 
-        view.Bind(
+        _ = view.Bind(
             vm,
             static x => x.JustANullSingle,
             static x => x.SomeTextBox.Text,
@@ -545,7 +545,7 @@ public partial class PropertyBindingTest
         vm.JustASingle = InitialSingle;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustASingle.ToString(CultureInfo.InvariantCulture));
 
-        view.Bind(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
+        _ = view.Bind(vm, static x => x.JustASingle, static x => x.SomeTextBox.Text, update.AsObservable(), null, null, null, triggerUpdate: TriggerUpdate.ViewModelToView).DisposeWith(dis);
 
         vm.JustASingle = SingleOne;
 

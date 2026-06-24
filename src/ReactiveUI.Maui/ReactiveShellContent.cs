@@ -93,6 +93,6 @@ TViewModel> : ShellContent, IActivatableView
             return;
         }
 
-        ContentTemplate = new DataTemplate(() => view);
+        ContentTemplate = new(() => view);
     }
 }

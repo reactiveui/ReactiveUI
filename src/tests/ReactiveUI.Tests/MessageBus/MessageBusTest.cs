@@ -85,7 +85,7 @@ public class MessageBusTest
     {
         var messageBus = new MessageBusType();
 
-        messageBus.Listen<int>().Subscribe();
+        _ = messageBus.Listen<int>().Subscribe();
 
         await Assert.That(messageBus.IsRegistered(typeof(int))).IsTrue();
     }
@@ -168,7 +168,7 @@ public class MessageBusTest
 
         await Assert.That(messageBus.IsRegistered(typeof(string))).IsFalse();
 
-        observable.Subscribe();
+        _ = observable.Subscribe();
 
         await Assert.That(messageBus.IsRegistered(typeof(string))).IsTrue();
     }
@@ -348,7 +348,7 @@ public class MessageBusTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            messageBus.RegisterMessageSource<string>(null!);
+            _ = messageBus.RegisterMessageSource<string>(null!);
             await Task.CompletedTask;
         });
     }
@@ -365,7 +365,7 @@ public class MessageBusTest
         var source = new Signal<string>();
         var messages = messageBus.Listen<string>().Collect();
 
-        messageBus.RegisterMessageSource(source);
+        _ = messageBus.RegisterMessageSource(source);
 
         source.OnNext(BeforeMessage);
         source.OnCompleted();
@@ -393,7 +393,7 @@ public class MessageBusTest
         var source = new Signal<string>();
         var messages = messageBus.Listen<string>().Collect();
 
-        messageBus.RegisterMessageSource(source);
+        _ = messageBus.RegisterMessageSource(source);
 
         source.OnNext(BeforeMessage);
         source.OnError(new InvalidOperationException("Test error"));
@@ -421,7 +421,7 @@ public class MessageBusTest
         var source = new Signal<string>();
         var messages = messageBus.Listen<string>().Collect();
 
-        messageBus.RegisterMessageSource(source);
+        _ = messageBus.RegisterMessageSource(source);
 
         source.OnNext(FirstMessage);
         source.OnNext(SecondTextMessage);
@@ -454,7 +454,7 @@ public class MessageBusTest
         const int SecondMessage = 2;
         const int ExpectedCount = 2;
 
-        messageBus.RegisterMessageSource(source, "MyContract");
+        _ = messageBus.RegisterMessageSource(source, "MyContract");
 
         source.OnNext(1);
         source.OnNext(SecondMessage);
@@ -745,7 +745,7 @@ public class MessageBusTest
         var messageBus = new MessageBusType();
         messageBus.RegisterScheduler<int?>(Sequencer.Immediate);
         var messages = new List<int?>();
-        messageBus.Listen<int?>().Subscribe(messages.Add);
+        _ = messageBus.Listen<int?>().Subscribe(messages.Add);
 
         const int ExpectedCount = 3;
         const int ThirdIndex = 2;
@@ -771,7 +771,7 @@ public class MessageBusTest
         var messageBus = new MessageBusType();
         messageBus.RegisterScheduler<string?>(Sequencer.Immediate);
         var messages = new List<string?>();
-        messageBus.Listen<string?>().Subscribe(messages.Add);
+        _ = messageBus.Listen<string?>().Subscribe(messages.Add);
 
         messageBus.SendMessage<string?>(HelloMessage);
         messageBus.SendMessage<string?>(null);

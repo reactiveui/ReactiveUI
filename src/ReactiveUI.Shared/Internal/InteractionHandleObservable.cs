@@ -41,7 +41,8 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
     }
 
     /// <summary>Drives the sequential, scheduler-bound handler run for a single subscription.</summary>
-    private sealed class Sink : IDisposable
+    /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
+    internal sealed class Sink : IDisposable
     {
         /// <summary>The observer receiving the interaction output.</summary>
         private readonly IObserver<TOutput> _observer;
@@ -104,38 +105,10 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
             _current.Dispose();
         }
 
-        /// <summary>Schedules the next handler step on the handler scheduler.</summary>
-        /// <param name="index">The handler index to run (descending toward the first-registered handler).</param>
-        private void RunFrom(int index)
-        {
-            // Saved/restored across the (possibly re-entrant) scheduling call so a nested RunFrom — triggered when a
-            // handler completes synchronously and advances the run inline — does not clobber the outer frame's view.
-            var previousRanInline = _stepRanInline;
-            _stepRanInline = false;
-
-            var scheduled = _scheduler.ScheduleOrInline(
-                (Self: this, Index: index),
-                static (_, state) =>
-                {
-                    state.Self._stepRanInline = true;
-                    state.Self.Step(state.Index);
-                    return EmptyDisposable.Instance;
-                });
-
-            // Only adopt the scheduling disposable when the step is genuinely pending (queued). When it ran inline the
-            // step already took ownership of _current (a live handler subscription, the next scheduled step, or the
-            // finished run), and overwriting that here would dispose the live work and stall the run.
-            if (!_stepRanInline)
-            {
-                _current.Disposable = scheduled;
-            }
-
-            _stepRanInline = previousRanInline;
-        }
-
         /// <summary>Runs the handler at <paramref name="index"/>, or finishes when handled or exhausted.</summary>
         /// <param name="index">The handler index to run.</param>
-        private void Step(int index)
+        /// <remarks>Internal so the disposed-during-step guard can be exercised directly in tests.</remarks>
+        internal void Step(int index)
         {
             if (_disposed)
             {
@@ -171,6 +144,45 @@ internal sealed class InteractionHandleObservable<TInput, TOutput>(
             }
 
             _current.Disposable = subscription;
+        }
+
+        /// <summary>Schedules the next handler step on the handler scheduler.</summary>
+        /// <param name="index">The handler index to run (descending toward the first-registered handler).</param>
+        private void RunFrom(int index)
+        {
+            // Saved/restored across the (possibly re-entrant) scheduling call so a nested RunFrom — triggered when a
+            // handler completes synchronously and advances the run inline — does not clobber the outer frame's view.
+            var previousRanInline = _stepRanInline;
+            _stepRanInline = false;
+
+            var scheduled = _scheduler.ScheduleOrInline(
+                (Self: this, Index: index),
+                static (_, state) =>
+                {
+                    state.Self._stepRanInline = true;
+                    state.Self.Step(state.Index);
+                    return EmptyDisposable.Instance;
+                });
+
+            // Only adopt the scheduling disposable when the step is genuinely pending (queued). When it ran inline the
+            // step already took ownership of _current (a live handler subscription, the next scheduled step, or the
+            // finished run), and overwriting that here would dispose the live work and stall the run.
+            AdoptIfPending(scheduled);
+
+            _stepRanInline = previousRanInline;
+        }
+
+        /// <summary>Adopts the scheduling disposable into <see cref="_current"/> only when the step is still pending —
+        /// that is, the scheduled callback did not run inline and take ownership of <see cref="_current"/> itself.</summary>
+        /// <param name="scheduled">The disposable returned by the scheduling call.</param>
+        private void AdoptIfPending(IDisposable scheduled)
+        {
+            if (_stepRanInline)
+            {
+                return;
+            }
+
+            _current.Disposable = scheduled;
         }
 
         /// <summary>Emits the output once handled, or the unhandled-interaction error otherwise.</summary>

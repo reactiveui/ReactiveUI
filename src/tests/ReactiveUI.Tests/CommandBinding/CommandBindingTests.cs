@@ -45,7 +45,7 @@ public class CommandBindingTests
         await Assert.That(disp).IsNotNull();
 
         var executed = false;
-        viewModel.Command.Subscribe(_ => executed = true);
+        _ = viewModel.Command.Subscribe(_ => executed = true);
 
         view.Control.RaiseClick();
 
@@ -84,7 +84,7 @@ public class CommandBindingTests
 
             var scheduler = Sequencer.Immediate;
 
-            builder
+            _ = builder
                 .WithMainThreadScheduler(scheduler)
                 .WithTaskPoolScheduler(scheduler)
                 .WithRegistration(r => r.RegisterConstant<ICreatesCommandBinding>(new CreatesCommandBindingViaEvent()))

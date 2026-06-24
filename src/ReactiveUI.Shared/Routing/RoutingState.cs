@@ -179,7 +179,7 @@ public class RoutingState : ReactiveObject
 
         CurrentViewModel = new MapSignal<IReactiveChangeSet<IRoutableViewModel>, IRoutableViewModel>(
             NavigationChanges,
-            _ => NavigationStack.LastOrDefault()!);
+            _ => NavigationStack.Count > 0 ? NavigationStack[NavigationStack.Count - 1] : null!);
     }
 
     /// <summary>Emits a single value delivered on a scheduler. Replaces <c>Observable.Return(value).ObserveOn(scheduler)</c>.</summary>

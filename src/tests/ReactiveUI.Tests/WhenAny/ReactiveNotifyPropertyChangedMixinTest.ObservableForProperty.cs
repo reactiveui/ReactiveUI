@@ -36,7 +36,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
+        _ = fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord)).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.IsOnlyOneWord = Value1Text;
 
@@ -63,7 +63,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord), true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
+        _ = fixture.ObservableForProperty<TestFixture, string?>(nameof(TestFixture.IsOnlyOneWord), true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.IsOnlyOneWord = ChangedText;
 
@@ -83,7 +83,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(
+        _ = fixture.ObservableForProperty<TestFixture, string?>(
             nameof(TestFixture.IsOnlyOneWord),
             false,
             false).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
@@ -133,7 +133,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.ObservableForProperty<TestFixture, string?>(
+        _ = fixture.ObservableForProperty<TestFixture, string?>(
             nameof(TestFixture.IsOnlyOneWord),
             false,
             true,
@@ -163,7 +163,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = "Hello";
 
@@ -192,7 +192,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<int>();
 
-        fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, true).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
+        _ = fixture.ObservableForProperty(x => x.IsOnlyOneWord, value => value?.Length ?? 0, true).ObserveOn(Sequencer.Immediate).Subscribe(results.Add);
 
         fixture.IsOnlyOneWord = ChangedText;
 
@@ -592,7 +592,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
+        _ = fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = "First";
 
@@ -621,7 +621,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
+        _ = fixture.SubscribeToExpressionChain<HostTestFixture, string?>(expression.Body, true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
 
         fixture.Child.IsOnlyOneWord = ChangedText;
 
@@ -643,7 +643,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
+        _ = fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
             expression.Body,
             true,
             true).ObserveOn(Sequencer.Immediate).Subscribe(x => results.Add(x.Value));
@@ -671,7 +671,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
+        _ = fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
             expression.Body,
             false,
             true,
@@ -701,7 +701,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var results = new List<string?>();
 
-        fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
+        _ = fixture.SubscribeToExpressionChain<HostTestFixture, string?>(
             expression.Body,
             false,
             true,

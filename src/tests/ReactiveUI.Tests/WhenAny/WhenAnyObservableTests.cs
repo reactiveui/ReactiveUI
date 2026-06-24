@@ -43,7 +43,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<string?>();
-        fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+        _ = fixture.WhenAnyObservable(static x => x.Command3, static x => x.Command1, static (s, i) => s + " : " + i).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
@@ -61,7 +61,7 @@ public class WhenAnyObservableTests
             await Assert.That(
                     ExpectedCombiningResults.Zip(
                         list,
-                        static (expected, actual) => new { expected, actual }).All(static x => x.expected == x.actual)).IsTrue();
+                        static (expected, actual) => (expected, actual)).All(static x => x.expected == x.actual)).IsTrue();
         }
     }
 
@@ -76,7 +76,7 @@ public class WhenAnyObservableTests
         var fixture = new TestWhenAnyObsViewModel();
 
         var list = new List<int>();
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+        _ = fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command2).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         await Assert.That(list).IsEmpty();
 
         await fixture.Command1!.Execute(1);
@@ -93,7 +93,7 @@ public class WhenAnyObservableTests
             await Assert.That(
                     new[] { 1, SecondCommandValue, 1 }.Zip(
                         list,
-                        static (expected, actual) => new { expected, actual }).All(static x => x.expected == x.actual)).IsTrue();
+                        static (expected, actual) => (expected, actual)).All(static x => x.expected == x.actual)).IsTrue();
         }
     }
 
@@ -102,21 +102,21 @@ public class WhenAnyObservableTests
     private static void SubscribeToNullLowArityMergeOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the lower-arity overloads of WhenAnyObservable that perform a Merge
-        fixture.WhenAnyObservable(static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(static x => x.Command1).Subscribe();
+        _ = fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1).Subscribe();
+        _ = fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static x => x.Command1).Subscribe();
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -130,7 +130,7 @@ public class WhenAnyObservableTests
     private static void SubscribeToNullHighArityMergeOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the higher-arity overloads of WhenAnyObservable that perform a Merge
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -138,17 +138,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1,
-            static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -157,8 +147,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -168,8 +157,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
-            static x => x.Command1,
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -180,7 +168,19 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1,
+            static x => x.Command1).Subscribe();
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -204,26 +204,26 @@ public class WhenAnyObservableTests
     private static void SubscribeToNullLowArityCombineLatestOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the lower-arity overloads of WhenAnyObservable that perform a CombineLatest
-        fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static (_, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(static x => x.Command1, static x => x.Command1, static (_, _) => RxVoid.Default).Subscribe();
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -231,7 +231,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -251,7 +251,7 @@ public class WhenAnyObservableTests
     private static void SubscribeToNullHighArityCombineLatestOverloads(TestWhenAnyObsViewModel fixture)
     {
         // these are the higher-arity overloads of WhenAnyObservable that perform a CombineLatest
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -261,7 +261,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -272,7 +272,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -284,7 +284,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,
@@ -297,7 +297,7 @@ public class WhenAnyObservableTests
             static x => x.Command1,
             static x => x.Command1,
             static (_, _, _, _, _, _, _, _, _, _, _) => RxVoid.Default).Subscribe();
-        fixture.WhenAnyObservable(
+        _ = fixture.WhenAnyObservable(
             static x => x.Command1,
             static x => x.Command1,
             static x => x.Command1,

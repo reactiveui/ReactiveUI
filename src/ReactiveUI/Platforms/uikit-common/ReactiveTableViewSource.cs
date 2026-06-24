@@ -56,8 +56,8 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     /// <param name="tableView">The table view.</param>
     public ReactiveTableViewSource(UITableView tableView)
     {
-        _adapter = new UITableViewAdapter(tableView);
-        _commonSource = new CommonReactiveSource<TSource, UITableView, UITableViewCell, TableSectionInformation<TSource>>(_adapter);
+        _adapter = new(tableView);
+        _commonSource = new(_adapter);
     }
 
     /// <inheritdoc/>
@@ -155,12 +155,9 @@ public class ReactiveTableViewSource<TSource> : UITableViewSource, IReactiveNoti
     {
         // iOS may call this method even when we have no sections, but only if we've overriden
         // EstimatedHeight(UITableView, NSIndexPath) in our UITableViewSource
-        if (section >= _commonSource.NumberOfSections())
-        {
-            return 0;
-        }
-
-        return _commonSource.RowsInSection((int)section);
+        return section >= _commonSource.NumberOfSections()
+            ? 0
+            : _commonSource.RowsInSection((int)section);
     }
 
     /// <inheritdoc/>

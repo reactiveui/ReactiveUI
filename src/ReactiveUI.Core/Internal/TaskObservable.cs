@@ -19,7 +19,7 @@ public sealed class TaskObservable<T>(Task<T> task) : IObservable<T>
     public IDisposable Subscribe(IObserver<T> observer)
     {
         ArgumentExceptionHelper.ThrowIfNull(observer);
-        task.ContinueWith(
+        _ = task.ContinueWith(
             static (completed, state) =>
             {
                 var observer = (IObserver<T>)state!;

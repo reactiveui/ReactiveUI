@@ -62,7 +62,7 @@ public static class MauiReactiveUIBuilderExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            builder.WithTaskPoolScheduler(TaskPoolSequencer.Default);
+            _ = builder.WithTaskPoolScheduler(TaskPoolSequencer.Default);
             return builder.WithMainThreadScheduler(ResolveMainThreadScheduler(dispatcher));
         }
 
@@ -98,7 +98,7 @@ public static class MauiReactiveUIBuilderExtensions
 
             var reactiveUIBuilder = RxAppBuilder.CreateReactiveUIBuilder();
             withReactiveUIBuilder?.Invoke(reactiveUIBuilder);
-            reactiveUIBuilder.BuildApp();
+            _ = reactiveUIBuilder.BuildApp();
             return builder;
         }
 
@@ -110,7 +110,7 @@ public static class MauiReactiveUIBuilderExtensions
         {
             ArgumentExceptionHelper.ThrowIfNull(builder);
 
-            RxAppBuilder.CreateReactiveUIBuilder().WithMaui(dispatcher).BuildApp();
+            _ = RxAppBuilder.CreateReactiveUIBuilder().WithMaui(dispatcher).BuildApp();
             return builder;
         }
     }
@@ -125,11 +125,6 @@ public static class MauiReactiveUIBuilderExtensions
             return dispatcher.ToSequencer();
         }
 
-        if (ModeDetector.InUnitTestRunner())
-        {
-            return Sequencer.CurrentThread;
-        }
-
-        return MauiMainThreadScheduler;
+        return ModeDetector.InUnitTestRunner() ? Sequencer.CurrentThread : MauiMainThreadScheduler;
     }
 }

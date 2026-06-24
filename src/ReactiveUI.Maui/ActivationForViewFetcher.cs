@@ -36,17 +36,20 @@ namespace ReactiveUI.Maui;
 public class ActivationForViewFetcher : IActivationForViewFetcher
 {
     /// <inheritdoc/>
-    public int GetAffinityForView(Type view) =>
+    public int GetAffinityForView(Type view)
+    {
+        var typeInfo = view.GetTypeInfo();
+        var isActivatableView =
 #if IS_WINUI
-       typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+            typeof(FrameworkElement).GetTypeInfo().IsAssignableFrom(typeInfo);
 #endif
 #if IS_MAUI
-        typeof(Page).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-        typeof(View).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo()) ||
-        typeof(Cell).GetTypeInfo().IsAssignableFrom(view.GetTypeInfo())
+            typeof(Page).GetTypeInfo().IsAssignableFrom(typeInfo) ||
+            typeof(View).GetTypeInfo().IsAssignableFrom(typeInfo) ||
+            typeof(Cell).GetTypeInfo().IsAssignableFrom(typeInfo);
 #endif
-            ? BindingAffinity.ExactType
-            : 0;
+        return isActivatableView ? BindingAffinity.ExactType : 0;
+    }
 
     /// <inheritdoc/>
     public IObservable<bool> GetActivationForView(IActivatableView view)
@@ -73,13 +76,7 @@ public class ActivationForViewFetcher : IActivationForViewFetcher
     /// <returns>The activation stream, or null when <paramref name="canActivate"/> is null.</returns>
     private static IObservable<bool>? GetActivationFor(ICanActivate? canActivate)
     {
-        if (canActivate is null)
-        {
-            return null;
-        }
-
-        // Replaces Activated.Select(_ => true).Merge(Deactivated.Select(_ => false)).
-        return Signal.Blend<bool>(
+        return canActivate is null ? null : Signal.Blend<bool>(
             new MapSignal<RxVoid, bool>(canActivate.Activated, static _ => true),
             new MapSignal<RxVoid, bool>(canActivate.Deactivated, static _ => false));
     }

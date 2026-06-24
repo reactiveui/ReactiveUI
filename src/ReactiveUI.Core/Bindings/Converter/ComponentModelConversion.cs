@@ -53,12 +53,9 @@ public static class ComponentModelConversion
                 var fromIsString = key.From == typeof(string);
                 var (lookupFrom, lookupTo) = fromIsString ? (key.To, key.From) : (key.From, key.To);
                 var converter = TypeDescriptor.GetConverter(lookupFrom);
-                if (fromIsString)
-                {
-                    return converter?.CanConvertFrom(typeof(string)) == true;
-                }
-
-                return converter?.CanConvertTo(lookupTo) == true;
+                return fromIsString
+                    ? converter?.CanConvertFrom(typeof(string)) == true
+                    : converter?.CanConvertTo(lookupTo) == true;
             }
             catch
             {

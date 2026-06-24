@@ -101,7 +101,7 @@ public class ReactiveComponentBaseTests : BunitContext
             this.WhenActivated(d =>
             {
                 IsActive = true;
-                new ActionDisposable(() => IsActive = false).DisposeWith(d);
+                _ = new ActionDisposable(() => IsActive = false).DisposeWith(d);
             });
 
         /// <summary>Gets the ViewModelActivator required for activation logic.</summary>

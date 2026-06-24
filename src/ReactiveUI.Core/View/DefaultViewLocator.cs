@@ -101,7 +101,7 @@ public sealed class DefaultViewLocator : IViewLocator
                 [key] = factory
             };
 
-            Interlocked.Exchange(ref _mappings, newMappings);
+            _ = Interlocked.Exchange(ref _mappings, newMappings);
         }
 
         return this;
@@ -140,8 +140,8 @@ public sealed class DefaultViewLocator : IViewLocator
             }
 
             Dictionary<(Type, string), Func<IViewFor>> newMappings = new(current);
-            newMappings.Remove(key);
-            Interlocked.Exchange(ref _mappings, newMappings);
+            _ = newMappings.Remove(key);
+            _ = Interlocked.Exchange(ref _mappings, newMappings);
         }
 
         return this;
@@ -186,7 +186,7 @@ public sealed class DefaultViewLocator : IViewLocator
             this.Log().Debug(
                 CultureInfo.InvariantCulture,
                 "Resolved IViewFor<{0}> from explicit mapping",
-                typeof(TViewModel).Name);
+                nameof(TViewModel));
             return (IViewFor<TViewModel>)factory();
         }
 
@@ -196,14 +196,14 @@ public sealed class DefaultViewLocator : IViewLocator
             this.Log().Debug(
                 CultureInfo.InvariantCulture,
                 "Resolved IViewFor<{0}> via service locator",
-                typeof(TViewModel).Name);
+                nameof(TViewModel));
             return view;
         }
 
         this.Log().Warn(
                 CultureInfo.InvariantCulture,
                 "Failed to resolve view for {0}. Use Map<TViewModel, TView>() or register IViewFor<TViewModel> in the service locator.",
-                typeof(TViewModel).Name);
+                nameof(TViewModel));
         return null;
     }
 

@@ -47,7 +47,7 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
         ArgumentNullException.ThrowIfNull(getCurrentViewProperties);
 
         var viewProperties = getCurrentViewProperties();
-        var lastViewProperty = viewProperties.LastOrDefault();
+        var lastViewProperty = viewProperties.Length > 0 ? viewProperties[^1] : null;
 
         if (lastViewProperty?.Sender is not ItemsControl itemsControl)
         {

@@ -187,6 +187,169 @@ public class RoutedViewHostTest
         await Assert.That(page.Title).IsEqualTo(TestTitle);
     }
 
+    /// <summary>Invalidating the current view model is a safe no-op when there is no current view model or page.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task InvalidateCurrentViewModel_NoCurrentViewModelOrPage_ReturnsEarly()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // The router has an empty navigation stack (no current view model) and there is no current page,
+        // so the call must short-circuit without throwing.
+        host.PublicInvalidateCurrentViewModel();
+
+        await Assert.That(host.Router?.GetCurrentViewModel()).IsNull();
+    }
+
+    /// <summary>The constructor throws when no <see cref="IScreen"/> is registered.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostNoScreenExecutor>]
+    public async Task Constructor_NoScreenRegistered_Throws() =>
+        await Assert.That(static () => new RoutedViewHost())
+            .Throws<InvalidOperationException>();
+
+    /// <summary>Invalidating with a matching current page view model type reassigns the current view model onto the page.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task InvalidateCurrentViewModel_MatchingViewModelType_UpdatesViewModel()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // Make the current page an IViewFor whose view model is the same type as the router's current view model.
+        var routerViewModel = new TestRoutableViewModel();
+        host.Router.NavigationStack.Add(routerViewModel);
+
+        var pageViewModel = new TestRoutableViewModel();
+        var page = new TestRoutableView { ViewModel = pageViewModel };
+        await host.PushAsync(page);
+
+        host.PublicInvalidateCurrentViewModel();
+
+        // The page's view model was replaced with the router's current view model (same type, so it is reassigned).
+        await Assert.That(page.ViewModel).IsEqualTo(routerViewModel);
+    }
+
+    /// <summary>Invalidating with an incompatible current page view model type leaves the page view model untouched.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task InvalidateCurrentViewModel_IncompatibleViewModelType_DoesNotUpdate()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // The router's current view model is a different type than the page's view model.
+        host.Router.NavigationStack.Add(new SecondRoutableViewModel());
+
+        var originalViewModel = new TestRoutableViewModel();
+        var page = new TestRoutableView { ViewModel = originalViewModel };
+        await host.PushAsync(page);
+
+        host.PublicInvalidateCurrentViewModel();
+
+        // The types are incompatible, so the page's view model is not replaced.
+        await Assert.That(page.ViewModel).IsEqualTo(originalViewModel);
+    }
+
+    /// <summary>Invalidating when the current page view model is <see langword="null"/> takes the incompatible-type branch and does not assign.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task InvalidateCurrentViewModel_NullPageViewModel_DoesNotUpdate()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // Push the page (whose view model is null) first so the navigation stack is non-empty before the
+        // router stack changes; otherwise the headless stack sync pushes into an empty navigation stack,
+        // which net10 MAUI rejects with an out-of-range List.Insert.
+        var page = new TestRoutableView();
+        await host.PushAsync(page);
+
+        host.Router.NavigationStack.Add(new TestRoutableViewModel());
+
+        host.PublicInvalidateCurrentViewModel();
+
+        await Assert.That(page.ViewModel).IsNull();
+    }
+
+    /// <summary>A navigate request whose stacks differ resolves the current page and pushes it via the navigate pipeline.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task Navigate_StacksDiffer_ResolvesAndPushesCurrentPage()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // Pre-seed the navigation stack larger than the router stack so StacksAreDifferent enumerates the
+        // navigation stack without indexing past it once Navigate appends the new view model.
+        var seededView = CreateRoutableView();
+        await host.PushAsync(seededView);
+        await host.PushAsync(CreateRoutableView());
+
+        host.Router.NavigationStack.Add(seededView.ViewModel!);
+
+        // Navigate -> OnNavigateRequested -> StacksAreDifferent() == true -> schedules OnNavigateAsync ->
+        // ResolveCurrentPage resolves and pushes the current view model's page.
+        var navigateTarget = new TestRoutableViewModel();
+        _ = host.Router.Navigate.Execute(navigateTarget).Subscribe(_ => { });
+        await Task.Delay(SchedulerProcessingDelayMs);
+
+        await Assert.That(host.Navigation.NavigationStack).IsNotEmpty();
+    }
+
+    /// <summary>A navigate request whose stacks already reference-match short-circuits in <c>OnNavigateRequested</c>.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    [TestExecutor<MauiRoutedViewHostTestExecutor>]
+    public async Task Navigate_StacksAlreadyMatch_ShortCircuits()
+    {
+        var host = new TestableRoutedViewHost();
+
+        // Make the pushed page reference-match the router view model that Navigate is about to append, so that the
+        // navigate pipeline observes StacksAreDifferent() == false and returns early.
+        var viewModel = new TestRoutableViewModel();
+        var page = new TestRoutableView { ViewModel = viewModel };
+        await host.PushAsync(page);
+
+        var initialCount = host.Navigation.NavigationStack.Count;
+
+        _ = host.Router.Navigate.Execute(viewModel).Subscribe(_ => { });
+        await Task.Delay(SchedulerProcessingDelayMs);
+
+        await Assert.That(host.Navigation.NavigationStack.Count).IsEqualTo(initialCount);
+    }
+
+    /// <summary>Creates a routable view seeded with its own view model.</summary>
+    /// <returns>A new <see cref="TestRoutableView"/> whose view model is set.</returns>
+    private static TestRoutableView CreateRoutableView() =>
+        new() { ViewModel = new() };
+
+    /// <summary>Test executor that sets up MAUI environment without registering an <see cref="IScreen"/>.</summary>
+    [NotInParallel]
+    public sealed class MauiRoutedViewHostNoScreenExecutor : MauiTestExecutor
+    {
+        /// <summary>The helper that configures and tears down the ReactiveUI app builder.</summary>
+        private readonly AppBuilderTestHelper _helper = new();
+
+        /// <inheritdoc/>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            // Deliberately do not register an IScreen so the RoutedViewHost constructor throws.
+            _helper.Initialize(builder => _ = builder.WithMaui().WithCoreServices());
+        }
+
+        /// <inheritdoc/>
+        protected override void CleanUp()
+        {
+            _helper.CleanUp();
+            base.CleanUp();
+        }
+    }
+
     /// <summary>Test executor that sets up MAUI environment with view registration.</summary>
     [NotInParallel]
     public sealed class MauiRoutedViewHostTestExecutor : MauiTestExecutor
@@ -201,7 +364,7 @@ public class RoutedViewHostTest
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithMaui()
                     .RegisterView<TestRoutableView, TestRoutableViewModel>()
                     .WithCoreServices();
@@ -269,6 +432,16 @@ public class RoutedViewHostTest
             get => ViewModel;
             set => ViewModel = value as TestRoutableViewModel;
         }
+    }
+
+    /// <summary>A second routable view model of a distinct type, used to exercise incompatible-type branches.</summary>
+    private sealed class SecondRoutableViewModel : ReactiveObject, IRoutableViewModel
+    {
+        /// <inheritdoc/>
+        public string? UrlPathSegment { get; set; } = "second";
+
+        /// <inheritdoc/>
+        public IScreen HostScreen { get; } = null!;
     }
 
     /// <summary>Unregistered view model for testing error cases.</summary>

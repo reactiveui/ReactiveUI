@@ -18,12 +18,12 @@ public class MauiDispatcherSequencerTest
         RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher();
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithMauiScheduler(dispatcher);
-        builder.WithCoreServices();
-        builder.BuildApp();
+        _ = builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithCoreServices();
+        _ = builder.BuildApp();
 
         var executed = false;
-        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -36,12 +36,12 @@ public class MauiDispatcherSequencerTest
         RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher { IsDispatchRequired = false };
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithMauiScheduler(dispatcher);
-        builder.WithCoreServices();
-        builder.BuildApp();
+        _ = builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithCoreServices();
+        _ = builder.BuildApp();
 
         var executed = false;
-        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -54,18 +54,18 @@ public class MauiDispatcherSequencerTest
         RxAppBuilder.ResetForTesting();
         var dispatcher = new TestDispatcher { IsDispatchRequired = true };
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
-        builder.WithMauiScheduler(dispatcher);
-        builder.WithCoreServices();
-        builder.BuildApp();
+        _ = builder.WithMauiScheduler(dispatcher);
+        _ = builder.WithCoreServices();
+        _ = builder.BuildApp();
 
         var executed = false;
-        RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
 
     /// <summary>Test dispatcher for sequencer testing.</summary>
-    private sealed class TestDispatcher : Microsoft.Maui.Dispatching.IDispatcher
+    private sealed class TestDispatcher : IDispatcher
     {
         /// <inheritdoc/>
         public bool IsDispatchRequired { get; set; }
@@ -85,10 +85,10 @@ public class MauiDispatcherSequencerTest
         }
 
         /// <inheritdoc/>
-        public Microsoft.Maui.Dispatching.IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
+        public IDispatcherTimer CreateTimer() => new TestDispatcherTimer();
 
         /// <summary>Test dispatcher timer for testing.</summary>
-        private sealed class TestDispatcherTimer : Microsoft.Maui.Dispatching.IDispatcherTimer
+        private sealed class TestDispatcherTimer : IDispatcherTimer
         {
             /// <inheritdoc/>
             public event EventHandler? Tick;

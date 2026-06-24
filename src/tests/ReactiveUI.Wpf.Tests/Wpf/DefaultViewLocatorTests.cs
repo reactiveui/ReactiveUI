@@ -49,7 +49,7 @@ public class DefaultViewLocatorTests
         var fixture = new DefaultViewLocator();
 
         // Use Map to register custom view
-        fixture.Map<RoutableFooViewModel, RoutableFooCustomView>(static () => new());
+        _ = fixture.Map<RoutableFooViewModel, RoutableFooCustomView>(static () => new());
 
         var vm = new RoutableFooViewModel();
 
@@ -75,7 +75,7 @@ public class DefaultViewLocatorTests
             _helper.Initialize(builder =>
             {
                 // Include WPF platform services and register test view
-                builder
+                _ = builder
                     .WithWpf()
                     .RegisterView<TView, TViewModel>()
                     .WithCoreServices();

@@ -88,7 +88,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<int>.Create(0, Sequencer.Immediate, false, true);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         var initialCount = values.Count;
 
@@ -143,7 +143,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<int>.Create(0, Sequencer.Immediate, false, false);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         var initialCount = values.Count;
 
@@ -204,11 +204,11 @@ public class ReactivePropertyBasicTests
         var values1 = new List<int>();
         var values2 = new List<int>();
 
-        rp.Subscribe(values1.Add);
+        _ = rp.Subscribe(values1.Add);
 
         rp.Value = 1;
 
-        rp.Subscribe(values2.Add);
+        _ = rp.Subscribe(values2.Add);
 
         rp.Value = SecondValue;
 
@@ -243,7 +243,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
         var errors = new List<IEnumerable?>();
-        rp.ObserveErrorChanged.Subscribe(errors.Add);
+        _ = rp.ObserveErrorChanged.Subscribe(errors.Add);
 
         _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
@@ -257,7 +257,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
         var hasErrorsValues = new List<bool>();
-        rp.ObserveHasErrors.Subscribe(hasErrorsValues.Add);
+        _ = rp.ObserveHasErrors.Subscribe(hasErrorsValues.Add);
 
         _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
@@ -287,7 +287,7 @@ public class ReactivePropertyBasicTests
         using (Assert.Multiple())
         {
             await Assert.That(fired).IsTrue();
-            await Assert.That(propertyName).IsEqualTo(nameof(ReactiveProperty<int>.Value));
+            await Assert.That(propertyName).IsEqualTo(nameof(ReactiveProperty<>.Value));
         }
     }
 
@@ -298,7 +298,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<int>.Create(InitialValue, Sequencer.Immediate, false, false);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         var countBefore = values.Count;
 
@@ -316,7 +316,7 @@ public class ReactivePropertyBasicTests
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
         using var rp = ReactiveProperty<int>.Create(0, scheduler, false, false);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         // Value should not be received until scheduler advances
         await Assert.That(values).IsEmpty();
@@ -332,7 +332,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<int>.Create(InitialValue, Sequencer.Immediate, true, false);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         await Assert.That(values).IsEmpty(); // Should not receive initial value
 
@@ -367,7 +367,7 @@ public class ReactivePropertyBasicTests
         rp.Dispose();
 
         var completed = false;
-        rp.Subscribe(
+        _ = rp.Subscribe(
             _ => { },
             () => completed = true);
 
@@ -381,7 +381,7 @@ public class ReactivePropertyBasicTests
     {
         using var rp = ReactiveProperty<int>.Create(InitialValue, Sequencer.Immediate, false, false);
         var received = 0;
-        rp.Subscribe(x => received = x);
+        _ = rp.Subscribe(x => received = x);
 
         await Assert.That(received).IsEqualTo(InitialValue);
     }
@@ -394,7 +394,7 @@ public class ReactivePropertyBasicTests
         const int SecondValue = 2;
         using var rp = ReactiveProperty<int>.Create(0, Sequencer.Immediate, false, false);
         var values = new List<int>();
-        rp.Subscribe(values.Add);
+        _ = rp.Subscribe(values.Add);
 
         rp.Value = 1;
         rp.Value = SecondValue;
@@ -432,5 +432,65 @@ public class ReactivePropertyBasicTests
         using var rp = ReactiveProperty<string>.Create();
         rp.Value = "new value";
         await Assert.That(rp.Value).IsEqualTo("new value");
+    }
+
+    /// <summary>Verifies the parameterless constructor creates a property with the default value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ParameterlessConstructorCreatesDefaultValue()
+    {
+        using var rp = new ReactiveProperty<int>();
+        await Assert.That(rp.Value).IsEqualTo(0);
+    }
+
+    /// <summary>Verifies the single-value constructor stores the supplied value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task SingleValueConstructorStoresValue()
+    {
+        using var rp = new ReactiveProperty<int>(InitialValue);
+        await Assert.That(rp.Value).IsEqualTo(InitialValue);
+    }
+
+    /// <summary>Verifies the value/skip/duplicate constructor stores the supplied value and applies skip-current.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValueSkipDuplicateConstructorStoresValueAndSkips()
+    {
+        using var rp = new ReactiveProperty<int>(InitialValue, true, false);
+        var values = new List<int>();
+        _ = rp.Subscribe(values.Add);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(rp.Value).IsEqualTo(InitialValue);
+            await Assert.That(values).IsEmpty(); // skip-current means no initial emission
+        }
+    }
+
+    /// <summary>Verifies that disposing a property twice is a no-op and remains disposed.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DisposeTwiceIsNoOp()
+    {
+        var rp = ReactiveProperty<int>.Create(InitialValue);
+
+        rp.Dispose();
+        rp.Dispose(); // second call hits the already-disposed early-return guard
+
+        await Assert.That(rp.IsDisposed).IsTrue();
+    }
+
+    /// <summary>Verifies that setting a new value after disposal does not throw and keeps the assigned value.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task SetValueAfterDisposeStoresValueWithoutNotifying()
+    {
+        var rp = ReactiveProperty<int>.Create(InitialValue);
+        rp.Dispose();
+
+        rp.Value = UpdatedValue; // SetValue takes the IsDisposed early-return path
+
+        await Assert.That(rp.Value).IsEqualTo(UpdatedValue);
     }
 }

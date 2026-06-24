@@ -33,7 +33,7 @@ public sealed class ReactiveUiAppHostedService : IHostedService
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "ReactiveUI.Builder.BlazorServer",
             "state.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
+        _ = Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
 
         _driver = new(statePath);
 

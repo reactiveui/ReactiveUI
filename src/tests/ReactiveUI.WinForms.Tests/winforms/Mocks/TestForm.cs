@@ -27,13 +27,13 @@ public class TestForm : Form, IActivatableView, ICanActivate
         Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public TestForm()
     {
-        this.WhenActivated((Action<Action<IDisposable>>)(static _ =>
+        _ = this.WhenActivated((Action<Action<IDisposable>>)(static _ =>
         {
             ////
         }));
 
-        _activated.Subscribe();
-        _deactivated.Subscribe();
+        _ = _activated.Subscribe();
+        _ = _deactivated.Subscribe();
     }
 
     /// <summary>Initializes a new instance of the <see cref="TestForm"/> class with an initial activation state.</summary>

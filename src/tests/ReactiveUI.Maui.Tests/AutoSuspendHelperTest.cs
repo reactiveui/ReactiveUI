@@ -40,7 +40,7 @@ public sealed class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxSuspension.SuspensionHost.IsLaunchingNew.Subscribe(_ => triggered = true);
+        _ = RxSuspension.SuspensionHost.IsLaunchingNew.Subscribe(_ => triggered = true);
         helper.OnCreate();
 
         await Assert.That(triggered).IsTrue();
@@ -54,7 +54,7 @@ public sealed class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxSuspension.SuspensionHost.IsUnpausing.Subscribe(_ => triggered = true);
+        _ = RxSuspension.SuspensionHost.IsUnpausing.Subscribe(_ => triggered = true);
         helper.OnStart();
 
         await Assert.That(triggered).IsTrue();
@@ -68,7 +68,7 @@ public sealed class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxSuspension.SuspensionHost.IsResuming.Subscribe(_ => triggered = true);
+        _ = RxSuspension.SuspensionHost.IsResuming.Subscribe(_ => triggered = true);
         helper.OnResume();
 
         await Assert.That(triggered).IsTrue();
@@ -82,7 +82,7 @@ public sealed class AutoSuspendHelperTest
         var helper = new AutoSuspendHelper();
         var triggered = false;
 
-        RxSuspension.SuspensionHost.ShouldPersistState.Subscribe(_ => triggered = true);
+        _ = RxSuspension.SuspensionHost.ShouldPersistState.Subscribe(_ => triggered = true);
         helper.OnSleep();
 
         await Assert.That(triggered).IsTrue();

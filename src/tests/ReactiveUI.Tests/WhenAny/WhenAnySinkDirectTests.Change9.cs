@@ -78,7 +78,7 @@ public partial class WhenAnySinkDirectTests
         var e8 = new Signal<string>();
         var e9 = new Signal<string>();
         var rec = new Recorder<string>();
-        new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
             e1,
             e2,
             e3,
@@ -109,7 +109,7 @@ public partial class WhenAnySinkDirectTests
         var k8 = new Signal<string>();
         var k9 = new Signal<string>();
         var rec = new Recorder<string>();
-        new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
             k1,
             k2,
             k3,
@@ -148,7 +148,7 @@ public partial class WhenAnySinkDirectTests
         var t8 = new Signal<string>();
         var t9 = new Signal<string>();
         var rec = new Recorder<string>();
-        new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
+        _ = new WhenAnyChangeSink<string, string, string, string, string, string, string, string, string, string>(
             t1,
             t2,
             t3,

@@ -43,13 +43,8 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             }
 
             var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
-            if (buffer is null)
-            {
-                return Signal.Fail<object?>(
-                    new InvalidOperationException("The persisted state buffer could not be found."));
-            }
-
-            return new TaskObservable<object?>(DeserializeAsync());
+            return buffer is null ? Signal.Fail<object?>(
+                    new InvalidOperationException("The persisted state buffer could not be found.")) : new TaskObservable<object?>(DeserializeAsync());
 
             async Task<object?> DeserializeAsync()
             {
@@ -77,13 +72,8 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             }
 
             var buffer = AutoSuspendHelper.LatestBundle.GetByteArray(StateKey);
-            if (buffer is null)
-            {
-                return Signal.Fail<T?>(
-                    new InvalidOperationException("The persisted state buffer could not be found."));
-            }
-
-            return new TaskObservable<T?>(DeserializeAsync());
+            return buffer is null ? Signal.Fail<T?>(
+                    new InvalidOperationException("The persisted state buffer could not be found.")) : new TaskObservable<T?>(DeserializeAsync());
 
             async Task<T?> DeserializeAsync()
             {

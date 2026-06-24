@@ -21,7 +21,7 @@
     <Using Include="ReactiveUI.Primitives.Disposables"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ReactiveUI.Primitives.WinForms.Reactive"/>
+    <PackageReference Include="ReactiveUI.Primitives.WinForms.Reactive" ExcludeAssets="analyzers" />
     <ProjectReference Include="..\ReactiveUI.Reactive\ReactiveUI.Reactive.csproj"/>
   </ItemGroup>
 

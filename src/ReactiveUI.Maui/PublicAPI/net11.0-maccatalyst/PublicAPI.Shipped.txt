@@ -97,6 +97,14 @@ ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.Text.get -> string?
 ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.Text.set -> void
 ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.TextColor.get -> Microsoft.Maui.Graphics.Color!
 ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.TextColor.set -> void
+ReactiveUI.Maui.ReactiveTitleBar<TViewModel>
+ReactiveUI.Maui.ReactiveTitleBar<TViewModel>.ReactiveTitleBar() -> void
+ReactiveUI.Maui.ReactiveTitleBar<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Maui.ReactiveTitleBar<TViewModel>.ViewModel.set -> void
+ReactiveUI.Maui.ReactiveWindow<TViewModel>
+ReactiveUI.Maui.ReactiveWindow<TViewModel>.ReactiveWindow() -> void
+ReactiveUI.Maui.ReactiveWindow<TViewModel>.ViewModel.get -> TViewModel?
+ReactiveUI.Maui.ReactiveWindow<TViewModel>.ViewModel.set -> void
 ReactiveUI.Maui.Registrations
 ReactiveUI.Maui.Registrations.Register(ReactiveUI.IRegistrar! registrar) -> void
 ReactiveUI.Maui.Registrations.Registrations() -> void
@@ -145,6 +153,8 @@ override ReactiveUI.Maui.ReactiveNavigationPage<TViewModel>.OnBindingContextChan
 override ReactiveUI.Maui.ReactivePage<TViewModel>.OnBindingContextChanged() -> void
 override ReactiveUI.Maui.ReactiveShell<TViewModel>.OnBindingContextChanged() -> void
 override ReactiveUI.Maui.ReactiveTabbedPage<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Maui.ReactiveTitleBar<TViewModel>.OnBindingContextChanged() -> void
+override ReactiveUI.Maui.ReactiveWindow<TViewModel>.OnBindingContextChanged() -> void
 override ReactiveUI.Maui.RoutedViewHost<TViewModel>.PageForViewModel(ReactiveUI.IRoutableViewModel! vm) -> Microsoft.Maui.Controls.Page!
 override ReactiveUI.Maui.RoutedViewHost<TViewModel>.PagesForViewModel(ReactiveUI.IRoutableViewModel? vm) -> System.IObservable<Microsoft.Maui.Controls.Page!>!
 override ReactiveUI.Maui.ViewModelViewHost<TViewModel>.ResolveViewForViewModel(object? viewModel, string? contract) -> void
@@ -180,6 +190,8 @@ static readonly ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.DetailColorProp
 static readonly ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.DetailProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.TextColorProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly ReactiveUI.Maui.ReactiveTextItemView<TViewModel>.TextProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Maui.ReactiveTitleBar<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly ReactiveUI.Maui.ReactiveWindow<TViewModel>.ViewModelProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly ReactiveUI.Maui.RoutedViewHost.RouterProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly ReactiveUI.Maui.RoutedViewHost.SetTitleOnNavigateProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly ReactiveUI.Maui.ViewModelViewHost.ContractFallbackByPassProperty -> Microsoft.Maui.Controls.BindableProperty!

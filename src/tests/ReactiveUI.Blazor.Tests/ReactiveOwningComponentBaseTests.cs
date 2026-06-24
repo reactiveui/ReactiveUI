@@ -25,7 +25,7 @@ public class ReactiveOwningComponentBaseTests : BunitContext
         var viewModel = new TestViewModel();
 
         // OwningComponentBase<T> typically expects T to be resolvable from the service provider.
-        Services.AddScoped(_ => new TestViewModel());
+        _ = Services.AddScoped(_ => new TestViewModel());
 
         var cut = Render<TestOwningComponent>(parameters => parameters.Add(p => p.ViewModel, viewModel));
 

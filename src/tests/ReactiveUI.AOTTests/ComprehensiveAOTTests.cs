@@ -55,7 +55,7 @@ public class ComprehensiveAOTTests
         var interaction = new Interaction<string, bool>();
         var result = false;
 
-        interaction.RegisterHandler(static context => context.SetOutput(context.Input == "test"));
+        _ = interaction.RegisterHandler(static context => context.SetOutput(context.Input == "test"));
 
         result = await interaction.Handle("test").FirstAsync();
         await Assert.That(result).IsTrue();
@@ -72,7 +72,7 @@ public class ComprehensiveAOTTests
         var messageBus = new MessageBus();
         var receivedMessages = new List<string>();
 
-        messageBus.Listen<string>().ObserveOn(Sequencer.Immediate).Subscribe(receivedMessages.Add);
+        _ = messageBus.Listen<string>().ObserveOn(Sequencer.Immediate).Subscribe(receivedMessages.Add);
 
         messageBus.SendMessage("Message1");
         messageBus.SendMessage("Message2");
@@ -94,11 +94,11 @@ public class ComprehensiveAOTTests
         var command = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
 
         var canExecute = true;
-        command.CanExecute.ObserveOn(Sequencer.Immediate).Subscribe(canExec => canExecute = canExec);
+        _ = command.CanExecute.ObserveOn(Sequencer.Immediate).Subscribe(canExec => canExecute = canExec);
 
         await Assert.That(canExecute).IsTrue();
 
-        command.Execute().ObserveOn(Sequencer.Immediate).Subscribe();
+        _ = command.Execute().ObserveOn(Sequencer.Immediate).Subscribe();
         await Assert.That(executed).IsTrue();
     }
 
@@ -115,7 +115,7 @@ public class ComprehensiveAOTTests
         var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
 
         var values = new List<string>();
-        property.ObserveOn(Sequencer.Immediate).Subscribe(value => values.Add(value ?? string.Empty));
+        _ = property.ObserveOn(Sequencer.Immediate).Subscribe(value => values.Add(value ?? string.Empty));
 
         property.Value = "changed";
 
@@ -184,12 +184,12 @@ public class ComprehensiveAOTTests
             activationCount++;
 
             // Register cleanup action
-            new ActionDisposable(() => deactivationCount++)
+            _ = new ActionDisposable(() => deactivationCount++)
                 .DisposeWith(disposables);
         });
 
         // Test activation/deactivation cycle
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
         using (Assert.Multiple())
         {
             await Assert.That(activationCount).IsEqualTo(1);
@@ -204,7 +204,7 @@ public class ComprehensiveAOTTests
         }
 
         // Test multiple activation cycles
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
         viewModel.Activator.Deactivate();
 
         using (Assert.Multiple())

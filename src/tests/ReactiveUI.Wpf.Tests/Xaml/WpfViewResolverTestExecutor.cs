@@ -26,7 +26,7 @@ public class WpfViewResolverTestExecutor : STAThreadExecutor
         {
             // Include WPF platform services to ensure view locator, activation, etc. work
             // Register views from this assembly for view resolution tests
-            builder
+            _ = builder
                 .WithViewsFromAssembly(GetType().Assembly)
                 .WithWpf()
                 .WithCoreServices();

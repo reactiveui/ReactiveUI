@@ -37,7 +37,7 @@ public class WpfTestExecutor : STAThreadExecutor
         _helper.Initialize(builder =>
         {
             // Include WPF platform services to ensure view locator, activation, etc. work.
-            builder
+            _ = builder
                 .WithWpf()
                 .WithCoreServices();
         });

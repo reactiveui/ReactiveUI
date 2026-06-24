@@ -24,12 +24,19 @@ public static class IndexNormalizer
     /// <returns>A list updates.</returns>
     public static IList<Update?> Normalize(IEnumerable<Update> updates)
     {
-        var updatesList = updates.ToList();
+        List<Update> updatesList = [.. updates];
         MarkDuplicates(updatesList);
 
-        return [.. updatesList
-               .Select((x, i) => x.IsDuplicate ? null : Update.Create(x.Type, CalculateUpdateIndex(updatesList, i)))
-               .Where(x => x is not null)];
+        List<Update?> result = [];
+        for (var i = 0; i < updatesList.Count; i++)
+        {
+            if (!updatesList[i].IsDuplicate)
+            {
+                result.Add(Update.Create(updatesList[i].Type, CalculateUpdateIndex(updatesList, i)));
+            }
+        }
+
+        return result;
     }
 
     /// <summary>

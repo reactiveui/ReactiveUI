@@ -17,7 +17,7 @@ public partial class WhenAnyObservableMixinTests
         var subj = new Signal<string>();
         vm.ObservableProperty1 = subj;
         var list = new List<string>();
-        vm.WhenAnyObservable(x => x.ObservableProperty1).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
+        _ = vm.WhenAnyObservable(x => x.ObservableProperty1).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
         subj.OnNext("test");
         await Assert.That(list).Count().IsGreaterThan(0);
     }

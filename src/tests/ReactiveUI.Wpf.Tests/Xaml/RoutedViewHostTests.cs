@@ -81,7 +81,7 @@ public class RoutedViewHostTests
         await Assert.That(uc.Content).IsAssignableTo<System.Windows.Controls.Label>();
 
         // Test Navigation after activated
-        router.Navigate.Execute(viewModel).Subscribe();
+        _ = router.Navigate.Execute(viewModel).Subscribe();
         await Assert.That(uc.Content).IsAssignableTo<TestView>();
     }
 
@@ -104,7 +104,7 @@ public class RoutedViewHostTests
         var controlActivated = activation.GetActivationForView(uc).Collect();
 
         // Test navigation before Activation.
-        router.Navigate.Execute(viewModel).Subscribe();
+        _ = router.Navigate.Execute(viewModel).Subscribe();
 
         // Activate by raising the Loaded event
         var loaded = new RoutedEventArgs
@@ -133,7 +133,7 @@ public class RoutedViewHostTests
             _helper.Initialize(builder =>
             {
                 // Include WPF platform services and register test view for routing tests
-                builder
+                _ = builder
                     .WithWpf()
                     .RegisterView<TestView, TestViewModel>()
                     .WithCoreServices();

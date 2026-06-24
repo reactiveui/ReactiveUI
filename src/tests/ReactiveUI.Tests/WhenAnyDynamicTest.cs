@@ -17,7 +17,7 @@ public partial class WhenAnyDynamicTest
         var param = System.Linq.Expressions.Expression.Parameter(typeof(TestViewModel), "x");
         var property1 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property1));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             _ => "x",
             true).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -35,7 +35,7 @@ public partial class WhenAnyDynamicTest
         var param = System.Linq.Expressions.Expression.Parameter(typeof(TestViewModel), "x");
         var property1 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property1));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             _ => "x",
             false).ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -54,7 +54,7 @@ public partial class WhenAnyDynamicTest
         var property1 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property1));
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             (_, _) => "x").ObserveOn(Sequencer.Immediate).Subscribe(list.Add);
@@ -73,7 +73,7 @@ public partial class WhenAnyDynamicTest
         var property1 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property1));
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             (_, _) => "x",
@@ -93,7 +93,7 @@ public partial class WhenAnyDynamicTest
         var property1 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property1));
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             (_, _) => "x",
@@ -114,7 +114,7 @@ public partial class WhenAnyDynamicTest
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -135,7 +135,7 @@ public partial class WhenAnyDynamicTest
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -157,7 +157,7 @@ public partial class WhenAnyDynamicTest
         var property2 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property2));
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -180,7 +180,7 @@ public partial class WhenAnyDynamicTest
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -203,7 +203,7 @@ public partial class WhenAnyDynamicTest
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -227,7 +227,7 @@ public partial class WhenAnyDynamicTest
         var property3 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property3));
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -252,7 +252,7 @@ public partial class WhenAnyDynamicTest
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -277,7 +277,7 @@ public partial class WhenAnyDynamicTest
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -303,7 +303,7 @@ public partial class WhenAnyDynamicTest
         var property4 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property4));
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -330,7 +330,7 @@ public partial class WhenAnyDynamicTest
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -357,7 +357,7 @@ public partial class WhenAnyDynamicTest
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -385,7 +385,7 @@ public partial class WhenAnyDynamicTest
         var property5 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property5));
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -414,7 +414,7 @@ public partial class WhenAnyDynamicTest
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var property7 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property7));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -443,7 +443,7 @@ public partial class WhenAnyDynamicTest
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var property7 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property7));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,
@@ -473,7 +473,7 @@ public partial class WhenAnyDynamicTest
         var property6 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property6));
         var property7 = System.Linq.Expressions.Expression.Property(param, nameof(TestViewModel.Property7));
         var list = new List<string>();
-        vm.WhenAnyDynamic(
+        _ = vm.WhenAnyDynamic(
             property1,
             property2,
             property3,

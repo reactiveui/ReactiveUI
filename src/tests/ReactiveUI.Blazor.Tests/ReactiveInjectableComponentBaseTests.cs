@@ -32,7 +32,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task ViewModel_Injected_Works()
     {
         var viewModel = new TestViewModel();
-        Services.AddSingleton(viewModel);
+        _ = Services.AddSingleton(viewModel);
 
         var cut = Render<TestInjectableComponent>();
 
@@ -53,7 +53,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task ViewModel_Set_Same_Value_No_Notification()
     {
         var viewModel = new TestViewModel();
-        Services.AddSingleton(viewModel);
+        _ = Services.AddSingleton(viewModel);
 
         var cut = Render<TestInjectableComponent>();
 
@@ -74,7 +74,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task IViewFor_ViewModel_Explicit_Interface_Works()
     {
         var viewModel = new TestViewModel();
-        Services.AddSingleton(viewModel);
+        _ = Services.AddSingleton(viewModel);
 
         var cut = Render<TestInjectableComponent>();
         IViewFor viewFor = cut.Instance;
@@ -96,7 +96,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task Activated_Deactivated_Observables_Work()
     {
         var viewModel = new TestViewModel();
-        Services.AddSingleton(viewModel);
+        _ = Services.AddSingleton(viewModel);
 
         var cut = Render<TestInjectableComponent>();
         var activatable = cut.Instance;
@@ -111,7 +111,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
     public async Task ActivatableViewModel_Works()
     {
         var viewModel = new TestActivatableViewModel();
-        Services.AddSingleton(viewModel);
+        _ = Services.AddSingleton(viewModel);
 
         var cut = Render<TestActivatableInjectableComponent>();
 
@@ -148,7 +148,7 @@ public class ReactiveInjectableComponentBaseTests : BunitContext
             this.WhenActivated(disposables =>
             {
                 IsActivated = true;
-                new ActionDisposable(() => IsActivated = false).DisposeWith(disposables);
+                _ = new ActionDisposable(() => IsActivated = false).DisposeWith(disposables);
             });
 
         /// <summary>Gets the ViewModelActivator for this ViewModel.</summary>

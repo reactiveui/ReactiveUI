@@ -34,7 +34,7 @@ public partial class BuilderInstanceMixinsTests
             out var s13,
             out var s14,
             out var s15);
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InvokeWithInstance15(
             builder,
@@ -100,10 +100,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -152,7 +152,7 @@ public partial class BuilderInstanceMixinsTests
             out var s13,
             out var s14,
             out var s15);
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InvokeWithInstance15(
             builder,
@@ -222,10 +222,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -271,7 +271,7 @@ public partial class BuilderInstanceMixinsTests
             out var s14,
             out var s15,
             out var s16);
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InvokeWithInstance16(
             builder,
@@ -340,10 +340,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -394,7 +394,7 @@ public partial class BuilderInstanceMixinsTests
             out var s14,
             out var s15,
             out var s16);
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InvokeWithInstance16(
             builder,
@@ -467,10 +467,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,

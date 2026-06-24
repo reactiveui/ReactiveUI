@@ -66,7 +66,7 @@ public class FollowObservableStateBehaviorTests
             null,
             stateSubject.AsObservable());
 
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             FollowObservableStateBehavior.InternalOnStateObservableChangedForTesting(button, eventArgs));
     }
 
@@ -79,7 +79,7 @@ public class FollowObservableStateBehaviorTests
         var behaviors = Interaction.GetBehaviors(button);
         behaviors.Add(behavior);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             FollowObservableStateBehavior.InternalOnStateObservableChangedForTesting(behavior, default));
     }
 
@@ -97,7 +97,7 @@ public class FollowObservableStateBehaviorTests
             null,
             null!);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             FollowObservableStateBehavior.InternalOnStateObservableChangedForTesting(behavior, eventArgs));
     }
 
@@ -127,7 +127,7 @@ public class FollowObservableStateBehaviorTests
 
         // First subject should no longer be subscribed
         var completed1 = false;
-        subject1.Subscribe(_ => { }, () => completed1 = true);
+        _ = subject1.Subscribe(_ => { }, () => completed1 = true);
         subject1.OnCompleted();
 
         await Assert.That(completed1).IsTrue();
@@ -217,7 +217,7 @@ public class FollowObservableStateBehaviorTests
         await Task.Delay(StateSettleDelayMs);
 
         // Detach the behavior
-        behaviors.Remove(behavior);
+        _ = behaviors.Remove(behavior);
         await Task.Delay(StateSettleDelayMs);
 
         await Assert.That(disposed).IsTrue();

@@ -263,15 +263,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     [SupportedOSPlatform("android35.0")]
     private static DispatchItem CreateTimePickerHourFromWidget()
     {
-        if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
-        {
-            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+        return (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Hour,
                 static (v, h) => v.TimeChanged += h,
-                static (v, h) => v.TimeChanged -= h);
-        }
-
-        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+                static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
             static v => v.CurrentHour,
             static (v, h) => v.TimeChanged += h,
             static (v, h) => v.TimeChanged -= h);
@@ -287,15 +282,10 @@ public sealed class AndroidObservableForWidgets : ICreatesObservableForProperty
     [SupportedOSPlatform("android35.0")]
     private static DispatchItem CreateTimePickerMinuteFromWidget()
     {
-        if ((int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel)
-        {
-            return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+        return (int)Build.VERSION.SdkInt >= TimePickerHourMinuteApiLevel ? CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
                 static v => v.Minute,
                 static (v, h) => v.TimeChanged += h,
-                static (v, h) => v.TimeChanged -= h);
-        }
-
-        return CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
+                static (v, h) => v.TimeChanged -= h) : CreateFromWidget<TimePicker, TimePicker.TimeChangedEventArgs>(
             static v => v.CurrentMinute,
             static (v, h) => v.TimeChanged += h,
             static (v, h) => v.TimeChanged -= h);

@@ -99,7 +99,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var obsUpdated = false;
 
-        obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
+        _ = obj.ObservableForProperty(x => x.Model.Model.Model.SomeOtherParam).Subscribe(_ => obsUpdated = true);
 
         obsUpdated = false;
 
@@ -137,7 +137,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? propertyName = null;
 
-        fixture.Changed.ObserveOn(Sequencer.Immediate).Subscribe(x =>
+        _ = fixture.Changed.ObserveOn(Sequencer.Immediate).Subscribe(x =>
         {
             sender = x.Sender;
 
@@ -178,7 +178,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? propertyName = null;
 
-        fixture.Changing.ObserveOn(Sequencer.Immediate).Subscribe(x =>
+        _ = fixture.Changing.ObserveOn(Sequencer.Immediate).Subscribe(x =>
         {
             sender = x.Sender;
 
@@ -240,10 +240,10 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
             }
         };
 
-        var results = data.Keys.Select(static x => new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
+        var results = data.Keys.Select(static x => (input: x, output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
 
         var resultTypes = dataTypes.Keys.Select(static x =>
-                    new { input = x, output = Reflection.Rewrite(x.Body).GetExpressionChain() }).ToArray();
+                    (input: x, output: Reflection.Rewrite(x.Body).GetExpressionChain())).ToArray();
 
         foreach (var x in results)
         {
@@ -273,7 +273,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         IEnumerable<AccountUser>? result = null;
 
-        fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
+        _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsers)
             .Where(users => users.Count > 0)
             .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x.LastName)))
             .Subscribe(dict => result = dict);
@@ -292,7 +292,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         IEnumerable<AccountUser>? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.ProjectService.Projects,
             x => x.AccountService.AccountUsers).Where(tuple => tuple.Value1?.Count > 0 && tuple.Value2?.Count > 0).Select(tuple =>
                 {
@@ -315,7 +315,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         IEnumerable<AccountUser?>? result = null;
 
-        fixture.WhenAnyValue(x => x.AccountService.AccountUsersNullable)
+        _ = fixture.WhenAnyValue(x => x.AccountService.AccountUsersNullable)
             .Where(users => users.Count > 0)
             .Select(users => users.Values.Where(x => !string.IsNullOrWhiteSpace(x?.LastName)))
             .Subscribe(dict => result = dict);
@@ -334,7 +334,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         IEnumerable<AccountUser?>? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.ProjectService.ProjectsNullable,
             x => x.AccountService.AccountUsersNullable).Where(tuple => tuple.Value1.Count > 0 && tuple.Value2?.Count > 0).Select(tuple =>
                 {
@@ -357,7 +357,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
             var weakRef = new WeakReference(obj.Model);
 
-            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            _ = obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
 
             obj.Model = new();
 
@@ -370,7 +370,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
             var weakRef = new WeakReference(obj.Model.Model);
 
-            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            _ = obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
 
             obj.Model.Model = new();
 
@@ -383,7 +383,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
             var weakRef = new WeakReference(obj.Model.Model.Model);
 
-            obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
+            _ = obj.ObservableForProperty(static x => x.Model.Model.Model.SomeOtherParam).Subscribe();
 
             obj.Model.Model.Model = new();
 
@@ -428,7 +428,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var observedValue = 1;
 
-        obj.WhenAnyValue(x => x.SomeOtherParam).Subscribe(x => observedValue = x);
+        _ = obj.WhenAnyValue(x => x.SomeOtherParam).Subscribe(x => observedValue = x);
 
         obj.SomeOtherParam = ExpectedValue;
 
@@ -445,7 +445,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText, PocoProperty = BamfText };
 
-        fixture.WhenAnyValue(x => x.IsNotNullString).ObserveOn(Sequencer.Immediate).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
+        _ = fixture.WhenAnyValue(x => x.IsNotNullString).ObserveOn(Sequencer.Immediate).Subscribe(__ => whenAnyTid = Environment.CurrentManagedThreadId);
 
         fixture.IsNotNullString = BarText;
 
@@ -461,23 +461,23 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var output = new List<IObservedChange<TestFixture, string?>?>();
 
-        fixture.WhenAny(
+        _ = fixture.WhenAny(
             static x => x.PocoProperty,
             static x => x).Subscribe(output.Add);
 
         var output2 = new List<string?>();
 
-        fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output2.Add);
+        _ = fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output2.Add);
 
         var output3 = new List<IObservedChange<TestFixture, int?>?>();
 
-        fixture.WhenAny(
+        _ = fixture.WhenAny(
             static x => x.NullableInt,
             static x => x).Subscribe(output3.Add);
 
         var output4 = new List<int?>();
 
-        fixture.WhenAnyValue(static x => x.NullableInt).Subscribe(output4.Add);
+        _ = fixture.WhenAnyValue(static x => x.NullableInt).Subscribe(output4.Add);
 
         using (Assert.Multiple())
         {
@@ -525,10 +525,10 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var output2 = new List<IObservedChange<HostTestFixture, string>>();
 
-        fixture.WhenAny(
+        _ = fixture.WhenAny(
             x => x.SomeOtherParam,
             x => x.Child!.IsNotNullString,
-            (sop, nns) => new { sop, nns }).Subscribe(x =>
+            (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);
 
@@ -601,9 +601,9 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var output2 = new List<int?>();
 
-        fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output1.Add);
+        _ = fixture.WhenAnyValue(static x => x.PocoProperty).Subscribe(output1.Add);
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             static x => x.IsOnlyOneWord,
             static x => x?.Length).Subscribe(output2.Add);
 
@@ -637,10 +637,10 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var output2 = new List<string>();
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.SomeOtherParam,
             x => x.Child!.IsNotNullString,
-            (sop, nns) => new { sop, nns }).Subscribe(x =>
+            (sop, nns) => (sop, nns)).Subscribe(x =>
             {
                 output1.Add(x.sop);
 

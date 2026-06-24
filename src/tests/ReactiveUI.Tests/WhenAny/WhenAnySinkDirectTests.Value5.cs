@@ -44,7 +44,7 @@ public partial class WhenAnySinkDirectTests
         var e4 = new Signal<IObservedChange<object?, string>>();
         var e5 = new Signal<IObservedChange<object?, string>>();
         var errRec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string>(e1, e2, e3, e4, e5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(errRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(e1, e2, e3, e4, e5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(errRec);
         e1.OnError(ex);
 
         var k1 = new Signal<IObservedChange<object?, string>>();
@@ -53,7 +53,7 @@ public partial class WhenAnySinkDirectTests
         var k4 = new Signal<IObservedChange<object?, string>>();
         var k5 = new Signal<IObservedChange<object?, string>>();
         var cmpRec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string>(k1, k2, k3, k4, k5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(cmpRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(k1, k2, k3, k4, k5, (x1, x2, x3, x4, x5) => x1 + x2 + x3 + x4 + x5).Subscribe(cmpRec);
         k1.OnCompleted();
         k2.OnCompleted();
         k3.OnCompleted();
@@ -66,7 +66,7 @@ public partial class WhenAnySinkDirectTests
         var t4 = new Signal<IObservedChange<object?, string>>();
         var t5 = new Signal<IObservedChange<object?, string>>();
         var throwRec = new Recorder<string>();
-        new WhenAnyValueSink<object?, string, string, string, string, string, string>(t1, t2, t3, t4, t5, (_, _, _, _, _) => throw ex).Subscribe(throwRec);
+        _ = new WhenAnyValueSink<object?, string, string, string, string, string, string>(t1, t2, t3, t4, t5, (_, _, _, _, _) => throw ex).Subscribe(throwRec);
         t1.OnNext(Ch("a"));
         t2.OnNext(Ch("a"));
         t3.OnNext(Ch("a"));

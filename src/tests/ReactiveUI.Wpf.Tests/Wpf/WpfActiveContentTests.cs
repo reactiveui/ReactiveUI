@@ -152,9 +152,9 @@ public class WpfActiveContentTests
         int? loadResult = null;
         int? saveResult = null;
         int? invalidateResult = null;
-        dsd.LoadState().Select(static _ => 1).Subscribe(v => loadResult = v);
-        dsd.SaveState("Save Me").Select(static _ => SaveResultValue).Subscribe(v => saveResult = v);
-        dsd.InvalidateState().Select(static _ => InvalidateResultValue).Subscribe(v => invalidateResult = v);
+        _ = dsd.LoadState().Select(static _ => 1).Subscribe(v => loadResult = v);
+        _ = dsd.SaveState("Save Me").Select(static _ => SaveResultValue).Subscribe(v => saveResult = v);
+        _ = dsd.InvalidateState().Select(static _ => InvalidateResultValue).Subscribe(v => invalidateResult = v);
         await Assert.That(loadResult).IsEqualTo(1);
         await Assert.That(saveResult).IsEqualTo(SaveResultValue);
         await Assert.That(invalidateResult).IsEqualTo(InvalidateResultValue);
@@ -173,7 +173,7 @@ public class WpfActiveContentTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
@@ -205,7 +205,7 @@ public class WpfActiveContentTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
@@ -236,7 +236,7 @@ public class WpfActiveContentTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))
@@ -267,7 +267,7 @@ public class WpfActiveContentTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithWpf()
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.View0()))
                     .WithRegistration(r => r.RegisterConstant<IViewFor<FakeViewWithContract.MyViewModel>>(new FakeViewWithContract.ViewA(), FakeViewWithContract.ContractA))

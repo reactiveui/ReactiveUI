@@ -55,7 +55,7 @@ public class ActivatingViewTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithCustomRegistration(builder =>
                 builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
@@ -93,7 +93,7 @@ public class ActivatingViewTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithCustomRegistration(builder =>
                 builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
@@ -138,7 +138,7 @@ public class ActivatingViewTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithCustomRegistration(builder =>
                 builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
@@ -172,7 +172,7 @@ public class ActivatingViewTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithCustomRegistration(builder =>
                 builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();
@@ -214,7 +214,7 @@ public class ActivatingViewTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var locator = new ModernDependencyResolver();
-        locator.CreateReactiveUIBuilder()
+        _ = locator.CreateReactiveUIBuilder()
             .WithCoreServices()
             .WithCustomRegistration(builder =>
                 builder.Register<IActivationForViewFetcher>(() => new ActivatingViewFetcher())).BuildApp();

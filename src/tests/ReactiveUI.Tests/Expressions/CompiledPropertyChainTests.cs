@@ -118,7 +118,7 @@ public class CompiledPropertyChainTests
     [Test]
     public async Task CompiledPropertyChain_Constructor_WithEmptyChain_Throws()
     {
-        var emptyChain = Array.Empty<System.Linq.Expressions.Expression>();
+        var emptyChain = Array.Empty<Expression>();
 
         await Assert.That(() => new Reflection.CompiledPropertyChain<TestViewModel, string>(emptyChain))
             .Throws<InvalidOperationException>();
@@ -236,7 +236,7 @@ public class CompiledPropertyChainTests
     [Test]
     public async Task CompiledPropertyChainSetter_Constructor_WithEmptyChain_Throws()
     {
-        var emptyChain = Array.Empty<System.Linq.Expressions.Expression>();
+        var emptyChain = Array.Empty<Expression>();
 
         await Assert.That(() => new Reflection.CompiledPropertyChainSetter<TestViewModel, string>(emptyChain))
             .Throws<InvalidOperationException>();

@@ -190,29 +190,17 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
     private static string GetCocoaKeyPathUnsafe(Type senderType, string propertyName)
     {
         // Note: This logic preserves the original behavior pattern: best-effort attempt and fallback.
-        var property = senderType
-            .GetTypeInfo()
-            .DeclaredProperties
-            .FirstOrDefault(p => !p.IsStatic());
-
+        var property = FindFirstInstanceProperty(senderType);
         var propIsBoolean = false;
 
         if (property is not null)
         {
             propIsBoolean = property.PropertyType == typeof(bool);
 
-            var getter = property.GetGetMethod();
-            if (getter is not null)
+            var export = FindExportAttribute(property.GetGetMethod());
+            if (export?.Selector is not null)
             {
-                var export = getter
-                    .GetCustomAttributes(inherit: true)
-                    .OfType<ExportAttribute>()
-                    .FirstOrDefault();
-
-                if (export?.Selector is not null)
-                {
-                    return export.Selector;
-                }
+                return export.Selector;
             }
         }
 
@@ -224,6 +212,45 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
         return string.Concat(
             char.ToLowerInvariant(propertyName[0]).ToString(CultureInfo.InvariantCulture),
             propertyName.AsSpan(1));
+    }
+
+    /// <summary>Returns the first non-static declared property of the type, or <see langword="null"/>.</summary>
+    /// <param name="senderType">The runtime type to inspect.</param>
+    /// <returns>The first instance property, or <see langword="null"/> when none exist.</returns>
+    [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
+    private static PropertyInfo? FindFirstInstanceProperty(Type senderType)
+    {
+        foreach (var candidate in senderType.GetTypeInfo().DeclaredProperties)
+        {
+            if (!candidate.IsStatic())
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Returns the first <see cref="ExportAttribute"/> applied to the getter, or <see langword="null"/>.</summary>
+    /// <param name="getter">The property getter, which may be <see langword="null"/>.</param>
+    /// <returns>The export attribute, or <see langword="null"/> when none is present.</returns>
+    [RequiresUnreferencedCode("Uses reflection over runtime members which is not trim- or AOT-safe.")]
+    private static ExportAttribute? FindExportAttribute(MethodInfo? getter)
+    {
+        if (getter is null)
+        {
+            return null;
+        }
+
+        foreach (var attribute in getter.GetCustomAttributes(inherit: true))
+        {
+            if (attribute is ExportAttribute exportAttribute)
+            {
+                return exportAttribute;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

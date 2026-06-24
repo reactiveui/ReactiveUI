@@ -28,7 +28,7 @@ public sealed class WinFormsViewDependencyResolverTests : IDisposable
 
         _resolver = new();
         _resolver.InitializeSplat();
-        _resolver.CreateReactiveUIBuilder()
+        _ = _resolver.CreateReactiveUIBuilder()
             .WithCoreServices()
             .BuildApp();
         _resolver.RegisterViewsForViewModels(GetType().Assembly);

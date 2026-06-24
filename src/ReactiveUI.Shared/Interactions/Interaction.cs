@@ -200,7 +200,7 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
     {
         lock (_sync)
         {
-            _handlers.Remove(handler);
+            _ = _handlers.Remove(handler);
             _handlersSnapshot = null;
         }
     }

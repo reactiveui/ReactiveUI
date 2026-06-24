@@ -104,7 +104,7 @@ public class AutoPersistCollectionTest
         var fixture = new ObservableCollection<TestFixture>();
         var timesSaved = 0;
 
-        fixture.AutoPersistCollection(
+        _ = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
@@ -142,7 +142,7 @@ public class AutoPersistCollectionTest
         var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
-        fixture.AutoPersistCollection(
+        _ = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
@@ -201,7 +201,7 @@ public class AutoPersistCollectionTest
         var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
-        fixture.AutoPersistCollection(
+        _ = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
@@ -234,7 +234,7 @@ public class AutoPersistCollectionTest
         var metadataProvider = AutoPersistHelperMixins.CreateMetadataProvider<TestFixture>();
         var timesSaved = 0;
 
-        fixture.AutoPersistCollection(
+        _ = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;
@@ -267,7 +267,7 @@ public class AutoPersistCollectionTest
         var fixture = new ResettableCollection<TestFixture> { item };
         var timesSaved = 0;
 
-        fixture.AutoPersistCollection(
+        _ = fixture.AutoPersistCollection(
             _ =>
             {
                 timesSaved++;

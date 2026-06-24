@@ -4,6 +4,7 @@
 // See the LICENSE file in the project root for full license information.
 
 using Splat;
+using Application = Microsoft.Maui.Controls.Application;
 
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive.Maui;
@@ -14,7 +15,7 @@ namespace ReactiveUI.Maui;
 /// <summary>Helps manage .NET MAUI application lifecycle events.</summary>
 /// <remarks>
 /// <para>
-/// Instantiate this class to wire <see cref="RxSuspension.SuspensionHost"/> to MAUI's <see cref="Microsoft.Maui.Controls.Application"/>
+/// Instantiate this class to wire <see cref="RxSuspension.SuspensionHost"/> to MAUI's <see cref="Application"/>
 /// callbacks. The helper propagates <c>OnStart</c>, <c>OnResume</c>, and <c>OnSleep</c> to the suspension host so state
 /// drivers created via <c>SetupDefaultSuspendResume</c> can serialize view models consistently across Android, iOS, and
 /// desktop targets.
@@ -78,16 +79,16 @@ public class AutoSuspendHelper : IEnableLogger, IDisposable
     /// <summary>Gets a subject to indicate whether the application has crashed.</summary>
     public static ISignal<RxVoid> UntimelyDemise { get; } = new Signal<RxVoid>();
 
-    /// <summary>Call this method in the constructor of your .NET MAUI <see cref="Microsoft.Maui.Controls.Application" />.</summary>
+    /// <summary>Call this method in the constructor of your .NET MAUI <see cref="Application" />.</summary>
     public void OnCreate() => _onLaunchingNew.OnNext(RxVoid.Default);
 
-    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnStart" /> to relay MAUI's start notification.</summary>
+    /// <summary>Call this method in <see cref="Application.OnStart" /> to relay MAUI's start notification.</summary>
     public void OnStart() => _onStart.OnNext(RxVoid.Default);
 
-    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnSleep" /> when the app is going to the background.</summary>
+    /// <summary>Call this method in <see cref="Application.OnSleep" /> when the app is going to the background.</summary>
     public void OnSleep() => _onSleep.OnNext(EmptyDisposable.Instance);
 
-    /// <summary>Call this method in <see cref="Microsoft.Maui.Controls.Application.OnResume" /> when the app returns to the foreground.</summary>
+    /// <summary>Call this method in <see cref="Application.OnResume" /> when the app returns to the foreground.</summary>
     public void OnResume() => _onResume.OnNext(RxVoid.Default);
 
     /// <inheritdoc />

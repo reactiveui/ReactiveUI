@@ -225,7 +225,7 @@ public class ReflectionTests
         const int ConstantValue = 42;
         var constant = System.Linq.Expressions.Expression.Constant(ConstantValue);
 
-        Assert.Throws<NotSupportedException>(() => constant.GetMemberInfo());
+        _ = Assert.Throws<NotSupportedException>(() => constant.GetMemberInfo());
     }
 
     /// <summary>Verifies that GetParent returns the object expression of an index expression.</summary>
@@ -266,7 +266,7 @@ public class ReflectionTests
         const int ConstantValue = 42;
         var constant = System.Linq.Expressions.Expression.Constant(ConstantValue);
 
-        Assert.Throws<NotSupportedException>(() => constant.GetParent());
+        _ = Assert.Throws<NotSupportedException>(() => constant.GetParent());
     }
 
     /// <summary>Verifies that a value fetcher reads a value from a field.</summary>
@@ -392,7 +392,7 @@ public class ReflectionTests
     public void IsStatic_WithNull_Throws()
     {
         PropertyInfo? propertyInfo = null;
-        Assert.Throws<ArgumentNullException>(() => propertyInfo!.IsStatic());
+        _ = Assert.Throws<ArgumentNullException>(() => propertyInfo!.IsStatic());
     }
 
     /// <summary>Verifies that IsStatic returns true for a static property.</summary>
@@ -492,6 +492,47 @@ public class ReflectionTests
 
         await Assert.That(result).IsTrue();
         await Assert.That(obj.Nested!.Property).IsEqualTo(SetValueText);
+    }
+
+    /// <summary>An empty expression chain has no member to resolve and throws.</summary>
+    [Test]
+    public void TryGetValueForPropertyChain_EmptyChain_Throws() =>
+        Assert.Throws<InvalidOperationException>(() =>
+            Reflection.TryGetValueForPropertyChain<int>(out _, new object(), []));
+
+    /// <summary>A null intermediate value in the chain yields a failed lookup.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TryGetValueForPropertyChain_NullIntermediate_ReturnsFalse()
+    {
+        Expression<Func<TestClass, string?>> expr = x => x.Nested!.Property;
+        var chain = expr.Body.GetExpressionChain();
+
+        var result = Reflection.TryGetValueForPropertyChain<string>(out var value, null, chain);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsFalse();
+            await Assert.That(value).IsNull();
+        }
+    }
+
+    /// <summary>Setting a writable member through the chain assigns the value and returns true.</summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TrySetValueToPropertyChain_WritableMember_SetsValue()
+    {
+        var target = new TestClass();
+        Expression<Func<TestClass, string?>> expr = x => x.Property;
+        var chain = expr.Body.GetExpressionChain();
+
+        var result = Reflection.TrySetValueToPropertyChain(target, chain, "assigned", shouldThrow: false);
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(result).IsTrue();
+            await Assert.That(target.Property).IsEqualTo("assigned");
+        }
     }
 
     /// <summary>A sample class used as the target of reflection tests.</summary>

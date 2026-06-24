@@ -77,7 +77,7 @@ public class ReactiveUIBuilderRxAppMigrationTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() => builder.WithExceptionHandler(null!));
+        _ = Assert.Throws<ArgumentNullException>(() => builder.WithExceptionHandler(null!));
     }
 
     /// <summary>Verifies that the non-generic suspension host creates a default <see cref="SuspensionHost"/>.</summary>
@@ -118,16 +118,16 @@ public class ReactiveUIBuilderRxAppMigrationTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() =>
             builder.WithCacheSizes(InvalidCacheSize, ValidCacheSize));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() =>
             builder.WithCacheSizes(ValidCacheSize, InvalidCacheSize));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() =>
             builder.WithCacheSizes(NegativeCacheSize, ValidCacheSize));
 
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        _ = Assert.Throws<ArgumentOutOfRangeException>(() =>
             builder.WithCacheSizes(ValidCacheSize, NegativeCacheSize));
     }
 
@@ -241,7 +241,7 @@ public class ReactiveUIBuilderRxAppMigrationTests
             CapturedEx = null;
             var customHandler = Witness.Create<Exception>(ex => CapturedEx = ex);
 
-            RxAppBuilder.CreateReactiveUIBuilder()
+            _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(customHandler)
                 .WithCoreServices()
                 .BuildApp();
@@ -293,7 +293,7 @@ public class ReactiveUIBuilderRxAppMigrationTests
             CapturedEx = null;
             var customHandler = Witness.Create<Exception>(ex => CapturedEx = ex);
 
-            RxAppBuilder.CreateReactiveUIBuilder()
+            _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(customHandler)
                 .WithSuspensionHost<TestAppState>()
                 .WithCacheSizes(ChainedSmallCacheSize, ChainedBigCacheSize)
@@ -320,7 +320,7 @@ public class ReactiveUIBuilderRxAppMigrationTests
             var firstHandler = Witness.Create<Exception>(ex => FirstCaptured = ex);
             var secondHandler = Witness.Create<Exception>(ex => SecondCaptured = ex);
 
-            RxAppBuilder.CreateReactiveUIBuilder()
+            _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(firstHandler)
                 .WithExceptionHandler(secondHandler)
                 .WithCoreServices()

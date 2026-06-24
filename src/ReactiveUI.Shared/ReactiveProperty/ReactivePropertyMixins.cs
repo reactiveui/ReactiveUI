@@ -50,25 +50,20 @@ public static class ReactivePropertyMixins
             var memberExpression = (MemberExpression)selfSelector.Body;
             var propertyInfo = (PropertyInfo)memberExpression.Member;
             var display = propertyInfo.GetCustomAttribute<DisplayAttribute>();
-            var attrs = propertyInfo.GetCustomAttributes<ValidationAttribute>().ToArray();
+            ValidationAttribute[] attrs = [.. propertyInfo.GetCustomAttributes<ValidationAttribute>()];
 
             ValidationContext context = new(self, null, null)
             {
                 DisplayName = display?.GetName() ?? propertyInfo.Name,
-                MemberName = nameof(ReactiveProperty<T>.Value)
+                MemberName = nameof(ReactiveProperty<>.Value)
             };
 
             if (attrs.Length != 0)
             {
-                self.AddValidationError(x =>
+                _ = self.AddValidationError(x =>
                 {
                     List<ValidationResult> validationResults = [];
-                    if (Validator.TryValidateValue(x!, context, validationResults, attrs))
-                    {
-                        return null;
-                    }
-
-                    return validationResults[0].ErrorMessage;
+                    return Validator.TryValidateValue(x!, context, validationResults, attrs) ? null : validationResults[0].ErrorMessage;
                 });
             }
 
@@ -115,7 +110,18 @@ public static class ReactivePropertyMixins
                 string? message;
                 try
                 {
-                    message = value?.OfType<string>().FirstOrDefault();
+                    message = null;
+                    if (value is not null)
+                    {
+                        foreach (var item in value)
+                        {
+                            if (item is string text)
+                            {
+                                message = text;
+                                break;
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

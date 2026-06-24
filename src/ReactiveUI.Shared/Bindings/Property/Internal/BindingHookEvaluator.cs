@@ -46,14 +46,14 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
                     return [];
                 }
 
-                viewModelChain!.TryGetAllValues(viewModel, out var fetchedValues);
+                _ = viewModelChain!.TryGetAllValues(viewModel, out var fetchedValues);
                 return fetchedValues;
             }
-        : () => [new ObservedChange<object, object?>(null!, null, viewModel)];
+            : () => [new ObservedChange<object, object?>(null!, null, viewModel)];
 
         var viewFetcher = () =>
         {
-            viewChainGetter.TryGetAllValues(view, out var fetchedValues);
+            _ = viewChainGetter.TryGetAllValues(view, out var fetchedValues);
             return fetchedValues;
         };
 
@@ -79,8 +79,8 @@ internal class BindingHookEvaluator : IBindingHookEvaluator
             return shouldBind;
         }
 
-        var viewModelString = $"{typeof(TViewModel).Name}.{string.Join(".", viewModelExpression)}";
-        var viewString = $"{typeof(TView).Name}.{string.Join(".", viewExpression)}";
+        var viewModelString = $"{nameof(TViewModel)}.{string.Join(".", viewModelExpression)}";
+        var viewString = $"{nameof(TView)}.{string.Join(".", viewExpression)}";
         LogHost.Default.Warn($"Binding hook asked to disable binding {viewModelString} => {viewString}");
 
         return shouldBind;

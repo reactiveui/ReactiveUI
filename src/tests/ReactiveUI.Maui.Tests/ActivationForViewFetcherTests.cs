@@ -131,7 +131,7 @@ public class ActivationForViewFetcherTests
 
         var activation = fetcher.GetActivationForView(view);
         var values = new List<bool>();
-        activation.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
+        _ = activation.ObserveOn(Sequencer.Immediate).Subscribe(values.Add);
 
         activatedSubject.OnNext(RxVoid.Default);
         deactivatedSubject.OnNext(RxVoid.Default);

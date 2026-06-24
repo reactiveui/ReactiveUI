@@ -73,7 +73,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         _mainThreadId = Environment.CurrentManagedThreadId;
 
         _mainDisposables = [];
-        _sectionInfoDisposable = new SwapDisposable();
+        _sectionInfoDisposable = new();
         _mainDisposables.Add(_sectionInfoDisposable);
 
         _pendingChanges = [];
@@ -162,7 +162,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
         var section = _sectionInfo[indexPath.Section];
         var viewModel = ((IList)section.Collection!)[indexPath.Row];
 
-        var key = section?.CellKeySelector?.Invoke(viewModel) ?? NSString.Empty;
+        var key = section.CellKeySelector?.Invoke(viewModel) ?? NSString.Empty;
         var cell = _adapter.DequeueReusableCell(key, indexPath);
 
         if (cell is IViewFor view)
@@ -171,7 +171,7 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
             view.ViewModel = viewModel;
         }
 
-        var initializeCellAction = section?.InitializeCellAction ?? NoOpInitializeCell;
+        var initializeCellAction = section.InitializeCellAction ?? NoOpInitializeCell;
         initializeCellAction(cell);
 
         return cell;
@@ -196,13 +196,11 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of updates.</returns>
     /// <exception cref="NotSupportedException">Thrown when the action is not supported.</exception>
-    private static IEnumerable<Update> GetUpdatesForEvent(PendingChange pendingChange) =>
+    private static List<Update> GetUpdatesForEvent(PendingChange pendingChange) =>
         pendingChange.Action switch
         {
             NotifyCollectionChangedAction.Add =>
-                Enumerable
-                    .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-                    .Select(Update.CreateAdd),
+                GetAddUpdates(pendingChange),
 
             NotifyCollectionChangedAction.Remove =>
                 GetRemoveUpdates(pendingChange),
@@ -221,30 +219,70 @@ internal sealed class CommonReactiveSource<TSource, TUIView, TUIViewCell, TSecti
     /// <summary>Builds the delete updates for a <see cref="NotifyCollectionChangedAction.Remove"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of delete updates.</returns>
-    private static IEnumerable<Update> GetRemoveUpdates(PendingChange pendingChange) =>
-        Enumerable
-            .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
-            .Select(_ => Update.CreateDelete(pendingChange.OldStartingIndex));
+    private static List<Update> GetRemoveUpdates(PendingChange pendingChange)
+    {
+        var count = pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count;
+        List<Update> updates = new(count);
+        for (var i = 0; i < count; i++)
+        {
+            updates.Add(Update.CreateDelete(pendingChange.OldStartingIndex));
+        }
+
+        return updates;
+    }
+
+    /// <summary>Builds the add updates for a <see cref="NotifyCollectionChangedAction.Add"/> change.</summary>
+    /// <param name="pendingChange">The pending change.</param>
+    /// <returns>An enumerable of add updates.</returns>
+    private static List<Update> GetAddUpdates(PendingChange pendingChange)
+    {
+        var count = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
+        List<Update> updates = new(count);
+        for (var i = 0; i < count; i++)
+        {
+            updates.Add(Update.CreateAdd(pendingChange.NewStartingIndex + i));
+        }
+
+        return updates;
+    }
 
     /// <summary>Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Move"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of delete and add updates.</returns>
-    private static IEnumerable<Update> GetMoveUpdates(PendingChange pendingChange) =>
-        Enumerable
-            .Range(pendingChange.OldStartingIndex, pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count)
-            .Select(Update.CreateDelete)
-            .Concat(
-                Enumerable
-                    .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-                    .Select(Update.CreateAdd));
+    private static List<Update> GetMoveUpdates(PendingChange pendingChange)
+    {
+        var oldCount = pendingChange.OldItems is null ? 1 : pendingChange.OldItems.Count;
+        var newCount = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
+        List<Update> updates = new(oldCount + newCount);
+        for (var i = 0; i < oldCount; i++)
+        {
+            updates.Add(Update.CreateDelete(pendingChange.OldStartingIndex + i));
+        }
+
+        for (var i = 0; i < newCount; i++)
+        {
+            updates.Add(Update.CreateAdd(pendingChange.NewStartingIndex + i));
+        }
+
+        return updates;
+    }
 
     /// <summary>Builds the delete-then-add updates for a <see cref="NotifyCollectionChangedAction.Replace"/> change.</summary>
     /// <param name="pendingChange">The pending change.</param>
     /// <returns>An enumerable of paired delete and add updates.</returns>
-    private static IEnumerable<Update> GetReplaceUpdates(PendingChange pendingChange) =>
-        Enumerable
-            .Range(pendingChange.NewStartingIndex, pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count)
-            .SelectMany(static x => new[] { Update.CreateDelete(x), Update.CreateAdd(x) });
+    private static List<Update> GetReplaceUpdates(PendingChange pendingChange)
+    {
+        var count = pendingChange.NewItems is null ? 1 : pendingChange.NewItems.Count;
+        List<Update> updates = new(count * 2);
+        for (var i = 0; i < count; i++)
+        {
+            var index = pendingChange.NewStartingIndex + i;
+            updates.Add(Update.CreateDelete(index));
+            updates.Add(Update.CreateAdd(index));
+        }
+
+        return updates;
+    }
 
     /// <summary>Called before <see cref="SectionInfo"/> changes. Disposes subscriptions for the current SectionInfo.</summary>
     private void SectionInfoChanging()

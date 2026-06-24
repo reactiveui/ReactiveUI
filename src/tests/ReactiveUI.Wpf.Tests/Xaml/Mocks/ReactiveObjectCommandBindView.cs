@@ -15,7 +15,7 @@ public class ReactiveObjectCommandBindView : ReactiveObject, IViewFor<CommandBin
     public ReactiveObjectCommandBindView()
     {
         Command1 = new();
-        Command2 = new Image();
+        Command2 = new();
     }
 
     /// <inheritdoc/>

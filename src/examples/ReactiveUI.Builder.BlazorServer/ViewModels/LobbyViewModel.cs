@@ -89,13 +89,13 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
             .Concat(Signal.Blend(localRoomsChanged, remoteRoomsChanged)
                 .EmitIfQuiet(TimeSpan.FromMilliseconds(50), RxSchedulers.TaskpoolScheduler));
 
-        this.WhenAnyObservable(x => x.RoomsChanged)
+        _ = this.WhenAnyObservable(x => x.RoomsChanged)
             .Select(_ => (IReadOnlyList<ChatRoom>)[.. GetState().Rooms])
             .ObserveOn(RxSchedulers.MainThreadScheduler)
             .ToProperty(this, nameof(Rooms), out _rooms);
 
         // Request a snapshot from peers shortly after activation
-        RxSchedulers.MainThreadScheduler.Schedule(RxVoid.Default, TimeSpan.FromMilliseconds(500), (_, _) =>
+        _ = RxSchedulers.MainThreadScheduler.Schedule(RxVoid.Default, TimeSpan.FromMilliseconds(500), (_, _) =>
         {
             var req = new RoomEventMessage(Services.RoomEventKind.SyncRequest, string.Empty)
             {
@@ -211,7 +211,7 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
 
             case Services.RoomEventKind.Remove:
                 {
-                    state.Rooms.RemoveAll(r => string.Equals(r.Name, evt.RoomName, StringComparison.OrdinalIgnoreCase));
+                    _ = state.Rooms.RemoveAll(r => string.Equals(r.Name, evt.RoomName, StringComparison.OrdinalIgnoreCase));
                     break;
                 }
         }
@@ -222,7 +222,16 @@ public class LobbyViewModel : ReactiveObject, IRoutableViewModel
     {
         var name = RoomName.Trim();
         var state = GetState();
-        var existing = state.Rooms.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
+        ChatRoom? existing = null;
+        foreach (var room in state.Rooms)
+        {
+            if (string.Equals(room.Name, name, StringComparison.OrdinalIgnoreCase))
+            {
+                existing = room;
+                break;
+            }
+        }
+
         if (existing is null)
         {
             var room = new ChatRoom { Name = name };

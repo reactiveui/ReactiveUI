@@ -506,12 +506,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
                         return (true, tmp);
                     }
 
-                    if (viewModelToViewConverterOverride is null && typeof(TTargetValue).IsAssignableFrom(typeof(TValue)))
-                    {
-                        return (true, (object?)x);
-                    }
-
-                    return (false, null);
+                    return viewModelToViewConverterOverride is null && typeof(TTargetValue).IsAssignableFrom(typeof(TValue)) ? (true, (object?)x) : (false, null);
                 });
 
             var (disposable, _) = BindToDirect<TTarget, TTargetValue?, object?>(source, target, viewExpression);
@@ -615,7 +610,8 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
                     viewExpression,
                     getter,
                     setter,
-                    _converterResolver.GetSetMethodConverter) : _expressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(
+                    _converterResolver.GetSetMethodConverter)
+                : _expressionCompiler.CreateChainedSetObservable<TTarget, TValue, TObs>(
                     target,
                     changeObservable,
                     viewExpression,
@@ -742,7 +738,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
             }
             else
             {
-                viewModelChainSetter.TrySetValue(view.ViewModel, latestValue.view, false);
+                _ = viewModelChainSetter.TrySetValue(view.ViewModel, latestValue.view, false);
             }
         }));
 

@@ -31,8 +31,8 @@ public static class FakeViewWithContract
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel
         {
-            get { return (MyViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => (MyViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         /// <inheritdoc/>
@@ -49,8 +49,8 @@ public static class FakeViewWithContract
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel
         {
-            get { return (MyViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => (MyViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         /// <inheritdoc/>
@@ -67,8 +67,8 @@ public static class FakeViewWithContract
         /// <summary>Gets or sets the ViewModel.</summary>
         public MyViewModel? ViewModel
         {
-            get { return (MyViewModel)GetValue(ViewModelProperty); }
-            set { SetValue(ViewModelProperty, value); }
+            get => (MyViewModel)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
         }
 
         /// <inheritdoc/>

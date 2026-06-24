@@ -58,13 +58,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
         ArgumentNullException.ThrowIfNull(setter);
         ArgumentNullException.ThrowIfNull(getSetConverter);
 
-        if (_setThenGetFunc is not null)
-        {
-            return _setThenGetFunc;
-        }
-
-        // Default implementation: simple set-then-get
-        return (target, value, parameters) =>
+        return (Func<object?, object?, object?[]?, (bool ShouldEmit, object? Value)>?)_setThenGetFunc ?? ((target, value, parameters) =>
         {
             var current = getter(target, parameters);
             if (EqualityComparer<object?>.Default.Equals(current, value))
@@ -74,7 +68,7 @@ internal sealed class MockPropertyBindingExpressionCompiler : IPropertyBindingEx
 
             setter(target, value, parameters);
             return (true, getter(target, parameters));
-        };
+        });
     }
 
     /// <inheritdoc/>

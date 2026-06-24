@@ -22,7 +22,7 @@ public sealed class ActivationForViewFetcherTests
     {
         AppBuilder.ResetBuilderStateForTests();
         var resolver = new ModernDependencyResolver();
-        resolver.CreateReactiveUIBuilder()
+        _ = resolver.CreateReactiveUIBuilder()
             .WithPlatformServices()
             .WithRegistrationOnBuild(r => r.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher()))
             .BuildApp();

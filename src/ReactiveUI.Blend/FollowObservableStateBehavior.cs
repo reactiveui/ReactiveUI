@@ -96,11 +96,11 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
                 var target = item.TargetObject ?? item.AssociatedObject;
                 if (target is Control)
                 {
-                    VisualStateManager.GoToState(target, x, true);
+                    _ = VisualStateManager.GoToState(target, x, true);
                 }
                 else
                 {
-                    VisualStateManager.GoToElementState(target, x, true);
+                    _ = VisualStateManager.GoToElementState(target, x, true);
                 }
             },
             _ =>

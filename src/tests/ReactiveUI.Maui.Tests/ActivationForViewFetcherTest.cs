@@ -128,7 +128,7 @@ public class ActivationForViewFetcherTest
         var view = new TestCanActivateView();
         var results = new List<bool>();
 
-        fetcher.GetActivationForView(view).Subscribe(results.Add);
+        _ = fetcher.GetActivationForView(view).Subscribe(results.Add);
 
         view.ActivateSubject.OnNext(RxVoid.Default);
         await Task.Delay(ActivationDelayMilliseconds);

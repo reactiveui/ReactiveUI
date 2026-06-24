@@ -60,7 +60,7 @@ public class ReactivePropertyTest
         using var rp = new ReactiveProperty<string>(null, Sequencer.Immediate, false, false);
         await Assert.That(rp.Value).IsNull();
         var receivedValue = false;
-        rp.Subscribe(x => receivedValue = true);
+        _ = rp.Subscribe(x => receivedValue = true);
 
         await Assert.That(receivedValue).IsTrue();
     }
@@ -117,7 +117,7 @@ public class ReactivePropertyTest
         using var rp = new ReactiveProperty<string>(ReactiveUiValue, Sequencer.Immediate, false, false);
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiValue);
         string? received = null;
-        rp.Subscribe(x => received = x);
+        _ = rp.Subscribe(x => received = x);
         await Assert.That(received).IsEqualTo(ReactiveUiValue);
     }
 
@@ -131,7 +131,7 @@ public class ReactivePropertyTest
 
         // current value should be skipped
         string? received = null;
-        rp.Subscribe(x => received = x);
+        _ = rp.Subscribe(x => received = x);
         rp.Value = ReactiveUiSecondValue;
         await Assert.That(received).IsEqualTo(ReactiveUiSecondValue);
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiSecondValue);
@@ -148,7 +148,7 @@ public class ReactivePropertyTest
         var collector1 = new List<int>();
         var collector2 = new List<int>();
         var obs = rp;
-        obs.Subscribe(collector1.Add);
+        _ = obs.Subscribe(collector1.Add);
 
         await Assert.That(rp.Value).IsEqualTo(0);
         await Assert.That(collector1).IsEquivalentTo([0]);
@@ -162,7 +162,7 @@ public class ReactivePropertyTest
         await Assert.That(collector1).IsEquivalentTo([0, 1, ThirdValue]);
 
         // second subscriber
-        obs.Subscribe(collector2.Add);
+        _ = obs.Subscribe(collector2.Add);
         await Assert.That(rp.Value).IsEqualTo(ThirdValue);
         await Assert.That(collector2).IsEquivalentTo([ThirdValue]);
 
@@ -182,7 +182,7 @@ public class ReactivePropertyTest
 
         const int ExpectedEmissionCount = 2;
         var results = new List<IEnumerable?>();
-        rp.ObserveErrorChanged.Subscribe(results.Add);
+        _ = rp.ObserveErrorChanged.Subscribe(results.Add);
         rp.Value = "OK";
 
         await Assert.That(results.Count).IsEqualTo(ExpectedEmissionCount);
@@ -200,7 +200,7 @@ public class ReactivePropertyTest
 
         const int ExpectedEmissionCount = 2;
         var results = new List<bool>();
-        rp.ObserveHasErrors.Subscribe(results.Add);
+        _ = rp.ObserveHasErrors.Subscribe(results.Add);
         rp.Value = "OK";
 
         await Assert.That(results.Count).IsEqualTo(ExpectedEmissionCount);
@@ -215,7 +215,7 @@ public class ReactivePropertyTest
     {
         var target = new ReactivePropertyVm();
         var errors = new List<string?>();
-        target.LengthLessThanFiveProperty.ObserveValidationErrors().Subscribe(errors.Add);
+        _ = target.LengthLessThanFiveProperty.ObserveValidationErrors().Subscribe(errors.Add);
 
         await Assert.That(errors).Count().IsEqualTo(1);
         await Assert.That(errors[0]).IsEqualTo(RequiredErrorValue);
@@ -234,7 +234,7 @@ public class ReactivePropertyTest
     {
         var target = new ReactivePropertyVm();
         var errors = new List<string?>();
-        target.IsRequiredProperty.ObserveValidationErrors().Subscribe(errors.Add);
+        _ = target.IsRequiredProperty.ObserveValidationErrors().Subscribe(errors.Add);
 
         const int AfterValidCount = 2;
         const int AfterClearedCount = 3;
@@ -267,7 +267,7 @@ public class ReactivePropertyTest
     {
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false);
         var collector = new List<int>();
-        rp.Subscribe(collector.Add);
+        _ = rp.Subscribe(collector.Add);
 
         await Assert.That(collector).IsEquivalentTo([0]);
 
@@ -286,7 +286,7 @@ public class ReactivePropertyTest
         rp.Value = ReactiveUiValue;
         await Assert.That(rp.Value).IsEqualTo(ReactiveUiValue);
         string? received = null;
-        rp.Subscribe(x => received = x);
+        _ = rp.Subscribe(x => received = x);
         await Assert.That(received).IsEqualTo(ReactiveUiValue);
     }
 
@@ -324,7 +324,7 @@ public class ReactivePropertyTest
             .AddValidationError(x => string.IsNullOrWhiteSpace(x) ? ErrorLowerValue : null);
 
         // old version behavior
-        rprop.ObserveErrorChanged.Skip(1).Subscribe(errors.Add);
+        _ = rprop.ObserveErrorChanged.Skip(1).Subscribe(errors.Add);
 
         await Assert.That(errors.Count).IsEqualTo(0);
 
@@ -358,7 +358,7 @@ public class ReactivePropertyTest
     {
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
-        target.IsRequiredProperty
+        _ = target.IsRequiredProperty
                     .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
 
         await Assert.That(errors.Count).IsEqualTo(1);
@@ -383,7 +383,7 @@ public class ReactivePropertyTest
     {
         var target = new ReactivePropertyVm();
         IEnumerable? error = null;
-        target.LengthLessThanFiveProperty
+        _ = target.LengthLessThanFiveProperty
                     .ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(target.LengthLessThanFiveProperty.HasErrors).IsTrue();
@@ -410,7 +410,7 @@ public class ReactivePropertyTest
     {
         var target = new ReactivePropertyVm();
         var errors = new List<IEnumerable?>();
-        target.TaskValidationTestProperty
+        _ = target.TaskValidationTestProperty
                     .ObserveErrorChanged.Where(x => x is not null).Subscribe(errors.Add);
         await Assert.That(errors.Count).IsEqualTo(1);
         await Assert.That(errors[0]!.OfType<string>()).IsEquivalentTo([RequiredErrorValue]);
@@ -435,7 +435,7 @@ public class ReactivePropertyTest
             .AddValidationError(x => string.IsNullOrEmpty(x) ? null : ErrorMessage);
 
         IEnumerable? error = null;
-        rp.ObserveErrorChanged.Subscribe(x => error = x);
+        _ = rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(rp.HasErrors).IsFalse();
         await Assert.That(error is null).IsTrue();
@@ -458,7 +458,7 @@ public class ReactivePropertyTest
             .AddValidationError(_ => tcs.Task);
 
         IEnumerable? error = null;
-        rp.ObserveErrorChanged.Subscribe(x => error = x);
+        _ = rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         await Assert.That(rp.HasErrors).IsFalse();
         await Assert.That(error is null).IsTrue();
@@ -494,7 +494,7 @@ public class ReactivePropertyTest
 #endif
 
         IEnumerable? error = null;
-        rp.ObserveErrorChanged.Subscribe(x => error = x);
+        _ = rp.ObserveErrorChanged.Subscribe(x => error = x);
 
         scheduler.AdvanceTo(DateTimeOffset.MinValue.Add(TimeSpan.FromMilliseconds(0)));
         rp.Value = string.Empty;
@@ -576,7 +576,7 @@ public class ReactivePropertyTest
         const int FourthValue = 3;
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, false);
         var collector = new List<int>();
-        rp.Subscribe(collector.Add);
+        _ = rp.Subscribe(collector.Add);
 
         await Assert.That(rp.Value).IsEqualTo(0);
         await Assert.That(collector).IsEquivalentTo([0]);
@@ -601,7 +601,7 @@ public class ReactivePropertyTest
     {
         using var rp = new ReactiveProperty<int>(0, Sequencer.Immediate, false, true);
         var collector = new List<int>();
-        rp.Subscribe(collector.Add);
+        _ = rp.Subscribe(collector.Add);
 
         await Assert.That(rp.Value).IsEqualTo(0);
         await Assert.That(collector).IsEquivalentTo([0]);

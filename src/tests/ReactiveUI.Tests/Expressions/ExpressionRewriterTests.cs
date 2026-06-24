@@ -29,7 +29,7 @@ public class ExpressionRewriterTests
         // x.Index is a non-constant member access (not foldable to a constant index), so the rewrite is unsupported.
         Expression<Func<TestClass, int>> expr = x => x.Array[x.Index];
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        _ = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
     /// <summary>Verifies that an array length expression is rewritten to a Length member access.</summary>
@@ -95,7 +95,7 @@ public class ExpressionRewriterTests
         var nonConstantArg = System.Linq.Expressions.Expression.Parameter(typeof(int), "index");
         var indexExpr = System.Linq.Expressions.Expression.MakeIndex(listProperty, indexer, [nonConstantArg]);
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
+        _ = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(indexExpr));
     }
 
     /// <summary>Verifies that a list indexer expression is rewritten to an Index node.</summary>
@@ -110,6 +110,21 @@ public class ExpressionRewriterTests
         await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
     }
 
+    /// <summary>Verifies that an already-built index expression with constant arguments is visited and preserved as an Index node.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task Rewrite_WithConstantIndexExpression_VisitsAndReturnsIndexExpression()
+    {
+        var parameter = Expression.Parameter(typeof(TestClass), "x");
+        var listProperty = Expression.Property(parameter, "List");
+        var indexer = typeof(List<int>).GetProperty("Item")!;
+        var indexExpr = Expression.MakeIndex(listProperty, indexer, [Expression.Constant(0)]);
+
+        var result = Reflection.Rewrite(indexExpr);
+
+        await Assert.That(result.NodeType).IsEqualTo(ExpressionType.Index);
+    }
+
     /// <summary>Verifies that a non-constant list indexer throws a not supported exception.</summary>
     [Test]
     public void Rewrite_WithListIndexerNonConstant_Throws()
@@ -117,7 +132,7 @@ public class ExpressionRewriterTests
         // x.Index is a non-constant member access (not foldable to a constant index), so the rewrite is unsupported.
         Expression<Func<TestClass, int>> expr = x => x.List[x.Index];
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        _ = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
     /// <summary>Verifies that a member access expression is preserved as a MemberAccess node.</summary>
@@ -138,7 +153,7 @@ public class ExpressionRewriterTests
     {
         Expression<Func<TestClass, string?>> expr = x => x.GetValue();
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
+        _ = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(expr.Body));
     }
 
     /// <summary>Verifies that a nested member access expression is preserved as a MemberAccess node.</summary>
@@ -179,7 +194,7 @@ public class ExpressionRewriterTests
         var parameter = System.Linq.Expressions.Expression.Parameter(typeof(bool), "x");
         var notExpr = System.Linq.Expressions.Expression.Not(parameter);
 
-        Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(notExpr));
+        _ = Assert.Throws<NotSupportedException>(() => Reflection.Rewrite(notExpr));
     }
 
     /// <summary>Verifies that an unsupported binary expression throws with a helpful message.</summary>

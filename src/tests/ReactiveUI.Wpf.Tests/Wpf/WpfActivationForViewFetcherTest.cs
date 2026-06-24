@@ -112,7 +112,7 @@ public class WpfActivationForViewFetcherTest
     public async Task WpfWhenActivatedOverloadsDelegateToRuntimeActivationFetcher()
     {
         using var locator = new ModernDependencyResolver();
-        locator
+        _ = locator
             .CreateReactiveUIBuilder()
             .WithWpf()
             .Build();

@@ -178,15 +178,12 @@ public static class ChangeSetExtensions
             /// <param name="changes">The change list being built.</param>
             private void ApplyAdd(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
             {
-                if (e.NewItems is null)
-                {
-                    return;
-                }
-
+                // NewItems is always populated for an Add by the sealed NotifyCollectionChangedEventArgs ctors.
+                var newItems = e.NewItems!;
                 var start = e.NewStartingIndex;
-                for (var i = 0; i < e.NewItems.Count; i++)
+                for (var i = 0; i < newItems.Count; i++)
                 {
-                    var item = (T)e.NewItems[i]!;
+                    var item = (T)newItems[i]!;
                     var index = start < 0 ? _shadow.Count : start + i;
                     _shadow.Insert(index, item);
                     changes.Add(new(ReactiveChangeReason.Add, item, default, index, -1));
@@ -198,15 +195,12 @@ public static class ChangeSetExtensions
             /// <param name="changes">The change list being built.</param>
             private void ApplyRemove(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
             {
-                if (e.OldItems is null)
-                {
-                    return;
-                }
-
+                // OldItems is always populated for a Remove by the sealed NotifyCollectionChangedEventArgs ctors.
+                var oldItems = e.OldItems!;
                 var start = e.OldStartingIndex;
-                for (var i = 0; i < e.OldItems.Count; i++)
+                for (var i = 0; i < oldItems.Count; i++)
                 {
-                    var item = (T)e.OldItems[i]!;
+                    var item = (T)oldItems[i]!;
                     var index = start < 0 ? -1 : start;
                     RemoveFromShadow(index, item);
                     changes.Add(new(ReactiveChangeReason.Remove, item, default, index, -1));
@@ -218,16 +212,14 @@ public static class ChangeSetExtensions
             /// <param name="changes">The change list being built.</param>
             private void ApplyReplace(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
             {
-                if (e.NewItems is null || e.OldItems is null)
-                {
-                    return;
-                }
-
+                // Both item lists are always populated for a Replace by the sealed NotifyCollectionChangedEventArgs ctors.
+                var newItems = e.NewItems!;
+                var oldItems = e.OldItems!;
                 var start = e.NewStartingIndex;
-                for (var i = 0; i < e.NewItems.Count; i++)
+                for (var i = 0; i < newItems.Count; i++)
                 {
-                    var current = (T)e.NewItems[i]!;
-                    var previous = (T)e.OldItems[i]!;
+                    var current = (T)newItems[i]!;
+                    var previous = (T)oldItems[i]!;
                     var index = start < 0 ? -1 : start + i;
                     if (index >= 0 && index < _shadow.Count)
                     {
@@ -243,12 +235,8 @@ public static class ChangeSetExtensions
             /// <param name="changes">The change list being built.</param>
             private void ApplyMove(NotifyCollectionChangedEventArgs e, List<ReactiveChange<T>> changes)
             {
-                if (e.NewItems is null)
-                {
-                    return;
-                }
-
-                var item = (T)e.NewItems[0]!;
+                // NewItems is always populated for a Move by the sealed NotifyCollectionChangedEventArgs ctors.
+                var item = (T)e.NewItems![0]!;
                 if (e.OldStartingIndex >= 0 && e.OldStartingIndex < _shadow.Count)
                 {
                     _shadow.RemoveAt(e.OldStartingIndex);
@@ -292,7 +280,7 @@ public static class ChangeSetExtensions
                     return;
                 }
 
-                _shadow.Remove(item);
+                _ = _shadow.Remove(item);
             }
         }
     }

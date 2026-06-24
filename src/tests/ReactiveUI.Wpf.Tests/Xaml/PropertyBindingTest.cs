@@ -263,7 +263,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, static x => x.Model!.AnotherThing, static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(view.ViewModel, static x => x.Model!.AnotherThing, static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Baz");
     }
 
@@ -275,7 +275,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.JustADouble);
+        _ = view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.JustADouble);
         await Assert.That(view.FakeControl.JustADouble).IsEqualTo(0);
 
         vm.NullableDouble = DoubleFour;
@@ -296,7 +296,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, static x => x.JustADouble, static x => x.FakeControl.NullableDouble);
+        _ = view.Bind(view.ViewModel, static x => x.JustADouble, static x => x.FakeControl.NullableDouble);
         await Assert.That(vm.JustADouble).IsEqualTo(0);
 
         view.FakeControl.NullableDouble = DoubleFour;
@@ -317,7 +317,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.NullableDouble);
+        _ = view.Bind(view.ViewModel, static x => x.NullableDouble, static x => x.FakeControl.NullableDouble);
         await Assert.That(vm.NullableDouble).IsNull();
 
         view.FakeControl.NullableDouble = DoubleFour;
@@ -338,7 +338,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Foo");
     }
 
@@ -350,7 +350,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0], static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("Foo");
 
         vm.SomeCollectionOfStrings[0] = "Bar";
@@ -366,7 +366,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0].Length, static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings[0].Length, static x => x.SomeTextBox.Text);
         await Assert.That(view.SomeTextBox.Text).IsEqualTo("3");
     }
 
@@ -378,7 +378,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = null };
 
-        view.OneWayBind(vm, static x => x.Model!.AnotherThing, static x => x.FakeControl.NullHatingString);
+        _ = view.OneWayBind(vm, static x => x.Model!.AnotherThing, static x => x.FakeControl.NullHatingString);
         await Assert.That(view.FakeControl.NullHatingString).IsEqualTo(string.Empty);
 
         view.ViewModel = vm;
@@ -395,7 +395,7 @@ public partial class PropertyBindingTest
 
         await Assert.That(view.FakeControl.NullHatingString).IsEqualTo(string.Empty);
 
-        view.WhenAnyValue(static x => x.ViewModel!.JustADouble)
+        _ = view.WhenAnyValue(static x => x.ViewModel!.JustADouble)
             .BindTo(view, static x => x.FakeControl.NullHatingString);
 
         view.ViewModel = vm;
@@ -408,7 +408,7 @@ public partial class PropertyBindingTest
     {
         var view = new PropertyBindView { ViewModel = null };
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
              view.WhenAnyValue(x => x.FakeControl.NullHatingString)
                  .BindTo(view.ViewModel, x => x.Property1));
     }
@@ -422,7 +422,7 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         view.FakeItemsControl.ItemsSource = new ObservableCollection<string>(_itemsControlSource);
 
-        view.Bind(view.ViewModel, static x => x.Property1, static x => x.FakeItemsControl.SelectedItem);
+        _ = view.Bind(view.ViewModel, static x => x.Property1, static x => x.FakeItemsControl.SelectedItem);
 
         using (Assert.Multiple())
         {
@@ -446,7 +446,7 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         view.ComboBoxSelection.ItemsSource = new ObservableCollection<string>(_collection);
 
-        view.Bind(view.ViewModel, static x => x.Property1, static x => x.ComboBoxSelection.SelectedItem);
+        _ = view.Bind(view.ViewModel, static x => x.Property1, static x => x.ComboBoxSelection.SelectedItem);
 
         view.ComboBoxSelection.SelectedItem = "aaa";
         await Assert.That(vm.Property1).IsEqualTo("aaa");
@@ -500,7 +500,7 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNull();
-        view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
+        _ = view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNotNull();
     }
@@ -515,7 +515,7 @@ public partial class PropertyBindingTest
         view.FakeItemsControl.DisplayMemberPath = "Bla";
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNull();
-        view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
+        _ = view.OneWayBind(vm, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNull();
     }
@@ -529,12 +529,12 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNull();
-        vm.WhenAnyValue(static x => x.SomeCollectionOfStrings)
+        _ = vm.WhenAnyValue(static x => x.SomeCollectionOfStrings)
             .BindTo(view, static v => v.FakeItemsControl.ItemsSource);
 
         await Assert.That(view.FakeItemsControl.ItemTemplate).IsNotNull();
 
-        view.WhenAnyValue(static x => x.FakeItemsControl.SelectedItem)
+        _ = view.WhenAnyValue(static x => x.FakeItemsControl.SelectedItem)
             .BindTo(vm, static x => x.Property1);
     }
 
@@ -546,7 +546,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
+        _ = view.OneWayBind(view.ViewModel, static x => x.SomeCollectionOfStrings, static x => x.FakeItemsControl.ItemsSource);
 
         var itemsSourceValue = (IList)view.FakeItemsControl.ItemsSource;
         await Assert.That(itemsSourceValue.OfType<string>().Count()).IsGreaterThan(1);
@@ -560,7 +560,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
-        fixture.OneWayBind(vm, view, static x => x.JustABoolean, static x => x.SomeTextBox.IsEnabled, static s => s);
+        _ = fixture.OneWayBind(vm, view, static x => x.JustABoolean, static x => x.SomeTextBox.IsEnabled, static s => s);
         await Assert.That(view.SomeTextBox.IsEnabled).IsFalse();
     }
 
@@ -572,7 +572,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
 
         vm.Property1 = "Baz";
 
@@ -589,7 +589,7 @@ public partial class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
+        _ = view.OneWayBind(vm, static x => x.Property1, static x => x.SomeTextBox.Text);
 
         vm.Property1 = null;
 
@@ -604,7 +604,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.OneWayBind(vm, static x => x.Model, static x => x.SomeTextBox.Text, static x => x?.AnotherThing);
+        _ = view.OneWayBind(vm, static x => x.Model, static x => x.SomeTextBox.Text, static x => x?.AnotherThing);
 
         vm.Model = null;
 
@@ -643,7 +643,7 @@ public partial class PropertyBindingTest
         var vm = new PropertyBindViewModel();
         var view = new PropertyBindView { ViewModel = vm };
 
-        view.WhenAnyValue(static x => x.ViewModel!.Property1)
+        _ = view.WhenAnyValue(static x => x.ViewModel!.Property1)
             .BindTo(view, static x => x.SomeTextBox.Text);
 
         vm.Property1 = "Baz";
@@ -661,7 +661,7 @@ public partial class PropertyBindingTest
 
         vm.Property1 = "Baz";
 
-        view.WhenAnyValue(static x => x.ViewModel!.Property1)
+        _ = view.WhenAnyValue(static x => x.ViewModel!.Property1)
             .BindTo(view, static x => x.SomeTextBox.Text);
 
         vm.Property1 = null;
@@ -679,8 +679,8 @@ public partial class PropertyBindingTest
 
         const Func<string?, string?> NullFunc = null!;
 
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, s => s));
-        Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, s => s, NullFunc));
+        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, NullFunc, s => s));
+        _ = Assert.Throws<ArgumentNullException>(() => fixture.Bind(vm, view, x => x.Property1, x => x.SomeTextBox.Text, (IObservable<RxVoid>?)null, s => s, NullFunc));
     }
 
     /// <summary>Tests the BindWith func's should work as extension methods.</summary>
@@ -694,7 +694,7 @@ public partial class PropertyBindingTest
         vm.JustADecimal = InitialDecimal;
         await Assert.That(view.SomeTextBox.Text).IsNotEqualTo(vm.JustADecimal.ToString(CultureInfo.InvariantCulture));
 
-        view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : 0m);
+        _ = view.Bind(vm, static x => x.JustADecimal, static x => x.SomeTextBox.Text, static d => d.ToString(CultureInfo.InvariantCulture), static t => decimal.TryParse(t, out var res) ? res : 0m);
 
         await Assert.That(view.SomeTextBox.Text).IsEqualTo(InitialNumericText);
 
@@ -742,7 +742,7 @@ public partial class PropertyBindingTest
         var view = new PropertyBindView { ViewModel = vm };
         var fixture = new PropertyBinderImplementation();
 
-        fixture.OneWayBind(vm, view, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
+        _ = fixture.OneWayBind(vm, view, static vm => vm.JustABoolean, static v => v.SomeTextBox.Visibility, BooleanToVisibilityHint.Inverse).DisposeWith(dis);
         await Assert.That(view.SomeTextBox.Visibility).IsEqualTo(System.Windows.Visibility.Visible);
 
         vm.JustABoolean = true;

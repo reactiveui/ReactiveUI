@@ -13,20 +13,20 @@ using Splat.Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+_ = builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHostedService<ReactiveUiAppHostedService>();
+_ = builder.Services.AddHostedService<ReactiveUiAppHostedService>();
 
 // Per-circuit (per tab) screen/bootstrapper:
-builder.Services.AddScoped<IScreen, AppBootstrapper>();
+_ = builder.Services.AddScoped<IScreen, AppBootstrapper>();
 
-builder.Services.AddSingleton<AppLifetimeCoordinator>();
+_ = builder.Services.AddSingleton<AppLifetimeCoordinator>();
 
 // This line connects Splat and standard Microsoft DI together
 builder.Services.UseMicrosoftDependencyResolver();
 
-RxAppBuilder.CreateReactiveUIBuilder()
+_ = RxAppBuilder.CreateReactiveUIBuilder()
     .WithBlazor()
     .WithMessageBus()
     .WithViewsFromAssembly(typeof(Program).Assembly)
@@ -37,21 +37,21 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", true);
+    _ = app.UseExceptionHandler("/Error", true);
 
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    _ = app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+_ = app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
-app.UseHttpsRedirection();
+_ = app.UseHttpsRedirection();
 
-app.UseAntiforgery();
+_ = app.UseAntiforgery();
 
-app.MapStaticAssets();
+_ = app.MapStaticAssets();
 
-app.MapRazorComponents<App>()
+_ = app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();

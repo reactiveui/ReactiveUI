@@ -3,13 +3,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using ReactiveUI.Primitives.Signals;
+
 namespace ReactiveUI.Benchmarks;
 
 /// <summary>A reactive object exposing a stable inner observable, used to drive the <c>WhenAnyObservable</c> benchmarks.</summary>
 internal sealed class ObservableBenchmarkViewModel : ReactiveObject, IDisposable
 {
     /// <summary>The inner observable values are pushed through.</summary>
-    private readonly ReactiveUI.Primitives.Signals.Signal<int> _subject = new();
+    private readonly Signal<int> _subject = new();
 
     /// <summary>Gets the observable that <c>WhenAnyObservable</c> subscribes to.</summary>
     public IObservable<int> Values => _subject;

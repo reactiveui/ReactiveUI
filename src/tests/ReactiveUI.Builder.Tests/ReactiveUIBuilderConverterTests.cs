@@ -31,7 +31,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithConverter((BindingTypeConverter<int, string>)null!));
     }
 
@@ -54,7 +54,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithConverter((IBindingTypeConverter)null!));
     }
 
@@ -76,7 +76,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithConverter((Func<BindingTypeConverter<int, string>>)null!));
     }
 
@@ -98,7 +98,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithConverter((Func<IBindingTypeConverter>)null!));
     }
 
@@ -108,7 +108,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithConvertersFrom(null!));
     }
 
@@ -144,7 +144,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithFallbackConverter((IBindingFallbackConverter)null!));
     }
 
@@ -166,7 +166,7 @@ public class ReactiveUIBuilderConverterTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             builder.WithFallbackConverter((Func<IBindingFallbackConverter>)null!));
     }
 

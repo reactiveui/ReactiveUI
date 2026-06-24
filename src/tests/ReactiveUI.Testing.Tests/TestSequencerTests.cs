@@ -34,7 +34,7 @@ public class TestSequencerTests
         var tcs = new TaskCompletionSource<bool>();
         var advanceCount = 0;
 
-        subject.Skip(1).Subscribe(Witness.Create<RxVoid>(ignored => _ = AdvancePhaseAsync()));
+        _ = subject.Skip(1).Subscribe(Witness.Create<RxVoid>(ignored => _ = AdvancePhaseAsync()));
 
         using (Assert.Multiple())
         {
@@ -89,12 +89,12 @@ public class TestSequencerTests
             try
             {
                 await testSequencer.AdvancePhaseAsync();
-                Interlocked.Increment(ref advanceCount);
-                tcs.TrySetResult(true);
+                _ = Interlocked.Increment(ref advanceCount);
+                _ = tcs.TrySetResult(true);
             }
             catch (Exception ex)
             {
-                tcs.TrySetException(ex);
+                _ = tcs.TrySetException(ex);
             }
         }
     }

@@ -34,7 +34,7 @@ internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UI
     internal UICollectionViewAdapter(UICollectionView view)
     {
         _view = view;
-        _isReloadingData = new BehaviorSignal<bool>(false);
+        _isReloadingData = new(false);
     }
 
     /// <inheritdoc/>
@@ -54,7 +54,7 @@ internal class UICollectionViewAdapter : IUICollViewAdapter<UICollectionView, UI
 
         // since ReloadData() queues the appropriate messages on the UI thread, we know we're done reloading
         // when this subsequent message is processed (with one caveat - see FinishReloadData for details)
-        RxSchedulers.MainThreadScheduler.Schedule(FinishReloadData);
+        _ = RxSchedulers.MainThreadScheduler.Schedule(FinishReloadData);
     }
 
     /// <summary>UICollectionView no longer has these methods so these are no-ops.</summary>

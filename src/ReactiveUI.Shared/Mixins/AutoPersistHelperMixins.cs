@@ -472,7 +472,7 @@ public static partial class AutoPersistHelperMixins
             var persistablePropertyNames = metadata.PersistablePropertyNames;
 
             var ret = new OnceDisposable();
-            RxSchedulers.MainThreadScheduler.Schedule(() =>
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
             {
                 if (ret.IsDisposed)
                 {
@@ -555,16 +555,7 @@ public static partial class AutoPersistHelperMixins
 
                     disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, metadata, interval);
                 },
-                x =>
-                {
-                    if (!disposerList.TryGetValue(x, out var d))
-                    {
-                        return;
-                    }
-
-                    d.Dispose();
-                    disposerList.Remove(x);
-                });
+                x => DisposeAndRemove(disposerList, x));
 
             return new ActionDisposable(() =>
             {
@@ -631,16 +622,7 @@ public static partial class AutoPersistHelperMixins
                     var metadata = metadataProvider(x);
                     disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, metadata, interval);
                 },
-                x =>
-                {
-                    if (!disposerList.TryGetValue(x, out var d))
-                    {
-                        return;
-                    }
-
-                    d.Dispose();
-                    disposerList.Remove(x);
-                });
+                x => DisposeAndRemove(disposerList, x));
 
             return new ActionDisposable(() =>
             {
@@ -710,16 +692,7 @@ public static partial class AutoPersistHelperMixins
 
                     disposerList[x] = x.AutoPersist(doPersist, manualSaveSignal, interval);
                 },
-                x =>
-                {
-                    if (!disposerList.TryGetValue(x, out var d))
-                    {
-                        return;
-                    }
-
-                    d.Dispose();
-                    disposerList.Remove(x);
-                });
+                x => DisposeAndRemove(disposerList, x));
 
             return new ActionDisposable(() =>
             {
@@ -805,6 +778,22 @@ public static partial class AutoPersistHelperMixins
     T>()
         where T : IReactiveObject
         => PersistMetadataHolder<T>.Metadata.Public;
+
+    /// <summary>Disposes and removes the tracked auto-persist subscription for an item that left the collection.</summary>
+    /// <typeparam name="TItem">The item type.</typeparam>
+    /// <param name="disposerList">The map of items to their auto-persist subscriptions.</param>
+    /// <param name="item">The item that was removed from the collection.</param>
+    private static void DisposeAndRemove<TItem>(Dictionary<TItem, IDisposable> disposerList, TItem item)
+        where TItem : notnull
+    {
+        if (!disposerList.TryGetValue(item, out var disposable))
+        {
+            return;
+        }
+
+        disposable.Dispose();
+        _ = disposerList.Remove(item);
+    }
 
     /// <summary>Applies a single change-set entry by invoking the add or remove callback for the affected items.</summary>
     /// <typeparam name="TItem">The item type.</typeparam>
@@ -1107,7 +1096,7 @@ public static partial class AutoPersistHelperMixins
                 }
 
                 set ??= new(StringComparer.Ordinal);
-                set.Add(p.Name);
+                _ = set.Add(p.Name);
             }
 
             set ??= new(StringComparer.Ordinal);

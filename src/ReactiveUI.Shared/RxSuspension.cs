@@ -61,7 +61,7 @@ public static class RxSuspension
     /// </remarks>
     internal static void ResetForTesting()
     {
-        Interlocked.Exchange(ref _suspensionHostInitialized, 0);
+        _ = Interlocked.Exchange(ref _suspensionHostInitialized, 0);
         _suspensionHost = null;
     }
 

@@ -3,8 +3,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using ReactiveUI.Tests.ReactiveObjects.Mocks;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
@@ -28,6 +31,9 @@ public class AutoPersistHelperTest
     /// <summary>Milliseconds to advance past the throttle interval to allow a save to fire.</summary>
     private const int PastThrottleMilliseconds = 150;
 
+    /// <summary>The default debounce interval, in seconds, used by the reflection-based overloads.</summary>
+    private const int DefaultIntervalSeconds = 3;
+
     /// <summary>Tests that ActOnEveryObject calls onAdd when new item added.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
@@ -36,7 +42,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture>();
         var addedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -61,7 +67,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             _ => { },
             removedItems.Add);
 
@@ -111,7 +117,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item1, item2 };
         var addedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -132,7 +138,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.ActOnEveryObject(_ => { }, _ => { });
+            _ = collection!.ActOnEveryObject(_ => { }, _ => { });
             await Task.CompletedTask;
         });
     }
@@ -146,7 +152,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.ActOnEveryObject(null!, _ => { });
+            _ = collection.ActOnEveryObject(null!, _ => { });
             await Task.CompletedTask;
         });
     }
@@ -160,7 +166,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.ActOnEveryObject(_ => { }, null!);
+            _ = collection.ActOnEveryObject(_ => { }, null!);
             await Task.CompletedTask;
         });
     }
@@ -174,7 +180,7 @@ public class AutoPersistHelperTest
         var readOnlyCollection = new ReadOnlyObservableCollection<TestFixture>(innerCollection);
         var addedItems = new List<TestFixture>();
 
-        readOnlyCollection.ActOnEveryObject(
+        _ = readOnlyCollection.ActOnEveryObject(
             addedItems.Add,
             _ => { });
 
@@ -197,11 +203,11 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item };
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             _ => { },
             removedItems.Add);
 
-        collection.Remove(item);
+        _ = collection.Remove(item);
 
         using (Assert.Multiple())
         {
@@ -222,7 +228,7 @@ public class AutoPersistHelperTest
         var addedItems = new List<TestFixture>();
         var removedItems = new List<TestFixture>();
 
-        collection.ActOnEveryObject(
+        _ = collection.ActOnEveryObject(
             addedItems.Add,
             removedItems.Add);
 
@@ -284,7 +290,7 @@ public class AutoPersistHelperTest
         var manualSave = new Signal<RxVoid>();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -325,7 +331,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            obj.AutoPersist(_ => SingleValueObservable.Void);
+            _ = obj.AutoPersist(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
@@ -341,7 +347,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -367,7 +373,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(null!);
+            _ = fixture.AutoPersist(null!);
             await Task.CompletedTask;
         });
     }
@@ -381,7 +387,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -399,7 +405,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -415,7 +421,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -442,7 +448,7 @@ public class AutoPersistHelperTest
         var fixture = new TestFixture();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -476,7 +482,7 @@ public class AutoPersistHelperTest
         var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
-        fixture.AutoPersist(
+        _ = fixture.AutoPersist(
             _ =>
             {
                 saveCount++;
@@ -503,7 +509,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture>();
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -532,7 +538,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
+            _ = collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
             await Task.CompletedTask;
         });
     }
@@ -546,7 +552,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(null!);
+            _ = collection.AutoPersistCollection(null!);
             await Task.CompletedTask;
         });
     }
@@ -560,7 +566,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
+            _ = collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
             await Task.CompletedTask;
         });
     }
@@ -578,7 +584,7 @@ public class AutoPersistHelperTest
         var saveCount = 0;
         var manualSave = new Signal<RxVoid>();
 
-        readOnlyCollection.AutoPersistCollection(
+        _ = readOnlyCollection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -611,7 +617,7 @@ public class AutoPersistHelperTest
         var collection = new ObservableCollection<TestFixture> { item };
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -621,7 +627,7 @@ public class AutoPersistHelperTest
 
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
 
-        collection.Remove(item);
+        _ = collection.Remove(item);
 
         item.IsNotNullString = "Test";
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
@@ -641,7 +647,7 @@ public class AutoPersistHelperTest
         var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
         var saveCount = 0;
 
-        collection.AutoPersistCollection(
+        _ = collection.AutoPersistCollection(
             _ =>
             {
                 saveCount++;
@@ -705,6 +711,502 @@ public class AutoPersistHelperTest
         await Assert.That(metadata1).IsSameReferenceAs(metadata2);
     }
 
+    /// <summary>
+    /// Tests the three-argument ObservableCollection metadata overload (no interval) so that the
+    /// forwarding entry point and the generic three-argument forwarder are both exercised.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_ManualSignalAndMetadataNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new ObservableCollection<TestFixture>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = collection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave,
+            metadata);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests the two-argument reflection-based ObservableCollection overload (manual signal, no interval).</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_ManualSignalNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new ObservableCollection<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = collection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests the three-argument read-only collection metadata overload and the metadata+interval body.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_ReadOnlyManualSignalAndMetadataNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var innerCollection = new ObservableCollection<TestFixture>();
+        var readOnlyCollection = new ReadOnlyObservableCollection<TestFixture>(innerCollection);
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = readOnlyCollection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave,
+            metadata);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        innerCollection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests the two-argument reflection-based read-only collection overload (manual signal, no interval).</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_ReadOnlyManualSignalNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var innerCollection = new ObservableCollection<TestFixture>();
+        var readOnlyCollection = new ReadOnlyObservableCollection<TestFixture>(innerCollection);
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = readOnlyCollection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        innerCollection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests the generic collection metadata-provider overload without an explicit interval (three-argument form).</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_MetadataProviderNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new ObservableCollection<TestFixture>();
+        var metadataProvider = AutoPersistHelperMixins.CreateMetadataProvider<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = collection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave,
+            metadataProvider);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        item.IsNotNullString = "Test";
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>
+    /// Tests that disposing a metadata-provider collection subscription disposes the live per-item
+    /// persistence subscriptions, exercising the dispose loop over a non-empty disposer list.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_MetadataProviderDispose_StopsPersistence()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new ObservableCollection<TestFixture>();
+        var metadataProvider = AutoPersistHelperMixins.CreateMetadataProvider<TestFixture>();
+        var saveCount = 0;
+
+        var subscription = collection.AutoPersistCollection(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            new Signal<RxVoid>(),
+            metadataProvider,
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        subscription.Dispose();
+
+        item.IsNotNullString = "AfterDispose";
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+
+        await Assert.That(saveCount).IsEqualTo(0);
+    }
+
+    /// <summary>
+    /// Tests that the generic collection metadata overload throws when the supplied metadata reports no
+    /// <c>[DataContract]</c>, covering the <c>HasDataContract</c> guard.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task AutoPersistCollection_MetadataWithoutDataContract_ThrowsArgumentException()
+    {
+        var collection = new ObservableCollection<TestFixture>();
+        var metadata = new AutoPersistHelperMixins.AutoPersistMetadata(false, new HashSet<string>());
+
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            _ = collection.AutoPersistCollection(_ => SingleValueObservable.Void, new Signal<RxVoid>(), metadata, interval: null);
+            await Task.CompletedTask;
+        });
+    }
+
+    /// <summary>Tests the generic collection metadata overload (no interval) on a non-ObservableCollection collection type.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_GenericMetadataNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new CustomNotifyCollection<TestFixture>();
+        var metadata = AutoPersistHelperMixins.CreateMetadata<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = AutoPersistHelperMixins.AutoPersistCollection<TestFixture, CustomNotifyCollection<TestFixture>, RxVoid>(
+            collection,
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave,
+            metadata);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests that disposing while a debounced save is pending cancels the save without persisting.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersist_DisposeWithPendingSave_DoesNotPersist()
+    {
+        const int IntervalSeconds = 2;
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var fixture = new TestFixture();
+        var saveCount = 0;
+
+        var subscription = fixture.AutoPersist(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            TimeSpan.FromSeconds(IntervalSeconds));
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        fixture.IsNotNullString = "Pending";
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
+
+        subscription.Dispose();
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(IntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(0);
+    }
+
+    /// <summary>Tests that changing a reactive property not marked <c>[DataMember]</c> does not trigger a save.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersist_NonPersistableRaisedProperty_DoesNotTriggerSave()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var fixture = new TestFixture();
+        var saveCount = 0;
+
+        _ = fixture.AutoPersist(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            TimeSpan.FromSeconds(1));
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        fixture.NotSerialized = "Changed";
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
+
+        await Assert.That(saveCount).IsEqualTo(0);
+    }
+
+    /// <summary>Tests the two-argument reactive-object AutoPersist overload (manual signal, no interval).</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersist_ManualSignalNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var fixture = new TestFixture();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = fixture.AutoPersist(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>
+    /// Tests that AutoPersist reflects over the runtime type when it differs from the generic type argument,
+    /// exercising the unknown-runtime-type metadata lookup.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersist_DerivedRuntimeType_UsesRuntimeMetadata()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var derived = new DerivedDataContractFixture();
+        DataContractBaseFixture fixture = derived;
+        var saveCount = 0;
+
+        _ = fixture.AutoPersist(
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            TimeSpan.FromSeconds(1));
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+        derived.DerivedValue = "Changed";
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(1));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests that a Refresh change set entry invokes onRemove then onAdd for the refreshed item.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task ActOnEveryObject_RefreshChange_CallsRemoveThenAdd()
+    {
+        var item = new TestFixture();
+        var changeSets = new Signal<IReactiveChangeSet<TestFixture>>();
+        var adds = new List<TestFixture>();
+        var removes = new List<TestFixture>();
+
+        using var subscription = changeSets.ActOnEveryObject(adds.Add, removes.Add);
+
+        changeSets.OnNext(new ReactiveChangeSet<TestFixture>(
+            [new ReactiveChange<TestFixture>(ReactiveChangeReason.Refresh, item, default, 0, -1)]));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(removes).Contains(item);
+            await Assert.That(adds).Contains(item);
+        }
+    }
+
+    /// <summary>Tests that a Replace change set entry with a non-null previous invokes onRemove for the previous and onAdd for the current.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task ActOnEveryObject_ReplaceChangeWithPrevious_CallsRemoveAndAdd()
+    {
+        var previous = new TestFixture();
+        var current = new TestFixture();
+        var changeSets = new Signal<IReactiveChangeSet<TestFixture>>();
+        var adds = new List<TestFixture>();
+        var removes = new List<TestFixture>();
+
+        using var subscription = changeSets.ActOnEveryObject(adds.Add, removes.Add);
+
+        changeSets.OnNext(new ReactiveChangeSet<TestFixture>(
+            [new ReactiveChange<TestFixture>(ReactiveChangeReason.Replace, current, previous, 0, -1)]));
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(removes).Contains(previous);
+            await Assert.That(adds).Contains(current);
+        }
+    }
+
+    /// <summary>
+    /// Tests that AutoPersistCollection tolerates a Replace whose previous item was never tracked, exercising the
+    /// dispose-and-remove early-return for an item not present in the disposer list.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_ReplaceUntrackedPrevious_DisposeAndRemoveSkips()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var untracked = new TestFixture();
+        var current = new TestFixture();
+        var collection = new ReplaceableCollection<TestFixture>();
+        var saveCount = 0;
+
+        _ = AutoPersistHelperMixins.AutoPersistCollection<TestFixture, ReplaceableCollection<TestFixture>, RxVoid>(
+            collection,
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            new Signal<RxVoid>(),
+            TimeSpan.FromMilliseconds(ThrottleMilliseconds));
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        // The Replace carries a previous item that AutoPersist never tracked (it was never added via a
+        // notification), taking the dispose-and-remove not-found early-return.
+        collection.RaiseReplace(untracked, current, 0);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        current.IsNotNullString = "Test";
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(PastThrottleMilliseconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
+    /// <summary>Tests the generic-collection reflection-based two-argument overload (manual signal, no interval) on a custom collection type.</summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
+    [Test]
+    [TestExecutor<WithVirtualTimeSchedulerExecutor>]
+    public async Task AutoPersistCollection_GenericReflectionManualSignalNoInterval_SavesCorrectly()
+    {
+        var scheduler = TestContext.Current.GetVirtualTimeScheduler();
+
+        var collection = new CustomNotifyCollection<TestFixture>();
+        var manualSave = new Signal<RxVoid>();
+        var saveCount = 0;
+
+        _ = AutoPersistHelperMixins.AutoPersistCollection<TestFixture, CustomNotifyCollection<TestFixture>, RxVoid>(
+            collection,
+            _ =>
+            {
+                saveCount++;
+                return SingleValueObservable.Void;
+            },
+            manualSave);
+
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(InitialAdvanceMilliseconds));
+
+        var item = new TestFixture();
+        collection.Add(item);
+        scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
+
+        manualSave.OnNext(RxVoid.Default);
+        scheduler.AdvanceBy(TimeSpan.FromSeconds(DefaultIntervalSeconds));
+
+        await Assert.That(saveCount).IsEqualTo(1);
+    }
+
     /// <summary>Test object without DataContract attribute.</summary>
     private sealed class ObjectWithoutDataContract : ReactiveObject
     {
@@ -714,5 +1216,102 @@ public class AutoPersistHelperTest
             get;
             set => this.RaiseAndSetIfChanged(ref field, value);
         }
+    }
+
+    /// <summary>A <c>[DataContract]</c> base reactive type used to exercise runtime-type metadata resolution.</summary>
+    [DataContract]
+    private class DataContractBaseFixture : ReactiveObject
+    {
+        /// <summary>Gets or sets a persistable base value.</summary>
+        [DataMember]
+        public string? BaseValue
+        {
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
+        }
+    }
+
+    /// <summary>A derived reactive type whose runtime type differs from the statically known base type.</summary>
+    [DataContract]
+    private sealed class DerivedDataContractFixture : DataContractBaseFixture
+    {
+        /// <summary>Gets or sets a persistable derived value.</summary>
+        [DataMember]
+        public string? DerivedValue
+        {
+            get;
+            set => this.RaiseAndSetIfChanged(ref field, value);
+        }
+    }
+
+    /// <summary>A change-notifying collection that can raise a Replace with an arbitrary previous item.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    private sealed class ReplaceableCollection<T> : IEnumerable<T>, INotifyCollectionChanged
+    {
+        /// <summary>The backing storage for the collection items.</summary>
+        private readonly List<T> _items = [];
+
+        /// <inheritdoc/>
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+        /// <summary>Raises a Replace notification swapping a previous item for a current item.</summary>
+        /// <param name="previous">The previous item.</param>
+        /// <param name="current">The current item.</param>
+        /// <param name="index">The index at which the replace occurs.</param>
+        public void RaiseReplace(T previous, T current, int index)
+        {
+            if (index < _items.Count)
+            {
+                _items[index] = current;
+            }
+            else
+            {
+                _items.Add(current);
+            }
+
+            CollectionChanged?.Invoke(
+                this,
+                new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Replace,
+                    current,
+                    previous,
+                    index));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    /// <summary>A change-notifying collection that is neither <see cref="ObservableCollection{T}" /> nor read-only, used to bind the generic AutoPersist extension block.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    private sealed class CustomNotifyCollection<T> : IEnumerable<T>, INotifyCollectionChanged
+    {
+        /// <summary>The backing storage for the collection items.</summary>
+        private readonly List<T> _items = [];
+
+        /// <inheritdoc/>
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+        /// <summary>Adds an item to the collection and raises a collection-changed notification.</summary>
+        /// <param name="item">The item to add.</param>
+        public void Add(T item)
+        {
+            _items.Add(item);
+            CollectionChanged?.Invoke(
+                this,
+                new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Add,
+                    item,
+                    _items.Count - 1));
+        }
+
+        /// <inheritdoc/>
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

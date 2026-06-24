@@ -52,7 +52,7 @@ public class RoutingStateTests
         var fixture = new RoutingState(Sequencer.Immediate);
 
         await Assert.That(await fixture.NavigateBack.CanExecute.FirstAsync()).IsFalse();
-        fixture.Navigate.Execute(input).Subscribe();
+        _ = fixture.Navigate.Execute(input).Subscribe();
 
         using (Assert.Multiple())
         {
@@ -69,7 +69,7 @@ public class RoutingStateTests
         }
 
         IRoutableViewModel? navigatedTo = null;
-        fixture.NavigateBack.Execute().Subscribe(vm => navigatedTo = vm);
+        _ = fixture.NavigateBack.Execute().Subscribe(vm => navigatedTo = vm);
         using (Assert.Multiple())
         {
             await Assert.That(navigatedTo).IsSameReferenceAs(input);
@@ -84,11 +84,11 @@ public class RoutingStateTests
     {
         var fixture = new RoutingState(Sequencer.Immediate);
         var output = new List<IRoutableViewModel?>();
-        fixture.CurrentViewModel.Subscribe(vm => output.Add(vm));
+        _ = fixture.CurrentViewModel.Subscribe(vm => output.Add(vm));
 
         await Assert.That(output).Count().IsEqualTo(1);
 
-        fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
+        _ = fixture.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
         await Assert.That(output).Count().IsEqualTo(ExpectedCountTwo);
 
         await NavigateForwardAndAssert(fixture, output, "B", ExpectedCountThree);
@@ -114,7 +114,7 @@ public class RoutingStateTests
         // initial batch), so both seeds count. This matches the released System.Reactive build's behaviour.
         var fixture = new TestScreen();
         var output = new List<IRoutableViewModel?>();
-        fixture.WhenAnyObservable(static x => x.Router!.CurrentViewModel)
+        _ = fixture.WhenAnyObservable(static x => x.Router!.CurrentViewModel)
                .Subscribe(vm => output.Add(vm));
 
         // One seed from the constructor's default Router.
@@ -125,17 +125,17 @@ public class RoutingStateTests
         // Plus one seed from the swapped-in Router.
         await Assert.That(output).Count().IsEqualTo(ExpectedCountTwo);
 
-        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
+        _ = fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "A" }).Subscribe();
         await Assert.That(output).Count().IsEqualTo(ExpectedCountThree);
 
-        fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
+        _ = fixture.Router.Navigate.Execute(new TestViewModel { SomeProp = "B" }).Subscribe();
         using (Assert.Multiple())
         {
             await Assert.That(output).Count().IsEqualTo(ExpectedCountFour);
             await Assert.That((output[^1] as TestViewModel)?.SomeProp).IsEqualTo("B");
         }
 
-        fixture.Router.NavigateBack.Execute().Subscribe();
+        _ = fixture.Router.NavigateBack.Execute().Subscribe();
         using (Assert.Multiple())
         {
             await Assert.That(output).Count().IsEqualTo(ExpectedCountFive);
@@ -156,7 +156,7 @@ public class RoutingStateTests
 
         await Assert.That(fixture.Router.NavigationStack).Count().IsLessThanOrEqualTo(0);
 
-        fixture.Router.NavigateAndReset.Execute(viewModel).Subscribe();
+        _ = fixture.Router.NavigateAndReset.Execute(viewModel).Subscribe();
 
         using (Assert.Multiple())
         {
@@ -175,19 +175,19 @@ public class RoutingStateTests
         var fixture = new RoutingState(scheduler);
 
         // Navigate should execute synchronously on ImmediateScheduler
-        fixture.Navigate.Execute(new TestViewModel()).Subscribe();
+        _ = fixture.Navigate.Execute(new TestViewModel()).Subscribe();
         await Assert.That(fixture.NavigationStack).Count().IsEqualTo(1);
 
         // Navigate again
-        fixture.Navigate.Execute(new TestViewModel()).Subscribe();
+        _ = fixture.Navigate.Execute(new TestViewModel()).Subscribe();
         await Assert.That(fixture.NavigationStack).Count().IsEqualTo(ExpectedCountTwo);
 
         // NavigateBack should execute synchronously on ImmediateScheduler
-        fixture.NavigateBack.Execute().Subscribe();
+        _ = fixture.NavigateBack.Execute().Subscribe();
         await Assert.That(fixture.NavigationStack).Count().IsEqualTo(1);
 
         // NavigateAndReset should execute synchronously on ImmediateScheduler
-        fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
+        _ = fixture.NavigateAndReset.Execute(new TestViewModel()).Subscribe();
         await Assert.That(fixture.NavigationStack).Count().IsEqualTo(1);
     }
 
@@ -206,7 +206,7 @@ public class RoutingStateTests
             .FirstAsync();
 
         // Execute with null to trigger the exception - subscribe with error handler to catch it
-        fixture.Navigate.Execute(null!).Subscribe(_ => { }, ex => { });
+        _ = fixture.Navigate.Execute(null!).Subscribe(_ => { }, ex => { });
 
         // Wait for the exception to be captured through ThrownExceptions
         var thrownException = await exceptionTask;
@@ -225,9 +225,9 @@ public class RoutingStateTests
         var vm2 = new TestViewModel { SomeProp = "Second" };
         var vm3 = new TestViewModel { SomeProp = "Third" };
 
-        fixture.Navigate.Execute(vm1).Subscribe();
-        fixture.Navigate.Execute(vm2).Subscribe();
-        fixture.Navigate.Execute(vm3).Subscribe();
+        _ = fixture.Navigate.Execute(vm1).Subscribe();
+        _ = fixture.Navigate.Execute(vm2).Subscribe();
+        _ = fixture.Navigate.Execute(vm3).Subscribe();
 
         var found = fixture.FindViewModelInStack<TestViewModel>();
 
@@ -255,9 +255,9 @@ public class RoutingStateTests
         var vm2 = new AlternateViewModel();
         var vm3 = new TestViewModel { SomeProp = "Third" };
 
-        fixture.Navigate.Execute(vm1).Subscribe();
-        fixture.Navigate.Execute(vm2).Subscribe();
-        fixture.Navigate.Execute(vm3).Subscribe();
+        _ = fixture.Navigate.Execute(vm1).Subscribe();
+        _ = fixture.Navigate.Execute(vm2).Subscribe();
+        _ = fixture.Navigate.Execute(vm3).Subscribe();
 
         var found = fixture.FindViewModelInStack<TestViewModel>();
 
@@ -269,7 +269,7 @@ public class RoutingStateTests
     public void FindViewModelInStackThrowsOnNull()
     {
         RoutingState? fixture = null;
-        Assert.Throws<ArgumentNullException>(() => fixture!.FindViewModelInStack<TestViewModel>());
+        _ = Assert.Throws<ArgumentNullException>(() => fixture!.FindViewModelInStack<TestViewModel>());
     }
 
     /// <summary>Test GetCurrentViewModel returns the top view model.</summary>
@@ -281,8 +281,8 @@ public class RoutingStateTests
         var vm1 = new TestViewModel { SomeProp = "First" };
         var vm2 = new TestViewModel { SomeProp = "Second" };
 
-        fixture.Navigate.Execute(vm1).Subscribe();
-        fixture.Navigate.Execute(vm2).Subscribe();
+        _ = fixture.Navigate.Execute(vm1).Subscribe();
+        _ = fixture.Navigate.Execute(vm2).Subscribe();
 
         var current = fixture.GetCurrentViewModel();
 
@@ -305,7 +305,7 @@ public class RoutingStateTests
     public void GetCurrentViewModelThrowsOnNull()
     {
         RoutingState? fixture = null;
-        Assert.Throws<ArgumentNullException>(() => fixture!.GetCurrentViewModel());
+        _ = Assert.Throws<ArgumentNullException>(() => fixture!.GetCurrentViewModel());
     }
 
     /// <summary>Test WhenNavigatedToObservable fires when navigated to.</summary>
@@ -317,9 +317,9 @@ public class RoutingStateTests
         var vm = new TestViewModel { HostScreen = screen };
 
         var fired = false;
-        vm.WhenNavigatedToObservable().Subscribe(_ => fired = true);
+        _ = vm.WhenNavigatedToObservable().Subscribe(_ => fired = true);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(fired).IsTrue();
     }
@@ -333,10 +333,10 @@ public class RoutingStateTests
         var vm = new TestViewModel { HostScreen = screen };
 
         var completed = false;
-        vm.WhenNavigatedToObservable().Subscribe(_ => { }, () => completed = true);
+        _ = vm.WhenNavigatedToObservable().Subscribe(_ => { }, () => completed = true);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.NavigateAndReset.Execute(new TestViewModel { HostScreen = screen }).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.NavigateAndReset.Execute(new TestViewModel { HostScreen = screen }).Subscribe();
 
         await Assert.That(completed).IsTrue();
     }
@@ -351,10 +351,10 @@ public class RoutingStateTests
         var vm2 = new TestViewModel { HostScreen = screen };
 
         var fired = false;
-        vm1.WhenNavigatingFromObservable().Subscribe(_ => fired = true);
+        _ = vm1.WhenNavigatingFromObservable().Subscribe(_ => fired = true);
 
-        screen.Router.Navigate.Execute(vm1).Subscribe();
-        screen.Router.Navigate.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm1).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm2).Subscribe();
 
         await Assert.That(fired).IsTrue();
     }
@@ -370,16 +370,16 @@ public class RoutingStateTests
         var setupCount = 0;
         var teardownCount = 0;
 
-        vm.WhenNavigatedTo(() =>
+        _ = vm.WhenNavigatedTo(() =>
         {
             setupCount++;
             return Scope.Create(() => teardownCount++);
         });
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
         await Assert.That(setupCount).IsEqualTo(1);
 
-        screen.Router.Navigate.Execute(new TestViewModel { HostScreen = screen }).Subscribe();
+        _ = screen.Router.Navigate.Execute(new TestViewModel { HostScreen = screen }).Subscribe();
         await Assert.That(teardownCount).IsEqualTo(1);
     }
 
@@ -388,7 +388,7 @@ public class RoutingStateTests
     public void WhenNavigatedToThrowsOnNull()
     {
         TestViewModel? vm = null;
-        Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatedTo(() => Scope.Empty));
+        _ = Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatedTo(() => Scope.Empty));
     }
 
     /// <summary>Test WhenNavigatedToObservable throws on null.</summary>
@@ -396,7 +396,7 @@ public class RoutingStateTests
     public void WhenNavigatedToObservableThrowsOnNull()
     {
         TestViewModel? vm = null;
-        Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatedToObservable());
+        _ = Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatedToObservable());
     }
 
     /// <summary>Test WhenNavigatingFromObservable throws on null.</summary>
@@ -404,7 +404,7 @@ public class RoutingStateTests
     public void WhenNavigatingFromObservableThrowsOnNull()
     {
         TestViewModel? vm = null;
-        Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatingFromObservable());
+        _ = Assert.Throws<ArgumentNullException>(() => vm!.WhenNavigatingFromObservable());
     }
 
     /// <summary>Navigates forward to a new <see cref="TestViewModel"/> and asserts the observed output count and the top-of-stack property value.</summary>
@@ -415,7 +415,7 @@ public class RoutingStateTests
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     private static async Task NavigateForwardAndAssert(RoutingState fixture, List<IRoutableViewModel?> output, string someProp, int expectedCount)
     {
-        fixture.Navigate.Execute(new TestViewModel { SomeProp = someProp }).Subscribe();
+        _ = fixture.Navigate.Execute(new TestViewModel { SomeProp = someProp }).Subscribe();
         using (Assert.Multiple())
         {
             await Assert.That(output).Count().IsEqualTo(expectedCount);

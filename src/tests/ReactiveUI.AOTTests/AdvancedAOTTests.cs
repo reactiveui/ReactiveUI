@@ -26,7 +26,7 @@ public class AdvancedAOTTests
         var viewModel = new TestRoutableViewModel();
 
         // Test navigation
-        routingState.Navigate.Execute(viewModel).Subscribe();
+        _ = routingState.Navigate.Execute(viewModel).Subscribe();
 
         await Assert.That(routingState.NavigationStack).Count().IsEqualTo(1);
         await Assert.That(routingState.NavigationStack[0]).IsEqualTo(viewModel);
@@ -40,7 +40,7 @@ public class AdvancedAOTTests
         var property = new ReactiveProperty<string>(string.Empty, Sequencer.Immediate, false, false);
         var hasErrors = false;
 
-        property.ObserveValidationErrors()
+        _ = property.ObserveValidationErrors()
             .Subscribe(error => hasErrors = !string.IsNullOrEmpty(error));
 
         _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
@@ -61,10 +61,10 @@ public class AdvancedAOTTests
         viewModel.WhenActivated(disposables =>
         {
             activated = true;
-            new ActionDisposable(() => deactivated = true).DisposeWith(disposables);
+            _ = new ActionDisposable(() => deactivated = true).DisposeWith(disposables);
         });
 
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
         await Assert.That(activated).IsTrue();
 
         viewModel.Activator.Deactivate();
@@ -113,7 +113,7 @@ public class AdvancedAOTTests
         var received = false;
         const string testMessage = "test message";
 
-        messageBus.Listen<string>().Subscribe(msg => received = msg == testMessage);
+        _ = messageBus.Listen<string>().Subscribe(msg => received = msg == testMessage);
 
         messageBus.SendMessage(testMessage);
 

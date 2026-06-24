@@ -316,19 +316,7 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         {
             if (Interlocked.CompareExchange(ref _activated, 1, 0) == 0 && !_disposed)
             {
-                _lastValue = _getInitialValue();
-                var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
-                lock (_gate)
-                {
-                    if (_disposed)
-                    {
-                        subscription.Dispose();
-                    }
-                    else
-                    {
-                        _sourceSubscription = subscription;
-                    }
-                }
+                ActivateOnFirstAccess();
             }
 
             return _lastValue!;
@@ -386,6 +374,54 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _sourceSubscription?.Dispose();
     }
 
+    /// <summary>Seeds the initial value and subscribes to the source the first time <see cref="Value"/> is read in deferred mode.</summary>
+    /// <remarks>Internal so the disposed-during-activation guard can be exercised directly in tests.</remarks>
+    internal void ActivateOnFirstAccess()
+    {
+        _lastValue = _getInitialValue();
+        var subscription = _sourceObservable.Subscribe(new SourceObserver(this));
+        lock (_gate)
+        {
+            if (_disposed)
+            {
+                subscription.Dispose();
+            }
+            else
+            {
+                _sourceSubscription = subscription;
+            }
+        }
+    }
+
+    /// <summary>Applies the distinct / skip-initial gate to a source value and schedules delivery when it passes.</summary>
+    /// <param name="value">The value produced by the source.</param>
+    /// <remarks>Internal so the disposed-source-emission guard can be exercised directly in tests.</remarks>
+    internal void OnSourceNext(T? value)
+    {
+        lock (_gate)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (_skipInitial && !_hasDistinctPrevious && EqualityComparer<T?>.Default.Equals(value, _getInitialValue()))
+            {
+                return;
+            }
+
+            if (_hasDistinctPrevious && EqualityComparer<T?>.Default.Equals(value, _distinctPrevious))
+            {
+                return;
+            }
+
+            _distinctPrevious = value;
+            _hasDistinctPrevious = true;
+        }
+
+        ScheduleDeliver(value);
+    }
+
     /// <summary>The no-op onChanging callback used when none is supplied.</summary>
     /// <param name="value">The unused value.</param>
     private static void NoOp(T? value)
@@ -415,34 +451,6 @@ public sealed class ObservableAsPropertyHelper<T> : IHandleObservableErrors, IDi
         _onChanging(value);
         _lastValue = value;
         _onChanged(value);
-    }
-
-    /// <summary>Applies the distinct / skip-initial gate to a source value and schedules delivery when it passes.</summary>
-    /// <param name="value">The value produced by the source.</param>
-    private void OnSourceNext(T? value)
-    {
-        lock (_gate)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (_skipInitial && !_hasDistinctPrevious && EqualityComparer<T?>.Default.Equals(value, _getInitialValue()))
-            {
-                return;
-            }
-
-            if (_hasDistinctPrevious && EqualityComparer<T?>.Default.Equals(value, _distinctPrevious))
-            {
-                return;
-            }
-
-            _distinctPrevious = value;
-            _hasDistinctPrevious = true;
-        }
-
-        ScheduleDeliver(value);
     }
 
     /// <summary>Schedules delivery of a source error to the exceptions stream.</summary>

@@ -17,21 +17,21 @@ public partial class LoginPage : ReactiveContentPage<LoginViewModel>
         InitializeComponent();
         ViewModel = new(RxSchedulers.MainThreadScheduler);
 
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
-            this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
+            _ = this.Bind(ViewModel, vm => vm.UserName, v => v.Username.Text)
                 .DisposeWith(d);
 
-            this.Bind(ViewModel, vm => vm.Password, v => v.Password.Text)
+            _ = this.Bind(ViewModel, vm => vm.Password, v => v.Password.Text)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Login, v => v.LoginButton)
+            _ = this.BindCommand(ViewModel, vm => vm.Login, v => v.LoginButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)
+            _ = this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)
                 .DisposeWith(d);
 
-            ViewModel.Login
+            _ = ViewModel.Login
                 .SelectMany(success => Signal.FromAsync(async () =>
                 {
                     await Shell.Current.DisplayAlertAsync(

@@ -31,7 +31,7 @@ public class OaphNameOfTestFixture : TestFixture
         Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
     public OaphNameOfTestFixture()
     {
-        this.WhenAnyValue(static x => x.IsOnlyOneWord)
+        _ = this.WhenAnyValue(static x => x.IsOnlyOneWord)
             .Select(static x => x ?? string.Empty)
             .Select(static x => x.Length >= LetterCount ? x.Substring(0, LetterCount) : x)
             .ToProperty(

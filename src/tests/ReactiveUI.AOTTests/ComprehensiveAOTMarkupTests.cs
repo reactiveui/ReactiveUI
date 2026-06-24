@@ -47,7 +47,7 @@ public class ComprehensiveAOTMarkupTests
         var property = new ReactiveProperty<string>(InitialValue, scheduler, false, false);
         var values = new List<string>();
 
-        property.Subscribe(value => values.Add(value ?? string.Empty));
+        _ = property.Subscribe(value => values.Add(value ?? string.Empty));
 
         property.Refresh(); // This calls RaisePropertyChanged which has AOT attributes
 
@@ -87,7 +87,7 @@ public class ComprehensiveAOTMarkupTests
 
         // Test basic operations
         var valueChanges = new List<string>();
-        property.Subscribe(value => valueChanges.Add(value ?? string.Empty));
+        _ = property.Subscribe(value => valueChanges.Add(value ?? string.Empty));
 
         // Test value setting (uses RaisePropertyChanged)
         property.Value = "changed";
@@ -97,7 +97,7 @@ public class ComprehensiveAOTMarkupTests
 
         // Test validation
         var hasErrors = false;
-        property.ObserveHasErrors.Subscribe(errors => hasErrors = errors);
+        _ = property.ObserveHasErrors.Subscribe(errors => hasErrors = errors);
 
         _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
@@ -128,11 +128,11 @@ public class ComprehensiveAOTMarkupTests
         // AOT-compatible: MessageBus usage
         var messageBus = new MessageBus();
         var messages = new List<string>();
-        messageBus.Listen<string>().Subscribe(messages.Add);
+        _ = messageBus.Listen<string>().Subscribe(messages.Add);
 
         // AOT-compatible: Interactions
         var interaction = new Interaction<string, bool>();
-        interaction.RegisterHandler(context => context.SetOutput(context.Input == "test"));
+        _ = interaction.RegisterHandler(context => context.SetOutput(context.Input == "test"));
 
         // Test the workflow
         property.Value = UpdatedValue;
@@ -226,14 +226,14 @@ public class ComprehensiveAOTMarkupTests
 
             // Create reactive property within activation
             var property = new ReactiveProperty<string>("activated", scheduler, false, false);
-            property.DisposeWith(disposables);
+            _ = property.DisposeWith(disposables);
 
             // Setup cleanup
-            new ActionDisposable(() => deactivationCount++).DisposeWith(disposables);
+            _ = new ActionDisposable(() => deactivationCount++).DisposeWith(disposables);
         });
 
         // Test activation cycle
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
         using (Assert.Multiple())
         {
             await Assert.That(activationCount).IsEqualTo(1);
@@ -248,7 +248,7 @@ public class ComprehensiveAOTMarkupTests
         }
 
         // Test reactivation
-        viewModel.Activator.Activate();
+        _ = viewModel.Activator.Activate();
         using (Assert.Multiple())
         {
             await Assert.That(activationCount).IsEqualTo(ExpectedCount);
@@ -273,11 +273,11 @@ public class ComprehensiveAOTMarkupTests
         var errors = new List<Exception>();
 
         // Subscribe to thrown exceptions (tests ReactiveObject error handling)
-        property.ThrownExceptions.Subscribe(errors.Add);
+        _ = property.ThrownExceptions.Subscribe(errors.Add);
 
         // Test validation errors
         var validationErrors = new List<string>();
-        property.ObserveErrorChanged
+        _ = property.ObserveErrorChanged
             .Where(errs => errs is not null)
             .Subscribe(errs => validationErrors.AddRange(errs!.OfType<string>()));
 

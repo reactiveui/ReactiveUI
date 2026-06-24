@@ -221,7 +221,7 @@ public static class ReactiveTableViewSourceExtensions
             var source = new ReactiveTableViewSource<TSource>(tableView);
             if (initSource is not null)
             {
-                initSource(source);
+                _ = initSource(source);
             }
 
             var bind = sectionsObservable.BindTo(source, static x => x.Data);

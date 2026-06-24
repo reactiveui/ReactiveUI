@@ -34,7 +34,7 @@ internal sealed class WpfPropertyBinderImplementation : PropertyBinderImplementa
             return;
         }
 
-        RxSchedulers.MainThreadScheduler.Schedule(
+        _ = RxSchedulers.MainThreadScheduler.Schedule(
             setter,
             static (_, state) =>
             {

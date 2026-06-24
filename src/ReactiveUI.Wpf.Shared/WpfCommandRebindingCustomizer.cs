@@ -52,7 +52,7 @@ internal sealed class WpfCommandRebindingCustomizer : ICreatesCustomizedCommandR
         // control off-thread (which would throw an InvalidOperationException).
         if (control is DispatcherObject dispatcherObject && !dispatcherObject.CheckAccess())
         {
-            RxSchedulers.MainThreadScheduler.Schedule(
+            _ = RxSchedulers.MainThreadScheduler.Schedule(
                 (Property: commandProperty, Control: control, Command: command),
                 static (_, state) =>
                 {

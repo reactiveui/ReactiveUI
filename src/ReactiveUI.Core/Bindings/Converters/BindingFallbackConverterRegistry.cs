@@ -146,12 +146,7 @@ public sealed class BindingFallbackConverterRegistry
     public IEnumerable<IBindingFallbackConverter> GetAllConverters()
     {
         var snap = Volatile.Read(ref _snapshot);
-        if (snap is null)
-        {
-            return [];
-        }
-
-        return [.. snap.Converters];
+        return snap is null ? [] : [.. snap.Converters];
     }
 
     /// <summary>A copy-on-write snapshot of the fallback converter registry.</summary>

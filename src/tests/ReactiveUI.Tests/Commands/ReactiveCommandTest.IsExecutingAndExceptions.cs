@@ -66,7 +66,7 @@ public partial class ReactiveCommandTest
             () => executeSubject,
             outputScheduler: Sequencer.Immediate);
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
 
         await Assert.That(await command.IsExecuting.FirstAsync()).IsTrue();
 
@@ -90,7 +90,7 @@ public partial class ReactiveCommandTest
             outputScheduler: scheduler);
         var isExecuting = command.IsExecuting.Collect();
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         const int ExpectedCount = 2;
@@ -184,7 +184,7 @@ public partial class ReactiveCommandTest
             outputScheduler: scheduler);
         var executed = false;
 
-        command.Execute().Subscribe(_ => executed = true);
+        _ = command.Execute().Subscribe(_ => executed = true);
 
         await Assert.That(executed).IsTrue();
     }
@@ -208,7 +208,7 @@ public partial class ReactiveCommandTest
             async token =>
             {
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, StartedCommandStatus));
-                tcsStarted.TrySetResult(RxVoid.Default);
+                _ = tcsStarted.TrySetResult(RxVoid.Default);
                 try
                 {
                     await Task.Delay(LongDelayMilliseconds, token);
@@ -216,7 +216,7 @@ public partial class ReactiveCommandTest
                 catch (OperationCanceledException)
                 {
                     statusTrail.Add((Interlocked.Increment(ref position) - 1, CancellingCommandStatus));
-                    tcsCaught.TrySetResult(RxVoid.Default);
+                    _ = tcsCaught.TrySetResult(RxVoid.Default);
                     await tcsFinish.Task;
                     statusTrail.Add((Interlocked.Increment(ref position) - 1, FinishedCancellingStatus));
                     throw;
@@ -227,9 +227,9 @@ public partial class ReactiveCommandTest
             outputScheduler: Sequencer.Immediate);
 
         Exception? exception = null;
-        command.ThrownExceptions.Subscribe(ex => exception = ex);
+        _ = command.ThrownExceptions.Subscribe(ex => exception = ex);
         var latestIsExecutingValue = false;
-        command.IsExecuting.Subscribe(isExec =>
+        _ = command.IsExecuting.Subscribe(isExec =>
         {
             statusTrail.Add((Interlocked.Increment(ref position) - 1, $"executing = {isExec}"));
             Volatile.Write(ref latestIsExecutingValue, isExec);
@@ -245,7 +245,7 @@ public partial class ReactiveCommandTest
         await tcsCaught.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
-        tcsFinish.TrySetResult(RxVoid.Default);
+        _ = tcsFinish.TrySetResult(RxVoid.Default);
         await Task.Delay(CompletionDelayMilliseconds);
 
         const int StartedCommandPosition = 2;
@@ -288,7 +288,7 @@ public partial class ReactiveCommandTest
             async cts =>
             {
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, StartedCommandStatus));
-                tcsStarted.TrySetResult(RxVoid.Default);
+                _ = tcsStarted.TrySetResult(RxVoid.Default);
                 try
                 {
                     await Task.Delay(DelayMilliseconds, cts);
@@ -302,23 +302,23 @@ public partial class ReactiveCommandTest
                 }
 
                 statusTrail.Add((Interlocked.Increment(ref position) - 1, "finished command"));
-                tcsFinished.TrySetResult(RxVoid.Default);
+                _ = tcsFinished.TrySetResult(RxVoid.Default);
                 await tcsContinue.Task;
                 return RxVoid.Default;
             },
             outputScheduler: Sequencer.Immediate);
 
         Exception? exception = null;
-        command.ThrownExceptions.Subscribe(ex => exception = ex);
+        _ = command.ThrownExceptions.Subscribe(ex => exception = ex);
         var latestIsExecutingValue = false;
-        command.IsExecuting.Subscribe(isExec =>
+        _ = command.IsExecuting.Subscribe(isExec =>
         {
             statusTrail.Add((Interlocked.Increment(ref position) - 1, $"executing = {isExec}"));
             Volatile.Write(ref latestIsExecutingValue, isExec);
         });
 
         var result = false;
-        command.Execute().Subscribe(_ => result = true);
+        _ = command.Execute().Subscribe(_ => result = true);
 
         await tcsStarted.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
@@ -326,7 +326,7 @@ public partial class ReactiveCommandTest
         await tcsFinished.Task.WaitAsync(TimeSpan.FromSeconds(WaitTimeoutSeconds));
         await Assert.That(Volatile.Read(ref latestIsExecutingValue)).IsTrue();
 
-        tcsContinue.TrySetResult(RxVoid.Default);
+        _ = tcsContinue.TrySetResult(RxVoid.Default);
         await Task.Delay(CompletionDelayMilliseconds);
 
         const int StartedCommandPosition = 2;
@@ -366,7 +366,7 @@ public partial class ReactiveCommandTest
 
         const int DelayMilliseconds = 100;
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
 
         await Task.Delay(DelayMilliseconds);
         tcsStart.SetResult(RxVoid.Default);
@@ -391,7 +391,7 @@ public partial class ReactiveCommandTest
             outputScheduler: Sequencer.Immediate);
         var exceptions = command.ThrownExceptions.Collect();
 
-        command.Execute().Subscribe(_ => { }, _ => { });
+        _ = command.Execute().Subscribe(_ => { }, _ => { });
 
         await Assert.That(exceptions).Count().IsEqualTo(1);
         await Assert.That(exceptions[0]).IsTypeOf<InvalidOperationException>();
@@ -408,7 +408,7 @@ public partial class ReactiveCommandTest
             outputScheduler: Sequencer.Immediate);
         var exceptions = command.ThrownExceptions.Collect();
 
-        command.Execute().Subscribe(_ => { }, _ => { });
+        _ = command.Execute().Subscribe(_ => { }, _ => { });
 
         await Assert.That(exceptions).Count().IsEqualTo(1);
         await Assert.That(exceptions[0]).IsTypeOf<InvalidOperationException>();
@@ -425,9 +425,9 @@ public partial class ReactiveCommandTest
             () => Signal.Fail<RxVoid>(new InvalidOperationException()),
             outputScheduler: scheduler);
         Exception? exception = null;
-        command.ThrownExceptions.Subscribe(ex => exception = ex);
+        _ = command.ThrownExceptions.Subscribe(ex => exception = ex);
 
-        command.Execute().Subscribe(_ => { }, _ => { });
+        _ = command.Execute().Subscribe(_ => { }, _ => { });
 
         await Assert.That(exception).IsTypeOf<InvalidOperationException>();
     }
@@ -449,7 +449,7 @@ public partial class ReactiveCommandTest
 
         const int DelayMilliseconds = 100;
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
 
         await Task.Delay(DelayMilliseconds);
         tcsStart.SetResult(RxVoid.Default);

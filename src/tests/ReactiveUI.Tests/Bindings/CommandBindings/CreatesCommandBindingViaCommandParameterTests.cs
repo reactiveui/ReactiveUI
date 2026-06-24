@@ -130,7 +130,7 @@ public class CreatesCommandBindingViaCommandParameterTests
         var binder = new CreatesCommandBindingViaCommandParameter();
         var command = ReactiveCommand.Create(() => { });
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<CommandControl>(command, null, Signal.Emit<object?>(null)));
     }
 

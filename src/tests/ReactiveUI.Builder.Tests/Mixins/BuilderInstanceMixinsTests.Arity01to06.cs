@@ -21,10 +21,10 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s1,
             typeof(InstanceService01));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
-        builder.WithInstance<InstanceService01>(s1 => captured1 = s1);
+        _ = builder.WithInstance<InstanceService01>(s1 => captured1 = s1);
 
         await Assert.That(captured1).IsSameReferenceAs(s1);
     }
@@ -38,10 +38,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01>(_ => invoked = true);
+        _ = builder.WithInstance<InstanceService01>(_ => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -61,10 +61,10 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s1,
             typeof(InstanceService01));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
-        builder.WithInstance<InstanceService01>(s1 => captured1 = s1);
+        _ = builder.WithInstance<InstanceService01>(s1 => captured1 = s1);
 
         await Assert.That(captured1).IsSameReferenceAs(s1);
     }
@@ -82,10 +82,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01>(_ => invoked = true);
+        _ = builder.WithInstance<InstanceService01>(_ => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -105,11 +105,11 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s2,
             typeof(InstanceService02));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
-        builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -128,10 +128,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
+        _ = builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -155,11 +155,11 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s2,
             typeof(InstanceService02));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
-        builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02>((s1, s2) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -182,10 +182,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
+        _ = builder.WithInstance<InstanceService01, InstanceService02>((_, _) => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -209,12 +209,12 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s3,
             typeof(InstanceService03));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -235,10 +235,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -266,12 +266,12 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s3,
             typeof(InstanceService03));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((s1, s2, s3) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -296,10 +296,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => invoked = true);
 
         await Assert.That(invoked).IsFalse();
     }
@@ -327,13 +327,13 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s4,
             typeof(InstanceService04));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
         InstanceService04? captured4 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -356,10 +356,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
             invoked = true);
 
         await Assert.That(invoked).IsFalse();
@@ -392,13 +392,13 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s4,
             typeof(InstanceService04));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
         InstanceService04? captured4 = null;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((s1, s2, s3, s4) =>
         {
             captured1 = s1;
             captured2 = s2;
@@ -425,10 +425,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
+        _ = builder.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
             invoked = true);
 
         await Assert.That(invoked).IsFalse();
@@ -461,14 +461,14 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s5,
             typeof(InstanceService05));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
         InstanceService04? captured4 = null;
         InstanceService05? captured5 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -499,10 +499,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -544,14 +544,14 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s5,
             typeof(InstanceService05));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
         InstanceService03? captured3 = null;
         InstanceService04? captured4 = null;
         InstanceService05? captured5 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -586,10 +586,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -631,7 +631,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s6,
             typeof(InstanceService06));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
@@ -639,7 +639,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService04? captured4 = null;
         InstanceService05? captured5 = null;
         InstanceService06? captured6 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -673,10 +673,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -723,7 +723,7 @@ public partial class BuilderInstanceMixinsTests
         resolver.RegisterConstant(
             s6,
             typeof(InstanceService06));
-        builder.WithCoreServices().Build();
+        _ = builder.WithCoreServices().Build();
 
         InstanceService01? captured1 = null;
         InstanceService02? captured2 = null;
@@ -731,7 +731,7 @@ public partial class BuilderInstanceMixinsTests
         InstanceService04? captured4 = null;
         InstanceService05? captured5 = null;
         InstanceService06? captured6 = null;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,
@@ -769,10 +769,10 @@ public partial class BuilderInstanceMixinsTests
         var builder = new ReactiveUIBuilder(
             resolver,
             null);
-        builder.WithCoreServices();
+        _ = builder.WithCoreServices();
 
         var invoked = false;
-        builder
+        _ = builder
             .WithInstance<
                 InstanceService01,
                 InstanceService02,

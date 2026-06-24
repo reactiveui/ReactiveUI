@@ -68,9 +68,7 @@ public class ReactiveUserControlTest
     [Test]
     public async Task IViewForViewModel_ReturnsNullAfterSettingToNull()
     {
-        IViewFor control = new ReactiveUserControl<TestViewModel>();
-
-        control.ViewModel = null;
+        IViewFor control = new ReactiveUserControl<TestViewModel> { ViewModel = null };
 
         await Assert.That(control.ViewModel).IsNull();
     }

@@ -56,7 +56,7 @@ public class CommandBindingImplementationTests
 
         var view = new CommandBindView { ViewModel = vm };
 
-        view.BindCommand(view.ViewModel, static m => m.NestedViewModel.NestedCommand, static x => x.Command1);
+        _ = view.BindCommand(view.ViewModel, static m => m.NestedViewModel.NestedCommand, static x => x.Command1);
 
         await Assert.That(view.Command1.Command).IsEqualTo(view.ViewModel.NestedViewModel.NestedCommand);
     }
@@ -71,7 +71,7 @@ public class CommandBindingImplementationTests
         var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         await Assert.That(view.Command1.IsEnabled).IsTrue();
     }
@@ -86,7 +86,7 @@ public class CommandBindingImplementationTests
         var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         await Assert.That(view.Command1.IsEnabled).IsTrue();
 
@@ -105,7 +105,7 @@ public class CommandBindingImplementationTests
         var canExecute1 = new BehaviorSignal<bool>(false);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         await Assert.That(view.Command1.IsEnabled).IsFalse();
     }
@@ -120,7 +120,7 @@ public class CommandBindingImplementationTests
         var canExecute1 = new BehaviorSignal<bool>(true);
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(static _ => { }, canExecute1);
 
-        view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
+        _ = view.BindCommand(view.ViewModel, static x => x.Command1, static x => x.Command1);
 
         await Assert.That(view.Command1.IsEnabled).IsTrue();
 
@@ -187,7 +187,7 @@ public class CommandBindingImplementationTests
         view.ViewModel.Command1 = ReactiveCommand.Create<int>(i => received = i);
         view.ViewModel.Value = InitialValue;
 
-        view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
+        _ = view.BindCommand(view.ViewModel, x => x.Command1, x => x.Command1, x => x.Value, nameof(CustomClickButton.CustomClick));
 
         view.Command1.RaiseCustomClick();
         await Assert.That(received).IsEqualTo(InitialValue);

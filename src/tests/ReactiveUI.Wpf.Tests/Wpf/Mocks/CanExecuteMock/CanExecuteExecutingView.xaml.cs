@@ -14,7 +14,7 @@ public partial class CanExecuteExecutingView
     {
         InitializeComponent();
         ViewModel = new();
-        this.WhenActivated(d =>
+        _ = this.WhenActivated(d =>
         {
             d(this.BindCommand(ViewModel, vm => vm.Command3, v => v.Execute));
             d(this.OneWayBind(ViewModel, vm => vm.Result, v => v.Result.Text));

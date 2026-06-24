@@ -148,7 +148,7 @@ public class CreatesCommandBindingViaEventTests
         var target = new object();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<Exception>(() =>
+        _ = Assert.Throws<Exception>(() =>
             binder.BindCommandToObject(command, target, Signal.Emit<object?>(null)));
     }
 
@@ -159,7 +159,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControl>(command, null, Signal.Emit<object?>(null)));
     }
 
@@ -290,7 +290,7 @@ public class CreatesCommandBindingViaEventTests
         var target = new ClickableControl();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControl, EventArgs>(
                 command,
                 target,
@@ -306,7 +306,7 @@ public class CreatesCommandBindingViaEventTests
         var target = new ClickableControl();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentException>(() =>
+        _ = Assert.Throws<ArgumentException>(() =>
             binder.BindCommandToObject<ClickableControl, EventArgs>(
                 command,
                 target,
@@ -409,7 +409,7 @@ public class CreatesCommandBindingViaEventTests
         var binder = new CreatesCommandBindingViaEvent();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
                 command,
                 null,
@@ -426,7 +426,7 @@ public class CreatesCommandBindingViaEventTests
         var target = new ClickableControlWithGenericEvent();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
                 command,
                 target,
@@ -443,7 +443,7 @@ public class CreatesCommandBindingViaEventTests
         var target = new ClickableControlWithGenericEvent();
         var command = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             binder.BindCommandToObject<ClickableControlWithGenericEvent, EventArgs>(
                 command,
                 target,

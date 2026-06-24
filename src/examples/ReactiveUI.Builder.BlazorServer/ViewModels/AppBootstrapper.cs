@@ -17,7 +17,7 @@ public class AppBootstrapper : ReactiveObject, IScreen
 
         Router = new();
 
-        Router.Navigate.Execute(new LobbyViewModel(this)).Subscribe(Witness.Create<IRoutableViewModel>(static _ => { }));
+        _ = Router.Navigate.Execute(new LobbyViewModel(this)).Subscribe(Witness.Create<IRoutableViewModel>(static _ => { }));
     }
 
     /// <summary>Gets the unique identifier for the Blazor circuit tab associated with this instance.</summary>

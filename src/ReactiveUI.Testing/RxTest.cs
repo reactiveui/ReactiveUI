@@ -64,7 +64,7 @@ public static class RxTest
         }
         finally
         {
-            TestGate.Release();
+            _ = TestGate.Release();
         }
     }
 }

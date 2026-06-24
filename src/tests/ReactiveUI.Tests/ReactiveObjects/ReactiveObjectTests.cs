@@ -45,7 +45,7 @@ public class ReactiveObjectTests
         var beforeFired = false;
         string? changingPropertyName = null;
         string? changingValue = null;
-        fixture.Changing.Subscribe(x =>
+        _ = fixture.Changing.Subscribe(x =>
         {
             changingPropertyName = x.PropertyName;
             changingValue = fixture.IsOnlyOneWord;
@@ -55,7 +55,7 @@ public class ReactiveObjectTests
         var afterFired = false;
         string? changedPropertyName = null;
         string? changedValue = null;
-        fixture.Changed.Subscribe(x =>
+        _ = fixture.Changed.Subscribe(x =>
         {
             changedPropertyName = x.PropertyName;
             changedValue = fixture.IsOnlyOneWord;
@@ -144,7 +144,7 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture { IsOnlyOneWord = FooText };
 
-        fixture.Changed.Subscribe(static _ => throw new InvalidOperationException("Die!"));
+        _ = fixture.Changed.Subscribe(static _ => throw new InvalidOperationException("Die!"));
         var exceptionList = fixture.ThrownExceptions.Collect();
 
         fixture.IsOnlyOneWord = BarText;
@@ -159,7 +159,7 @@ public class ReactiveObjectTests
         const int ExpectedCount = 2;
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<IObservedChange<TestFixture, string?>>();
-        ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsNotNullString)).Subscribe(output.Add);
+        _ = ObservableMixins.WhereNotNull(fixture.ObservableForProperty(x => x.IsNotNullString)).Subscribe(output.Add);
 
         fixture.IsNotNullString = BarText;
         fixture.IsNotNullString = BazText;
@@ -188,7 +188,7 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture { IsNotNullString = FooText, IsOnlyOneWord = BazText };
         var output = new List<string>();
-        fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
+        _ = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
 
         fixture.UsesExprRaiseSet = FooText;
         fixture.UsesExprRaiseSet = FooText; // This one shouldn't raise a change notification
@@ -257,9 +257,9 @@ public class ReactiveObjectTests
     {
         var fixture = new TestFixture();
         var observable = fixture.WhenAnyValue(x => x.IsOnlyOneWord).Skip(1);
-        observable.Subscribe(_ => throw new InvalidOperationException("This is a test."));
+        _ = observable.Subscribe(_ => throw new InvalidOperationException("This is a test."));
 
-        Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
+        _ = Assert.Throws<Exception>(() => fixture.IsOnlyOneWord = "Two Words");
     }
 
     /// <summary>Performs a ReactiveObject smoke test.</summary>
@@ -271,8 +271,8 @@ public class ReactiveObjectTests
         var output = new List<string>();
         var fixture = new TestFixture();
 
-        fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(outputChanging.Add);
-        fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
+        _ = fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(outputChanging.Add);
+        _ = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(output.Add);
 
         fixture.IsNotNullString = "Foo Bar Baz";
         fixture.IsOnlyOneWord = FooText;

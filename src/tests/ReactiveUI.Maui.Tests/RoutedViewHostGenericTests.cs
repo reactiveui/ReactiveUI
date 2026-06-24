@@ -220,7 +220,7 @@ public class RoutedViewHostGenericTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithMaui()
                     .RegisterView<TestRoutableView, TestRoutableViewModel>()
                     .WithCoreServices();
@@ -252,7 +252,7 @@ public class RoutedViewHostGenericTests
 
             _helper.Initialize(builder =>
             {
-                builder
+                _ = builder
                     .WithMaui()
                     .WithCoreServices();
 

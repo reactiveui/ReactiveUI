@@ -15,8 +15,8 @@ public class CommandBindingView : ReactiveObject, IViewFor<CommandBindingViewMod
     public CommandBindingView()
     {
         Command1 = new();
-        Command2 = new Image();
-        Command3 = new Image();
+        Command2 = new();
+        Command3 = new();
     }
 
     /// <inheritdoc/>

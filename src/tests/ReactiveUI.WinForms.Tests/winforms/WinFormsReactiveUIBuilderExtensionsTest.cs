@@ -26,7 +26,7 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     [Test]
     public void WithWinForms_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             WinFormsReactiveUIBuilderExtensions.WithWinForms(null!));
     }
 
@@ -53,7 +53,7 @@ public class WinFormsReactiveUIBuilderExtensionsTest
     [Test]
     public void WithWinFormsScheduler_ThrowsArgumentNullException_WhenBuilderIsNull()
     {
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             WinFormsReactiveUIBuilderExtensions.WithWinFormsScheduler(null!));
     }
 
@@ -88,7 +88,7 @@ public class WinFormsReactiveUIBuilderExtensionsTest
         {
             var builder = (ReactiveUIBuilder)resolver.CreateReactiveUIBuilder();
 
-            builder.WithWinFormsScheduler();
+            _ = builder.WithWinFormsScheduler();
 
             await Assert.That(builder.MainThreadScheduler).IsNotNull();
             await Assert.That(builder.MainThreadScheduler!).IsTypeOf<ControlSequencer>();

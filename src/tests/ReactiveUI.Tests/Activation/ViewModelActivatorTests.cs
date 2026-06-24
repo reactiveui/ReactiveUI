@@ -16,7 +16,7 @@ public class ViewModelActivatorTests
         var viewModelActivator = new ViewModelActivator();
         var activated = viewModelActivator.Activated.Collect();
 
-        viewModelActivator.Activate();
+        _ = viewModelActivator.Activate();
 
         await Assert.That(activated).Count().IsEqualTo(1);
     }
@@ -42,7 +42,7 @@ public class ViewModelActivatorTests
         var viewModelActivator = new ViewModelActivator();
         var deactivated = viewModelActivator.Deactivated.Collect();
 
-        viewModelActivator.Activate();
+        _ = viewModelActivator.Activate();
         viewModelActivator.Deactivate();
 
         await Assert.That(deactivated).Count().IsEqualTo(1);
@@ -71,12 +71,10 @@ public class ViewModelActivatorTests
         var deactivated = viewModelActivator.Deactivated.Collect();
 
         using (viewModelActivator.Activate())
+        using (Assert.Multiple())
         {
-            using (Assert.Multiple())
-            {
-                await Assert.That(activated).Count().IsEqualTo(1);
-                await Assert.That(deactivated).IsEmpty();
-            }
+            await Assert.That(activated).Count().IsEqualTo(1);
+            await Assert.That(deactivated).IsEmpty();
         }
 
         using (Assert.Multiple())

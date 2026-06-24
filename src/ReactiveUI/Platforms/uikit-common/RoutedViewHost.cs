@@ -68,7 +68,7 @@ public class RoutedViewHost : ReactiveNavigationController
     public RoutedViewHost()
     {
         ViewContractObservable = Signal.Emit<string?>(null);
-        _titleUpdater = new SwapDisposable();
+        _titleUpdater = new();
 
         _ = this.WhenActivated(d =>
         {
@@ -183,11 +183,7 @@ public class RoutedViewHost : ReactiveNavigationController
 
                 foreach (var viewModel in x.NavigationStack)
                 {
-                    view = ResolveView(Router.GetCurrentViewModel(), null);
-                    if (view is null)
-                    {
-                        throw new InvalidOperationException(nameof(view));
-                    }
+                    view = ResolveView(Router.GetCurrentViewModel(), null) ?? throw new InvalidOperationException(nameof(view));
 
                     PushViewController(view, false);
                 }
@@ -248,7 +244,7 @@ public class RoutedViewHost : ReactiveNavigationController
                 }
 
                 _routerInstigated = true;
-                PopToRootViewController(true);
+                _ = PopToRootViewController(true);
                 _routerInstigated = false;
             }));
 
@@ -256,10 +252,11 @@ public class RoutedViewHost : ReactiveNavigationController
     /// <returns>A disposable that represents the subscription.</returns>
     private IDisposable SubscribeToNavigateBack() =>
         this.WhenAnyObservable(x => x.Router!.NavigateBack!)
-            .Subscribe(new DelegateObserver<IRoutableViewModel>(_ =>
+            .Subscribe(new DelegateObserver<IRoutableViewModel>(navigateBack =>
             {
+                _ = navigateBack;
                 _routerInstigated = true;
-                PopViewController(true);
+                _ = PopViewController(true);
                 _routerInstigated = false;
             }));
 

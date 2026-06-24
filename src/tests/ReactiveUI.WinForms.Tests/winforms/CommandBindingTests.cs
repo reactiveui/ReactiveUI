@@ -169,4 +169,58 @@ public class CommandBindingTests
             await Assert.That(input.Enabled).IsFalse();
         }
     }
+
+    /// <summary>Binding to a named event invokes the command when that event fires.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task BindCommandToObject_WithEventName_BindsToNamedEvent()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create<int>(_ => executed = true);
+        var input = new Button();
+
+        using (fixture.BindCommandToObject<Button, EventArgs>(cmd, input, Signal.Emit((object)CommandParameter), nameof(Button.Click)))
+        {
+            input.PerformClick();
+
+            await Assert.That(executed).IsTrue();
+        }
+    }
+
+    /// <summary>Binding via non-generic add/remove handlers invokes the command when the event fires.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task BindCommandToObject_WithNonGenericHandlers_BindsToEvent()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create<int>(_ => executed = true);
+        var input = new Button();
+
+        using (fixture.BindCommandToObject<Button>(cmd, input, Signal.Emit((object)CommandParameter), h => input.Click += h, h => input.Click -= h))
+        {
+            input.PerformClick();
+
+            await Assert.That(executed).IsTrue();
+        }
+    }
+
+    /// <summary>Binding via generic add/remove handlers invokes the command when the typed event fires.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
+    [Test]
+    public async Task BindCommandToObject_WithGenericHandlers_BindsToTypedEvent()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create<int>(_ => executed = true);
+        using var control = new GenericEventControl();
+
+        using (fixture.BindCommandToObject<GenericEventControl, CustomEventArgs>(cmd, control, Signal.Emit((object)CommandParameter), h => control.CustomEvent += h, h => control.CustomEvent -= h))
+        {
+            control.RaiseCustomEvent();
+
+            await Assert.That(executed).IsTrue();
+        }
+    }
 }

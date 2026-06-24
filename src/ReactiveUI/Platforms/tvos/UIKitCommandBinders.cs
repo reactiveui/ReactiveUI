@@ -52,18 +52,15 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
             affinity: 10,
             static (cmd, t, cp) =>
             {
-                if (t is not UIBarButtonItem item)
-                {
-                    return Scope.Empty;
-                }
-
-                return ForEvent(
-                    command: cmd,
-                    target: item,
-                    commandParameter: cp,
-                    addHandler: h => item.Clicked += h,
-                    removeHandler: h => item.Clicked -= h,
-                    enabledProperty: UIBarButtonItemEnabledProperty);
+                return t is not UIBarButtonItem item
+                    ? Scope.Empty
+                    : ForEvent(
+                        command: cmd,
+                        target: item,
+                        commandParameter: cp,
+                        addHandler: h => item.Clicked += h,
+                        removeHandler: h => item.Clicked -= h,
+                        enabledProperty: UIBarButtonItemEnabledProperty);
             });
     }
 

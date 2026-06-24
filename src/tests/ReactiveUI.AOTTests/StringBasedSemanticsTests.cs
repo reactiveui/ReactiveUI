@@ -34,7 +34,7 @@ public class StringBasedSemanticsTests
         var obj = new TestReactiveObject();
         var seen = new List<string?>();
 
-        obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), false, false)
+        _ = obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), false, false)
             .Select(static x => x.Value)
             .Subscribe(seen.Add);
 
@@ -61,7 +61,7 @@ public class StringBasedSemanticsTests
         var obj = new TestReactiveObject { TestProperty = "start" };
         string? observed = null;
 
-        obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), true, true)
+        _ = obj.ObservableForProperty<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty), true, true)
             .Select(x => x.Value)
             .Subscribe(v => observed = v);
 
@@ -82,7 +82,7 @@ public class StringBasedSemanticsTests
         var obj = new TestReactiveObject();
         var seen = new List<string?>();
 
-        obj.WhenAnyValue<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty))
+        _ = obj.WhenAnyValue<TestReactiveObject, string?>(nameof(TestReactiveObject.TestProperty))
             .Subscribe(seen.Add);
 
         obj.TestProperty = "same";
@@ -109,7 +109,7 @@ public class StringBasedSemanticsTests
         var obj = new TestReactiveObject();
         var tuples = new List<(string?, string?)>();
 
-        obj.WhenAnyValue<TestReactiveObject, string?, string?>(
+        _ = obj.WhenAnyValue<TestReactiveObject, string?, string?>(
             nameof(TestReactiveObject.TestProperty),
             nameof(TestReactiveObject.ComputedProperty)).Subscribe(tuples.Add);
 

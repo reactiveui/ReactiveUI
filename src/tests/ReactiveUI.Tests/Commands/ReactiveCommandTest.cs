@@ -71,7 +71,7 @@ public partial class ReactiveCommandTest
             outputScheduler: scheduler);
         var canExecute = command.CanExecute.Collect();
 
-        command.Execute().Subscribe();
+        _ = command.Execute().Subscribe();
         scheduler.AdvanceBy(TimeSpan.FromMilliseconds(1));
 
         const int ExpectedCount = 2;
@@ -201,7 +201,7 @@ public partial class ReactiveCommandTest
             Sequencer.Immediate);
         var source = new Signal<RxVoid>();
 
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
 
         source.OnNext(RxVoid.Default);
         await Assert.That(executed).IsFalse();
@@ -497,7 +497,7 @@ public partial class ReactiveCommandTest
 
         const int Parameter = 5;
 
-        combined.Execute(Parameter).Subscribe(_ => { }, _ => { });
+        _ = combined.Execute(Parameter).Subscribe(_ => { }, _ => { });
 
         await Assert.That(exceptions).Count().IsEqualTo(1);
         await Assert.That(exceptions[0]).IsTypeOf<InvalidOperationException>();

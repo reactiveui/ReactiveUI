@@ -35,7 +35,7 @@ public class WinFormsTestExecutor : STAThreadExecutor
         _helper.Initialize(builder =>
         {
             // Include WinForms platform services to ensure view locator, activation, etc. work
-            builder
+            _ = builder
                 .WithWinForms();
         });
     }

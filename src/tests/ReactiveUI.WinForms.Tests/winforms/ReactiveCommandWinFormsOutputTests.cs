@@ -55,7 +55,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
-        command.Subscribe(results.Add);
+        _ = command.Subscribe(results.Add);
 
         await command.Execute();
 
@@ -76,7 +76,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
-        command.Subscribe(results.Add);
+        _ = command.Subscribe(results.Add);
 
         await command.Execute(HelloInput);
 
@@ -95,7 +95,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<int>();
-        command.Subscribe(results.Add);
+        _ = command.Subscribe(results.Add);
 
         await command.Execute();
         await command.Execute();
@@ -122,7 +122,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var executingValues = new List<bool>();
-        command.IsExecuting.Subscribe(executingValues.Add);
+        _ = command.IsExecuting.Subscribe(executingValues.Add);
 
         // Start execution (don't await yet)
         var executeTask = command.Execute().ToTask();
@@ -151,7 +151,7 @@ public class ReactiveCommandWinFormsOutputTests
         var viewModel = new ReactiveCommandOutputViewModel();
 
         var results = new List<string>();
-        viewModel.WhenAnyObservable(vm => vm.NavigateCommand)
+        _ = viewModel.WhenAnyObservable(vm => vm.NavigateCommand)
                  .Subscribe(results.Add);
 
         await viewModel.NavigateCommand.Execute(Page1);
@@ -173,10 +173,10 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
-        command.Subscribe(results.Add);
+        _ = command.Subscribe(results.Add);
 
         var source = new Signal<string>();
-        source.InvokeCommand(command);
+        _ = source.InvokeCommand(command);
         source.OnNext(HelloInput);
 
         await Assert.That(results).Count().IsEqualTo(1);
@@ -195,10 +195,10 @@ public class ReactiveCommandWinFormsOutputTests
         var viewModel = new ReactiveCommandOutputViewModel();
 
         var results = new List<string>();
-        viewModel.NavigateCommand.Subscribe(results.Add);
+        _ = viewModel.NavigateCommand.Subscribe(results.Add);
 
         var source = new Signal<string>();
-        source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
+        _ = source.InvokeCommand(viewModel, vm => vm.NavigateCommand);
         source.OnNext(Page1);
 
         await Assert.That(results).Count().IsEqualTo(1);
@@ -221,7 +221,7 @@ public class ReactiveCommandWinFormsOutputTests
         var subscribedResults = new List<string>();
 
         // Subscribe to the command output stream
-        command.Subscribe(subscribedResults.Add);
+        _ = command.Subscribe(subscribedResults.Add);
 
         // Execute the command
         await command.Execute(HelloInput).Do(executedResults.Add);
@@ -252,7 +252,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
-        command.Subscribe(results.Add);
+        _ = command.Subscribe(results.Add);
 
         await command.Execute("clients");
 
@@ -278,7 +278,7 @@ public class ReactiveCommandWinFormsOutputTests
             outputScheduler: Sequencer.Immediate);
 
         var results = new List<string>();
-        outerCommand.Subscribe(results.Add);
+        _ = outerCommand.Subscribe(results.Add);
 
         await outerCommand.Execute("clients");
 

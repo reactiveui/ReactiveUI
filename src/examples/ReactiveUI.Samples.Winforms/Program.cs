@@ -14,11 +14,12 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        RxAppBuilder.CreateReactiveUIBuilder()
+        ApplicationConfiguration.Initialize();
+
+        _ = RxAppBuilder.CreateReactiveUIBuilder()
             .WithWinForms()
             .BuildApp();
 
-        ApplicationConfiguration.Initialize();
         Application.Run(new MainForm());
     }
 }

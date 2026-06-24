@@ -26,14 +26,14 @@ public class RoutableViewModelMixinTests
         var screen = new TestScreen();
         var vm = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedTo(() =>
+        _ = vm.WhenNavigatedTo(() =>
         {
             count++;
 
             return Scope.Empty;
         });
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -49,16 +49,16 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedTo(() =>
+        _ = vm.WhenNavigatedTo(() =>
         {
             count++;
 
             return Scope.Empty;
         });
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.Navigate.Execute(vm2).Subscribe();
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(count).IsEqualTo(ExpectedCountTwo);
     }
@@ -74,13 +74,13 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedTo(() => Scope.Create(() => count++));
+        _ = vm.WhenNavigatedTo(() => Scope.Create(() => count++));
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(count).IsEqualTo(0);
 
-        screen.Router.Navigate.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm2).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -96,13 +96,13 @@ public class RoutableViewModelMixinTests
         var vm1 = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm1.WhenNavigatedTo(() => Scope.Create(() => count++));
+        _ = vm1.WhenNavigatedTo(() => Scope.Create(() => count++));
 
-        screen.Router.Navigate.Execute(vm1).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm1).Subscribe();
 
         await Assert.That(count).IsEqualTo(0);
 
-        screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
+        _ = screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -117,9 +117,9 @@ public class RoutableViewModelMixinTests
         var screen = new TestScreen();
         var vm = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedToObservable().Subscribe(_ => count++);
+        _ = vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -135,11 +135,11 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedToObservable().Subscribe(_ => count++);
+        _ = vm.WhenNavigatedToObservable().Subscribe(_ => count++);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.Navigate.Execute(vm2).Subscribe();
-        screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
 
         await Assert.That(count).IsEqualTo(ExpectedCountTwo);
     }
@@ -154,12 +154,12 @@ public class RoutableViewModelMixinTests
         var screen = new TestScreen();
         var vm = new RoutableViewModel(screen);
 
-        vm.WhenNavigatedToObservable().Subscribe(
+        _ = vm.WhenNavigatedToObservable().Subscribe(
             _ => { },
             () => count++);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.NavigateBack.Execute().Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.NavigateBack.Execute().Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -175,12 +175,12 @@ public class RoutableViewModelMixinTests
         var vm1 = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm1.WhenNavigatedToObservable().Subscribe(
+        _ = vm1.WhenNavigatedToObservable().Subscribe(
             _ => { },
             () => count++);
 
-        screen.Router.Navigate.Execute(vm1).Subscribe();
-        screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm1).Subscribe();
+        _ = screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -195,10 +195,10 @@ public class RoutableViewModelMixinTests
         var vm = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
+        _ = vm.WhenNavigatingFromObservable().Subscribe(_ => count++);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.Navigate.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm2).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -213,12 +213,12 @@ public class RoutableViewModelMixinTests
         var screen = new TestScreen();
         var vm = new RoutableViewModel(screen);
 
-        vm.WhenNavigatingFromObservable().Subscribe(
+        _ = vm.WhenNavigatingFromObservable().Subscribe(
             _ => { },
             () => count++);
 
-        screen.Router.Navigate.Execute(vm).Subscribe();
-        screen.Router.NavigateBack.Execute().Subscribe();
+        _ = screen.Router.Navigate.Execute(vm).Subscribe();
+        _ = screen.Router.NavigateBack.Execute().Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }
@@ -234,12 +234,12 @@ public class RoutableViewModelMixinTests
         var vm1 = new RoutableViewModel(screen);
         var vm2 = new RoutableViewModel(screen);
 
-        vm1.WhenNavigatingFromObservable().Subscribe(
+        _ = vm1.WhenNavigatingFromObservable().Subscribe(
             _ => { },
             () => count++);
 
-        screen.Router.Navigate.Execute(vm1).Subscribe();
-        screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
+        _ = screen.Router.Navigate.Execute(vm1).Subscribe();
+        _ = screen.Router.NavigateAndReset.Execute(vm2).Subscribe();
 
         await Assert.That(count).IsEqualTo(1);
     }

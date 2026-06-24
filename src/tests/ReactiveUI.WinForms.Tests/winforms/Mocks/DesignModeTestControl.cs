@@ -13,7 +13,7 @@ namespace ReactiveUI.WinForms.Tests.Winforms.Mocks
         /// <summary>Initializes a new instance of the <see cref="DesignModeTestControl"/> class.</summary>
         public DesignModeTestControl()
         {
-            this.WhenActivated(() =>
+            _ = this.WhenActivated(() =>
             {
                 Activated = true;
                 return [];

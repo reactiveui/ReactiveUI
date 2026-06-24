@@ -1,0 +1,282 @@
+<UserControl
+    x:Class="ReactiveUI.Builder.WpfApp.Views.TerminalView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:ReactiveUI.Builder.WpfApp.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:TerminalViewModel}"
+    FontFamily="Segoe UI"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="Text" Color="#E2E8F0" />
+        <SolidColorBrush x:Key="Muted" Color="#94A3B8" />
+        <SolidColorBrush x:Key="KeyFill" Color="#1B2740" />
+        <SolidColorBrush x:Key="KeyBorder" Color="#2A3A57" />
+        <SolidColorBrush x:Key="Accent" Color="#34D399" />
+
+        <Style x:Key="Key" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource Text}" />
+            <Setter Property="Background" Value="{StaticResource KeyFill}" />
+            <Setter Property="BorderBrush" Value="{StaticResource KeyBorder}" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Height" Value="56" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="12">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#27374F" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Pay" TargetType="Button">
+            <Setter Property="Foreground" Value="#06281C" />
+            <Setter Property="Background" Value="{StaticResource Accent}" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Height" Value="58" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="14">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#2BBE89" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="#23415A" />
+                                <Setter Property="Foreground" Value="#5B7186" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <Grid Grid.Row="0" Margin="2,0,2,14">
+            <StackPanel>
+                <TextBlock
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource Accent}"
+                    Text="MOCK EFTPOS · REACTIVEUI BUILDER" />
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource Text}"
+                    Text="Payment Terminal" />
+            </StackPanel>
+            <Button
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="14,8"
+                Command="{Binding ViewModel.ViewJournal}"
+                Content="Journal ›"
+                Cursor="Hand"
+                Foreground="{StaticResource Muted}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="12,7"
+                            Background="{StaticResource KeyFill}"
+                            BorderBrush="{StaticResource KeyBorder}"
+                            BorderThickness="1"
+                            CornerRadius="9">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        <!--  Amount display  -->
+        <Border
+            Grid.Row="1"
+            Padding="20,16"
+            Background="#0C1426"
+            BorderBrush="{StaticResource KeyBorder}"
+            BorderThickness="1"
+            CornerRadius="14">
+            <StackPanel>
+                <TextBlock
+                    FontSize="11"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource Muted}"
+                    Text="AMOUNT" />
+                <TextBlock
+                    HorizontalAlignment="Right"
+                    FontSize="46"
+                    FontWeight="Bold"
+                    Foreground="{StaticResource Text}"
+                    Text="{Binding ViewModel.FormattedAmount}" />
+            </StackPanel>
+        </Border>
+
+        <!--  Result banner  -->
+        <Border
+            Grid.Row="2"
+            Margin="0,12,0,0"
+            Padding="16,12"
+            Background="#101A2E"
+            BorderBrush="{StaticResource KeyBorder}"
+            BorderThickness="1"
+            CornerRadius="12">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViewModel.LastTransaction.Approved}" Value="True">
+                            <Setter Property="Background" Value="#0F2A22" />
+                            <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ViewModel.LastTransaction.Approved}" Value="False">
+                            <Setter Property="Background" Value="#2A1316" />
+                            <Setter Property="BorderBrush" Value="#F87171" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock
+                        FontSize="14"
+                        FontWeight="Bold"
+                        Foreground="{StaticResource Text}"
+                        Text="{Binding ViewModel.LastTransaction.Outcome, TargetNullValue='READY TO TRANSACT', FallbackValue='READY TO TRANSACT'}" />
+                    <TextBlock
+                        Margin="0,3,0,0"
+                        FontSize="12"
+                        Foreground="{StaticResource Muted}"
+                        Text="{Binding ViewModel.LastTransaction.CardScheme, StringFormat='{}{0} ····', TargetNullValue='Enter an amount and present a card', FallbackValue='Enter an amount and present a card'}" />
+                </StackPanel>
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource Muted}"
+                    Text="{Binding ViewModel.LastTransaction.CardLast4}" />
+            </Grid>
+        </Border>
+
+        <!--  Keypad  -->
+        <UniformGrid
+            Grid.Row="3"
+            Margin="-5,16,-5,0"
+            VerticalAlignment="Center"
+            Columns="3"
+            Rows="4">
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="1"
+                Content="1"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="2"
+                Content="2"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="3"
+                Content="3"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="4"
+                Content="4"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="5"
+                Content="5"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="6"
+                Content="6"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="7"
+                Content="7"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="8"
+                Content="8"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="9"
+                Content="9"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.Clear}"
+                Content="C"
+                Foreground="#F87171"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.AppendDigit}"
+                CommandParameter="0"
+                Content="0"
+                Style="{StaticResource Key}" />
+            <Button
+                Command="{Binding ViewModel.Backspace}"
+                Content="⌫"
+                Style="{StaticResource Key}" />
+        </UniformGrid>
+
+        <!--  Pay  -->
+        <Button
+            Grid.Row="4"
+            Margin="0,16,0,0"
+            Command="{Binding ViewModel.PayCommand}"
+            Content="PAY">
+            <Button.Style>
+                <Style BasedOn="{StaticResource Pay}" TargetType="Button">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViewModel.IsBusy}" Value="True">
+                            <Setter Property="Content" Value="AUTHORIZING…" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+    </Grid>
+</UserControl>

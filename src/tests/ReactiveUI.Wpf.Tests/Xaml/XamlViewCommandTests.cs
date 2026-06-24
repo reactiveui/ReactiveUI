@@ -23,7 +23,7 @@ public class XamlViewCommandTests
     public void EventBinderBindsToExplicitInheritedEvent()
     {
         var fixture = new FakeView();
-        fixture.BindCommand(fixture!.ViewModel, static x => x!.Cmd, static x => x.TheTextBox, "MouseDown");
+        _ = fixture.BindCommand(fixture!.ViewModel, static x => x!.Cmd, static x => x.TheTextBox, "MouseDown");
     }
 
     /// <summary>Test that event binder binds to implicit event.</summary>
@@ -38,7 +38,7 @@ public class XamlViewCommandTests
         await Assert.That(fixture.GetAffinityForObject<Button>(false)).IsGreaterThan(0);
 
         var invokeCount = 0;
-        cmd.Subscribe(_ => ++invokeCount);
+        _ = cmd.Subscribe(_ => ++invokeCount);
 
         var disp = fixture.BindCommandToObject(cmd, input, Signal.Emit((object)5));
         using (Assert.Multiple())

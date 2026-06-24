@@ -51,8 +51,8 @@ public class RoutedViewHost<
         var ret = ViewLocator.Current.ResolveView<TViewModel>();
         if (ret is null)
         {
-            var msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{typeof(TViewModel).Name}>";
+            const string msg =
+                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{nameof(TViewModel)}>";
 
             return Signal.Fail<Page>(new InvalidOperationException(msg));
         }
@@ -84,8 +84,8 @@ public class RoutedViewHost<
         var ret = ViewLocator.Current.ResolveView<TViewModel>();
         if (ret is null)
         {
-            var msg =
-                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{typeof(TViewModel).Name}>";
+            const string msg =
+                $"Couldn't find a View for ViewModel. You probably need to register an IViewFor<{nameof(TViewModel)}>";
 
             throw new InvalidOperationException(msg);
         }
@@ -96,7 +96,7 @@ public class RoutedViewHost<
 
         if (SetTitleOnNavigate)
         {
-            RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
         }
 
         return pg;

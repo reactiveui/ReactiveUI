@@ -139,7 +139,7 @@ public class PocoObservableForPropertyTests
         var instance = new POCOObservableForProperty();
         Expression<Func<PocoType, string?>> expr = x => x.Property1;
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             instance.GetNotificationForProperty(null!, expr.Body, nameof(PocoType.Property1), false, true));
     }
 

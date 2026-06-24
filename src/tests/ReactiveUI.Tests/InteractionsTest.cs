@@ -30,7 +30,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        interaction.RegisterHandler(context => _ = ((InteractionContext<RxVoid, RxVoid>)context).GetOutput());
+        _ = interaction.RegisterHandler(context => _ = ((InteractionContext<RxVoid, RxVoid>)context).GetOutput());
 
         var ex = Assert.Throws<InvalidOperationException>(() => interaction.Handle(RxVoid.Default).Subscribe());
         await Assert.That(ex.Message).IsEqualTo("Output has not been set.");
@@ -43,7 +43,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(context =>
         {
             context.SetOutput(RxVoid.Default);
             context.SetOutput(RxVoid.Default);
@@ -59,7 +59,7 @@ public class InteractionsTest
     public async Task HandledInteractionsShouldNotCauseException()
     {
         var interaction = new Interaction<RxVoid, bool>(Sequencer.Immediate);
-        interaction.RegisterHandler(static c => c.SetOutput(true));
+        _ = interaction.RegisterHandler(static c => c.SetOutput(true));
 
         // Await rather than block: blocking (.Wait()) on a CurrentThreadScheduler-scheduled interaction can deadlock
         // when a scheduler trampoline is already active on the test thread.
@@ -78,7 +78,7 @@ public class InteractionsTest
         using (interaction.RegisterHandler(x => x.SetOutput("done")))
         {
             var handled = false;
-            interaction
+            _ = interaction
                 .Handle(RxVoid.Default).Subscribe(_ => handled = true);
 
             // With ImmediateScheduler, handlers execute immediately
@@ -107,19 +107,17 @@ public class InteractionsTest
                 .Do(_ => x.SetOutput(OutputB)));
 
         using (handler1A)
+        using (handler1B)
         {
-            using (handler1B)
-            {
-                var result = interaction
-                    .Handle(RxVoid.Default).Collect();
+            var result = interaction
+                .Handle(RxVoid.Default).Collect();
 
-                await Assert.That(result).IsEmpty();
-                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5));
-                await Assert.That(result).IsEmpty();
-                scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6));
-                await Assert.That(result).Count().IsEqualTo(1);
-                await Assert.That(result[0]).IsEqualTo(OutputB);
-            }
+            await Assert.That(result).IsEmpty();
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.5));
+            await Assert.That(result).IsEmpty();
+            scheduler.AdvanceBy(TimeSpan.FromSeconds(0.6));
+            await Assert.That(result).Count().IsEqualTo(1);
+            await Assert.That(result[0]).IsEqualTo(OutputB);
         }
 
         await Assert.That(handler1AWasCalled).IsFalse();
@@ -132,7 +130,7 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, string>(Sequencer.Immediate);
 
-        interaction.RegisterHandler(context =>
+        _ = interaction.RegisterHandler(context =>
         {
             context.SetOutput(ResultOutput);
             return Task.FromResult(true);
@@ -170,12 +168,10 @@ public class InteractionsTest
             using (handler1B)
             {
                 using (handler1C)
+                using (Assert.Multiple())
                 {
-                    using (Assert.Multiple())
-                    {
-                        await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputC);
-                        await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputC);
-                    }
+                    await Assert.That(await interaction.Handle(false).FirstAsync()).IsEqualTo(OutputC);
+                    await Assert.That(await interaction.Handle(true).FirstAsync()).IsEqualTo(OutputC);
                 }
 
                 using (Assert.Multiple())
@@ -240,10 +236,10 @@ public class InteractionsTest
     {
         var interaction = new Interaction<RxVoid, RxVoid>(Sequencer.Immediate);
 
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() =>
             interaction.RegisterHandler((Action<IInteractionContext<RxVoid, RxVoid>>)null!));
-        Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler(null!));
-        Assert.Throws<ArgumentNullException>(() =>
+        _ = Assert.Throws<ArgumentNullException>(() => interaction.RegisterHandler(null!));
+        _ = Assert.Throws<ArgumentNullException>(() =>
             interaction.RegisterHandler((Func<IInteractionContext<RxVoid, RxVoid>, IObservable<RxVoid>>)null!));
     }
 
@@ -261,8 +257,8 @@ public class InteractionsTest
             await Assert.That(ex.Input).IsEqualTo("foo");
         }
 
-        interaction.RegisterHandler(_ => { });
-        interaction.RegisterHandler(_ => { });
+        _ = interaction.RegisterHandler(_ => { });
+        _ = interaction.RegisterHandler(_ => { });
         ex = await Assert.That(() => interaction.Handle("bar").FirstAsync())
             .Throws<UnhandledInteractionException<string, RxVoid>>();
         using (Assert.Multiple())

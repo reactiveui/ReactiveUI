@@ -51,7 +51,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
@@ -82,7 +82,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
         testClass.Property1 = "test1";
@@ -113,7 +113,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
 
@@ -147,7 +147,7 @@ public class InpcObservableForPropertyTests
 
         var propertyName = exp.GetMemberInfo()?.Name ??
                            throw new InvalidOperationException(PropertyNameNullMessage);
-        ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
+        _ = ObservableMixins.WhereNotNull(instance.GetNotificationForProperty(testClass, exp, propertyName, true)).Subscribe(changes.Add);
 
         const int ExpectedChangeCount = 2;
 
@@ -163,6 +163,68 @@ public class InpcObservableForPropertyTests
             await Assert.That(changes[0].Sender).IsEqualTo(testClass);
             await Assert.That(changes[1].Sender).IsEqualTo(testClass);
         }
+    }
+
+    /// <summary>The two-argument affinity overload defers to changed notifications, and a null type has no affinity.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task GetAffinityForObjectTwoArgOverloadAndNullType()
+    {
+        var instance = new INPCObservableForProperty();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(instance.GetAffinityForObject(typeof(TestClassChanged), "Property1")).IsEqualTo(BindingAffinity.Explicit);
+            await Assert.That(instance.GetAffinityForObject(null, "Property1", false)).IsEqualTo(0);
+        }
+    }
+
+    /// <summary>A changing notification ignores other properties' events and unsubscribes on dispose.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ChangingNotificationIgnoresOtherPropertiesAndDisposes()
+    {
+        var instance = new INPCObservableForProperty();
+        var testClass = new TestClassChanging();
+
+        Expression<Func<TestClassChanging, string?>> expr = x => x.Property1;
+        var exp = Reflection.Rewrite(expr.Body);
+        var propertyName = exp.GetMemberInfo()?.Name ??
+                           throw new InvalidOperationException(PropertyNameNullMessage);
+
+        var changes = new List<IObservedChange<object?, object?>>();
+        var subscription = instance.GetNotificationForProperty(testClass, exp, propertyName, true).Subscribe(changes.Add);
+
+        // A non-matching property's changing event is filtered out.
+        testClass.Property2 = "ignored";
+        await Assert.That(changes).IsEmpty();
+
+        // The observed property's changing event is forwarded.
+        testClass.Property1 = "matched";
+        await Assert.That(changes).IsNotEmpty();
+
+        subscription.Dispose();
+    }
+
+    /// <summary>A non-notifying sender observed through an index expression yields a silent stream, exercising both the
+    /// index-named-property path and the "sender is not a notifier" fallback.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task NonNotifyingSenderWithIndexExpressionReturnsSilentStream()
+    {
+        var instance = new INPCObservableForProperty();
+
+        Expression<Func<List<string>, string>> expr = x => x[0];
+        var indexExpression = Reflection.Rewrite(expr.Body);
+        await Assert.That(indexExpression.NodeType).IsEqualTo(ExpressionType.Index);
+
+        var changes = new List<IObservedChange<object?, object?>>();
+
+        // A plain object is neither INotifyPropertyChanged nor INotifyPropertyChanging, so the index-named
+        // observation resolves to a silent (no-op) stream rather than hooking change events.
+        using var subscription = instance.GetNotificationForProperty(new object(), indexExpression, "Item").Subscribe(changes.Add);
+
+        await Assert.That(changes).IsEmpty();
     }
 
     /// <summary>A test fixture implementing <see cref="INotifyPropertyChanged"/> to drive change notifications.</summary>

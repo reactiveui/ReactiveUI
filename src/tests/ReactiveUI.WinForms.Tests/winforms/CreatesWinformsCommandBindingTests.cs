@@ -503,7 +503,7 @@ public class CreatesWinformsCommandBindingTests
         var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
         var control = new CustomClickableControl();
 
-        using var binding = fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), "MouseUp");
+        using var binding = fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, control, Signal.Emit<object?>(null), "MouseUp");
         control.RaiseMouseUpEvent(new(MouseButtons.Left, 1, 0, 0, 0));
         await Assert.That(executed).IsTrue();
     }
@@ -516,7 +516,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var control = new CustomClickableControl();
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(null!, control, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(null!, control, Signal.Emit<object?>(null), "MouseUp");
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }
@@ -529,7 +529,7 @@ public class CreatesWinformsCommandBindingTests
         var fixture = new CreatesWinformsCommandBinding();
         var cmd = ReactiveCommand.Create(() => { });
 
-        var act = () => fixture.BindCommandToObject<CustomClickableControl, System.Windows.Forms.MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), "MouseUp");
+        var act = () => fixture.BindCommandToObject<CustomClickableControl, MouseEventArgs>(cmd, null!, Signal.Emit<object?>(null), "MouseUp");
 
         await Assert.That(act).Throws<ArgumentNullException>();
     }
@@ -596,6 +596,78 @@ public class CreatesWinformsCommandBindingTests
         var component = new CustomClickableComponent();
 
         using var binding = fixture.BindCommandToObject(cmd, component, Signal.Emit<object?>(null));
+        component.PerformClick();
+        await Assert.That(executed).IsTrue();
+    }
+
+    /// <summary>
+    /// A component exposing only a MouseUp event binds through the reflection fallback's MouseEventArgs branch and
+    /// executes the command when the event fires.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task BindCommandToObject_ComponentWithMouseUpEvent_ExecutesCommand()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
+        var component = new MouseUpOnlyComponent();
+
+        using var binding = fixture.BindCommandToObject(cmd, component, Signal.Emit<object?>(null));
+        await Assert.That(binding).IsNotNull();
+
+        component.RaiseMouseUp(new(MouseButtons.Left, 1, 0, 0, 0));
+        await Assert.That(executed).IsTrue();
+    }
+
+    /// <summary>
+    /// The generic event-handler overload returns the binding without an Enabled subscription when the component has no
+    /// Enabled property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task BindCommandToObject_GenericEventHandler_ComponentWithoutEnabled_ReturnsBinding()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
+        var component = new NoEnabledGenericEventComponent();
+
+        using var binding = fixture.BindCommandToObject<NoEnabledGenericEventComponent, CustomEventArgs>(
+            cmd,
+            component,
+            Signal.Emit<object?>(null),
+            h => component.CustomEvent += h,
+            h => component.CustomEvent -= h);
+
+        await Assert.That(binding).IsNotNull();
+
+        component.RaiseCustomEvent();
+        await Assert.That(executed).IsTrue();
+    }
+
+    /// <summary>
+    /// The non-generic event-handler overload returns the binding without an Enabled subscription when the component
+    /// has no Enabled property.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task BindCommandToObject_NonGenericEventHandler_ComponentWithoutEnabled_ReturnsBinding()
+    {
+        var fixture = new CreatesWinformsCommandBinding();
+        var executed = false;
+        var cmd = ReactiveCommand.Create(() => executed = true, outputScheduler: Sequencer.Immediate);
+        var component = new CustomClickableComponent();
+
+        using var binding = fixture.BindCommandToObject(
+            cmd,
+            component,
+            Signal.Emit<object?>(null),
+            h => component.Click += h,
+            h => component.Click -= h);
+
+        await Assert.That(binding).IsNotNull();
+
         component.PerformClick();
         await Assert.That(executed).IsTrue();
     }

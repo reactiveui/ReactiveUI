@@ -59,7 +59,7 @@ public static class RxState
     /// </remarks>
     internal static void ResetForTesting()
     {
-        Interlocked.Exchange(ref _exceptionHandlerInitialized, 0);
+        _ = Interlocked.Exchange(ref _exceptionHandlerInitialized, 0);
         _defaultExceptionHandler = null;
     }
 
@@ -81,7 +81,7 @@ public static class RxState
                 Debugger.Break();
             }
 
-            RxSchedulers.MainThreadScheduler.Schedule(() => throw new UnhandledErrorException(
+            _ = RxSchedulers.MainThreadScheduler.Schedule(() => throw new UnhandledErrorException(
                 "An object implementing IHandleObservableErrors (often a ReactiveCommand or ObservableAsPropertyHelper) has errored," +
                 " thereby breaking its observable pipeline. To prevent this, ensure the pipeline does not error, or Subscribe to the " +
                 "ThrownExceptions property of the object in question to handle the erroneous case.",

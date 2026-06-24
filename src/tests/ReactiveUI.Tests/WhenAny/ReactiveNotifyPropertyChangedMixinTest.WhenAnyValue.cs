@@ -24,7 +24,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -58,7 +58,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -96,7 +96,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -131,7 +131,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
 
         await Assert.That(result).IsEqualTo(OneText);
     }
@@ -147,7 +147,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         fixture.Value1 = null!;
 
-        fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(x => x.Value1).Subscribe(value => result = value);
 
         await Assert.That(result).IsNull();
 
@@ -173,7 +173,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         var result = string.Empty;
 
-        fixture.WhenAnyValue(x => x.Value2).Subscribe(value => result = value);
+        _ = fixture.WhenAnyValue(x => x.Value2).Subscribe(value => result = value);
 
         await Assert.That(result).IsNull();
 
@@ -199,7 +199,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2).Select(tuple =>
         {
@@ -220,7 +220,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             (v1, v2) => (v1, v2)).Select(tuple =>
@@ -242,7 +242,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3).Select(tuple =>
@@ -264,7 +264,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -287,7 +287,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -310,7 +310,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -334,7 +334,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -358,7 +358,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -383,7 +383,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -408,7 +408,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -434,7 +434,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -460,7 +460,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -491,7 +491,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,
@@ -523,7 +523,7 @@ public partial class ReactiveNotifyPropertyChangedMixinTest
 
         string? result = null;
 
-        fixture.WhenAnyValue(
+        _ = fixture.WhenAnyValue(
             x => x.Value1,
             x => x.Value2,
             x => x.Value3,

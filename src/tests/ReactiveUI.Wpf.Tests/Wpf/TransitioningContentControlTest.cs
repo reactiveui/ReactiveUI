@@ -63,6 +63,15 @@ public class TransitioningContentControlTest
     /// <summary>The text used to represent newly presented content.</summary>
     private const string NewContentText = "New Content";
 
+    /// <summary>An out-of-range value used to exercise the default arms of the transition switch expressions.</summary>
+    private const int InvalidEnumValue = 999;
+
+    /// <summary>The maximum number of dispatcher pump iterations while waiting for a storyboard to complete.</summary>
+    private const int DispatcherPumpCount = 50;
+
+    /// <summary>The delay, in milliseconds, between dispatcher pump iterations.</summary>
+    private const int PumpDelayMs = 10;
+
     /// <summary>Tests that Transition property can be set and retrieved.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
@@ -797,6 +806,337 @@ public class TransitioningContentControlTest
         await Assert.That(control.CurrentContentPresentationSite!.Content).IsEqualTo(NewContentText);
     }
 
+    /// <summary>An invalid direction makes SetSlideTransitionDefaults throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetSlideTransitionDefaults_WithInvalidDirection_Throws()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = TransitioningContentControl.TransitionType.Slide,
+            Direction = TransitioningContentControl.TransitionDirection.Left,
+        };
+
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(new DoubleAnimation());
+
+        // Assign with a valid direction (the setter eagerly applies defaults), then corrupt the direction and invoke
+        // the method directly so the switch expression hits its default arm.
+        control.CompletingTransition = storyboard;
+        control.Direction = (TransitioningContentControl.TransitionDirection)InvalidEnumValue;
+
+        await Assert.That(control.SetSlideTransitionDefaults).Throws<InvalidOperationException>();
+    }
+
+    /// <summary>An invalid direction makes SetMoveTransitionDefaults throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetMoveTransitionDefaults_WithInvalidDirection_Throws()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = TransitioningContentControl.TransitionType.Move,
+            Direction = TransitioningContentControl.TransitionDirection.Left,
+        };
+
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(new DoubleAnimation());
+        storyboard.Children.Add(new DoubleAnimation());
+        control.CompletingTransition = storyboard;
+        control.Direction = (TransitioningContentControl.TransitionDirection)InvalidEnumValue;
+
+        await Assert.That(control.SetMoveTransitionDefaults).Throws<InvalidOperationException>();
+    }
+
+    /// <summary>An invalid direction makes SetBounceTransitionDefaults throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetBounceTransitionDefaults_WithInvalidDirection_Throws()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = TransitioningContentControl.TransitionType.Bounce,
+            Direction = TransitioningContentControl.TransitionDirection.Left,
+        };
+
+        var storyboard = new Storyboard();
+        storyboard.Children.Add(new DoubleAnimation());
+        control.StartingTransition = storyboard;
+        control.Direction = (TransitioningContentControl.TransitionDirection)InvalidEnumValue;
+
+        await Assert.That(control.SetBounceTransitionDefaults).Throws<InvalidOperationException>();
+    }
+
+    /// <summary>An invalid transition type makes SetTransitionDefaultValues throw.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task SetTransitionDefaultValues_WithInvalidType_Throws()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = (TransitioningContentControl.TransitionType)InvalidEnumValue,
+        };
+
+        await Assert.That(control.SetTransitionDefaultValues).Throws<InvalidOperationException>();
+    }
+
+    /// <summary>Setting CompletingTransition a second time unhooks the previous storyboard's completion handler.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompletingTransition_SetTwice_DecouplesPreviousTransition()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = TransitioningContentControl.TransitionType.Fade,
+            Duration = TimeSpan.FromSeconds(HalfSecond),
+        };
+
+        var first = new Storyboard();
+        first.Children.Add(new DoubleAnimation());
+        first.Children.Add(new DoubleAnimation());
+        control.CompletingTransition = first;
+
+        var second = new Storyboard();
+        second.Children.Add(new DoubleAnimation());
+        second.Children.Add(new DoubleAnimation());
+
+        // Setting again triggers the decouple branch on the previously assigned transition.
+        control.CompletingTransition = second;
+
+        await Assert.That(control.CompletingTransition).IsSameReferenceAs(second);
+    }
+
+    /// <summary>Setting CompletingTransition back to null leaves it null after decoupling.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompletingTransition_SetToNull_Decouples()
+    {
+        var control = new TransitioningContentControl
+        {
+            Transition = TransitioningContentControl.TransitionType.Fade,
+            Duration = TimeSpan.FromSeconds(HalfSecond),
+        };
+
+        var first = new Storyboard();
+        first.Children.Add(new DoubleAnimation());
+        first.Children.Add(new DoubleAnimation());
+        control.CompletingTransition = first;
+
+        control.CompletingTransition = null;
+
+        await Assert.That(control.CompletingTransition).IsNull();
+    }
+
+    /// <summary>
+    /// Changing content on a realized control configured for a standard (Fade) transition drives the full transition
+    /// pipeline: it snapshots the old content, swaps in the new content, raises <c>TransitionStarted</c> and enters the
+    /// transition visual state.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_FadeTransition_RunsStandardTransition()
+    {
+        var control = CreateRealizedControl();
+        control.Transition = TransitioningContentControl.TransitionType.Fade;
+
+        var started = false;
+        control.TransitionStarted += (_, _) => started = true;
+
+        // The synthetic visual-state storyboards have no animation targets, so WPF's VisualStateManager.GoToState (the
+        // final step of QueueTransition) fails internally. By then the whole transition body has already run and
+        // TransitionStarted has fired, which is what this test exercises.
+        ChangeContentDrivingTransition(control, new TextBlock { Text = NewContentText });
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(started).IsTrue();
+            await Assert.That(control.CurrentContentPresentationSite!.Content).IsTypeOf<TextBlock>();
+        }
+    }
+
+    /// <summary>Changing content on a realized control configured for Bounce runs the two-phase bounce transition.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_BounceTransition_RunsBounceTransition()
+    {
+        var control = CreateRealizedControl();
+        control.Transition = TransitioningContentControl.TransitionType.Bounce;
+        control.Direction = TransitioningContentControl.TransitionDirection.Down;
+
+        var started = false;
+        control.TransitionStarted += (_, _) => started = true;
+
+        ChangeContentDrivingTransition(control, new TextBlock { Text = NewContentText });
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(started).IsTrue();
+            await Assert.That(control.StartingTransition).IsNotNull();
+            await Assert.That(control.CompletingTransition).IsNotNull();
+        }
+    }
+
+    /// <summary>
+    /// A second content change while a transition is already in progress updates the current content immediately
+    /// without queueing another animation.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_WhileTransitioning_UpdatesContentImmediately()
+    {
+        var control = CreateRealizedControl();
+        control.Transition = TransitioningContentControl.TransitionType.Fade;
+
+        // First change starts a transition (sets _isTransitioning = true) before the synthetic storyboard fails inside
+        // GoToState, so the control is left mid-transition.
+        ChangeContentDrivingTransition(control, new TextBlock { Text = "first" });
+
+        // Second change while transitioning falls into the immediate-update branch (no animation queued).
+        var secondContent = new TextBlock { Text = "second" };
+        control.Content = secondContent;
+
+        await Assert.That(control.CurrentContentPresentationSite!.Content).IsSameReferenceAs(secondContent);
+    }
+
+    /// <summary>When the template has no previous-image part, a content change falls back to a plain content swap.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_WithoutPreviousImageSite_UpdatesContentImmediately()
+    {
+        var control = CreateRealizedControl(includePreviousImage: false);
+
+        var newContent = new TextBlock { Text = NewContentText };
+        control.Content = newContent;
+
+        await Assert.That(control.CurrentContentPresentationSite!.Content).IsSameReferenceAs(newContent);
+    }
+
+    /// <summary>Before the template is applied, a content change is a no-op on the (absent) content presenter.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task OnContentChanged_WithoutTemplate_DoesNotThrow()
+    {
+        var control = new TransitioningContentControl
+        {
+            Content = new TextBlock { Text = NewContentText },
+        };
+
+        await Assert.That(control.CurrentContentPresentationSite).IsNull();
+    }
+
+    /// <summary>
+    /// When the completing storyboard runs to completion, the control aborts the transition (returns to Normal, clears
+    /// the previous-image snapshot) and raises <c>TransitionCompleted</c>.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task CompletingTransition_Completes_AbortsTransitionAndRaisesCompleted()
+    {
+        var control = CreateRealizedControl();
+        control.Transition = TransitioningContentControl.TransitionType.Fade;
+
+        // Seed a previous-image snapshot so AbortTransition exercises its render-target clearing branch.
+        control.PrepareTransitionImages(new TextBlock { Text = "snapshot" });
+
+        // A real, zero-duration storyboard targeting an existing element so it actually completes and fires Completed.
+        // Two children are required because the Fade defaults read Children[0] and Children[1].
+        var storyboard = new Storyboard();
+        var opacityAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
+        Storyboard.SetTarget(opacityAnimation, control);
+        Storyboard.SetTargetProperty(opacityAnimation, new PropertyPath(UIElement.OpacityProperty));
+        storyboard.Children.Add(opacityAnimation);
+
+        var secondAnimation = new DoubleAnimation(1.0, 1.0, new Duration(TimeSpan.Zero));
+        Storyboard.SetTarget(secondAnimation, control);
+        Storyboard.SetTargetProperty(secondAnimation, new PropertyPath(UIElement.OpacityProperty));
+        storyboard.Children.Add(secondAnimation);
+
+        var completed = false;
+        control.TransitionCompleted += (_, _) => completed = true;
+
+        // Assigning CompletingTransition hooks OnTransitionCompleted onto the storyboard's Completed event.
+        control.CompletingTransition = storyboard;
+
+        storyboard.Begin(control, true);
+
+        // Pump the dispatcher so the zero-length animation completes and fires its Completed callback.
+        for (var i = 0; i < DispatcherPumpCount && !completed; i++)
+        {
+            Tests.Xaml.Utilities.DispatcherUtilities.DoEvents();
+            await Task.Delay(PumpDelayMs);
+        }
+
+        await Assert.That(completed).IsTrue();
+    }
+
+    /// <summary>
+    /// Assigns new content to a realized control to drive its transition pipeline, tolerating the WPF-internal failure
+    /// raised by <c>VisualStateManager.GoToState</c> when the synthetic visual-state storyboards lack animation targets.
+    /// The transition body (snapshot, content swap, state bookkeeping and the <c>TransitionStarted</c> event) runs
+    /// before that failure.
+    /// </summary>
+    /// <param name="control">The realized control under test.</param>
+    /// <param name="newContent">The new content to assign.</param>
+    private static void ChangeContentDrivingTransition(TransitioningContentControl control, object newContent)
+    {
+        try
+        {
+            control.Content = newContent;
+        }
+        catch (Exception ex) when (ex is NullReferenceException or InvalidOperationException)
+        {
+            // The exception originates inside WPF's VisualStateManager when flattening target-less storyboards; the
+            // control's own transition logic has already executed by this point.
+        }
+    }
+
+    /// <summary>
+    /// Creates a fully realized control: full template, presentation visual states, non-zero layout size and initial
+    /// content, so that a subsequent content change drives the real transition pipeline.
+    /// </summary>
+    /// <param name="includePreviousImage">Whether to include the optional previous-image template part.</param>
+    /// <returns>A realized <see cref="TransitioningContentControl"/>.</returns>
+    private static TransitioningContentControl CreateRealizedControl(bool includePreviousImage = true)
+    {
+        var control = new TransitioningContentControl
+        {
+            Width = ControlSize,
+            Height = ControlSize,
+            Content = new TextBlock { Text = "initial" },
+        };
+
+        var template = new ControlTemplate(typeof(TransitioningContentControl));
+        var grid = new FrameworkElementFactory(typeof(Grid)) { Name = PartContainerName };
+
+        var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter)) { Name = PartCurrentContentName };
+        grid.AppendChild(contentPresenter);
+
+        if (includePreviousImage)
+        {
+            var image = new FrameworkElementFactory(typeof(Image)) { Name = PartPreviousImageName };
+            grid.AppendChild(image);
+        }
+
+        template.VisualTree = grid;
+        control.Template = template;
+        _ = control.ApplyTemplate();
+
+        if (control.Template.FindName(PartContainerName, control) is Grid container)
+        {
+            var stateGroup = new VisualStateGroup { Name = PresentationStatesName };
+            AddTransitionStates(stateGroup);
+            var groups = VisualStateManager.GetVisualStateGroups(container);
+            _ = groups.Add(stateGroup);
+            control.PresentationStateGroup = groups.OfType<VisualStateGroup>().FirstOrDefault(g => g.Name == PresentationStatesName);
+        }
+
+        control.Measure(new Size(ControlSize, ControlSize));
+        control.Arrange(new(0, 0, ControlSize, ControlSize));
+        control.UpdateLayout();
+
+        return control;
+    }
+
     /// <summary>Creates a control with a minimal template for testing.</summary>
     /// <returns>A configured TransitioningContentControl.</returns>
     private static TransitioningContentControl CreateControlWithTemplate()
@@ -815,7 +1155,7 @@ public class TransitioningContentControlTest
 
         template.VisualTree = grid;
         control.Template = template;
-        control.ApplyTemplate();
+        _ = control.ApplyTemplate();
 
         // Set up visual state groups AFTER applying template
         if (control.Template.FindName(PartContainerName, control) is Grid container)
@@ -826,7 +1166,7 @@ public class TransitioningContentControlTest
             AddTransitionStates(stateGroup);
 
             var groups = VisualStateManager.GetVisualStateGroups(container);
-            groups.Add(stateGroup);
+            _ = groups.Add(stateGroup);
 
             // Manually update the PresentationStateGroup property since OnApplyTemplate already ran
             // Get the first group with name "PresentationStates"
@@ -853,7 +1193,7 @@ public class TransitioningContentControlTest
 
         template.VisualTree = grid;
         control.Template = template;
-        control.ApplyTemplate();
+        _ = control.ApplyTemplate();
 
         return control;
     }
@@ -863,13 +1203,13 @@ public class TransitioningContentControlTest
     private static void AddTransitionStates(VisualStateGroup stateGroup)
     {
         // Normal state
-        stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
+        _ = stateGroup.States.Add(new VisualState { Name = "Normal", Storyboard = new() });
 
         // Fade transition
         var fadeStoryboard = new Storyboard();
         fadeStoryboard.Children.Add(new DoubleAnimation());
         fadeStoryboard.Children.Add(new DoubleAnimation());
-        stateGroup.States.Add(new VisualState { Name = TransitionFadeName, Storyboard = fadeStoryboard });
+        _ = stateGroup.States.Add(new VisualState { Name = TransitionFadeName, Storyboard = fadeStoryboard });
 
         // Add states for each direction and transition type
         var directions = new[] { "Left", "Right", "Up", "Down" };
@@ -884,7 +1224,7 @@ public class TransitioningContentControlTest
                     storyboard.Children.Add(new DoubleAnimation());
                 }
 
-                stateGroup.States.Add(new VisualState { Name = $"Transition_{transition}{direction}", Storyboard = storyboard });
+                _ = stateGroup.States.Add(new VisualState { Name = $"Transition_{transition}{direction}", Storyboard = storyboard });
             }
         }
 
@@ -893,14 +1233,14 @@ public class TransitioningContentControlTest
         {
             var bounceOutStoryboard = new Storyboard();
             bounceOutStoryboard.Children.Add(new DoubleAnimation());
-            stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}Out", Storyboard = bounceOutStoryboard });
+            _ = stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}Out", Storyboard = bounceOutStoryboard });
 
             var bounceInStoryboard = new Storyboard();
             var keyFrameAnimation = new DoubleAnimationUsingKeyFrames();
-            keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
-            keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
+            _ = keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
+            _ = keyFrameAnimation.KeyFrames.Add(new LinearDoubleKeyFrame());
             bounceInStoryboard.Children.Add(keyFrameAnimation);
-            stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}In", Storyboard = bounceInStoryboard });
+            _ = stateGroup.States.Add(new VisualState { Name = $"Transition_Bounce{direction}In", Storyboard = bounceInStoryboard });
         }
     }
 }

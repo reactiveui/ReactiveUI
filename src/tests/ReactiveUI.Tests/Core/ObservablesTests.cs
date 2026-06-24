@@ -21,7 +21,7 @@ public class ObservablesTests
         bool? result = null;
 
         // Act
-        SingleValueObservable.False.Subscribe(x => result = x);
+        _ = SingleValueObservable.False.Subscribe(x => result = x);
 
         // Assert
         await Assert.That(result).IsFalse();
@@ -50,7 +50,7 @@ public class ObservablesTests
         bool? result = null;
 
         // Act
-        SingleValueObservable.True.Subscribe(x => result = x);
+        _ = SingleValueObservable.True.Subscribe(x => result = x);
 
         // Assert
         await Assert.That(result).IsTrue();
@@ -65,7 +65,7 @@ public class ObservablesTests
         RxVoid? result = null;
 
         // Act
-        SingleValueObservable.Void.Subscribe(x => result = x);
+        _ = SingleValueObservable.Void.Subscribe(x => result = x);
 
         // Assert
         await Assert.That(result).IsEqualTo(RxVoid.Default);

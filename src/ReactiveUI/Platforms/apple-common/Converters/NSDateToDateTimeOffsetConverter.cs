@@ -27,7 +27,7 @@ public sealed class NSDateToDateTimeOffsetConverter : BindingTypeConverter<NSDat
             return false;
         }
 
-        result = new DateTimeOffset((DateTime)from);
+        result = new((DateTime)from);
         return true;
     }
 }

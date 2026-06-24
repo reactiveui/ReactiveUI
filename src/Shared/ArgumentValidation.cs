@@ -313,7 +313,7 @@ internal static class ArgumentValidation
             return;
         }
 
-        throw new ArgumentException($"Argument must be of type {typeof(T).Name}.", paramName);
+        throw new ArgumentException($"Argument must be of type {nameof(T)}.", paramName);
     }
 
     /// <summary>Throws an <see cref="ArgumentNullException"/> if <paramref name="argument"/> is default.</summary>

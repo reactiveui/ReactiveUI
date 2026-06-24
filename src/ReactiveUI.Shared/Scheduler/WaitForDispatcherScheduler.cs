@@ -29,7 +29,7 @@ public class WaitForDispatcherScheduler : ISequencer
     {
         _schedulerFactory = schedulerFactory;
 
-        AttemptToCreateScheduler();
+        _ = AttemptToCreateScheduler();
     }
 
     /// <inheritdoc/>
