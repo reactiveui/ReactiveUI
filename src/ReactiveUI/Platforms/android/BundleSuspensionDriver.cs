@@ -102,7 +102,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             JsonSerializer.Serialize(stream, state);
 
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {
@@ -121,7 +121,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
             JsonSerializer.Serialize(stream, state, typeInfo);
 
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, stream.ToArray());
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {
@@ -135,7 +135,7 @@ public sealed class BundleSuspensionDriver : ISuspensionDriver
         try
         {
             AutoSuspendHelper.LatestBundle?.PutByteArray(StateKey, []);
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {

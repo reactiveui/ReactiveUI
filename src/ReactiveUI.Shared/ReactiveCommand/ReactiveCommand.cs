@@ -103,11 +103,13 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return new(
-            _ => new SyncExecuteObservable<RxVoid>(() =>
-            {
-                execute();
-                return RxVoid.Default;
-            }),
+            _ => new StartSignal<RxVoid>(
+                () =>
+                {
+                    execute();
+                    return RxVoid.Default;
+                },
+                Sequencer.Immediate),
             canExecute,
             outputScheduler);
     }
@@ -159,7 +161,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return new(
-            _ => new SyncExecuteObservable<TResult>(execute),
+            _ => new StartSignal<TResult>(execute, Sequencer.Immediate),
             canExecute,
             outputScheduler);
     }
@@ -211,11 +213,13 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return new(
-            param => new SyncExecuteObservable<RxVoid>(() =>
-            {
-                execute(param);
-                return RxVoid.Default;
-            }),
+            param => new StartSignal<RxVoid>(
+                () =>
+                {
+                    execute(param);
+                    return RxVoid.Default;
+                },
+                Sequencer.Immediate),
             canExecute,
             outputScheduler);
     }
@@ -277,7 +281,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return new(
-            param => new SyncExecuteObservable<TResult>(() => execute(param)),
+            param => new StartSignal<TResult>(() => execute(param), Sequencer.Immediate),
             canExecute,
             outputScheduler);
     }
@@ -341,7 +345,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return CreateFromObservable(
-            () => new StartObservable<RxVoid>(
+            () => new StartSignal<RxVoid>(
                 () =>
                 {
                     execute();
@@ -424,7 +428,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return CreateFromObservable(
-            () => new StartObservable<TResult>(execute, backgroundScheduler ?? RxSchedulers.TaskpoolScheduler),
+            () => new StartSignal<TResult>(execute, backgroundScheduler ?? RxSchedulers.TaskpoolScheduler),
             canExecute,
             outputScheduler);
     }
@@ -494,7 +498,7 @@ public static class ReactiveCommand
 
         return CreateFromObservable<TParam, RxVoid>(
             p =>
-                new StartObservable<RxVoid>(
+                new StartSignal<RxVoid>(
                     () =>
                     {
                         execute(p);
@@ -582,7 +586,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return CreateFromObservable<TParam, TResult>(
-            p => new StartObservable<TResult>(() => execute(p), backgroundScheduler ?? RxSchedulers.TaskpoolScheduler),
+            p => new StartSignal<TResult>(() => execute(p), backgroundScheduler ?? RxSchedulers.TaskpoolScheduler),
             canExecute,
             outputScheduler);
     }

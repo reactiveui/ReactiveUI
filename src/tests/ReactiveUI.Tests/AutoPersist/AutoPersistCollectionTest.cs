@@ -47,7 +47,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -108,7 +108,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -146,7 +146,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -205,7 +205,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -238,7 +238,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             ReactiveUI.Primitives.Signals.Signal.Silent<RxVoid>(),
             metadataProvider,
@@ -271,7 +271,7 @@ public class AutoPersistCollectionTest
             _ =>
             {
                 timesSaved++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 

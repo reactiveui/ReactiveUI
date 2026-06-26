@@ -64,18 +64,11 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
         SubscribeToPopped();
         SubscribeToPoppedToRoot();
 
-        // Perform initial sync asynchronously
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await SyncNavigationStacksAsync();
-            }
-            catch (Exception ex)
-            {
-                this.Log().Error(ex, "Failed to perform initial navigation stack sync");
-            }
-        });
+        // Perform the initial navigation-stack sync on the main thread rather than a thread-pool thread. MAUI
+        // navigation state must only be mutated from the UI thread, and marshalling here serialises the initial
+        // sync with any subsequent navigation instead of racing it on a background thread (the previous Task.Run
+        // could interleave its own PushAsync with a caller's push and leave CurrentPage pointing at the wrong page).
+        _ = RxSchedulers.MainThreadScheduler.Schedule(() => _ = PerformInitialNavigationSyncAsync());
     }
 
     /// <summary>Gets or sets the <see cref="RoutingState"/> of the view model stack.</summary>
@@ -222,6 +215,25 @@ public class RoutedViewHost : NavigationPage, IActivatableView, IEnableLogger
                 var page = PageForViewModel(Router.NavigationStack[i]);
                 Navigation.InsertPageBefore(page, rootPage);
             }
+        }
+    }
+
+    /// <summary>Performs the one-time initial navigation-stack sync, logging any failure instead of faulting an unobserved task.</summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [RequiresUnreferencedCode(
+        "This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
+    [RequiresDynamicCode(
+        "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, or generic constraints), " +
+        "trimming can't validate that the requirements of those annotations are met.")]
+    private async Task PerformInitialNavigationSyncAsync()
+    {
+        try
+        {
+            await SyncNavigationStacksAsync();
+        }
+        catch (Exception ex)
+        {
+            this.Log().Error(ex, "Failed to perform initial navigation stack sync");
         }
     }
 

@@ -28,10 +28,10 @@ public sealed class DummySuspensionDriver : ISuspensionDriver
         "Implementations commonly use reflection-based serialization. " +
         "Prefer LoadState<T>(JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<object?> LoadState()
-        => new SingleValueObservable<object?>(null);
+        => new ReturnSignal<object?>(null, Sequencer.Immediate);
 
     /// <inheritdoc />
-    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => new SingleValueObservable<T?>(default);
+    public IObservable<T?> LoadState<T>(JsonTypeInfo<T> typeInfo) => new ReturnSignal<T?>(default, Sequencer.Immediate);
 
     /// <inheritdoc />
     [RequiresUnreferencedCode(
@@ -41,12 +41,12 @@ public sealed class DummySuspensionDriver : ISuspensionDriver
         "Implementations commonly use reflection-based serialization. " +
         "Prefer SaveState<T>(T, JsonTypeInfo<T>) for trimming or AOT scenarios.")]
     public IObservable<RxVoid> SaveState<T>(T state)
-        => SingleValueObservable.Void;
+        => ImmutableReturnRxVoidSignal.Instance;
 
     /// <inheritdoc />
-    public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => SingleValueObservable.Void;
+    public IObservable<RxVoid> SaveState<T>(T state, JsonTypeInfo<T> typeInfo) => ImmutableReturnRxVoidSignal.Instance;
 
     /// <inheritdoc />
     public IObservable<RxVoid> InvalidateState()
-        => SingleValueObservable.Void;
+        => ImmutableReturnRxVoidSignal.Instance;
 }

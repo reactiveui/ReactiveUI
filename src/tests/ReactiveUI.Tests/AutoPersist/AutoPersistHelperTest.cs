@@ -259,7 +259,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(1));
 
@@ -294,7 +294,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             TimeSpan.FromSeconds(1));
@@ -331,7 +331,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = obj.AutoPersist(_ => SingleValueObservable.Void);
+            _ = obj.AutoPersist(_ => ImmutableReturnRxVoidSignal.Instance);
             await Task.CompletedTask;
         });
     }
@@ -351,7 +351,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(1));
 
@@ -387,7 +387,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => ImmutableReturnRxVoidSignal.Instance, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -405,7 +405,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = fixture.AutoPersist(_ => SingleValueObservable.Void, null!, TimeSpan.FromSeconds(1));
+            _ = fixture.AutoPersist(_ => ImmutableReturnRxVoidSignal.Instance, null!, TimeSpan.FromSeconds(1));
             await Task.CompletedTask;
         });
     }
@@ -425,7 +425,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(1));
 
@@ -452,7 +452,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(ThrottleSeconds));
 
@@ -486,7 +486,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             metadata,
             TimeSpan.FromSeconds(1));
@@ -513,7 +513,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -538,7 +538,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = collection!.AutoPersistCollection(_ => SingleValueObservable.Void);
+            _ = collection!.AutoPersistCollection(_ => ImmutableReturnRxVoidSignal.Instance);
             await Task.CompletedTask;
         });
     }
@@ -566,7 +566,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
-            _ = collection.AutoPersistCollection(_ => SingleValueObservable.Void, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
+            _ = collection.AutoPersistCollection(_ => ImmutableReturnRxVoidSignal.Instance, (AutoPersistHelperMixins.AutoPersistMetadata)null!);
             await Task.CompletedTask;
         });
     }
@@ -588,7 +588,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -621,7 +621,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
 
@@ -651,7 +651,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             metadata,
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -731,7 +731,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             metadata);
@@ -764,7 +764,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave);
 
@@ -798,7 +798,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             metadata);
@@ -832,7 +832,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave);
 
@@ -865,7 +865,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             metadataProvider);
@@ -901,7 +901,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             new Signal<RxVoid>(),
             metadataProvider,
@@ -934,7 +934,7 @@ public class AutoPersistHelperTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            _ = collection.AutoPersistCollection(_ => SingleValueObservable.Void, new Signal<RxVoid>(), metadata, interval: null);
+            _ = collection.AutoPersistCollection(_ => ImmutableReturnRxVoidSignal.Instance, new Signal<RxVoid>(), metadata, interval: null);
             await Task.CompletedTask;
         });
     }
@@ -957,7 +957,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave,
             metadata);
@@ -990,7 +990,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(IntervalSeconds));
 
@@ -1020,7 +1020,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(1));
 
@@ -1048,7 +1048,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave);
 
@@ -1079,7 +1079,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             TimeSpan.FromSeconds(1));
 
@@ -1156,7 +1156,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             new Signal<RxVoid>(),
             TimeSpan.FromMilliseconds(ThrottleMilliseconds));
@@ -1191,7 +1191,7 @@ public class AutoPersistHelperTest
             _ =>
             {
                 saveCount++;
-                return SingleValueObservable.Void;
+                return ImmutableReturnRxVoidSignal.Instance;
             },
             manualSave);
 

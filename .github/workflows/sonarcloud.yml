@@ -18,10 +18,18 @@ jobs:
             sonarProjectKey: reactiveui_ReactiveUI
             sonarOrganization: reactiveui
             sonarExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/TestResults/**'
-            # Shared/Platform fused Rx-replacement observables are compile-linked into every platform assembly and
-            # only exercisable via platform (WPF/WinForms/MAUI/mobile) tests, so exclude them from coverage like
-            # generated code. The Shared/ root helpers stay measured (covered by the core test suite).
-            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**'
+            # Coverage exclusions (sonar.coverage.exclusions) — code the Sonar scan cannot execute, so counting it
+            # would only ever report 0%. This is COVERAGE ONLY; every excluded file is still fully analysed for bugs,
+            # smells and duplication.
+            #  - Shared/Platform fused Rx-replacement observables are compile-linked into every platform assembly and
+            #    only exercisable via platform tests; the Shared/ root helpers stay measured (core test suite covers them).
+            #  - The scan runs on windows-latest (see workflow-common-sonarcloud.yml runsOn) so it builds and runs the
+            #    core + WPF + WinUI + WinForms tests — that platform code stays measured (e.g. CreatesWinformsCommandBinding
+            #    sits at ~99%). What it CANNOT run is the android/apple per-OS code under ReactiveUI/Platforms/{android,
+            #    apple-common,ios,mac,tvos,uikit-common,mobile-common}: those need an emulator/device or a mac runner, so
+            #    their tests never execute in CI and the files always read 0%. Exclude exactly those per-OS dirs from
+            #    coverage (Platforms/net and Platforms/netstandard2.0 stay measured — they run under the core tests).
+            sonarCoverageExclusions: '**/tests/**,**/integrationtests/**,**/benchmarks/**,**/examples/**,**/*Tests/**,**/*Tests.cs,**/Generated/**,**/Shared/Platform/**,**/Platforms/android/**,**/Platforms/apple-common/**,**/Platforms/ios/**,**/Platforms/mac/**,**/Platforms/tvos/**,**/Platforms/uikit-common/**,**/Platforms/mobile-common/**'
             # CPD (copy/paste detection) exclusions:
             #  - tests/integrationtests/Benchmarks/examples are non-shipping code. The examples are
             #    demo apps that deliberately parallel each other (each sample reimplements the same

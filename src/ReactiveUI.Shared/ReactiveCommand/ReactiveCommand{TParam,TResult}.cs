@@ -91,7 +91,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         CanExecute = new BoolStream(this, isExecuting: false);
         IsExecuting = new BoolStream(this, isExecuting: true);
         ThrownExceptions = new ExceptionStream(this);
-        _canExecuteSubscription = (canExecute ?? SingleValueObservable.True)
+        _canExecuteSubscription = (canExecute ?? new ReturnSignal<bool>(true, Sequencer.Immediate))
             .Subscribe(new DelegateObserver<bool>(OnUserCanExecute, OnUserCanExecuteError));
     }
 
@@ -105,7 +105,7 @@ public class ReactiveCommand<TParam, TResult> : ReactiveCommandBase<TParam, TRes
         IObservable<bool>? canExecute,
         ISequencer? outputScheduler)
         : this(
-            p => new SingleValueObservable<(IObservable<TResult> Result, Action Cancel)>((execute(p), NoCancel)),
+            p => new ReturnSignal<(IObservable<TResult> Result, Action Cancel)>((execute(p), NoCancel), Sequencer.Immediate),
             canExecute,
             outputScheduler)
     {

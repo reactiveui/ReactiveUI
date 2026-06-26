@@ -113,7 +113,7 @@ public static class ObservableLoggingMixins
             string? message)
             where TObj : IEnableLogger
         {
-            next ??= new SingleValueObservable<T>(default!);
+            next ??= new ReturnSignal<T>(default!, Sequencer.Immediate);
             return new LoggedCatchObservable<T, Exception>(@this, ex =>
             {
                 @class.Log().Warn(ex, message ?? string.Empty);

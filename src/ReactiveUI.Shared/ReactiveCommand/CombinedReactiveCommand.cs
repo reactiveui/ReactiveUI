@@ -94,7 +94,7 @@ public class CombinedReactiveCommand<TParam, TResult> : ReactiveCommandBase<TPar
             childCanExecute[i] = childCommandsArray[i].CanExecute;
         }
 
-        var parentGate = canExecute ?? SingleValueObservable.True;
+        var parentGate = canExecute ?? new ReturnSignal<bool>(true, Sequencer.Immediate);
 
         // all-true of [parent, child0..childN] (the parent gate plus every child's CanExecute).
         var canExecuteSources = new IObservable<bool>[childCommandsArray.Length + 1];

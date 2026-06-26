@@ -6,7 +6,7 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>5.6.0</PrimitivesVersion>
+    <PrimitivesVersion>5.7.0</PrimitivesVersion>
     <TUnitVersion>1.56.25</TUnitVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.2</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
