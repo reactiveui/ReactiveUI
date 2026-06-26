@@ -25,7 +25,7 @@ public partial class ReactiveCommandTest
     public async Task Execute_CanBeCancelled()
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromSeconds(1), scheduler);
+        var execute = ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromSeconds(1), scheduler);
         var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);
@@ -175,7 +175,7 @@ public partial class ReactiveCommandTest
     public async Task ICommand_CanExecute_IsFalseWhileExecuting()
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromSeconds(1), scheduler);
+        var execute = ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromSeconds(1), scheduler);
         ICommand command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);

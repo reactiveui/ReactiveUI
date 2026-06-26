@@ -23,6 +23,10 @@ namespace ReactiveUI;
 /// </remarks>
 public static class SuspensionHostExtensions
 {
+    /// <summary>A shared completed RxVoid signal. Typed as the interface so the synchronous helpers below
+    /// surface it without CA1859 demanding the concrete singleton type leak into their signatures.</summary>
+    private static readonly IObservable<RxVoid> _completed = ImmutableReturnRxVoidSignal.Instance;
+
     /// <summary>Func used to load app state exactly once. Backing field for testing purposes.</summary>
     private static Func<IObservable<RxVoid>>? _ensureLoadAppStateFunc;
 
@@ -305,7 +309,7 @@ public static class SuspensionHostExtensions
     {
         if (item.AppState is not null)
         {
-            return SingleValueObservable.Void;
+            return _completed;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -313,7 +317,7 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return SingleValueObservable.Void;
+            return _completed;
         }
 
         try
@@ -327,7 +331,7 @@ public static class SuspensionHostExtensions
             item.AppState = item.CreateNewAppState?.Invoke();
         }
 
-        return SingleValueObservable.Void;
+        return _completed;
     }
 
     /// <summary>Ensures a one-time typed app state load from storage using source-generated JSON metadata (trimming/AOT friendly).</summary>
@@ -344,7 +348,7 @@ public static class SuspensionHostExtensions
     {
         if (item.AppStateValue is not null)
         {
-            return SingleValueObservable.Void;
+            return _completed;
         }
 
         _suspensionDriver ??= driver ?? AppLocator.Current.GetService<ISuspensionDriver>();
@@ -352,7 +356,7 @@ public static class SuspensionHostExtensions
         if (_suspensionDriver is null)
         {
             item.Log().Error("Could not find a valid driver and therefore cannot load app state.");
-            return SingleValueObservable.Void;
+            return _completed;
         }
 
         try
@@ -366,7 +370,7 @@ public static class SuspensionHostExtensions
             item.AppStateValue = item.CreateNewAppStateTyped?.Invoke();
         }
 
-        return SingleValueObservable.Void;
+        return _completed;
     }
 
     /// <summary>Runs the pending one-time app-state load exactly once, if one is registered.</summary>

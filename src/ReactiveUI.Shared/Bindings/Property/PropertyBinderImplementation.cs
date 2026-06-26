@@ -554,7 +554,7 @@ public partial class PropertyBinderImplementation : IPropertyBinderImplementatio
     /// <returns>An observable that emits <paramref name="value"/> when the binding should continue.</returns>
     protected virtual IObservable<bool> ScheduleForBinding<TView>(TView view, bool value)
         where TView : class =>
-        new SingleValueObservable<bool>(value);
+        new ReturnSignal<bool>(value, Sequencer.Immediate);
 
     /// <summary>
     /// Applies a view-value setter. The default invokes it inline; platform binders (e.g. WPF) override this to

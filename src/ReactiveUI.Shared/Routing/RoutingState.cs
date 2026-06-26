@@ -192,7 +192,7 @@ public class RoutingState : ReactiveObject
         public IDisposable Subscribe(IObserver<T> observer)
         {
             ArgumentExceptionHelper.ThrowIfNull(observer);
-            return new SingleValueObservable<T>(value).Subscribe(new SchedulingObserver<T>(observer, scheduler));
+            return new ReturnSignal<T>(value, Sequencer.Immediate).Subscribe(new SchedulingObserver<T>(observer, scheduler));
         }
     }
 

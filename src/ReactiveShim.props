@@ -40,6 +40,10 @@
          Broadcaster) resolve unqualified to the lean ReactiveUI.Primitives namespace. Open generics can't be aliased,
          so this is a namespace import rather than a per-type alias like RxVoid/ISequencer above. -->
     <Using Include="ReactiveUI.Primitives.Signals" />
+    <!-- Concrete signal classes (ReturnSignal/StartSignal/ImmutableReturnRxVoidSignal, ...) that back the
+         Signal.* factories. The shared source constructs these directly in place of in-repo sink forks; only
+         the seam-neutral (both-leaf) concretes are named so the .Reactive leaf below stays buildable. -->
+    <Using Include="ReactiveUI.Primitives.Advanced" />
   </ItemGroup>
 
   <!-- Reactive seam: the *.Reactive leaves recompile the shared ReactiveUI source against System.Reactive's
@@ -63,6 +67,9 @@
     <Using Include="ReactiveUI.Reactive.Builder" />
     <Using Include="ReactiveUI.Reactive.Interfaces" />
     <Using Include="ReactiveUI.Primitives.Signals" />
+    <!-- Reactive-shim counterpart of the lean leaf's ReactiveUI.Primitives.Advanced import: the same
+         seam-neutral concrete signal classes, flipped to the ReactiveUI.Primitives.Reactive.Advanced namespace. -->
+    <Using Include="ReactiveUI.Primitives.Reactive.Advanced" />
   </ItemGroup>
 
   <!-- Reactive seam, platform leaves: the apple/android reactive main-thread sequencers

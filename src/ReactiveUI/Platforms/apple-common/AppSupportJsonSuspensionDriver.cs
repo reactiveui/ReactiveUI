@@ -118,7 +118,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state, typeInfo);
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {
@@ -137,7 +137,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             using var stream = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
             JsonSerializer.Serialize(stream, state);
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {
@@ -153,7 +153,7 @@ public sealed class AppSupportJsonSuspensionDriver : ISuspensionDriver
             var path = GetStatePath();
             File.Delete(path);
 
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
         catch (Exception ex)
         {

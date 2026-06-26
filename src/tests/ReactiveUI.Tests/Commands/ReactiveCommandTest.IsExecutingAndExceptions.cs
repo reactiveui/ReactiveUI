@@ -25,7 +25,7 @@ public partial class ReactiveCommandTest
         const int DelayMilliseconds = 500;
 
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
+        var execute = ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromMilliseconds(DelayMilliseconds), scheduler);
         var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);
@@ -84,7 +84,7 @@ public partial class ReactiveCommandTest
     public async Task IsExecuting_TicksWhileExecuting()
     {
         var scheduler = TestContext.Current.GetVirtualTimeScheduler();
-        var execute = SingleValueObservable.Void.Delay(TimeSpan.FromSeconds(1), scheduler);
+        var execute = ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromSeconds(1), scheduler);
         var command = ReactiveCommand.CreateFromObservable<RxVoid>(
             () => execute,
             outputScheduler: scheduler);
@@ -180,7 +180,7 @@ public partial class ReactiveCommandTest
     {
         var scheduler = TestContext.Current!.GetScheduler();
         var command = ReactiveCommand.CreateFromObservable(
-            () => SingleValueObservable.Void,
+            () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: scheduler);
         var executed = false;
 

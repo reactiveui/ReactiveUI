@@ -36,7 +36,7 @@ public class CanActivateViewFetcher : IActivationForViewFetcher
     /// <see langword="false"/> when it is deactivated.</returns>
     public IObservable<bool> GetActivationForView(IActivatableView view) =>
         view is not ICanActivate canActivate
-            ? SingleValueObservable.False
+            ? new ReturnSignal<bool>(false, Sequencer.Immediate)
             : new ActivationStateObservable(canActivate.Activated, canActivate.Deactivated);
 
     /// <summary>

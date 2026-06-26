@@ -134,7 +134,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             return EmptyDisposable.Instance;
         }
 
-        commandParameter ??= new SingleValueObservable<object?>(target);
+        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
 
         object? latestParam = null;
 
@@ -202,7 +202,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
     {
         ArgumentExceptionHelper.ThrowIfNull(command);
 
-        commandParameter ??= new SingleValueObservable<object?>(target);
+        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
 
         object? latestParam = null;
         var ctl = target!;
@@ -264,7 +264,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(addHandler);
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
-        commandParameter ??= new SingleValueObservable<object?>(target);
+        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
 
         object? latestParam = null;
 
@@ -331,7 +331,7 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(addHandler);
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
-        commandParameter ??= new SingleValueObservable<object?>(target);
+        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
 
         object? latestParam = null;
 

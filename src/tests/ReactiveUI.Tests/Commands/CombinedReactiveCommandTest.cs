@@ -29,11 +29,11 @@ public class CombinedReactiveCommandTest
     public async Task CanExecuteIsFalseIfAnyChildCannotExecute()
     {
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
-            SingleValueObservable.False,
+            static () => ImmutableReturnRxVoidSignal.Instance,
+            new ReturnSignal<bool>(false, Sequencer.Immediate),
             Sequencer.Immediate);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: Sequencer.Immediate);
@@ -49,13 +49,13 @@ public class CombinedReactiveCommandTest
     public async Task CanExecuteIsFalseIfParentCanExecuteIsFalse()
     {
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var childCommands = new[] { child1, child2 };
-        var fixture = ReactiveCommand.CreateCombined(childCommands, SingleValueObservable.False, Sequencer.Immediate);
+        var fixture = ReactiveCommand.CreateCombined(childCommands, new ReturnSignal<bool>(false, Sequencer.Immediate), Sequencer.Immediate);
         var canExecute = fixture.CanExecute.Collect();
 
         await Assert.That(canExecute).Count().IsEqualTo(1);
@@ -69,10 +69,10 @@ public class CombinedReactiveCommandTest
     {
         var canExecuteSubject = new Signal<bool>();
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             canExecuteSubject,
             Sequencer.Immediate);
         var childCommands = new[] { child1, child2 };
@@ -92,10 +92,10 @@ public class CombinedReactiveCommandTest
     {
         var canExecuteSubject = new Signal<bool>();
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var childCommands = new[] { child1, child2 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, canExecuteSubject, Sequencer.Immediate);
@@ -132,13 +132,13 @@ public class CombinedReactiveCommandTest
     public async Task ExecuteExecutesAllChildCommands()
     {
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child3 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var childCommands = new[] { child1, child2, child3 };
         var fixture = ReactiveCommand.CreateCombined(childCommands, outputScheduler: Sequencer.Immediate);
@@ -192,7 +192,7 @@ public class CombinedReactiveCommandTest
     public async Task ExecuteTicksErrorsInAnyChildCommandThroughThrownExceptions()
     {
         var child1 = ReactiveCommand.CreateFromObservable(
-            static () => SingleValueObservable.Void,
+            static () => ImmutableReturnRxVoidSignal.Instance,
             outputScheduler: Sequencer.Immediate);
         var child2 = ReactiveCommand.CreateFromObservable(
             static () => Signal.Fail<RxVoid>(new InvalidOperationException("oops")),

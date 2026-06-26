@@ -107,7 +107,7 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
         IObservable<RxVoid> ContentHandler(IInteractionContext<TInput, TOutput> interaction)
         {
             handler(interaction);
-            return SingleValueObservable.Void;
+            return ImmutableReturnRxVoidSignal.Instance;
         }
     }
 

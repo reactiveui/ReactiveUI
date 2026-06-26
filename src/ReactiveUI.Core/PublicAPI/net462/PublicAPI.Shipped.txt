@@ -317,15 +317,9 @@ ReactiveUI.InteractionContext<TInput, TOutput>.Input.get -> TInput
 ReactiveUI.InteractionContext<TInput, TOutput>.InteractionContext(TInput input) -> void
 ReactiveUI.InteractionContext<TInput, TOutput>.IsHandled.get -> bool
 ReactiveUI.InteractionContext<TInput, TOutput>.SetOutput(TOutput output) -> void
-ReactiveUI.Internal.SingleValueObservable<T>
-ReactiveUI.Internal.SingleValueObservable<T>.SingleValueObservable(T value) -> void
-ReactiveUI.Internal.SingleValueObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
 ReactiveUI.Internal.StartWithObservable<T>
 ReactiveUI.Internal.StartWithObservable<T>.StartWithObservable(System.IObservable<T>! source, T value) -> void
 ReactiveUI.Internal.StartWithObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
-ReactiveUI.Internal.SyncExecuteObservable<T>
-ReactiveUI.Internal.SyncExecuteObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
-ReactiveUI.Internal.SyncExecuteObservable<T>.SyncExecuteObservable(System.Func<T>! execute) -> void
 ReactiveUI.Internal.TaskObservable<T>
 ReactiveUI.Internal.TaskObservable<T>.Subscribe(System.IObserver<T>! observer) -> System.IDisposable!
 ReactiveUI.Internal.TaskObservable<T>.TaskObservable(System.Threading.Tasks.Task<T>! task) -> void

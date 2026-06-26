@@ -103,7 +103,7 @@ public class InteractionsTest
             handler1AWasCalled = true;
         });
         var handler1B = interaction.RegisterHandler(x =>
-            SingleValueObservable.Void.Delay(TimeSpan.FromSeconds(1), scheduler)
+            ImmutableReturnRxVoidSignal.Instance.Delay(TimeSpan.FromSeconds(1), scheduler)
                 .Do(_ => x.SetOutput(OutputB)));
 
         using (handler1A)

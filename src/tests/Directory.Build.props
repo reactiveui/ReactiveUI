@@ -27,6 +27,9 @@
        System.Reactive surface instead. All other lean test projects are System.Reactive-free and use the Primitives surface. -->
   <ItemGroup Condition="'$(RxReactiveSeam)' != 'true' and !$(MSBuildProjectName.Contains('Routing'))">
     <Using Include="ReactiveUI.Primitives" />
+    <!-- Concrete signal classes (ReturnSignal/StartSignal/ImmutableReturnRxVoidSignal) the tests construct
+         directly in place of the removed in-repo SingleValueObservable/SyncExecuteObservable sinks. -->
+    <Using Include="ReactiveUI.Primitives.Advanced" />
   </ItemGroup>
   <!-- BCL ObservableCollection replaces incidental DynamicData ObservableCollectionExtended in test mocks. -->
   <ItemGroup>
@@ -39,6 +42,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(RxReactiveSeam)' == 'true' and !$(MSBuildProjectName.Contains('Routing'))">
     <Using Include="ReactiveUI.Primitives.Reactive" />
+    <Using Include="ReactiveUI.Primitives.Reactive.Advanced" />
     <!-- The generic Signal<T> subject (and ReplaySignal/ScheduledSignal) is neutral — it ships in
          ReactiveUI.Primitives.Core under ReactiveUI.Primitives.Signals and is shared by both leaves; the engine
          seam (ReactiveShim.props) already imports that namespace. Only the NON-generic Signal static factory
