@@ -134,13 +134,6 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             return EmptyDisposable.Instance;
         }
 
-        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
-
-        object? latestParam = null;
-
-        var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
-        addHandler(Handler);
-
         Action<object?, object?, object?[]?>? enabledSetter = null;
         try
         {
@@ -155,34 +148,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
             enabledSetter = null;
         }
 
-        IDisposable? canExecuteSub = null;
-        if (enabledSetter is not null)
+        return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
-
-            canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
-                .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
-        }
-
-        return canExecuteSub is null
-            ? new MultipleDisposable(
-                parameterSub,
-                new ActionDisposable(() => removeHandler(Handler)))
-            : new MultipleDisposable(
-                parameterSub,
-                canExecuteSub,
-                new ActionDisposable(() => removeHandler(Handler)));
-
-        void Handler(object? sender, TEventArgs e)
-        {
-            var param = Volatile.Read(ref latestParam);
-            if (!command.CanExecute(param))
-            {
-                return;
-            }
-
-            command.Execute(param);
-        }
+            void Handler(object? sender, TEventArgs e) => execute();
+            addHandler(Handler);
+            return new ActionDisposable(() => removeHandler(Handler));
+        });
     }
 
     /// <summary>Creates a commands binding from event and a property.</summary>
@@ -264,41 +235,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(addHandler);
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
-        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
-
-        object? latestParam = null;
-
-        var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
-
-        addHandler(Handler);
-
-        if (enabledSetter is null)
+        return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            return new MultipleDisposable(
-                parameterSub,
-                new ActionDisposable(() => removeHandler(Handler)));
-        }
-
-        enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
-
-        var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
-            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
-
-        return new MultipleDisposable(
-            parameterSub,
-            canExecuteSub,
-            new ActionDisposable(() => removeHandler(Handler)));
-
-        void Handler(object? sender, TEventArgs e)
-        {
-            var param = Volatile.Read(ref latestParam);
-            if (!command.CanExecute(param))
-            {
-                return;
-            }
-
-            command.Execute(param);
-        }
+            void Handler(object? sender, TEventArgs e) => execute();
+            addHandler(Handler);
+            return new ActionDisposable(() => removeHandler(Handler));
+        });
     }
 
     /// <summary>
@@ -331,41 +273,12 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         ArgumentExceptionHelper.ThrowIfNull(addHandler);
         ArgumentExceptionHelper.ThrowIfNull(removeHandler);
 
-        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
-
-        object? latestParam = null;
-
-        var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
-
-        addHandler(Handler);
-
-        if (enabledSetter is null)
+        return BindEvent(command, target, commandParameter, enabledSetter, execute =>
         {
-            return new MultipleDisposable(
-                parameterSub,
-                new ActionDisposable(() => removeHandler(Handler)));
-        }
-
-        enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
-
-        var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
-            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
-
-        return new MultipleDisposable(
-            parameterSub,
-            canExecuteSub,
-            new ActionDisposable(() => removeHandler(Handler)));
-
-        void Handler(object? sender, EventArgs e)
-        {
-            var param = Volatile.Read(ref latestParam);
-            if (!command.CanExecute(param))
-            {
-                return;
-            }
-
-            command.Execute(param);
-        }
+            void Handler(object? sender, EventArgs e) => execute();
+            addHandler(Handler);
+            return new ActionDisposable(() => removeHandler(Handler));
+        });
     }
 
     /// <summary>Registers an observable factory for the specified type and property.</summary>
@@ -377,6 +290,55 @@ public abstract class FlexibleCommandBinder : ICreatesCommandBinding
         int affinity,
         Func<ICommand?, object?, IObservable<object?>, IDisposable> createBinding) =>
         _config[type] = new() { Affinity = affinity, CreateBinding = createBinding };
+
+    /// <summary>
+    /// Shared command-binding core: subscribes the command parameter, attaches the event handler that executes the
+    /// command when it can, and optionally keeps an enabled-like property in sync with
+    /// <see cref="ICommand.CanExecute(object?)"/>. Each public overload supplies <paramref name="subscribeHandler"/>
+    /// to wire its own strongly typed event delegate; everything else is identical, so it lives here once.
+    /// </summary>
+    /// <param name="command">The command to bind.</param>
+    /// <param name="target">The event source object.</param>
+    /// <param name="commandParameter">Observable producing command parameter values. If <see langword="null"/>, <paramref name="target"/> is used.</param>
+    /// <param name="enabledSetter">Optional setter for an enabled-like property; enabled synchronization is skipped when <see langword="null"/>.</param>
+    /// <param name="subscribeHandler">Attaches a handler that invokes the supplied callback when the event fires and returns a disposable that detaches it.</param>
+    /// <returns>A disposable that unbinds the command and stops enabled synchronization.</returns>
+    private static MultipleDisposable BindEvent(
+        ICommand command,
+        object? target,
+        IObservable<object?>? commandParameter,
+        Action<object?, object?, object?[]?>? enabledSetter,
+        Func<Action, IDisposable> subscribeHandler)
+    {
+        commandParameter ??= new ReturnSignal<object?>(target, Sequencer.Immediate);
+
+        object? latestParam = null;
+
+        var parameterSub = commandParameter.Subscribe(new DelegateObserver<object?>(x => Volatile.Write(ref latestParam, x)));
+
+        var handlerSub = subscribeHandler(() =>
+        {
+            var param = Volatile.Read(ref latestParam);
+            if (!command.CanExecute(param))
+            {
+                return;
+            }
+
+            command.Execute(param);
+        });
+
+        if (enabledSetter is null)
+        {
+            return new MultipleDisposable(parameterSub, handlerSub);
+        }
+
+        enabledSetter(target, command.CanExecute(Volatile.Read(ref latestParam)), null);
+
+        var canExecuteSub = new CanExecuteChangedObservable(command, () => command.CanExecute(Volatile.Read(ref latestParam)))
+            .Subscribe(new DelegateObserver<bool>(x => enabledSetter(target, x, null)));
+
+        return new MultipleDisposable(parameterSub, canExecuteSub, handlerSub);
+    }
 
     /// <summary>
     /// Emits the command's current can-execute value each time <see cref="ICommand.CanExecuteChanged"/> fires —
