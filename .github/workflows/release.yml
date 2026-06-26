@@ -40,6 +40,8 @@ jobs:
     with:
       solutionFile: reactiveui.slnx
       installWorkloads: true
+      # Release tags are unprefixed (e.g. 23.2.28); the workflow default is 'v'.
+      minverTagPrefix: ''
       bump: ${{ inputs.bump }}
       preRelease: ${{ inputs.channel != 'none' && inputs.channel || '' }}
       ref: ${{ inputs.sourceRef }}
