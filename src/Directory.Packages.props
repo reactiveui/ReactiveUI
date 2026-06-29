@@ -6,14 +6,14 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>5.7.0</PrimitivesVersion>
-    <TUnitVersion>1.56.25</TUnitVersion>
-    <XamarinAndroidXLifecycleLiveDataVersion>2.10.0.2</XamarinAndroidXLifecycleLiveDataVersion>
+    <PrimitivesVersion>5.8.0</PrimitivesVersion>
+    <TUnitVersion>1.57.0</TUnitVersion>
+    <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Framework-Aligned Versions">
     <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.120</MauiVersion>
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.71</MauiVersion>
+    <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.80</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26304.4</MauiVersion>
 
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
@@ -61,8 +61,8 @@
   </ItemGroup>
 
   <ItemGroup Label="Akavache">
-    <PackageVersion Include="Akavache.Sqlite3" Version="12.0.12"/>
-    <PackageVersion Include="Akavache.SystemTextJson" Version="12.0.12"/>
+    <PackageVersion Include="Akavache.Sqlite3" Version="12.1.1"/>
+    <PackageVersion Include="Akavache.SystemTextJson" Version="12.1.1"/>
   </ItemGroup>
 
   <ItemGroup Label="Testing">
@@ -100,7 +100,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - Windows / WinUI / WPF">
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839"/>
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270"/>
     <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2"/>
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)"/>
   </ItemGroup>
@@ -132,13 +132,13 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - Android (Fragment / Collection / SavedState / Preference)">
-    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.2"/>
-    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2"/>
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0"/>
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0"/>
-    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.4.0.2"/>
-    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2"/>
-    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.17"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.3"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.4"/>
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1"/>
+    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.18"/>
   </ItemGroup>
 
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
