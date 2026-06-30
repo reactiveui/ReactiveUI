@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">
-    <PackageVersion Include="DynamicData" Version="9.4.31"/>
+    <PackageVersion Include="DynamicData" Version="9.4.32"/>
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1"/>
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
