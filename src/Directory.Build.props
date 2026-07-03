@@ -88,10 +88,11 @@
     <ReactiveUITestTargets>net8.0-windows10.0.19041.0;net9.0-windows10.0.19041.0;net10.0-windows10.0.19041.0;net11.0-windows10.0.19041.0</ReactiveUITestTargets>
 
     <!--    <ReactiveUIMauiTestTargets Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(ReactiveUIMauiWindowsTargets)</ReactiveUIMauiTestTargets>-->
-    <ReactiveUIMauiTestTargets>$(ReactiveUIMauiTestTargets);net9.0;net10.0</ReactiveUIMauiTestTargets>
+    <ReactiveUIMauiTestTargets>$(ReactiveUIMauiTestTargets);net10.0</ReactiveUIMauiTestTargets>
 
+    <!-- MAUI net9 heads (Android/Apple/plain) are EOL; MAUI targets net10+ only. Windows/WinUI3 targets keep net9 elsewhere. -->
     <ReactiveMauiTargets>$(ReactiveUIMauiWindowsTargets)</ReactiveMauiTargets>
-    <ReactiveMauiTargets>$(ReactiveMauiTargets);net9.0;net10.0;$(ReactiveUIAndroidTargets)</ReactiveMauiTargets>
+    <ReactiveMauiTargets>$(ReactiveMauiTargets);net10.0;$(ReactiveUIAndroidTargets)</ReactiveMauiTargets>
     <ReactiveMauiTargets Condition="$([MSBuild]::IsOsPlatform('Windows')) or $([MSBuild]::IsOsPlatform('OSX'))">$(ReactiveMauiTargets);$(ReactiveUIAppleTargets)</ReactiveMauiTargets>
 
     <!-- Modern targets for tests and benchmarks (no netstandard) -->
