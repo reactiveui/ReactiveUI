@@ -6,13 +6,12 @@
 
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>5.8.0</PrimitivesVersion>
-    <TUnitVersion>1.57.0</TUnitVersion>
+    <PrimitivesVersion>6.0.0</PrimitivesVersion>
+    <TUnitVersion>1.58.0</TUnitVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="Framework-Aligned Versions">
-    <MauiVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.120</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.80</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26304.4</MauiVersion>
 
@@ -50,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Rx Ecosystem">
-    <PackageVersion Include="DynamicData" Version="9.4.31"/>
+    <PackageVersion Include="DynamicData" Version="9.4.33"/>
     <PackageVersion Include="Reactive.Wasm" Version="3.0.1"/>
     <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
     <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
@@ -80,10 +79,10 @@
   <ItemGroup Label="Analyzers">
     <PackageVersion Include="StyleSharp.Analyzers" Version="3.13.4"/>
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.3.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.0.0-1.25277.114"/>
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.28.0.143324"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0"/>
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink / Versioning">
