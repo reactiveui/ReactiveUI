@@ -69,8 +69,8 @@
     <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
     <PackageVersion Include="bunit" Version="2.7.2"/>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0"/>
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.8.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.2.3"/>
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0"/>
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.0"/>
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.1.0"/>
     <PackageVersion Include="System.Reactive" Version="6.1.0"/>
     <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
