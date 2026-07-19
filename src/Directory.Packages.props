@@ -86,7 +86,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Build / SourceLink / Versioning">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301"/>
     <PackageVersion Include="MinVer" Version="7.0.0"/>
   </ItemGroup>
 
