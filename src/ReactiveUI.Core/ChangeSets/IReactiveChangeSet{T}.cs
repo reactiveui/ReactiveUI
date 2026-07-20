@@ -7,4 +7,9 @@ namespace ReactiveUI;
 
 /// <summary>A batch of collection changes produced by the <see cref="ChangeSetExtensions"/> change-set observers.</summary>
 /// <typeparam name="T">The collection item type.</typeparam>
-public interface IReactiveChangeSet<T> : IReactiveChangeSet, IReadOnlyList<ReactiveChange<T>>;
+public interface IReactiveChangeSet<T> : IReactiveChangeSet, IReadOnlyList<ReactiveChange<T>>
+{
+    /// <summary>Returns an enumerator over the typed changes.</summary>
+    /// <returns>An enumerator over the typed changes.</returns>
+    new IEnumerator<ReactiveChange<T>> GetEnumerator();
+}

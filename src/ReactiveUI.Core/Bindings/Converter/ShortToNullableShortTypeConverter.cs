@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="short"/> to <see cref="Nullable{Int16}"/>.</summary>
+/// <summary>Converts <see cref="short"/> to <see cref="short"/>?.</summary>
 public sealed class ShortToNullableShortTypeConverter : IBindingTypeConverter<short, short?>
 {
     /// <inheritdoc/>

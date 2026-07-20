@@ -28,13 +28,13 @@ internal sealed class RequiresUnreferencedCodeAttribute : Attribute
         Message = message;
 
     /// <summary>Gets a message that contains information about the usage of unreferenced code.</summary>
-    public string Message { get; }
+    internal string Message { get; }
 
     /// <summary>
     /// Gets or sets an optional URL that contains more information about the method,
     /// why it requires unreferenced code, and what options a consumer has to deal with it.
     /// </summary>
-    public string? Url { get; set; }
+    internal string? Url { get; set; }
 }
 
 #else

@@ -35,6 +35,9 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class SetMethodBindingConverterRegistry
 {
+    /// <summary>The initial capacity used for the set-method converter list.</summary>
+    private const int InitialConverterListCapacity = 8;
+
 #if NET9_0_OR_GREATER
     /// <summary>Synchronization primitive guarding mutations to the registry's internal state.</summary>
     /// <remarks>
@@ -77,7 +80,7 @@ public sealed class SetMethodBindingConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(8));
+            var snap = _snapshot ?? new Snapshot(new(InitialConverterListCapacity));
 
             List<ISetMethodBindingConverter> newList = [.. snap.Converters, converter];
 

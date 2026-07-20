@@ -14,9 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="bunit"/>
-    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj"/>
-    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj"/>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="bunit" />
+    <ProjectReference Include="..\..\ReactiveUI.Blazor\ReactiveUI.Blazor.csproj" />
+    <ProjectReference Include="..\ReactiveUI.Test.Utilities\ReactiveUI.Test.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

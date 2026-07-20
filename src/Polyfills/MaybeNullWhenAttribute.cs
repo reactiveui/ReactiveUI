@@ -29,7 +29,7 @@ internal sealed class MaybeNullWhenAttribute : Attribute
     /// Gets a value indicating whether the return condition has been satisfied.
     /// If the method returns this value, the associated parameter may be <see langword="null"/>.
     /// </summary>
-    public bool ReturnValue { get; }
+    internal bool ReturnValue { get; }
 }
 
 #else

@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="Nullable{Double}"/> to <see cref="double"/>.</summary>
+/// <summary>Converts <see cref="double"/>? to <see cref="double"/>.</summary>
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>

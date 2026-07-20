@@ -56,7 +56,7 @@ public class ObservableTrigger : TriggerBase<FrameworkElement>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
     protected static void OnObservableChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        ArgumentValidation.ThrowIfNotOfType<ObservableTrigger>(sender);
+        ArgumentValidation.ThrowIfNotOfType(sender, typeof(ObservableTrigger));
         var triggerItem = (ObservableTrigger)sender;
 
         if (triggerItem._watcher is not null)

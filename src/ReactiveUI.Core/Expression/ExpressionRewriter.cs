@@ -35,6 +35,9 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class ExpressionRewriter : ExpressionVisitor
 {
+    /// <summary>The initial capacity used while formatting unsupported-expression messages.</summary>
+    private const int UnsupportedExpressionMessageCapacity = 96;
+
     /// <summary>Visits the specified expression node and rewrites supported shapes into their normalized form.</summary>
     /// <param name="node">The expression node to visit.</param>
     /// <returns>The rewritten expression.</returns>
@@ -47,13 +50,12 @@ public sealed class ExpressionRewriter : ExpressionVisitor
         return node.NodeType switch
         {
             ExpressionType.ArrayIndex => VisitBinary((BinaryExpression)node),
-            ExpressionType.ArrayLength => VisitUnary((UnaryExpression)node),
+            ExpressionType.ArrayLength or ExpressionType.Convert => VisitUnary((UnaryExpression)node),
             ExpressionType.Call => VisitMethodCall((MethodCallExpression)node),
             ExpressionType.Index => VisitIndex((IndexExpression)node),
             ExpressionType.MemberAccess => VisitMember((MemberExpression)node),
             ExpressionType.Parameter => VisitParameter((ParameterExpression)node),
             ExpressionType.Constant => VisitConstant((ConstantExpression)node),
-            ExpressionType.Convert => VisitUnary((UnaryExpression)node),
             _ => throw CreateUnsupportedNodeException(node)
         };
     }
@@ -200,7 +202,7 @@ public sealed class ExpressionRewriter : ExpressionVisitor
     /// <returns>An exception to throw.</returns>
     private static NotSupportedException CreateUnsupportedNodeException(Expression node)
     {
-        StringBuilder sb = new(96);
+        StringBuilder sb = new(UnsupportedExpressionMessageCapacity);
         _ = sb.Append("Unsupported expression of type '")
             .Append(node.NodeType)
             .Append("' ")

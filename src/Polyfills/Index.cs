@@ -31,16 +31,16 @@ internal readonly struct Index : IEquatable<Index>
     }
 
     /// <summary>Gets an <see cref="Index"/> that points at the first element of a collection.</summary>
-    public static Index Start => new(0);
+    internal static Index Start => new(0);
 
     /// <summary>Gets an <see cref="Index"/> that points beyond the last element of a collection.</summary>
-    public static Index End => new(0, true);
+    internal static Index End => new(0, true);
 
     /// <summary>Gets the index value (without the from-end flag).</summary>
-    public int Value => _value < 0 ? ~_value : _value;
+    internal int Value => _value < 0 ? ~_value : _value;
 
     /// <summary>Gets a value indicating whether the index is counted from the end of a collection.</summary>
-    public bool IsFromEnd => _value < 0;
+    internal bool IsFromEnd => _value < 0;
 
     /// <summary>Determines whether two indexes are equal.</summary>
     /// <param name="left">The first index.</param>
@@ -57,17 +57,17 @@ internal readonly struct Index : IEquatable<Index>
     /// <summary>Creates an <see cref="Index"/> measured from the start of a collection.</summary>
     /// <param name="value">The zero-based index from the start.</param>
     /// <returns>The created <see cref="Index"/>.</returns>
-    public static Index FromStart(int value) => new(value);
+    internal static Index FromStart(int value) => new(value);
 
     /// <summary>Creates an <see cref="Index"/> measured from the end of a collection.</summary>
     /// <param name="value">The index from the end (1 refers to the last element).</param>
     /// <returns>The created <see cref="Index"/>.</returns>
-    public static Index FromEnd(int value) => new(value, true);
+    internal static Index FromEnd(int value) => new(value, true);
 
     /// <summary>Calculates the offset from the start of a collection of the supplied length.</summary>
     /// <param name="length">The length of the collection.</param>
     /// <returns>The offset from the start of the collection.</returns>
-    public int GetOffset(int length)
+    internal int GetOffset(int length)
     {
         var offset = _value;
         if (IsFromEnd)

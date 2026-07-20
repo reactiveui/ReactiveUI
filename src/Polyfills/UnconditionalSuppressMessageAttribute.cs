@@ -28,22 +28,22 @@ internal sealed class UnconditionalSuppressMessageAttribute : Attribute
     }
 
     /// <summary>Gets the category identifying the classification of the attribute.</summary>
-    public string Category { get; }
+    internal string Category { get; }
 
     /// <summary>Gets the identifier of the analysis tool rule to be suppressed.</summary>
-    public string CheckId { get; }
+    internal string CheckId { get; }
 
     /// <summary>Gets or sets the scope of the code that is relevant for the attribute.</summary>
-    public string? Scope { get; set; }
+    internal string? Scope { get; set; }
 
     /// <summary>Gets or sets a fully qualified path that represents the target of the attribute.</summary>
-    public string? Target { get; set; }
+    internal string? Target { get; set; }
 
     /// <summary>Gets or sets an optional argument expanding on exclusion criteria.</summary>
-    public string? MessageId { get; set; }
+    internal string? MessageId { get; set; }
 
     /// <summary>Gets or sets the justification for suppressing the code analysis message.</summary>
-    public string? Justification { get; set; }
+    internal string? Justification { get; set; }
 }
 
 #else

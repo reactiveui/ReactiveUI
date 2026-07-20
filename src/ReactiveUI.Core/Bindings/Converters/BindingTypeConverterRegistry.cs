@@ -33,6 +33,9 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class BindingTypeConverterRegistry
 {
+    /// <summary>The initial capacity used for the converter type-pair registry.</summary>
+    private const int InitialRegistryCapacity = 16;
+
     /// <summary>The initial capacity used for a per-type-pair converter list.</summary>
     private const int DefaultConverterListCapacity = 4;
 
@@ -80,7 +83,7 @@ public sealed class BindingTypeConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(16));
+            var snap = _snapshot ?? new Snapshot(new(InitialRegistryCapacity));
 
             var newDict = CloneRegistryShallow(snap.ConvertersByTypePair);
 

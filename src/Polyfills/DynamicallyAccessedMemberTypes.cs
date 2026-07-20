@@ -8,14 +8,8 @@ namespace System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Specifies the types of members that are dynamically accessed.
-/// This enumeration has a <see cref="FlagsAttribute"/> attribute that allows a
-/// bitwise combination of its member values.
+/// Its member values can be combined with bitwise operators.
 /// </summary>
-[Flags]
-[SuppressMessage(
-    "Major Code Smell",
-    "S4070:Non-flags enums should not be marked with FlagsAttribute",
-    Justification = "Faithful BCL polyfill.")]
 internal enum DynamicallyAccessedMemberTypes
 {
     /// <summary>Specifies no members.</summary>
@@ -25,10 +19,6 @@ internal enum DynamicallyAccessedMemberTypes
     PublicParameterlessConstructor = 0x0001,
 
     /// <summary>Specifies all public constructors.</summary>
-    [SuppressMessage(
-        "Roslynator",
-        "RCS1157:Composite enum value contains undefined flag",
-        Justification = "Faithful BCL polyfill.")]
     PublicConstructors = 0x0002 | PublicParameterlessConstructor,
 
     /// <summary>Specifies all non-public constructors.</summary>

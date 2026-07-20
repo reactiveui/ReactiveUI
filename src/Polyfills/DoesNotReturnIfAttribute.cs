@@ -26,7 +26,7 @@ internal sealed class DoesNotReturnIfAttribute : Attribute
     /// Gets a value indicating whether code after the method is considered unreachable
     /// by diagnostics if the argument to the associated parameter matches this value.
     /// </summary>
-    public bool ParameterValue { get; }
+    internal bool ParameterValue { get; }
 }
 #else
 using System.Diagnostics.CodeAnalysis;

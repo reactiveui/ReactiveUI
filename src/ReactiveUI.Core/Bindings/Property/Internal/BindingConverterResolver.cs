@@ -36,10 +36,7 @@ public class BindingConverterResolver : IBindingConverterResolver
                 static key =>
                 {
                     var converter = ResolveBestSetMethodConverter(key.fromType, key.toType);
-                    return converter is null
-                        ? null
-                        : (currentValue, newValue, indexParameters) =>
-                            converter.PerformSet(currentValue, newValue, indexParameters);
+                    return converter is null ? null : converter.PerformSet;
                 });
 
     /// <summary>Resolves the best converter for a given type pair using the ConverterService.</summary>

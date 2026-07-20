@@ -19,8 +19,6 @@ namespace ReactiveUI;
 /// typically used in reactive programming scenarios to monitor property changes in data-binding or MVVM patterns.
 /// Reflection is used to inspect runtime types, which may have implications for trimming or ahead-of-time (AOT)
 /// compilation.</remarks>
-[SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Legacy naming convention")]
-[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Legacy naming convention")]
 public class INPCObservableForProperty : ICreatesObservableForProperty
 {
     /// <inheritdoc/>
@@ -69,7 +67,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     {
         ArgumentExceptionHelper.ThrowIfNull(expression);
 
-        var expectedName = expression.NodeType == ExpressionType.Index ? propertyName + "[]" : propertyName;
+        var expectedName = expression.NodeType == ExpressionType.Index ? $"{propertyName}[]" : propertyName;
 
         if (beforeChanged && sender is INotifyPropertyChanging before)
         {
@@ -87,7 +85,7 @@ public class INPCObservableForProperty : ICreatesObservableForProperty
     /// <returns><see langword="true"/> if the notification applies to the observed property.</returns>
     private static bool Matches(string? notifiedName, string expectedName) =>
         string.IsNullOrEmpty(notifiedName) ||
-        string.Equals(notifiedName, expectedName, StringComparison.InvariantCulture);
+        StringComparer.InvariantCulture.Equals(notifiedName, expectedName);
 
     /// <summary>
     /// A single-layer observable over <see cref="INotifyPropertyChanged.PropertyChanged"/>: each subscription attaches

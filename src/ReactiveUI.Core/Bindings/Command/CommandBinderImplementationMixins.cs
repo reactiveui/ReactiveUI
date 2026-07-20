@@ -41,7 +41,7 @@ internal static class CommandBinderImplementationMixins
         /// <returns>An IReactiveBinding{TView, TProp} representing the established binding between the command and the control.
         /// It will remain active until disposed.</returns>
         [RequiresUnreferencedCode("Dynamic observation uses reflection over members that may be trimmed.")]
-        public IReactiveBinding<TView, TProp> BindCommand<
+        internal IReactiveBinding<TView, TProp> BindCommand<
             TView,
             TViewModel,
             TProp,

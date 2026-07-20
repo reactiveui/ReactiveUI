@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Splat;
 
 namespace ReactiveUI;
@@ -34,7 +33,6 @@ public static class ViewLocator
     /// Thrown when no locator has been registered with the dependency resolver. Ensure ReactiveUI initialization
     /// has run and required assemblies are referenced.
     /// </exception>
-    [SuppressMessage("Microsoft.Reliability", "CA1065", Justification = "Exception required to keep interface same.")]
     public static IViewLocator Current =>
         AppLocator.Current.GetService<IViewLocator>() ?? throw new ViewLocatorNotFoundException(
             "Could not find a default ViewLocator. This should never happen, your dependency resolver is broken");

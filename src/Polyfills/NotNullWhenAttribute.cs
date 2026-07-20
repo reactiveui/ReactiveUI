@@ -22,7 +22,7 @@ internal sealed class NotNullWhenAttribute :
     ///   Gets a value indicating whether it is a return value condition.
     ///   If the method returns this value, the associated parameter will not be <see langword="null"/>.
     /// </summary>
-    public bool ReturnValue { get; }
+    internal bool ReturnValue { get; }
 }
 
 #else

@@ -1,1 +1,2 @@
 #nullable enable
+ReactiveUI.IReactiveChangeSet<T>.GetEnumerator() -> System.Collections.Generic.IEnumerator<ReactiveUI.ReactiveChange<T>>!

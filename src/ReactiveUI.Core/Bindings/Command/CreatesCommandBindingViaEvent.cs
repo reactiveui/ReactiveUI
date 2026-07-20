@@ -25,17 +25,6 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 {
-    /// <summary>Default events to attempt, in priority order.</summary>
-    /// <remarks>
-    /// The first event found on the target type is used.
-    /// </remarks>
-    private static readonly (string Name, Type ArgsType)[] DefaultEventsToBind =
-    [
-        ("Click", typeof(EventArgs)),
-        ("TouchUpInside", typeof(EventArgs)),
-        ("MouseUp", typeof(EventArgs))
-    ];
-
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [SuppressMessage(
@@ -199,8 +188,10 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
             parameterSub,
             new ActionDisposable(() => removeHandler(Handler)));
 
-        void Handler(object? s, TEventArgs e)
+        void Handler(object? sender, TEventArgs eventArgs)
         {
+            _ = sender;
+            _ = eventArgs;
             var param = Volatile.Read(ref latestParameter);
             if (!command.CanExecute(param))
             {
@@ -250,8 +241,10 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
         addHandler(Handler);
         return ret;
 
-        void Handler(object? s, EventArgs e)
+        void Handler(object? sender, EventArgs eventArgs)
         {
+            _ = sender;
+            _ = eventArgs;
             var param = Volatile.Read(ref latestParameter);
             if (!command.CanExecute(param))
             {
@@ -274,6 +267,17 @@ public sealed class CreatesCommandBindingViaEvent : ICreatesCommandBinding
 
         /// <summary>Gets a value indicating whether <typeparamref name="T"/> has any default event supported by this binder.</summary>
         public static readonly bool HasDefaultEvent = DefaultEventName is not null;
+
+        /// <summary>Default events to attempt, in priority order.</summary>
+        /// <remarks>
+        /// The first event found on the target type is used.
+        /// </remarks>
+        private static readonly (string Name, Type ArgsType)[] DefaultEventsToBind =
+        [
+            ("Click", typeof(EventArgs)),
+            ("TouchUpInside", typeof(EventArgs)),
+            ("MouseUp", typeof(EventArgs))
+        ];
 
         /// <summary>Scans the default events list and returns the name of the first event found on the type, or null if none exist.</summary>
         /// <returns>The name of the first supported default event, or null if none exist.</returns>

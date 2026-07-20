@@ -6,7 +6,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
@@ -45,10 +44,6 @@ public static class ChangeSetExtensions
         /// initial batch for the current items and then one batch per collection change.
         /// </summary>
         /// <returns>A change-set stream.</returns>
-        [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "T is the element type and is supplied explicitly by callers; it cannot be inferred from the collection parameter.")]
         public IObservable<IReactiveChangeSet<T>> ToReactiveChangeSet()
         {
             ArgumentExceptionHelper.ThrowIfNull(collection);
@@ -83,6 +78,9 @@ public static class ChangeSetExtensions
             /// <summary>Floor capacity for a per-event change list so the first <c>Add</c> doesn't immediately
             /// reallocate the backing array when the change count is unknown or trivial.</summary>
             private const int DefaultChangeCapacity = 4;
+
+            /// <summary>The maximum number of change records produced per existing item by a reset.</summary>
+            private const int ResetCapacityMultiplier = 2;
 
             /// <summary>Shadow copy of the collection, kept in sync to service resets and indices.</summary>
             private readonly List<T> _shadow = [];
@@ -169,7 +167,9 @@ public static class ChangeSetExtensions
             {
                 var added = e.NewItems?.Count ?? 0;
                 var removed = e.OldItems?.Count ?? 0;
-                var count = e.Action == NotifyCollectionChangedAction.Reset ? _shadow.Count * 2 : added + removed;
+                var count = e.Action == NotifyCollectionChangedAction.Reset
+                    ? _shadow.Count * ResetCapacityMultiplier
+                    : added + removed;
                 return count < DefaultChangeCapacity ? DefaultChangeCapacity : count;
             }
 

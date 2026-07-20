@@ -30,12 +30,6 @@ namespace ReactiveUI;
 /// </remarks>
 public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBinding
 {
-    /// <summary>The expected name of the command property.</summary>
-    private const string CommandPropertyName = "Command";
-
-    /// <summary>The expected name of the command parameter property.</summary>
-    private const string CommandParameterPropertyName = "CommandParameter";
-
     /// <inheritdoc />
     /// <remarks>
     /// If an explicit event target exists, this binder is not applicable and returns 0.
@@ -122,7 +116,11 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
         T? target,
         IObservable<object?> commandParameter,
         string eventName)
-        where T : class => EmptyDisposable.Instance;
+        where T : class
+    {
+        _ = typeof(TEventArgs);
+        return EmptyDisposable.Instance;
+    }
 
     /// <inheritdoc />
     /// <remarks>
@@ -168,6 +166,12 @@ public sealed class CreatesCommandBindingViaCommandParameter : ICreatesCommandBi
 
         /// <summary>Gets the resolved public instance property named <c>CommandParameter</c>, or <see langword="null"/> if missing.</summary>
         internal static readonly PropertyInfo? CommandParameterProperty;
+
+        /// <summary>The expected name of the command property.</summary>
+        private const string CommandPropertyName = "Command";
+
+        /// <summary>The expected name of the command parameter property.</summary>
+        private const string CommandParameterPropertyName = "CommandParameter";
 
         /// <summary>Initializes static members of the <see cref="Holder{T}"/> class.</summary>
         static Holder()

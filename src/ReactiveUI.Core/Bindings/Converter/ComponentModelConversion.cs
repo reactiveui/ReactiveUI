@@ -143,17 +143,16 @@ public static class ComponentModelConversion
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type fromType,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type toType)
     {
-        var fromIsString = fromType == typeof(string);
-        var lookupFrom = fromIsString ? toType : fromType;
-
         return _converterCache.GetOrAdd((fromType, toType), ConverterFactory);
 
-        TypeConverter? ConverterFactory((Type From, Type To) key)
+        static TypeConverter? ConverterFactory((Type From, Type To) key)
         {
+            var fromIsString = key.From == typeof(string);
+            var lookupFrom = fromIsString ? key.To : key.From;
             var converter = TypeDescriptor.GetConverter(lookupFrom);
             var canConvert = fromIsString
                 ? converter?.CanConvertFrom(typeof(string)) == true
-                : converter?.CanConvertTo(toType) == true;
+                : converter?.CanConvertTo(key.To) == true;
 
             return canConvert ? converter : null;
         }

@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="Nullable{Int32}"/> to <see cref="int"/>.</summary>
+/// <summary>Converts <see cref="int"/>? to <see cref="int"/>.</summary>
 /// <remarks>
 /// When the nullable value is null, the conversion fails and returns false.
 /// </remarks>

@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Targets = System.AttributeTargets;
 
+namespace System.Diagnostics.CodeAnalysis;
+
 /// <summary>Specifies that the method or property will ensure that the listed field and property members have not-<see langword="null"/> values.</summary>
 [ExcludeFromCodeCoverage]
 [DebuggerNonUserCode]
@@ -16,10 +18,6 @@ using Targets = System.AttributeTargets;
              Targets.Property,
     Inherited = false,
     AllowMultiple = true)]
-[SuppressMessage(
-    "Design",
-    "CA1019:Define accessors for attribute arguments",
-    Justification = "Faithful BCL polyfill.")]
 internal sealed class MemberNotNullAttribute :
     Attribute
 {
@@ -34,7 +32,7 @@ internal sealed class MemberNotNullAttribute :
         Members = members;
 
     /// <summary>Gets field or property member names.</summary>
-    public string[] Members { get; }
+    internal string[] Members { get; }
 }
 
 #else

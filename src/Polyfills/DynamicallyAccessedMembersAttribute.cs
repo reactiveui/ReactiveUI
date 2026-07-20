@@ -30,7 +30,7 @@ internal sealed class DynamicallyAccessedMembersAttribute : Attribute
         MemberTypes = memberTypes;
 
     /// <summary>Gets the <see cref="DynamicallyAccessedMemberTypes"/> which specifies the type of members dynamically accessed.</summary>
-    public DynamicallyAccessedMemberTypes MemberTypes { get; }
+    internal DynamicallyAccessedMemberTypes MemberTypes { get; }
 }
 
 #else

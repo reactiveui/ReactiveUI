@@ -24,7 +24,7 @@ internal sealed class CallerArgumentExpressionAttribute : Attribute
         ParameterName = parameterName;
 
     /// <summary>Gets the name of the parameter whose expression should be captured as a string.</summary>
-    public string ParameterName { get; }
+    internal string ParameterName { get; }
 }
 
 #else

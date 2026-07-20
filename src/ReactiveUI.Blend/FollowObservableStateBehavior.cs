@@ -72,7 +72,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
     protected static void OnStateObservableChanged(DependencyObject? sender, DependencyPropertyChangedEventArgs e)
     {
-        ArgumentValidation.ThrowIfNotOfType<FollowObservableStateBehavior>(sender);
+        ArgumentValidation.ThrowIfNotOfType(sender, typeof(FollowObservableStateBehavior));
         var item = (FollowObservableStateBehavior)sender;
 
         if (item._watcher is not null)

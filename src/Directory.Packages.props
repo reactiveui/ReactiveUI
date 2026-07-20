@@ -3,159 +3,141 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-
   <PropertyGroup Label="Shared Version Variables">
     <SplatVersion>20.0.0</SplatVersion>
-    <PrimitivesVersion>6.0.0</PrimitivesVersion>
-    <TUnitVersion>1.58.0</TUnitVersion>
+    <PrimitivesVersion>7.0.0</PrimitivesVersion>
+    <TUnitVersion>1.61.15</TUnitVersion>
     <XamarinAndroidXLifecycleLiveDataVersion>2.11.0.1</XamarinAndroidXLifecycleLiveDataVersion>
+    <RoslynCommonAnalyzersVersion>3.33.0</RoslynCommonAnalyzersVersion>
   </PropertyGroup>
-
   <PropertyGroup Label="Framework-Aligned Versions">
     <MauiVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.80</MauiVersion>
     <MauiVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26304.4</MauiVersion>
-
     <AspNetVersion Condition="$(TargetFramework.StartsWith('netstandard'))">3.1.32</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.28</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.17</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.9</AspNetVersion>
-    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</AspNetVersion>
-
-    <SystemTextJsonVersion>10.0.9</SystemTextJsonVersion>
-    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</SystemTextJsonVersion>
-
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net8'))">8.0.29</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net9'))">9.0.18</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.10</AspNetVersion>
+    <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</AspNetVersion>
+    <SystemTextJsonVersion>10.0.10</SystemTextJsonVersion>
+    <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.6.26359.118</SystemTextJsonVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net8'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net9'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net10'))">1.1.142</XamlBehaviorsWpfVersion>
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net11'))">1.1.142</XamlBehaviorsWpfVersion>
   </PropertyGroup>
-
   <ItemGroup Label="ReactiveUI Primitives">
-    <PackageVersion Include="ReactiveUI.Primitives" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Core" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Disposables" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Wpf" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Wpf.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.WinUI" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.WinUI.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.WinForms" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.WinForms.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Maui" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Maui.Reactive" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Blazor" Version="$(PrimitivesVersion)"/>
-    <PackageVersion Include="ReactiveUI.Primitives.Blazor.Reactive" Version="$(PrimitivesVersion)"/>
+    <PackageVersion Include="ReactiveUI.Primitives" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Core" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Reactive" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Disposables" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Wpf" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Wpf.Reactive" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.WinUI" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.WinUI.Reactive" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.WinForms" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.WinForms.Reactive" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Maui" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Maui.Reactive" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Blazor" Version="$(PrimitivesVersion)" />
+    <PackageVersion Include="ReactiveUI.Primitives.Blazor.Reactive" Version="$(PrimitivesVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Rx Ecosystem">
-    <PackageVersion Include="DynamicData" Version="9.4.33"/>
-    <PackageVersion Include="Reactive.Wasm" Version="3.0.1"/>
-    <PackageVersion Include="Splat" Version="$(SplatVersion)"/>
-    <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)"/>
-    <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)"/>
-    <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)"/>
-    <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)"/>
-    <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="$(SplatVersion)"/>
+    <PackageVersion Include="DynamicData" Version="9.4.33" />
+    <PackageVersion Include="Reactive.Wasm" Version="3.0.1" />
+    <PackageVersion Include="Splat" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Autofac" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Drawing" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.DryIoc" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Ninject" Version="$(SplatVersion)" />
+    <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="$(SplatVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Akavache">
-    <PackageVersion Include="Akavache.Sqlite3" Version="12.1.1"/>
-    <PackageVersion Include="Akavache.SystemTextJson" Version="12.1.1"/>
+    <PackageVersion Include="Akavache.Sqlite3" Version="12.1.1" />
+    <PackageVersion Include="Akavache.SystemTextJson" Version="12.1.1" />
   </ItemGroup>
-
   <ItemGroup Label="Testing">
-    <PackageVersion Include="TUnit" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)"/>
-    <PackageVersion Include="bunit" Version="2.7.2"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1"/>
-    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0"/>
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.2"/>
-    <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0"/>
-    <PackageVersion Include="System.Reactive" Version="7.0.0"/>
-    <PackageVersion Include="Mocks.Maui" Version="1.2.5"/>
+    <PackageVersion Include="AngleSharp" Version="1.5.2" />
+    <PackageVersion Include="TUnit" Version="$(TUnitVersion)" />
+    <PackageVersion Include="TUnit.Core" Version="$(TUnitVersion)" />
+    <PackageVersion Include="bunit" Version="2.7.2" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.9.0" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.3.2" />
+    <PackageVersion Include="Microsoft.Reactive.Testing" Version="7.0.0" />
+    <PackageVersion Include="System.Reactive" Version="7.0.0" />
+    <PackageVersion Include="Mocks.Maui" Version="1.2.5" />
   </ItemGroup>
-
   <ItemGroup Label="Analyzers">
-    <PackageVersion Include="StyleSharp.Analyzers" Version="3.13.4"/>
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0"/>
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.29.0.143774"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0"/>
-    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0"/>
+    <PackageVersion Include="StyleSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
+    <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
+    <PackageVersion Include="SecuritySharp.Analyzers" Version="$(RoslynCommonAnalyzersVersion)" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.29.0.143774" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.6.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.6.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.6.0" />
   </ItemGroup>
-
   <ItemGroup Label="Build / SourceLink / Versioning">
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301"/>
-    <PackageVersion Include="MinVer" Version="7.0.0"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
+    <PackageVersion Include="MinVer" Version="7.0.0" />
   </ItemGroup>
-
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.10"/>
-    <PackageVersion Include="System.Collections.Immutable" Version="10.0.10"/>
-    <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
-    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.10"/>
-    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11"/>
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.10" />
+    <PackageVersion Include="System.Collections.Immutable" Version="10.0.10" />
+    <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
+    <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.10" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - Windows / WinUI / WPF">
-    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270"/>
-    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2"/>
-    <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)"/>
+    <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
+    <PackageVersion Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
+    <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="$(XamlBehaviorsWpfVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - MAUI">
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
-    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
+    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageVersion Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - Blazor / ASP.NET">
-    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Components" Version="$(AspNetVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Legacy Compat Shims">
-    <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0"/>
-    <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0"/>
+    <PackageVersion Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageVersion Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - Android (AndroidX Lifecycle, aligned to 2.10.x)">
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModel" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
-    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)"/>
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Process" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModel" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
+    <PackageVersion Include="Xamarin.AndroidX.Lifecycle.LiveData.Core.Ktx" Version="$(XamarinAndroidXLifecycleLiveDataVersion)" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - Android (Fragment / Collection / SavedState / Preference)">
-    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.3"/>
-    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.4"/>
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1"/>
-    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1"/>
-    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1"/>
-    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1"/>
-    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.18"/>
+    <PackageVersion Include="Xamarin.AndroidX.Fragment" Version="1.8.9.3" />
+    <PackageVersion Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.4" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.SavedState" Version="1.5.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1" />
+    <PackageVersion Include="Xamarin.AndroidX.Preference" Version="1.2.1.18" />
   </ItemGroup>
-
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.3.1"/>
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
   </ItemGroup>
-
   <ItemGroup Label="Polyfills - net4 (System.ValueTuple)" Condition="$(TargetFramework.StartsWith('net4'))">
-    <PackageVersion Include="System.ValueTuple" Version="4.6.2"/>
+    <PackageVersion Include="System.ValueTuple" Version="4.6.2" />
   </ItemGroup>
-
   <ItemGroup Label="Polyfills - ComponentModel.Annotations" Condition="$(TargetFramework.StartsWith('net4')) or '$(TargetFramework)' == 'net9.0' or '$(TargetFramework)' == 'net8.0' or $(TargetFramework.EndsWith('-windows10.0.17763.0')) or $(TargetFramework.EndsWith('-windows10.0.19041.0'))">
-    <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0"/>
+    <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
-
   <ItemGroup Label="Polyfills - netstandard" Condition="$(TargetFramework.StartsWith('netstandard'))">
-    <PackageVersion Include="System.ComponentModel" Version="4.3.0"/>
-    <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0"/>
-    <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0"/>
-    <PackageVersion Include="System.Dynamic.Runtime" Version="4.3.0"/>
+    <PackageVersion Include="System.ComponentModel" Version="4.3.0" />
+    <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageVersion Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
 </Project>
