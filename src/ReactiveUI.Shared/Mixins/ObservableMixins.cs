@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
 using ReactiveUI.Primitives.Disposables;
 
 #if REACTIVE_SHIM
@@ -19,9 +20,6 @@ namespace ReactiveUI;
 /// intended for use with reactive programming patterns.</remarks>
 public static class ObservableMixins
 {
-    /// <summary>Initializes static members of the <see cref="ObservableMixins"/> class.</summary>
-    static ObservableMixins() => RxAppBuilder.EnsureInitialized();
-
     /// <summary>Provides WhereNotNull extension members for <see cref="IObservable{T}"/>.</summary>
     /// <typeparam name="T">The type of value emitted by the observable.</typeparam>
     /// <param name="observable">The observable that can contain nulls.</param>
@@ -126,7 +124,7 @@ public static class ObservableMixins
     /// <summary>Forwards only the non-null values of a source, projected to the non-nullable type. Replaces <c>Where(x is not null).Select(x!)</c>.</summary>
     /// <typeparam name="T">The element type.</typeparam>
     /// <param name="source">The source observable.</param>
-    private sealed class WhereNotNullObservable<T>(IObservable<T?> source) : IObservable<T>
+    internal sealed class WhereNotNullObservable<T>(IObservable<T?> source) : IObservable<T>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<T> observer)
@@ -163,7 +161,7 @@ public static class ObservableMixins
     /// </summary>
     /// <typeparam name="T">The element type.</typeparam>
     /// <param name="factory">Builds the value to emit at subscription time.</param>
-    private sealed class DeferredValueObservable<T>(Func<T> factory) : IObservable<T>
+    internal sealed class DeferredValueObservable<T>(Func<T> factory) : IObservable<T>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<T> observer)
@@ -194,7 +192,7 @@ public static class ObservableMixins
     /// <typeparam name="T">The result type.</typeparam>
     /// <param name="factory">The asynchronous factory, invoked with a linked cancellation token.</param>
     /// <param name="outerCancellation">The outer cancellation source, cancelled by the caller and disposed when the run ends.</param>
-    private sealed class FromAsyncObservable<T>(Func<CancellationToken, Task<T>> factory, CancellationTokenSource outerCancellation) : IObservable<T>
+    internal sealed class FromAsyncObservable<T>(Func<CancellationToken, Task<T>> factory, CancellationTokenSource outerCancellation) : IObservable<T>
     {
         /// <inheritdoc/>
         public IDisposable Subscribe(IObserver<T> observer)
@@ -255,7 +253,7 @@ public static class ObservableMixins
 
                 // Dispose the linked source BEFORE its source sources: a linked token source deregisters from its
                 // sources on dispose, which throws ObjectDisposedException if the sources were disposed first.
-                Volatile.Read(ref _linked)?.Dispose();
+                DisposeLinkedSource();
                 _subscriptionCancellation.Dispose();
                 _outerCancellation.Dispose();
             }
@@ -287,6 +285,14 @@ public static class ObservableMixins
                     Dispose();
                 }
             }
+
+            /// <summary>
+            /// Disposes the linked token source when it is present. The null path is only reachable if disposal races
+            /// ahead of <see cref="RunAsync"/> assigning the linked source, which cannot happen through a subscription
+            /// because that assignment completes before the disposable is returned to the caller.
+            /// </summary>
+            [ExcludeFromCodeCoverage]
+            private void DisposeLinkedSource() => Volatile.Read(ref _linked)?.Dispose();
         }
     }
 }
