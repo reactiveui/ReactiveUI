@@ -22,6 +22,14 @@
   <ItemGroup>
     <Compile Include="..\ReactiveUI.Wpf.Shared\**\*.cs" Link="ReactiveUI.Wpf.Shared\%(RecursiveDir)%(Filename)%(Extension)"/>
   </ItemGroup>
+
+  <!-- The single shared default control template, linked so it packs at themes/transitioningcontentcontroltemplate.xaml
+       in this assembly. This assembly's own Themes/Generic.xaml (auto-included as a Page) merges it and binds the
+       template to the lean TransitioningContentControl. The .Reactive sibling links the same file and binds it to
+       its own control type, so the ~40 KB template is authored once. -->
+  <ItemGroup>
+    <Page Include="..\ReactiveUI.Wpf.Shared\Themes\TransitioningContentControlTemplate.xaml" Link="Themes\TransitioningContentControlTemplate.xaml"/>
+  </ItemGroup>
   <!-- The shared source carries no per-file usings for the namespaces it shifts between leaves; the lean
        leaf imports the unshifted forms here. -->
   <ItemGroup>

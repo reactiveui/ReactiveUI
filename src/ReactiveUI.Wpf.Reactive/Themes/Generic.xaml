@@ -1,0 +1,18 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Controls="clr-namespace:ReactiveUI.Reactive">
+
+    <!--  Binds the shared default template (see ReactiveUI.Wpf.Shared/Themes/TransitioningContentControlTemplate.xaml,
+          linked into this assembly) to the System.Reactive-flavoured TransitioningContentControl. The control type
+          is named through a bare clr-namespace so the markup compiler resolves it against this assembly during the
+          second markup pass. Without this file the .Reactive assembly ships no themes/generic.xaml, the default
+          template is never found, and ViewModelViewHost renders nothing.  -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ReactiveUI.Wpf.Reactive;component/themes/transitioningcontentcontroltemplate.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type Controls:TransitioningContentControl}">
+        <Setter Property="Template" Value="{StaticResource TransitioningContentControlTemplate}" />
+    </Style>
+</ResourceDictionary>
