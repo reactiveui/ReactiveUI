@@ -21,7 +21,7 @@
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net10'))">10.0.9</AspNetVersion>
     <AspNetVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</AspNetVersion>
 
-    <SystemTextJsonVersion>10.0.9</SystemTextJsonVersion>
+    <SystemTextJsonVersion>10.0.10</SystemTextJsonVersion>
     <SystemTextJsonVersion Condition="$(TargetFramework.StartsWith('net11'))">11.0.0-preview.5.26302.115</SystemTextJsonVersion>
 
     <XamlBehaviorsWpfVersion Condition="$(TargetFramework.StartsWith('net4'))">1.1.142</XamlBehaviorsWpfVersion>
