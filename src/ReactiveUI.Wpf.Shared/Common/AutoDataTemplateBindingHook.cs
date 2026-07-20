@@ -22,8 +22,20 @@ public class AutoDataTemplateBindingHook : IPropertyBindingHook
     /// <summary>Gets the default item template.</summary>
     public static Lazy<DataTemplate> DefaultItemTemplate { get; } = new(static () =>
     {
+        // The clr-namespace in the inline XAML template must match the namespace
+        // this type is actually compiled into. Under REACTIVE_SHIM the shared
+        // source is recompiled into the ReactiveUI.Reactive namespace (see the
+        // conditional namespace above), so the XAML must reference that namespace
+        // too — otherwise XamlReader.Parse throws a XamlObjectReaderException
+        // because '{clr-namespace:ReactiveUI;assembly=ReactiveUI.Wpf.Reactive}'
+        // cannot resolve ViewModelViewHost. See issue #4398.
+#if REACTIVE_SHIM
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI.Reactive";
+#else
+        const string XamlClrNamespace = "clr-namespace:ReactiveUI";
+#endif
         const string Template = "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' " +
-                                "xmlns:xaml='clr-namespace:ReactiveUI;assembly=__ASSEMBLYNAME__'> " +
+                                "xmlns:xaml='" + XamlClrNamespace + ";assembly=__ASSEMBLYNAME__'> " +
                                 "<xaml:ViewModelViewHost ViewModel=\"{Binding Mode=OneWay}\" VerticalContentAlignment=\"Stretch\" HorizontalContentAlignment=\"Stretch\" IsTabStop=\"False\" />" +
                                 "</DataTemplate>";
 

@@ -21,6 +21,29 @@ public class AutoDataTemplateBindingHookTest
     public async Task DefaultItemTemplate_IsNotNull() =>
         await Assert.That(AutoDataTemplateBindingHook.DefaultItemTemplate.Value).IsNotNull();
 
+#if REACTIVE_SHIM
+    /// <summary>
+    /// Under REACTIVE_SHIM the shared source is recompiled into the
+    /// ReactiveUI.Reactive namespace, so the inline XAML template's
+    /// clr-namespace must also be ReactiveUI.Reactive. If it is left hardcoded
+    /// to ReactiveUI, XamlReader.Parse throws a XamlObjectReaderException
+    /// because ViewModelViewHost cannot be resolved in the ReactiveUI.Wpf.Reactive
+    /// assembly. This regression test forces the lazy template to materialize and
+    /// asserts it loads without throwing. See issue #4398.
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task DefaultItemTemplate_LoadsUnderReactiveShim()
+    {
+        // Materializing the lazy value must not throw. Before the fix this threw
+        // System.Xaml.XamlObjectReaderException: Cannot create unknown type
+        // '{clr-namespace:ReactiveUI;assembly=ReactiveUI.Wpf.Reactive}ViewModelViewHost'.
+        DataTemplate? template = null;
+        await Assert.That(() => template = AutoDataTemplateBindingHook.DefaultItemTemplate.Value).ThrowsNothing();
+        await Assert.That(template).IsNotNull();
+    }
+#endif
+
     /// <summary>A null view-property accessor throws.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     [Test]
