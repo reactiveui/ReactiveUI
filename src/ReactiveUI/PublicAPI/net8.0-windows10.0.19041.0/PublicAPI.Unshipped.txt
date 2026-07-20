@@ -1,1 +1,9 @@
 #nullable enable
+ReactiveUI.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+ReactiveUI.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Action<System.Action<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+ReactiveUI.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+ReactiveUI.ViewForMixins.extension(ReactiveUI.IActivatableView!).WhenActivated(System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+static ReactiveUI.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<ReactiveUI.Primitives.Disposables.MultipleDisposable!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+static ReactiveUI.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Action<System.Action<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+static ReactiveUI.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.Func<System.Collections.Generic.IEnumerable<System.IDisposable!>!>! block, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
+static ReactiveUI.ViewForMixins.WhenActivated(this ReactiveUI.IActivatableView! item, System.IObservable<object?>! viewModelChanged) -> System.IDisposable!
