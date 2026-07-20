@@ -3,6 +3,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
+using System.Collections.Concurrent;
 using ReactiveUI.Tests.Utilities.Schedulers;
 using TUnit.Core.Executors;
 
@@ -265,6 +266,117 @@ public class InteractionsTest
         {
             await Assert.That(ex!.Interaction).IsSameReferenceAs(interaction);
             await Assert.That(ex.Input).IsEqualTo("bar");
+        }
+    }
+
+    /// <summary>
+    /// A task-based handler registered while a <see cref="SynchronizationContext"/> is installed resumes on that
+    /// captured context rather than on a thread-pool thread, so UI handlers run on the UI thread (see issue #4393).
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TaskHandlerResumesOnCapturedSynchronizationContext()
+    {
+        using var uiContext = new SingleThreadedSynchronizationContext();
+        var observedContext = new TaskCompletionSource<SynchronizationContext?>();
+        var completed = new TaskCompletionSource<RxVoid>();
+
+        uiContext.Post(() =>
+        {
+            var interaction = new Interaction<RxVoid, RxVoid>();
+            _ = interaction.RegisterHandler(async context =>
+            {
+                _ = observedContext.TrySetResult(SynchronizationContext.Current);
+                context.SetOutput(RxVoid.Default);
+                await Task.CompletedTask;
+            });
+
+            _ = interaction.Handle(RxVoid.Default).Subscribe(
+                _ => completed.TrySetResult(RxVoid.Default),
+                completed.SetException);
+        });
+
+        var handlerContext = await observedContext.Task;
+        _ = await completed.Task;
+
+        await Assert.That(handlerContext).IsSameReferenceAs(uiContext);
+    }
+
+    /// <summary>
+    /// A task-based handler yields before running, so it is not invoked inside the subscription that triggers the
+    /// interaction (see issue #4351); the handler only runs once the triggering call has unwound.
+    /// </summary>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    [Test]
+    public async Task TaskHandlerDoesNotRunInsideTriggeringSubscription()
+    {
+        const string afterSubscribeMarker = "after-subscribe";
+        const string handlerMarker = "handler";
+        const int expectedStepCount = 2;
+
+        using var uiContext = new SingleThreadedSynchronizationContext();
+        var order = new List<string>();
+        var completed = new TaskCompletionSource<IReadOnlyList<string>>();
+
+        uiContext.Post(() =>
+        {
+            var interaction = new Interaction<RxVoid, string>();
+            _ = interaction.RegisterHandler(async context =>
+            {
+                order.Add(handlerMarker);
+                context.SetOutput(ResultOutput);
+                await Task.CompletedTask;
+            });
+
+            _ = interaction.Handle(RxVoid.Default).Subscribe(
+                _ => completed.TrySetResult(order),
+                completed.SetException);
+
+            // Recorded before the yielded handler continuation is pumped, so it must precede the handler marker.
+            order.Add(afterSubscribeMarker);
+        });
+
+        var sequence = await completed.Task;
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(sequence).Count().IsEqualTo(expectedStepCount);
+            await Assert.That(sequence[0]).IsEqualTo(afterSubscribeMarker);
+            await Assert.That(sequence[1]).IsEqualTo(handlerMarker);
+        }
+    }
+
+    /// <summary>A minimal single-threaded <see cref="SynchronizationContext"/> backed by one pumped worker thread.</summary>
+    private sealed class SingleThreadedSynchronizationContext : SynchronizationContext, IDisposable
+    {
+        /// <summary>The queue of work items pumped on the worker thread in order.</summary>
+        private readonly BlockingCollection<Action> _queue = new();
+
+        /// <summary>Initializes a new instance of the <see cref="SingleThreadedSynchronizationContext"/> class.</summary>
+        public SingleThreadedSynchronizationContext()
+        {
+            var thread = new Thread(Run) { IsBackground = true, Name = "interaction-ui" };
+            thread.Start();
+        }
+
+        /// <inheritdoc/>
+        public override void Post(SendOrPostCallback d, object? state) => _queue.Add(() => d(state));
+
+        /// <summary>Queues an action to run on the worker thread.</summary>
+        /// <param name="action">The action to run.</param>
+        public void Post(Action action) => _queue.Add(action);
+
+        /// <inheritdoc/>
+        public void Dispose() => _queue.CompleteAdding();
+
+        /// <summary>Pumps queued work on the worker thread with this context installed as current.</summary>
+        private void Run()
+        {
+            SynchronizationContext.SetSynchronizationContext(this);
+            foreach (var work in _queue.GetConsumingEnumerable())
+            {
+                work();
+            }
         }
     }
 }
