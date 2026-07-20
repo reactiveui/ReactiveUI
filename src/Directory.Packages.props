@@ -91,7 +91,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Microsoft Extensions / Runtime / Data">
-    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.9"/>
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="10.0.10"/>
     <PackageVersion Include="System.Collections.Immutable" Version="10.0.10"/>
     <PackageVersion Include="System.Text.Json" Version="$(SystemTextJsonVersion)"/>
     <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="10.0.10"/>
