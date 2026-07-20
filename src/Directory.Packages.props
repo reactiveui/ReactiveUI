@@ -141,7 +141,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Platform - WinUI (non-MAUI only)" Condition="'$(UseMaui)' != 'true'">
-    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.2.0"/>
+    <PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.3.1"/>
   </ItemGroup>
 
   <ItemGroup Label="Polyfills - net4 (System.ValueTuple)" Condition="$(TargetFramework.StartsWith('net4'))">
