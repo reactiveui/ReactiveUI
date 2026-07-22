@@ -185,16 +185,16 @@ public class ReactiveRecordTests
         var changingEvents = new List<string>();
         var changedEvents = new List<string>();
 
-        using var sub1 = fixture.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changingEvents.Add);
+        using var sub1 = fixture.Changing.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(changingEvents.Add);
 
-        using var sub2 = fixture.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changedEvents.Add);
+        using var sub2 = fixture.Changed.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(changedEvents.Add);
 
         var updated = fixture with { Name = "Updated" };
 
         // Records create new instances, so we need to subscribe to the new instance
-        using var sub3 = updated.Changing.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changingEvents.Add);
+        using var sub3 = updated.Changing.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(changingEvents.Add);
 
-        using var sub4 = updated.Changed.Where(x => x.PropertyName is not null).Select(x => x.PropertyName!).Subscribe(changedEvents.Add);
+        using var sub4 = updated.Changed.Where(static x => x.PropertyName is not null).Select(static x => x.PropertyName!).Subscribe(changedEvents.Add);
 
         await Assert.That(updated.Name).IsEqualTo("Updated");
     }
@@ -231,10 +231,10 @@ public class ReactiveRecordTests
 
         const int SecondValue = 2;
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Major Code Smell",
-            "S2123:Values should not be uselessly incremented",
-            Justification = "Intentional counter increment in test handler.")]
-        void Handler(object? sender, PropertyChangedEventArgs args) => callCount++;
+            "Maintainability",
+            "SST1461:Remove unused parameter",
+            Justification = "Parameters are mandated by the PropertyChangedEventHandler delegate signature; the handler only counts invocations.")]
+        void Handler(object? sender, PropertyChangedEventArgs e) => callCount++;
 
         fixture.PropertyChanged += Handler;
         fixture.Value = 1;
@@ -255,10 +255,10 @@ public class ReactiveRecordTests
 
         const int SecondValue = 2;
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
-            "Major Code Smell",
-            "S2123:Values should not be uselessly incremented",
-            Justification = "Intentional counter increment in test handler.")]
-        void Handler(object? sender, PropertyChangingEventArgs args) => callCount++;
+            "Maintainability",
+            "SST1461:Remove unused parameter",
+            Justification = "Parameters are mandated by the PropertyChangingEventHandler delegate signature; the handler only counts invocations.")]
+        void Handler(object? sender, PropertyChangingEventArgs e) => callCount++;
 
         fixture.PropertyChanging += Handler;
         fixture.Value = 1;

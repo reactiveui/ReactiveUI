@@ -130,7 +130,7 @@ public class RoutedViewHostTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 // Include WPF platform services and register test view for routing tests
                 _ = builder

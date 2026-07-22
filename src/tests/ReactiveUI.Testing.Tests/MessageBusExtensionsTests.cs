@@ -89,7 +89,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        testBus.With(() =>
+        testBus.With(static () =>
         {
             /* Do nothing */
         });
@@ -145,7 +145,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        _ = testBus.With(() => ExpectedFunctionResult);
+        _ = testBus.With(static () => ExpectedFunctionResult);
 
         // Assert
         await Assert.That(MessageBus.Current).IsSameReferenceAs(originalBus);
@@ -173,7 +173,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act
-        var result = testBus.With(() => "test result");
+        var result = testBus.With(static () => "test result");
 
         // Assert
         await Assert.That(result).IsEqualTo("test result");
@@ -218,7 +218,7 @@ public class MessageBusExtensionsTests
         var testBus = new MessageBus();
 
         // Act & Assert
-        await Assert.That(() => testBus.With(() => throw new InvalidOperationException("Test exception")))
+        await Assert.That(() => testBus.With(static () => throw new InvalidOperationException("Test exception")))
             .Throws<InvalidOperationException>();
     }
 }

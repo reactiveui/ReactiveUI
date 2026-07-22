@@ -71,13 +71,23 @@ internal sealed class WhenAnyValueSink<TSender, T1, T2, TResult>(
         public void Run(IObservable<IObservedChange<TSender, T1>> source1, IObservable<IObservedChange<TSender, T2>> source2)
         {
             var i = 0;
-            _subscriptions[i++] = source1.Subscribe(new DelegateObserver<IObservedChange<TSender, T1>>(On1, OnError, OnSourceCompleted));
-            _subscriptions[i++] = source2.Subscribe(new DelegateObserver<IObservedChange<TSender, T2>>(On2, OnError, OnSourceCompleted));
+            _subscriptions[i] = source1.Subscribe(new DelegateObserver<IObservedChange<TSender, T1>>(On1, OnError, OnSourceCompleted));
+            i++;
+            _subscriptions[i] = source2.Subscribe(new DelegateObserver<IObservedChange<TSender, T2>>(On2, OnError, OnSourceCompleted));
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            for (var i = 0; i < _subscriptions.Length; i++)
+            {
+                _subscriptions[i]?.Dispose();
+            }
         }
 
         /// <summary>Captures the value from source 1 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 1.</param>
-        public void On1(IObservedChange<TSender, T1> change)
+        private void On1(IObservedChange<TSender, T1> change)
         {
             lock (_gate)
             {
@@ -94,7 +104,7 @@ internal sealed class WhenAnyValueSink<TSender, T1, T2, TResult>(
 
         /// <summary>Captures the value from source 2 and emits when every source is ready.</summary>
         /// <param name="change">The notification from source 2.</param>
-        public void On2(IObservedChange<TSender, T2> change)
+        private void On2(IObservedChange<TSender, T2> change)
         {
             lock (_gate)
             {
@@ -111,7 +121,7 @@ internal sealed class WhenAnyValueSink<TSender, T1, T2, TResult>(
 
         /// <summary>Forwards an error from any source and tears down the subscriptions.</summary>
         /// <param name="error">The error to forward.</param>
-        public void OnError(Exception error)
+        private void OnError(Exception error)
         {
             lock (_gate)
             {
@@ -122,23 +132,15 @@ internal sealed class WhenAnyValueSink<TSender, T1, T2, TResult>(
         }
 
         /// <summary>Completes the result once every source has completed.</summary>
-        public void OnSourceCompleted()
+        private void OnSourceCompleted()
         {
             lock (_gate)
             {
-                if (--_active == 0)
+                --_active;
+                if (_active == 0)
                 {
                     downstream.OnCompleted();
                 }
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            for (var i = 0; i < _subscriptions.Length; i++)
-            {
-                _subscriptions[i]?.Dispose();
             }
         }
 

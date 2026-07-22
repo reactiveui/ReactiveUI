@@ -15,7 +15,7 @@ namespace ReactiveUI;
 #endif
 /// <summary>Class used to extract a common API between <see cref="UITableView"/> and <see cref="UITableViewCell"/>.</summary>
 /// <typeparam name="TSource">The type of the source.</typeparam>
-[SuppressMessage("Minor Code Smell", "S2326:Unused type parameters should be removed", Justification = "Type parameter is part of the public generic API and preserves call-site type safety.")]
+[SuppressMessage("Design", "SST1452:Remove unused type parameters", Justification = "TSource is part of the public generic API and preserves call-site type safety for consumers.")]
 public class TableSectionInformation<TSource> : ISectionInformation<UITableViewCell>
 {
     /// <inheritdoc/>

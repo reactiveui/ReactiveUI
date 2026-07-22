@@ -22,7 +22,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -44,7 +44,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -58,6 +58,10 @@ public class InteractionBinderImplementationTests
     /// <summary>Test that confirms nested view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1021:Remove GC.Collect/GC.WaitForPendingFinalizers call",
+        Justification = "the weak-reference test deliberately forces a collection to observe reclamation.")]
     public async Task NestedViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()
@@ -68,7 +72,7 @@ public class InteractionBinderImplementationTests
             var disposable = view.BindInteraction(
                 vm,
                 vm => vm.InteractionViewModel.Interaction1,
-                input =>
+                static input =>
                 {
                     input.SetOutput(true);
                     return Signal.Emit(RxVoid.Default);
@@ -97,7 +101,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -119,7 +123,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -143,7 +147,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -165,7 +169,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -189,7 +193,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -213,7 +217,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -229,10 +233,6 @@ public class InteractionBinderImplementationTests
     /// <summary>Tests to make sure that it registers the task handler to newly assigned nested view model.</summary>
     /// <returns>A task to monitor the progress.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task RegisterTaskHandlerToNewlyAssignedNestedViewModel()
     {
         var vm = new InteractionAncestorViewModel { InteractionViewModel = new() };
@@ -241,7 +241,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -265,7 +265,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -289,7 +289,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -311,7 +311,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -333,7 +333,7 @@ public class InteractionBinderImplementationTests
         var disposable = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -356,7 +356,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Signal.Emit(RxVoid.Default);
@@ -379,7 +379,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.InteractionViewModel.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -401,7 +401,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -423,7 +423,7 @@ public class InteractionBinderImplementationTests
         var disposable = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -446,7 +446,7 @@ public class InteractionBinderImplementationTests
         _ = view.BindInteraction(
             vm,
             vm => vm.Interaction1,
-            input =>
+            static input =>
             {
                 input.SetOutput(true);
                 return Task.CompletedTask;
@@ -461,6 +461,10 @@ public class InteractionBinderImplementationTests
     /// <summary>Test that confirms the view model should be garbage collected when overwritten.</summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     [Test]
+    [SuppressMessage(
+        "Performance",
+        "PSH1021:Remove GC.Collect/GC.WaitForPendingFinalizers call",
+        Justification = "the weak-reference test deliberately forces a collection to observe reclamation.")]
     public async Task ViewModelShouldBeGarbageCollectedWhenOverwritten()
     {
         static (IDisposable, WeakReference) GetWeakReference()
@@ -471,7 +475,7 @@ public class InteractionBinderImplementationTests
             var disposable = view.BindInteraction(
                 vm,
                 vm => vm.Interaction1,
-                input =>
+                static input =>
                 {
                     input.SetOutput(true);
                     return Task.CompletedTask;

@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -208,14 +207,10 @@ public class TransitioningContentControl : ContentControl
     /// The event is raised after the control returns to the <c>Normal</c> visual state and after the previous content
     /// snapshot has been released.
     /// </remarks>
-    [SuppressMessage(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
-        "RCS1159:Use EventHandler<T>",
-        Justification = "Using WPF's RoutedEventHandler pattern.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S3908:Use EventHandler<TEventArgs>",
-        Justification = "Public WPF RoutedEventHandler event; matches the RCS1159 suppression.")]
+        "SST2304:Events should use the standard handler signature",
+        Justification = "RoutedEventHandler is the established WPF delegate for routed events on this public control; changing an already-shipped event's delegate type is binary-breaking.")]
     public event RoutedEventHandler? TransitionCompleted;
 
     /// <summary>Occurs when a transition has started.</summary>
@@ -223,14 +218,10 @@ public class TransitioningContentControl : ContentControl
     /// The event is raised when a transition is about to begin (after the control has prepared the outgoing snapshot and
     /// set the new content), but before the first visual state is entered.
     /// </remarks>
-    [SuppressMessage(
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
-        "RCS1159:Use EventHandler<T>",
-        Justification = "Using WPF's RoutedEventHandler pattern.")]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S3908:Use EventHandler<TEventArgs>",
-        Justification = "Public WPF RoutedEventHandler event; matches the RCS1159 suppression.")]
+        "SST2304:Events should use the standard handler signature",
+        Justification = "RoutedEventHandler is the established WPF delegate for routed events on this public control; changing an already-shipped event's delegate type is binary-breaking.")]
     public event RoutedEventHandler? TransitionStarted;
 
     /// <summary>Specifies the animation behavior to use when the content changes.</summary>
@@ -734,17 +725,30 @@ public class TransitioningContentControl : ContentControl
         var transitionInName = string.Empty;
         var statesRemaining = 0;
 
+        EventHandler nextState = null!;
+        nextState = (_, _) =>
+        {
+            StartingTransition!.Completed -= nextState;
+            if (statesRemaining != 1)
+            {
+                return;
+            }
+
+            statesRemaining--;
+            _ = VisualStateManager.GoToState(this, transitionInName, false);
+        };
+
         if (Transition == TransitionType.Bounce)
         {
             (startingTransitionName, transitionInName) = ConfigureBounceTransition();
             statesRemaining = BounceTransitionStateCount;
-            StartingTransition!.Completed += NextState;
+            StartingTransition!.Completed += nextState;
         }
         else
         {
             if (StartingTransition is not null)
             {
-                StartingTransition.Completed -= NextState;
+                StartingTransition.Completed -= nextState;
             }
 
             startingTransitionName = ConfigureStandardTransition();
@@ -757,17 +761,5 @@ public class TransitioningContentControl : ContentControl
 
         statesRemaining--;
         _ = VisualStateManager.GoToState(this, startingTransitionName, false);
-
-        void NextState(object? o, EventArgs e)
-        {
-            StartingTransition!.Completed -= NextState;
-            if (statesRemaining != 1)
-            {
-                return;
-            }
-
-            statesRemaining--;
-            _ = VisualStateManager.GoToState(this, transitionInName, false);
-        }
     }
 }

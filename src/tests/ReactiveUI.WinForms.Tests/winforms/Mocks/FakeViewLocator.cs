@@ -8,14 +8,10 @@ using System.Diagnostics.CodeAnalysis;
 namespace ReactiveUI.WinForms.Tests.Winforms.Mocks;
 
 /// <summary>A fake view locator that resolves views using a configurable delegate.</summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S4018:Generic methods should provide type parameters",
-    Justification = "IViewLocator declares parameterless generic ResolveView overloads that this mock must implement.")]
 internal sealed class FakeViewLocator : IViewLocator
 {
     /// <summary>Gets or sets the delegate used to resolve a view from a view model type.</summary>
-    public Func<Type, IViewFor>? LocatorFunc { get; set; }
+    internal Func<Type, IViewFor>? LocatorFunc { get; set; }
 
     /// <inheritdoc/>
     public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)

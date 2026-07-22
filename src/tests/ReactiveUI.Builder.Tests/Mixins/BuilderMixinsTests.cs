@@ -28,21 +28,21 @@ public class BuilderMixinsTests
         [
             () => BuilderMixins.WithTaskPoolScheduler(null!, scheduler),
             () => BuilderMixins.WithMainThreadScheduler(null!, scheduler),
-            () => BuilderMixins.WithRegistrationOnBuild(null!, _ => { }),
-            () => BuilderMixins.WithRegistration(null!, _ => { }),
-            () => BuilderMixins.WithViewsFromAssembly(null!, typeof(BuilderMixinsTests).Assembly),
-            () => BuilderMixins.WithPlatformModule<TestRegistrationModule>(null!),
-            () => BuilderMixins.UsingSplatModule(null!, new TestSplatModule()),
-            () => BuilderMixins.UsingSplatBuilder(null!, _ => { }),
-            () => BuilderMixins.ForCustomPlatform(null!, scheduler, _ => { }),
-            () => BuilderMixins.ForPlatforms(null!, _ => { }),
-            () => BuilderMixins.WithMessageBus(null!, _ => { }),
-            () => BuilderMixins.ConfigureViewLocator(null!, _ => { }),
-            () => BuilderMixins.ConfigureSuspensionDriver(null!, _ => { }),
-            () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
-            () => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!),
-            () => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
-            () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)
+            static () => BuilderMixins.WithRegistrationOnBuild(null!, static _ => { }),
+            static () => BuilderMixins.WithRegistration(null!, static _ => { }),
+            static () => BuilderMixins.WithViewsFromAssembly(null!, typeof(BuilderMixinsTests).Assembly),
+            static () => BuilderMixins.WithPlatformModule<TestRegistrationModule>(null!),
+            static () => BuilderMixins.UsingSplatModule(null!, new TestSplatModule()),
+            static () => BuilderMixins.UsingSplatBuilder(null!, static _ => { }),
+            () => BuilderMixins.ForCustomPlatform(null!, scheduler, static _ => { }),
+            static () => BuilderMixins.ForPlatforms(null!, static _ => { }),
+            static () => BuilderMixins.WithMessageBus(null!, static _ => { }),
+            static () => BuilderMixins.ConfigureViewLocator(null!, static _ => { }),
+            static () => BuilderMixins.ConfigureSuspensionDriver(null!, static _ => { }),
+            static () => BuilderMixins.RegisterViewModel<BuilderMixinsTestViewModel>(null!),
+            static () => BuilderMixins.RegisterSingletonViewModel<BuilderMixinsTestViewModel>(null!),
+            static () => BuilderMixins.RegisterView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!),
+            static () => BuilderMixins.RegisterSingletonView<BuilderMixinsTestView, BuilderMixinsTestViewModel>(null!)
         ];
     }
 
@@ -116,7 +116,7 @@ public class BuilderMixinsTests
     {
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithRegistrationOnBuild(builder, r => r.RegisterConstant("mixins", typeof(string)));
+        _ = BuilderMixins.WithRegistrationOnBuild(builder, static r => r.RegisterConstant("mixins", typeof(string)));
         _ = builder.WithCoreServices().Build();
 
         await Assert.That(Locator.Current.GetService<string>()).IsEqualTo("mixins");
@@ -130,7 +130,7 @@ public class BuilderMixinsTests
         const int ExpectedRegisteredValue = 42;
         var builder = RxAppBuilder.CreateReactiveUIBuilder();
 
-        _ = BuilderMixins.WithRegistration(builder, r => r.RegisterConstant(ExpectedRegisteredValue, typeof(int)));
+        _ = BuilderMixins.WithRegistration(builder, static r => r.RegisterConstant(ExpectedRegisteredValue, typeof(int)));
 
         await Assert.That(Locator.Current.GetService<int>()).IsEqualTo(ExpectedRegisteredValue);
     }
@@ -216,7 +216,7 @@ public class BuilderMixinsTests
         _ = BuilderMixins.ForCustomPlatform(
             builder,
             scheduler,
-            r => r.RegisterConstant(new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker)));
+            static r => r.RegisterConstant(new PlatformRegistrationMarker(), typeof(PlatformRegistrationMarker)));
         _ = builder.WithCoreServices().Build();
 
         using (Assert.Multiple())
@@ -425,14 +425,14 @@ public class BuilderMixinsTests
     /// <summary>Verifies that WithInstance throws <see cref="ArgumentNullException"/> when the builder is null.</summary>
     [Test]
     public void WithInstance_WithNullBuilder_ThrowsArgumentNullException() =>
-        Assert.Throws<ArgumentNullException>(() =>
-            BuilderMixins.WithInstance<string>(null!, _ => { }));
+        Assert.Throws<ArgumentNullException>(static () =>
+            BuilderMixins.WithInstance<string>(null!, static _ => { }));
 
     /// <summary>Verifies that RegisterViews throws <see cref="ArgumentNullException"/> when the builder is null.</summary>
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task RegisterViews_WithNullBuilder_ThrowsArgumentNullException() =>
-        await Assert.That(() => BuilderMixins.RegisterViews(null!, _ => { }))
+        await Assert.That(static () => BuilderMixins.RegisterViews(null!, static _ => { }))
             .Throws<ArgumentNullException>();
 
     /// <summary>Verifies that RegisterViews throws <see cref="ArgumentNullException"/> when the configure action is null.</summary>
@@ -456,7 +456,7 @@ public class BuilderMixinsTests
         // WithCoreServices registers the DefaultViewLocator
         _ = builder.WithCoreServices().Build();
 
-        var result = builder.RegisterViews(views =>
+        var result = builder.RegisterViews(static views =>
             views.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>());
 
         await Assert.That(result).IsSameReferenceAs(builder);
@@ -466,7 +466,7 @@ public class BuilderMixinsTests
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task WithViewModule_WithNullBuilder_ThrowsArgumentNullException() =>
-        await Assert.That(() => BuilderMixins.WithViewModule<TestViewModule>(null!))
+        await Assert.That(static () => BuilderMixins.WithViewModule<TestViewModule>(null!))
             .Throws<ArgumentNullException>();
 
     /// <summary>Verifies that WithViewModule returns the same builder for chaining.</summary>
@@ -488,7 +488,7 @@ public class BuilderMixinsTests
     /// <returns>A task representing the asynchronous test.</returns>
     [Test]
     public async Task BuildApp_WithNullBuilder_ThrowsArgumentNullException() =>
-        await Assert.That(() => BuilderMixins.BuildApp(null!))
+        await Assert.That(static () => BuilderMixins.BuildApp(null!))
             .Throws<ArgumentNullException>();
 
     /// <summary>Verifies that BuildApp throws <see cref="InvalidOperationException"/> when the builder is not a ReactiveUI builder.</summary>
@@ -623,7 +623,7 @@ public class BuilderMixinsTests
     {
         /// <inheritdoc/>
         public void RegisterViews(DefaultViewLocator locator) =>
-            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>(() => new());
+            locator.Map<BuilderMixinsTestViewModel, BuilderMixinsTestView>(static () => new());
     }
 
     /// <summary>App builder that does not implement <see cref="IReactiveUIBuilder"/>, used to verify error handling.</summary>
@@ -664,10 +664,6 @@ public class BuilderMixinsTests
         public IMutableDependencyResolver CurrentMutable => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        [SuppressMessage(
-            "Microsoft.Performance",
-            "CA1822:MarkMembersAsStatic",
-            Justification = "Required by interface")]
         public void Dispose()
         {
             // No-op: test stub holds no resources to release.
@@ -714,7 +710,7 @@ public class BuilderMixinsTests
     {
         /// <inheritdoc/>
         public void Register(IRegistrar registrar) =>
-            registrar.RegisterConstant<PlatformRegistrationMarker>(() => new());
+            registrar.RegisterConstant<PlatformRegistrationMarker>(static () => new());
     }
 
     /// <summary>Test Splat module that registers a <see cref="SplatModuleMarker"/> and records that it ran.</summary>
@@ -728,15 +724,6 @@ public class BuilderMixinsTests
         {
             resolver.RegisterConstant(new SplatModuleMarker(), typeof(SplatModuleMarker));
             Registered = true;
-        }
-
-        /// <summary>Registers the module's services into the supplied dependency resolver.</summary>
-        /// <param name="services">The mutable dependency resolver to register services into.</param>
-        /// <param name="resolver">The readonly dependency resolver used to resolve existing services.</param>
-        public void Register(IMutableDependencyResolver services, IReadonlyDependencyResolver? resolver)
-        {
-            _ = resolver;
-            Configure(services);
         }
     }
 

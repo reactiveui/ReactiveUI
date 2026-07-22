@@ -99,7 +99,7 @@ public class ComprehensiveAOTMarkupTests
         var hasErrors = false;
         _ = property.ObserveHasErrors.Subscribe(errors => hasErrors = errors);
 
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Required" : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? "Required" : null);
         property.Value = string.Empty;
 
         await Assert.That(valueChanges).Contains(InitialValue);
@@ -132,7 +132,7 @@ public class ComprehensiveAOTMarkupTests
 
         // AOT-compatible: Interactions
         var interaction = new Interaction<string, bool>();
-        _ = interaction.RegisterHandler(context => context.SetOutput(context.Input == "test"));
+        _ = interaction.RegisterHandler(static context => context.SetOutput(context.Input == "test"));
 
         // Test the workflow
         property.Value = UpdatedValue;
@@ -147,7 +147,6 @@ public class ComprehensiveAOTMarkupTests
         }
 
         // Cleanup
-        source.Dispose();
         property.Dispose();
     }
 
@@ -170,7 +169,6 @@ public class ComprehensiveAOTMarkupTests
         source.OnNext(UpdatedValue);
         await Assert.That(helper.Value).IsEqualTo(UpdatedValue);
 
-        source.Dispose();
         helper.Dispose();
     }
 
@@ -278,10 +276,10 @@ public class ComprehensiveAOTMarkupTests
         // Test validation errors
         var validationErrors = new List<string>();
         _ = property.ObserveErrorChanged
-            .Where(errs => errs is not null)
+            .Where(static errs => errs is not null)
             .Subscribe(errs => validationErrors.AddRange(errs!.OfType<string>()));
 
-        _ = property.AddValidationError(x => string.IsNullOrEmpty(x) ? "Value required" : null);
+        _ = property.AddValidationError(static x => string.IsNullOrEmpty(x) ? "Value required" : null);
         property.Value = string.Empty;
 
         using (Assert.Multiple())

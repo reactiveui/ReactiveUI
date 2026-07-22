@@ -17,7 +17,6 @@ namespace ReactiveUI;
 #endif
 /// <summary>Provides change notifications for Cocoa <see cref="NSObject"/> instances using Key-Value Observing (KVO).</summary>
 [Preserve(AllMembers = true)]
-[SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "KVO is an established acronym and the public type name cannot change without a breaking API change.")]
 public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 {
     /// <summary>The affinity score returned for properties declared on the <see cref="NSObject"/> hierarchy.</summary>
@@ -62,7 +61,6 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
     /// <inheritdoc />
     [RequiresUnreferencedCode("Uses reflection over runtime types which is not trim- or AOT-safe.")]
-    [SuppressMessage("Major Code Smell", "S1172:Unused method parameters should be removed", Justification = "suppressWarnings is part of the ICreatesObservableForProperty interface contract.")]
     public IObservable<IObservedChange<object?, object?>> GetNotificationForProperty(
         object sender,
         Expression expression,
@@ -135,7 +133,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
             throw new ArgumentException("Sender must be an NSObject.", nameof(sender));
         }
 
-        return new KeyValueObservingObservable(obj, expression, observationKey, beforeChanged);
+        return new(obj, expression, observationKey, beforeChanged);
     }
 
     /// <summary>Determines whether the specified member name is declared on the type hierarchy rooted at <see cref="NSObject"/>.</summary>
@@ -206,7 +204,7 @@ public sealed class KVOObservableForProperty : ICreatesObservableForProperty
 
         if (propIsBoolean)
         {
-            propertyName = "Is" + propertyName;
+            propertyName = $"Is{propertyName}";
         }
 
         return string.Concat(

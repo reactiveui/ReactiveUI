@@ -47,8 +47,6 @@ namespace ReactiveUI;
 /// ]]>
 /// </code>
 /// </example>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-
 [RequiresUnreferencedCode("This method uses reflection to determine the view model type at runtime, which may be incompatible with trimming.")]
 [RequiresDynamicCode(
     "If some of the generic arguments are annotated (either with DynamicallyAccessedMembersAttribute, " +

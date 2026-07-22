@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ReactiveUI;
 
-/// <summary>Converts <see cref="double"/> to <see cref="Nullable{Double}"/>.</summary>
+/// <summary>Converts <see cref="double"/> to <see cref="double"/>?.</summary>
 public sealed class DoubleToNullableDoubleTypeConverter : IBindingTypeConverter<double, double?>
 {
     /// <inheritdoc/>

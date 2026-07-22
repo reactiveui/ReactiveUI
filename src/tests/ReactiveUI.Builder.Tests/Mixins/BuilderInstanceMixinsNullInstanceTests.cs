@@ -15,7 +15,7 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() => nullInstance.WithInstance<InstanceService01>(_ => { }))
+        await Assert.That(static () => nullInstance.WithInstance<InstanceService01>(static _ => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -26,7 +26,7 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() => nullInstance.WithInstance<InstanceService01, InstanceService02>((_, _) => { }))
+        await Assert.That(static () => nullInstance.WithInstance<InstanceService01, InstanceService02>(static (_, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -37,8 +37,8 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
-                nullInstance.WithInstance<InstanceService01, InstanceService02, InstanceService03>((_, _, _) => { }))
+        await Assert.That(static () =>
+                nullInstance.WithInstance<InstanceService01, InstanceService02, InstanceService03>(static (_, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -49,8 +49,8 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
-                nullInstance.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>((_, _, _, _) =>
+        await Assert.That(static () =>
+                nullInstance.WithInstance<InstanceService01, InstanceService02, InstanceService03, InstanceService04>(static (_, _, _, _) =>
                 {
                 }))
             .Throws<ArgumentNullException>();
@@ -63,14 +63,14 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
                         InstanceService02,
                         InstanceService03,
                         InstanceService04,
-                        InstanceService05>((_, _, _, _, _) => { }))
+                        InstanceService05>(static (_, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -81,7 +81,7 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -89,7 +89,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService03,
                         InstanceService04,
                         InstanceService05,
-                        InstanceService06>((_, _, _, _, _, _) => { }))
+                        InstanceService06>(static (_, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -100,7 +100,7 @@ public class BuilderInstanceMixinsNullInstanceTests
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -109,7 +109,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService04,
                         InstanceService05,
                         InstanceService06,
-                        InstanceService07>((_, _, _, _, _, _, _) => { }))
+                        InstanceService07>(static (_, _, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -118,13 +118,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_8_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -134,7 +134,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService05,
                         InstanceService06,
                         InstanceService07,
-                        InstanceService08>((_, _, _, _, _, _, _, _) =>
+                        InstanceService08>(static (_, _, _, _, _, _, _, _) =>
                     {
                     }))
             .Throws<ArgumentNullException>();
@@ -145,13 +145,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_9_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -162,7 +162,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService06,
                         InstanceService07,
                         InstanceService08,
-                        InstanceService09>((_, _, _, _, _, _, _, _, _) =>
+                        InstanceService09>(static (_, _, _, _, _, _, _, _, _) =>
                     {
                     }))
             .Throws<ArgumentNullException>();
@@ -173,13 +173,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_10_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -191,7 +191,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService07,
                         InstanceService08,
                         InstanceService09,
-                        InstanceService10>((_, _, _, _, _, _, _, _, _, _) => { }))
+                        InstanceService10>(static (_, _, _, _, _, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -200,13 +200,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_11_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -219,7 +219,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService08,
                         InstanceService09,
                         InstanceService10,
-                        InstanceService11>((_, _, _, _, _, _, _, _, _, _, _) => { }))
+                        InstanceService11>(static (_, _, _, _, _, _, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -228,13 +228,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_12_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -248,7 +248,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService09,
                         InstanceService10,
                         InstanceService11,
-                        InstanceService12>((_, _, _, _, _, _, _, _, _, _, _, _) =>
+                        InstanceService12>(static (_, _, _, _, _, _, _, _, _, _, _, _) =>
                     {
                     }))
             .Throws<ArgumentNullException>();
@@ -259,13 +259,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_13_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -280,7 +280,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService10,
                         InstanceService11,
                         InstanceService12,
-                        InstanceService13>((_, _, _, _, _, _, _, _, _, _, _, _, _) =>
+                        InstanceService13>(static (_, _, _, _, _, _, _, _, _, _, _, _, _) =>
                     {
                     }))
             .Throws<ArgumentNullException>();
@@ -291,13 +291,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_14_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -313,7 +313,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService11,
                         InstanceService12,
                         InstanceService13,
-                        InstanceService14>((_, _, _, _, _, _, _, _, _, _, _, _, _, _) =>
+                        InstanceService14>(static (_, _, _, _, _, _, _, _, _, _, _, _, _, _) =>
                     {
                     }))
             .Throws<ArgumentNullException>();
@@ -324,13 +324,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_15_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -347,7 +347,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService12,
                         InstanceService13,
                         InstanceService14,
-                        InstanceService15>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => { }))
+                        InstanceService15>(static (_, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 
@@ -356,13 +356,13 @@ public class BuilderInstanceMixinsNullInstanceTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_16_Types_throws_when_instance_null()
     {
         const IReactiveUIInstance nullInstance = null!;
 
-        await Assert.That(() =>
+        await Assert.That(static () =>
                 nullInstance
                     .WithInstance<
                         InstanceService01,
@@ -380,7 +380,7 @@ public class BuilderInstanceMixinsNullInstanceTests
                         InstanceService13,
                         InstanceService14,
                         InstanceService15,
-                        InstanceService16>((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => { }))
+                        InstanceService16>(static (_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => { }))
             .Throws<ArgumentNullException>();
     }
 

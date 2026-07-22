@@ -48,7 +48,7 @@ public class StringToDecimalTypeConverterTests
     public async Task TryConvert_StringToDecimal_Succeeds()
     {
         var converter = new StringToDecimalTypeConverter();
-        const decimal ExpectedValue = 123.456m;
+        const decimal ExpectedValue = 123.456M;
 
         var result = converter.TryConvert("123.456", null, out var output);
 
@@ -66,7 +66,7 @@ public class StringToDecimalTypeConverterTests
         var result = converter.TryConvert(null, null, out var output);
 
         await Assert.That(result).IsFalse();
-        await Assert.That(output).IsEqualTo(0m);
+        await Assert.That(output).IsEqualTo(0M);
     }
 
     /// <summary>Verifies that a zero value converts successfully.</summary>
@@ -79,7 +79,7 @@ public class StringToDecimalTypeConverterTests
         var result = converter.TryConvert("0", null, out var output);
 
         await Assert.That(result).IsTrue();
-        await Assert.That(output).IsEqualTo(0m);
+        await Assert.That(output).IsEqualTo(0M);
     }
 
     /// <summary>Verifies that a negative value converts successfully.</summary>
@@ -88,7 +88,7 @@ public class StringToDecimalTypeConverterTests
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new StringToDecimalTypeConverter();
-        const decimal ExpectedValue = -123.456m;
+        const decimal ExpectedValue = -123.456M;
 
         var result = converter.TryConvert("-123.456", null, out var output);
 
@@ -102,7 +102,7 @@ public class StringToDecimalTypeConverterTests
     public async Task TryConvertTyped_ValidString_Succeeds()
     {
         var converter = new StringToDecimalTypeConverter();
-        const decimal ExpectedValue = 456.789m;
+        const decimal ExpectedValue = 456.789M;
 
         var result = converter.TryConvertTyped("456.789", null, out var output);
 

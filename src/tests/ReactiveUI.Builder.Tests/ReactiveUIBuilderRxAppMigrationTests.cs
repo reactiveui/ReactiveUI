@@ -25,12 +25,6 @@ public class ReactiveUIBuilderRxAppMigrationTests
     /// <summary>The big-cache size used by the chained cache-size tests.</summary>
     private const int ChainedBigCacheSize = 400;
 
-    /// <summary>The small-cache size applied by the first call in the override-order tests.</summary>
-    private const int FirstSmallCacheSize = 100;
-
-    /// <summary>The big-cache size applied by the first call in the override-order tests.</summary>
-    private const int FirstBigCacheSize = 200;
-
     /// <summary>The small-cache size applied by the last call in the override-order tests.</summary>
     private const int LastSmallCacheSize = 300;
 
@@ -233,13 +227,13 @@ public class ReactiveUIBuilderRxAppMigrationTests
     internal sealed class WithExceptionHandlerExecutor : RxAppMigrationTestExecutor
     {
         /// <summary>Gets the exception captured by the custom handler.</summary>
-        public static Exception? CapturedEx { get; private set; }
+        internal static Exception? CapturedEx { get; private set; }
 
         /// <inheritdoc/>
         protected override void ConfigureBuilder()
         {
             CapturedEx = null;
-            var customHandler = Witness.Create<Exception>(ex => CapturedEx = ex);
+            var customHandler = Witness.Create<Exception>(static ex => CapturedEx = ex);
 
             _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(customHandler)
@@ -285,13 +279,13 @@ public class ReactiveUIBuilderRxAppMigrationTests
     internal sealed class WithAllMigrationMethodsExecutor : RxAppMigrationTestExecutor
     {
         /// <summary>Gets the exception captured by the custom handler.</summary>
-        public static Exception? CapturedEx { get; private set; }
+        internal static Exception? CapturedEx { get; private set; }
 
         /// <inheritdoc/>
         protected override void ConfigureBuilder()
         {
             CapturedEx = null;
-            var customHandler = Witness.Create<Exception>(ex => CapturedEx = ex);
+            var customHandler = Witness.Create<Exception>(static ex => CapturedEx = ex);
 
             _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(customHandler)
@@ -306,10 +300,10 @@ public class ReactiveUIBuilderRxAppMigrationTests
     internal sealed class WithMultipleExceptionHandlersExecutor : RxAppMigrationTestExecutor
     {
         /// <summary>Gets the exception captured by the first handler.</summary>
-        public static Exception? FirstCaptured { get; private set; }
+        internal static Exception? FirstCaptured { get; private set; }
 
         /// <summary>Gets the exception captured by the second handler.</summary>
-        public static Exception? SecondCaptured { get; private set; }
+        internal static Exception? SecondCaptured { get; private set; }
 
         /// <inheritdoc/>
         protected override void ConfigureBuilder()
@@ -317,8 +311,8 @@ public class ReactiveUIBuilderRxAppMigrationTests
             FirstCaptured = null;
             SecondCaptured = null;
 
-            var firstHandler = Witness.Create<Exception>(ex => FirstCaptured = ex);
-            var secondHandler = Witness.Create<Exception>(ex => SecondCaptured = ex);
+            var firstHandler = Witness.Create<Exception>(static ex => FirstCaptured = ex);
+            var secondHandler = Witness.Create<Exception>(static ex => SecondCaptured = ex);
 
             _ = RxAppBuilder.CreateReactiveUIBuilder()
                 .WithExceptionHandler(firstHandler)
@@ -331,6 +325,12 @@ public class ReactiveUIBuilderRxAppMigrationTests
     /// <summary>Executor that builds the app while setting cache sizes twice to verify the last call wins.</summary>
     internal sealed class WithMultipleCacheSizesExecutor : RxAppMigrationTestExecutor
     {
+        /// <summary>The small-cache size applied by the first call in the override-order tests.</summary>
+        private const int FirstSmallCacheSize = 100;
+
+        /// <summary>The big-cache size applied by the first call in the override-order tests.</summary>
+        private const int FirstBigCacheSize = 200;
+
         /// <inheritdoc/>
         protected override void ConfigureBuilder() =>
             RxAppBuilder.CreateReactiveUIBuilder()
@@ -353,12 +353,12 @@ public class ReactiveUIBuilderRxAppMigrationTests
     }
 
     /// <summary>Sample application state used to verify the typed suspension host.</summary>
-    private sealed class TestAppState
+    internal sealed class TestAppState
     {
         /// <summary>Gets or sets the name.</summary>
-        public string? Name { get; set; }
+        internal string? Name { get; set; }
 
         /// <summary>Gets or sets the counter.</summary>
-        public int Counter { get; set; }
+        internal int Counter { get; set; }
     }
 }

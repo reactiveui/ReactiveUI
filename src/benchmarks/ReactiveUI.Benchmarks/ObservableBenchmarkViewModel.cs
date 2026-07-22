@@ -14,12 +14,12 @@ internal sealed class ObservableBenchmarkViewModel : ReactiveObject, IDisposable
     private readonly Signal<int> _subject = new();
 
     /// <summary>Gets the observable that <c>WhenAnyObservable</c> subscribes to.</summary>
-    public IObservable<int> Values => _subject;
-
-    /// <summary>Pushes a value through the inner observable.</summary>
-    /// <param name="value">The value to emit.</param>
-    public void Push(int value) => _subject.OnNext(value);
+    internal IObservable<int> Values => _subject;
 
     /// <inheritdoc/>
     public void Dispose() => _subject.Dispose();
+
+    /// <summary>Pushes a value through the inner observable.</summary>
+    /// <param name="value">The value to emit.</param>
+    internal void Push(int value) => _subject.OnNext(value);
 }

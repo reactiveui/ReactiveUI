@@ -21,10 +21,6 @@ public class TestForm : Form, IActivatableView, ICanActivate
     private readonly ReplaySignal<RxVoid> _deactivated = new(1);
 
     /// <summary>Initializes a new instance of the <see cref="TestForm"/> class.</summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Reliability",
-        "S3366:Don't expose 'this' in constructors",
-        Justification = "OAPH/WhenAny initialization requires 'this'; single-threaded test fixture.")]
     public TestForm()
     {
         _ = this.WhenActivated((Action<Action<IDisposable>>)(static _ =>

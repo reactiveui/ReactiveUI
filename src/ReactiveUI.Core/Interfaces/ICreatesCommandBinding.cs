@@ -26,9 +26,13 @@ public interface ICreatesCommandBinding
     /// <typeparam name="T">The type of the object to query for compatibility with command binding.</typeparam>
     /// <returns>A positive integer if binding is supported, or zero/a negative value if not supported.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [SuppressMessage(
+        "Design",
+        "SST1452:A generic type parameter is never used",
+        Justification = "The type parameter is part of the interface contract and identifies the target type; callers supply it explicitly and implementations consume it via reflection.")]
     int GetAffinityForObject<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents |
                                     DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -79,9 +83,13 @@ public interface ICreatesCommandBinding
     /// <returns>An IDisposable which will disconnect the binding when disposed, or null if no binding was created.</returns>
     [RequiresUnreferencedCode("String/reflection-based event binding may require members removed by trimming.")]
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+    [SuppressMessage(
+        "Design",
+        "SST1452:A generic type parameter is never used",
+        Justification = "The type parameter is part of the interface contract and identifies the target type; callers supply it explicitly and implementations consume it via reflection.")]
     IDisposable? BindCommandToObject<T, TEventArgs>(
         ICommand? command,
         T? target,

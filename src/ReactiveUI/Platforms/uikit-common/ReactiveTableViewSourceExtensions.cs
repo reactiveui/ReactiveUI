@@ -30,9 +30,9 @@ public static class ReactiveTableViewSourceExtensions
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameters",
-            Justification = "Type parameters are part of the public binding API and specified at the call site.")]
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
+            Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             NSString cellKey,
@@ -51,9 +51,9 @@ public static class ReactiveTableViewSourceExtensions
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameters",
-            Justification = "Type parameters are part of the public binding API and specified at the call site.")]
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
+            Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             NSString cellKey,
@@ -107,9 +107,9 @@ public static class ReactiveTableViewSourceExtensions
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameters",
-            Justification = "Type parameters are part of the public binding API and specified at the call site.")]
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
+            Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             float sizeHint)
@@ -131,9 +131,9 @@ public static class ReactiveTableViewSourceExtensions
         [RequiresUnreferencedCode("Evaluates expression-based member chains via reflection; members may be trimmed.")]
         [RequiresDynamicCode("Uses dynamic binding paths which may require runtime code generation or reflection-based invocation.")]
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameters",
-            Justification = "Type parameters are part of the public binding API and specified at the call site.")]
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
+            Justification = "Type parameters are specified at the call site; this is a type-argument-driven binding factory.")]
         public IDisposable BindTo<TSource, TCell>(
             UITableView tableView,
             float sizeHint,
@@ -168,7 +168,7 @@ public static class ReactiveTableViewSourceExtensions
 
             var type = typeof(TCell);
             var cellKey = new NSString(type.ToString());
-            tableView.RegisterClassForCellReuse(type, new NSString(cellKey));
+            tableView.RegisterClassForCellReuse(type, new(cellKey));
 
             return sourceObservable
                 .BindTo(tableView, cellKey, sizeHint, initializeCellAction, initSource);

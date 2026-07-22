@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -1121,7 +1119,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return CreateFromObservableCancellable<TParam, TResult>(
-            param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
+            param => ObservableMixins.FromAsyncWithAllNotifications(execute, param),
             canExecute,
             outputScheduler);
     }
@@ -1243,7 +1241,7 @@ public static class ReactiveCommand
         ArgumentExceptionHelper.ThrowIfNull(execute);
 
         return CreateFromObservableCancellable<TParam, RxVoid>(
-            param => ObservableMixins.FromAsyncWithAllNotifications(ct => execute(param, ct)),
+            param => ObservableMixins.FromAsyncWithAllNotifications(execute, param),
             canExecute,
             outputScheduler);
     }
@@ -1258,10 +1256,6 @@ public static class ReactiveCommand
     /// The <c>ReactiveCommand</c> instance.
     /// </returns>
     /// <exception cref="ArgumentNullException">execute.</exception>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     internal static ReactiveCommand<TParam, TResult> CreateFromObservableCancellable<TParam, TResult>(
         Func<IObservable<(IObservable<TResult> Result, Action Cancel)>> execute,
         IObservable<bool>? canExecute = null,

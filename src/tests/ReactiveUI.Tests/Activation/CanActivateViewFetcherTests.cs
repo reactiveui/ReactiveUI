@@ -5,13 +5,13 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace ReactiveUI.Tests.Activation;
-
 #if REACTIVE_SHIM
 using ICanActivateContract = ReactiveUI.Reactive.ICanActivate;
 #else
 using ICanActivateContract = ReactiveUI.ICanActivate;
 #endif
+
+namespace ReactiveUI.Tests.Activation;
 
 /// <summary>Tests for the <see cref="CanActivateViewFetcher" />.</summary>
 public class CanActivateViewFetcherTests

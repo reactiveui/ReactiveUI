@@ -31,7 +31,7 @@ public class WaitForDispatcherSchedulerTests
     public async Task FactoryThrowsArgumentNullException_FallsBackToCurrentThread()
     {
         ISequencer? schedulerExecutedOn = null;
-        var schedulerFactory = new Func<ISequencer>(() => throw new ArgumentNullException());
+        var schedulerFactory = new Func<ISequencer>(static () => throw new ArgumentNullException());
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         _ = sut.Schedule<object>(
             null!,
@@ -57,7 +57,7 @@ public class WaitForDispatcherSchedulerTests
         });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        _ = sut.Schedule(() => { });
+        _ = sut.Schedule(static () => { });
 
         const int ExpectedFactoryCalls = 2;
         await Assert.That(schedulerFactoryCalls).IsEqualTo(ExpectedFactoryCalls);
@@ -111,7 +111,7 @@ public class WaitForDispatcherSchedulerTests
         var callsBeforeThird = schedulerFactoryCalls;
         _ = sut.Schedule<object>(
             null!,
-            (_, _) => Scope.Empty);
+            static (_, _) => Scope.Empty);
 
         await Assert.That(firstCallScheduler).IsEqualTo(Sequencer.CurrentThread);
         await Assert.That(secondCallScheduler).IsEqualTo(successScheduler);
@@ -124,7 +124,7 @@ public class WaitForDispatcherSchedulerTests
     public async Task FactoryThrowsInvalidOperationException_FallsBackToCurrentThread()
     {
         ISequencer schedulerExecutedOn = null!;
-        var schedulerFactory = new Func<ISequencer>(() => throw new InvalidOperationException());
+        var schedulerFactory = new Func<ISequencer>(static () => throw new InvalidOperationException());
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
         _ = sut.Schedule<object>(
@@ -151,7 +151,7 @@ public class WaitForDispatcherSchedulerTests
         });
 
         var sut = new WaitForDispatcherScheduler(schedulerFactory);
-        _ = sut.Schedule(() => { });
+        _ = sut.Schedule(static () => { });
 
         await Assert.That(schedulerFactoryCalls).IsEqualTo(1);
     }

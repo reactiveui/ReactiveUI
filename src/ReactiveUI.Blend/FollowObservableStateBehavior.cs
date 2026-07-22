@@ -20,7 +20,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <summary>The state observable dependency property.</summary>
     public static readonly DependencyProperty StateObservableProperty =
         DependencyProperty.Register(
-            "StateObservable",
+            nameof(StateObservable),
             typeof(IObservable<string>),
             typeof(FollowObservableStateBehavior),
             new(null, OnStateObservableChanged));
@@ -28,7 +28,7 @@ public class FollowObservableStateBehavior : Behavior<FrameworkElement>
     /// <summary>The target object dependency property.</summary>
     public static readonly DependencyProperty TargetObjectProperty =
         DependencyProperty.Register(
-            "TargetObject",
+            nameof(TargetObject),
             typeof(FrameworkElement),
             typeof(FollowObservableStateBehavior),
             new(null));

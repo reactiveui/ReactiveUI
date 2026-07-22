@@ -11,6 +11,9 @@ namespace ReactiveUI.Tests.Mixins;
 /// <summary>Tests for the <see cref="MutableDependencyResolverAOTExtensions" /> class. These tests verify the AOT-friendly registration helpers.</summary>
 public class MutableDependencyResolverAotExtensionsTests
 {
+    /// <summary>The contract name used to verify singleton registration scoped to a contract.</summary>
+    private const string SingletonContractName = "SingletonContract";
+
     /// <summary>Verifies that RegisterSingletonViewForViewModelAOT registers a singleton view.</summary>
     /// <returns>A Task representing the asynchronous test operation.</returns>
     [Test]
@@ -63,10 +66,10 @@ public class MutableDependencyResolverAotExtensionsTests
     {
         using var resolver = new ModernDependencyResolver();
 
-        _ = resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>("SingletonContract");
+        _ = resolver.RegisterSingletonViewForViewModelAOT<TestView, TestViewModel>(SingletonContractName);
 
-        var view1 = resolver.GetService<IViewFor<TestViewModel>>("SingletonContract");
-        var view2 = resolver.GetService<IViewFor<TestViewModel>>("SingletonContract");
+        var view1 = resolver.GetService<IViewFor<TestViewModel>>(SingletonContractName);
+        var view2 = resolver.GetService<IViewFor<TestViewModel>>(SingletonContractName);
 
         using (Assert.Multiple())
         {

@@ -49,6 +49,10 @@ internal sealed class EventPatternObservable<TEventArgs>(object target, string e
         /// <summary>Forwards a raised event's arguments to the observer.</summary>
         /// <param name="sender">The event source.</param>
         /// <param name="args">The event arguments.</param>
+        [SuppressMessage(
+            "Design",
+            "SST2324:A member is declared more accessible than its containing type",
+            Justification = "OnEvent is public so the reflection-created delegate binds by public lookup; Forwarder is a private nested detail.")]
         public void OnEvent(object? sender, TEventArgs args) => observer.OnNext(args);
     }
 }

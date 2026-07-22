@@ -18,9 +18,9 @@ public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
     /// <summary>Initializes a new instance of the <see cref="JournalViewModel"/> class.</summary>
     /// <param name="hostScreen">The screen hosting this view model.</param>
     [SuppressMessage(
-        "Major Code Smell",
-        "S3366:Make sure the use of this in constructors is safe",
-        Justification = "Single-threaded WPF view model fully constructed before the reactive pipelines run.")]
+        "Correctness",
+        "SST2403:Do not let 'this' escape from a constructor",
+        Justification = "Single-threaded WPF sample view model; ToProperty binds the OAPH to this after all fields are set.")]
     public JournalViewModel(IScreen hostScreen)
     {
         ArgumentExceptionHelper.ThrowIfNull(hostScreen);
@@ -56,11 +56,11 @@ public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
 
     /// <summary>Gets the current UTC date.</summary>
     /// <returns>Today's date.</returns>
-    [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider", Justification = "Not available on all target frameworks.")]
-    private static DateTime UtcToday() =>
 #if NET8_0_OR_GREATER
-        TimeProvider.System.GetUtcNow().UtcDateTime.Date;
+    private static DateOnly UtcToday() =>
+        DateOnly.FromDateTime(TimeProvider.System.GetUtcNow().UtcDateTime);
 #else
+    private static DateTime UtcToday() =>
         DateTimeOffset.UtcNow.UtcDateTime.Date;
 #endif
 
@@ -69,10 +69,14 @@ public sealed class JournalViewModel : ReactiveObject, IRoutableViewModel
     private decimal ComputeTodayTotal()
     {
         var today = UtcToday();
-        decimal total = 0m;
+        decimal total = 0M;
         foreach (var transaction in Transactions)
         {
+#if NET8_0_OR_GREATER
+            if (transaction.Approved && DateOnly.FromDateTime(transaction.Timestamp.UtcDateTime) == today)
+#else
             if (transaction.Approved && transaction.Timestamp.UtcDateTime.Date == today)
+#endif
             {
                 total += transaction.Amount;
             }

@@ -24,15 +24,15 @@ public sealed class ActivationForViewFetcherTests
         var resolver = new ModernDependencyResolver();
         _ = resolver.CreateReactiveUIBuilder()
             .WithPlatformServices()
-            .WithRegistrationOnBuild(r => r.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher()))
+            .WithRegistrationOnBuild(static r => r.RegisterConstant<IActivationForViewFetcher>(new ActivationForViewFetcher()))
             .BuildApp();
 
         using (resolver.WithResolver())
         {
             var page = new TestPage();
             var child = new TestView();
-            var pageViewModel = new TestActivatableViewModel();
-            var childViewModel = new TestActivatableViewModel();
+            using var pageViewModel = new TestActivatableViewModel();
+            using var childViewModel = new TestActivatableViewModel();
 
             page.Content = child;
             page.ViewModel = pageViewModel;
@@ -77,7 +77,7 @@ public sealed class ActivationForViewFetcherTests
     }
 
     /// <summary>Test page that tracks activation count.</summary>
-    private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, IActivatableView, ICanActivate
+    private sealed class TestPage : ReactiveContentPage<TestActivatableViewModel>, ICanActivate
     {
         /// <summary>The subject that signals page activation.</summary>
         private readonly Signal<RxVoid> _activated = new();
@@ -86,10 +86,14 @@ public sealed class ActivationForViewFetcherTests
         private readonly Signal<RxVoid> _deactivated = new();
 
         /// <summary>Initializes a new instance of the <see cref="TestPage"/> class.</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2403:'this' escapes before construction finishes",
+            Justification = "Canonical WhenActivated activation wiring; the single-threaded test fixture never exposes the half-built instance.")]
         public TestPage() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Scope.Create(() => ActivationCount--));
+            d(Scope.Create(this, static self => self.ActivationCount--));
         });
 
         /// <inheritdoc/>
@@ -109,7 +113,7 @@ public sealed class ActivationForViewFetcherTests
     }
 
     /// <summary>Test view that tracks activation count.</summary>
-    private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, IActivatableView, ICanActivate
+    private sealed class TestView : ReactiveContentView<TestActivatableViewModel>, ICanActivate
     {
         /// <summary>The subject that signals view activation.</summary>
         private readonly Signal<RxVoid> _activated = new();
@@ -118,10 +122,14 @@ public sealed class ActivationForViewFetcherTests
         private readonly Signal<RxVoid> _deactivated = new();
 
         /// <summary>Initializes a new instance of the <see cref="TestView"/> class.</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2403:'this' escapes before construction finishes",
+            Justification = "Canonical WhenActivated activation wiring; the single-threaded test fixture never exposes the half-built instance.")]
         public TestView() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Scope.Create(() => ActivationCount--));
+            d(Scope.Create(this, static self => self.ActivationCount--));
         });
 
         /// <inheritdoc/>
@@ -141,13 +149,17 @@ public sealed class ActivationForViewFetcherTests
     }
 
     /// <summary>Test view model that tracks activation count.</summary>
-    private sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel
+    private sealed class TestActivatableViewModel : ReactiveObject, IActivatableViewModel, IDisposable
     {
         /// <summary>Initializes a new instance of the <see cref="TestActivatableViewModel"/> class.</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Design",
+            "SST2403:'this' escapes before construction finishes",
+            Justification = "Canonical WhenActivated activation wiring; the single-threaded test fixture never exposes the half-built instance.")]
         public TestActivatableViewModel() => this.WhenActivated(d =>
         {
             ActivationCount++;
-            d(Scope.Create(() => ActivationCount--));
+            d(Scope.Create(this, static self => self.ActivationCount--));
         });
 
         /// <summary>Gets the view model activator.</summary>
@@ -155,5 +167,8 @@ public sealed class ActivationForViewFetcherTests
 
         /// <summary>Gets the current activation count.</summary>
         public int ActivationCount { get; private set; }
+
+        /// <inheritdoc/>
+        public void Dispose() => Activator.Dispose();
     }
 }

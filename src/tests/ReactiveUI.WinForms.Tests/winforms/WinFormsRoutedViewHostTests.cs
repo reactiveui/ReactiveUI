@@ -23,7 +23,7 @@ public class WinFormsRoutedViewHostTests
     [Test]
     public async Task ShouldDisposePreviousView()
     {
-        var viewLocator = new FakeViewLocator { LocatorFunc = _ => new FakeWinformsView() };
+        var viewLocator = new FakeViewLocator { LocatorFunc = static _ => new FakeWinformsView() };
         var router = new RoutingState(Sequencer.Immediate);
         var target = new WinFormsRoutedViewHost { Router = router, ViewLocator = viewLocator };
         _ = router.Navigate.Execute(new FakeWinformViewModel()).Subscribe();

@@ -90,7 +90,7 @@ public class ViewModelViewHostTests
         {
             base.Initialize();
 
-            _helper.Initialize(builder =>
+            _helper.Initialize(static builder =>
             {
                 // Include WPF platform services and register test view
                 _ = builder

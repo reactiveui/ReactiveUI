@@ -64,8 +64,8 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <param name="factory">Factory function that creates the view instance.</param>
     /// <returns>The locator for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory)
         where TViewModel : class
@@ -82,8 +82,8 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <param name="contract">Optional contract used to disambiguate multiple views for the same view model.</param>
     /// <returns>The locator for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public DefaultViewLocator Map<TViewModel, TView>(Func<TView> factory, string? contract)
         where TViewModel : class
@@ -111,8 +111,8 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <typeparam name="TViewModel">View model type to unmap.</typeparam>
     /// <returns>The locator for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public DefaultViewLocator Unmap<TViewModel>()
         where TViewModel : class =>
@@ -123,8 +123,8 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <param name="contract">Optional contract to unmap. If null, removes the default mapping.</param>
     /// <returns>The locator for chaining.</returns>
     [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
+        "Design",
+        "SST2307:A generic method's type parameter appears in no parameter, so no caller can infer it",
         Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public DefaultViewLocator Unmap<TViewModel>(string? contract)
         where TViewModel : class
@@ -150,10 +150,6 @@ public sealed class DefaultViewLocator : IViewLocator
     /// <summary>Resolves a view for a view model type using the default contract. Fully AOT-compatible.</summary>
     /// <typeparam name="TViewModel">The view model type to resolve a view for.</typeparam>
     /// <returns>The resolved view or null when no registration is available.</returns>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IViewFor<TViewModel>? ResolveView<TViewModel>()
         where TViewModel : class =>
         ResolveView<TViewModel>(null);
@@ -171,10 +167,6 @@ public sealed class DefaultViewLocator : IViewLocator
     /// </list>
     /// </para>
     /// </remarks>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     public IViewFor<TViewModel>? ResolveView<TViewModel>(string? contract)
         where TViewModel : class
     {

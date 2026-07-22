@@ -175,10 +175,6 @@ public class BindingConverterResolverTests
     /// <summary>Verifies that GetBindingConverter handles null services gracefully.</summary>
     /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4144:Methods should not have identical implementations",
-        Justification = "Intentional duplicate test scenario.")]
     public async Task GetBindingConverter_WithNoRxConverters_FallsBackToSplat()
     {
         // Arrange
@@ -202,8 +198,8 @@ public class BindingConverterResolverTests
             ArgumentNullException.ThrowIfNull(context);
 
             _ = builder
-                .WithRegistration(r => r.RegisterConstant<IBindingTypeConverter>(new MockBindingTypeConverter()))
-                .WithRegistration(r =>
+                .WithRegistration(static r => r.RegisterConstant<IBindingTypeConverter>(new MockBindingTypeConverter()))
+                .WithRegistration(static r =>
                     r.RegisterConstant<ISetMethodBindingConverter>(new MockSetMethodBindingConverter()))
                 .WithCoreServices();
         }

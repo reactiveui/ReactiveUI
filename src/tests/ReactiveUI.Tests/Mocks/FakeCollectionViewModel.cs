@@ -14,9 +14,10 @@ public class FakeCollectionViewModel : ReactiveObject
     /// <summary>Initializes a new instance of the <see cref="FakeCollectionViewModel" /> class.</summary>
     /// <param name="model">The model.</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S3366:Make sure the use of this in constructors is safe here",
-        Justification = "OAPH initialization requires 'this' in the constructor; single-threaded test fixture.")]
+        "Design",
+        "SST2403:'this' escapes 'FakeCollectionViewModel' before construction finishes",
+        Justification = "canonical ObservableAsPropertyHelper initialization requires 'this' in the constructor; " +
+            "the single-threaded fixture never exposes the half-built instance.")]
     public FakeCollectionViewModel(FakeCollectionModel model)
     {
         Model = model;

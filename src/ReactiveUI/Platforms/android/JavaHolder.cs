@@ -19,5 +19,5 @@ internal class JavaHolder(object instance) : Object
 {
     /// <summary>The held Java object instance used for interop scenarios.</summary>
     [SuppressMessage("Maintainability", "SST1401:Field should be private", Justification = "Used for interop purposes.")]
-    public readonly object Instance = instance;
+    internal readonly object Instance = instance;
 }

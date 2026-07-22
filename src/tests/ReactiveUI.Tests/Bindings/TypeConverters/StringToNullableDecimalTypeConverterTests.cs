@@ -48,7 +48,7 @@ public class StringToNullableDecimalTypeConverterTests
     public async Task TryConvert_StringToDecimalNullable_Succeeds()
     {
         var converter = new StringToNullableDecimalTypeConverter();
-        const decimal ExpectedValue = 123.456m;
+        const decimal ExpectedValue = 123.456M;
 
         var result = converter.TryConvert("123.456", null, out var output);
 

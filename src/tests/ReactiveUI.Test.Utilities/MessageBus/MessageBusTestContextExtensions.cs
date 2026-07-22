@@ -3,13 +3,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-namespace ReactiveUI.Tests.Utilities.MessageBus;
-
 #if REACTIVE_SHIM
 using MessageBusType = ReactiveUI.Reactive.MessageBus;
 #else
 using MessageBusType = ReactiveUI.MessageBus;
 #endif
+
+namespace ReactiveUI.Tests.Utilities.MessageBus;
 
 /// <summary>Extensions for accessing message bus from TestContext.</summary>
 public static class MessageBusTestContextExtensions

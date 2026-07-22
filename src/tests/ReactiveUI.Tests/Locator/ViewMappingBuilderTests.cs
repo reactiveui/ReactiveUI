@@ -194,7 +194,7 @@ public class ViewMappingBuilderTests
         var builder = new ViewMappingBuilder(locator);
 
         // Act
-        var result = builder.Map<TestViewModel, TestView>(() => new());
+        var result = builder.Map<TestViewModel, TestView>(static () => new());
 
         // Assert
         await Assert.That(result).IsSameReferenceAs(builder);
@@ -283,7 +283,7 @@ public class ViewMappingBuilderTests
         // Register view in service locator
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
-        resolver.Register(() => new TestView(), typeof(TestView));
+        resolver.Register(static () => new TestView(), typeof(TestView));
 
         // Act
         var result = builder.MapFromServiceLocator<TestViewModel, TestView>();
@@ -304,8 +304,8 @@ public class ViewMappingBuilderTests
         // Register views in service locator
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
-        resolver.Register(() => new TestView(), typeof(TestView));
-        resolver.Register(() => new AlternateView(), typeof(AlternateView));
+        resolver.Register(static () => new TestView(), typeof(TestView));
+        resolver.Register(static () => new AlternateView(), typeof(AlternateView));
 
         // Act
         _ = builder
@@ -333,7 +333,7 @@ public class ViewMappingBuilderTests
         // Register one view in service locator
         var resolver = AppLocator.Current as IDependencyResolver;
         ArgumentNullException.ThrowIfNull(resolver);
-        resolver.Register(() => new AnotherView(), typeof(AnotherView));
+        resolver.Register(static () => new AnotherView(), typeof(AnotherView));
 
         // Act - Mix all three registration types
         _ = builder

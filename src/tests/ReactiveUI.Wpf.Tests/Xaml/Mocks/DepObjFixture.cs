@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.Windows;
-using PropertyMetadata = System.Windows.PropertyMetadata;
 
 namespace ReactiveUI.Tests.Xaml.Mocks;
 
@@ -13,7 +12,7 @@ public class DepObjFixture : FrameworkElement
 {
     /// <summary>The test string property.</summary>
     public static readonly DependencyProperty TestStringProperty =
-        DependencyProperty.Register("TestString", typeof(string), typeof(DepObjFixture), new(null));
+        DependencyProperty.Register(nameof(TestString), typeof(string), typeof(DepObjFixture), new(null));
 
     /// <summary>Gets or sets the test string.</summary>
     public string TestString

@@ -13,9 +13,9 @@ namespace ReactiveUI;
 #endif
 /// <summary>Provides the arity-9 WhenAnyObservable extension overloads.</summary>
 [SuppressMessage(
-    "Major Code Smell",
-    "S107:Methods should not have too many parameters",
-    Justification = "Arity-N variadic overloads intentionally expose more than seven parameters.")]
+    "Design",
+    "SST1472:Method declares too many parameters",
+    Justification = "Parameter count is intrinsic to the fixed WhenAny arity API.")]
 public static partial class WhenAnyObservableMixins
 {
     /// <summary>Provides arity-9 WhenAnyObservable extension members for a source object.</summary>
@@ -46,9 +46,8 @@ public static partial class WhenAnyObservableMixins
             Expression<Func<TSender, IObservable<TRet>?>> obs6,
             Expression<Func<TSender, IObservable<TRet>?>> obs7,
             Expression<Func<TSender, IObservable<TRet>?>> obs8,
-            Expression<Func<TSender, IObservable<TRet>?>> obs9)
-        {
-            return new WhenAnyObservableMergeSink<TRet>(
+            Expression<Func<TSender, IObservable<TRet>?>> obs9) =>
+            new WhenAnyObservableMergeSink<TRet>(
                 sender.WhenAny(
                     obs1,
                     obs2,
@@ -59,7 +58,7 @@ public static partial class WhenAnyObservableMixins
                     obs7,
                     obs8,
                     obs9,
-                    (o1, o2, o3, o4, o5, o6, o7, o8, o9) => new[]
+                    static (o1, o2, o3, o4, o5, o6, o7, o8, o9) => new[]
                     {
                         o1.Value!.EmptyIfNull(),
                         o2.Value!.EmptyIfNull(),
@@ -71,7 +70,6 @@ public static partial class WhenAnyObservableMixins
                         o8.Value!.EmptyIfNull(),
                         o9.Value!.EmptyIfNull(),
                     }));
-        }
 
         /// <summary>Observes several observable-valued properties and combines their latest values with a selector.</summary>
         /// <typeparam name="TRet">The type of the resulting value.</typeparam>

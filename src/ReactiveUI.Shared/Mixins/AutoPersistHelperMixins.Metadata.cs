@@ -90,26 +90,29 @@ public static partial class AutoPersistHelperMixins
                     nameof(metadata));
             }
 
-            interval ??= TimeSpan.FromSeconds(3.0);
+            interval ??= TimeSpan.FromSeconds(DefaultAutoPersistIntervalSeconds);
 
             var persistablePropertyNames = metadata.PersistablePropertyNames;
 
             var ret = new OnceDisposable();
-            _ = RxSchedulers.MainThreadScheduler.Schedule(() =>
-            {
-                if (ret.IsDisposed)
+            _ = RxSchedulers.MainThreadScheduler.Schedule(
+                (ret, source: @this, doPersist, persistablePropertyNames, manualSaveSignal, interval: interval.Value),
+                static (_, state) =>
                 {
-                    return;
-                }
+                    if (state.ret.IsDisposed)
+                    {
+                        return EmptyDisposable.Instance;
+                    }
 
-                ret.Disposable = new AutoPersistDriver<T, TDontCare>(
-                    @this,
-                    doPersist,
-                    persistablePropertyNames,
-                    manualSaveSignal,
-                    interval.Value,
-                    RxSchedulers.TaskpoolScheduler);
-            });
+                    state.ret.Disposable = new AutoPersistDriver<T, TDontCare>(
+                        state.source,
+                        state.doPersist,
+                        state.persistablePropertyNames,
+                        state.manualSaveSignal,
+                        state.interval,
+                        RxSchedulers.TaskpoolScheduler);
+                    return EmptyDisposable.Instance;
+                });
 
             return ret;
         }

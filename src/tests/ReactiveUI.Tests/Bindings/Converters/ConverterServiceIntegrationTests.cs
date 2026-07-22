@@ -13,6 +13,15 @@ namespace ReactiveUI.Tests.Bindings.Converters;
 /// </summary>
 public class ConverterServiceIntegrationTests
 {
+    /// <summary>A low converter affinity value reused across multiple resolution scenarios.</summary>
+    private const int LowAffinity = 2;
+
+    /// <summary>A medium converter affinity value reused across multiple resolution scenarios.</summary>
+    private const int MediumAffinity = 5;
+
+    /// <summary>A high converter affinity value reused across multiple resolution scenarios.</summary>
+    private const int HighAffinity = 10;
+
     /// <summary>Verifies that all three registries are accessible.</summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     [Test]
@@ -34,8 +43,9 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var defaultConverter = new TestTypedConverter<int, string>(2);
-        var customConverter = new TestTypedConverter<int, string>(100);
+        const int CustomAffinity = 100;
+        var defaultConverter = new TestTypedConverter<int, string>(LowAffinity);
+        var customConverter = new TestTypedConverter<int, string>(CustomAffinity);
 
         service.TypedConverters.Register(defaultConverter);
         service.TypedConverters.Register(customConverter);
@@ -54,8 +64,9 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var typedConverter = new TestTypedConverter<int, string>(5);
-        var fallbackConverter = new TestFallbackConverter(3);
+        const int FallbackAffinity = 3;
+        var typedConverter = new TestTypedConverter<int, string>(MediumAffinity);
+        var fallbackConverter = new TestFallbackConverter(FallbackAffinity);
 
         service.TypedConverters.Register(typedConverter);
         service.FallbackConverters.Register(fallbackConverter);
@@ -74,9 +85,9 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var lowAffinity = new TestFallbackConverter(2);
-        var mediumAffinity = new TestFallbackConverter(5);
-        var highAffinity = new TestFallbackConverter(10);
+        var lowAffinity = new TestFallbackConverter(LowAffinity);
+        var mediumAffinity = new TestFallbackConverter(MediumAffinity);
+        var highAffinity = new TestFallbackConverter(HighAffinity);
 
         service.FallbackConverters.Register(mediumAffinity);
         service.FallbackConverters.Register(lowAffinity);
@@ -96,7 +107,7 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var converter = new TestTypedConverter<int, string>(5);
+        var converter = new TestTypedConverter<int, string>(MediumAffinity);
         service.TypedConverters.Register(converter);
 
         // Act
@@ -137,7 +148,7 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var converter = new TestTypedConverter<int, string>(5);
+        var converter = new TestTypedConverter<int, string>(MediumAffinity);
         service.TypedConverters.Register(converter);
 
         // Act
@@ -158,7 +169,8 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var setMethodConverter = new TestSetMethodConverter(8);
+        const int SetMethodAffinity = 8;
+        var setMethodConverter = new TestSetMethodConverter(SetMethodAffinity);
 
         service.SetMethodConverters.Register(setMethodConverter);
 
@@ -176,8 +188,8 @@ public class ConverterServiceIntegrationTests
     {
         // Arrange
         var service = new ConverterService();
-        var typedConverter = new TestTypedConverter<int, string>(2);
-        var fallbackConverter = new TestFallbackConverter(10); // Higher affinity but should lose to typed
+        var typedConverter = new TestTypedConverter<int, string>(LowAffinity);
+        var fallbackConverter = new TestFallbackConverter(HighAffinity); // Higher affinity but should lose to typed
 
         service.TypedConverters.Register(typedConverter);
         service.FallbackConverters.Register(fallbackConverter);
@@ -197,7 +209,7 @@ public class ConverterServiceIntegrationTests
         // Arrange
         var service = new ConverterService();
         var zeroAffinity = new TestTypedConverter<int, string>(0);
-        var validAffinity = new TestTypedConverter<int, string>(2);
+        var validAffinity = new TestTypedConverter<int, string>(LowAffinity);
 
         service.TypedConverters.Register(zeroAffinity);
         service.TypedConverters.Register(validAffinity);

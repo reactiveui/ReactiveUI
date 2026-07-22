@@ -12,10 +12,6 @@ namespace ReactiveUI.Maui.Tests;
 /// <summary>Tests for the generic <see cref="ViewModelViewHost{TViewModel}"/>.</summary>
 [NotInParallel]
 [TestExecutor<MauiTestExecutor>]
-[System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Major Code Smell",
-    "S4018:Generic methods should provide type parameters",
-    Justification = "Test exercises a generic overload with explicit type arguments.")]
 public class ViewModelViewHostGenericTests
 {
     /// <summary>The contract string used for view contract tests.</summary>
@@ -168,12 +164,13 @@ public class ViewModelViewHostGenericTests
     [Test]
     public async Task IViewFor_ViewModel_CanBeSetToNull()
     {
-        IViewFor host = new ViewModelViewHost<TestViewModel> { ViewModel = new() };
+        var host = new ViewModelViewHost<TestViewModel> { ViewModel = new() };
+        IViewFor viewForHost = host;
 
-        host.ViewModel = null;
+        viewForHost.ViewModel = null;
 
+        await Assert.That(viewForHost.ViewModel).IsNull();
         await Assert.That(host.ViewModel).IsNull();
-        await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsNull();
     }
 
     /// <summary>Tests that IViewFor.ViewModel setter works correctly.</summary>
@@ -182,9 +179,10 @@ public class ViewModelViewHostGenericTests
     public async Task IViewFor_ViewModelSetter_WorksCorrectly()
     {
         var viewModel = new TestViewModel();
-        IViewFor host = new ViewModelViewHost<TestViewModel> { ViewModel = viewModel };
+        var host = new ViewModelViewHost<TestViewModel> { ViewModel = viewModel };
+        IViewFor viewForHost = host;
+        await Assert.That(viewForHost.ViewModel).IsSameReferenceAs(viewModel);
         await Assert.That(host.ViewModel).IsSameReferenceAs(viewModel);
-        await Assert.That(((ViewModelViewHost<TestViewModel>)host).ViewModel).IsSameReferenceAs(viewModel);
     }
 
     /// <summary>Tests that ViewContractObservable can be set.</summary>

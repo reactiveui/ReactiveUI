@@ -36,6 +36,9 @@ public sealed class BindingTypeConverterRegistry
     /// <summary>The initial capacity used for a per-type-pair converter list.</summary>
     private const int DefaultConverterListCapacity = 4;
 
+    /// <summary>The initial capacity used for the type-pair converter registry dictionary.</summary>
+    private const int DefaultRegistryCapacity = 16;
+
 #if NET9_0_OR_GREATER
     /// <summary>Synchronization primitive guarding mutations to the registry's internal state.</summary>
     /// <remarks>
@@ -80,7 +83,7 @@ public sealed class BindingTypeConverterRegistry
 
         lock (_gate)
         {
-            var snap = _snapshot ?? new Snapshot(new(16));
+            var snap = _snapshot ?? new Snapshot(new(DefaultRegistryCapacity));
 
             var newDict = CloneRegistryShallow(snap.ConvertersByTypePair);
 

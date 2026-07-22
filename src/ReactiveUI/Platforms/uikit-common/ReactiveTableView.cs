@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for full license information.
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -15,8 +14,7 @@ namespace ReactiveUI.Reactive;
 namespace ReactiveUI;
 #endif
 /// <summary>This is a TableView that is both an TableView and has ReactiveObject powers (i.e. you can call RaiseAndSetIfChanged).</summary>
-[SuppressMessage("Design", "CA1010: Implement generic IEnumerable", Justification = "UI Kit exposes IEnumerable")]
-public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
+public class ReactiveTableView : UITableView, IReactiveNotifyPropertyChanged<ReactiveTableView>, IHandleObservableErrors, IReactiveObject, ICanActivate, ICanForceManualActivation
 {
     /// <summary>The subject used to signal view activation.</summary>
     private readonly Signal<RxVoid> _activated = new();
@@ -104,8 +102,13 @@ public abstract class ReactiveTableView : UITableView, IReactiveNotifyPropertyCh
 
     /// <inheritdoc/>
     void ICanForceManualActivation.Activate(bool isActivating) =>
-        RxSchedulers.MainThreadScheduler.Schedule(() =>
-                                               (isActivating ? _activated : _deactivated).OnNext(RxVoid.Default));
+        RxSchedulers.MainThreadScheduler.Schedule(
+            (self: this, isActivating),
+            static (_, state) =>
+            {
+                (state.isActivating ? state.self._activated : state.self._deactivated).OnNext(RxVoid.Default);
+                return EmptyDisposable.Instance;
+            });
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

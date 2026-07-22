@@ -19,7 +19,7 @@ public class DependencyResolverRegistrarTests
     /// <returns>A <see cref="Task" /> representing the asynchronous unit test.</returns>
     [Test]
     public async Task Constructor_NullResolver_ThrowsArgumentNullException() =>
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsAsync<ArgumentNullException>(static async () =>
         {
             _ = new DependencyResolverRegistrar(null!);
             await Task.CompletedTask;
@@ -91,7 +91,7 @@ public class DependencyResolverRegistrarTests
     {
         var resolver = new MockDependencyResolver();
         var registrar = new DependencyResolverRegistrar(resolver);
-        var factory = () => new TestService();
+        var factory = static () => new TestService();
 
         registrar.RegisterLazySingleton(factory);
 
@@ -107,7 +107,7 @@ public class DependencyResolverRegistrarTests
     {
         var resolver = new MockDependencyResolver();
         var registrar = new DependencyResolverRegistrar(resolver);
-        var factory = () => new TestService();
+        var factory = static () => new TestService();
         const string Contract = "test-contract";
 
         registrar.RegisterLazySingleton(factory, Contract);
@@ -139,7 +139,7 @@ public class DependencyResolverRegistrarTests
     {
         var resolver = new MockDependencyResolver();
         var registrar = new DependencyResolverRegistrar(resolver);
-        var factory = () => new TestService();
+        var factory = static () => new TestService();
 
         registrar.Register(factory);
 
@@ -155,7 +155,7 @@ public class DependencyResolverRegistrarTests
     {
         var resolver = new MockDependencyResolver();
         var registrar = new DependencyResolverRegistrar(resolver);
-        var factory = () => new TestService();
+        var factory = static () => new TestService();
         const string Contract = "test-contract";
 
         registrar.Register(factory, Contract);
@@ -188,7 +188,11 @@ public class DependencyResolverRegistrarTests
     private sealed class TestService;
 
     /// <summary>Mock implementation of <see cref="IMutableDependencyResolver"/> for testing.</summary>
-    [SuppressMessage("Major Code Smell", "S4018:Generic methods should provide type parameters", Justification = "Type parameter cannot be inferred.")]
+    [SuppressMessage(
+        "Design",
+        "SST1452:Type parameter is never used",
+        Justification = "type parameters are mandated by the implemented interface signatures; the no-op test " +
+            "double does not reference them.")]
     private sealed class MockDependencyResolver : IMutableDependencyResolver, IDisposable
     {
         /// <summary>Gets the recorded calls to RegisterConstant.</summary>
@@ -372,18 +376,25 @@ public class DependencyResolverRegistrarTests
         /// <param name="serviceType">The requested service type.</param>
         /// <param name="contract">The optional registration contract.</param>
         /// <returns>Always <see langword="null"/>.</returns>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        [SuppressMessage(
+            "Design",
+            "SST2324:Public member on a non-public type",
+            Justification = "the public surface is required for interface/reflection binding; the containing " +
+                "test double is an intentionally non-public detail.")]
         public object? GetService(Type? serviceType, string? contract) => null;
 
         /// <summary>Gets the registered services for the given type and contract; this stub always returns an empty sequence.</summary>
         /// <param name="serviceType">The requested service type.</param>
         /// <param name="contract">The optional registration contract.</param>
         /// <returns>An empty sequence.</returns>
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
+        [SuppressMessage(
+            "Design",
+            "SST2324:Public member on a non-public type",
+            Justification = "the public surface is required for interface/reflection binding; the containing " +
+                "test double is an intentionally non-public detail.")]
         public IEnumerable<object> GetServices(Type? serviceType, string? contract) => [];
 
         /// <inheritdoc />
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Interface implementation")]
         public void Dispose()
         {
             // No-op: this mock holds no disposable resources.

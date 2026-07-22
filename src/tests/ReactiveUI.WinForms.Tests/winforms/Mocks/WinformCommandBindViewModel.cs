@@ -23,8 +23,8 @@ public class WinformCommandBindViewModel : ReactiveObject
     /// <summary>Initializes a new instance of the <see cref="WinformCommandBindViewModel"/> class.</summary>
     public WinformCommandBindViewModel()
     {
-        _command1 = ReactiveCommand.Create(() => { }, outputScheduler: Sequencer.Immediate);
-        _command2 = ReactiveCommand.CreateRunInBackground(() => { }, backgroundScheduler: null, outputScheduler: Sequencer.Immediate);
+        _command1 = ReactiveCommand.Create(static () => { }, outputScheduler: Sequencer.Immediate);
+        _command2 = ReactiveCommand.CreateRunInBackground(static () => { }, backgroundScheduler: null, outputScheduler: Sequencer.Immediate);
         _command3 = ReactiveCommand.Create<int>(i => ParameterResult = i * ParameterMultiplier, outputScheduler: Sequencer.Immediate);
     }
 

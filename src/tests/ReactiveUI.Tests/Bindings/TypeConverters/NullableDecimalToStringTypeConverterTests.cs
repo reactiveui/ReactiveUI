@@ -26,7 +26,7 @@ public class NullableDecimalToStringTypeConverterTests
     public async Task TryConvert_DecimalNullableToString_Succeeds()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        const decimal Value = 123.456m;
+        const decimal Value = 123.456M;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -68,7 +68,7 @@ public class NullableDecimalToStringTypeConverterTests
     public async Task TryConvert_NegativeValue_Succeeds()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        const decimal Value = -123.456m;
+        const decimal Value = -123.456M;
 
         var result = converter.TryConvert(Value, null, out var output);
 
@@ -94,7 +94,7 @@ public class NullableDecimalToStringTypeConverterTests
     public async Task TryConvert_WithConversionHint_FormatsCorrectly()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        const decimal Value = 42.5m;
+        const decimal Value = 42.5M;
         const int DecimalPlaces = 2;
 
         var result = converter.TryConvert(Value, DecimalPlaces, out var output);
@@ -109,7 +109,7 @@ public class NullableDecimalToStringTypeConverterTests
     public async Task TryConvert_Zero_Succeeds()
     {
         var converter = new NullableDecimalToStringTypeConverter();
-        decimal? value = 0m;
+        decimal? value = 0M;
 
         var result = converter.TryConvert(value, null, out var output);
 

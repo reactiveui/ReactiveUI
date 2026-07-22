@@ -121,12 +121,14 @@ public class Interaction<TInput, TOutput>(ISequencer? handlerScheduler = null) :
         // Yield before invoking the async handler so it is not run inside the current scheduler
         // trampoline (see #4351).
         IObservable<RxVoid> ContentHandler(IInteractionContext<TInput, TOutput> interaction) =>
-            new TaskUnitObservable(InvokeAsync(interaction));
+            new TaskUnitObservable(InvokeAsync(interaction, handler));
 
-        async Task InvokeAsync(IInteractionContext<TInput, TOutput> interaction)
+        static async Task InvokeAsync(
+            IInteractionContext<TInput, TOutput> interaction,
+            Func<IInteractionContext<TInput, TOutput>, Task> asyncHandler)
         {
             await YieldToCurrentContext().ConfigureAwait(false);
-            await handler(interaction).ConfigureAwait(false);
+            await asyncHandler(interaction).ConfigureAwait(false);
         }
     }
 

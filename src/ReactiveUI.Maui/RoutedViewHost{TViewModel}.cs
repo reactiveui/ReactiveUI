@@ -65,7 +65,7 @@ public class RoutedViewHost<
             pg.Title = vm.UrlPathSegment;
         }
 
-        return Signal.Emit<Page>(pg);
+        return Signal.Emit(pg);
     }
 
     /// <summary>Page for view model.</summary>
@@ -96,7 +96,11 @@ public class RoutedViewHost<
 
         if (SetTitleOnNavigate)
         {
-            _ = RxSchedulers.MainThreadScheduler.Schedule(() => pg.Title = vm.UrlPathSegment);
+            _ = RxSchedulers.MainThreadScheduler.Schedule((page: pg, vm), static (_, state) =>
+            {
+                state.page.Title = state.vm.UrlPathSegment;
+                return EmptyDisposable.Instance;
+            });
         }
 
         return pg;

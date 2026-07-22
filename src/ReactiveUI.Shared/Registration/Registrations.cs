@@ -3,8 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for full license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 #if REACTIVE_SHIM
 namespace ReactiveUI.Reactive;
 #else
@@ -87,6 +85,13 @@ public class Registrations : IWantsToRegisterStuff
         RegisterConverter(registrar, new StringToGuidTypeConverter());
         RegisterConverter(registrar, new StringToNullableGuidTypeConverter());
 
+        RegisterDateTimeAndUriStringConverters(registrar);
+    }
+
+    /// <summary>Registers the date/time and URI string binding converters.</summary>
+    /// <param name="registrar">The Splat registrar.</param>
+    private static void RegisterDateTimeAndUriStringConverters(IRegistrar registrar)
+    {
         RegisterConverter(registrar, new DateTimeToStringTypeConverter());
         RegisterConverter(registrar, new NullableDateTimeToStringTypeConverter());
         RegisterConverter(registrar, new StringToDateTimeTypeConverter());
@@ -178,10 +183,6 @@ public class Registrations : IWantsToRegisterStuff
     /// <item><description>As <see cref="IBindingTypeConverter"/> for affinity-based discovery</description></item>
     /// </list>
     /// </remarks>
-    [SuppressMessage(
-        "Major Code Smell",
-        "S4018:Generic methods should provide type parameter",
-        Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
     private static void RegisterUnidirectionalConverter<TFrom, TTo, TConverter>(
         IRegistrar registrar)
         where TConverter : IBindingTypeConverter<TFrom, TTo>, new()

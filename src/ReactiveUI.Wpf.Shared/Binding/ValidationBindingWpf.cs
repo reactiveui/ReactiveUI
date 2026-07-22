@@ -104,25 +104,6 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
     /// <summary>Gets the direction of the binding (always TwoWay for validation bindings).</summary>
     public BindingDirection Direction { get; }
 
-    /// <summary>Establishes the two-way data binding between the view control and view model property.</summary>
-    /// <returns>A disposable that can be used to remove the binding.</returns>
-    public IDisposable Bind()
-    {
-        _ = _control.SetBinding(
-            _dependencyProperty,
-            new System.Windows.Data.Binding
-            {
-                Source = _viewModel,
-                Path = new(_viewModelPropertyName),
-                Mode = BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-            });
-
-        _inner = new(() => BindingOperations.ClearBinding(_control, _dependencyProperty));
-
-        return _inner;
-    }
-
     /// <summary>Disposes the binding and releases all associated resources.</summary>
     public void Dispose()
     {
@@ -280,6 +261,25 @@ internal class ValidationBindingWpf<TView, TViewModel, TVProp, TVMProp> : IReact
 
         using var enumerator = FindControlsByNameIterator(parent, name).GetEnumerator();
         return enumerator.MoveNext() ? enumerator.Current : null;
+    }
+
+    /// <summary>Establishes the two-way data binding between the view control and view model property.</summary>
+    /// <returns>A disposable that can be used to remove the binding.</returns>
+    internal IDisposable Bind()
+    {
+        _ = _control.SetBinding(
+            _dependencyProperty,
+            new System.Windows.Data.Binding
+            {
+                Source = _viewModel,
+                Path = new(_viewModelPropertyName),
+                Mode = BindingMode.TwoWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+
+        _inner = new(() => BindingOperations.ClearBinding(_control, _dependencyProperty));
+
+        return _inner;
     }
 
     /// <summary>Releases the resources used by the binding.</summary>

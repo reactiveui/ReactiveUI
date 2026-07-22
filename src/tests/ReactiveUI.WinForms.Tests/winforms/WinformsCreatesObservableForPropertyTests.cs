@@ -98,11 +98,8 @@ public class WinformsCreatesObservableForPropertyTests
     }
 
     /// <summary>Test component with a property that has a Changed event.</summary>
-    private sealed class TestComponent : Component
+    public sealed class TestComponent : Component
     {
-        /// <summary>Backing field for the test property.</summary>
-        private string? _testProperty;
-
         /// <summary>Occurs when test property changed.</summary>
         public event EventHandler? TestPropertyChanged;
 
@@ -110,15 +107,15 @@ public class WinformsCreatesObservableForPropertyTests
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? TestProperty
         {
-            get => _testProperty;
+            get => field;
             set
             {
-                if (_testProperty == value)
+                if (field == value)
                 {
                     return;
                 }
 
-                _testProperty = value;
+                field = value;
                 TestPropertyChanged?.Invoke(this, EventArgs.Empty);
             }
         }

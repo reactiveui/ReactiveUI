@@ -50,18 +50,15 @@ public sealed class UIKitCommandBinders : FlexibleCommandBinder
         Register(
             typeof(UIBarButtonItem),
             affinity: 10,
-            static (cmd, t, cp) =>
-            {
-                return t is not UIBarButtonItem item
-                    ? Scope.Empty
-                    : ForEvent(
-                        command: cmd,
-                        target: item,
-                        commandParameter: cp,
-                        addHandler: h => item.Clicked += h,
-                        removeHandler: h => item.Clicked -= h,
-                        enabledProperty: UIBarButtonItemEnabledProperty);
-            });
+            static (cmd, t, cp) => t is not UIBarButtonItem item
+                ? Scope.Empty
+                : ForEvent(
+                    command: cmd,
+                    target: item,
+                    commandParameter: cp,
+                    addHandler: h => item.Clicked += h,
+                    removeHandler: h => item.Clicked -= h,
+                    enabledProperty: UIBarButtonItemEnabledProperty));
     }
 
     /// <summary>Gets the shared <see cref="UIKitCommandBinders"/> instance.</summary>

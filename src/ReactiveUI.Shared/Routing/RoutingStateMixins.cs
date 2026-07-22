@@ -22,9 +22,9 @@ public static class RoutingStateMixins
         /// <returns>The first view model of type <typeparamref name="T"/> found in the navigation stack, or <see langword="null"/>
         /// if no such view model exists.</returns>
         [SuppressMessage(
-            "Major Code Smell",
-            "S4018:Generic methods should provide type parameter",
-            Justification = "Generic type parameter is supplied explicitly by the caller by design; it identifies the target type and cannot be inferred from the method's parameters.")]
+            "Design",
+            "SST2307:Generic method type parameters should be inferable from the parameters",
+            Justification = "The view model type to search for is supplied explicitly by the caller by design; it selects the match type and cannot be inferred from the parameters.")]
         public T? FindViewModelInStack<T>()
             where T : IRoutableViewModel
         {

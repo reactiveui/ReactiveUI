@@ -30,10 +30,7 @@ public class TestFixtureBuilder : IBuilder
     /// <returns>The test fixture.</returns>
     public static TestFixture ToTestFixture(TestFixtureBuilder builder)
     {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentExceptionHelper.ThrowIfNull(builder);
 
         return builder.Build();
     }

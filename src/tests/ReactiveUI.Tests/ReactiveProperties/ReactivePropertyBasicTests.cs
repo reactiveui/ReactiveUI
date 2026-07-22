@@ -31,7 +31,7 @@ public class ReactivePropertyBasicTests
     public async Task AddValidationErrorIgnoreInitialError()
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null, true);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null, true);
 
         await Assert.That(rp.HasErrors).IsFalse(); // Initial error ignored
 
@@ -45,7 +45,7 @@ public class ReactivePropertyBasicTests
     public async Task AddValidationErrorWithEnumerableFunction()
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? new[] { RequiredError } : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? new[] { RequiredError } : null);
 
         await Assert.That(rp.HasErrors).IsTrue();
 
@@ -59,7 +59,7 @@ public class ReactivePropertyBasicTests
     public async Task AddValidationErrorWithObservableFunction()
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
-        _ = rp.AddValidationError(xs => xs.Select(x => string.IsNullOrEmpty(x) ? RequiredError : null));
+        _ = rp.AddValidationError(static xs => xs.Select(static x => string.IsNullOrEmpty(x) ? RequiredError : null));
 
         await Assert.That(rp.HasErrors).IsTrue();
 
@@ -73,7 +73,7 @@ public class ReactivePropertyBasicTests
     public async Task AddValidationErrorWithSyncFunction()
     {
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
         await Assert.That(rp.HasErrors).IsTrue();
 
@@ -160,7 +160,7 @@ public class ReactivePropertyBasicTests
         var fired = false;
 
         rp.ErrorsChanged += (_, _) => fired = true;
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
         await Assert.That(fired).IsTrue();
     }
@@ -227,8 +227,8 @@ public class ReactivePropertyBasicTests
     {
         const int MinimumLength = 3;
         using var rp = ReactiveProperty<string>.Create(null, Sequencer.Immediate, false, false);
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null!)
-            .AddValidationError(x => x?.Length < MinimumLength ? "Too short" : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null!)
+            .AddValidationError(static x => x?.Length < MinimumLength ? "Too short" : null);
 
         await Assert.That(rp.HasErrors).IsTrue();
 
@@ -245,7 +245,7 @@ public class ReactivePropertyBasicTests
         var errors = new List<IEnumerable?>();
         _ = rp.ObserveErrorChanged.Subscribe(errors.Add);
 
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
         await Assert.That(errors.Count).IsGreaterThan(0);
     }
@@ -259,7 +259,7 @@ public class ReactivePropertyBasicTests
         var hasErrorsValues = new List<bool>();
         _ = rp.ObserveHasErrors.Subscribe(hasErrorsValues.Add);
 
-        _ = rp.AddValidationError(x => string.IsNullOrEmpty(x) ? RequiredError : null);
+        _ = rp.AddValidationError(static x => string.IsNullOrEmpty(x) ? RequiredError : null);
 
         await Assert.That(hasErrorsValues).Contains(true);
 
@@ -368,7 +368,7 @@ public class ReactivePropertyBasicTests
 
         var completed = false;
         _ = rp.Subscribe(
-            _ => { },
+            static _ => { },
             () => completed = true);
 
         await Assert.That(completed).IsTrue();

@@ -167,9 +167,9 @@ TViewModel> : ReactiveContentView<TViewModel>
 
     /// <summary>Handles changes to the <see cref="ImageSource"/> property by updating the image control.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnImageSourceChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnImageSourceChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ReactiveImageItemView<TViewModel> view)
         {
@@ -181,9 +181,9 @@ TViewModel> : ReactiveContentView<TViewModel>
 
     /// <summary>Handles changes to the <see cref="Text"/> property by updating the primary text label.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnTextChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnTextChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ReactiveImageItemView<TViewModel> view)
         {
@@ -195,9 +195,9 @@ TViewModel> : ReactiveContentView<TViewModel>
 
     /// <summary>Handles changes to the <see cref="TextColor"/> property by updating the primary text label color.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnTextColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnTextColorChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ReactiveImageItemView<TViewModel> view)
         {
@@ -209,9 +209,9 @@ TViewModel> : ReactiveContentView<TViewModel>
 
     /// <summary>Handles changes to the <see cref="Detail"/> property by updating the detail text label.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnDetailChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnDetailChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ReactiveImageItemView<TViewModel> view)
         {
@@ -223,9 +223,9 @@ TViewModel> : ReactiveContentView<TViewModel>
 
     /// <summary>Handles changes to the <see cref="DetailColor"/> property by updating the detail text label color.</summary>
     /// <param name="bindable">The object whose property changed.</param>
-    /// <param name="oldValue">The previous value.</param>
+    /// <param name="_">The previous value.</param>
     /// <param name="newValue">The new value.</param>
-    private static void OnDetailColorChanged(BindableObject bindable, object? oldValue, object? newValue)
+    private static void OnDetailColorChanged(BindableObject bindable, object? _, object? newValue)
     {
         if (bindable is not ReactiveImageItemView<TViewModel> view)
         {

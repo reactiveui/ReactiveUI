@@ -47,7 +47,7 @@ public sealed class DependencyResolverRegistrar(IMutableDependencyResolver resol
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TService>(
         Func<TService> factory)
         where TService : class =>
-        RegisterLazySingleton<TService>(factory, null);
+        RegisterLazySingleton(factory, null);
 
     /// <inheritdoc/>
     public void RegisterLazySingleton<

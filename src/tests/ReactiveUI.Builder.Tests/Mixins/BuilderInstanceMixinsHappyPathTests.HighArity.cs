@@ -6,6 +6,10 @@
 namespace ReactiveUI.Builder.Tests.Mixins;
 
 /// <summary>Tests the happy-path behaviour of the instance-based WithInstance overloads for the higher-arity (9-16 type) overloads.</summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Layout",
+    "SST1523:Members should not be too long",
+    Justification = "High-arity variadic WithInstance test methods are intrinsically long; each per-instance setup and assertion sits on its own line under one-statement-per-line formatting.")]
 public partial class BuilderInstanceMixinsHappyPathTests
 {
     /// <summary>Verifies that the 9-types WithInstance overload invokes the action with the resolved instances.</summary>
@@ -13,7 +17,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_9_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -90,7 +94,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_9_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -122,7 +126,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_10_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -205,7 +209,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_10_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -238,7 +242,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_11_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -281,7 +285,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_11_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -315,7 +319,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_12_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -360,7 +364,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_12_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -395,7 +399,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_13_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -442,7 +446,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_13_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -479,7 +483,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_14_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -528,7 +532,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_14_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -566,7 +570,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_15_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -617,7 +621,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_15_Types_Returns_Early_When_Current_Is_Null()
     {
@@ -655,7 +659,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_16_Types_Invokes_Action_With_Resolved_Services()
     {
@@ -708,7 +712,7 @@ public partial class BuilderInstanceMixinsHappyPathTests
     [Test]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Major Code Smell",
-        "S107:Methods should not have too many parameters",
+        "SST1472:Signatures should not declare too many parameters",
         Justification = "Test exercises a variadic overload.")]
     public async Task WithInstance_16_Types_Returns_Early_When_Current_Is_Null()
     {
