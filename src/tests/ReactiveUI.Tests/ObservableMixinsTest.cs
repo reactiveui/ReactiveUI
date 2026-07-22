@@ -179,17 +179,11 @@ public class ObservableMixinsTest
     [Test]
     public async Task FromAsyncWithAllNotificationsRunsAction()
     {
-        var ran = false;
+        var source = ObservableMixins.FromAsyncWithAllNotifications(static _ => Task.CompletedTask);
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications(_ =>
-        {
-            ran = true;
-            return Task.CompletedTask;
-        });
+        var result = await RunToCompletionAsync(source);
 
-        _ = await RunToCompletionAsync(source);
-
-        await Assert.That(ran).IsTrue();
+        await Assert.That(result).IsEqualTo(RxVoid.Default);
     }
 
     /// <summary>Tests that the parameterized action overload passes the parameter and completes.</summary>
@@ -200,7 +194,7 @@ public class ObservableMixinsTest
         const int Parameter = 7;
         var observed = 0;
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications<int>(
+        var source = ObservableMixins.FromAsyncWithAllNotifications(
             (param, _) =>
             {
                 observed = param;
@@ -220,7 +214,7 @@ public class ObservableMixinsTest
     {
         const int Expected = 42;
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications<int>(_ => Task.FromResult(Expected));
+        var source = ObservableMixins.FromAsyncWithAllNotifications(static _ => Task.FromResult(Expected));
 
         var result = await RunToCompletionAsync(source);
 
@@ -233,10 +227,11 @@ public class ObservableMixinsTest
     public async Task FromAsyncWithAllNotificationsWithParameterProducesResult()
     {
         const int Parameter = 21;
+        const int Multiplier = 2;
         const int Expected = 42;
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications<int, int>(
-            (param, _) => Task.FromResult(param * 2),
+        var source = ObservableMixins.FromAsyncWithAllNotifications(
+            static (param, _) => Task.FromResult(param * Multiplier),
             Parameter);
 
         var result = await RunToCompletionAsync(source);
@@ -251,11 +246,13 @@ public class ObservableMixinsTest
     {
         var expected = new InvalidOperationException("async failure");
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications<int>(_ => Task.FromException<int>(expected));
+        var source = ObservableMixins.FromAsyncWithAllNotifications(
+            static (ex, _) => Task.FromException<int>(ex),
+            expected);
 
         var (result, _) = Materialize(source);
 
-        var completion = new TaskCompletionSource<Exception>();
+        var completion = new TaskCompletionSource<Exception>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var subscription = result.Subscribe(
             static _ => { },
             ex => completion.TrySetResult(ex),
@@ -271,20 +268,23 @@ public class ObservableMixinsTest
     [Test]
     public async Task FromAsyncWithAllNotificationsCancelDelegateIsInvokable()
     {
-        var started = new TaskCompletionSource();
-        var release = new TaskCompletionSource();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        var source = ObservableMixins.FromAsyncWithAllNotifications<int>(async ct =>
-        {
-            _ = started.TrySetResult();
-            await release.Task.ConfigureAwait(false);
-            ct.ThrowIfCancellationRequested();
-            return 0;
-        });
+        var source = ObservableMixins.FromAsyncWithAllNotifications(
+            static async (state, ct) =>
+            {
+                var (start, rel) = state;
+                _ = start.TrySetResult();
+                await rel.Task.ConfigureAwait(false);
+                ct.ThrowIfCancellationRequested();
+                return 0;
+            },
+            (started, release));
 
         var (result, cancel) = Materialize(source);
 
-        var completion = new TaskCompletionSource();
+        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var subscription = result.Subscribe(
             static _ => { },
             _ => completion.TrySetResult(),
@@ -321,7 +321,7 @@ public class ObservableMixinsTest
     {
         var (result, _) = Materialize(source);
 
-        var completion = new TaskCompletionSource<TResult>();
+        var completion = new TaskCompletionSource<TResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         var last = default(TResult)!;
         using var subscription = result.Subscribe(
             value => last = value,
